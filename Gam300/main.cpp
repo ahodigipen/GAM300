@@ -1,4 +1,4 @@
-#include "../Engine/BoomEngine/BoomEngine.h"
+#include "BoomEngine.h"
 
 int main() {
     MyEngineClass engine;
