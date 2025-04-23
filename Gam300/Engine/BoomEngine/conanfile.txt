@@ -1,0 +1,13 @@
+# BoomEngine/conanfile.txt
+[requires]
+glfw/3.3.8
+glew/2.1.0
+glm/0.9.9.8
+imgui/1.89.7
+opengl/system
+
+[generators]
+CMakeDeps
+CMakeToolchain
+
+

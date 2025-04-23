@@ -5,6 +5,10 @@
 #include "Core.h"
 #include "framework.h"
 #include <iostream>
+#include <glm/glm.hpp>
+#include <GLFW/glfw3.h>
+#include <GL/glew.h>
+#include <imgui.h>
 using namespace std;
 // TODO: This is an example of a library function
 void MyEngineClass::whatup() {
