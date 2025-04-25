@@ -108,3 +108,5 @@ Gam300/conanbuild/opengl_system-release-x86_64-data.cmake
 Gam300/conanbuild/opengl_system-Target-debug.cmake
 Gam300/conanbuild/opengl_system-Target-release.cmake
 Gam300/conanbuild/opengl_systemTargets.cmake
+*.props
+*.cmake

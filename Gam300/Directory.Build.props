@@ -4,6 +4,18 @@
 				Condition="Exists('conanbuild\conandeps.props')" />
 	</ImportGroup>
 
+	
+	<ItemDefinitionGroup Condition="'$(Configuration)' == 'Debug'">
+		<ClCompile>
+			<!--MACRO DEFINITION FOR DEBUG MODE-->
+			<PreprocessorDefinitions>
+				BOOM_ENABLE_LOG;
+				%(PreprocessorDefinitions)
+			</PreprocessorDefinitions>
+		</ClCompile>
+	</ItemDefinitionGroup>
+
+
 	<PropertyGroup>
 		<!-- 1) Engine import lib folder -->
 		<AdditionalLibraryDirectories>

@@ -1,10 +1,10 @@
 #pragma once
-
-#ifdef BOOMENGINE_EXPORTS
-#define BOOM_API __declspec(dllexport)
-#else
-#define BOOM_API __declspec(dllimport)
-#endif
+#include"Core.h"
+//#ifdef BOOM_EXPORTS
+//#define BOOM_API __declspec(dllexport)
+//#else
+//#define BOOM_API __declspec(dllimport)
+//#endif
 
 //trying out
 class BOOM_API MyEngineClass {
