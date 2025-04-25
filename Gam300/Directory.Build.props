@@ -1,20 +1,20 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
+<Project>
 	<ImportGroup Label="PropertySheets">
-		<Import
-		  Project="$(MSBuildThisFileDirectory)conanbuild\conandeps.props"
-		  Condition="Exists('$(MSBuildThisFileDirectory)conanbuild\conandeps.props')" />
+		<Import Project="conanbuild\conandeps.props"
+				Condition="Exists('conanbuild\conandeps.props')" />
 	</ImportGroup>
 
 	<PropertyGroup>
-		<!--
-      Prepend the engine lib folder, then preserve any Conan-injected dirs:
-    -->
+		<!-- 1) Engine import lib folder -->
 		<AdditionalLibraryDirectories>
 			$(MSBuildThisFileDirectory)Engine\BoomEngine\x64\$(Configuration);
 			%(AdditionalLibraryDirectories)
 		</AdditionalLibraryDirectories>
-	</PropertyGroup>
 
+		<!-- 2) Pull in the engine import library itself -->
+		<AdditionalDependencies>
+			BoomEngine.lib;
+			%(AdditionalDependencies)
+		</AdditionalDependencies>
+	</PropertyGroup>
 </Project>
