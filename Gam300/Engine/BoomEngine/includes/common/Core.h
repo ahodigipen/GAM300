@@ -54,7 +54,7 @@
 #endif
 
 
-//CONSOLE LOGGING
+//-------------CONSOLE LOGGING----------------
 #ifdef BOOM_ENABLE_LOG
 
 	namespace Boom
@@ -81,11 +81,11 @@
 	#define BOOM_FATAL
 	#define BOOM_INFO
 	#define BOOM_WARN
-
-
-
 #endif //BOOM_ENABLE LOG
 
+
+//---------FREE ALLOCATED MEMORY------------
+#define BOOM_DELETE(ptr) if (ptr != nullptr) { delete (ptr); ptr = nullptr; }
 
 
 #endif //CORE_H
