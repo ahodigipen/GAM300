@@ -1,7 +1,10 @@
 #include "BoomEngine.h"
 
-int main() {
+int32_t main()
+ {
     MyEngineClass engine;
     engine.whatup();
+
+    BOOM_INFO("Editor Started");
     return 0;
 }

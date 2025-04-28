@@ -1,0 +1,274 @@
+Folder PATH listing for volume OS
+Volume serial number is 64F7-917A
+C:.
+¦   .gitignore
+¦   3D Game Engine Development_ Lea - Franc Pouhela.pdf
+¦   python-3.13.3-amd64.exe
+¦   Rubrics_Milestone01.xlsx
+¦   structure.txt
+¦   
++---Gam300
+    ¦   conanfile.txt
+    ¦   Directory.Build.props
+    ¦   Gam300.sln
+    ¦   setup.bat
+    ¦   structure.txt
+    ¦   
+    +---conanbuild
+    ¦       cmakedeps_macros.cmake
+    ¦       CMakePresets.json
+    ¦       conanbuild.bat
+    ¦       conanbuildenv-debug-x86_64.bat
+    ¦       conanbuildenv-release-x86_64.bat
+    ¦       conandeps.props
+    ¦       conandeps_legacy.cmake
+    ¦       conanrun.bat
+    ¦       conanrunenv-debug-x86_64.bat
+    ¦       conanrunenv-release-x86_64.bat
+    ¦       conan_fmt.props
+    ¦       conan_fmt__fmt.props
+    ¦       conan_fmt__fmt_debug_x64.props
+    ¦       conan_fmt__fmt_release_x64.props
+    ¦       conan_fmt__fmt_vars_debug_x64.props
+    ¦       conan_fmt__fmt_vars_release_x64.props
+    ¦       conan_glew.props
+    ¦       conan_glew_glewlib.props
+    ¦       conan_glew_glewlib_debug_x64.props
+    ¦       conan_glew_glewlib_release_x64.props
+    ¦       conan_glew_glewlib_vars_debug_x64.props
+    ¦       conan_glew_glewlib_vars_release_x64.props
+    ¦       conan_glfw.props
+    ¦       conan_glfw_debug_x64.props
+    ¦       conan_glfw_release_x64.props
+    ¦       conan_glfw_vars_debug_x64.props
+    ¦       conan_glfw_vars_release_x64.props
+    ¦       conan_glm.props
+    ¦       conan_glm_debug_x64.props
+    ¦       conan_glm_release_x64.props
+    ¦       conan_glm_vars_debug_x64.props
+    ¦       conan_glm_vars_release_x64.props
+    ¦       conan_glu.props
+    ¦       conan_glu_debug_x64.props
+    ¦       conan_glu_release_x64.props
+    ¦       conan_glu_vars_debug_x64.props
+    ¦       conan_glu_vars_release_x64.props
+    ¦       conan_imgui.props
+    ¦       conan_imgui_debug_x64.props
+    ¦       conan_imgui_release_x64.props
+    ¦       conan_imgui_vars_debug_x64.props
+    ¦       conan_imgui_vars_release_x64.props
+    ¦       conan_opengl.props
+    ¦       conan_opengl_debug_x64.props
+    ¦       conan_opengl_release_x64.props
+    ¦       conan_opengl_vars_debug_x64.props
+    ¦       conan_opengl_vars_release_x64.props
+    ¦       conan_spdlog.props
+    ¦       conan_spdlog_libspdlog.props
+    ¦       conan_spdlog_libspdlog_debug_x64.props
+    ¦       conan_spdlog_libspdlog_release_x64.props
+    ¦       conan_spdlog_libspdlog_vars_debug_x64.props
+    ¦       conan_spdlog_libspdlog_vars_release_x64.props
+    ¦       conan_toolchain.cmake
+    ¦       deactivate_conanbuild.bat
+    ¦       deactivate_conanrun.bat
+    ¦       FindGLEW.cmake
+    ¦       fmt-config-version.cmake
+    ¦       fmt-config.cmake
+    ¦       fmt-debug-x86_64-data.cmake
+    ¦       fmt-release-x86_64-data.cmake
+    ¦       fmt-Target-debug.cmake
+    ¦       fmt-Target-release.cmake
+    ¦       fmtTargets.cmake
+    ¦       glew-config-version.cmake
+    ¦       glew-config.cmake
+    ¦       glew-debug-x86_64-data.cmake
+    ¦       glew-release-x86_64-data.cmake
+    ¦       glew-Target-debug.cmake
+    ¦       glew-Target-release.cmake
+    ¦       glewTargets.cmake
+    ¦       glfw3-config-version.cmake
+    ¦       glfw3-config.cmake
+    ¦       glfw3-debug-x86_64-data.cmake
+    ¦       glfw3-release-x86_64-data.cmake
+    ¦       glfw3-Target-debug.cmake
+    ¦       glfw3-Target-release.cmake
+    ¦       glfw3Targets.cmake
+    ¦       glm-config-version.cmake
+    ¦       glm-config.cmake
+    ¦       glm-debug-x86_64-data.cmake
+    ¦       glm-release-x86_64-data.cmake
+    ¦       glm-Target-debug.cmake
+    ¦       glm-Target-release.cmake
+    ¦       glmTargets.cmake
+    ¦       glu-config-version.cmake
+    ¦       glu-config.cmake
+    ¦       glu-debug-x86_64-data.cmake
+    ¦       glu-release-x86_64-data.cmake
+    ¦       glu-Target-debug.cmake
+    ¦       glu-Target-release.cmake
+    ¦       gluTargets.cmake
+    ¦       imgui-config-version.cmake
+    ¦       imgui-config.cmake
+    ¦       imgui-debug-x86_64-data.cmake
+    ¦       imgui-release-x86_64-data.cmake
+    ¦       imgui-Target-debug.cmake
+    ¦       imgui-Target-release.cmake
+    ¦       imguiTargets.cmake
+    ¦       module-GLEW-debug-x86_64-data.cmake
+    ¦       module-GLEW-release-x86_64-data.cmake
+    ¦       module-GLEW-Target-debug.cmake
+    ¦       module-GLEW-Target-release.cmake
+    ¦       module-GLEWTargets.cmake
+    ¦       opengl_system-config-version.cmake
+    ¦       opengl_system-config.cmake
+    ¦       opengl_system-debug-x86_64-data.cmake
+    ¦       opengl_system-release-x86_64-data.cmake
+    ¦       opengl_system-Target-debug.cmake
+    ¦       opengl_system-Target-release.cmake
+    ¦       opengl_systemTargets.cmake
+    ¦       spdlog-config-version.cmake
+    ¦       spdlog-config.cmake
+    ¦       spdlog-debug-x86_64-data.cmake
+    ¦       spdlog-release-x86_64-data.cmake
+    ¦       spdlog-Target-debug.cmake
+    ¦       spdlog-Target-release.cmake
+    ¦       spdlogTargets.cmake
+    ¦       
+    +---Editor
+    ¦   ¦   Editor.filters
+    ¦   ¦   Editor.user
+    ¦   ¦   Editor.vcxproj
+    ¦   ¦   Editor.vcxproj.user
+    ¦   ¦   
+    ¦   +---Includes
+    ¦   +---src
+    ¦   ¦       main.cpp
+    ¦   ¦       
+    ¦   +---x64
+    ¦       +---Debug
+    ¦           ¦   Editor.Build.CppClean.log
+    ¦           ¦   Editor.exe.recipe
+    ¦           ¦   Editor.log
+    ¦           ¦   Editor.vcxproj.FileListAbsolute.txt
+    ¦           ¦   Gam300.Build.CppClean.log
+    ¦           ¦   Gam300.exe.recipe
+    ¦           ¦   main.obj
+    ¦           ¦   Project1.log
+    ¦           ¦   Project1.vcxproj.FileListAbsolute.txt
+    ¦           ¦   vc143.idb
+    ¦           ¦   vc143.pdb
+    ¦           ¦   
+    ¦           +---Editor.tlog
+    ¦           ¦       CL.command.1.tlog
+    ¦           ¦       Cl.items.tlog
+    ¦           ¦       CL.read.1.tlog
+    ¦           ¦       CL.write.1.tlog
+    ¦           ¦       Editor.lastbuildstate
+    ¦           ¦       link.19836-cvtres.read.1.tlog
+    ¦           ¦       link.19836-cvtres.write.1.tlog
+    ¦           ¦       link.19836-rc.read.1.tlog
+    ¦           ¦       link.19836-rc.write.1.tlog
+    ¦           ¦       link.19836.read.1.tlog
+    ¦           ¦       link.19836.read.2.tlog
+    ¦           ¦       link.19836.write.1.tlog
+    ¦           ¦       link.command.1.tlog
+    ¦           ¦       link.read.1.tlog
+    ¦           ¦       link.secondary.1.tlog
+    ¦           ¦       link.write.1.tlog
+    ¦           ¦       unsuccessfulbuild
+    ¦           ¦       
+    ¦           +---Gam300.tlog
+    ¦                   CL.command.1.tlog
+    ¦                   Cl.items.tlog
+    ¦                   CL.read.1.tlog
+    ¦                   CL.write.1.tlog
+    ¦                   Gam300.lastbuildstate
+    ¦                   link.command.1.tlog
+    ¦                   link.read.1.tlog
+    ¦                   link.secondary.1.tlog
+    ¦                   link.write.1.tlog
+    ¦                   
+    +---Engine
+    ¦   +---BoomEngine
+    ¦       ¦   BoomEngine.vcxproj
+    ¦       ¦   BoomEngine.vcxproj.filters
+    ¦       ¦   BoomEngine.vcxproj.user
+    ¦       ¦   CMakeLists.txt
+    ¦       ¦   
+    ¦       +---BoomEngine
+    ¦       ¦   +---x64
+    ¦       ¦       +---Debug
+    ¦       ¦           ¦   BoomEngine.dll.recipe
+    ¦       ¦           ¦   BoomEngine.ilk
+    ¦       ¦           ¦   BoomEngine.log
+    ¦       ¦           ¦   BoomEngine.obj
+    ¦       ¦           ¦   Logger.obj
+    ¦       ¦           ¦   vc143.idb
+    ¦       ¦           ¦   vc143.pdb
+    ¦       ¦           ¦   
+    ¦       ¦           +---BoomEngine
+    ¦       ¦           ¦       Core.pch
+    ¦       ¦           ¦       
+    ¦       ¦           +---BoomEngine.tlog
+    ¦       ¦                   BoomEngine.lastbuildstate
+    ¦       ¦                   CL.command.1.tlog
+    ¦       ¦                   Cl.items.tlog
+    ¦       ¦                   CL.read.1.tlog
+    ¦       ¦                   CL.write.1.tlog
+    ¦       ¦                   link.command.1.tlog
+    ¦       ¦                   link.read.1.tlog
+    ¦       ¦                   link.secondary.1.tlog
+    ¦       ¦                   link.write.1.tlog
+    ¦       ¦                   
+    ¦       +---includes
+    ¦       ¦   ¦   BoomEngine.h
+    ¦       ¦   ¦   
+    ¦       ¦   +---common
+    ¦       ¦           Core.h
+    ¦       ¦           framework.h
+    ¦       ¦           
+    ¦       +---src
+    ¦       ¦       BoomEngine.cpp
+    ¦       ¦       Logger.cpp
+    ¦       ¦       
+    ¦       +---x64
+    ¦           +---Debug
+    ¦               ¦   BoomEngine.Build.CppClean.log
+    ¦               ¦   BoomEngine.dll.recipe
+    ¦               ¦   BoomEngine.ilk
+    ¦               ¦   BoomEngine.lib
+    ¦               ¦   BoomEngine.log
+    ¦               ¦   BoomEngine.obj
+    ¦               ¦   BoomEngine.vcxproj.FileListAbsolute.txt
+    ¦               ¦   Logger.obj
+    ¦               ¦   vc143.idb
+    ¦               ¦   vc143.pdb
+    ¦               ¦   
+    ¦               +---BoomEngine
+    ¦               ¦       Core.pch
+    ¦               ¦       
+    ¦               +---BoomEngine.tlog
+    ¦                       BoomEngine.lastbuildstate
+    ¦                       CL.command.1.tlog
+    ¦                       Cl.items.tlog
+    ¦                       CL.read.1.tlog
+    ¦                       CL.write.1.tlog
+    ¦                       link.command.1.tlog
+    ¦                       link.read.1.tlog
+    ¦                       link.secondary.1.tlog
+    ¦                       link.write.1.tlog
+    ¦                       
+    +---Game
+    +---Solutions
+    ¦   +---x64
+    ¦       +---Debug
+    +---x64
+        +---Debug
+                BoomEngine.dll
+                BoomEngine.exp
+                BoomEngine.lib
+                BoomEngine.pdb
+                Editor.pdb
+                Gam300.exe
+                Gam300.pdb
+                

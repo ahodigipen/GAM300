@@ -87,7 +87,7 @@
 		// Returns a process-wide, thread-safe spdlog logger instance.
 		// Initialized on first call.
 		// ----------------------------------------------------------------
-		std::shared_ptr<spdlog::logger>& GetLogger();
+		BOOM_API std::shared_ptr<spdlog::logger>& GetLogger();
 	}
 
 	// Convenience macros — expand to no-ops when logging is disabled:
