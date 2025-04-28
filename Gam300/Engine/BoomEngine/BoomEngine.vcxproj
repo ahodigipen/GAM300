@@ -163,6 +163,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="includes\Application\Application.h" />
+    <ClInclude Include="includes\Application\Context.h" />
+    <ClInclude Include="includes\Application\Interface.h" />
     <ClInclude Include="includes\BoomEngine.h" />
     <ClInclude Include="includes\common\framework.h" />
     <ClInclude Include="includes\common\Core.h" />

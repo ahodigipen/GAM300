@@ -3,7 +3,7 @@
 // This also affects IntelliSense performance, including code completion and many code browsing features.
 // However, files listed here are ALL re-compiled if any one of them is updated between builds.
 // Do not add files here that you will be updating frequently as this negates the performance advantage.
-
+#pragma once 
 #ifndef CORE_H
 #define CORE_H
 
@@ -108,6 +108,7 @@
 #endif //BOOM_ENABLE LOG
 
 //---------FREE ALLOCATED MEMORY------------
+//To improve pointer safety within engine context
 #define BOOM_DELETE(ptr) if (ptr != nullptr) { delete (ptr); ptr = nullptr; }
 
 
