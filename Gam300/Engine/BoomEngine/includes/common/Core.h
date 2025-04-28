@@ -59,6 +59,30 @@
 
 	namespace Boom
 	{
+		/**
+		 * @brief Generates a unique 32-bit identifier for a given type.
+		 *
+		 * This function uses the address of the `std::type_info` object for type `T`
+		 * as the basis for the identifier, casted to a 32-bit unsigned integer.
+		 *
+		 * It is designed for fast, memory-efficient type identification within the engine.
+		 *
+		 * @tparam T The type for which the ID is generated.
+		 * @return constexpr uint32_t A 32-bit unsigned integer representing the unique ID of the type.
+		 *
+		 * @note This method is fast but the ID is only guaranteed to be unique within a single program execution.
+		 * It is not stable across different runs or builds.
+		 *
+		 * @warning On 64-bit systems, truncating the address to 32 bits may theoretically cause collisions,
+		 * although in practice this is rare.
+		 */
+		template <typename T>
+		BOOM_INLINE constexpr uint32_t TypeID()
+		{
+			return static_cast<uint32_t>(reinterpret_cast<std::uintptr_t>(&typeid(T)));
+		}
+
+
 		// ----------------------------------------------------------------
 		// Returns a process-wide, thread-safe spdlog logger instance.
 		// Initialized on first call.
@@ -82,7 +106,6 @@
 	#define BOOM_INFO
 	#define BOOM_WARN
 #endif //BOOM_ENABLE LOG
-
 
 //---------FREE ALLOCATED MEMORY------------
 #define BOOM_DELETE(ptr) if (ptr != nullptr) { delete (ptr); ptr = nullptr; }
