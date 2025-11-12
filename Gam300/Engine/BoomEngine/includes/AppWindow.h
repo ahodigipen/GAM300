@@ -248,6 +248,18 @@ namespace Boom {
 			return (mx >= camRegionX && mx <= camRegionX + camRegionW &&
 				my >= camRegionY && my <= camRegionY + camRegionH);
 		}
+		BOOM_INLINE void SetViewportKeyboardFocus(bool allow) { allowViewportKeyboard = allow; }
+
+		// NEW: point-in-rect test (window client coords)
+		BOOM_INLINE bool IsPointInCameraRect(double x, double y) const {
+			return (x >= camRegionX && x <= camRegionX + camRegionW &&
+				y >= camRegionY && y <= camRegionY + camRegionH);
+		}
+
+		// NEW: allow mouse even if ImGui wants it (used by bridge callbacks)
+		BOOM_INLINE bool AllowCameraMouseNow(double x, double y) const {
+			return camInputEnabled && IsPointInCameraRect(x, y);
+		}
 		BOOM_INLINE int getWidth() {
 			return width;
 		}
@@ -274,7 +286,7 @@ namespace Boom {
 		bool isRightClickDown{};   // optional legacy flags if you still want them
 		bool isMiddleClickDown{};
 		bool isShiftDown{};
-
+		bool allowViewportKeyboard{ false };
 		// x - strafe right/left, y - hover up/down, z - forward/back
 		glm::vec3  camMoveDir{};
 

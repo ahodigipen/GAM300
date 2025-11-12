@@ -190,6 +190,7 @@ namespace EditorUI {
                     // Only allow camera movement when NOT using gizmo
                     const bool allowCameraInput = hovered && focused && !gizmoWantsInput;
                     m_Ctx->window->SetCameraInputRegion(localX, localY, localW, localH, allowCameraInput);
+                    m_Ctx->window->SetViewportKeyboardFocus(focused && !gizmoWantsInput);
                 }
 
                 // Tooltip
