@@ -1803,7 +1803,7 @@ namespace Boom
                     float targetYaw = targetTransform.rotate.y; // Get the player's Y rotation
 
                     // 5. Update Pitch (up/down) from the mouse
-                    cam.currentPitch -= mouseDelta.y * cam.mouseSensitivity;
+                   // cam.currentPitch -= mouseDelta.y * cam.mouseSensitivity;
 
                     // 6. Apply new Pitch Limits
                     //    We clamp the pitch from 5 (slightly looking down) to 40 (about 45 degrees)

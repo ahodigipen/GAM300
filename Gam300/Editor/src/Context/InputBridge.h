@@ -22,7 +22,6 @@ namespace EditorUI
     }
 
     // ---------- Callbacks ----------
-
     static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
     {
         if (ImGui::GetCurrentContext())
@@ -36,9 +35,11 @@ namespace EditorUI
             return;
         }
 
-        // allow viewport keys (WASD etc) even if ImGui wants keyboard
         const bool allowViewportKeys = self->allowViewportKeyboard;
-        if (ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureKeyboard && !allowViewportKeys)
+        const bool wantsKb = ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureKeyboard;
+
+        
+        if (wantsKb && !allowViewportKeys && (action == GLFW_PRESS || action == GLFW_REPEAT))
             return;
 
         auto& input = self->GetInputSystem();
@@ -77,13 +78,12 @@ namespace EditorUI
         if (!self) return;
 
         ImGuiIO& io = ImGui::GetIO();
-
-        double mx = 0.0, my = 0.0;
-        glfwGetCursorPos(window, &mx, &my);
-
-        // allow camera mouse even if ImGui wants it, when inside viewport region
+        double mx = 0.0, my = 0.0; glfwGetCursorPos(window, &mx, &my);
         const bool allowCameraHere = self->AllowCameraMouseNow(mx, my);
-        if (ImGui::GetCurrentContext() && io.WantCaptureMouse && !allowCameraHere)
+        const bool wantsMouse = ImGui::GetCurrentContext() && io.WantCaptureMouse;
+
+        // Only swallow PRESSES when ImGui captures; always let RELEASE go through
+        if (wantsMouse && !allowCameraHere && action == GLFW_PRESS)
             return;
 
         auto& input = self->GetInputSystem();
