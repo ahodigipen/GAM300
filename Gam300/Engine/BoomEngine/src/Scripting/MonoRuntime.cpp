@@ -5,6 +5,16 @@
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/debug-helpers.h>
 
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <Windows.h>
+#endif
+
 namespace Boom {
 
     bool MonoRuntime::Init(const char* domainName, const char* assembliesPath)
@@ -13,16 +23,37 @@ namespace Boom {
             mono_set_assemblies_path(assembliesPath);
 
 #ifdef _WIN32
-        // Point to actual Mono installation
-        mono_set_dirs("C:/Program Files/Mono/lib", "C:/Program Files/Mono/etc");
+        // Get the directory where the executable is located
+        char exePath[MAX_PATH];
+        GetModuleFileNameA(NULL, exePath, MAX_PATH);
+        std::filesystem::path exeDir = std::filesystem::path(exePath).parent_path();
+
+        // Build paths to mono/lib and mono/etc relative to exe
+        std::filesystem::path monoLib = exeDir.parent_path() / "mono" / "lib";
+        std::filesystem::path monoEtc = exeDir.parent_path() / "mono" / "etc";
+
+        // Convert to absolute paths
+        std::string libPath = std::filesystem::absolute(monoLib).string();
+        std::string etcPath = std::filesystem::absolute(monoEtc).string();
+
+        // Replace backslashes with forward slashes for Mono
+        std::replace(libPath.begin(), libPath.end(), '\\', '/');
+        std::replace(etcPath.begin(), etcPath.end(), '\\', '/');
+
+#ifdef DEBUG
+        BOOM_INFO("[Mono] Setting dirs: lib='{}', etc='{}'", libPath, etcPath);
+#endif
+
+        mono_set_dirs(libPath.c_str(), etcPath.c_str());
 #else
         mono_set_dirs("/usr/lib", "/etc/mono");
 #endif
 
+        BOOM_INFO("[Mono] Initializing Mono JIT...");
         m_RootDomain = mono_jit_init_version(domainName ? domainName : "BoomDomain", "v4.0.30319");
         if (!m_RootDomain) {
 #ifdef DEBUG
-            BOOM_ERROR("Mono: mono_jit_init_version failed");
+            BOOM_ERROR("Mono: mono_jit_init_version failed - check Mono installation paths");
 #endif
             return false;
         }
