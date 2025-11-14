@@ -10,7 +10,7 @@ namespace GameScripts
         private const int MOUSE_RIGHT = 1;
 
         private static ulong _player;
-        private static float _speed = 5f;
+        private static float _speed = 50f;
 
         // jump/gravity
         private static float _vy = 0f, _gravity = -20f, _jumpSpeed = 8f, _groundY = 0f;
@@ -24,6 +24,8 @@ namespace GameScripts
 
         public static void Update(float dt)
         {
+            API.Log("Update called!");
+
             if (_player == 0) return;
 
             var pos = API.GetPosition(_player);

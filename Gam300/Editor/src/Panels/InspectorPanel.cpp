@@ -734,6 +734,108 @@ namespace EditorUI {
                 [&]() { ctx->scene.remove<SkyboxComponent>(m_App->SelectedEntity()); });
         }
 
+        if (selected.Has<Boom::ScriptComponent>()) {
+            auto& sc = selected.Get<Boom::ScriptComponent>();
+
+            // Collapsing header + settings ("..." to remove), matching your style
+            bool isOpen = ImGui::CollapsingHeader("Script", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap);
+
+            // Settings button (remove)
+            const ImVec2 headerMin = ImGui::GetItemRectMin();
+            const ImVec2 headerMax = ImGui::GetItemRectMax();
+            const float  lineH = ImGui::GetFrameHeight();
+            const float  y = headerMin.y + (headerMax.y - headerMin.y - lineH) * 0.5f;
+            ImGui::SetCursorScreenPos(ImVec2(headerMax.x - lineH, y));
+            if (ImGui::Button("...", ImVec2(lineH, lineH)))
+                ImGui::OpenPopup("ScriptSettings");
+
+            bool removed = false;
+            if (ImGui::BeginPopup("ScriptSettings")) {
+                if (ImGui::MenuItem("Remove Component")) removed = true;
+                ImGui::EndPopup();
+            }
+
+            // Reset cursor for contents
+            ImGui::SetCursorScreenPos(ImVec2(headerMin.x, headerMax.y + ImGui::GetStyle().ItemSpacing.y));
+
+            if (isOpen) {
+                ImGui::Indent(12.0f);
+
+                // Enabled toggle
+                ImGui::Checkbox("Enabled", &sc.Enabled);
+
+                // Type name (namespace.Type)
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Type");
+                ImGui::SameLine(150);
+                ImGui::SetNextItemWidth(-1);
+
+                static char typeBuf[256];
+#ifdef _MSC_VER
+                strncpy_s(typeBuf, sizeof(typeBuf), sc.TypeName.c_str(), sizeof(typeBuf) - 1);
+#else
+                std::snprintf(typeBuf, sizeof(typeBuf), "%s", sc.TypeName.c_str());
+#endif
+                if (ImGui::InputText("##ScriptTypeName", typeBuf, sizeof(typeBuf))) {
+                    sc.TypeName = typeBuf;
+                }
+
+                // Params (JSON)
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Params (JSON)");
+                ImGui::SameLine(150);
+                ImGui::SetNextItemWidth(-1);
+
+                static std::string paramsText;
+                paramsText = sc.Params.dump(2);
+
+                if (ImGui::InputTextMultiline("##ScriptParams",
+                    &paramsText[0], paramsText.size() + 1,
+                    ImVec2(-1, 120),
+                    ImGuiInputTextFlags_AllowTabInput))
+                {
+                    try {
+                        sc.Params = nlohmann::json::parse(paramsText);
+                    }
+                    catch (...) {
+                        // optional: visual hint if JSON invalid
+                    }
+                }
+
+                // Runtime info (read-only)
+                ImGui::Separator();
+                ImGui::TextDisabled("Runtime");
+                ImGui::SameLine();
+                ImGui::Text("InstanceId: %llu", (unsigned long long)sc.InstanceId);
+
+                // ===== ADD RELOAD BUTTON HERE =====
+                ImGui::Spacing();
+                ImGui::Separator();
+                ImGui::Spacing();
+
+                if (ImGui::Button("Reload Scripts", ImVec2(-1, 0))) {
+                    // Get the scripting system from your app context
+                    if (m_Owner && m_Owner->GetContext()) {
+                        auto* ctx = m_Owner->GetContext();
+                        // You'll need to expose GetScriptingSystem() in your AppContext or Editor
+                        // For now, assuming you have access to it:
+                        ctx->scriptingSystem->ReloadScripts();
+                        
+                        BOOM_INFO("Scripts reloaded from Inspector!");
+                    }
+                }
+                // ===== END RELOAD BUTTON =====
+
+                ImGui::Unindent(12.0f);
+            }
+
+            if (removed) {
+                ctx->scene.remove<Boom::ScriptComponent>(m_App->SelectedEntity());
+                return;
+            }
+            ImGui::Spacing();
+        }
+
         // ===== Add Component =====
         ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing();
         if (ImGui::Button("Add Component", ImVec2(-1, 30))) {
@@ -905,9 +1007,8 @@ namespace EditorUI {
                     UpdateComponent<Boom::DirectLightComponent>(Boom::ComponentID::DIRECT_LIGHT, selected);
                     UpdateComponent<Boom::PointLightComponent>(Boom::ComponentID::POINT_LIGHT, selected);
                     UpdateComponent<Boom::SpotLightComponent>(Boom::ComponentID::SPOT_LIGHT, selected);
-                    //UpdateComponent<Boom::SoundComponent>(Boom::ComponentID::SOUND, selected);
-                    //UpdateComponent<Boom::ScriptComponent>(Boom::ComponentID::SCRIPT, selected);
-
+                    UpdateComponent<Boom::SoundComponent>(Boom::ComponentID::SOUND, selected);
+                    UpdateComponent<Boom::ScriptComponent>(Boom::ComponentID::SCRIPT, selected);
                     UpdateComponent<Boom::ThirdPersonCameraComponent>(Boom::ComponentID::THIRD_PERSON_CAMERA, selected);
                     ImGui::EndTable();
                 }
