@@ -86,10 +86,9 @@ namespace Boom {
 			else {
 				glViewport(0, 0, width, height);
 			}
-			std::apply(glClearColor, CONSTANTS::DEFAULT_BACKGROUND_COLOR);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glEnable(GL_DEPTH_TEST);
-			glEnable(GL_SAMPLES);
+			//glEnable(GL_SAMPLES);
 		}
 		BOOM_INLINE void End() {
 			if (isLowPoly) {
@@ -101,7 +100,7 @@ namespace Boom {
 				glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 				glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 			}
-			glDisable(GL_SAMPLES);
+			//glDisable(GL_SAMPLES);
 			glDisable(GL_DEPTH_TEST);
 		
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);

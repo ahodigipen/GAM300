@@ -8,6 +8,7 @@
 #include <filesystem>
 #include <algorithm>
 #include <cctype>
+#include <future>
 
 // pull Interface so we can call AppInterface methods
 #include "Application/Interface.h"   // include path per your include dirs
@@ -93,10 +94,16 @@ namespace EditorUI {
             m_App ? m_App->GetDeltaTime()
             : (m_Ctx ? m_Ctx->DeltaTime : 0.0);
 
-        if (ImGui::Button("Refresh") || ((rTimer += dt) > AUTO_REFRESH_SEC))
+        static std::future<std::unique_ptr<FileNode>> refreshFuture;
+
+        if ((ImGui::Button("Refresh") || ((rTimer += dt) > AUTO_REFRESH_SEC) && !refreshFuture.valid()))
         {
-            rootNode = BuildDirectoryTree();
+            refreshFuture = std::async(std::launch::async, [this]() {return BuildDirectoryTree(); });
             rTimer = 0.0;
+        }
+
+        if (refreshFuture.valid() && refreshFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+            rootNode = refreshFuture.get();
             UpdateAssetRegistry();
         }
     }
@@ -260,6 +267,20 @@ namespace EditorUI {
             selectedPath = root->fullPath.string();
         }
 
+        // Drag source for animation files
+        if (!root->isDirectory) {
+            std::string ext = root->fullPath.extension().string();
+            std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+            if (ext == ".fbx" || ext == ".gltf" || ext == ".glb" || ext == ".dae") {
+                if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+                    std::string pathStr = root->fullPath.string();
+                    ImGui::SetDragDropPayload(CONSTANTS::DND_PAYLOAD_ANIM_FILE.data(), pathStr.c_str(), pathStr.size() + 1);
+                    ImGui::Text("Animation: %s", root->name.c_str());
+                    ImGui::EndDragDropSource();
+                }
+            }
+        }
+
         if (root->isDirectory) {
             treeNodeOpenStatus[root->fullPath.string()] = nodeOpen;
         }
@@ -363,13 +384,12 @@ namespace EditorUI {
     {
         for (auto& [type, map] : m_App->GetAssetRegistry().GetAll()) {
             if (!map.empty()) {
-                auto first{ map.begin() };
-                ++first;
-                for (auto it{ first }; it != map.end(); ) {
+                for (auto it{ map.begin() }; it != map.end(); ) {
                     std::string ext{ GetExtension(it->second->source) };
-                    if (ext != "png" || ext != "dds" || ext != "fbx") {
+                    //ignore empty asset
+                    if (ext == "" || (ext != "png" && ext != "dds" && ext != "fbx")) {
                         ++it;
-                        continue;
+                        continue; //ignore wrong types
                     }
                     //if file not located in seen path = deleted, must remove from assetmanager
                     if (seen.find(it->second->source) == seen.end()) {

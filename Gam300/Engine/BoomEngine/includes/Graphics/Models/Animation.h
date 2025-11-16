@@ -65,6 +65,7 @@ namespace Boom
         std::string name;
         float duration = 0.0f;
         float ticksPerSecond = 1.0f;
+        std::string filePath; // Track source file for serialization
 
         // Map of joint name -> keyframes for that joint
         std::unordered_map<std::string, std::vector<KeyFrame>> tracks;

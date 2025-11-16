@@ -34,6 +34,40 @@ ASSETS:
       MetallicMapID: 0
       OcclusionMapID: 0
       EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 5966106834849932234
+    Name: Color
+    Source: Color
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 0
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 8803557448742180096
+    Name: light
+    Source: light
+    Properties:
+      Data:
+        emissive: [1, 1, 1]
+        albedo: [0, 0, 0]
+        roughness: 0
+        metallic: 0
+        occlusion: 0
+      AlbedoMapID: 0
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
   - Type: PHYSICS_MESH
     UID: 6932420578595885980
     Name: sphere
@@ -4415,28 +4449,6 @@ ASSETS:
           Scale: [0.00999999978, 0.00999999978, 0.00999999978]
       HasJoints: true
   - Type: MODEL
-    UID: 11553622136344308773
-    Name: Cube - Copy (3).FBX
-    Source: Resources/Models/Cube - Copy (3).FBX
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 9170159486869422342
-    Name: Cube - Copy (4).FBX
-    Source: Resources/Models/Cube - Copy (4).FBX
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
     UID: 15771049607565255665
     Name: GAM300_Ninja
     Source: Resources/Models/Enemy/GAM300_Ninja.fbx
@@ -4448,31 +4460,9 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 1538943657792452404
-    Name: Cube - Copy (2).FBX
-    Source: Resources/Models/Cube - Copy (2).FBX
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 4930468099905886477
-    Name: Cube - Copy.FBX
-    Source: Resources/Models/Cube - Copy.FBX
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 5196195182764112076
-    Name: Samurai Hurt (1)
-    Source: Resources/Models/Player/PlayerAnimations/Samurai Hurt (1).fbx
+    UID: 2969614915951242434
+    Name: Zombie Agonizing
+    Source: Resources/Models/Enemy/new anims/Zombie Agonizing.fbx
     Properties:
       Model Transform:
         transform:
@@ -4481,15 +4471,15 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: true
   - Type: MODEL
-    UID: 11571973121006748334
-    Name: Zombie Idle Cautious Looking out
-    Source: Resources/Models/Enemy/new anims/Zombie Idle Cautious Looking out.fbx
+    UID: 10510038847207197447
+    Name: run.fbx
+    Source: Resources/Models/run.fbx
     Properties:
       Model Transform:
         transform:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
+          Scale: [0.00999999978, 0.00999999978, 0.00999999978]
       HasJoints: true
   - Type: MODEL
     UID: 7633162898494281895
@@ -4503,20 +4493,9 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 10510038847207197447
-    Name: run.fbx
-    Source: Resources/Models/run.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [0.00999999978, 0.00999999978, 0.00999999978]
-      HasJoints: true
-  - Type: MODEL
-    UID: 2969614915951242434
-    Name: Zombie Agonizing
-    Source: Resources/Models/Enemy/new anims/Zombie Agonizing.fbx
+    UID: 11571973121006748334
+    Name: Zombie Idle Cautious Looking out
+    Source: Resources/Models/Enemy/new anims/Zombie Idle Cautious Looking out.fbx
     Properties:
       Model Transform:
         transform:
@@ -4525,16 +4504,16 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: true
   - Type: MODEL
-    UID: 13629756360523159207
-    Name: Cube - Copy (5).FBX
-    Source: Resources/Models/Cube - Copy (5).FBX
+    UID: 5196195182764112076
+    Name: Samurai Hurt (1)
+    Source: Resources/Models/Player/PlayerAnimations/Samurai Hurt (1).fbx
     Properties:
       Model Transform:
         transform:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
-      HasJoints: false
+      HasJoints: true
   - Type: MODEL
     UID: 6778583016148211621
     Name: Ch02_nonPBR@Two Handed Sword Death

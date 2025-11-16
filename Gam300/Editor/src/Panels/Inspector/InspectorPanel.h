@@ -41,13 +41,31 @@ namespace EditorUI {
         template <std::string_view const& Payload>
         void InputAssetWidget(char const* label, uint64_t& data);
 
+		void AnimatorComponentUI(Boom::Entity& selected);
+
     private:
-        Editor* m_Owner = nullptr;     
+        Editor* m_Owner = nullptr;
         Boom::AppInterface* m_App = nullptr;
         bool* m_ShowInspector = nullptr;
         bool showDeletePopup{};
         bool           m_HasSelection{ false };
         char           m_NameBuffer[128]{};
+
+        // Animator state editing
+        int            m_EditingStateIndex = -1;
+        bool m_OpenEditStatePopup = false;
+        char           m_StateNameBuffer[128]{};
+
+        // Animator parameters
+        char           m_NewParamNameBuffer[128]{};
+        int            m_NewParamType = 0; // 0=Float, 1=Bool, 2=Trigger
+
+        // Animator transitions
+        int            m_EditingTransitionStateIndex = -1;
+        int            m_EditingTransitionIndex = -1;
+        bool           m_OpenEditTransitionPopup = false;
+        Boom::Animator::Transition m_TempTransition;
+        char           m_TransitionParamNameBuffer[128]{};
 
         template<typename TComponent, typename GetPropsFn>
         void DrawComponentSection(const char* title,

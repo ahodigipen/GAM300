@@ -46,21 +46,7 @@ namespace EditorUI {
 			CreateEmptyMaterial();
 		}
 
-
-		/*
-		bool CompressAllTextures::ProgressCallback(float percent, size_t, size_t) {
-			BOOM_INFO("Progress: {}%", percent);
-			return false;
-		}
-		*/
 		ImGui::SameLine();
-		
-		/*
-		if (ImGui::Button("Compress Textures", { 160, 20 })) {
-			auto textureMap = m_App->GetAssetRegistry().GetMap<TextureAsset>();
-			CompressAllTextures(textureMap, CONSTANTS::COMPRESSED_TEXTURE_OUTPUT_PATH);
-		}*/
-
 		static bool isCompressionStarted{};
 		static std::future<void> g_CompressFuture;
 		static float compressionTimeElapsed{};
@@ -91,6 +77,10 @@ namespace EditorUI {
 		static int currentType{ static_cast<int>(AssetType::UNKNOWN) }; //unknown will show all assets
 		ImGui::Combo("Filter", &currentType, TYPE_NAMES, IM_ARRAYSIZE(TYPE_NAMES));
 
+		ImGui::SameLine();
+		static char searchBuff[CONSTANTS::CHAR_BUFFER_SIZE] = "";
+		ImGui::InputTextWithHint("##", "search", searchBuff, CONSTANTS::CHAR_BUFFER_SIZE);
+
 		int32_t colNo{ (int32_t)((ImGui::GetContentRegionAvail().x) / (ASSET_SIZE + ImGui::GetStyle().ItemSpacing.x)) };
 		colNo = glm::max(1, colNo);
 
@@ -106,44 +96,46 @@ namespace EditorUI {
 
 			m_App->AssetView(
 				[&](Asset* asset) {
-					if (static_cast<AssetType>(currentType) == AssetType::UNKNOWN || asset->type == static_cast<AssetType>(currentType)) {
-						ImGui::TableNextColumn();
-						//render with textures if avaliable
-						ImTextureID texid{ m_Icon }; //default file icon
+					// filters
+					if (static_cast<AssetType>(currentType) != AssetType::UNKNOWN && asset->type != static_cast<AssetType>(currentType))
+						return;
+					if (asset->name.find(searchBuff) == std::string::npos) 
+						return;
 
-						TextureAsset* tex{ dynamic_cast<TextureAsset*>(asset) };
-						if (tex) texid = *tex->data.get();
+					ImGui::TableNextColumn();
+					ImTextureID texid{ m_Icon }; //default file icon
+					TextureAsset* tex{ dynamic_cast<TextureAsset*>(asset) };
+					if (tex) texid = *tex->data.get();
 
-						ImGui::PushID((int)asset->uid);
-						bool isClicked = ImGui::ImageButton("##thumb", texid, ImVec2(ASSET_SIZE, ASSET_SIZE),
-							ImVec2(0, 0), ImVec2(1, 1),
-							ImVec4(0, 0, 0, 1),
-							ImVec4(1, 1, 1, 1));
+					ImGui::PushID((int)asset->uid);
+					bool isClicked = ImGui::ImageButton("##thumb", texid, ImVec2(ASSET_SIZE, ASSET_SIZE),
+						ImVec2(0, 0), ImVec2(1, 1),
+						ImVec4(0, 0, 0, 1),
+						ImVec4(1, 1, 1, 1));
 
-						if (tex && ImGui::BeginDragDropSource()) {
-							ImGui::SetDragDropPayload(CONSTANTS::DND_PAYLOAD_TEXTURE.data(), &asset->uid, sizeof(AssetID));
-							ImGui::Text("Dragging Texture: %s", asset->name.c_str());
-							ImGui::EndDragDropSource();
-						}
-						else if (dynamic_cast<MaterialAsset*>(asset) && ImGui::BeginDragDropSource()) {
-							ImGui::SetDragDropPayload(CONSTANTS::DND_PAYLOAD_MATERIAL.data(), &asset->uid, sizeof(AssetID));
-							ImGui::Text("Dragging Material: %s", asset->name.c_str());
-							ImGui::EndDragDropSource();
-						}
-						else if (dynamic_cast<ModelAsset*>(asset) && ImGui::BeginDragDropSource()) {
-							ImGui::SetDragDropPayload(CONSTANTS::DND_PAYLOAD_MODEL.data(), &asset->uid, sizeof(AssetID));
-							ImGui::Text("Dragging Model: %s", asset->name.c_str());
-							ImGui::EndDragDropSource();
-						}
-						ImGui::PopID();
+					if (tex && ImGui::BeginDragDropSource()) {
+						ImGui::SetDragDropPayload(CONSTANTS::DND_PAYLOAD_TEXTURE.data(), &asset->uid, sizeof(AssetID));
+						ImGui::Text("Dragging Texture: %s", asset->name.c_str());
+						ImGui::EndDragDropSource();
+					}
+					else if (dynamic_cast<MaterialAsset*>(asset) && ImGui::BeginDragDropSource()) {
+						ImGui::SetDragDropPayload(CONSTANTS::DND_PAYLOAD_MATERIAL.data(), &asset->uid, sizeof(AssetID));
+						ImGui::Text("Dragging Material: %s", asset->name.c_str());
+						ImGui::EndDragDropSource();
+					}
+					else if (dynamic_cast<ModelAsset*>(asset) && ImGui::BeginDragDropSource()) {
+						ImGui::SetDragDropPayload(CONSTANTS::DND_PAYLOAD_MODEL.data(), &asset->uid, sizeof(AssetID));
+						ImGui::Text("Dragging Model: %s", asset->name.c_str());
+						ImGui::EndDragDropSource();
+					}
+					ImGui::PopID();
 
-						std::filesystem::path aPath{ asset->source };
-						ImGui::TextWrapped(aPath.filename().string().c_str());
+					std::filesystem::path aPath{ asset->source };
+					ImGui::TextWrapped(aPath.filename().string().c_str());
 
-						//show modifyable properties in inspector when selected
-						if (isClicked) {
-							m_App->SelectedAsset(true) = { asset->uid, asset->type, asset->name };
-						}
+					//show modifyable properties in inspector when selected
+					if (isClicked) {
+						m_App->SelectedAsset(true) = { asset->uid, asset->type, asset->name };
 					}
 				}
 			);
@@ -157,7 +149,7 @@ namespace EditorUI {
 		static char buff[CONSTANTS::CHAR_BUFFER_SIZE] = "";
 
 		if (ImGui::BeginPopupModal("Input Material Name", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-			ImGui::InputTextWithHint("##", NEW_MATERIAL_NAME, buff, sizeof(buff));
+			ImGui::InputTextWithHint("##", NEW_MATERIAL_NAME, buff, CONSTANTS::CHAR_BUFFER_SIZE);
 			ImGui::Separator();
 
 			if (ImGui::Button("OK", ImVec2(120, 0)) || ImGui::IsKeyPressed(ImGuiKey_Enter, false)) { //create material operation

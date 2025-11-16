@@ -1,9 +1,10 @@
-﻿// ViewportPanel.cpp - WITH FULLSCREEN SUPPORT
+﻿// ViewportPanel.cpp - WITH RAY CASTING
 #include "Panels/ViewportPanel.h"
 #include "Editor.h"
 #include "Context/Context.h"
 #include "Context/DebugHelpers.h"
 #include "Vendors/imgui/imgui.h"
+#include "RayCast.h"
 #include <type_traits>
 #include <cstdint>
 #include <GL/glew.h>
@@ -12,14 +13,11 @@
 #ifndef ICON_FA_IMAGE
 #define ICON_FA_IMAGE ""
 #endif
+
 namespace {
-    // Helper to decompose a matrix back into position, rotation (euler), and scale
     void DecomposeTransform(const glm::mat4& matrix, glm::vec3& position, glm::vec3& rotation, glm::vec3& scale)
     {
-        // Extract translation
         position = glm::vec3(matrix[3]);
-
-        // Extract scale
         glm::vec3 col0(matrix[0]);
         glm::vec3 col1(matrix[1]);
         glm::vec3 col2(matrix[2]);
@@ -28,14 +26,11 @@ namespace {
         scale.y = glm::length(col1);
         scale.z = glm::length(col2);
 
-        // Remove scale from the matrix to get pure rotation
         if (scale.x != 0) col0 /= scale.x;
         if (scale.y != 0) col1 /= scale.y;
         if (scale.z != 0) col2 /= scale.z;
 
         glm::mat3 rotationMatrix(col0, col1, col2);
-
-        // Convert rotation matrix to euler angles (in radians)
         rotation.y = asin(-rotationMatrix[0][2]);
 
         if (cos(rotation.y) != 0) {
@@ -57,50 +52,45 @@ namespace EditorUI {
     {
         m_App = static_cast<Boom::AppInterface*>(m_Owner);
         m_Ctx = m_App ? owner->GetContext() : nullptr;
+
+        if (m_Ctx) {
+            m_RayCast = std::make_unique<RayCast>(m_Ctx);
+        }
     }
 
     void ViewportPanel::Render() { OnShow(); }
 
     void ViewportPanel::OnShow()
     {
-
         if (!m_ShowViewport) return;
 
         if (ImGui::Begin(ICON_FA_IMAGE "\tViewport", &m_ShowViewport))
         {
-            // 1) Get available space & aspect
             ImVec2 viewportSize = ImGui::GetContentRegionAvail();
             m_Viewport = viewportSize;
-            //const float aspect = (viewportSize.y > 1.0f) ? (viewportSize.x / viewportSize.y) : 1.0f;
 
-            // 2) Get the frame texture from the engine
             const uint32_t frameTexture = QuerySceneFrame();
 
             if (frameTexture > 0 && viewportSize.x > 1.0f && viewportSize.y > 1.0f)
             {
-                // 3) Draw the backbuffer/scene image WITHOUT blocking input
                 ImVec2 cursorPos = ImGui::GetCursorScreenPos();
                 ImGui::GetWindowDrawList()->AddImage(
                     (ImTextureID)(uintptr_t)frameTexture,
                     cursorPos,
                     ImVec2(cursorPos.x + viewportSize.x, cursorPos.y + viewportSize.y),
-                    ImVec2(0, 1),  // UV flip for OpenGL
+                    ImVec2(0, 1),
                     ImVec2(1, 0)
                 );
 
-                // Move cursor but DON'T create any interactive widget
                 ImGui::Dummy(viewportSize);
 
-
-                // 6) Determine the viewport rect in ImGui space
+                // Get viewport bounds FIRST
                 const ImVec2 itemMin = ImGui::GetItemRectMin();
                 const ImVec2 itemMax = ImGui::GetItemRectMax();
                 const ImVec2 rectSz = ImVec2(itemMax.x - itemMin.x, itemMax.y - itemMin.y);
-
-                // 7) Check hover/focus state
                 const bool hovered = ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem);
-                const bool focused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && hovered;
-                // 8) Build camera matrices
+
+                // Get gizmo state BEFORE handling mouse clicks
                 bool gizmoWantsInput = false;
                 if (m_Ctx)
                 {
@@ -114,7 +104,13 @@ namespace EditorUI {
                         const glm::mat4 view = camComp.camera.View(trans.transform);
                         const glm::mat4 proj = camComp.camera.Projection(m_Ctx->renderer->AspectRatio());
 
-                        // 9) ImGuizmo manipulation (if entity selected)
+                        // Store camera data for ray casting
+                        m_CurrentViewMatrix = view;
+                        m_CurrentProjectionMatrix = proj;
+                        m_CurrentViewportSize = glm::vec2(viewportSize.x, viewportSize.y);
+                        m_CurrentCameraPosition = trans.transform.translate;
+
+                        // ImGuizmo manipulation
                         entt::entity selectedEntity = m_App->SelectedEntity();
                         if (selectedEntity != entt::null)
                         {
@@ -124,18 +120,11 @@ namespace EditorUI {
                                 auto& ltrans = m_Ctx->scene.get<Boom::TransformComponent>(selectedEntity);
                                 glm::mat4 matrix = ltrans.transform.Matrix();
 
-                                // Set ImGuizmo to draw in this viewport window
                                 ImGuizmo::SetOrthographic(false);
                                 ImGuizmo::SetDrawlist();
-
-                                // Test 2: Use window-relative coordinates instead of screen coordinates
-                                ImVec2 windowPos = ImGui::GetWindowPos();
                                 ImGuizmo::SetRect(itemMin.x, itemMin.y, rectSz.x, rectSz.y);
-
-                                // Make gizmo more visible
                                 ImGuizmo::SetGizmoSizeClipSpace(0.15f);
 
-                                // Handle keyboard shortcuts
                                 const bool viewportFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
                                 if (viewportFocused && !ImGui::GetIO().WantCaptureKeyboard)
                                 {
@@ -146,10 +135,8 @@ namespace EditorUI {
                                         m_GizmoMode = (m_GizmoMode == ImGuizmo::WORLD) ? ImGuizmo::LOCAL : ImGuizmo::WORLD;
                                 }
 
-                                // Ensure context is set
                                 ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
 
-                                // Draw and manipulate the gizmo
                                 ImGuizmo::Manipulate(
                                     glm::value_ptr(view),
                                     glm::value_ptr(proj),
@@ -160,25 +147,51 @@ namespace EditorUI {
                                     m_UseSnap ? m_SnapValues : nullptr
                                 );
 
-                                // NOW check if gizmo wants input (AFTER Manipulate call)
+                                // Check if gizmo wants input
                                 gizmoWantsInput = ImGuizmo::IsOver() || ImGuizmo::IsUsing();
 
-                                // Update transform if gizmo was manipulated
                                 if (ImGuizmo::IsUsing())
                                 {
                                     glm::vec3 newPosition, newRotation, newScale;
                                     DecomposeTransform(matrix, newPosition, newRotation, newScale);
 
-                                    ltrans.transform.translate = newPosition;
-                                    ltrans.transform.rotate = newRotation;
-                                    ltrans.transform.scale = newScale;
+                                    //must be within switch to prevent overwrite
+                                    switch (m_GizmoOperation) {
+                                    case ImGuizmo::TRANSLATE:
+                                        ltrans.transform.translate = newPosition;
+                                        break;
+                                    case ImGuizmo::ROTATE:
+                                        ltrans.transform.rotate = newRotation;
+                                        break;
+                                    case ImGuizmo::SCALE:
+                                        ltrans.transform.scale = newScale;
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
                 }
 
-                // 10) NOW set camera input region (AFTER ImGuizmo has processed input)
+                // Handle mouse clicks for entity selection - ONLY if gizmo is not being used
+                if (hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !gizmoWantsInput) {
+                    ImVec2 mousePos = ImGui::GetMousePos();
+                    ImVec2 windowPos = ImGui::GetWindowPos();
+                    ImVec2 contentRegion = ImGui::GetWindowContentRegionMin();
+
+                    ImVec2 relativeMousePos(
+                        mousePos.x - windowPos.x - contentRegion.x,
+                        mousePos.y - windowPos.y - contentRegion.y
+                    );
+
+                    if (relativeMousePos.x >= 0 && relativeMousePos.y >= 0 &&
+                        relativeMousePos.x < viewportSize.x && relativeMousePos.y < viewportSize.y) {
+                        HandleMouseClick(relativeMousePos, viewportSize);
+                    }
+                }
+
+                const bool focused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && hovered;
+
                 const ImVec2 mainPos = ImGui::GetMainViewport()->Pos;
                 const double localX = double(itemMin.x - mainPos.x);
                 const double localY = double(itemMin.y - mainPos.y);
@@ -187,13 +200,11 @@ namespace EditorUI {
 
                 if (m_Ctx && m_Ctx->window)
                 {
-                    // Only allow camera movement when NOT using gizmo
                     const bool allowCameraInput = hovered && focused && !gizmoWantsInput;
                     m_Ctx->window->SetCameraInputRegion(localX, localY, localW, localH, allowCameraInput);
                     m_Ctx->window->SetViewportKeyboardFocus(focused && !gizmoWantsInput);
                 }
 
-                // Tooltip
                 if (hovered) ImGui::SetTooltip("Engine Viewport - Scene render output");
             }
             else {
@@ -217,7 +228,44 @@ namespace EditorUI {
                     );
                 }
             }
-            ImGui::End();
+            
+        }
+        ImGui::End();
+    }
+
+    void ViewportPanel::HandleMouseClick(const ImVec2& mousePos, const ImVec2& viewportSize)
+    {
+        if (!m_Ctx || !m_RayCast) return;
+
+        // Perform ray cast using the current camera data
+        entt::entity hitEntity = m_RayCast->CastRayFromScreen(
+            mousePos.x, mousePos.y,
+            m_CurrentViewMatrix,
+            m_CurrentProjectionMatrix,
+            m_CurrentCameraPosition,
+            m_CurrentViewportSize
+        );
+
+        // Update selection
+        if (m_App) {
+            if (hitEntity != entt::null) {
+                m_App->SelectedEntity(true) = hitEntity;
+
+                // Log selection info
+                auto& registry = m_Ctx->scene;
+                if (registry.all_of<Boom::InfoComponent>(hitEntity)) {
+                    const auto& info = registry.get<Boom::InfoComponent>(hitEntity);
+                    BOOM_INFO("Selected entity: {} (UID: {})", info.name, info.uid);
+                }
+                else {
+                    BOOM_INFO("Selected entity: {}", static_cast<uint32_t>(hitEntity));
+                }
+            }
+            else {
+                // Deselect if clicking empty space
+                m_App->SelectedEntity(true) = entt::null;
+                BOOM_INFO("Deselected all entities");
+            }
         }
     }
 

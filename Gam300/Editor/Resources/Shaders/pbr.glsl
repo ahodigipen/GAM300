@@ -18,6 +18,7 @@ out Vertex {
     vec2 uv;
 } vertex;
 layout (location = 1) out vec3 viewPos;
+layout (location = 2) out vec4 fragPosLight;
 
 uniform mat4 modelMat;
 uniform mat4 frustumMat; // proj * view
@@ -116,6 +117,18 @@ uniform vec3 viewPos;
 uniform bool isDebugMode;
 uniform bool showNormalTexture;
 
+// shadow mapping
+uniform mat4 u_lightSpace;
+uniform sampler2D u_depthMap;
+float ComputeShadow()
+{
+  vec4 pos = u_lightSpace * vec4(vertex.position, 1.0);
+  vec3 uvs = (pos.xyz / pos.w) * 0.5 + 0.5;
+  float depth = texture(u_depthMap, uvs.xy).r;
+
+  return pos.z > depth ? 1.0 : 0.0;
+}
+
 //this effect influences the appearance of surfaces
 // for example, higher reflectivity at grazing angles than dielectrics
 // f0 stands for the base fresnel distributivity
@@ -170,7 +183,7 @@ void main() {
         out_fragment = vec4(normalize(vertex.normal) * 0.5 + 0.5, 1.0); //normal map colors
         return;
     }
-    vec3 V = normalize(vertex.position - viewPos);
+    vec3 V = normalize(viewPos - vertex.position);
 
     //material or texture maps
     vec3 N = normalize(vertex.normal);
@@ -192,15 +205,16 @@ void main() {
                 ComputeDirLights(N, V, f0, albedo, roughness, metallic) + 
                 ComputeSpotLights(N, V, f0, albedo, roughness, metallic);
     
-    //occ and em
-    color = color * occlusion + emissive;
+    //shadows, occ and em
+    color = (color * occlusion) + emissive;
+    color *= 1.0 - ComputeShadow();
+
     if (dot(color,BLOOM_THRESHOLD)>1.0) {
         out_brightness=vec4(color,1.0);
     }
     else {
         out_brightness=vec4(0.0,0.0,0.0,1.0);
     }
-
 
     //simulate low bit depth
     float colorDepth = 32.0;

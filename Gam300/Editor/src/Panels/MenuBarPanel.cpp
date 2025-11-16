@@ -42,6 +42,7 @@ namespace EditorUI {
              m.showAudio            = &m_Owner->m_ShowAudio;
 			 m.showResources        = &m_Owner->m_ShowResources;
 			 m.showDirectory        = &m_Owner->m_ShowDirectory;
+             m.showAnimatorGraph    = &m_Owner->m_ShowAnimatorGraph;
              //Dialog flags & helpers can also be wired here if Editor exposes them.
              m.showSaveDialog = &m_Owner->m_ShowSaveDialog;
              m.showLoadDialog = &m_Owner->m_ShowLoadDialog;
@@ -139,6 +140,7 @@ namespace EditorUI {
             if (m.showAudio)            ImGui::MenuItem("Audio", nullptr, m.showAudio);
 			if (m.showResources)     ImGui::MenuItem("Resources", nullptr, m.showResources);
 			if (m.showDirectory)       ImGui::MenuItem("Directory", nullptr, m.showDirectory);
+            if (m.showAnimatorGraph)    ImGui::MenuItem("Animator Graph", nullptr, m.showAnimatorGraph);
             ImGui::EndMenu();
         }
 

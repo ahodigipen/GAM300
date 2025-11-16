@@ -51,6 +51,7 @@ namespace Boom {
             finalShader = std::make_unique<FinalShader>("final.glsl", w, h);
             pbrShader = std::make_unique<PBRShader>("pbr.glsl");
             bloom = std::make_unique<BloomShader>("bloom.glsl", w, h);
+            shadowShader = std::make_unique<ShadowShader>("shadow.glsl");
 
             // --- Framebuffers ---
             frame = std::make_unique<FrameBuffer>(w, h, /*lowPoly=*/false);
@@ -78,12 +79,40 @@ namespace Boom {
         BOOM_INLINE void SetPointLightCount(int32_t count) { pbrShader->SetPointLightCount(count); }
         BOOM_INLINE void SetDirectionalLightCount(int32_t count) { pbrShader->SetDirectionalLightCount(count); }
 
+        BOOM_INLINE void DrawShadow(Model3D& model, Transform3D& transform, std::vector<glm::mat4>& joints) {
+            if (!joints.empty()) shadowShader->SetJoints(joints);
+            //glCullFace(GL_FRONT);
+            shadowShader->Draw(model, transform);
+            //glCullFace(GL_BACK);
+        }
+        BOOM_INLINE void BeginShadowPass(const glm::vec3& LightDir)
+        {
+            // prepare projection and view mtx
+            static auto proj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 10.0f);
+            auto view = glm::lookAt(LightDir, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+            // compute light space
+            auto lightSpaceMtx = proj * view;
+
+            // set pbr shader light space mtx and depth map
+            pbrShader->Use();
+            pbrShader->SetLightSpaceMatrix(lightSpaceMtx);
+
+            // begin depth rendering
+            shadowShader->BeginFrame(lightSpaceMtx);
+        }
+        BOOM_INLINE void EndShadowPass()
+        {
+            shadowShader->EndFrame();
+        }
+
     public: // ----------------------- Skybox -----------------------
         BOOM_INLINE void InitSkybox(Skybox& sky, Texture const& tex, int32_t size) {
             sky.cubeMap = skyMapShader->Generate(tex, skyboxMesh, size);
         }
         BOOM_INLINE void DrawSkybox(Skybox const& sky, Transform3D const& transform) {
             skyBoxShader->Draw(skyboxMesh, sky.cubeMap, transform);
+            pbrShader->SetEnvMaps(0, 0, 0, shadowShader->GetDepthMap());
         }
 
     public: // -------------------- Animator (skinning) -------------
@@ -161,6 +190,7 @@ namespace Boom {
             }
             else {
                 if (m_TouchViewport) glViewport(0, 0, frame->GetWidth(), frame->GetHeight());
+                //shadowShader->GetDepthMap() //frame->GetTexture()
                 finalShader->Render(frame->GetTexture(), bloom->GetMap(), useFBO, enabledBloom); // toggle bloom inside final if needed
             }
         }
@@ -239,6 +269,7 @@ namespace Boom {
         std::unique_ptr<SkyboxShader>  skyBoxShader;
         std::unique_ptr<FinalShader>   finalShader;
         std::unique_ptr<PBRShader>     pbrShader;
+        std::unique_ptr<ShadowShader>  shadowShader;
         std::unique_ptr<FrameBuffer>   frame;
         std::unique_ptr<FrameBuffer>   lowPolyFrame;
         std::unique_ptr<BloomShader>   bloom;
@@ -252,9 +283,9 @@ namespace Boom {
 
     public:  // ---------------------- ImGui-exposed toggles ----------------
         bool isDrawDebugMode{};
-        bool showLowPoly{ true };
+        bool showLowPoly{};
         bool showNormalTexture{};
-        bool enabledBloom{ false };
+        bool enabledBloom{};
     };
 
 } // namespace Boom

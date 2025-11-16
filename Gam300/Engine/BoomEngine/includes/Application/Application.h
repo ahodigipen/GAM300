@@ -495,10 +495,11 @@ namespace Boom
 
 
                 // ============ END NEW SECTION ============
-
                 m_Context->profiler.BeginFrame();
                 m_Context->profiler.Start("Total Frame");
                 m_Context->profiler.Start("Renderer Start Frame");
+                std::apply(glClearColor, CONSTANTS::DEFAULT_BACKGROUND_COLOR);
+                RenderShadowScene();
                 m_Context->renderer->NewFrame();
                 m_Context->profiler.End("Renderer Start Frame");
 
@@ -512,7 +513,7 @@ namespace Boom
                     InitNavRuntime();
                     UpdateThirdPersonCameras();
                 }
-
+                
                 m_SphereTimer += m_Context->DeltaTime;
                 if (m_SphereTimer >= m_SphereResetInterval) {
                     ResetAllSpheres();
@@ -520,33 +521,7 @@ namespace Boom
                     m_SphereTimer = 0.0;
                 }
 
-                {
-                    int points = 0;
-                    EnttView<Entity, PointLightComponent, TransformComponent>(
-                        [this, &points](auto, PointLightComponent& plc, TransformComponent& tc)
-                        {
-                            m_Context->renderer->SetLight(plc.light, tc.transform, points++);
-                        });
-                    m_Context->renderer->SetPointLightCount(points);
-                }
-                {
-                    int directs = 0;
-                    EnttView<Entity, DirectLightComponent, TransformComponent>(
-                        [this, &directs](auto, DirectLightComponent& dlc, TransformComponent& tc)
-                        {
-                            m_Context->renderer->SetLight(dlc.light, tc.transform, directs++);
-                        });
-                    m_Context->renderer->SetDirectionalLightCount(directs);
-                }
-                {
-                    int spots = 0;
-                    EnttView<Entity, SpotLightComponent, TransformComponent>(
-                        [this, &spots](auto, SpotLightComponent& slc, TransformComponent& tc)
-                        {
-                            m_Context->renderer->SetLight(slc.light, tc.transform, spots++);
-                        });
-                    m_Context->renderer->SetSpotLightCount(spots);
-                }
+                LightsUpdate();
 
                 //temp input for mouse motion
                 glfwGetCursorPos(m_Context->window->Handle().get(), &curMP.x, &curMP.y);
@@ -601,89 +576,7 @@ namespace Boom
                         });
                 }
                
-                //pbr ecs (always render)
-                EnttView<Entity, ModelComponent>([this](auto entity, ModelComponent& comp) {
-                    static int renderCount = 0;
-                    static bool debugModelsPrinted = false;
-
-                    if (!debugModelsPrinted && renderCount < 5) {
-                        BOOM_INFO("[Render] Rendering model entity, ModelID: {}, MaterialID: {}", comp.modelID, comp.materialID);
-                    }
-
-                    ModelAsset* modelPtr{ m_Context->assets->TryGet<ModelAsset>(comp.modelID) };
-
-                    if (!modelPtr || modelPtr->uid == EMPTY_ASSET) {
-                        //BOOM_ERROR("[Render] Model data is null for ModelID: {} ({})", comp.modelID, comp.modelName);
-                        return; // Skip rendering this model
-                    }
-                    ModelAsset& model{ *modelPtr };
-
-                    if (entity.Has<AnimatorComponent>()) {
-                        auto& an = entity.Get<AnimatorComponent>();
-                        float dt = (m_AppState == ApplicationState::RUNNING) ? (float)m_Context->DeltaTime : 0.0f;
-                        auto& joints = an.animator->Animate(dt);
-                        m_Context->renderer->SetJoints(joints);           // existing
-                    }
-                    else {
-                        // NEW: ensure no stale palette leaks into this draw
-                        if (model.hasJoints)
-                        {
-                            static std::vector<glm::mat4> identityPalette(100, glm::mat4(1.0f));
-                            m_Context->renderer->SetJoints(identityPalette);
-                        }
-                    }
-
-                    glm::mat4 worldMatrix = GetWorldMatrix(entity);
-
-                    Transform3D worldTransform;
-                    DecomposeMatrix(worldMatrix,
-                        worldTransform.translate,
-                        worldTransform.rotate,
-                        worldTransform.scale);
-
-                    Transform3D& transform{ entity.template Get<TransformComponent>().transform };
-                    //ModelAsset& model{ m_Context->assets->Get<ModelAsset>(comp.modelID) };
-
-                    if (!debugModelsPrinted && renderCount < 5) {
-                        BOOM_INFO("[Render] Transform position: ({}, {}, {}), scale: ({}, {}, {})",
-                            transform.translate.x, transform.translate.y, transform.translate.z,
-                            transform.scale.x, transform.scale.y, transform.scale.z);
-                    }
-
-                    //draw model with material if it has one otherwise draw default material
-                    if (comp.materialID != EMPTY_ASSET) {
-                        auto& material{ m_Context->assets->Get<MaterialAsset>(comp.materialID) };
-
-                        // Only assign textures if they exist and are valid
-                        if (material.albedoMapID != EMPTY_ASSET) {
-                            auto& albedoTex = m_Context->assets->Get<TextureAsset>(material.albedoMapID);
-                            if (albedoTex.data) {
-                                material.data.albedoMap = albedoTex.data;
-                            }
-                        }
-                        if (material.normalMapID != EMPTY_ASSET) {
-                            auto& normalTex = m_Context->assets->Get<TextureAsset>(material.normalMapID);
-                            if (normalTex.data) {
-                                material.data.normalMap = normalTex.data;
-                            }
-                        }
-                        if (material.roughnessMapID != EMPTY_ASSET) {
-                            auto& roughnessTex = m_Context->assets->Get<TextureAsset>(material.roughnessMapID);
-                            if (roughnessTex.data) {
-                                material.data.roughnessMap = roughnessTex.data;
-                            }
-                        }
-
-                        m_Context->renderer->Draw(model.data, worldTransform, material.data);
-                    }
-                    else {
-                        m_Context->renderer->Draw(model.data, worldTransform);
-                    }
-
-                    renderCount++;
-                    if (renderCount >= 5) debugModelsPrinted = true;
-                    });
-
+                RenderScene();
                 if (m_PhysDebugViz && m_DebugLinesShader)
                 {
                     m_Context->physics->CollectDebugLines(m_PhysLinesCPU);
@@ -724,7 +617,6 @@ namespace Boom
                             m_DebugLinesShader->Draw(dbgView, dbgProj, filtered, 50.5f);
                     }
                 }
-
                 if (m_PhysDebugViz && m_DebugLinesShader)
                 {
                     DrawRigidBodiesDebugOnly(dbgView, dbgProj);
@@ -734,13 +626,14 @@ namespace Boom
                     const float navDrawRadius = 60.0f; // try 40–100 to see more/less
                     m_Nav->DrawDetourNavMesh_Query(*m_DebugLinesShader, dbgView, dbgProj, dbgCamPos, navDrawRadius);
                 }
+                
                 //skybox ecs (should be drawn at the end)
                 EnttView<Entity, SkyboxComponent>([this](auto entity, SkyboxComponent& comp) {
                     Transform3D& transform{ entity.template Get<TransformComponent>().transform };
                     SkyboxAsset& skybox{ m_Context->assets->Get<SkyboxAsset>(comp.skyboxID) };
                     m_Context->renderer->DrawSkybox(skybox.data, transform);
                     });
-
+                
                 m_Context->profiler.Start("Renderer End Frame");
                 m_Context->renderer->EndFrame();
                 m_Context->profiler.End("Renderer End Frame");
@@ -758,9 +651,6 @@ namespace Boom
                 m_Context->profiler.EndFrame();
             }
         }
-
-
-
 
         /**
         * 
@@ -827,6 +717,130 @@ namespace Boom
             return true;
         }
 
+        BOOM_INLINE void LightsUpdate() {
+            {
+                int points = 0;
+                EnttView<Entity, PointLightComponent, TransformComponent>(
+                    [this, &points](auto, PointLightComponent& plc, TransformComponent& tc)
+                    {
+                        m_Context->renderer->SetLight(plc.light, tc.transform, points++);
+                    });
+                m_Context->renderer->SetPointLightCount(points);
+            }
+            {
+                int directs = 0;
+                EnttView<Entity, DirectLightComponent, TransformComponent>(
+                    [this, &directs](auto, DirectLightComponent& dlc, TransformComponent& tc)
+                    {
+                        m_Context->renderer->SetLight(dlc.light, tc.transform, directs++);
+                    });
+                m_Context->renderer->SetDirectionalLightCount(directs);
+            }
+            {
+                int spots = 0;
+                EnttView<Entity, SpotLightComponent, TransformComponent>(
+                    [this, &spots](auto, SpotLightComponent& slc, TransformComponent& tc)
+                    {
+                        m_Context->renderer->SetLight(slc.light, tc.transform, spots++);
+                    });
+                m_Context->renderer->SetSpotLightCount(spots);
+            }
+        }
+        BOOM_INLINE void RenderShadowScene() {
+            //building shadows
+            EnttView<Entity, DirectLightComponent, TransformComponent>(
+                [this](auto, DirectLightComponent&, TransformComponent& tc)
+                {
+                    // light direction
+                    auto& lightDir = tc.transform.rotate;
+                    m_Context->renderer->BeginShadowPass(lightDir);
+
+                    EnttView<Entity, ModelComponent>([this](auto entity, ModelComponent& comp) {
+                        //ignore lights and non initialized models
+                        if (!entity.Has<ModelComponent>() || comp.modelID == EMPTY_ASSET) return;
+                        if (entity.Has<DirectLightComponent>() || entity.Has<PointLightComponent>() || entity.Has<SpotLightComponent>()) return;
+
+                        ModelAsset& model{ m_Context->assets->Get<ModelAsset>(comp.modelID) };
+                        std::vector<glm::mat4> joints;
+                        if (entity.Has<AnimatorComponent>()) {
+                            auto& an = entity.Get<AnimatorComponent>();
+                            joints = an.animator->Animate(0); //dont update animation here
+                        }
+                        else if (model.hasJoints) {
+                            static std::vector<glm::mat4> identityPalette(100, glm::mat4(1.0f));
+                            joints = identityPalette;
+                        }
+
+                        glm::mat4 worldMatrix = GetWorldMatrix(entity);
+                        Transform3D worldTransform;
+                        DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
+
+                        m_Context->renderer->DrawShadow(model.data, worldTransform, joints);
+                    });
+            
+                    m_Context->renderer->EndShadowPass();
+                });
+        }
+        
+        BOOM_INLINE void RenderScene() {
+            //pbr ecs (always render)
+            EnttView<Entity, ModelComponent>([this](auto entity, ModelComponent& comp) {
+                if (!entity.Has<ModelComponent>() || comp.modelID == EMPTY_ASSET) {
+                    //BOOM_ERROR("[Render] Model data is null for ModelID: {} ({})", comp.modelID, comp.modelName);
+                    return; // Skip rendering this model
+                }
+
+                ModelAsset& model{ m_Context->assets->Get<ModelAsset>(comp.modelID) };
+                if (entity.Has<AnimatorComponent>()) {
+                    auto& an = entity.Get<AnimatorComponent>();
+                    float dt = (m_AppState == ApplicationState::RUNNING) ? (float)m_Context->DeltaTime : 0.0f;
+                    auto& joints = an.animator->Animate(dt);
+                    m_Context->renderer->SetJoints(joints);           // existing
+                }
+                else {
+                    // NEW: ensure no stale palette leaks into this draw
+                    if (model.hasJoints)
+                    {
+                        static std::vector<glm::mat4> identityPalette(100, glm::mat4(1.0f));
+                        m_Context->renderer->SetJoints(identityPalette);
+                    }
+                }
+
+                glm::mat4 worldMatrix = GetWorldMatrix(entity);
+                Transform3D worldTransform;
+                DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
+
+                //draw model with material if it has one otherwise draw default material
+                if (comp.materialID != EMPTY_ASSET) {
+                    auto& material{ m_Context->assets->Get<MaterialAsset>(comp.materialID) };
+
+                    // Only assign textures if they exist and are valid
+                    if (material.albedoMapID != EMPTY_ASSET) {
+                        auto& albedoTex = m_Context->assets->Get<TextureAsset>(material.albedoMapID);
+                        if (albedoTex.data) {
+                            material.data.albedoMap = albedoTex.data;
+                        }
+                    }
+                    if (material.normalMapID != EMPTY_ASSET) {
+                        auto& normalTex = m_Context->assets->Get<TextureAsset>(material.normalMapID);
+                        if (normalTex.data) {
+                            material.data.normalMap = normalTex.data;
+                        }
+                    }
+                    if (material.roughnessMapID != EMPTY_ASSET) {
+                        auto& roughnessTex = m_Context->assets->Get<TextureAsset>(material.roughnessMapID);
+                        if (roughnessTex.data) {
+                            material.data.roughnessMap = roughnessTex.data;
+                        }
+                    }
+
+                    m_Context->renderer->Draw(model.data, worldTransform, material.data);
+                }
+                else {
+                    m_Context->renderer->Draw(model.data, worldTransform);
+                }
+                });
+        }
 
         /**
          * @brief Creates a new empty scene

@@ -37,8 +37,11 @@ namespace Boom {
 
 			, jointsLoc{ GetUniformVar("hasJoints") }
 			, isDebugModeLoc{ GetUniformVar("isDebugMode") }
-			, ditherThresholdLoc{GetUniformVar("ditherThreshold")}
+			, ditherThresholdLoc{ GetUniformVar("ditherThreshold") }
 			, showNormalTextureLoc{ GetUniformVar("showNormalTexture") }
+
+			, u_LightSpace{ GetUniformVar("u_lightSpace") }
+			, u_DepthMap{ GetUniformVar("u_depthMap") }
 		{
 		}
 
@@ -97,7 +100,19 @@ namespace Boom {
 		BOOM_INLINE void SetPointLightCount(int32_t count) {
 			SetUniform(noPointLightLoc, count);
 		}
+		BOOM_INLINE void SetLightSpaceMatrix(const glm::mat4& lightSpaceMtx)
+		{
+			// set view projection matrix
+			SetUniform(u_LightSpace, lightSpaceMtx);
+		}
 	public:
+		BOOM_INLINE void SetEnvMaps(uint32_t, uint32_t, uint32_t, uint32_t depthMap) {
+			Use();
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, depthMap);
+			glUniform1i(u_DepthMap, 0);
+		}
 		BOOM_INLINE void SetCamera(Camera3D const& cam, Transform3D const& transform, float ratio) {
 			SetUniform(frustumMatLoc, cam.Frustum(transform, ratio));
 			SetUniform(viewPosLoc, transform.translate);
@@ -110,6 +125,52 @@ namespace Boom {
 			mesh->Draw(GL_TRIANGLES);
 		}
 
+		BOOM_INLINE void SetMaterial(PbrMaterial const& material, int32_t unit) {
+			glBindTexture(GL_TEXTURE_2D, 0);
+			SetUniform(albedoLoc, material.albedo);
+			SetUniform(roughLoc, material.roughness);
+			SetUniform(metalLoc, material.metallic);
+			SetUniform(emissiveLoc, material.emissive);
+			SetUniform(occlusionLoc, material.occlusion);
+
+			bool isMap{};
+			isMap = material.albedoMap != nullptr;
+			SetUniform(isAlbedoMapLoc, isMap);
+			if (isMap) {
+				material.albedoMap->Use(albedoMapLoc, unit++);
+			}
+
+			isMap = material.normalMap != nullptr;
+			SetUniform(isNormalMapLoc, isMap);
+			if (isMap) {
+				material.normalMap->Use(normalMapLoc, unit++);
+			}
+
+			isMap = material.metallicMap != nullptr;
+			SetUniform(isMetallicMapLoc, isMap);
+			if (isMap) {
+				material.metallicMap->Use(metallicMapLoc, unit++);
+			}
+
+			isMap = material.emissiveMap != nullptr;
+			SetUniform(isEmissiveMapLoc, isMap);
+			if (isMap) {
+				material.emissiveMap->Use(emissiveMapLoc, unit++);
+			}
+
+			isMap = material.occlusionMap != nullptr;
+			SetUniform(isOcclusionMapLoc, isMap);
+			if (isMap) {
+				material.occlusionMap->Use(occlusionMapLoc, unit++);
+			}
+
+			isMap = material.roughnessMap != nullptr;
+			SetUniform(isRoughnessMapLoc, isMap);
+			if (isMap) {
+				material.roughnessMap->Use(roughnessMapLoc, unit++);
+			}
+		}
+
 		BOOM_INLINE void Draw(Model3D const& model, Transform3D const& transform, PbrMaterial const& material, bool showNormal = false) {
 			SetUniform(isDebugModeLoc, false);
 			SetUniform(ditherThresholdLoc, showDither ? ditherThreshold : 0.f);
@@ -117,54 +178,9 @@ namespace Boom {
 
 			//world transformation * model transformation
 			SetUniform(modelMatLoc, transform.Matrix() * model->modelTransform.Matrix());
-			SetUniform(albedoLoc, material.albedo);
-			SetUniform(roughLoc, material.roughness);
-			SetUniform(metalLoc, material.metallic);
-			SetUniform(emissiveLoc, material.emissive);
-			SetUniform(occlusionLoc, material.occlusion);
-
+			
 			//material texture maps
-			{
-				int32_t unit{};
-				//int32_t unit=4;
-				bool isMap{};
-
-				isMap = material.albedoMap != nullptr;
-				SetUniform(isAlbedoMapLoc, isMap);
-				if (isMap) {
-					material.albedoMap->Use(albedoMapLoc, unit++);
-				}
-
-				isMap = material.normalMap != nullptr;
-				SetUniform(isNormalMapLoc, isMap);
-				if (isMap) {
-					material.normalMap->Use(normalMapLoc, unit++);
-				}
-
-				isMap = material.metallicMap != nullptr;
-				SetUniform(isMetallicMapLoc, isMap);
-				if (isMap) {
-					material.metallicMap->Use(metallicMapLoc, unit++);
-				}
-
-				isMap = material.emissiveMap != nullptr;
-				SetUniform(isEmissiveMapLoc, isMap);
-				if (isMap) {
-					material.emissiveMap->Use(emissiveMapLoc, unit++);
-				}
-
-				isMap = material.occlusionMap != nullptr;
-				SetUniform(isOcclusionMapLoc, isMap);
-				if (isMap) {
-					material.occlusionMap->Use(occlusionMapLoc, unit++);
-				}
-
-				isMap = material.roughnessMap != nullptr;
-				SetUniform(isRoughnessMapLoc, isMap);
-				if (isMap) {
-					material.roughnessMap->Use(roughnessMapLoc, unit++);
-				}
-			}
+			SetMaterial(material, 1);
 
 			SetUniform(jointsLoc, model->HasJoint());
 			model->Draw();
@@ -174,7 +190,7 @@ namespace Boom {
 			SetUniform(isDebugModeLoc, true);
 			SetUniform(ditherThresholdLoc, showDither ? ditherThreshold : 0.f);
 			SetUniform(showNormalTextureLoc, showNormal);
-			SetUniform(modelMatLoc, transform.Matrix());
+			SetUniform(modelMatLoc, transform.Matrix() * model->modelTransform.Matrix());
 			SetUniform(albedoLoc, albedo);
 
 			SetUniform(jointsLoc, model->HasJoint());
@@ -226,5 +242,8 @@ namespace Boom {
 		int32_t isDebugModeLoc;
 		int32_t ditherThresholdLoc;
 		int32_t showNormalTextureLoc;
+
+		int32_t u_LightSpace = 0;
+		int32_t u_DepthMap = 0;
 	};
 }

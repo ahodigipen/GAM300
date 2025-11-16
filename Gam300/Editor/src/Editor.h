@@ -26,6 +26,7 @@ namespace EditorUI {
     class PerformancePanel;
     class PlaybackControlsPanel;
 	class NavmeshPanel;
+    class AnimatorGraphPanel;
     // FIXED: Now inherits from AppInterface (complete definition included above)
     class Editor : public Boom::AppInterface {
     public:
@@ -75,6 +76,7 @@ namespace EditorUI {
 		bool m_ShowResources = true;
 		bool m_ShowDirectory = true;
         bool m_ShowNavmesh = true;
+        bool m_ShowAnimatorGraph = true;
         bool m_ShowSaveDialog = false;
         bool m_ShowLoadDialog = false;
         bool m_ShowSavePrefabDialog = false;
@@ -90,6 +92,7 @@ namespace EditorUI {
         std::unique_ptr<PerformancePanel>       m_Performance;
         std::unique_ptr<PlaybackControlsPanel>  m_Playback;
 		std::unique_ptr<NavmeshPanel>            m_Navmesh;
+        std::unique_ptr<AnimatorGraphPanel>     m_AnimatorGraph;
     private:
         std::filesystem::path m_ScenesDir = std::filesystem::path("Scenes");
         std::unordered_map<std::string, std::filesystem::file_time_type> m_SceneStamp;

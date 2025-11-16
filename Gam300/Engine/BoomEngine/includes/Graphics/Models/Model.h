@@ -119,7 +119,7 @@ namespace Boom {
 				ShadedVert vert;
 				vert.pos = AssimpToVec3(mesh->mVertices[i]);
 				vert.norm = AssimpToVec3(mesh->mNormals[i]);
-				if (mesh->HasTextureCoords(i)) vert.uv = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
+				if (mesh->HasTextureCoords(0)) vert.uv = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
 				if (mesh->HasTangentsAndBitangents()) {
 					vert.biTangent = glm::normalize(AssimpToVec3(mesh->mBitangents[i]));
 					vert.tangent = glm::normalize(AssimpToVec3(mesh->mTangents[i]));
@@ -368,7 +368,7 @@ namespace Boom {
 				// normals
 				vertex.norm = AssimpToVec3(ai_mesh->mNormals[i]);
 				// texcoords
-				if (ai_mesh->HasTextureCoords(i)) {
+				if (ai_mesh->HasTextureCoords(0)) {
 					vertex.uv.x = ai_mesh->mTextureCoords[0][i].x;
 					vertex.uv.y = ai_mesh->mTextureCoords[0][i].y;
 				}
