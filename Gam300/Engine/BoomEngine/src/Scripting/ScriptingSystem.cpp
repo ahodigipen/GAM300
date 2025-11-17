@@ -7,39 +7,71 @@ namespace Boom {
     {
         m_Ctx = ctx;
         m_ScriptsDir = scriptsDir;
-        if (!m_Mono.Init("BoomDomain", scriptsDir.c_str())) return false;
 
-        // IMPORTANT: register internal calls for THIS domain
+        if (!m_Mono.Init("BoomDomain", scriptsDir.c_str()))
+            return false;
+
         RegisterScriptInternalCalls(m_Ctx);
 
 #ifdef DEBUG
         BOOM_INFO("[Scripting] Mono ready. {}", m_Mono.RuntimeInfo());
 #endif
+
+        m_Alive = true;          // <-- Mono is now usable
         return true;
     }
 
     void ScriptingSystem::Shutdown()
     {
+        if (!m_Alive)
+            return;
+
+        // 1. Destroy all instances first (safe GCHandle cleanup)
+        for (auto& [id, inst] : m_Instances) {
+            if (inst.gchandle) {
+                MonoObject* obj = mono_gchandle_get_target(inst.gchandle);
+                if (inst.onDestroy && obj) {
+                    MonoObject* exc = nullptr;
+                    mono_runtime_invoke(inst.onDestroy, obj, nullptr, &exc);
+                    if (exc) m_Mono.LogException(exc, "[Scripting] OnDestroy (shutdown)");
+                }
+                mono_gchandle_free(inst.gchandle);
+            }
+        }
+        m_Instances.clear();
+        m_NextId = 1;
+
+        // 2. Mark as dead BEFORE actually shutting Mono down
+        m_Alive = false;
+
+        // 3. Drop our assembly handle and kill Mono
         m_Scripts = nullptr;
         m_Mono.Shutdown();
     }
 
     bool ScriptingSystem::LoadScriptsDll(const std::string& dllPath)
     {
+        if (!m_Alive)
+            return false;
+
         m_Scripts = m_Mono.LoadAssembly(dllPath.c_str());
         return (m_Scripts != nullptr);
     }
 
     bool ScriptingSystem::CallStart()
     {
-        // Fully-qualified static method: Namespace.Type:Method(signature)
+        if (!m_Alive || !m_Scripts)
+            return false;
+
         return m_Mono.InvokeStatic("GameScripts.Entry:Start()");
     }
 
     bool ScriptingSystem::CallUpdate(float dt)
     {
-        void* args[1];
-        args[0] = &dt; // Mono expects float* for single-precision
+        if (!m_Alive || !m_Scripts)
+            return false;
+
+        void* args[1] = { &dt };
         return m_Mono.InvokeStatic("GameScripts.Entry:Update(single)", args, 1);
     }
 
@@ -133,7 +165,9 @@ namespace Boom {
 
     bool ScriptingSystem::TickEntity(entt::entity, ScriptComponent& sc, float dt)
     {
-        if (!sc.Enabled || !sc.InstanceId) return false;
+        if (!m_Alive || !sc.Enabled || !sc.InstanceId)
+            return false;
+
         auto it = m_Instances.find(sc.InstanceId);
         if (it == m_Instances.end()) return false;
 
@@ -151,55 +185,63 @@ namespace Boom {
     }
 
     bool ScriptingSystem::ReloadScripts()
-{
-    BOOM_INFO("[Scripting] Starting hot reload...");
-    
-    // 1. Destroy all existing instances
-    for (auto& [id, inst] : m_Instances) {
-        if (inst.gchandle) {
-            MonoObject* obj = mono_gchandle_get_target(inst.gchandle);
-            if (inst.onDestroy && obj) {
-                MonoObject* exc = nullptr;
-                mono_runtime_invoke(inst.onDestroy, obj, nullptr, &exc);
-                if (exc) m_Mono.LogException(exc, "[Scripting] OnDestroy (reload)");
+    {
+        if (!m_Alive)
+            return false;
+
+        BOOM_INFO("[Scripting] Starting hot reload...");
+        m_Reloading = true;
+
+        // 1. Destroy existing instances
+        for (auto& [id, inst] : m_Instances) {
+            if (inst.gchandle) {
+                MonoObject* obj = mono_gchandle_get_target(inst.gchandle);
+                if (inst.onDestroy && obj) {
+                    MonoObject* exc = nullptr;
+                    mono_runtime_invoke(inst.onDestroy, obj, nullptr, &exc);
+                    if (exc) m_Mono.LogException(exc, "[Scripting] OnDestroy (reload)");
+                }
+                mono_gchandle_free(inst.gchandle);
             }
-            mono_gchandle_free(inst.gchandle);
         }
-    }
-    m_Instances.clear();
-    
-    // 2. Unload the old domain
-    m_Mono.UnloadDomain();
-    
-    // 3. Create fresh app domain
-    if (!m_Mono.Init("BoomDomain", m_ScriptsDir.c_str())) {
-        BOOM_ERROR("[Scripting] Failed to reinitialize Mono runtime");
-        return false;
-    }
-    
-    // 4. Re-register internal calls (CRITICAL!)
-    RegisterScriptInternalCalls(m_Ctx);
-    
-    // 5. Reload the DLL
-    std::string dllPath = m_ScriptsDir + "/GameScripts.dll";
-    if (!LoadScriptsDll(dllPath)) {
-        BOOM_ERROR("[Scripting] Failed to reload GameScripts.dll");
-        return false;
-    }
-    
-    // 6. Recreate all script component instances
-    auto& registry = m_Ctx->scene;
-    auto view = registry.view<Boom::ScriptComponent>();
-    for (auto entity : view) {
-        auto& sc = view.get<Boom::ScriptComponent>(entity);
-        if (!RecreateForEntity(entity, sc)) {
-            BOOM_ERROR("[Scripting] Failed to recreate instance for entity");
+        m_Instances.clear();
+        m_NextId = 1;
+
+        // 2. Unload old domain
+        m_Mono.UnloadDomain();
+
+        // 3. Re-init Mono appdomain
+        if (!m_Mono.Init("BoomDomain", m_ScriptsDir.c_str())) {
+            BOOM_ERROR("[Scripting] Failed to reinitialize Mono runtime");
+            m_Alive = false;
+            m_Reloading = false;
+            return false;
         }
+
+        RegisterScriptInternalCalls(m_Ctx);
+
+        // 4. Reload DLL
+        std::string dllPath = m_ScriptsDir + "/GameScripts.dll";
+        if (!LoadScriptsDll(dllPath)) {
+            BOOM_ERROR("[Scripting] Failed to reload GameScripts.dll");
+            m_Reloading = false;
+            return false;
+        }
+
+        // 5. Recreate instances from ScriptComponents
+        auto& registry = m_Ctx->scene;
+        auto view = registry.view<Boom::ScriptComponent>();
+        for (auto entity : view) {
+            auto& sc = view.get<Boom::ScriptComponent>(entity);
+            if (!RecreateForEntity(entity, sc)) {
+                BOOM_ERROR("[Scripting] Failed to recreate instance for entity");
+            }
+        }
+
+        m_Reloading = false;
+        BOOM_INFO("[Scripting] Hot reload complete!");
+        return true;
     }
-    
-    BOOM_INFO("[Scripting] Hot reload complete!");
-    return true;
-}
 
 
 

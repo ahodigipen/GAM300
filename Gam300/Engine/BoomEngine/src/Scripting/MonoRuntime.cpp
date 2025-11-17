@@ -17,31 +17,34 @@
 
 namespace Boom {
 
+    // Define static members
+    MonoDomain* MonoRuntime::m_RootDomain = nullptr;
+    MonoDomain* MonoRuntime::m_AppDomain = nullptr;
+
     bool MonoRuntime::Init(const char* domainName, const char* assembliesPath)
     {
         if (assembliesPath && *assembliesPath)
             mono_set_assemblies_path(assembliesPath);
 
 #ifdef _WIN32
-        // Get the directory where the executable is located
         char exePath[MAX_PATH];
-        GetModuleFileNameA(NULL, exePath, MAX_PATH);
+        GetModuleFileNameA(nullptr, exePath, MAX_PATH);
         std::filesystem::path exeDir = std::filesystem::path(exePath).parent_path();
+        std::filesystem::path repoRoot = exeDir.parent_path().parent_path().parent_path();
+        std::filesystem::path monoRoot = repoRoot / "mono";
 
-        // Build paths to mono/lib and mono/etc relative to exe
-        std::filesystem::path monoLib = exeDir.parent_path() / "mono" / "lib";
-        std::filesystem::path monoEtc = exeDir.parent_path() / "mono" / "etc";
+        std::filesystem::path monoLib = monoRoot / "lib";
+        std::filesystem::path monoEtc = monoRoot / "etc";
 
-        // Convert to absolute paths
         std::string libPath = std::filesystem::absolute(monoLib).string();
         std::string etcPath = std::filesystem::absolute(monoEtc).string();
 
-        // Replace backslashes with forward slashes for Mono
         std::replace(libPath.begin(), libPath.end(), '\\', '/');
         std::replace(etcPath.begin(), etcPath.end(), '\\', '/');
 
 #ifdef DEBUG
-        BOOM_INFO("[Mono] Setting dirs: lib='{}', etc='{}'", libPath, etcPath);
+        BOOM_INFO("[Mono] libPath = {}", libPath);
+        BOOM_INFO("[Mono] etcPath = {}", etcPath);
 #endif
 
         mono_set_dirs(libPath.c_str(), etcPath.c_str());
@@ -50,15 +53,32 @@ namespace Boom {
 #endif
 
         BOOM_INFO("[Mono] Initializing Mono JIT...");
-        m_RootDomain = mono_jit_init_version(domainName ? domainName : "BoomDomain", "v4.0.30319");
-        if (!m_RootDomain) {
+
+        // Create root domain only once for the whole process.
+        if (!m_RootDomain)
+        {
+            m_RootDomain = mono_jit_init(domainName ? domainName : "BoomDomain");
+            if (!m_RootDomain) {
 #ifdef DEBUG
-            BOOM_ERROR("Mono: mono_jit_init_version failed - check Mono installation paths");
+                BOOM_ERROR("Mono: mono_jit_init failed - check Mono installation paths");
 #endif
-            return false;
+                return false;
+            }
+        }
+        else
+        {
+            // Make sure we are back on root before messing with app domains
+            mono_domain_set(m_RootDomain, /*force*/ false);
         }
 
-        // Fresh app domain for your scripts (this is what we later unload)
+        // If we had an app domain from a previous run, unload it first
+        if (m_AppDomain)
+        {
+            mono_domain_unload(m_AppDomain);
+            m_AppDomain = nullptr;
+        }
+
+        // Fresh app domain for your scripts
         m_AppDomain = mono_domain_create_appdomain(const_cast<char*>("BoomApp"), nullptr);
         if (!m_AppDomain) {
 #ifdef DEBUG
@@ -66,29 +86,33 @@ namespace Boom {
 #endif
             return false;
         }
-        mono_domain_set(m_AppDomain, /*force*/false);
+        mono_domain_set(m_AppDomain, /*force*/ false);
 
 #ifdef DEBUG
         BOOM_INFO("[Mono] Initialized: {}", RuntimeInfo());
 #endif
+
         m_LoadedAssemblies.clear();
         return true;
     }
 
     void MonoRuntime::UnloadDomain()
     {
-        // Leave app domain, switch back to root, then unload
+        // 1) Invalidate all assembly handles immediately
+        m_LoadedAssemblies.clear();
+
+        // 2) Then unload the app domain (if any)
         if (m_AppDomain) {
-            mono_domain_set(m_RootDomain, /*force*/false);
+            mono_domain_set(m_RootDomain, /*force*/ false);
             mono_domain_unload(m_AppDomain);
             m_AppDomain = nullptr;
         }
-        // The handles to images/assemblies become invalid; clear our cache.
-        m_LoadedAssemblies.clear();
     }
 
     void MonoRuntime::Shutdown()
     {
+
+        m_LoadedAssemblies.clear();
         UnloadDomain();
         if (m_RootDomain) {
             mono_jit_cleanup(m_RootDomain);
@@ -103,8 +127,8 @@ namespace Boom {
     {
         if (!path) return nullptr;
 
-        // Ensure we are in app domain
-        if (m_AppDomain) mono_domain_set(m_AppDomain, /*force*/false);
+        if (m_AppDomain)
+            mono_domain_set(m_AppDomain, /*force*/ false);
 
         MonoAssembly* asmHandle = mono_domain_assembly_open(mono_domain_get(), path);
         if (!asmHandle) {
@@ -115,7 +139,8 @@ namespace Boom {
         }
 #ifdef DEBUG
         MonoImage* img = mono_assembly_get_image(asmHandle);
-        BOOM_INFO("[Mono] Loaded assembly: {} (image ok={})", path, img ? "true" : "false");
+        BOOM_INFO("[Mono] Loaded assembly: {} (image ok={})",
+            path, img ? "true" : "false");
 #endif
         m_LoadedAssemblies.push_back(asmHandle);
         return asmHandle;
@@ -126,11 +151,19 @@ namespace Boom {
         (void)argCount;
         if (!fullMethodDesc) return false;
 
-        if (m_AppDomain) mono_domain_set(m_AppDomain, /*force*/false);
+        // If runtime / app domain is gone, do NOT call into Mono
+        if (!m_RootDomain || !m_AppDomain) {
+#ifdef DEBUG
+            BOOM_WARN("[Mono] InvokeStatic called after shutdown/unload ({}). Ignoring.", fullMethodDesc);
+#endif
+            return false;
+        }
+
+        mono_domain_set(m_AppDomain, /*force*/ false);
 
         MonoMethodDesc* desc = mono_method_desc_new(fullMethodDesc, /*include_namespace*/ true);
         if (!desc) {
-#ifdef _DEBUG
+#ifdef DEBUG
             BOOM_ERROR("[Mono] Bad method desc: {}", fullMethodDesc);
 #endif
             return false;
@@ -144,16 +177,16 @@ namespace Boom {
         if (!method) {
             for (MonoAssembly* a : m_LoadedAssemblies) {
                 if (!a) continue;
-                if (MonoImage* img = mono_assembly_get_image(a)) {
-                    method = mono_method_desc_search_in_image(desc, img);
-                    if (method) break;
-                }
+                MonoImage* img = mono_assembly_get_image(a);
+                if (!img) continue;       // *** extra safety ***
+                method = mono_method_desc_search_in_image(desc, img);
+                if (method) break;
             }
         }
 
         mono_method_desc_free(desc);
         if (!method) {
-#ifdef _DEBUG
+#ifdef DEBUG
             BOOM_ERROR("[Mono] Method not found: {}", fullMethodDesc);
 #endif
             return false;
@@ -165,11 +198,12 @@ namespace Boom {
             LogException(exc, "[Mono] Exception");
             return false;
         }
-#ifdef _DEBUG
+#ifdef DEBUG
         BOOM_INFO("[Mono] Invoked: {}", fullMethodDesc);
 #endif
         return true;
     }
+
 
     // ===== Helpers for instance creation / reflection =====
 
@@ -220,7 +254,7 @@ namespace Boom {
     }
 
     const char* MonoRuntime::RuntimeInfo() const
-    {
+    {   
         return mono_get_runtime_build_info();
     }
 

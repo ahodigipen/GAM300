@@ -34,8 +34,10 @@ namespace Boom {
         const char* RuntimeInfo() const;
 
     private:
-        MonoDomain* m_RootDomain = nullptr;
-        MonoDomain* m_AppDomain = nullptr;
+        static MonoDomain* m_RootDomain;
+        static MonoDomain* m_AppDomain;
+
+
         std::vector<MonoAssembly*> m_LoadedAssemblies;
     };
 

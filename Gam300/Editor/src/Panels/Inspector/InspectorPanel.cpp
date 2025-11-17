@@ -638,7 +638,8 @@ namespace EditorUI {
             auto& sc = selected.Get<Boom::ScriptComponent>();
 
             // Collapsing header + settings ("..." to remove), matching your style
-            bool isOpen = ImGui::CollapsingHeader("Script", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap);
+            bool isOpen = ImGui::CollapsingHeader("Script",
+                ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap);
 
             // Settings button (remove)
             const ImVec2 headerMin = ImGui::GetItemRectMin();
@@ -651,20 +652,22 @@ namespace EditorUI {
 
             bool removed = false;
             if (ImGui::BeginPopup("ScriptSettings")) {
-                if (ImGui::MenuItem("Remove Component")) removed = true;
+                if (ImGui::MenuItem("Remove Component"))
+                    removed = true;
                 ImGui::EndPopup();
             }
 
             // Reset cursor for contents
-            ImGui::SetCursorScreenPos(ImVec2(headerMin.x, headerMax.y + ImGui::GetStyle().ItemSpacing.y));
+            ImGui::SetCursorScreenPos(ImVec2(headerMin.x,
+                headerMax.y + ImGui::GetStyle().ItemSpacing.y));
 
             if (isOpen) {
                 ImGui::Indent(12.0f);
 
-                // Enabled toggle
+                // ----- Enabled toggle -----
                 ImGui::Checkbox("Enabled", &sc.Enabled);
 
-                // Type name (namespace.Type)
+                // ----- Type name (namespace.Type) -----
                 ImGui::AlignTextToFramePadding();
                 ImGui::Text("Type");
                 ImGui::SameLine(150);
@@ -672,7 +675,8 @@ namespace EditorUI {
 
                 static char typeBuf[256];
 #ifdef _MSC_VER
-                strncpy_s(typeBuf, sizeof(typeBuf), sc.TypeName.c_str(), sizeof(typeBuf) - 1);
+                strncpy_s(typeBuf, sizeof(typeBuf), sc.TypeName.c_str(),
+                    sizeof(typeBuf) - 1);
 #else
                 std::snprintf(typeBuf, sizeof(typeBuf), "%s", sc.TypeName.c_str());
 #endif
@@ -680,51 +684,66 @@ namespace EditorUI {
                     sc.TypeName = typeBuf;
                 }
 
-                // Params (JSON)
+                // ----- Params (JSON) -----
                 ImGui::AlignTextToFramePadding();
                 ImGui::Text("Params (JSON)");
                 ImGui::SameLine(150);
                 ImGui::SetNextItemWidth(-1);
 
-                static std::string paramsText;
-                paramsText = sc.Params.dump(2);
+                // persistent buffer per-selected entity
+                static char         paramsBuf[2048];
+                static entt::entity lastJsonEntity = entt::null;
 
-                if (ImGui::InputTextMultiline("##ScriptParams",
-                    &paramsText[0], paramsText.size() + 1,
+                entt::entity currentEntity = m_App->SelectedEntity();
+                if (currentEntity != lastJsonEntity) {
+                    std::string initial = sc.Params.dump(2); // pretty JSON
+#ifdef _MSC_VER
+                    strncpy_s(paramsBuf, sizeof(paramsBuf), initial.c_str(),
+                        sizeof(paramsBuf) - 1);
+#else
+                    std::snprintf(paramsBuf, sizeof(paramsBuf), "%s", initial.c_str());
+#endif
+                    lastJsonEntity = currentEntity;
+                }
+
+                if (ImGui::InputTextMultiline(
+                    "##ScriptParams",
+                    paramsBuf,
+                    IM_ARRAYSIZE(paramsBuf),
                     ImVec2(-1, 120),
                     ImGuiInputTextFlags_AllowTabInput))
                 {
+                    // Try parse back into JSON whenever text changes
                     try {
-                        sc.Params = nlohmann::json::parse(paramsText);
+                        sc.Params = nlohmann::json::parse(paramsBuf);
                     }
                     catch (...) {
-                        // optional: visual hint if JSON invalid
+                        // Optional: show a small warning if you want
+                        // ImGui::TextColored(ImVec4(1,0.3f,0.3f,1), "Invalid JSON");
                     }
                 }
 
-                // Runtime info (read-only)
+                // ----- Runtime info -----
                 ImGui::Separator();
                 ImGui::TextDisabled("Runtime");
                 ImGui::SameLine();
-                ImGui::Text("InstanceId: %llu", (unsigned long long)sc.InstanceId);
+                ImGui::Text("InstanceId: %llu",
+                    (unsigned long long)sc.InstanceId);
 
-                // ===== ADD RELOAD BUTTON HERE =====
+                // ----- Reload button -----
                 ImGui::Spacing();
                 ImGui::Separator();
                 ImGui::Spacing();
 
                 if (ImGui::Button("Reload Scripts", ImVec2(-1, 0))) {
-                    // Get the scripting system from your app context
                     if (m_Owner && m_Owner->GetContext()) {
-                        auto* ctx = m_Owner->GetContext();
-                        // You'll need to expose GetScriptingSystem() in your AppContext or Editor
-                        // For now, assuming you have access to it:
-                        ctx->scriptingSystem->ReloadScripts();
-                        
-                        BOOM_INFO("Scripts reloaded from Inspector!");
+                        auto* appCtx = m_Owner->GetContext();
+                        if (appCtx->scriptingSystem) {
+                            appCtx->scriptingSystem->ReloadScripts();
+                            BOOM_INFO("Scripts reloaded from Inspector!");
+                        }
                     }
                 }
-                // ===== END RELOAD BUTTON =====
 
                 ImGui::Unindent(12.0f);
             }

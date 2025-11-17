@@ -10,9 +10,11 @@
 #include "Auxiliaries/Assets.h"
 #include <glm/vec3.hpp>
 #include <GLFW/glfw3.h>
-     
+
 #include "AppWindow.h"
 #include "Input/InputHandler.h"
+
+
 namespace Boom {
 
     static AppContext* s_Ctx = nullptr;

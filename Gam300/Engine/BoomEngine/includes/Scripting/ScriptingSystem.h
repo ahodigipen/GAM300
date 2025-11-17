@@ -48,6 +48,9 @@ namespace Boom {
         MonoAssembly* m_Scripts = nullptr;
         std::string    m_ScriptsDir;
         AppContext* m_Ctx = nullptr;  // Remove Boom:: prefix - already in namespace
+        bool           m_Alive = false;      // <-- NEW: Mono is usable
+        bool           m_Reloading = false;  // <-- NEW: hot reload in progress
+
 
         bool CreateInstance(const std::string& typeName,
             const nlohmann::json& params,
