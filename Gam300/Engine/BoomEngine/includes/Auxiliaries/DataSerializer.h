@@ -161,7 +161,6 @@ namespace Boom
                 int successCount = 0;
                 int failCount = 0;
 
-                //nodes.size();
                 for (const auto& node : nodes)
                 {
                     try

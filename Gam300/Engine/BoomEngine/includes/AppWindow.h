@@ -14,15 +14,15 @@ namespace Boom {
 		//example for initializing with reference:
 		//std::unique_ptr<AppWindow> w = std::make_unique<AppWindow>(&Dispatcher, 1900, 800, "BOOM");
 		BOOM_INLINE AppWindow(EventDispatcher* disp, int32_t w, int32_t h, char const* windowTitle)
-			: refreshRate{ 144 }
+			: width{ w }
+			, height{ h }
+			, refreshRate{ 144 }
 			, isFullscreen{ false }
 			, monitorPtr{}
 			, modePtr{}
 			, windowPtr{}
 			, dispatcher{ disp }
 		{
-			height = h;
-			width = w;
 			if (!glfwInit()) {
 				BOOM_FATAL("AppWindow::Init() - glfwInit() failed.");
 				std::exit(EXIT_FAILURE);
@@ -273,15 +273,17 @@ namespace Boom {
 
 		BOOM_INLINE static void RenderLoading(GLFWwindow* win, float percentProgress) {
 			static auto loadingShader{ std::make_unique<LoadingShader>("loading.glsl") };
-			auto proj = glm::ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f);
+			int w, h;
+			glfwGetFramebufferSize(win, &w, &h);
+			auto proj = glm::ortho(0.0f, (float)w, (float)h, 0.0f, -1.0f, 1.0f);
 			std::apply(glClearColor, CONSTANTS::DEFAULT_BACKGROUND_COLOR);
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			// track (dark background)
-			const float barY = height * 0.45f;
-			const float barH = height * 0.10f;
-			const float trackX = width * 0.5f;
-			const float trackW = width * 0.4f;
+			const float barY = h * 0.45f;
+			const float barH = h * 0.10f;
+			const float trackX = w * 0.5f;
+			const float trackW = w * 0.4f;
 			loadingShader->SetColor({ 0.12f, 0.12f, 0.12f, 1.f });
 			loadingShader->SetTransform({trackX, barY + barH * 0.5f}, { trackW, barH }, 0.f);
 			loadingShader->Show(proj);
@@ -296,8 +298,8 @@ namespace Boom {
 			glfwPollEvents();
 		}
 	private:
-		inline static int32_t width{};
-		inline static int32_t height{};
+		int32_t width{};
+		int32_t height{};
 		int32_t refreshRate;
 		bool isFullscreen;
 
