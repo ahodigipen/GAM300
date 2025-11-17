@@ -59,6 +59,9 @@ namespace EditorUI {
 
         // Get model's bounding box from ModelComponent
         bool GetModelBounds(const Boom::ModelComponent& modelComp, glm::vec3& min, glm::vec3& max);
+        
+        bool CalculateMeshBounds(std::shared_ptr<Boom::StaticModel> model, glm::vec3& min, glm::vec3& max);
+        bool CalculateSkeletalMeshBounds(std::shared_ptr<Boom::SkeletalModel> model, glm::vec3& min, glm::vec3& max);
     };
 
 } // namespace EditorUI

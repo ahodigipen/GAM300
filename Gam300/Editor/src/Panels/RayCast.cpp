@@ -113,7 +113,7 @@ namespace EditorUI {
         // Try to get model-specific bounds from asset registry
         glm::vec3 modelMin, modelMax;
         if (GetModelBounds(modelComp, modelMin, modelMax)) {
-            // Use actual model bounds
+            // Use actual model bounds (same as before)
             std::vector<glm::vec3> corners = {
                 glm::vec3(modelMin.x, modelMin.y, modelMin.z),
                 glm::vec3(modelMax.x, modelMin.y, modelMin.z),
@@ -125,7 +125,6 @@ namespace EditorUI {
                 glm::vec3(modelMax.x, modelMax.y, modelMax.z)
             };
 
-            // Transform all corners to world space and find min/max
             aabbMin = glm::vec3(FLT_MAX);
             aabbMax = glm::vec3(-FLT_MAX);
 
@@ -136,13 +135,13 @@ namespace EditorUI {
             }
         }
         else {
-            // Fallback: use scale-based AABB with larger default size
-            glm::vec3 localMin = glm::vec3(-1.0f, -1.0f, -1.0f); // Larger default size
-            glm::vec3 localMax = glm::vec3(1.0f, 1.0f, 1.0f);
+            // Fallback: use a larger scale-based AABB that better encompasses typical models
+            glm::vec3 scale = transformComp.transform.scale;
 
-            // Scale the AABB based on the entity's scale
-            localMin *= transformComp.transform.scale;
-            localMax *= transformComp.transform.scale;
+            // Use a more generous base size - many models are larger than 2x2x2 units
+            float baseSize = 5.0f; // Adjust this based on your typical model sizes
+            glm::vec3 localMin = glm::vec3(-baseSize) * scale;
+            glm::vec3 localMax = glm::vec3(baseSize) * scale;
 
             // Transform AABB corners to world space
             std::vector<glm::vec3> corners = {
@@ -156,7 +155,6 @@ namespace EditorUI {
                 glm::vec3(localMax.x, localMax.y, localMax.z)
             };
 
-            // Transform all corners to world space and find min/max
             aabbMin = glm::vec3(FLT_MAX);
             aabbMax = glm::vec3(-FLT_MAX);
 
@@ -182,15 +180,59 @@ namespace EditorUI {
         auto& assetRegistry = *m_Context->assets;
 
         // Check if the model asset exists and has data
-        //if (assetRegistry.<ModelAsset>(modelComp.modelID)) {
-            auto& modelAsset = assetRegistry.Get<ModelAsset>(modelComp.modelID);
+        auto* modelAsset = assetRegistry.TryGet<ModelAsset>(modelComp.modelID);
+        if (!modelAsset || !modelAsset->data) {
+            return false;
+        }
 
-            // If the model has data, try to get its bounds
-            // For now, return false to use the fallback AABB
-            // You can implement actual model bounds here if available
-            //return false;
-        //}
+        // Try to cast to StaticModel first (most common case)
+        auto staticModel = std::dynamic_pointer_cast<Boom::StaticModel>(modelAsset->data);
+        if (staticModel) {
+            return CalculateMeshBounds(staticModel, min, max);
+        }
 
+        // Try SkeletalModel as fallback
+        auto skeletalModel = std::dynamic_pointer_cast<Boom::SkeletalModel>(modelAsset->data);
+        if (skeletalModel) {
+            return CalculateSkeletalMeshBounds(skeletalModel, min, max);
+        }
+
+        return false;
+    }
+
+    // Add this new helper method to your RayCast class
+    bool RayCast::CalculateMeshBounds(std::shared_ptr<Boom::StaticModel> model, glm::vec3& min, glm::vec3& max) {
+        const auto& meshData = model->GetMeshData();
+
+        if (meshData.empty()) {
+            return false;
+        }
+
+        min = glm::vec3(FLT_MAX);
+        max = glm::vec3(-FLT_MAX);
+        bool foundVertices = false;
+
+        // Iterate through all submeshes and find the overall bounds
+        for (const auto& mesh : meshData) {
+            for (const auto& vertex : mesh.vtx) {
+                min = glm::min(min, vertex.pos);
+                max = glm::max(max, vertex.pos);
+                foundVertices = true;
+            }
+        }
+
+        return foundVertices;
+    }
+
+    // Add this new helper method for skeletal models (if needed)
+    bool RayCast::CalculateSkeletalMeshBounds(std::shared_ptr<Boom::SkeletalModel> model, glm::vec3& min, glm::vec3& max) {
+        // For skeletal models, you might need to access the mesh data differently
+        // This is a placeholder - you'll need to adapt based on your SkeletalModel implementation
+
+        // If SkeletalModel also has GetMeshData() or similar, use it
+        // Otherwise, you might need to access the internal mesh data differently
+
+        // For now, return false to use fallback bounds
         return false;
     }
 

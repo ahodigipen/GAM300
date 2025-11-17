@@ -17,8 +17,8 @@ namespace EditorUI {
         : m_Owner(owner)
     {
         if (m_Owner) {
-            m_App = static_cast<Boom::AppInterface*>(m_Owner);
-            m_Ctx = m_App ? owner->GetContext() : nullptr;
+            m_App = m_Owner->GetAppInterface();
+            m_Ctx = m_App ? m_App->GetContext() : nullptr;
             m_Reg = m_Owner->GetRegistry();
         }
         // default output path already set in ctor member init

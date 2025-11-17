@@ -82,6 +82,11 @@
     <ClInclude Include="includes\Scripting\MonoRuntime.h" />
     <ClInclude Include="includes\Scripting\ScriptBinding.h" />
     <ClInclude Include="includes\Scripting\ScriptingSystem.h" />
+    <ClInclude Include="includes\AI\BehaviourTree.h" />
+    <ClInclude Include="includes\AI\AIComponent.h" />
+    <ClInclude Include="includes\AI\Actions.h" />
+    <ClInclude Include="includes\AI\BehaviourTreeActions.h" />
+    <ClInclude Include="includes\AI\AISystem.h" />
     <ClInclude Include="includes\Graphics\Shaders\LoadingShader.h" />
   </ItemGroup>
   <ItemGroup>

@@ -35,6 +35,7 @@
 #include "AI/GridChaseAI.h"
 #include "AI/DetourNavSystem.h"
 #include "AI/NavAgent.h"
+#include "AI/AISystem.h"
 namespace Boom {
     BOOM_INLINE entt::entity CreateEnemySphere(entt::registry& reg, const std::string& name,
         const glm::vec3& pos, float radius)
@@ -300,9 +301,9 @@ namespace Boom
                 }
             }
             // --- END MONO INITIALIZE ---
-
+      
             InitNavRuntime();
-			EnsureNinjaSeeksSamurai();
+			//EnsureNinjaSeeksSamurai();
             CameraController camera(
                 m_Context->window.get()
             );
@@ -383,7 +384,7 @@ namespace Boom
                 float dt = static_cast<float>(m_Context->DeltaTime);
 
                 m_Scripting.CallUpdate(dt);
-
+                m_AIagents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime));
                 if (m_Nav) {
                     m_NavAgents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime), *m_Nav);
                 }
@@ -952,17 +953,24 @@ namespace Boom
     private:
         std::unordered_map<std::string, std::pair<glm::vec3, glm::vec3>> m_SphereInitialStates;
 
-        BOOM_INLINE void RegisterSphereInitialState(const std::string& name,
+        BOOM_INLINE void 
+            
+            
+            
+            SphereInitialState(const std::string& name,
             const glm::vec3& pos,
             const glm::vec3& vel = glm::vec3(0.0f)) {
             m_SphereInitialStates[name] = { pos, vel };
         }
 		bool m_NavInitialized = false;
+        bool m_AIinitialized = false;
         std::unique_ptr<Boom::DebugLinesShader> m_DebugLinesShader;
         std::vector<Boom::PhysicsContext::DebugLine> m_PhysLinesCPU;
         char m_CurrentScenePath[512] = "\0";
         bool m_SceneLoaded = false;
         std::unique_ptr<DetourNavSystem> m_Nav;
+       
+        Boom::AISystem                         m_AIagents;
         Boom::NavAgentSystem                   m_NavAgents;
         entt::entity                           m_PlayerE = entt::null;
         entt::entity                           m_AgentE = entt::null;
@@ -993,6 +1001,7 @@ namespace Boom
 
             BOOM_INFO("[Nav] 'Ninja' will seek 'Samurai'.");
         }
+        
         BOOM_INLINE void InitNavRuntime()
         {
             if (m_NavInitialized) return;
@@ -1011,53 +1020,53 @@ namespace Boom
                 BOOM_INFO("[Nav] Loaded navmesh.");
             }
 
-            // 2) Cache the player (if any)
-            m_PlayerE = Boom::FindEntityByName(reg, "Player");
-            if (m_PlayerE == entt::null) {
-                BOOM_WARN("[Nav] 'Player' not found; agent will idle until one exists.");
-            }
+            //// 2) Cache the player (if any)
+            //m_PlayerE = Boom::FindEntityByName(reg, "Player");
+            //if (m_PlayerE == entt::null) {
+            //    BOOM_WARN("[Nav] 'Player' not found; agent will idle until one exists.");
+            //}
 
-            // 3) Find an existing agent FIRST (prefer 'NavAgent', then allow 'Enemy' to be used as agent)
-            if (m_AgentE == entt::null || !reg.valid(m_AgentE)) {
-                entt::entity byName = Boom::FindEntityByName(reg, "NavAgent");
-                if (byName == entt::null) {
-                    byName = Boom::FindEntityByName(reg, "Enemy"); // optional reuse
-                }
+            //// 3) Find an existing agent FIRST (prefer 'NavAgent', then allow 'Enemy' to be used as agent)
+            //if (m_AgentE == entt::null || !reg.valid(m_AgentE)) {
+            //    entt::entity byName = Boom::FindEntityByName(reg, "NavAgent");
+            //    if (byName == entt::null) {
+            //        byName = Boom::FindEntityByName(reg, "Enemy"); // optional reuse
+            //    }
 
-                if (byName != entt::null) {
-                    m_AgentE = byName;
-                }
-                else {
-                    // Create a single agent as a sphere
-                    glm::vec3 spawnPos{ 2.f, 1.f, 2.f }; // default
-                    if (auto ground = Boom::FindEntityByName(reg, "ground");
-                        ground != entt::null && reg.all_of<TransformComponent>(ground)) {
-                        const auto& gt = reg.get<TransformComponent>(ground).transform;
-                        spawnPos.y = gt.translate.y + 1.0f; // float above ground
-                    }
+            //    if (byName != entt::null) {
+            //        m_AgentE = byName;
+            //    }
+            //    else {
+            //        // Create a single agent as a sphere
+            //        glm::vec3 spawnPos{ 2.f, 1.f, 2.f }; // default
+            //        if (auto ground = Boom::FindEntityByName(reg, "ground");
+            //            ground != entt::null && reg.all_of<TransformComponent>(ground)) {
+            //            const auto& gt = reg.get<TransformComponent>(ground).transform;
+            //            spawnPos.y = gt.translate.y + 1.0f; // float above ground
+            //        }
 
-                    // Uses your helper (speed = 2.0f set inside NavAgentComponent)
-                    m_AgentE = CreateEnemySphere(reg, "NavAgent", spawnPos, /*radius*/0.5f);
-                    RegisterSphereInitialState("NavAgent", spawnPos /*, glm::vec3(0)*/);
-                  
-                    BOOM_INFO("[Nav] Spawned 'NavAgent' sphere at ({}, {}, {}), r = {}",
-                        spawnPos.x, spawnPos.y, spawnPos.z, 0.5f);
-                }
-            }
+            //        // Uses your helper (speed = 2.0f set inside NavAgentComponent)
+            //        m_AgentE = CreateEnemySphere(reg, "NavAgent", spawnPos, /*radius*/0.5f);
+            //        RegisterSphereInitialState("NavAgent", spawnPos /*, glm::vec3(0)*/);
+            //      
+            //        BOOM_INFO("[Nav] Spawned 'NavAgent' sphere at ({}, {}, {}), r = {}",
+            //            spawnPos.x, spawnPos.y, spawnPos.z, 0.5f);
+            //    }
+            //}
 
-            // 4) Ensure required components exist on the chosen agent
-            if (!reg.all_of<Boom::TransformComponent>(m_AgentE))
-                reg.emplace<Boom::TransformComponent>(m_AgentE);
-            if (!reg.all_of<Boom::NavAgentComponent>(m_AgentE))
-                reg.emplace<Boom::NavAgentComponent>(m_AgentE);
+            //// 4) Ensure required components exist on the chosen agent
+            //if (!reg.all_of<Boom::TransformComponent>(m_AgentE))
+            //    reg.emplace<Boom::TransformComponent>(m_AgentE);
+            //if (!reg.all_of<Boom::NavAgentComponent>(m_AgentE))
+            //    reg.emplace<Boom::NavAgentComponent>(m_AgentE);
 
-            // 5) Configure follow target once
-            if (m_PlayerE != entt::null) {
-                auto& ag = reg.get<Boom::NavAgentComponent>(m_AgentE);
-                ag.follow = m_PlayerE;
-                ag.dirty = true; // force first path build
-                BOOM_INFO("[Nav] Agent now follows 'Player'.");
-            }
+            //// 5) Configure follow target once
+            //if (m_PlayerE != entt::null) {
+            //    auto& ag = reg.get<Boom::NavAgentComponent>(m_AgentE);
+            //    ag.follow = m_PlayerE;
+            //    ag.dirty = true; // force first path build
+            //    BOOM_INFO("[Nav] Agent now follows 'Player'.");
+            //}
 
             m_NavInitialized = true;  // ← prevents re-entering
         }

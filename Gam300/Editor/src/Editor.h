@@ -3,7 +3,7 @@
 #include "Application/Interface.h"  // For Boom::AppInterface complete type
 #include "Vendors/imgui/imgui.h"    // For ImVec2
 #include "Vendors/imGuizmo/ImGuizmo.h"
-
+#include "Application/Application.h"
 // Keep heavy headers out of here to avoid cycles.
 // Just forward-declare the few types we need.
 struct ImGuiContext;            // ImGui is global-namespace
@@ -55,7 +55,7 @@ namespace EditorUI {
         ImVec2 GetViewportSize() const;
         void RenderSceneDialogs();
         ViewportPanel* GetViewportPanel() const { return m_Viewport.get(); }
-
+        AppInterface* GetAppInterface() const { return m_App; }
 
     public:
       

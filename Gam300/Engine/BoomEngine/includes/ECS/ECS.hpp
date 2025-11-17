@@ -5,7 +5,7 @@
 #include "Auxiliaries/Assets.h"
 #include "Physics/Utilities.h"  
 #include "BoomProperties.h"
-
+#include "AI/BehaviourTree.h"
 
 
 namespace Boom {
@@ -20,6 +20,8 @@ namespace Boom {
         MODEL, ANIMATOR, DIRECT_LIGHT, POINT_LIGHT, SPOT_LIGHT,
         SOUND, SCRIPT,
         THIRD_PERSON_CAMERA,
+        NAV_AGENT_COMPONENT,
+        AI_COMPONENT,
         COUNT
     };
     constexpr std::string_view COMPONENT_NAMES[]{
@@ -35,7 +37,10 @@ namespace Boom {
         "Spot Light",           //9
         "Sound",                //10
         "Script",               //11
-        "Third Person Camera"   //12
+        "Third Person Camera" ,  //12
+        "Nav Agent Component",
+        "AI Component"
+
     };
 
     // transform component
@@ -300,7 +305,58 @@ namespace Boom {
             obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
         )
     };
+    struct NavAgentComponent {
+        glm::vec3 target{ 0.f };
+        std::vector<glm::vec3> path; // straight path
+        int   waypoint = 0;
+        float speed = 2.5f;  // m/s
+        float arrive = 0.15f; // meters
+        bool  active = true;
+        bool  dirty = false; // set true when target changes
+        std::string followName;
+        entt::entity follow = entt::null; //this is player entity to follow
+        float repathCooldown = 0.25f;     // seconds between path rebuilds
+        float retargetDist = 0.5f;      // re-path if player moved this far
+        float repathTimer = 0.f;       // internal timer
+        XPROPERTY_DEF
+        ("NavAgentComponent", NavAgentComponent
+            , obj_member<"Target", &NavAgentComponent::target>
+            , obj_member<"Speed", &NavAgentComponent::speed>
+            , obj_member<"ArriveRadius", &NavAgentComponent::arrive>
+            , obj_member<"Active", &NavAgentComponent::active>
+            , obj_member<"RepathCooldown", &NavAgentComponent::repathCooldown>
+            , obj_member<"RetargetDistance", &NavAgentComponent::retargetDist>
+        )
+    };
+    struct AIComponent {
+        enum class AIMode : int { Auto = 0, Idle = 1, Patrol = 2, Seek = 3 };
+        AIMode mode = AIMode::Auto;   // exposed in Inspector
+        AIMode lastMode = AIMode::Auto;
+        float detectRadius = 8.0f;    // start seeking when within this distance
+        float loseRadius = 12.0f;   // stop seeking when beyond this distance
+        float idleWait = 1.0f;    // wait at patrol points
+        float idleTimer = 0.0f;
+        std::string playerName = "Samurai";   // find by name instead of PlayerTag
+        entt::entity player = entt::null;     // cached after first successful lookup
+        // Patrol
+        std::vector<glm::vec3> patrolPoints;
+        int patrolIndex = 0;
 
+
+        // BT root
+        BTNodePtr root;
+
+        XPROPERTY_DEF
+        ("AIComponent", AIComponent
+            , obj_member<"DetectRadius", &AIComponent::detectRadius>
+            , obj_member<"LoseRadius", &AIComponent::loseRadius>
+            , obj_member<"IdleWait", &AIComponent::idleWait>
+            , obj_member<"IdleTimer", &AIComponent::idleTimer>    // include if you want to see the live timer
+            , obj_member<"PlayerName", &AIComponent::playerName>
+           
+            , obj_member<"PatrolIndex", &AIComponent::patrolIndex>
+        )
+    };
     struct Entity
     {
         BOOM_INLINE Entity(EntityRegistry* registry, EntityID entity) :

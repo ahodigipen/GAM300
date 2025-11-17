@@ -180,6 +180,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="includes\AI\Actions.h" />
+    <ClInclude Include="includes\AI\AIComponent.h" />
+    <ClInclude Include="includes\AI\AISystem.h" />
+    <ClInclude Include="includes\AI\BehaviourTree.h" />
+    <ClInclude Include="includes\AI\BehaviourTreeActions.h" />
     <ClInclude Include="includes\AI\DetourBuildAPI.h" />
     <ClInclude Include="includes\AI\DetourNavSystem.h" />
     <ClInclude Include="includes\AI\Grid.h" />

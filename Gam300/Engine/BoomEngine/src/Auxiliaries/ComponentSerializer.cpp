@@ -1,4 +1,5 @@
 #include "Core.h"
+#include"BoomProperties.h"
 #include "Auxiliaries\SerializationRegistry.h"
 #include "ECS/ECS.hpp"
 
@@ -242,7 +243,187 @@ namespace Boom
                     animator->GetClipCount(), animator->GetStateCount());
             }
         );
+        registry.RegisterComponentSerializer(
+            "NavAgentComponent",
+            // ----- SERIALIZE -----
+            [](YAML::Emitter& e, EntityRegistry& reg, EntityID ent)
+            {
+                if (!reg.all_of<NavAgentComponent>(ent))
+                    return;
 
+                auto& nav = reg.get<NavAgentComponent>(ent);
+
+                e << YAML::Key << "NavAgentComponent" << YAML::Value << YAML::BeginMap;
+
+                // target
+                e << YAML::Key << "Target" << YAML::Value
+                    << YAML::Flow << YAML::BeginSeq
+                    << nav.target.x << nav.target.y << nav.target.z
+                    << YAML::EndSeq;
+
+                e << YAML::Key << "Speed" << YAML::Value << nav.speed;
+                e << YAML::Key << "ArriveRadius" << YAML::Value << nav.arrive;
+                e << YAML::Key << "Active" << YAML::Value << nav.active;
+                e << YAML::Key << "RepathCooldown" << YAML::Value << nav.repathCooldown;
+                e << YAML::Key << "RetargetDistance" << YAML::Value << nav.retargetDist;
+                std::string followName = nav.followName;
+                // If empty, but follow is valid, derive it from InfoComponent:
+                if (followName.empty() &&
+                    nav.follow != entt::null &&
+                    reg.all_of<InfoComponent>(nav.follow)) {
+                    followName = reg.get<InfoComponent>(nav.follow).name;
+                }
+
+                e << YAML::Key << "FollowName" << YAML::Value << followName;
+                e << YAML::EndMap;
+            },
+            // ----- DESERIALIZE -----
+            [](const YAML::Node& data, EntityRegistry& reg, EntityID ent, AssetRegistry&)
+            {
+                if (!data || !data.IsMap())
+                    return;
+
+                auto& nav = reg.get_or_emplace<NavAgentComponent>(ent);
+
+                // Target (vec3 as [x, y, z])
+                if (auto t = data["Target"]; t && t.IsSequence() && t.size() == 3) {
+                    nav.target.x = t[0].as<float>(nav.target.x);
+                    nav.target.y = t[1].as<float>(nav.target.y);
+                    nav.target.z = t[2].as<float>(nav.target.z);
+                }
+
+                if (auto v = data["Speed"])            nav.speed = v.as<float>(nav.speed);
+                if (auto v = data["ArriveRadius"])     nav.arrive = v.as<float>(nav.arrive);
+                if (auto v = data["Active"])           nav.active = v.as<bool>(nav.active);
+                if (auto v = data["RepathCooldown"])   nav.repathCooldown = v.as<float>(nav.repathCooldown);
+                if (auto v = data["RetargetDistance"]) nav.retargetDist = v.as<float>(nav.retargetDist);
+
+              
+
+                // FollowName -> nav.follow
+                if (auto f = data["FollowName"]) {
+                    nav.followName = f.as<std::string>(nav.followName);
+                    nav.follow = entt::null;   // will resolve lazily later
+                    nav.dirty = true;         // so we build path once follow is resolved
+                    nav.repathTimer = 0.f;
+                }
+                // nav.path, nav.waypoint, nav.dirty, nav.follow, nav.repathTimer
+            }
+        );
+        registry.RegisterComponentSerializer(
+            "AIComponent",
+            // ---------- SERIALIZE ----------
+            [](YAML::Emitter& e, EntityRegistry& reg, EntityID ent)
+            {
+                if (!reg.all_of<AIComponent>(ent))
+                    return;
+
+                auto& ai = reg.get<AIComponent>(ent);
+
+                e << YAML::Key << "AIComponent" << YAML::Value << YAML::BeginMap;
+
+                // Mode (store as int)
+                e << YAML::Key << "Mode"
+                    << YAML::Value << static_cast<int>(ai.mode);
+
+                // Player name (we serialize the name, not the entt::entity)
+                e << YAML::Key << "PlayerName"
+                    << YAML::Value << ai.playerName;
+
+                // Tuning
+                e << YAML::Key << "DetectRadius" << YAML::Value << ai.detectRadius;
+                e << YAML::Key << "LoseRadius" << YAML::Value << ai.loseRadius;
+                e << YAML::Key << "IdleWait" << YAML::Value << ai.idleWait;
+
+                // IdleTimer is runtime-only, so usually we reset it on load instead of saving.
+              
+                // e << YAML::Key << "IdleTimer"    << YAML::Value << ai.idleTimer;
+
+                // Patrol points: list of [x, y, z]
+                e << YAML::Key << "PatrolPoints" << YAML::Value << YAML::BeginSeq;
+                for (const auto& p : ai.patrolPoints) {
+                    e << YAML::Flow << YAML::BeginSeq
+                        << p.x << p.y << p.z
+                        << YAML::EndSeq;
+                }
+                e << YAML::EndSeq;
+
+                e << YAML::Key << "PatrolIndex"
+                    << YAML::Value << ai.patrolIndex;
+
+                e << YAML::EndMap;
+            },
+
+            // ---------- DESERIALIZE ----------
+            [](const YAML::Node& data, EntityRegistry& reg, EntityID ent, AssetRegistry&)
+            {
+                if (!data || !data.IsMap())
+                    return;
+
+                auto& ai = reg.get_or_emplace<AIComponent>(ent);
+
+                // Mode
+                if (auto v = data["Mode"]) {
+                    int m = v.as<int>(static_cast<int>(ai.mode));
+                    // Clamp to valid enum range (0..3 for Auto/Idle/Patrol/Seek)
+                    if (m < 0 || m > static_cast<int>(AIComponent::AIMode::Seek))
+                        m = static_cast<int>(AIComponent::AIMode::Auto);
+                    ai.mode = static_cast<AIComponent::AIMode>(m);
+                }
+
+             
+                if (auto v = data["PlayerName"]) {
+                    ai.playerName = v.as<std::string>(ai.playerName);
+                    ai.player = entt::null;  // resolved lazily using playerName
+                }
+
+                // Tuning
+                if (auto v = data["DetectRadius"]) ai.detectRadius = v.as<float>(ai.detectRadius);
+                if (auto v = data["LoseRadius"])   ai.loseRadius = v.as<float>(ai.loseRadius);
+                if (auto v = data["IdleWait"])     ai.idleWait = v.as<float>(ai.idleWait);
+
+                // Idle timer: reset on load
+                ai.idleTimer = 0.0f;
+                // If you serialized IdleTimer and want to restore:
+                // if (auto v = data["IdleTimer"]) ai.idleTimer = v.as<float>(ai.idleTimer);
+
+                // Patrol points
+                ai.patrolPoints.clear();
+                if (auto pts = data["PatrolPoints"]; pts && pts.IsSequence()) {
+                    ai.patrolPoints.reserve(pts.size());
+                    for (const auto& n : pts) {
+                        if (!n.IsSequence() || n.size() != 3)
+                            continue;
+                        glm::vec3 p{};
+                        p.x = n[0].as<float>(0.0f);
+                        p.y = n[1].as<float>(0.0f);
+                        p.z = n[2].as<float>(0.0f);
+                        ai.patrolPoints.push_back(p);
+                    }
+                }
+
+                // Patrol index (clamp to valid range)
+                if (auto v = data["PatrolIndex"]) {
+                    int idx = v.as<int>(ai.patrolIndex);
+                    if (!ai.patrolPoints.empty()) {
+                        idx = std::clamp(idx, 0, (int)ai.patrolPoints.size() - 1);
+                        ai.patrolIndex = idx;
+                    }
+                    else {
+                        ai.patrolIndex = 0;
+                    }
+                }
+                else {
+                    if (!ai.patrolPoints.empty())
+                        ai.patrolIndex = std::clamp(ai.patrolIndex, 0, (int)ai.patrolPoints.size() - 1);
+                    else
+                        ai.patrolIndex = 0;
+                }
+
+                // Behaviour tree root / internal runtime stuff is NOT serialized.
+                // AISystem should rebuild the BT on start based on 'mode', patrol list, etc.
+            }
+        );
         // === DIRECT LIGHT COMPONENT ===
 		RegisterPropertyComponent<DirectLightComponent>("DirectLightComponent");
 
@@ -259,9 +440,14 @@ namespace Boom
         // === THIRD PERSON CAMERA COMPONENT ===
         RegisterPropertyComponent<ThirdPersonCameraComponent>("ThirdPersonCameraComponent");
 
-
+        
+        
        
 
         BOOM_INFO("[ComponentSerializers] All component serializers registered");
+       
     }
+ 
+
+   
 }

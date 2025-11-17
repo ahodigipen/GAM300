@@ -26,6 +26,8 @@ namespace Boom {
         IMPLEMENT_COMPONENT_PROPERTY_API(RigidBodyComponent)
         IMPLEMENT_COMPONENT_PROPERTY_API(ColliderComponent)
         IMPLEMENT_COMPONENT_PROPERTY_API(ThirdPersonCameraComponent)
+        IMPLEMENT_COMPONENT_PROPERTY_API(NavAgentComponent);
+        IMPLEMENT_COMPONENT_PROPERTY_API(AIComponent);
         // Add more as needed - one line each
 
 } // namespace Boom

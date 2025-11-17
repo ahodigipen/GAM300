@@ -80,7 +80,15 @@ namespace Boom {
     {
         // Free whatever is currently loaded
         shutdown();
-        // Rebuild mesh & query from the new file
+
+        // Re-create objects and default state
+        m_mesh = dtAllocNavMesh();
+        m_query = dtAllocNavMeshQuery();
+        if (!m_mesh || !m_query) return false;
+
+        setFilter(); // restore include/exclude flags (and set default extents if you do that elsewhere)
+
+        // Load new
         return initFromFile(filepath);
     }
 
