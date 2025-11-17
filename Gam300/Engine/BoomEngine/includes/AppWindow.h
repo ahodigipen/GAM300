@@ -3,6 +3,7 @@
 #include "common/Events.h"
 #include "GlobalConstants.h"
 #include "Input/InputHandler.h"
+#include "Graphics/Shaders/LoadingShader.h"
 
 namespace Boom {
 	struct AppWindow {
@@ -13,15 +14,15 @@ namespace Boom {
 		//example for initializing with reference:
 		//std::unique_ptr<AppWindow> w = std::make_unique<AppWindow>(&Dispatcher, 1900, 800, "BOOM");
 		BOOM_INLINE AppWindow(EventDispatcher* disp, int32_t w, int32_t h, char const* windowTitle)
-			: width{ w }
-			, height{ h }
-			, refreshRate{ 144 }
+			: refreshRate{ 144 }
 			, isFullscreen{ false }
 			, monitorPtr{}
 			, modePtr{}
 			, windowPtr{}
 			, dispatcher{ disp }
 		{
+			height = h;
+			width = w;
 			if (!glfwInit()) {
 				BOOM_FATAL("AppWindow::Init() - glfwInit() failed.");
 				std::exit(EXIT_FAILURE);
@@ -269,9 +270,34 @@ namespace Boom {
 		//accesssors
 		BOOM_INLINE EventDispatcher* GetDispatcher() const { return dispatcher; }
 		BOOM_INLINE InputSystem& GetInputSystem() { return input; }
+
+		BOOM_INLINE static void RenderLoading(GLFWwindow* win, float percentProgress) {
+			static auto loadingShader{ std::make_unique<LoadingShader>("loading.glsl") };
+			auto proj = glm::ortho(0.0f, (float)width, (float)height, 0.0f, -1.0f, 1.0f);
+			std::apply(glClearColor, CONSTANTS::DEFAULT_BACKGROUND_COLOR);
+			glClear(GL_COLOR_BUFFER_BIT);
+
+			// track (dark background)
+			const float barY = height * 0.45f;
+			const float barH = height * 0.10f;
+			const float trackX = width * 0.5f;
+			const float trackW = width * 0.4f;
+			loadingShader->SetColor({ 0.12f, 0.12f, 0.12f, 1.f });
+			loadingShader->SetTransform({trackX, barY + barH * 0.5f}, { trackW, barH }, 0.f);
+			loadingShader->Show(proj);
+
+			// fill (bright color)
+			const float fillW = trackW * percentProgress;
+			loadingShader->SetColor({ 0.0f, 0.7f, 1.f, 1.f });
+			loadingShader->SetTransform({trackX - trackW + fillW, barY + barH * 0.5f }, { fillW, barH }, 0.f);
+			loadingShader->Show(proj);
+
+			glfwSwapBuffers(win);
+			glfwPollEvents();
+		}
 	private:
-		int32_t width;
-		int32_t height;
+		inline static int32_t width{};
+		inline static int32_t height{};
 		int32_t refreshRate;
 		bool isFullscreen;
 

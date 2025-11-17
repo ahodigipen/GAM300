@@ -132,7 +132,7 @@ namespace EditorUI {
     {
         { //load assets
             DataSerializer serializer;
-            serializer.Deserialize(*m_Context->assets, "AssetsProp/assets.yaml");
+            serializer.Deserialize(*m_Context->assets, "AssetsProp/assets.yaml", m_App->GetWindowHandle().get());
         }
 
         // Construct panels here; they persist across frames.

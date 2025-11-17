@@ -6,8 +6,8 @@
 #include "Shaders/SkyMap.h"
 #include "Shaders/Skybox.h"
 #include "Shaders/Bloom.h"
-#include "GlobalConstants.h"
 #include "Shaders/Shadow.h"
+#include "GlobalConstants.h"
 
 #include <memory>
 #include <string>
@@ -273,11 +273,11 @@ namespace Boom {
         std::unique_ptr<FrameBuffer>   frame;
         std::unique_ptr<FrameBuffer>   lowPolyFrame;
         std::unique_ptr<BloomShader>   bloom;
-        SkyboxMesh                      skyboxMesh;
+        SkyboxMesh                     skyboxMesh;
 
     private: // ---------------------- Internal state -----------------------
-        int32_t m_Width{ 0 };
-        int32_t m_Height{ 0 };
+        int32_t m_Width{};
+        int32_t m_Height{};
         float   m_AspectOverride{ -1.0f }; // < 0.0f => use FBO ratio
         bool    m_TouchViewport{ true };    // false when embedded in ImGui
 

@@ -219,6 +219,7 @@
     <ClInclude Include="includes\Graphics\Shaders\Bloom.h" />
     <ClInclude Include="includes\Graphics\Shaders\Color.h" />
     <ClInclude Include="includes\Graphics\Shaders\Final.h" />
+    <ClInclude Include="includes\Graphics\Shaders\LoadingShader.h" />
     <ClInclude Include="includes\Graphics\Shaders\PBR.h" />
     <ClInclude Include="includes\Graphics\Shaders\Shader.h" />
     <ClInclude Include="includes\Graphics\Shaders\Shadow.h" />

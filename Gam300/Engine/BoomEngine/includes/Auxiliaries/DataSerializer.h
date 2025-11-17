@@ -2,6 +2,7 @@
 #include "ECS/ECS.hpp"
 #include "Common/YAML.h"
 #include "SerializationRegistry.h"
+#include "AppWindow.h"
 #include <fstream>
 
 namespace Boom
@@ -139,7 +140,7 @@ namespace Boom
             BOOM_INFO("[DataSerializer] Serialized assets to: {}", path);
         }
 
-        void Deserialize(AssetRegistry& registry, const std::string& path)
+        void Deserialize(AssetRegistry& registry, const std::string& path, GLFWwindow* win)
         {
             try
             {
@@ -160,6 +161,7 @@ namespace Boom
                 int successCount = 0;
                 int failCount = 0;
 
+                //nodes.size();
                 for (const auto& node : nodes)
                 {
                     try
@@ -202,6 +204,9 @@ namespace Boom
                                 name, uid);
                             failCount++;
                         }
+
+                        //render progress
+                        AppWindow::RenderLoading(win, (float)(successCount + failCount) / (float)(nodes.size()));
                     }
                     catch (const YAML::Exception& e)
                     {
