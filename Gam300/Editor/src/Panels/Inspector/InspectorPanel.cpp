@@ -966,8 +966,28 @@ namespace EditorUI {
             if (isOpen) {
                 ImGui::Indent(12.0f);
 
+                // Track changes to trigger recreation
+                static std::string lastTypeName;
+                static bool lastEnabled = false;
+                static entt::entity lastEntity = entt::null;
+
+                entt::entity currentEntity = m_App->SelectedEntity();
+
+                // Reset tracking when switching entities
+                if (currentEntity != lastEntity) {
+                    lastTypeName = sc.TypeName;
+                    lastEnabled = sc.Enabled;
+                    lastEntity = currentEntity;
+                }
+
                 // ----- Enabled toggle -----
-                ImGui::Checkbox("Enabled", &sc.Enabled);
+                bool enabledChanged = false;
+                if (ImGui::Checkbox("Enabled", &sc.Enabled)) {
+                    if (sc.Enabled != lastEnabled) {
+                        enabledChanged = true;
+                        lastEnabled = sc.Enabled;
+                    }
+                }
 
                 // ----- Type name (namespace.Type) -----
                 ImGui::AlignTextToFramePadding();
@@ -977,13 +997,29 @@ namespace EditorUI {
 
                 static char typeBuf[256];
 #ifdef _MSC_VER
-                strncpy_s(typeBuf, sizeof(typeBuf), sc.TypeName.c_str(),
-                    sizeof(typeBuf) - 1);
+                strncpy_s(typeBuf, sizeof(typeBuf), sc.TypeName.c_str(), sizeof(typeBuf) - 1);
 #else
                 std::snprintf(typeBuf, sizeof(typeBuf), "%s", sc.TypeName.c_str());
 #endif
-                if (ImGui::InputText("##ScriptTypeName", typeBuf, sizeof(typeBuf))) {
+
+                bool typeNameChanged = false;
+                if (ImGui::InputText("##ScriptTypeName", typeBuf, sizeof(typeBuf),
+                    ImGuiInputTextFlags_EnterReturnsTrue))
+                {
                     sc.TypeName = typeBuf;
+                    if (sc.TypeName != lastTypeName) {
+                        typeNameChanged = true;
+                        lastTypeName = sc.TypeName;
+                    }
+                }
+
+                // Auto-recreate if TypeName changed (on Enter) or Enabled toggled
+                if ((typeNameChanged || enabledChanged) && m_Owner && m_Owner->GetContext()) {
+                    auto* appCtx = m_Owner->GetContext();
+                    if (appCtx->scriptingSystem) {
+                        appCtx->scriptingSystem->RecreateForEntity(currentEntity, sc);
+                        BOOM_INFO("[Inspector] Auto-reloaded script due to changes");
+                    }
                 }
 
                 // ----- Params (JSON) -----
@@ -993,15 +1029,13 @@ namespace EditorUI {
                 ImGui::SetNextItemWidth(-1);
 
                 // persistent buffer per-selected entity
-                static char         paramsBuf[2048];
+                static char paramsBuf[2048];
                 static entt::entity lastJsonEntity = entt::null;
 
-                entt::entity currentEntity = m_App->SelectedEntity();
                 if (currentEntity != lastJsonEntity) {
                     std::string initial = sc.Params.dump(2); // pretty JSON
 #ifdef _MSC_VER
-                    strncpy_s(paramsBuf, sizeof(paramsBuf), initial.c_str(),
-                        sizeof(paramsBuf) - 1);
+                    strncpy_s(paramsBuf, sizeof(paramsBuf), initial.c_str(), sizeof(paramsBuf) - 1);
 #else
                     std::snprintf(paramsBuf, sizeof(paramsBuf), "%s", initial.c_str());
 #endif
@@ -1020,29 +1054,48 @@ namespace EditorUI {
                         sc.Params = nlohmann::json::parse(paramsBuf);
                     }
                     catch (...) {
-                        // Optional: show a small warning if you want
-                        // ImGui::TextColored(ImVec4(1,0.3f,0.3f,1), "Invalid JSON");
+                        ImGui::SameLine();
+                        ImGui::TextColored(ImVec4(1, 0.3f, 0.3f, 1), "Invalid JSON");
                     }
                 }
 
                 // ----- Runtime info -----
                 ImGui::Separator();
-                ImGui::TextDisabled("Runtime");
-                ImGui::SameLine();
-                ImGui::Text("InstanceId: %llu",
-                    (unsigned long long)sc.InstanceId);
+                ImGui::TextDisabled("Runtime Info");
+                ImGui::Text("Instance ID: %llu", (unsigned long long)sc.InstanceId);
 
-                // ----- Reload button -----
+                // Show if script is actually running
+                if (sc.InstanceId != 0 && sc.Enabled) {
+                    ImGui::TextColored(ImVec4(0, 1, 0, 1), "Active");
+                }
+                else if (sc.InstanceId == 0 && sc.Enabled) {
+                    ImGui::TextColored(ImVec4(1, 0.5f, 0, 1), "Waiting for creation");
+                }
+                else {
+                    ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), "Disabled");
+                }
+
+                // ----- Reload buttons -----
                 ImGui::Spacing();
                 ImGui::Separator();
                 ImGui::Spacing();
 
-                if (ImGui::Button("Reload Scripts", ImVec2(-1, 0))) {
+                if (ImGui::Button("Reload This Script", ImVec2(-1, 0))) {
+                    if (m_Owner && m_Owner->GetContext()) {
+                        auto* appCtx = m_Owner->GetContext();
+                        if (appCtx->scriptingSystem) {
+                            appCtx->scriptingSystem->RecreateForEntity(currentEntity, sc);
+                            BOOM_INFO("[Inspector] Manually reloaded script instance");
+                        }
+                    }
+                }
+
+                if (ImGui::Button("Hot Reload All Scripts (DLL)", ImVec2(-1, 0))) {
                     if (m_Owner && m_Owner->GetContext()) {
                         auto* appCtx = m_Owner->GetContext();
                         if (appCtx->scriptingSystem) {
                             appCtx->scriptingSystem->ReloadScripts();
-                            BOOM_INFO("Scripts reloaded from Inspector!");
+                            BOOM_INFO("[Inspector] Hot reloaded all scripts from DLL!");
                         }
                     }
                 }
@@ -1051,6 +1104,13 @@ namespace EditorUI {
             }
 
             if (removed) {
+                // Destroy the script instance before removing component
+                if (m_Owner && m_Owner->GetContext()) {
+                    auto* appCtx = m_Owner->GetContext();
+                    if (appCtx->scriptingSystem) {
+                        appCtx->scriptingSystem->DestroyForEntity(m_App->SelectedEntity(), sc);
+                    }
+                }
                 ctx->scene.remove<Boom::ScriptComponent>(m_App->SelectedEntity());
                 return;
             }
@@ -1221,7 +1281,7 @@ namespace EditorUI {
                         ImGui::CloseCurrentPopup();
                     }
 
-                    ImGui::PopID();
+                    
                 }
             }
         }

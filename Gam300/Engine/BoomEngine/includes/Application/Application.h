@@ -124,7 +124,6 @@ namespace Boom
         double m_LastPauseTime = 0.0;  // When the last pause started
         bool m_ShouldExit = false;  // Flag for graceful shutdown
         float m_TestRot = 0.0f;
-        ScriptingSystem m_Scripting;
         bool m_PhysDebugViz = true;
 
 
@@ -166,7 +165,7 @@ namespace Boom
         BOOM_INLINE ~Application()
         {
             DestroyPhysicsActors();
-            m_Scripting.Shutdown();
+            m_Context->scriptingSystem->Shutdown();
             BOOM_DELETE(m_Context);
             //called here in case of the need of multiple windows
             glfwTerminate();
@@ -259,8 +258,6 @@ namespace Boom
         BOOM_INLINE void RunContext(bool showFrame = false)
         {
             BOOM_INFO("[Application] RunContext started");
-            LoadScene("level");
-            
 
             // -- LOADING in MONO --
             const std::string exeDir = GetExeDir();
@@ -279,29 +276,47 @@ namespace Boom
             const std::string asmDir = (repoRoot / "Gam300" / "GameScripts" / "bin" / "x64" / "Release").string();
 #endif
 
-
-            if (!m_Scripting.Init(asmDir, m_Context))
+            
+            if (!m_Context->scriptingSystem->Init(asmDir, m_Context))
             {
                 BOOM_ERROR("[Scripting] Failed to initialize scripting system!");
             }
             else
             {
+
                 std::string dllPath = (std::filesystem::path(asmDir) / "GameScripts.dll").string();
 
-                if (!m_Scripting.LoadScriptsDll(dllPath))
+                if (!m_Context->scriptingSystem->LoadScriptsDll(dllPath))
                 {
                     BOOM_ERROR("[Scripting] Failed to load GameScripts.dll");
                 }
                 else
                 {
-                    if (!m_Scripting.CallStart())
+                    if (!m_Context->scriptingSystem->CallStart())
                         BOOM_ERROR("[Scripting] GameScripts.Entry:Start() failed");
                     else
                         BOOM_INFO("[Scripting] GameScripts entry invoked.");
+
+                    int scriptsCreated = 0;
+                    auto& registry = m_Context->scene;
+                    auto scriptView = registry.view<Boom::ScriptComponent>();
+                    for (auto entity : scriptView) {
+                        auto& sc = scriptView.get<Boom::ScriptComponent>(entity);
+                        if (m_Context->scriptingSystem->RecreateForEntity(entity, sc)) {
+                            scriptsCreated++;
+                            BOOM_INFO("[Scripting] Created instance for entity {} (type: {})",
+                                static_cast<uint32_t>(entity), sc.TypeName);
+                        }
+                    }
+                    if (scriptsCreated > 0) {
+                        BOOM_INFO("[Scripting] Created {} script instances after scene load", scriptsCreated);
+                    }
                 }
             }
             // --- END MONO INITIALIZE ---
-      
+            
+            LoadScene("level");
+
             InitNavRuntime();
 			//EnsureNinjaSeeksSamurai();
             CameraController camera(
@@ -383,7 +398,15 @@ namespace Boom
                 ComputeFrameDeltaTime();
                 float dt = static_cast<float>(m_Context->DeltaTime);
 
-                m_Scripting.CallUpdate(dt);
+                m_Context->scriptingSystem->CallUpdate(dt);
+
+                auto& registry = m_Context->scene;
+                auto scriptView = registry.view<Boom::ScriptComponent>();
+                for (auto entity : scriptView) {
+                    auto& sc = scriptView.get<Boom::ScriptComponent>(entity);
+                    m_Context->scriptingSystem->TickEntity(entity, sc, dt);
+                }
+
                 m_AIagents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime));
                 if (m_Nav) {
                     m_NavAgents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime), *m_Nav);
@@ -1142,6 +1165,17 @@ namespace Boom
                 m_Context->physics->AddRigidBody(entity, *m_Context->assets);
                 });
 
+            // Creating a script instances 
+            int scriptsCreated = 0;
+            EnttView<Entity, ScriptComponent>([this, &scriptsCreated](auto entity, ScriptComponent& sc) {
+                if (m_Context->scriptingSystem->RecreateForEntity(entity, sc)) {
+                    scriptsCreated++;
+                }
+                });
+
+            if (scriptsCreated > 0) {
+                BOOM_INFO("[Scene] Created {} script instances", scriptsCreated);
+            }
 
             BOOM_INFO("[Scene] Scene systems reinitialization complete");
         }
@@ -1576,6 +1610,16 @@ namespace Boom
             // Fallback for non-Windows platforms
             return std::filesystem::current_path().string();
 #endif
+        }
+
+        BOOM_INLINE void RecreateScriptForEntity(entt::entity entity)
+        {
+            if (!m_Context->scene.valid(entity)) return;
+
+            auto* sc = m_Context->scene.try_get<ScriptComponent>(entity);
+            if (!sc) return;
+
+            m_Context->scriptingSystem->RecreateForEntity(entity, *sc);
         }
 
         BOOM_INLINE void UpdateThirdPersonCameras()

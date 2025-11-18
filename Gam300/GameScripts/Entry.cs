@@ -5,10 +5,6 @@ namespace GameScripts
 {
     public static class Entry
     {
-        private const int KEY_W = 87, KEY_A = 65, KEY_S = 83, KEY_D = 68, KEY_SPACE = 32;
-        private const int MOUSE_LEFT = 0;
-        private const int MOUSE_RIGHT = 1;
-
         private static ulong _player;
         private static float _speed = 10f;
 
@@ -23,27 +19,65 @@ namespace GameScripts
             API.Log("[C#] Samurai handle = " + _player);
 
             if (_player != 0)
+            {
+                // Check if entity has required components
+                if (!API.HasTransform(_player))
+                {
+                    API.Log("[C#] ERROR: Samurai entity does not have TransformComponent!");
+                    _player = 0; // Invalidate so Update won't try to use it
+                    return;
+                }
+
+                if (!API.HasScript(_player))
+                {
+                    API.Log("[C#] ERROR: Samurai entity does not have ScriptComponent!");
+                    API.Log("[C#] Player movement requires a ScriptComponent to be attached.");
+                    _player = 0; // Invalidate so Update won't try to use it
+                    return;
+                }
+
+                API.Log("[C#] Samurai has required components (Transform + Script) - OK");
                 _groundY = API.GetPosition(_player).Y;
+                API.Log("[C#] Ground Y set to: " + _groundY);
+            }
+            else
+            {
+                API.Log("[C#] WARNING: Could not find Samurai entity");
+            }
         }
 
         public static void Update(float dt)
         {
-            API.Log("[C#] Entry.Update(dt=" + dt + ")");
-
+            // Only process if we have a valid player with required components
             if (_player == 0)
                 return;
 
+            // Double-check components still exist (in case they were removed at runtime)
+            if (!API.HasTransform(_player))
+            {
+                API.Log("[C#] ERROR: Player lost TransformComponent!");
+                _player = 0;
+                return;
+            }
+
+            if (!API.HasScript(_player))
+            {
+                API.Log("[C#] ERROR: Player lost ScriptComponent! Movement disabled.");
+                _player = 0;
+                return;
+            }
+
             var pos = API.GetPosition(_player);
 
-            bool allowMove = !API.IsMouseDown(MOUSE_RIGHT);
+            bool allowMove = !API.IsMouseDown(API.MOUSE_RIGHT);
 
             float dx = 0f, dz = 0f;
             if (allowMove)
             {
-                if (API.IsKeyDown(KEY_A)) dx -= 1f;
-                if (API.IsKeyDown(KEY_D)) dx += 1f;
-                if (API.IsKeyDown(KEY_W)) dz -= 1f; // forward = -Z
-                if (API.IsKeyDown(KEY_S)) dz += 1f;
+                if (API.IsKeyDown(API.KEY_A)) dx -= 1f;
+                if (API.IsKeyDown(API.KEY_D)) dx += 1f;
+                if (API.IsKeyDown(API.KEY_W)) dz -= 1f; // forward = -Z
+                if (API.IsKeyDown(API.KEY_S)) dz += 1f;
 
                 if (dx != 0f || dz != 0f)
                 {
@@ -53,7 +87,7 @@ namespace GameScripts
                     pos.Z += dz * _speed * dt;
                 }
 
-                if (_grounded && API.IsKeyDown(KEY_SPACE))
+                if (_grounded && API.IsKeyDown(API.KEY_SPACE))
                 {
                     _vy = _jumpSpeed;
                     _grounded = false;
