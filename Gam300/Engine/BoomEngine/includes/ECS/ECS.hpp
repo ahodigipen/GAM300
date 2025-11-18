@@ -246,7 +246,7 @@ namespace Boom {
             }
         };
 
-        std::vector<Entry> entries;
+        std::vector<Entry> entries; // timo was here
 
         void serialize(nlohmann::json& j) const {
             j = nlohmann::json::array();

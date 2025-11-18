@@ -14,7 +14,6 @@ public:
  static void Shutdown();
 
 private:
- // allow multiple instances per entity: map uid -> vector of instance names
  inline static std::unordered_map<uint64_t, std::vector<std::string>> s_activeInstances;
  inline static std::unordered_map<uint64_t, glm::vec3> s_lastPos;
 };
