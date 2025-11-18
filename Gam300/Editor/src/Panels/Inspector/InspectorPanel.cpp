@@ -337,13 +337,15 @@ namespace EditorUI {
             AnimatorComponentUI(selected);
         }
 
+        // In: InspectorPanel.cpp
+
         if (selected.Has<Boom::RigidBodyComponent>()) {
             ImGui::PushID("Rigid Body");
 
             // 1. Draw Header
             bool isOpen = ImGui::CollapsingHeader("Rigidbody", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap);
 
-            // 2. Draw "..." Button (to match photo)
+            // 2. Draw "..." Button
             const ImVec2 headerMin = ImGui::GetItemRectMin();
             const ImVec2 headerMax = ImGui::GetItemRectMax();
             const float  lineH = ImGui::GetFrameHeight();
@@ -374,9 +376,10 @@ namespace EditorUI {
                 const char* currentTypeName;
                 switch (currentType)
                 {
-                case RigidBody3D::Type::STATIC:  currentTypeName = "Static";  break;
-                case RigidBody3D::Type::DYNAMIC: currentTypeName = "Dynamic"; break;
-                default:                         currentTypeName = "Unknown"; break;
+                case RigidBody3D::Type::STATIC:    currentTypeName = "Static";    break;
+                case RigidBody3D::Type::DYNAMIC:   currentTypeName = "Dynamic";   break;
+                case RigidBody3D::Type::KINEMATIC: currentTypeName = "Kinematic"; break;
+                default:                           currentTypeName = "Unknown";   break;
                 }
 
                 ImGui::AlignTextToFramePadding();
@@ -400,6 +403,13 @@ namespace EditorUI {
                     }
                     if (isDynamicSelected) ImGui::SetItemDefaultFocus();
 
+                    bool isKinematicSelected = (currentType == RigidBody3D::Type::KINEMATIC);
+                    if (ImGui::Selectable("Kinematic", isKinematicSelected))
+                    {
+                        m_App->GetPhysicsContext().SetRigidBodyType(selected, RigidBody3D::Type::KINEMATIC);
+                    }
+                    if (isKinematicSelected) ImGui::SetItemDefaultFocus();
+
                     ImGui::EndCombo();
                 }
 
@@ -416,6 +426,51 @@ namespace EditorUI {
                 ImGui::SameLine(150);
                 ImGui::SetNextItemWidth(-1);
                 ImGui::DragFloat("##Mass", &rigidBody->mass, 0.1f, 0.0f, 1000.0f);
+
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Initial Velocity");
+                ImGui::SameLine(150);
+                ImGui::SetNextItemWidth(-1);
+                ImGui::DragFloat3("##InitialVelocity", &rigidBody->initialVelocity.x, 0.01f);
+
+                // --- ADD THIS NEW SECTION ---
+                ImGui::Spacing();
+                ImGui::SeparatorText("Constraints"); // Uses a nice separator
+                ImGui::Spacing();
+
+                // Store old values to detect changes
+                bool oldFreezeX = rigidBody->freezeRotationX;
+                bool oldFreezeY = rigidBody->freezeRotationY;
+                bool oldFreezeZ = rigidBody->freezeRotationZ;
+
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Freeze Rotation");
+                ImGui::SameLine(150);
+
+                // We use Push/PopID to make the labels unique for ImGui
+                ImGui::PushID("FreezeRot");
+                ImGui::Checkbox("X", &rigidBody->freezeRotationX);
+                ImGui::SameLine();
+                ImGui::Checkbox("Y", &rigidBody->freezeRotationY);
+                ImGui::SameLine();
+                ImGui::Checkbox("Z", &rigidBody->freezeRotationZ);
+                ImGui::PopID();
+
+                // If any value changed, notify the physics context
+                if (rigidBody->freezeRotationX != oldFreezeX ||
+                    rigidBody->freezeRotationY != oldFreezeY ||
+                    rigidBody->freezeRotationZ != oldFreezeZ)
+                {
+                    // This is a new function we will need to create in PhysicsContext 
+                    m_App->GetPhysicsContext().SetRotationLock(
+                        selected,
+                        rigidBody->freezeRotationX,
+                        rigidBody->freezeRotationY,
+                        rigidBody->freezeRotationZ
+                    );
+                }
+                // --- END OF NEW SECTION ---
+
 
                 ImGui::Spacing();
                 ImGui::Unindent(12.0f);

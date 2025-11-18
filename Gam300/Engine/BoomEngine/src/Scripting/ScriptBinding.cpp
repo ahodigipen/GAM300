@@ -58,6 +58,40 @@ namespace Boom {
         t.translate = *pos;
     }
 
+    // Helper to get the PxRigidDynamic actor
+    static physx::PxRigidDynamic* GetDynamicActor(uint64_t handle) {
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.any_of<RigidBodyComponent>(e)) return nullptr; 
+        auto& rb = s_Ctx->scene.get<RigidBodyComponent>(e);
+        if (!rb.RigidBody.actor) return nullptr;
+        return rb.RigidBody.actor->is<physx::PxRigidDynamic>();
+    }
+
+    static glm::vec3* ICALL_API_GetLinearVelocity(uint64_t handle, glm::vec3* outVel) {
+        auto* dyn = GetDynamicActor(handle);
+        if (dyn && outVel) {
+            physx::PxVec3 vel = dyn->getLinearVelocity();
+            *outVel = glm::vec3(vel.x, vel.y, vel.z);
+            return outVel;
+        }
+        return nullptr;
+    }
+
+    static void ICALL_API_SetLinearVelocity(uint64_t handle, glm::vec3* vel) {
+        if (!vel) return;
+        auto* dyn = GetDynamicActor(handle);
+        if (dyn) {
+            dyn->setLinearVelocity(physx::PxVec3(vel->x, vel->y, vel->z));
+        }
+    }
+
+    static bool ICALL_API_IsColliding(uint64_t handle) {
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.any_of<RigidBodyComponent>(e)) return false;
+        // This flag is set to true by your physics event callback
+        return s_Ctx->scene.get<RigidBodyComponent>(e).RigidBody.isColliding;
+    }
+
     static bool ICALL_API_IsKeyDown(int key)
     {
         if (!s_Ctx || !s_Ctx->window) return false;
@@ -81,6 +115,9 @@ namespace Boom {
         mono_add_internal_call("GameScripts.Native::Boom_API_FindEntity", (const void*)ICALL_API_FindEntity);
         mono_add_internal_call("GameScripts.Native::Boom_API_GetPosition", (const void*)ICALL_API_GetPosition);
         mono_add_internal_call("GameScripts.Native::Boom_API_SetPosition", (const void*)ICALL_API_SetPosition);
+        mono_add_internal_call("GameScripts.Native::Boom_API_GetLinearVelocity", (const void*)ICALL_API_GetLinearVelocity);
+        mono_add_internal_call("GameScripts.Native::Boom_API_SetLinearVelocity", (const void*)ICALL_API_SetLinearVelocity);
+        mono_add_internal_call("GameScripts.Native::Boom_API_IsColliding", (const void*)ICALL_API_IsColliding);
         mono_add_internal_call("GameScripts.Native::Boom_API_IsKeyDown", (const void*)ICALL_API_IsKeyDown);
         mono_add_internal_call("GameScripts.Native::Boom_API_IsMouseDown", (const void*)ICALL_API_IsMouseDown);
 

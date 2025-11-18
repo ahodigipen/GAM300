@@ -1,9 +1,6 @@
 #pragma once
 #include "common/Core.h"
-#pragma warning(push)
-#pragma warning(disable: 26495)
-#include <PxPhysicsAPI.h>
-#pragma warning(pop)
+
 using namespace	physx;
 
 namespace Boom

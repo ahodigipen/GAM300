@@ -33,13 +33,33 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 0
+        FreezeRotationX: true
+        FreezeRotationY: true
+        FreezeRotationZ: true
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.01, 0.01, 0.01]
+        Type: DYNAMIC
+    ColliderComponent:
+      Collider:
+        LocalPosition: [0, 1, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [100, 200, 100]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0
+        PhysicsMesh: 0
+        Type: CAPSULE
   - InfoComponent:
       Parent: 0
       Name: Ninja
       UID: 12784200605494588253
     TransformComponent:
       Transform:
-        Translate: [-1.20270455, -1.14875376, -1.19640887]
+        Translate: [-1.20270455, 1, -1.19640887]
         Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
@@ -66,6 +86,26 @@ ENTITIES:
       PatrolPoints:
         []
       PatrolIndex: 0
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [1, 0, 1]
+        Previous Scale: [0.01, 0.01, 0.01]
+        FreezeRotationX: true
+        FreezeRotationY: true
+        FreezeRotationZ: true
+        Type: DYNAMIC
+    ColliderComponent:
+      Collider:
+        LocalPosition: [0, -0.75, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [100, 200, 100]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0
+        PhysicsMesh: 0
+        Type: CAPSULE
   - {}
   - {}
   - {}

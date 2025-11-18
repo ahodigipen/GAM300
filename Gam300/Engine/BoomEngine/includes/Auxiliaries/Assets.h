@@ -1,5 +1,6 @@
 #pragma once
-#include "PxPhysicsAPI.h" 
+#include "common/Core.h"
+
 #include "Graphics/Models/Model.h"
 #include "Graphics/Textures/Texture.h"
 #include "Graphics/Utilities/Data.h"

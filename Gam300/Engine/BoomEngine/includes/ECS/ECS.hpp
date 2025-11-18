@@ -333,6 +333,7 @@ namespace Boom {
         int   waypoint = 0;
         float speed = 2.5f;  // m/s
         float arrive = 0.15f; // meters
+		glm::vec3 velocity = glm::vec3(0.f);
         bool  active = true;
         bool  dirty = false; // set true when target changes
         std::string followName;
@@ -344,6 +345,7 @@ namespace Boom {
         ("NavAgentComponent", NavAgentComponent
             , obj_member<"Target", &NavAgentComponent::target>
             , obj_member<"Speed", &NavAgentComponent::speed>
+			, obj_member<"Velocity", &NavAgentComponent::velocity>
             , obj_member<"ArriveRadius", &NavAgentComponent::arrive>
             , obj_member<"Active", &NavAgentComponent::active>
             , obj_member<"RepathCooldown", &NavAgentComponent::repathCooldown>

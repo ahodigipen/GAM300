@@ -401,98 +401,6 @@ namespace Boom
                 if (m_Nav) {
                     m_NavAgents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime), *m_Nav);
                 }
-                // Animation testing controls
-                {
-                    // Press L to load additional animations
-                    static bool lastLPressed = false;
-                    bool lPressed = glfwGetKey(engineWindow.get(), GLFW_KEY_L) == GLFW_PRESS;
-                    if (lPressed && !lastLPressed) {
-                        EnttView<Entity, AnimatorComponent>([this]([[maybe_unused]] auto entity, auto& animComp) {
-
-                            auto& animator = animComp.animator;
-
-
-                            BOOM_INFO("=== Loading additional animations ===");
-                            size_t beforeCount = animator->GetClipCount();
-
-                            // Try to load these - they need to exist in your Models folder!
-                            animator->LoadAnimationFromFile("Resources/Models/idle.fbx", "Idle");
-                            animator->LoadAnimationFromFile("Resources/Models/walking.fbx", "Walk");
-                            animator->LoadAnimationFromFile("Resources/Models/run.fbx", "Run");
-
-                            size_t afterCount = animator->GetClipCount();
-                            BOOM_WARN("Loaded {} new animations (total: {})", afterCount - beforeCount, afterCount);
-
-                            // List all animations
-                            for (size_t i = 0; i < animator->GetClipCount(); ++i) {
-                                const auto* clip = animator->GetClip(i);
-                                if (clip) {
-                                    BOOM_INFO("  [{}] '{}' - {:.2f}s", i, clip->name, clip->duration);
-                                }
-                            }
-                            });
-                    }
-                    lastLPressed = lPressed;
-
-                    // Press 1-9 to switch animations
-                    EnttView<Entity, AnimatorComponent>([this, &engineWindow]([[maybe_unused]]auto entity, auto& animComp) {
-
-                        auto& animator = animComp.animator;
-
-                        if (glfwGetKey(engineWindow.get(), GLFW_KEY_1) == GLFW_PRESS && animator->GetClipCount() > 0) {
-                            animator->PlayClip(0);
-#ifdef DEBUG
-                            const auto* clip = animator->GetClip(0);
-                            if (clip) BOOM_INFO("Switched to [0]: '{}'", clip->name);
-#endif // DEBUG
-
-                        }
-                        if (glfwGetKey(engineWindow.get(), GLFW_KEY_2) == GLFW_PRESS && animator->GetClipCount() > 1) {
-                            animator->PlayClip(1);
-
-#ifdef DEBUG
-                            const auto* clip = animator->GetClip(1);
-                            if (clip) BOOM_INFO("Switched to [1]: '{}'", clip->name);
-#endif // DEBUG
-
-                        }
-                        if (glfwGetKey(engineWindow.get(), GLFW_KEY_3) == GLFW_PRESS && animator->GetClipCount() > 2) {
-                            animator->PlayClip(2);
-
-#ifdef DEBUG
-                            const auto* clip = animator->GetClip(2);
-                            if (clip) BOOM_INFO("Switched to [2]: '{}'", clip->name);
-#endif // DEBUG
-                        }
-                        if (glfwGetKey(engineWindow.get(), GLFW_KEY_4) == GLFW_PRESS && animator->GetClipCount() > 3) {
-                            animator->PlayClip(3);
-#ifdef DEBUG
-                            const auto* clip = animator->GetClip(3);
-                            if (clip) BOOM_INFO("Switched to [3]: '{}'", clip->name);
-#endif // DEBUG
-                        }
-
-                        // Press I for info about current animation
-                        static bool lastIPressed = false;
-                        bool iPressed = glfwGetKey(engineWindow.get(), GLFW_KEY_I) == GLFW_PRESS;
-                        if (iPressed && !lastIPressed) {
-                            BOOM_INFO("=== Current Animation Info ===");
-                            BOOM_INFO("Current Clip: {} / {}", animator->GetCurrentClip(), animator->GetClipCount() - 1);
-                            const auto* clip = animator->GetClip(animator->GetCurrentClip());
-                            if (clip) {
-#ifdef DEBUG
-
-                                BOOM_INFO("  Name: '{}'", clip->name);
-                                BOOM_INFO("  Duration: {:.2f}s", clip->duration);
-                                BOOM_INFO("  Current Time: {:.2f}s", animator->GetTime());
-                                BOOM_INFO("  Tracks: {}", clip->tracks.size());
-#endif // DEBUG
-
-                            }
-                        }
-                        lastIPressed = iPressed;
-                        });
-                }
 
 
                 // ============ END NEW SECTION ============
@@ -509,7 +417,7 @@ namespace Boom
                     EnttView<Entity, RigidBodyComponent>([](auto, RigidBodyComponent& rb) {
                         rb.RigidBody.isColliding = false;
                         });
-                    UpdateStaticTransforms();
+                    UpdateKinematicTransforms();
                     RunPhysicsSimulation();
                     InitNavRuntime();
                     UpdateThirdPersonCameras();
@@ -919,13 +827,12 @@ namespace Boom
             return pMatrix_NoScale * localMatrix;
         }
 
-        BOOM_INLINE void UpdateStaticTransforms()
+        BOOM_INLINE void UpdateKinematicTransforms()
         {
             EnttView<Entity, RigidBodyComponent>(
                 [this](auto entity, RigidBodyComponent& rb)
                 {
-                    if (rb.RigidBody.type == RigidBody3D::Type::STATIC)
-                    {
+                    if (rb.RigidBody.type == RigidBody3D::Type::KINEMATIC) {
                         auto* actor = rb.RigidBody.actor;
                         if (!actor) return;
 
@@ -1343,8 +1250,24 @@ namespace Boom
             // Only simulate physics if running
             if (m_AppState == ApplicationState::RUNNING)
             {
+                // Apply navigation velocities BEFORE physics simulation
+                EnttView<Entity, NavAgentComponent, RigidBodyComponent>([this](auto entity, auto& navAgent, auto& rb)
+                    {
+                        if (!navAgent.active || !rb.RigidBody.actor) return;
+
+                        auto* dyn = rb.RigidBody.actor->is<physx::PxRigidDynamic>();
+                        if (!dyn) return;
+
+                        // Convert glm velocity to PhysX and apply directly
+                        physx::PxVec3 pxVel(navAgent.velocity.x, navAgent.velocity.y, navAgent.velocity.z);
+                        dyn->setLinearVelocity(pxVel);
+
+                        // OPTIONAL: Lock Y rotation so the agent doesn't tip over
+                        dyn->setAngularVelocity(physx::PxVec3(0, 0, 0));
+                    });
 
                 m_Context->physics->Simulate(1, static_cast<float>(m_Context->DeltaTime));
+
                 EnttView<Entity, RigidBodyComponent>([this](auto entity, auto& comp)
                     {
                         auto& transform = entity.template Get<TransformComponent>().transform;
