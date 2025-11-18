@@ -8,9 +8,11 @@ using namespace Boom;
 
 void SoundSystem::Shutdown()
 {
-	for (auto& [eid, name] : s_activeInstances) {
-		SoundEngine::Instance().StopSound(name);
-		SoundEngine::Instance().UnloadSound(name);
+	for (auto& [eid, names] : s_activeInstances) {
+		for (auto& name : names) {
+			SoundEngine::Instance().StopSound(name);
+			SoundEngine::Instance().UnloadSound(name);
+		}
 	}
 	s_activeInstances.clear();
 	s_lastPos.clear();
@@ -27,43 +29,89 @@ void SoundSystem::Update(Boom::EntityRegistry& registry, float dt)
 		auto& sc = view.get<SoundComponent>(entity);
 
 		uint64_t uid = static_cast<uint64_t>(static_cast<uint32_t>(entity));
-		std::string instanceName = "ent_" + std::to_string(uid) + "_" + sc.name;
 
-		if (sc.playOnStart && s_activeInstances.find(uid) == s_activeInstances.end())
+		// Ensure container exists
+		auto& instances = s_activeInstances[uid];
+
+		// Iterate through entries in component and ensure each sound is active as requested
+		for (size_t i =0; i < sc.entries.size(); ++i)
 		{
-			SoundEngine::Instance().PreloadSound(instanceName, sc.filePath, false, sc.loop);
-			SoundEngine::Instance().PlaySoundAt(instanceName, sc.filePath, tf.transform.translate, sc.loop);
-			s_activeInstances[uid] = instanceName;
-			s_lastPos[uid] = tf.transform.translate;
-			continue;
+			const auto& entry = sc.entries[i];
+			// Construct unique instance name per entity + index + logical name to avoid collisions
+			std::string instanceName = "ent_" + std::to_string(uid) + "_" + std::to_string(i) + "_" + entry.name;
+
+			// If playOnStart and not yet active -> preload and play
+			bool alreadyActive = false;
+			for (const auto& n : instances) if (n == instanceName) { alreadyActive = true; break; }
+
+			if (entry.playOnStart && !alreadyActive)
+			{
+				SoundEngine::Instance().PreloadSound(instanceName, entry.filePath, false, entry.loop);
+				SoundEngine::Instance().PlaySoundAt(instanceName, entry.filePath, tf.transform.translate, entry.loop);
+				instances.push_back(instanceName);
+				s_lastPos[uid] = tf.transform.translate;
+				continue;
+			}
+
+			// If there's an active instance for this entry, update its position
+			for (const auto& n : instances)
+			{
+				if (n == instanceName)
+				{
+					glm::vec3 pos = tf.transform.translate;
+					SoundEngine::Instance().SetSoundPosition(n, pos);
+					s_lastPos[uid] = pos;
+
+					// If filePath cleared, stop and unload this instance
+					if (entry.filePath.empty())
+					{
+						SoundEngine::Instance().StopSound(n);
+						SoundEngine::Instance().UnloadSound(n);
+						// remove from instances vector (lazy removal below)
+					}
+				}
+			}
 		}
 
-		auto it = s_activeInstances.find(uid);
-		if (it != s_activeInstances.end())
+		// Remove instances whose corresponding entry no longer exists or whose filePath was cleared
+		// Build a set of desired instance names from current component
+		std::vector<std::string> desired;
+		desired.reserve(sc.entries.size());
+		for (size_t i =0; i < sc.entries.size(); ++i) {
+			const auto& entry = sc.entries[i];
+			desired.push_back("ent_" + std::to_string(uid) + "_" + std::to_string(i) + "_" + entry.name);
+		}
+
+		// Erase any instances not in desired
+		auto& vec = instances;
+		for (auto it = vec.begin(); it != vec.end(); )
 		{
-			const std::string& name = it->second;
-			glm::vec3 pos = tf.transform.translate;
-			SoundEngine::Instance().SetSoundPosition(name, pos);
-
-			s_lastPos[uid] = pos;
-
-			if (sc.filePath.empty())
+			const std::string& name = *it;
+			if (std::find(desired.begin(), desired.end(), name) == desired.end())
 			{
 				SoundEngine::Instance().StopSound(name);
 				SoundEngine::Instance().UnloadSound(name);
-				s_activeInstances.erase(it);
-				s_lastPos.erase(uid);
+				it = vec.erase(it);
 			}
+			else ++it;
+		}
+
+		// If component has no entries left, clean up pos map
+		if (sc.entries.empty()) {
+			s_lastPos.erase(uid);
 		}
 	}
 
+	// Remove entries for destroyed entities
 	for (auto it = s_activeInstances.begin(); it != s_activeInstances.end(); )
 	{
 		auto eid = static_cast<Boom::EntityID>(static_cast<uint32_t>(it->first));
 		if (!registry.valid(eid))
 		{
-			SoundEngine::Instance().StopSound(it->second);
-			SoundEngine::Instance().UnloadSound(it->second);
+			for (auto& name : it->second) {
+				SoundEngine::Instance().StopSound(name);
+				SoundEngine::Instance().UnloadSound(name);
+			}
 			s_lastPos.erase(it->first);
 			it = s_activeInstances.erase(it);
 		}

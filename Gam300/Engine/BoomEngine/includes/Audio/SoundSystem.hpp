@@ -5,6 +5,7 @@
 #include "ECS/ECS.hpp"
 #include <unordered_map>
 #include <glm/vec3.hpp>
+#include <vector>
 
 class SoundSystem {
 public:
@@ -13,6 +14,7 @@ public:
  static void Shutdown();
 
 private:
- inline static std::unordered_map<uint64_t, std::string> s_activeInstances;
+ // allow multiple instances per entity: map uid -> vector of instance names
+ inline static std::unordered_map<uint64_t, std::vector<std::string>> s_activeInstances;
  inline static std::unordered_map<uint64_t, glm::vec3> s_lastPos;
 };

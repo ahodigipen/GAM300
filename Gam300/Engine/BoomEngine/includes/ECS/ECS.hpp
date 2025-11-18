@@ -220,29 +220,51 @@ namespace Boom {
         )
     };
 
-    //Chris I have no idea how your sound component works
+    // Chris I have no idea how your sound component works
     struct SoundComponent
     {
-        std::string name;      // logical name ("bgm", "jump", etc.)
-        std::string filePath;  // actual sound file path
-        bool loop = false;
-        float volume = 1.0f;
-        bool playOnStart = false;
+        struct Entry {
+            std::string name;      // logical name ("bgm", "jump", etc.)
+            std::string filePath;  // actual sound file path
+            bool loop = false;
+            float volume = 1.0f;
+            bool playOnStart = false;
 
-        // --- ADD THIS CODE INSIDE THE STRUCT ---
+            void serialize(nlohmann::json& j) const {
+                j["name"] = name;
+                j["filePath"] = filePath;
+                j["loop"] = loop;
+                j["volume"] = volume;
+                j["playOnStart"] = playOnStart;
+            }
+            void deserialize(const nlohmann::json& j) {
+                if (j.contains("name")) j.at("name").get_to(name);
+                if (j.contains("filePath")) j.at("filePath").get_to(filePath);
+                if (j.contains("loop")) j.at("loop").get_to(loop);
+                if (j.contains("volume")) j.at("volume").get_to(volume);
+                if (j.contains("playOnStart")) j.at("playOnStart").get_to(playOnStart);
+            }
+        };
+
+        std::vector<Entry> entries;
+
         void serialize(nlohmann::json& j) const {
-            j["name"] = name;
-            j["filePath"] = filePath;
-            j["loop"] = loop;
-            j["volume"] = volume;
-            j["playOnStart"] = playOnStart;
+            j = nlohmann::json::array();
+            for (const auto& e : entries) {
+                nlohmann::json ej;
+                e.serialize(ej);
+                j.push_back(ej);
+            }
         }
         void deserialize(const nlohmann::json& j) {
-            if (j.contains("name")) j.at("name").get_to(name);
-            if (j.contains("filePath")) j.at("filePath").get_to(filePath);
-            if (j.contains("loop")) j.at("loop").get_to(loop);
-            if (j.contains("volume")) j.at("volume").get_to(volume);
-            if (j.contains("playOnStart")) j.at("playOnStart").get_to(playOnStart);
+            entries.clear();
+            if (j.is_array()) {
+                for (const auto& ej : j) {
+                    Entry e;
+                    e.deserialize(ej);
+                    entries.push_back(std::move(e));
+                }
+            }
         }
     };
 

@@ -871,19 +871,19 @@ namespace EditorUI {
                 ImGui::Text("Dynamic Friction");
                 ImGui::SameLine(150);
                 ImGui::SetNextItemWidth(-1);
-                ImGui::DragFloat("##DynamicFriction", &collider->dynamicFriction, 0.01f, 0.0f, 100.0f);
+                ImGui::DragFloat("##DynamicFriction", &collider->dynamicFriction, 0.01f, 0.0f, 1000.0f);
 
                 ImGui::AlignTextToFramePadding();
                 ImGui::Text("Static Friction");
                 ImGui::SameLine(150);
                 ImGui::SetNextItemWidth(-1);
-                ImGui::DragFloat("##StaticFriction", &collider->staticFriction, 0.01f, 0.0f, 100.0f);
+                ImGui::DragFloat("##StaticFriction", &collider->staticFriction, 0.01f, 0.0f, 1000.0f);
 
                 ImGui::AlignTextToFramePadding();
                 ImGui::Text("Restitution");
                 ImGui::SameLine(150);
                 ImGui::SetNextItemWidth(-1);
-                ImGui::DragFloat("##Restitution", &collider->restitution, 0.01f, 0.0f, 100.0f);
+                ImGui::DragFloat("##Restitution", &collider->restitution, 0.01f, 0.0f, 1000.0f);
 
                 if (collider->localPosition != oldPos ||
                     collider->localRotation != oldRot ||
@@ -1145,7 +1145,7 @@ namespace EditorUI {
                     UpdateComponent<Boom::DirectLightComponent>(Boom::ComponentID::DIRECT_LIGHT, selected);
                     UpdateComponent<Boom::PointLightComponent>(Boom::ComponentID::POINT_LIGHT, selected);
                     UpdateComponent<Boom::SpotLightComponent>(Boom::ComponentID::SPOT_LIGHT, selected);
-                    //UpdateComponent<Boom::SoundComponent>(Boom::ComponentID::SOUND, selected);
+                    UpdateComponent<Boom::SoundComponent>(Boom::ComponentID::SOUND, selected);
                     //UpdateComponent<Boom::ScriptComponent>(Boom::ComponentID::SCRIPT, selected);
                     UpdateComponent<Boom::NavAgentComponent>(Boom::ComponentID::NAV_AGENT_COMPONENT, selected);
                     UpdateComponent<Boom::AIComponent>(Boom::ComponentID::AI_COMPONENT, selected);
