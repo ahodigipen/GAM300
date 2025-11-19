@@ -8,9 +8,9 @@
 // Forward declarations
 namespace Boom {
     struct Entity;
-    class AppContext;
+    struct AppContext;
     struct Animator;
-	class AppInterface;
+	struct AppInterface;
 }
 
 
@@ -62,7 +62,7 @@ namespace EditorUI {
         // UI state
         bool m_ShowContextMenu = false;
         ImVec2 m_ContextMenuPos;
-        GraphEditor::NodeIndex m_ContextNode = -1;
+        GraphEditor::NodeIndex m_ContextNode = (size_t)-1;
 
         // Edit dialogs
         bool m_ShowEditStateDialog = false;

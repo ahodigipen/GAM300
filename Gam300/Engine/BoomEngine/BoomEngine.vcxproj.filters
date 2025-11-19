@@ -20,6 +20,8 @@
     <ClCompile Include="includes\AI\DetourNavSystem.cpp" />
     <ClCompile Include="includes\AI\NavAgent.cpp" />
     <ClCompile Include="includes\AI\DetourBuildAPI.cpp" />
+    <ClCompile Include="src\Application\Application.cpp" />
+    <ClCompile Include="src\Core.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\Application\Application.h" />

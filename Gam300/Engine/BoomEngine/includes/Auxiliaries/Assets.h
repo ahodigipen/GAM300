@@ -178,6 +178,17 @@ namespace Boom {
 		}
 
 		template <class T>
+		BOOM_INLINE T* TryGet(const std::string& name) {
+			auto& map = GetMap<T>();
+			for (auto& [uid, asset] : map) {
+				if (uid != EMPTY_ASSET && asset->name == name) {
+					return dynamic_cast<T*>(asset.get());
+				}
+			}
+			return nullptr;
+		}
+
+		template <class T>
 		BOOM_INLINE T* TryGet(AssetID uid)
 		{
 			const uint32_t type = TypeID<T>();

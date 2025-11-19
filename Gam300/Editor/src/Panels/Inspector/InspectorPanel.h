@@ -1,5 +1,4 @@
 ﻿#pragma once
-#pragma once
 #include <functional>
 #include <entt/entt.hpp>
 #include "Vendors/imgui/imgui.h"

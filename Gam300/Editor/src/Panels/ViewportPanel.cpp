@@ -101,7 +101,7 @@ namespace EditorUI {
                         auto& camComp = camView.get<Boom::CameraComponent>(eid);
                         auto& trans = camView.get<Boom::TransformComponent>(eid);
 
-                        const glm::mat4 view = camComp.camera.View(trans.transform);
+                        glm::mat4 view = camComp.camera.View(trans.transform);
                         const glm::mat4 proj = camComp.camera.Projection(m_Ctx->renderer->AspectRatio());
 
                         // Store camera data for ray casting
@@ -110,64 +110,15 @@ namespace EditorUI {
                         m_CurrentViewportSize = glm::vec2(viewportSize.x, viewportSize.y);
                         m_CurrentCameraPosition = trans.transform.translate;
 
-                        // ImGuizmo manipulation
                         entt::entity selectedEntity = m_App->SelectedEntity();
-                        if (selectedEntity != entt::null)
+                        if (selectedEntity != entt::null && m_Ctx->scene.valid(selectedEntity))
                         {
-                            if (m_Ctx->scene.valid(selectedEntity) &&
-                                m_Ctx->scene.all_of<Boom::TransformComponent>(selectedEntity))
+                            if (m_Ctx->scene.all_of<Boom::TransformComponent>(selectedEntity))
                             {
-                                auto& ltrans = m_Ctx->scene.get<Boom::TransformComponent>(selectedEntity);
-                                glm::mat4 matrix = ltrans.transform.Matrix();
-
-                                ImGuizmo::SetOrthographic(false);
-                                ImGuizmo::SetDrawlist();
-                                ImGuizmo::SetRect(itemMin.x, itemMin.y, rectSz.x, rectSz.y);
-                                ImGuizmo::SetGizmoSizeClipSpace(0.15f);
-
-                                const bool viewportFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
-                                if (viewportFocused && !ImGui::GetIO().WantCaptureKeyboard)
-                                {
-                                    if (ImGui::IsKeyPressed(ImGuiKey_W)) m_GizmoOperation = ImGuizmo::TRANSLATE;
-                                    if (ImGui::IsKeyPressed(ImGuiKey_E)) m_GizmoOperation = ImGuizmo::ROTATE;
-                                    if (ImGui::IsKeyPressed(ImGuiKey_R)) m_GizmoOperation = ImGuizmo::SCALE;
-                                    if (ImGui::IsKeyPressed(ImGuiKey_T))
-                                        m_GizmoMode = (m_GizmoMode == ImGuizmo::WORLD) ? ImGuizmo::LOCAL : ImGuizmo::WORLD;
-                                }
-
-                                ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
-
-                                ImGuizmo::Manipulate(
-                                    glm::value_ptr(view),
-                                    glm::value_ptr(proj),
-                                    (ImGuizmo::OPERATION)m_GizmoOperation,
-                                    (ImGuizmo::MODE)m_GizmoMode,
-                                    glm::value_ptr(matrix),
-                                    nullptr,
-                                    m_UseSnap ? m_SnapValues : nullptr
-                                );
-
-                                // Check if gizmo wants input
-                                gizmoWantsInput = ImGuizmo::IsOver() || ImGuizmo::IsUsing();
-
-                                if (ImGuizmo::IsUsing())
-                                {
-                                    glm::vec3 newPosition, newRotation, newScale;
-                                    DecomposeTransform(matrix, newPosition, newRotation, newScale);
-
-                                    //must be within switch to prevent overwrite
-                                    switch (m_GizmoOperation) {
-                                    case ImGuizmo::TRANSLATE:
-                                        ltrans.transform.translate = newPosition;
-                                        break;
-                                    case ImGuizmo::ROTATE:
-                                        ltrans.transform.rotate = newRotation;
-                                        break;
-                                    case ImGuizmo::SCALE:
-                                        ltrans.transform.scale = newScale;
-                                        break;
-                                    }
-                                }
+                                if (m_Ctx->scene.all_of<Boom::SpriteComponent>(selectedEntity) &&
+                                    m_Ctx->scene.get<Boom::SpriteComponent>(selectedEntity).uiOverlay)
+                                    DrawGuizmo2D(itemMin, rectSz, gizmoWantsInput);
+                                else DrawGuizmo3D(itemMin, rectSz, view, proj, gizmoWantsInput);
                             }
                         }
                     }
@@ -233,7 +184,109 @@ namespace EditorUI {
         ImGui::End();
     }
 
-    void ViewportPanel::HandleMouseClick(const ImVec2& mousePos, const ImVec2& viewportSize)
+    void ViewportPanel::DrawGuizmo2D(ImVec2 const& itemMin, ImVec2 const& rectSz, bool& gizmoWantsInput) {
+        entt::entity selectedEntity = m_App->SelectedEntity();
+        auto& ltrans = m_Ctx->scene.get<Boom::TransformComponent>(selectedEntity);
+        glm::mat4 matrix = ltrans.transform.Matrix();
+
+        ImGuizmo::SetOrthographic(true);
+        glm::mat4 view = glm::mat4(1.0f);
+        glm::mat4 proj = glm::ortho(-1.f, 1.f, -1.f, 1.f, 0.1f, 1.f);
+        ImGuizmo::SetDrawlist();
+        ImGuizmo::SetRect(itemMin.x, itemMin.y, rectSz.x, rectSz.y);
+
+        ImGuizmo::Manipulate(
+            glm::value_ptr(view),          // identity → pure screen space
+            glm::value_ptr(proj),
+            (ImGuizmo::OPERATION)m_GizmoOperation,
+            ImGuizmo::LOCAL,               // always LOCAL for 2D
+            glm::value_ptr(matrix),   // or worldMatrix if you want parent space
+            nullptr,
+            m_UseSnap ? m_SnapValues : nullptr
+        );
+
+        gizmoWantsInput = ImGuizmo::IsOver() || ImGuizmo::IsUsing();
+
+        if (ImGuizmo::IsUsing())
+        {
+            glm::vec3 pos, rot, scale;
+            DecomposeTransform(matrix, pos, rot, scale);
+
+            switch (m_GizmoOperation) {
+            case ImGuizmo::TRANSLATE:
+                ltrans.transform.translate = pos;
+                break;
+            case ImGuizmo::ROTATE:
+                ltrans.transform.rotate = rot;
+                break;
+            case ImGuizmo::SCALE:
+                ltrans.transform.scale = scale;
+                break;
+            }
+        }
+    }
+    void ViewportPanel::DrawGuizmo3D(
+        ImVec2 const& itemMin, ImVec2 const& rectSz, 
+        glm::mat4 const& view, glm::mat4 const& proj,
+        bool& gizmoWantsInput) 
+    {
+        // ImGuizmo manipulation
+        entt::entity selectedEntity = m_App->SelectedEntity();
+        auto& ltrans = m_Ctx->scene.get<Boom::TransformComponent>(selectedEntity);
+        glm::mat4 matrix = ltrans.transform.Matrix();
+
+        ImGuizmo::SetOrthographic(false);
+        ImGuizmo::SetDrawlist();
+        ImGuizmo::SetRect(itemMin.x, itemMin.y, rectSz.x, rectSz.y);
+        ImGuizmo::SetGizmoSizeClipSpace(0.15f);
+
+        const bool viewportFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
+        if (viewportFocused && !ImGui::GetIO().WantCaptureKeyboard)
+        {
+            if (ImGui::IsKeyPressed(ImGuiKey_W)) m_GizmoOperation = ImGuizmo::TRANSLATE;
+            if (ImGui::IsKeyPressed(ImGuiKey_E)) m_GizmoOperation = ImGuizmo::ROTATE;
+            if (ImGui::IsKeyPressed(ImGuiKey_R)) m_GizmoOperation = ImGuizmo::SCALE;
+            if (ImGui::IsKeyPressed(ImGuiKey_T))
+                m_GizmoMode = (m_GizmoMode == ImGuizmo::WORLD) ? ImGuizmo::LOCAL : ImGuizmo::WORLD;
+        }
+
+        ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
+
+        ImGuizmo::Manipulate(
+            glm::value_ptr(view),
+            glm::value_ptr(proj),
+            (ImGuizmo::OPERATION)m_GizmoOperation,
+            (ImGuizmo::MODE)m_GizmoMode,
+            glm::value_ptr(matrix),
+            nullptr,
+            m_UseSnap ? m_SnapValues : nullptr
+        );
+
+        // Check if gizmo wants input
+        gizmoWantsInput = ImGuizmo::IsOver() || ImGuizmo::IsUsing();
+
+        if (ImGuizmo::IsUsing())
+        {
+            glm::vec3 newPosition, newRotation, newScale;
+            DecomposeTransform(matrix, newPosition, newRotation, newScale);
+
+            //must be within switch to prevent overwrite
+            switch (m_GizmoOperation) {
+            case ImGuizmo::TRANSLATE:
+                ltrans.transform.translate = newPosition;
+                break;
+            case ImGuizmo::ROTATE:
+                ltrans.transform.rotate = newRotation;
+                break;
+            case ImGuizmo::SCALE:
+                ltrans.transform.scale = newScale;
+                break;
+            }
+        }
+        
+    }
+
+    void ViewportPanel::HandleMouseClick(const ImVec2& mousePos, const ImVec2&)
     {
         if (!m_Ctx || !m_RayCast) return;
 

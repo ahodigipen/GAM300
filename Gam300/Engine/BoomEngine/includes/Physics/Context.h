@@ -1,11 +1,11 @@
 #pragma once
+#include "common/Core.h"
 #include "Callback.h"
 #include "Utilities.h"
 #include "Auxiliaries/Assets.h"
 #include <iostream>
-
-#include "common/Core.h"
-
+#include "PxPhysicsAPI.h"
+#include <foundation/PxMath.h>
 
 namespace Boom {
     struct PhysicsContext {
@@ -570,7 +570,21 @@ namespace Boom {
             UpdateColliderShape(entity, assetRegistry);
         }
 
-        void SetRotationLock(Boom::Entity entity, bool lockX, bool lockY, bool lockZ)
+		//raycast functions
+        BOOM_INLINE glm::vec3 ResolveThirdPersonCameraPosition(glm::vec3 const& playerEye, glm::vec3 const& idealCamPosition, float minDist = 0.5f)
+        {
+            PxVec3 targetPos{ ToPxVec3(playerEye) };
+			PxVec3 idealCamPos{ ToPxVec3(idealCamPosition) };
+            PxVec3 dir = (idealCamPos - targetPos).getNormalized();
+            PxReal maxDist = (idealCamPos - targetPos).magnitude();
+
+            PxRaycastBuffer hit;
+            if (m_Scene->raycast(targetPos, dir, maxDist, hit))
+                return ToGLMVec3(targetPos + dir * PxMax(hit.block.distance - 0.05f, minDist));
+
+            return ToGLMVec3(idealCamPos);
+        }
+	BOOM_INLINE void SetRotationLock(Boom::Entity entity, bool lockX, bool lockY, bool lockZ)
         {
             {
                 if (!entity.Has<Boom::RigidBodyComponent>())
@@ -591,9 +605,6 @@ namespace Boom {
                 }
             }
         }
-
-
-
         // Mesh Colliders
         BOOM_INLINE PxConvexMeshGeometry CookMesh(const MeshData<ShadedVert>& data) {
             // px vertex container

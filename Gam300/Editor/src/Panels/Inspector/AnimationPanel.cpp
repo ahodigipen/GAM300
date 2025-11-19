@@ -225,8 +225,8 @@ namespace EditorUI {
                         BOOM_INFO("Loaded animation clip from file: {}", filePath);
                     }
                     // Also accept model asset (from resource panel)
-                    else if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(CONSTANTS::DND_PAYLOAD_MODEL.data())) {
-                        Boom::AssetID assetID = *(Boom::AssetID*)payload->Data;
+                    else if (const ImGuiPayload* pd = ImGui::AcceptDragDropPayload(CONSTANTS::DND_PAYLOAD_MODEL.data())) {
+                        Boom::AssetID assetID = *(Boom::AssetID*)pd->Data;
                         auto& assetReg = m_App->GetAssetRegistry();
                         auto* modelAsset = assetReg.TryGet<Boom::ModelAsset>(assetID);
                         if (modelAsset && modelAsset->uid != EMPTY_ASSET) {
