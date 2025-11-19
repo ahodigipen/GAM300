@@ -382,7 +382,7 @@ namespace EditorUI {
             }
             else if constexpr (std::is_same_v<T, AudioAsset>) {
                 m_App->GetAssetRegistry().AddAudio(uid, path.generic_string());
-			}
+            }
             // --- more stuff in future ---
 
         }

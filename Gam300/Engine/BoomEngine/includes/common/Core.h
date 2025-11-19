@@ -38,7 +38,7 @@
 #include <filesystem>
 #include <unordered_map>
 #include <random>
-#include<magic_enum.hpp>
+#include <magic_enum.hpp>
 #include <atomic>
 #include <thread>
 #include <chrono>
