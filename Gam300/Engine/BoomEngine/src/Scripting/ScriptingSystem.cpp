@@ -28,10 +28,13 @@ namespace Boom {
 
         BOOM_INFO("[Scripting] Starting shutdown...");
 
-        // 1. Mark as NOT alive first to prevent any new invocations
+        // 1. Stop file watching
+        m_FileWatcher.ClearAll();
+
+        // 2. Mark as NOT alive first to prevent any new invocations
         m_Alive = false;
 
-        // 2. Destroy all instances (safe GCHandle cleanup)
+        // 3. Destroy all instances (safe GCHandle cleanup)
         for (auto& [id, inst] : m_Instances) {
             if (inst.gchandle) {
                 MonoObject* obj = mono_gchandle_get_target(inst.gchandle);
@@ -46,10 +49,10 @@ namespace Boom {
         m_Instances.clear();
         m_NextId = 1;
 
-        // 3. Clear assembly reference before shutdown
+        // 4. Clear assembly reference before shutdown
         m_Scripts = nullptr;
 
-        // 4. Shutdown Mono runtime
+        // 5. Shutdown Mono runtime
         m_Mono.Shutdown();
 
         BOOM_INFO("[Scripting] Shutdown complete");
@@ -66,8 +69,25 @@ namespace Boom {
             return false;
         }
 
+        // Store the DLL path for hot reload
+        m_DllPath = dllPath;
+
+        // Setup file watcher for automatic hot reload
+        if (m_AutoHotReload) {
+            m_FileWatcher.AddWatch(dllPath,
+                [this](const std::string& path) {
+                    BOOM_INFO("[Scripting] DLL modified, triggering hot reload...");
+                    this->ReloadScripts();
+                },
+                1000  // 1 second debounce to handle build systems
+            );
+        }
+
 #ifdef DEBUG
         BOOM_INFO("[Scripting] Loaded assembly: {}", dllPath);
+        if (m_AutoHotReload) {
+            BOOM_INFO("[Scripting] Auto hot-reload ENABLED for: {}", dllPath);
+        }
 #endif
         return true;
     }
@@ -94,15 +114,6 @@ namespace Boom {
         uint64_t entityHandle,
         Instance& out)
     {
-
-        BOOM_INFO("[Scripting] ========================================");
-        BOOM_INFO("[Scripting] CreateInstance CALLED");
-        BOOM_INFO("[Scripting]   TypeName: '{}'", typeName);
-        BOOM_INFO("[Scripting]   Entity: {}", static_cast<uint32_t>(entityHandle));
-        BOOM_INFO("[Scripting]   System alive: {}", m_Alive);
-        BOOM_INFO("[Scripting]   Scripts loaded: {}", m_Scripts != nullptr);
-        BOOM_INFO("[Scripting] ========================================");
-
         if (!m_Alive) {
             BOOM_ERROR("[Scripting] Cannot create instance - system not alive");
             return false;
@@ -247,6 +258,10 @@ namespace Boom {
         BOOM_INFO("[Scripting] ========== HOT RELOAD START ==========");
         m_Reloading = true;
 
+        // Temporarily disable file watching during reload
+        bool wasAutoReloadEnabled = m_AutoHotReload;
+        m_FileWatcher.ClearAll();
+
         // 1. Call OnDestroy on all existing instances
         BOOM_INFO("[Scripting] Destroying {} existing instances...", m_Instances.size());
         for (auto& [id, inst] : m_Instances) {
@@ -285,12 +300,22 @@ namespace Boom {
         RegisterScriptInternalCalls(m_Ctx);
 
         // 6. Reload the DLL
-        std::string dllPath = m_ScriptsDir + "/GameScripts.dll";
-        BOOM_INFO("[Scripting] Loading assembly: {}", dllPath);
-        if (!LoadScriptsDll(dllPath)) {
+        BOOM_INFO("[Scripting] Loading assembly: {}", m_DllPath);
+        if (!LoadScriptsDll(m_DllPath)) {
             BOOM_ERROR("[Scripting] Failed to reload GameScripts.dll");
             m_Reloading = false;
             return false;
+        }
+
+        // Re-enable file watching if it was enabled
+        if (wasAutoReloadEnabled) {
+            m_FileWatcher.AddWatch(m_DllPath,
+                [this](const std::string& path) {
+                    BOOM_INFO("[Scripting] DLL modified, triggering hot reload...");
+                    this->ReloadScripts();
+                },
+                1000
+            );
         }
 
         // 7. Call Entry.Start() if it exists
@@ -324,6 +349,37 @@ namespace Boom {
         BOOM_INFO("[Scripting] ========== HOT RELOAD END ==========");
 
         return (failed == 0);
+    }
+
+    // NEW: Control auto hot reload
+    void ScriptingSystem::EnableAutoHotReload(bool enable)
+    {
+        if (m_AutoHotReload == enable) return;
+
+        m_AutoHotReload = enable;
+
+        if (enable && !m_DllPath.empty()) {
+            m_FileWatcher.AddWatch(m_DllPath,
+                [this](const std::string& path) {
+                    BOOM_INFO("[Scripting] DLL modified, triggering hot reload...");
+                    this->ReloadScripts();
+                },
+                1000
+            );
+            BOOM_INFO("[Scripting] Auto hot-reload ENABLED");
+        }
+        else {
+            m_FileWatcher.ClearAll();
+            BOOM_INFO("[Scripting] Auto hot-reload DISABLED");
+        }
+    }
+
+    // NEW: Update file watcher (call every frame)
+    void ScriptingSystem::UpdateFileWatcher()
+    {
+        if (m_AutoHotReload && m_Alive && !m_Reloading) {
+            m_FileWatcher.Update();
+        }
     }
 
 } // namespace Boom

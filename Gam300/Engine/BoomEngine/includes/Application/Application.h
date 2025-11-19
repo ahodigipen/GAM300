@@ -292,6 +292,10 @@ namespace Boom
                 }
                 else
                 {
+
+                    // Auto enabling of hot reload
+                    m_Context->scriptingSystem->EnableAutoHotReload(true);
+
                     if (!m_Context->scriptingSystem->CallStart())
                         BOOM_ERROR("[Scripting] GameScripts.Entry:Start() failed");
                     else
@@ -397,6 +401,8 @@ namespace Boom
                 // Always update delta time, but adjust for pause state
                 ComputeFrameDeltaTime();
                 float dt = static_cast<float>(m_Context->DeltaTime);
+
+                m_Context->scriptingSystem->UpdateFileWatcher();
 
                 m_Context->scriptingSystem->CallUpdate(dt);
 

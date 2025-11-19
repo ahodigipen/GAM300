@@ -5,6 +5,7 @@
 #include "Scripting/MonoRuntime.h"
 #include "Scripting/ScriptBinding.h"
 #include "ECS/ECS.hpp"
+#include "FileWatcher.h"
 
 namespace Boom {
     // Forward declarations only - no includes that might cause circular deps
@@ -42,14 +43,24 @@ namespace Boom {
 
         // ---- Whole-DLL hot reload (Inspector calls this) ----
         bool ReloadScripts();
+        bool IsAlive() const { return m_Alive; }
+        bool IsReloading() const { return m_Reloading; }
+
+        // Hot reload control
+        void EnableAutoHotReload(bool enable);
+        bool IsAutoHotReloadEnabled() const { return m_AutoHotReload; }
+        void UpdateFileWatcher();
 
     private:
         MonoRuntime    m_Mono;
         MonoAssembly* m_Scripts = nullptr;
         std::string    m_ScriptsDir;
         AppContext* m_Ctx = nullptr;  // Remove Boom:: prefix - already in namespace
-        bool           m_Alive = false;      // <-- NEW: Mono is usable
-        bool           m_Reloading = false;  // <-- NEW: hot reload in progress
+        bool           m_Alive = false;
+        bool           m_Reloading = false;  
+        FileWatcher m_FileWatcher;
+        bool m_AutoHotReload = true;
+        std::string m_DllPath;
 
 
         bool CreateInstance(const std::string& typeName,
