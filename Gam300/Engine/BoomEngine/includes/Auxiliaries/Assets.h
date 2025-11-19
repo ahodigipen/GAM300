@@ -1,5 +1,6 @@
 #pragma once
-#include "PxPhysicsAPI.h" 
+#include "common/Core.h"
+
 #include "Graphics/Models/Model.h"
 #include "Graphics/Textures/Texture.h"
 #include "Graphics/Utilities/Data.h"
@@ -168,6 +169,17 @@ namespace Boom {
 			}
 			//BOOM_ERROR("[AssetRegistry::Get] Asset UID {} not found! Returning EMPTY_ASSET", uid);
 			return static_cast<T&>(*registry[type][EMPTY_ASSET]);
+		}
+
+		template <class T>
+		BOOM_INLINE T* TryGet(const std::string& name) {
+			auto& map = GetMap<T>();
+			for (auto& [uid, asset] : map) {
+				if (uid != EMPTY_ASSET && asset->name == name) {
+					return dynamic_cast<T*>(asset.get());
+				}
+			}
+			return nullptr;
 		}
 
 		template <class T>

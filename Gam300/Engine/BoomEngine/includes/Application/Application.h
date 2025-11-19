@@ -2,7 +2,6 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#pragma once
 #ifdef _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -24,8 +23,6 @@
 #include "../Graphics/Utilities/Culling.h"
 #include "Input/CameraManager.h"
 #include "Graphics/Shaders/DebugLines.h"
-//#include "../../../Editor/src/Vendors/imgui/imgui.h"
-//#include "../../../Editor/src/Vendors/imGuizmo/ImGuizmo.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 #include "Scripting/MonoRuntime.h"
@@ -344,20 +341,20 @@ namespace Boom
                 std::shared_ptr<GLFWwindow> engineWindow = m_Context->window->Handle();
                 SoundEngine::Instance().Update();
                 Camera3D* activeCam = nullptr;
-                EnttView<Entity, CameraComponent>([&](auto, CameraComponent& comp) {
-                    if (!activeCam && comp.camera.cameraType == Camera3D::CameraType::Main)
+				Transform3D camTransform{};
+                EnttView<Entity, CameraComponent>([&](auto en, CameraComponent& comp) {
+                    if (!activeCam && comp.camera.cameraType == Camera3D::CameraType::Main) {
+						camTransform = en.Get<TransformComponent>().transform;
                         activeCam = &comp.camera;
+                    }
                     });
                 if (!activeCam) { // fallback: first camera
-                    EnttView<Entity, CameraComponent>([&](auto, CameraComponent& comp) {
-                        if (!activeCam) activeCam = &comp.camera;
-                        });
                 }
 
                 // 2) Attach BEFORE update so scroll/pan use this camera's FOV in this frame
                 if (activeCam) camera.attachCamera(activeCam);
                 glfwMakeContextCurrent(engineWindow.get());
-
+                
                 // NEW: runtime toggle with F9
                 {
                     static bool prevF9 = false;
@@ -417,99 +414,10 @@ namespace Boom
                 if (m_Nav) {
                     m_NavAgents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime), *m_Nav);
                 }
-                // Animation testing controls
-                {
-                    // Press L to load additional animations
-                    static bool lastLPressed = false;
-                    bool lPressed = glfwGetKey(engineWindow.get(), GLFW_KEY_L) == GLFW_PRESS;
-                    if (lPressed && !lastLPressed) {
-                        EnttView<Entity, AnimatorComponent>([this]([[maybe_unused]] auto entity, auto& animComp) {
 
-                            auto& animator = animComp.animator;
-
-
-                            BOOM_INFO("=== Loading additional animations ===");
-                            size_t beforeCount = animator->GetClipCount();
-
-                            // Try to load these - they need to exist in your Models folder!
-                            animator->LoadAnimationFromFile("Resources/Models/idle.fbx", "Idle");
-                            animator->LoadAnimationFromFile("Resources/Models/walking.fbx", "Walk");
-                            animator->LoadAnimationFromFile("Resources/Models/run.fbx", "Run");
-
-                            size_t afterCount = animator->GetClipCount();
-                            BOOM_WARN("Loaded {} new animations (total: {})", afterCount - beforeCount, afterCount);
-
-                            // List all animations
-                            for (size_t i = 0; i < animator->GetClipCount(); ++i) {
-                                const auto* clip = animator->GetClip(i);
-                                if (clip) {
-                                    BOOM_INFO("  [{}] '{}' - {:.2f}s", i, clip->name, clip->duration);
-                                }
-                            }
-                            });
-                    }
-                    lastLPressed = lPressed;
-
-                    // Press 1-9 to switch animations
-                    EnttView<Entity, AnimatorComponent>([this, &engineWindow]([[maybe_unused]]auto entity, auto& animComp) {
-
-                        auto& animator = animComp.animator;
-
-                        if (glfwGetKey(engineWindow.get(), GLFW_KEY_1) == GLFW_PRESS && animator->GetClipCount() > 0) {
-                            animator->PlayClip(0);
-#ifdef DEBUG
-                            const auto* clip = animator->GetClip(0);
-                            if (clip) BOOM_INFO("Switched to [0]: '{}'", clip->name);
-#endif // DEBUG
-
-                        }
-                        if (glfwGetKey(engineWindow.get(), GLFW_KEY_2) == GLFW_PRESS && animator->GetClipCount() > 1) {
-                            animator->PlayClip(1);
-
-#ifdef DEBUG
-                            const auto* clip = animator->GetClip(1);
-                            if (clip) BOOM_INFO("Switched to [1]: '{}'", clip->name);
-#endif // DEBUG
-
-                        }
-                        if (glfwGetKey(engineWindow.get(), GLFW_KEY_3) == GLFW_PRESS && animator->GetClipCount() > 2) {
-                            animator->PlayClip(2);
-
-#ifdef DEBUG
-                            const auto* clip = animator->GetClip(2);
-                            if (clip) BOOM_INFO("Switched to [2]: '{}'", clip->name);
-#endif // DEBUG
-                        }
-                        if (glfwGetKey(engineWindow.get(), GLFW_KEY_4) == GLFW_PRESS && animator->GetClipCount() > 3) {
-                            animator->PlayClip(3);
-#ifdef DEBUG
-                            const auto* clip = animator->GetClip(3);
-                            if (clip) BOOM_INFO("Switched to [3]: '{}'", clip->name);
-#endif // DEBUG
-                        }
-
-                        // Press I for info about current animation
-                        static bool lastIPressed = false;
-                        bool iPressed = glfwGetKey(engineWindow.get(), GLFW_KEY_I) == GLFW_PRESS;
-                        if (iPressed && !lastIPressed) {
-                            BOOM_INFO("=== Current Animation Info ===");
-                            BOOM_INFO("Current Clip: {} / {}", animator->GetCurrentClip(), animator->GetClipCount() - 1);
-                            const auto* clip = animator->GetClip(animator->GetCurrentClip());
-                            if (clip) {
-#ifdef DEBUG
-
-                                BOOM_INFO("  Name: '{}'", clip->name);
-                                BOOM_INFO("  Duration: {:.2f}s", clip->duration);
-                                BOOM_INFO("  Current Time: {:.2f}s", animator->GetTime());
-                                BOOM_INFO("  Tracks: {}", clip->tracks.size());
-#endif // DEBUG
-
-                            }
-                        }
-                        lastIPressed = iPressed;
-                        });
-                }
-
+                //compute camera position to colliders
+                //if (m_AppState == ApplicationState::RUNNING)
+                   //m_Context->physics->ResolveThirdPersonCameraPosition(, camTransform.translate);
 
                 // ============ END NEW SECTION ============
                 m_Context->profiler.BeginFrame();
@@ -525,7 +433,7 @@ namespace Boom
                     EnttView<Entity, RigidBodyComponent>([](auto, RigidBodyComponent& rb) {
                         rb.RigidBody.isColliding = false;
                         });
-                    UpdateStaticTransforms();
+                    UpdateKinematicTransforms();
                     RunPhysicsSimulation();
                     InitNavRuntime();
                     UpdateThirdPersonCameras();
@@ -594,6 +502,7 @@ namespace Boom
                 }
                
                 RenderScene();
+                //DrawDebugTPC();
                 if (m_PhysDebugViz && m_DebugLinesShader)
                 {
                     m_Context->physics->CollectDebugLines(m_PhysLinesCPU);
@@ -800,63 +709,79 @@ namespace Boom
         }
         
         BOOM_INLINE void RenderScene() {
+            std::vector<std::pair<SpriteComponent, Transform2D>> guiList;
             //pbr ecs (always render)
-            EnttView<Entity, ModelComponent>([this](auto entity, ModelComponent& comp) {
-                if (!entity.Has<ModelComponent>() || comp.modelID == EMPTY_ASSET) {
-                    //BOOM_ERROR("[Render] Model data is null for ModelID: {} ({})", comp.modelID, comp.modelName);
-                    return; // Skip rendering this model
-                }
-
-                ModelAsset& model{ m_Context->assets->Get<ModelAsset>(comp.modelID) };
-                if (entity.Has<AnimatorComponent>()) {
-                    auto& an = entity.Get<AnimatorComponent>();
-                    float dt = (m_AppState == ApplicationState::RUNNING) ? (float)m_Context->DeltaTime : 0.0f;
-                    auto& joints = an.animator->Animate(dt);
-                    m_Context->renderer->SetJoints(joints);           // existing
-                }
-                else {
-                    // NEW: ensure no stale palette leaks into this draw
-                    if (model.hasJoints)
-                    {
-                        static std::vector<glm::mat4> identityPalette(100, glm::mat4(1.0f));
-                        m_Context->renderer->SetJoints(identityPalette);
+            EnttView<Entity, TransformComponent>([this, &guiList](auto entity, TransformComponent& t) {
+                if (entity.Has<ModelComponent>()) {
+                    ModelComponent& comp{ entity.Get<ModelComponent>() };
+                    if (comp.modelID == EMPTY_ASSET) return;
+                    ModelAsset& model{ m_Context->assets->Get<ModelAsset>(comp.modelID) };
+                    if (entity.Has<AnimatorComponent>()) {
+                        auto& an = entity.Get<AnimatorComponent>();
+                        float dt = (m_AppState == ApplicationState::RUNNING) ? (float)m_Context->DeltaTime : 0.0f;
+                        auto& joints = an.animator->Animate(dt);
+                        m_Context->renderer->SetJoints(joints);           // existing
                     }
-                }
-
-                glm::mat4 worldMatrix = GetWorldMatrix(entity);
-                Transform3D worldTransform;
-                DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
-
-                //draw model with material if it has one otherwise draw default material
-                if (comp.materialID != EMPTY_ASSET) {
-                    auto& material{ m_Context->assets->Get<MaterialAsset>(comp.materialID) };
-
-                    // Only assign textures if they exist and are valid
-                    if (material.albedoMapID != EMPTY_ASSET) {
-                        auto& albedoTex = m_Context->assets->Get<TextureAsset>(material.albedoMapID);
-                        if (albedoTex.data) {
-                            material.data.albedoMap = albedoTex.data;
-                        }
-                    }
-                    if (material.normalMapID != EMPTY_ASSET) {
-                        auto& normalTex = m_Context->assets->Get<TextureAsset>(material.normalMapID);
-                        if (normalTex.data) {
-                            material.data.normalMap = normalTex.data;
-                        }
-                    }
-                    if (material.roughnessMapID != EMPTY_ASSET) {
-                        auto& roughnessTex = m_Context->assets->Get<TextureAsset>(material.roughnessMapID);
-                        if (roughnessTex.data) {
-                            material.data.roughnessMap = roughnessTex.data;
+                    else {
+                        // NEW: ensure no stale palette leaks into this draw
+                        if (model.hasJoints)
+                        {
+                            static std::vector<glm::mat4> identityPalette(100, glm::mat4(1.0f));
+                            m_Context->renderer->SetJoints(identityPalette);
                         }
                     }
 
-                    m_Context->renderer->Draw(model.data, worldTransform, material.data);
+                    glm::mat4 worldMatrix = GetWorldMatrix(entity);
+                    Transform3D worldTransform;
+                    DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
+
+                    //draw model with material if it has one otherwise draw default material
+                    if (comp.materialID != EMPTY_ASSET) {
+                        auto& material{ m_Context->assets->Get<MaterialAsset>(comp.materialID) };
+
+                        // Only assign textures if they exist and are valid
+                        if (material.albedoMapID != EMPTY_ASSET) {
+                            auto& albedoTex = m_Context->assets->Get<TextureAsset>(material.albedoMapID);
+                            if (albedoTex.data) {
+                                material.data.albedoMap = albedoTex.data;
+                            }
+                        }
+                        if (material.normalMapID != EMPTY_ASSET) {
+                            auto& normalTex = m_Context->assets->Get<TextureAsset>(material.normalMapID);
+                            if (normalTex.data) {
+                                material.data.normalMap = normalTex.data;
+                            }
+                        }
+                        if (material.roughnessMapID != EMPTY_ASSET) {
+                            auto& roughnessTex = m_Context->assets->Get<TextureAsset>(material.roughnessMapID);
+                            if (roughnessTex.data) {
+                                material.data.roughnessMap = roughnessTex.data;
+                            }
+                        }
+
+                        m_Context->renderer->Draw(model.data, worldTransform, material.data);
+                    }
+                    else {
+                        m_Context->renderer->Draw(model.data, worldTransform);
+                    }
                 }
-                else {
-                    m_Context->renderer->Draw(model.data, worldTransform);
+                else if (entity.Has<SpriteComponent>()) {
+                    SpriteComponent& comp{ entity.Get<SpriteComponent>() };
+                    if (comp.textureID == EMPTY_ASSET) return;
+
+                    if (!comp.uiOverlay) {
+                        TextureAsset& texture{ m_Context->assets->Get<TextureAsset>(comp.textureID) };
+                        m_Context->renderer->DrawQuad(texture.data, t.transform, comp.color);
+                    }
+                    else guiList.push_back({ comp, t.transform });
                 }
-                });
+            });
+
+			//render gui overlays at the end
+            for (auto const& gui : guiList) {
+                TextureAsset& texture{ m_Context->assets->Get<TextureAsset>(gui.first.textureID) };
+                m_Context->renderer->DrawQuad(texture.data, gui.second, gui.first.color);
+			}
         }
 
         /**
@@ -935,13 +860,12 @@ namespace Boom
             return pMatrix_NoScale * localMatrix;
         }
 
-        BOOM_INLINE void UpdateStaticTransforms()
+        BOOM_INLINE void UpdateKinematicTransforms()
         {
             EnttView<Entity, RigidBodyComponent>(
                 [this](auto entity, RigidBodyComponent& rb)
                 {
-                    if (rb.RigidBody.type == RigidBody3D::Type::STATIC)
-                    {
+                    if (rb.RigidBody.type == RigidBody3D::Type::KINEMATIC) {
                         auto* actor = rb.RigidBody.actor;
                         if (!actor) return;
 
@@ -982,11 +906,7 @@ namespace Boom
     private:
         std::unordered_map<std::string, std::pair<glm::vec3, glm::vec3>> m_SphereInitialStates;
 
-        BOOM_INLINE void 
-            
-            
-            
-            SphereInitialState(const std::string& name,
+        BOOM_INLINE void SphereInitialState(const std::string& name,
             const glm::vec3& pos,
             const glm::vec3& vel = glm::vec3(0.0f)) {
             m_SphereInitialStates[name] = { pos, vel };
@@ -1035,7 +955,7 @@ namespace Boom
         {
             if (m_NavInitialized) return;
 
-            auto& reg = m_Context->scene;
+            //auto& reg = m_Context->scene;
 
             // 1) Build / load navmesh only once
             if (!m_Nav) {
@@ -1370,8 +1290,24 @@ namespace Boom
             // Only simulate physics if running
             if (m_AppState == ApplicationState::RUNNING)
             {
+                // Apply navigation velocities BEFORE physics simulation
+                EnttView<Entity, NavAgentComponent, RigidBodyComponent>([this](auto /*entity*/, auto& navAgent, auto& rb)
+                    {
+                        if (!navAgent.active || !rb.RigidBody.actor) return;
+
+                        auto* dyn = rb.RigidBody.actor->is<physx::PxRigidDynamic>();
+                        if (!dyn) return;
+
+                        // Convert glm velocity to PhysX and apply directly
+                        physx::PxVec3 pxVel(navAgent.velocity.x, navAgent.velocity.y, navAgent.velocity.z);
+                        dyn->setLinearVelocity(pxVel);
+
+                        // OPTIONAL: Lock Y rotation so the agent doesn't tip over
+                        dyn->setAngularVelocity(physx::PxVec3(0, 0, 0));
+                    });
 
                 m_Context->physics->Simulate(1, static_cast<float>(m_Context->DeltaTime));
+
                 EnttView<Entity, RigidBodyComponent>([this](auto entity, auto& comp)
                     {
                         auto& transform = entity.template Get<TransformComponent>().transform;
@@ -1628,6 +1564,133 @@ namespace Boom
             m_Context->scriptingSystem->RecreateForEntity(entity, *sc);
         }
 
+        BOOM_INLINE void ShutdownMonoRuntime()
+        {
+            if (m_MonoAppDomain)
+            {
+                // Switch back to root to safely unload app domain
+                mono_domain_set(m_MonoRootDomain, false);
+                mono_domain_unload(m_MonoAppDomain);
+                m_MonoAppDomain = nullptr;
+            }
+            if (m_MonoRootDomain)
+            {
+                mono_jit_cleanup(m_MonoRootDomain);
+                m_MonoRootDomain = nullptr;
+            }
+            m_GameAssembly = nullptr;
+            m_GameImage = nullptr;
+
+#ifdef _DEBUG
+            BOOM_INFO("[Mono] Shutdown complete.");
+#endif // DEBUG
+
+        }
+
+        BOOM_INLINE bool LoadGameAssembly(const std::string& dllName /* e.g., "GameScripts.dll" */)
+        {
+            if (!m_MonoAppDomain)
+            {
+#ifdef _DEBUG
+                BOOM_ERROR("[Mono] App domain not initialized.");
+#endif // DEBUG
+
+                return false;
+            }
+
+            const std::string full = (std::filesystem::path(m_AssembliesPath) / dllName).string();
+            if (!std::filesystem::exists(full))
+            {
+#ifdef _DEBUG
+                BOOM_ERROR("[Mono] Assembly not found: {}", full);
+
+#endif // DEBUG
+                return false;
+            }
+
+            m_GameAssembly = mono_domain_assembly_open(m_MonoAppDomain, full.c_str());
+            if (!m_GameAssembly)
+            {
+#ifdef _DEBUG
+                BOOM_ERROR("[Mono] Failed to load assembly: {}", full);
+#endif // DEBUG
+                return false;
+            }
+
+            m_GameImage = mono_assembly_get_image(m_GameAssembly);
+            if (!m_GameImage)
+            {
+#ifdef _DEBUG
+                BOOM_ERROR("[Mono] mono_assembly_get_image failed.");
+#endif // DEBUG
+                return false;
+            }
+#ifdef _DEBUG
+            BOOM_INFO("[Mono] Loaded assembly: {}", full);
+#endif // DEBUG
+            return true;
+        }
+
+        BOOM_INLINE bool InvokeStaticVoid(const char* nsName,
+            const char* className,
+            const char* methodName,
+            void** args = nullptr)
+        {
+            if (!m_GameImage) { BOOM_ERROR("[Mono] No assembly image loaded."); return false; }
+
+            MonoClass* klass = mono_class_from_name(m_GameImage, nsName, className);
+            if (!klass) { BOOM_ERROR("[Mono] Class not found: {}.{}", nsName, className); return false; }
+
+            MonoMethod* method = mono_class_get_method_from_name(klass, methodName, /*param_count*/ 0);
+            if (!method) { BOOM_ERROR("[Mono] Method not found: {}.{}", className, methodName); return false; }
+
+            MonoObject* exc = nullptr;
+            mono_runtime_invoke(method, /*this*/ nullptr, args, &exc);
+            if (exc)
+            {
+                // print exception
+                MonoString* s = mono_object_to_string(exc, nullptr);
+                char* utf8 = mono_string_to_utf8(s);
+#ifdef _DEBUG
+                BOOM_ERROR("[Mono] Exception: {}", utf8 ? utf8 : "(null)");
+#endif // DEBUG
+                if (utf8) mono_free(utf8);
+                return false;
+            }
+            return true;
+        }
+
+        BOOM_INLINE bool InvokeStatic1Float(const char* nsName,
+            const char* className,
+            const char* methodName,
+            float value)
+        {
+            if (!m_GameImage) { BOOM_ERROR("[Mono] No assembly image loaded."); return false; }
+
+            MonoClass* klass = mono_class_from_name(m_GameImage, nsName, className);
+            if (!klass) { BOOM_ERROR("[Mono] Class not found: {}.{}", nsName, className); return false; }
+
+            // method with 1 parameter
+            MonoMethod* method = mono_class_get_method_from_name(klass, methodName, 1);
+            if (!method) { BOOM_ERROR("[Mono] Method not found: {}.{}", className, methodName); return false; }
+
+            void* args[1];
+            args[0] = &value;
+
+            MonoObject* exc = nullptr;
+            mono_runtime_invoke(method, nullptr, args, &exc);
+            if (exc)
+            {
+                MonoString* s = mono_object_to_string(exc, nullptr);
+                char* utf8 = mono_string_to_utf8(s);
+                BOOM_ERROR("[Mono] Exception: {}", utf8 ? utf8 : "(null)");
+                if (utf8) mono_free(utf8);
+                return false;
+            }
+            return true;
+        }
+
+        glm::vec3 pivotPosition{};
         BOOM_INLINE void UpdateThirdPersonCameras()
         {
             // 1. Get input
@@ -1636,14 +1699,8 @@ namespace Boom
 
             // 2. Iterate over all third-person cameras
             EnttView<Entity, ThirdPersonCameraComponent, TransformComponent>(
-                [this, &mouseDelta, &scrollDelta](Entity entity, ThirdPersonCameraComponent& cam, TransformComponent& tc)
+                [this, &mouseDelta, &scrollDelta](Entity, ThirdPersonCameraComponent& cam, TransformComponent& tc)
                 {
-
-#define UNUSED(x) (void)(x)
-                    UNUSED(entity);
-
-
-
                     // 3. Find the target entity by its UID
                     if (cam.targetUID == 0) return; // No target UID set
 
@@ -1663,54 +1720,49 @@ namespace Boom
 
                     //
                     // === NEW LOGIC STARTS HERE ===
+                    // I am following Dark Souls k&m control scheme: mouse is camera only, does not change player's direction
                     //
 
-                    // 4. Get the target's full transform
+                    // the target
                     Transform3D& targetTransform = target.Get<TransformComponent>().transform;
                     glm::vec3 targetPosition = targetTransform.translate;
-                    float targetYaw = targetTransform.rotate.y; // Get the player's Y rotation
 
-                    // 5. Update Pitch (up/down) from the mouse
-                   // cam.currentPitch -= mouseDelta.y * cam.mouseSensitivity;
+                    //camera movement
+                    cam.currentYaw -= mouseDelta.x * cam.mouseSensitivity;
+                    cam.currentPitch += mouseDelta.y * cam.mouseSensitivity;
+                    cam.currentPitch = glm::clamp(cam.currentPitch, -85.f, 85.f);
 
-                    // 6. Apply new Pitch Limits
-                    //    We clamp the pitch from 5 (slightly looking down) to 40 (about 45 degrees)
-                    //    This prevents the camera from going "below the plane".
-                    cam.currentPitch = glm::clamp(cam.currentPitch, 2.0f, 40.0f);
-
-                    // 7. Lock Yaw (left/right) to the target's yaw
-                    //    This keeps the camera locked behind the player.
-                    cam.currentYaw = targetYaw + 180.0f;
-
-                    // 8. Update distance (zoom) from the scroll wheel
+                    // zoom
                     cam.currentDistance -= scrollDelta.y * cam.scrollSensitivity;
                     cam.currentDistance = glm::clamp(cam.currentDistance, cam.minDistance, cam.maxDistance);
-
+                    
                     // 9. Calculate the camera's final orientation
-                    glm::quat orientation = glm::quat(glm::vec3(glm::radians(cam.currentPitch),
+                    glm::quat orientation = glm::quat(
+                        glm::vec3(glm::radians(cam.currentPitch),
                         glm::radians(cam.currentYaw),
                         0.0f));
 
-                    // 10. Define the pivot point (e.g., 5 units above the player's origin)
-                    glm::vec3 pivotPosition = targetPosition + glm::vec3(0.0f, cam.offset.y, 0.0f);
+                    // camera target point
+                    pivotPosition = targetPosition + cam.offset;
 
-                    // 11. Calculate the final camera position
-                    //     Start with a vector pointing "back" by the zoom distance
+                    // calculate final new camera translate according to spherical movement
                     glm::vec3 offsetVector = glm::vec3(0.0f, 0.0f, -cam.currentDistance);
-                    //     Rotate that vector by the final orientation
                     glm::vec3 rotatedOffset = orientation * offsetVector;
-                    //     Add it to the pivot point
                     glm::vec3 desiredPosition = pivotPosition + rotatedOffset;
-
-                    // 12. Update the camera's actual transform
-                    tc.transform.translate = desiredPosition;
 
                     // 13. Make the camera look at the pivot point
                     tc.transform.rotate = glm::degrees(glm::eulerAngles(
                         glm::quatLookAt(glm::normalize(pivotPosition - desiredPosition), glm::vec3(0, 1, 0))
                     ));
+
+                    tc.transform.translate = m_Context->physics->ResolveThirdPersonCameraPosition(pivotPosition, desiredPosition);
                 }
             );
+        }
+
+        BOOM_INLINE void DrawDebugTPC() {
+            ModelAsset const* mdl{ m_Context->assets->TryGet<ModelAsset>("Cube.FBX") };
+            m_Context->renderer->Draw(mdl->data, Transform3D{ pivotPosition, glm::vec3(0.f), glm::vec3(.2f) });
         }
     };
 

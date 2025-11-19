@@ -333,9 +333,27 @@ namespace EditorUI {
             }
         }
 
+        if (selected.Has<Boom::SpriteComponent>()) {
+            if (ImGui::CollapsingHeader("Quad 2D", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap)) {
+                ComponentSettings<Boom::SpriteComponent>(ctx);
+
+                auto& q = selected.Get<Boom::SpriteComponent>();
+
+				ImGui::Checkbox("GUI", &q.uiOverlay);
+                ImGui::BeginTable("##maps", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersInnerV);
+                ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Asset", ImGuiTableColumnFlags_WidthStretch);
+                InputAssetWidget<CONSTANTS::DND_PAYLOAD_TEXTURE>("texture", q.textureID);
+                ImGui::EndTable();
+				ImGui::ColorEdit3("color", &q.color[0]);
+            }
+		}
+
         if (selected.Has<Boom::AnimatorComponent>()) {
             AnimatorComponentUI(selected);
         }
+
+        // In: InspectorPanel.cpp
 
         if (selected.Has<Boom::RigidBodyComponent>()) {
             ImGui::PushID("Rigid Body");
@@ -343,7 +361,7 @@ namespace EditorUI {
             // 1. Draw Header
             bool isOpen = ImGui::CollapsingHeader("Rigidbody", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap);
 
-            // 2. Draw "..." Button (to match photo)
+            // 2. Draw "..." Button
             const ImVec2 headerMin = ImGui::GetItemRectMin();
             const ImVec2 headerMax = ImGui::GetItemRectMax();
             const float  lineH = ImGui::GetFrameHeight();
@@ -374,9 +392,10 @@ namespace EditorUI {
                 const char* currentTypeName;
                 switch (currentType)
                 {
-                case RigidBody3D::Type::STATIC:  currentTypeName = "Static";  break;
-                case RigidBody3D::Type::DYNAMIC: currentTypeName = "Dynamic"; break;
-                default:                         currentTypeName = "Unknown"; break;
+                case RigidBody3D::Type::STATIC:    currentTypeName = "Static";    break;
+                case RigidBody3D::Type::DYNAMIC:   currentTypeName = "Dynamic";   break;
+                case RigidBody3D::Type::KINEMATIC: currentTypeName = "Kinematic"; break;
+                default:                           currentTypeName = "Unknown";   break;
                 }
 
                 ImGui::AlignTextToFramePadding();
@@ -400,6 +419,13 @@ namespace EditorUI {
                     }
                     if (isDynamicSelected) ImGui::SetItemDefaultFocus();
 
+                    bool isKinematicSelected = (currentType == RigidBody3D::Type::KINEMATIC);
+                    if (ImGui::Selectable("Kinematic", isKinematicSelected))
+                    {
+                        m_App->GetPhysicsContext().SetRigidBodyType(selected, RigidBody3D::Type::KINEMATIC);
+                    }
+                    if (isKinematicSelected) ImGui::SetItemDefaultFocus();
+
                     ImGui::EndCombo();
                 }
 
@@ -416,6 +442,51 @@ namespace EditorUI {
                 ImGui::SameLine(150);
                 ImGui::SetNextItemWidth(-1);
                 ImGui::DragFloat("##Mass", &rigidBody->mass, 0.1f, 0.0f, 1000.0f);
+
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Initial Velocity");
+                ImGui::SameLine(150);
+                ImGui::SetNextItemWidth(-1);
+                ImGui::DragFloat3("##InitialVelocity", &rigidBody->initialVelocity.x, 0.01f);
+
+                // --- ADD THIS NEW SECTION ---
+                ImGui::Spacing();
+                ImGui::SeparatorText("Constraints"); // Uses a nice separator
+                ImGui::Spacing();
+
+                // Store old values to detect changes
+                bool oldFreezeX = rigidBody->freezeRotationX;
+                bool oldFreezeY = rigidBody->freezeRotationY;
+                bool oldFreezeZ = rigidBody->freezeRotationZ;
+
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Freeze Rotation");
+                ImGui::SameLine(150);
+
+                // We use Push/PopID to make the labels unique for ImGui
+                ImGui::PushID("FreezeRot");
+                ImGui::Checkbox("X", &rigidBody->freezeRotationX);
+                ImGui::SameLine();
+                ImGui::Checkbox("Y", &rigidBody->freezeRotationY);
+                ImGui::SameLine();
+                ImGui::Checkbox("Z", &rigidBody->freezeRotationZ);
+                ImGui::PopID();
+
+                // If any value changed, notify the physics context
+                if (rigidBody->freezeRotationX != oldFreezeX ||
+                    rigidBody->freezeRotationY != oldFreezeY ||
+                    rigidBody->freezeRotationZ != oldFreezeZ)
+                {
+                    // This is a new function we will need to create in PhysicsContext 
+                    m_App->GetPhysicsContext().SetRotationLock(
+                        selected,
+                        rigidBody->freezeRotationX,
+                        rigidBody->freezeRotationY,
+                        rigidBody->freezeRotationZ
+                    );
+                }
+                // --- END OF NEW SECTION ---
+
 
                 ImGui::Spacing();
                 ImGui::Unindent(12.0f);
@@ -668,10 +739,10 @@ namespace EditorUI {
                                         break;
                                     }
                                     if (ImGui::MenuItem("Insert After (use Selected Transform if any)")) {
-                                        glm::vec3 p = a->path[i];
+                                        glm::vec3 path = a->path[i];
                                         if (selected.Has<Boom::TransformComponent>())
-                                            p = selected.Get<Boom::TransformComponent>().transform.translate;
-                                        a->path.insert(a->path.begin() + i + 1, p);
+                                            path = selected.Get<Boom::TransformComponent>().transform.translate;
+                                        a->path.insert(a->path.begin() + i + 1, path);
                                         ImGui::EndPopup();
                                         break;
                                     }
@@ -914,20 +985,54 @@ namespace EditorUI {
 
         if (selected.Has<DirectLightComponent>()) {
             auto& dl = selected.Get<DirectLightComponent>();
-            DrawComponentSection("Directional Light", &dl, GetDirectLightComponentProperties, true,
-                [&]() { ctx->scene.remove<DirectLightComponent>(m_App->SelectedEntity()); });
+            DrawComponentSection(
+                "Direct Light",
+                &dl,
+                [&](void* p) -> const xproperty::type::object*
+                {
+                    auto* comp = static_cast<DirectLightComponent*>(p);
+                    ImGui::ColorEdit3("Irradiance", &comp->light.radiance[0]);
+
+                    return GetDirectLightComponentProperties(p);
+                },
+                true,
+                [&]() { ctx->scene.remove<DirectLightComponent>(m_App->SelectedEntity()); }
+            );
         }
 
         if (selected.Has<PointLightComponent>()) {
             auto& pl = selected.Get<PointLightComponent>();
-            DrawComponentSection("Point Light", &pl, GetPointLightComponentProperties, true,
-                [&]() { ctx->scene.remove<PointLightComponent>(m_App->SelectedEntity()); });
+
+            DrawComponentSection(
+                "Point Light",
+                &pl,
+                [&](void* p) -> const xproperty::type::object*
+                {
+                    auto* comp = static_cast<PointLightComponent*>(p);
+                    ImGui::ColorEdit3("Irradiance", &comp->light.radiance[0]);
+                    
+                    return GetPointLightComponentProperties(p);
+                },
+                true,
+                [&]() { ctx->scene.remove<PointLightComponent>(m_App->SelectedEntity()); }
+            );
         }
 
         if (selected.Has<SpotLightComponent>()) {
             auto& sl = selected.Get<SpotLightComponent>();
-            DrawComponentSection("Spot Light", &sl, GetSpotLightComponentProperties, true,
-                [&]() { ctx->scene.remove<SpotLightComponent>(m_App->SelectedEntity()); });
+            DrawComponentSection(
+                "Spot Light",
+                &sl,
+                [&](void* p) -> const xproperty::type::object*
+                {
+                    auto* comp = static_cast<SpotLightComponent*>(p);
+                    ImGui::ColorEdit3("Irradiance", &comp->light.radiance[0]);
+
+                    return GetSpotLightComponentProperties(p);
+                },
+                true,
+                [&]() { ctx->scene.remove<SpotLightComponent>(m_App->SelectedEntity()); }
+            );
         }
 
         if (selected.Has<SkyboxComponent>()) {
@@ -1331,6 +1436,7 @@ namespace EditorUI {
                     UpdateComponent<Boom::NavAgentComponent>(Boom::ComponentID::NAV_AGENT_COMPONENT, selected);
                     UpdateComponent<Boom::AIComponent>(Boom::ComponentID::AI_COMPONENT, selected);
                     UpdateComponent<Boom::ThirdPersonCameraComponent>(Boom::ComponentID::THIRD_PERSON_CAMERA, selected);
+					UpdateComponent<Boom::SpriteComponent>(Boom::ComponentID::SPRITE, selected);
                     ImGui::EndTable();
                 }
             }

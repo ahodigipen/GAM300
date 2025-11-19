@@ -22,6 +22,7 @@ namespace Boom {
         THIRD_PERSON_CAMERA,
         NAV_AGENT_COMPONENT,
         AI_COMPONENT,
+        SPRITE,
         COUNT
     };
     constexpr std::string_view COMPONENT_NAMES[]{
@@ -37,10 +38,10 @@ namespace Boom {
         "Spot Light",           //9
         "Sound",                //10
         "Script",               //11
-        "Third Person Camera" ,  //12
-        "Nav Agent Component",
-        "AI Component"
-
+        "Third Person Camera" , //12
+        "Nav Agent Component",  //13
+        "AI Component",         //14
+        "Sprite"                //15
     };
 
     // transform component
@@ -282,13 +283,13 @@ namespace Boom {
 
     struct ThirdPersonCameraComponent {
         AssetID targetUID = 0;       // The UID of the target entity
-        glm::vec3 offset = glm::vec3(0.0f, 2.0f, -10.0f);
+        glm::vec3 offset = glm::vec3(0.0f, 2.0f, 0.0f);
         float currentDistance = 2.0f;
-        float minDistance = 2.0f;
-        float maxDistance = 2.0f;
+        float minDistance = 1.0f;
+        float maxDistance = 5.0f;
         float currentYaw = 0.0f;
         float currentPitch = 20.0f;
-        float mouseSensitivity = 0.2f;
+        float mouseSensitivity = 1.0f;
         float scrollSensitivity = 1.0f;
 
         // Add this back in
@@ -311,6 +312,7 @@ namespace Boom {
         int   waypoint = 0;
         float speed = 2.5f;  // m/s
         float arrive = 0.15f; // meters
+		glm::vec3 velocity = glm::vec3(0.f);
         bool  active = true;
         bool  dirty = false; // set true when target changes
         std::string followName;
@@ -322,6 +324,7 @@ namespace Boom {
         ("NavAgentComponent", NavAgentComponent
             , obj_member<"Target", &NavAgentComponent::target>
             , obj_member<"Speed", &NavAgentComponent::speed>
+			, obj_member<"Velocity", &NavAgentComponent::velocity>
             , obj_member<"ArriveRadius", &NavAgentComponent::arrive>
             , obj_member<"Active", &NavAgentComponent::active>
             , obj_member<"RepathCooldown", &NavAgentComponent::repathCooldown>
@@ -357,6 +360,19 @@ namespace Boom {
             , obj_member<"PatrolIndex", &AIComponent::patrolIndex>
         )
     };
+
+    struct SpriteComponent {
+        AssetID textureID{ EMPTY_ASSET };
+		glm::vec4 color{ 1.0f };
+        bool uiOverlay{ true };
+
+        XPROPERTY_DEF(
+            "SpriteComponent", SpriteComponent,
+            obj_member<"textureID", &SpriteComponent::textureID>,
+            obj_member<"color", &SpriteComponent::color>,
+            obj_member<"uiOverlay", &SpriteComponent::uiOverlay>
+        )
+    };
     struct Entity
     {
         BOOM_INLINE Entity(EntityRegistry* registry, EntityID entity) :
@@ -388,7 +404,6 @@ namespace Boom {
         {
             return m_EnttID;
         }
-
 
         template<typename T, typename... Args>
         BOOM_INLINE T& Attach(Args&&... args)
