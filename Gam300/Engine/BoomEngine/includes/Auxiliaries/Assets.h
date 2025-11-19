@@ -4,7 +4,7 @@
 #include "Graphics/Models/Model.h"
 #include "Graphics/Textures/Texture.h"
 #include "Graphics/Utilities/Data.h"
-#include "BoomProperties.h"
+#include "BoomProperties.h" 
 
 namespace Boom {
 	using AssetID = uint64_t;
@@ -23,6 +23,7 @@ namespace Boom {
 		MODEL,
 		PHYSICS_MESH,
 		PREFAB,
+		AUDIO,
 	};
 	constexpr char const* TYPE_NAMES[]{
 		"All",
@@ -34,6 +35,7 @@ namespace Boom {
 		"Models(.fbx)",
 		"Physics Meshes (.pxm)",
 		"Prefab",
+		"Audio",
 	};
 
 	struct Asset {
@@ -130,6 +132,10 @@ namespace Boom {
 		std::string serializedData{};
 
 		PrefabAsset() { type = AssetType::PREFAB; }
+	};
+
+	struct AudioAsset : Asset {
+		AudioAsset() { type = AssetType::AUDIO; }
 	};
 
 	//TODO(other uncompleted/custom types):
@@ -276,6 +282,14 @@ namespace Boom {
 			Add(uid, path, asset);
 			return asset;
 		}
+
+		BOOM_INLINE auto AddAudio(AssetID uid, std::string const& path) {
+			auto asset{ std::make_shared<AudioAsset>() };
+			asset->type = AssetType::AUDIO;
+			Add(uid, path, asset);
+			return asset;
+		}
+
 		BOOM_INLINE auto AddScene(AssetID uid, std::string const& path) {
 			auto asset{ std::make_shared<SceneAsset>() };
 			asset->type = AssetType::SCENE;
