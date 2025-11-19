@@ -16,6 +16,8 @@ namespace EditorUI
     {
         EnsureVolumeKeys();
         if (m_Tracks.empty()) m_Selected = -1;
+
+        m_App = ctx;
     }
 
     void AudioPanel::Render()
@@ -89,6 +91,8 @@ namespace EditorUI
                 const bool playing = audio.IsPlaying(name);
                 if (!playing) {
                     if (ImGui::Button("Play")) {
+                        //AudioAsset* assPtr = m_App->GetAssetRegistry().TryGet<AudioAsset>("Fetty Wap.wav"); //use this to get sound by name.wav
+                        //m_App->GetAssetRegistry().Get<AudioAsset>(123412341234) //use this to get sound by unique id (int), replace numbers with unique id
                         audio.StopAllExcept(std::string{});
                         audio.PlaySound(name, path, m_Loop);
                         audio.SetVolume(name, m_Volume[name]);

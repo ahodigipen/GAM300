@@ -345,6 +345,10 @@ namespace EditorUI {
             seen.insert(path);
             RegisterAsset<PrefabAsset>(path, node->texId);
         }
+        else if (!node->isDirectory && ext == ".wav") {
+            seen.insert(path);
+            RegisterAsset<AudioAsset>(path, node->texId);
+        }
         // --- more stuff in future ---
 
         // Recurse into children
@@ -371,8 +375,11 @@ namespace EditorUI {
             else if constexpr (std::is_same_v<T, SkyboxAsset>) {
                 m_App->GetAssetRegistry().AddSkybox(uid, path.generic_string());
             }
-            else if constexpr (std::is_same_v<T, SkyboxAsset>) {
+            else if constexpr (std::is_same_v<T, PrefabAsset>) {
                 m_App->GetAssetRegistry().AddPrefab(uid, path.generic_string());
+            }
+            else if constexpr (std::is_same_v<T, AudioAsset>) {
+                m_App->GetAssetRegistry().AddAudio(uid, path.generic_string());
             }
             // --- more stuff in future ---
 

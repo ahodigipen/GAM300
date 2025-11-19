@@ -23,6 +23,7 @@ namespace Boom {
 		MODEL,
 		PHYSICS_MESH,
 		PREFAB,
+		AUDIO,
 	};
 	constexpr char const* TYPE_NAMES[]{
 		"All",
@@ -34,6 +35,7 @@ namespace Boom {
 		"Models(.fbx)",
 		"Physics Meshes (.pxm)",
 		"Prefab",
+		"Audio",
 	};
 
 	struct Asset {
@@ -142,6 +144,14 @@ namespace Boom {
 		SceneAsset() { type = AssetType::SCENE; }
 	};
 
+	struct AudioAsset : Asset {
+		AudioAsset() { type = AssetType::AUDIO; }
+
+		XPROPERTY_DEF(
+			"AudioAsset", AudioAsset
+		)
+	};
+
 	using SharedAsset = std::shared_ptr<Asset>;
 	using AssetMap = std::unordered_map<AssetID, SharedAsset>;
 
@@ -156,6 +166,7 @@ namespace Boom {
 			AddEmpty<ScriptAsset>();
 			AddEmpty<SceneAsset>();
 			AddEmpty<PhysicsMeshAsset>();
+			AddEmpty<AudioAsset>();
 		}
 
 
@@ -298,6 +309,12 @@ namespace Boom {
 			auto asset = std::make_shared<PhysicsMeshAsset>();
 			asset->type = AssetType::PHYSICS_MESH;
 			asset->cookedMeshPath = path;
+			Add(uid, path, asset);
+			return asset;
+		}
+
+		BOOM_INLINE auto AddAudio(AssetID uid, std::string const& path) {
+			auto asset = std::make_shared<AudioAsset>();
 			Add(uid, path, asset);
 			return asset;
 		}

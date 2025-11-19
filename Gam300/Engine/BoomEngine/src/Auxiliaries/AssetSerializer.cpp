@@ -243,6 +243,16 @@ namespace Boom
             }
         );
 
+        // === Audio ===
+        registry.RegisterAssetSerializer(
+            AssetType::AUDIO,
+            [](YAML::Emitter&, Asset*) {
+
+            },
+            [](AssetRegistry& reg, AssetID uid, const std::string& src, const YAML::Node&)->Asset* {
+                return static_cast<Asset*>(reg.AddAudio(uid, src).get());
+            }
+        );
 
         // === SCENE ===
         registry.RegisterAssetSerializer(

@@ -38,5 +38,7 @@ namespace EditorUI
 
         // Per-track volume
         std::unordered_map<std::string, float> m_Volume;
+
+        Boom::AppInterface* m_App = nullptr;   // preferred access (Interface.h)
     };
 } // namespace EditorUI
