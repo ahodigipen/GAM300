@@ -2,6 +2,7 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
+#pragma once
 #ifdef _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -23,6 +24,8 @@
 #include "../Graphics/Utilities/Culling.h"
 #include "Input/CameraManager.h"
 #include "Graphics/Shaders/DebugLines.h"
+//#include "../../../Editor/src/Vendors/imgui/imgui.h"
+//#include "../../../Editor/src/Vendors/imGuizmo/ImGuizmo.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 #include "Scripting/MonoRuntime.h"
@@ -94,16 +97,7 @@ namespace Boom
         double m_LastPauseTime = 0.0;  // When the last pause started
         bool m_ShouldExit = false;  // Flag for graceful shutdown
         float m_TestRot = 0.0f;
-
         bool m_PhysDebugViz = true;
-
-        // --- Mono State ---
-        MonoDomain* m_MonoRootDomain = nullptr;
-        MonoDomain* m_MonoAppDomain = nullptr;
-        MonoAssembly* m_GameAssembly = nullptr;
-        MonoImage* m_GameImage = nullptr;
-        std::string      m_MonoBase;       // e.g. "<EditorRoot>/Mono"
-        std::string      m_AssembliesPath; // e.g. "<EditorRoot>/Scripts/bin/x64/Debug"
 
 
         // Temporary for showing physics
@@ -144,7 +138,7 @@ namespace Boom
         BOOM_INLINE ~Application()
         {
             DestroyPhysicsActors();
-            ShutdownMonoRuntime();
+            m_Context->scriptingSystem->Shutdown();
             BOOM_DELETE(m_Context);
             //called here in case of the need of multiple windows
             glfwTerminate();
@@ -468,6 +462,65 @@ namespace Boom
                 });
         }
         
+        BOOM_INLINE void RenderScene() {
+            //pbr ecs (always render)
+            EnttView<Entity, ModelComponent>([this](auto entity, ModelComponent& comp) {
+                if (!entity.Has<ModelComponent>() || comp.modelID == EMPTY_ASSET) {
+                    //BOOM_ERROR("[Render] Model data is null for ModelID: {} ({})", comp.modelID, comp.modelName);
+                    return; // Skip rendering this model
+                }
+
+                ModelAsset& model{ m_Context->assets->Get<ModelAsset>(comp.modelID) };
+                if (entity.Has<AnimatorComponent>()) {
+                    auto& an = entity.Get<AnimatorComponent>();
+                    float dt = (m_AppState == ApplicationState::RUNNING) ? (float)m_Context->DeltaTime : 0.0f;
+                    auto& joints = an.animator->Animate(dt);
+                    m_Context->renderer->SetJoints(joints);           // existing
+                }
+                else {
+                    // NEW: ensure no stale palette leaks into this draw
+                    if (model.hasJoints)
+                    {
+                        static std::vector<glm::mat4> identityPalette(100, glm::mat4(1.0f));
+                        m_Context->renderer->SetJoints(identityPalette);
+                    }
+                }
+
+                glm::mat4 worldMatrix = GetWorldMatrix(entity);
+                Transform3D worldTransform;
+                DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
+
+                //draw model with material if it has one otherwise draw default material
+                if (comp.materialID != EMPTY_ASSET) {
+                    auto& material{ m_Context->assets->Get<MaterialAsset>(comp.materialID) };
+
+                    // Only assign textures if they exist and are valid
+                    if (material.albedoMapID != EMPTY_ASSET) {
+                        auto& albedoTex = m_Context->assets->Get<TextureAsset>(material.albedoMapID);
+                        if (albedoTex.data) {
+                            material.data.albedoMap = albedoTex.data;
+                        }
+                    }
+                    if (material.normalMapID != EMPTY_ASSET) {
+                        auto& normalTex = m_Context->assets->Get<TextureAsset>(material.normalMapID);
+                        if (normalTex.data) {
+                            material.data.normalMap = normalTex.data;
+                        }
+                    }
+                    if (material.roughnessMapID != EMPTY_ASSET) {
+                        auto& roughnessTex = m_Context->assets->Get<TextureAsset>(material.roughnessMapID);
+                        if (roughnessTex.data) {
+                            material.data.roughnessMap = roughnessTex.data;
+                        }
+                    }
+
+                    m_Context->renderer->Draw(model.data, worldTransform, material.data);
+                }
+                else {
+                    m_Context->renderer->Draw(model.data, worldTransform);
+                }
+                });
+        }
 
         /**
          * @brief Creates a new empty scene
@@ -496,11 +549,57 @@ namespace Boom
         BOOM_INLINE bool IsSceneLoaded() const { return m_SceneLoaded; }
 
         BOOM_INLINE void UpdateKinematicTransforms()
+        BOOM_INLINE glm::mat4 GetWorldMatrix(Entity& entity)
+        {
+            // 1. Get this entity's local matrix (e.g., the visual model's transform)
+            glm::mat4 localMatrix(1.0f);
+            if (entity.Has<TransformComponent>()) {
+                localMatrix = entity.Get<TransformComponent>().transform.Matrix();
+            }
+
+            // 2. Get the parent's world matrix (e.g., the physics body's transform)
+            glm::mat4 pMatrix(1.0f);
+            if (entity.Has<InfoComponent>()) {
+                uint64_t parentUID = entity.Get<InfoComponent>().parent;
+
+                if (parentUID != 0) // 0 means root/no parent
+                {
+                    entt::entity parentEnttID = entt::null;
+                    auto view = m_Context->scene.view<InfoComponent>();
+                    for (auto e : view) {
+                        if (view.get<InfoComponent>(e).uid == parentUID) {
+                            parentEnttID = e;
+                            break;
+                        }
+                    }
+
+                    if (parentEnttID != entt::null) {
+                        Entity parentEntity{ &m_Context->scene, parentEnttID };
+                        pMatrix = GetWorldMatrix(parentEntity); // Recurse
+                    }
+                }
+            }
+
+            // 3. Decompose the parent's matrix into T, R, and S
+            glm::vec3 pTranslate, pRotate, pScale;
+            DecomposeMatrix(pMatrix, pTranslate, pRotate, pScale);
+
+
+            // 4. Recompose the parent's matrix *without* its scale
+            glm::mat4 pMatrix_NoScale;
+            pMatrix_NoScale = RecomposeMatrix(pTranslate, pRotate, glm::vec3(1.0f));
+
+            // 5. Return the parent's (T*R) multiplied by the child's (T*R*S)
+            return pMatrix_NoScale * localMatrix;
+        }
+
+        BOOM_INLINE void UpdateStaticTransforms()
         {
             EnttView<Entity, RigidBodyComponent>(
                 [this](auto entity, RigidBodyComponent& rb)
                 {
-                    if (rb.RigidBody.type == RigidBody3D::Type::KINEMATIC) {
+                    if (rb.RigidBody.type == RigidBody3D::Type::STATIC)
+                    {
                         auto* actor = rb.RigidBody.actor;
                         if (!actor) return;
 
@@ -543,6 +642,15 @@ namespace Boom
         std::unordered_map<std::string, std::pair<glm::vec3, glm::vec3>> m_SphereInitialStates;
 
         glm::vec3 pivotPosition{};
+        BOOM_INLINE void 
+            
+            
+            
+            SphereInitialState(const std::string& name,
+            const glm::vec3& pos,
+            const glm::vec3& vel = glm::vec3(0.0f)) {
+            m_SphereInitialStates[name] = { pos, vel };
+        }
 		bool m_NavInitialized = false;
         bool m_AIinitialized = false;
         std::unique_ptr<Boom::DebugLinesShader> m_DebugLinesShader;
@@ -592,7 +700,7 @@ namespace Boom
         {
             if (m_NavInitialized) return;
 
-            //auto& reg = m_Context->scene;
+            auto& reg = m_Context->scene;
 
             // 1) Build / load navmesh only once
             if (!m_Nav) {
@@ -730,6 +838,17 @@ namespace Boom
                 m_Context->physics->AddRigidBody(entity, *m_Context->assets);
                 });
 
+            // Creating a script instances 
+            int scriptsCreated = 0;
+            EnttView<Entity, ScriptComponent>([this, &scriptsCreated](auto entity, ScriptComponent& sc) {
+                if (m_Context->scriptingSystem->RecreateForEntity(entity, sc)) {
+                    scriptsCreated++;
+                }
+                });
+
+            if (scriptsCreated > 0) {
+                BOOM_INFO("[Scene] Created {} script instances", scriptsCreated);
+            }
 
             BOOM_INFO("[Scene] Scene systems reinitialization complete");
         }
@@ -820,6 +939,132 @@ namespace Boom
         void DrawRigidBodiesDebugOnly(const glm::mat4& view, const glm::mat4& proj);
 
         static void AppendCapsuleWire(float radius, float halfHeight, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color);
+                    const physx::PxTransform pose(p, q);
+                    dyn->setGlobalPose(pose);
+                    dyn->setLinearVelocity(physx::PxVec3(0.f, 0.f, 0.f));
+                    dyn->setAngularVelocity(physx::PxVec3(0.f, 0.f, 0.f));
+
+                    // Mirror to ECS transform immediately (prevents 1-frame hitch)
+                    transform.transform.translate = m_SphereInitialPosition;
+                    transform.transform.rotate = glm::vec3(0.0f);
+                });
+        }
+
+
+        BOOM_INLINE void ResetAllSpheres()
+        {
+            EnttView<Entity, InfoComponent, TransformComponent, RigidBodyComponent>(
+                [this](auto entity, InfoComponent& info, TransformComponent& transform, RigidBodyComponent& rb)
+                {
+                    (void)entity; // Silence the "unused parameter" warning
+
+                    // 1. Check if this entity is one of the spheres we want to reset
+                    auto it = m_SphereInitialStates.find(info.name);
+                    if (it == m_SphereInitialStates.end()) {
+                        return; // Not a sphere we care about, skip it
+                    }
+
+                    // 2. Get the dynamic actor
+                    auto* dyn = rb.RigidBody.actor->is<physx::PxRigidDynamic>();
+                    if (!dyn) return; // Skip if it's not a dynamic body
+
+                    // 3. Get the initial state from our map
+                    const glm::vec3& initialPos = it->second.first;
+                    const glm::vec3& initialVel = it->second.second;
+
+                    // 4. Create the PhysX pose and velocity
+                    const physx::PxVec3 p(initialPos.x, initialPos.y, initialPos.z);
+                    const physx::PxVec3 v(initialVel.x, initialVel.y, initialVel.z);
+                    const physx::PxQuat q(0.f, 0.f, 0.f, 1.f); // Identity rotation
+
+                    // 5. Teleport the PhysX actor and reset its velocity
+                    const physx::PxTransform pose(p, q);
+                    dyn->setGlobalPose(pose);
+                    dyn->setLinearVelocity(v);
+                    dyn->setAngularVelocity(physx::PxVec3(0.f, 0.f, 0.f));
+
+                    // 6. Update the ECS transform to match (so it's correct next frame)
+                    transform.transform.translate = initialPos;
+                    transform.transform.rotate = glm::vec3(0.0f);
+                });
+        }
+
+        BOOM_INLINE void DestroyPhysicsActors()
+        {
+            // Get the scene from the physics context *once* outside the loop
+            auto* pxScene = m_Context->physics->GetPxScene();
+            if (!pxScene) {
+                BOOM_ERROR("DestroyPhysicsActors failed: No PxScene available.");
+                return;
+            }
+
+            // Iterate over all entities with a RigidBodyComponent
+            EnttView<Entity, RigidBodyComponent>([this, pxScene](auto entity, auto& comp)
+                {
+                    auto* actor = comp.RigidBody.actor;
+                    if (!actor) return; // Skip if no actor
+
+                    // 1. Clean up Collider Pointers (if they exist)
+                    if (entity.template Has<ColliderComponent>())
+                    {
+                        auto& collider = entity.template Get<ColliderComponent>().Collider;
+                        if (collider.material) {
+                            collider.material->release();
+                            collider.material = nullptr;
+                        }
+                        if (collider.Shape) {
+                            collider.Shape->release();
+                            collider.Shape = nullptr;
+                        }
+                    }
+
+                    // 2. Destroy actor user data
+                    if (actor->userData) {
+                        EntityID* owner = static_cast<EntityID*>(actor->userData);
+                        BOOM_DELETE(owner);
+                        actor->userData = nullptr;
+                    }
+
+                    // 3. (THE FIX) Remove from scene, THEN release memory
+                    pxScene->removeActor(*actor);
+                    actor->release();
+                    comp.RigidBody.actor = nullptr;
+                });
+        }
+
+        BOOM_INLINE void RunPhysicsSimulation()
+        {
+            // Only simulate physics if running
+            if (m_AppState == ApplicationState::RUNNING)
+            {
+
+                m_Context->physics->Simulate(1, static_cast<float>(m_Context->DeltaTime));
+                EnttView<Entity, RigidBodyComponent>([this](auto entity, auto& comp)
+                    {
+                        auto& transform = entity.template Get<TransformComponent>().transform;
+
+                        // --- guard / lazy create ---
+                        if (!comp.RigidBody.actor) {
+                            // optional: try to create now
+                            if (m_Context->physics)
+                                m_Context->physics->AddRigidBody(entity, *m_Context->assets);
+
+                            if (!comp.RigidBody.actor) {
+                                // still null -> skip this entity this frame
+                                return;
+                            }
+                        }
+
+                        const auto pose = comp.RigidBody.actor->getGlobalPose();
+                        if (comp.RigidBody.actor->is<physx::PxRigidDynamic>()) {
+                            glm::quat rot(pose.q.w, pose.q.x, pose.q.y, pose.q.z);
+                            transform.rotate = glm::degrees(glm::eulerAngles(rot));
+                            transform.translate = PxToVec3(pose.p);
+                        }
+                    });
+
+            }
+        }
 
         BOOM_INLINE static glm::mat4 PxToGlm(const physx::PxTransform& t)
         {
@@ -929,200 +1174,99 @@ namespace Boom
 #endif
         }
 
-        BOOM_INLINE bool InitMonoRuntime(const std::string& monoBaseDir,
-            const std::string& assembliesDir,
-            const char* domainName = "BoomDomain")
+        BOOM_INLINE void RecreateScriptForEntity(entt::entity entity)
         {
-            // 0) sanity on folders
-            if (!std::filesystem::exists(monoBaseDir) ||
-                !std::filesystem::exists(monoBaseDir + "/lib") ||
-                !std::filesystem::exists(monoBaseDir + "/etc"))
-            {
-                
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] Invalid mono base folder: '{}'", monoBaseDir);
+            if (!m_Context->scene.valid(entity)) return;
 
-#endif // DEBUG
-                return false;
-            }
-            if (!std::filesystem::exists(assembliesDir))
-            {
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] Assemblies folder not found: '{}'", assembliesDir);
+            auto* sc = m_Context->scene.try_get<ScriptComponent>(entity);
+            if (!sc) return;
 
-#endif // DEBUG
-                
-                return false;
-            }
-
-            m_MonoBase = monoBaseDir;
-            m_AssembliesPath = assembliesDir;
-
-            // 1) point Mono at its runtime folders
-            //    On Windows, make sure the Mono DLLs (e.g., mono-2.0-sgen.dll) are next to the EXE or in PATH.
-            mono_set_dirs((m_MonoBase + "/lib").c_str(),
-                (m_MonoBase + "/etc").c_str());
-
-            // 2) config (enables machine.config etc.)
-            //mono_config_parse(nullptr);
-
-            // 3) assembly search paths (so "GameScripts.dll" can be found by name)
-            mono_set_assemblies_path(m_AssembliesPath.c_str());
-
-            // 4) root domain
-            m_MonoRootDomain = mono_jit_init_version(domainName, "v4.0.30319");
-            if (!m_MonoRootDomain)
-            {
-                BOOM_ERROR("[Mono] mono_jit_init_version failed.");
-                return false;
-            }
-
-            // 5) create a child/app domain (optional but recommended for unload/reload patterns)
-            m_MonoAppDomain = mono_domain_create_appdomain(const_cast<char*>("BoomAppDomain"), nullptr);
-            if (!m_MonoAppDomain)
-            {
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] mono_domain_create_appdomain failed.");
-
-#endif // DEBUG
-                return false;
-            }
-            mono_domain_set(m_MonoAppDomain, /* force */ false);
-#ifdef _DEBUG
-            BOOM_INFO("[Mono] Initialized. Base='{}', Assemblies='{}'", m_MonoBase, m_AssembliesPath);
-#endif // DEBUG
-            return true;
+            m_Context->scriptingSystem->RecreateForEntity(entity, *sc);
         }
 
-        BOOM_INLINE void ShutdownMonoRuntime()
+        BOOM_INLINE void UpdateThirdPersonCameras()
         {
-            if (m_MonoAppDomain)
-            {
-                // Switch back to root to safely unload app domain
-                mono_domain_set(m_MonoRootDomain, false);
-                mono_domain_unload(m_MonoAppDomain);
-                m_MonoAppDomain = nullptr;
-            }
-            if (m_MonoRootDomain)
-            {
-                mono_jit_cleanup(m_MonoRootDomain);
-                m_MonoRootDomain = nullptr;
-            }
-            m_GameAssembly = nullptr;
-            m_GameImage = nullptr;
+            // 1. Get input
+            glm::vec2 mouseDelta = m_Context->window->input.mouseDeltaLast();
+            glm::vec2 scrollDelta = m_Context->window->input.scrollDelta();
 
-#ifdef _DEBUG
-            BOOM_INFO("[Mono] Shutdown complete.");
-#endif // DEBUG
+            // 2. Iterate over all third-person cameras
+            EnttView<Entity, ThirdPersonCameraComponent, TransformComponent>(
+                [this, &mouseDelta, &scrollDelta](Entity entity, ThirdPersonCameraComponent& cam, TransformComponent& tc)
+                {
 
-        }
+#define UNUSED(x) (void)(x)
+                    UNUSED(entity);
 
-        BOOM_INLINE bool LoadGameAssembly(const std::string& dllName /* e.g., "GameScripts.dll" */)
-        {
-            if (!m_MonoAppDomain)
-            {
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] App domain not initialized.");
-#endif // DEBUG
 
-                return false;
-            }
 
-            const std::string full = (std::filesystem::path(m_AssembliesPath) / dllName).string();
-            if (!std::filesystem::exists(full))
-            {
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] Assembly not found: {}", full);
+                    // 3. Find the target entity by its UID
+                    if (cam.targetUID == 0) return; // No target UID set
 
-#endif // DEBUG
-                return false;
-            }
+                    entt::entity targetEnttID = entt::null;
+                    auto infoView = m_Context->scene.view<InfoComponent>();
+                    for (auto e : infoView) {
+                        if (infoView.get<InfoComponent>(e).uid == cam.targetUID) {
+                            targetEnttID = e;
+                            break;
+                        }
+                    }
 
-            m_GameAssembly = mono_domain_assembly_open(m_MonoAppDomain, full.c_str());
-            if (!m_GameAssembly)
-            {
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] Failed to load assembly: {}", full);
-#endif // DEBUG
-                return false;
-            }
+                    if (targetEnttID == entt::null) return; // Target not found
 
-            m_GameImage = mono_assembly_get_image(m_GameAssembly);
-            if (!m_GameImage)
-            {
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] mono_assembly_get_image failed.");
-#endif // DEBUG
-                return false;
-            }
-#ifdef _DEBUG
-            BOOM_INFO("[Mono] Loaded assembly: {}", full);
-#endif // DEBUG
-            return true;
-        }
+                    Entity target{ &m_Context->scene, targetEnttID };
+                    if (!target.Has<TransformComponent>()) return; // Target has no position
 
-        BOOM_INLINE bool InvokeStaticVoid(const char* nsName,
-            const char* className,
-            const char* methodName,
-            void** args = nullptr)
-        {
-            if (!m_GameImage) { BOOM_ERROR("[Mono] No assembly image loaded."); return false; }
+                    //
+                    // === NEW LOGIC STARTS HERE ===
+                    //
 
-            MonoClass* klass = mono_class_from_name(m_GameImage, nsName, className);
-            if (!klass) { BOOM_ERROR("[Mono] Class not found: {}.{}", nsName, className); return false; }
+                    // 4. Get the target's full transform
+                    Transform3D& targetTransform = target.Get<TransformComponent>().transform;
+                    glm::vec3 targetPosition = targetTransform.translate;
+                    float targetYaw = targetTransform.rotate.y; // Get the player's Y rotation
 
-            MonoMethod* method = mono_class_get_method_from_name(klass, methodName, /*param_count*/ 0);
-            if (!method) { BOOM_ERROR("[Mono] Method not found: {}.{}", className, methodName); return false; }
+                    // 5. Update Pitch (up/down) from the mouse
+                   // cam.currentPitch -= mouseDelta.y * cam.mouseSensitivity;
 
-            MonoObject* exc = nullptr;
-            mono_runtime_invoke(method, /*this*/ nullptr, args, &exc);
-            if (exc)
-            {
-                // print exception
-                MonoString* s = mono_object_to_string(exc, nullptr);
-                char* utf8 = mono_string_to_utf8(s);
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] Exception: {}", utf8 ? utf8 : "(null)");
-#endif // DEBUG
-                if (utf8) mono_free(utf8);
-                return false;
-            }
-            return true;
-        }
+                    // 6. Apply new Pitch Limits
+                    //    We clamp the pitch from 5 (slightly looking down) to 40 (about 45 degrees)
+                    //    This prevents the camera from going "below the plane".
+                    cam.currentPitch = glm::clamp(cam.currentPitch, 2.0f, 40.0f);
 
-        BOOM_INLINE bool InvokeStatic1Float(const char* nsName,
-            const char* className,
-            const char* methodName,
-            float value)
-        {
-            if (!m_GameImage) { BOOM_ERROR("[Mono] No assembly image loaded."); return false; }
+                    // 7. Lock Yaw (left/right) to the target's yaw
+                    //    This keeps the camera locked behind the player.
+                    cam.currentYaw = targetYaw + 180.0f;
 
-            MonoClass* klass = mono_class_from_name(m_GameImage, nsName, className);
-            if (!klass) { BOOM_ERROR("[Mono] Class not found: {}.{}", nsName, className); return false; }
+                    // 8. Update distance (zoom) from the scroll wheel
+                    cam.currentDistance -= scrollDelta.y * cam.scrollSensitivity;
+                    cam.currentDistance = glm::clamp(cam.currentDistance, cam.minDistance, cam.maxDistance);
 
-            // method with 1 parameter
-            MonoMethod* method = mono_class_get_method_from_name(klass, methodName, 1);
-            if (!method) { BOOM_ERROR("[Mono] Method not found: {}.{}", className, methodName); return false; }
+                    // 9. Calculate the camera's final orientation
+                    glm::quat orientation = glm::quat(glm::vec3(glm::radians(cam.currentPitch),
+                        glm::radians(cam.currentYaw),
+                        0.0f));
 
-            void* args[1];
-            args[0] = &value;
+                    // 10. Define the pivot point (e.g., 5 units above the player's origin)
+                    glm::vec3 pivotPosition = targetPosition + glm::vec3(0.0f, cam.offset.y, 0.0f);
 
-            MonoObject* exc = nullptr;
-            mono_runtime_invoke(method, nullptr, args, &exc);
-            if (exc)
-            {
-                MonoString* s = mono_object_to_string(exc, nullptr);
-                char* utf8 = mono_string_to_utf8(s);
-                BOOM_ERROR("[Mono] Exception: {}", utf8 ? utf8 : "(null)");
-                if (utf8) mono_free(utf8);
-                return false;
-            }
-            return true;
-        }
+                    // 11. Calculate the final camera position
+                    //     Start with a vector pointing "back" by the zoom distance
+                    glm::vec3 offsetVector = glm::vec3(0.0f, 0.0f, -cam.currentDistance);
+                    //     Rotate that vector by the final orientation
+                    glm::vec3 rotatedOffset = orientation * offsetVector;
+                    //     Add it to the pivot point
+                    glm::vec3 desiredPosition = pivotPosition + rotatedOffset;
 
-        BOOM_INLINE void DrawDebugTPC() {
-            ModelAsset const* mdl{ m_Context->assets->TryGet<ModelAsset>("Cube.FBX") };
-            m_Context->renderer->Draw(mdl->data, Transform3D{ pivotPosition, glm::vec3(0.f), glm::vec3(.2f) });
+                    // 12. Update the camera's actual transform
+                    tc.transform.translate = desiredPosition;
+
+                    // 13. Make the camera look at the pivot point
+                    tc.transform.rotate = glm::degrees(glm::eulerAngles(
+                        glm::quatLookAt(glm::normalize(pivotPosition - desiredPosition), glm::vec3(0, 1, 0))
+                    ));
+                }
+            );
         }
     };
 
