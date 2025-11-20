@@ -1121,10 +1121,10 @@ namespace Boom
             return true;
         }
 
-        BOOM_INLINE void DrawDebugTPC() {
+        /*BOOM_INLINE void DrawDebugTPC() {
             ModelAsset const* mdl{ m_Context->assets->TryGet<ModelAsset>("Cube.FBX") };
             m_Context->renderer->Draw(mdl->data, Transform3D{ pivotPosition, glm::vec3(0.f), glm::vec3(.2f) });
-        }
+        }*/
     };
 
 

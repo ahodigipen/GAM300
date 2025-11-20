@@ -10,6 +10,7 @@
 #include "Auxiliaries/Profiler.h"
 #include "Audio/Audio.hpp"
 
+
 namespace Boom
 {
 	// Forward declarations
