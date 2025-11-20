@@ -83,7 +83,9 @@ namespace Boom
         BOOM_INLINE void EnttView(Fn&& fn) {
             auto view = m_Context->scene.view<Components...>();
             for (auto e : view) {
-                fn(EntityType{ &m_Context->scene, e }, m_Context->scene.get<Components>(e)...);
+                // fn(EntityType{ &m_Context->scene, e }, m_Context->scene.get<Components>(e)...);
+                EntityType entity{ &m_Context->scene, e };
+                fn(entity, m_Context->scene.get<Components>(e)...);
             }
         }
 
@@ -121,6 +123,9 @@ namespace Boom
         {
             m_LayerID = TypeID<Application>();
             m_Context = new AppContext();
+
+            m_Context->app = this;
+
             RegisterEventCallbacks();
 
             AttachCallback<WindowResizeEvent>([this](auto e) {
@@ -290,8 +295,58 @@ namespace Boom
             // Reinitialize systems that need it
             ReinitializeSceneSystems();
 
+            InvokeStaticVoid("GameScripts", "Entry", "Start");
+
             BOOM_INFO("[Scene] Successfully loaded scene '{}'", sceneName);
             return true;
+        }
+
+
+        BOOM_INLINE bool LoadSceneAdditive(const std::string& sceneName, const std::string& scenePath = "Scenes/")
+        {
+            DataSerializer serializer;
+            const std::string sceneFilePath = scenePath + sceneName + ".yaml";
+            BOOM_INFO("[Scene] Additively loading scene '{}'", sceneName, sceneFilePath);
+
+            // Deserialize new entities and components into the EXISTING scene
+            serializer.Deserialize(m_Context->scene, *m_Context->assets, sceneFilePath);
+
+            // Reinitialize systems, but ONLY for the newly loaded objects.
+            BOOM_INFO("[Scene] Initializing physics for additive objects...");
+            auto view = m_Context->scene.view<PauseMenuTagComponent, RigidBodyComponent>();
+            for (auto e : view) {
+                // Check if it's already been added
+                auto& rb = view.get<RigidBodyComponent>(e);
+                if (!rb.RigidBody.actor) {
+                    Boom::Entity entity{ &m_Context->scene, e };
+                    m_Context->physics->AddRigidBody(entity, *m_Context->assets);
+                }
+            }
+
+            InvokeStaticVoid("GameScripts", "Entry", "Start");
+
+            BOOM_INFO("[Scene] Successfully added scene '{}'", sceneName);
+            return true;
+        }
+
+        template<typename TagComponent>
+        BOOM_INLINE void UnloadAdditiveScene()
+        {
+            BOOM_INFO("[Scene] Unloading additive scene with tag...");
+            auto& reg = m_Context->scene;
+            auto view = reg.view<TagComponent>();
+
+            for (auto e : view) {
+                if (reg.all_of<RigidBodyComponent>(e)) {
+                    auto& rb = reg.get<RigidBodyComponent>(e);
+                    if (rb.RigidBody.actor) {
+                        rb.RigidBody.actor->release();
+                        rb.RigidBody.actor = nullptr;
+                    }
+                }
+            }
+            reg.destroy(view.begin(), view.end());
+            BOOM_INFO("[Scene] Unload complete.");
         }
 
         BOOM_INLINE void LightsUpdate() {
@@ -431,6 +486,21 @@ namespace Boom
             out.push_back(Boom::LineVert{ b, cB });
         }
 
+        BOOM_INLINE void SetPreviousScenePath(const std::string& path)
+        {
+            strncpy_s(m_PreviousScenePath, 512, path.c_str(), _TRUNCATE);
+        }
+
+        BOOM_INLINE std::string GetPreviousScenePath() const
+        {
+            return std::string(m_PreviousScenePath);
+        }
+
+        BOOM_INLINE void SetCurrentScenePath(const std::string& path)
+        {
+            strncpy_s(m_CurrentScenePath, 512, path.c_str(), _TRUNCATE);
+        }
+
     private:
         std::unordered_map<std::string, std::pair<glm::vec3, glm::vec3>> m_SphereInitialStates;
 
@@ -440,6 +510,7 @@ namespace Boom
         std::unique_ptr<Boom::DebugLinesShader> m_DebugLinesShader;
         std::vector<Boom::PhysicsContext::DebugLine> m_PhysLinesCPU;
         char m_CurrentScenePath[512] = "\0";
+        char m_PreviousScenePath[512] = "\0";
         bool m_SceneLoaded = false;
         std::unique_ptr<DetourNavSystem> m_Nav;
        

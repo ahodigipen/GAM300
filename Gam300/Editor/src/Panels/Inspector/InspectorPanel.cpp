@@ -1041,6 +1041,13 @@ namespace EditorUI {
                 [&]() { ctx->scene.remove<SkyboxComponent>(m_App->SelectedEntity()); });
         }
 
+        if (selected.Has<Boom::PauseMenuTagComponent>()) {
+            static Boom::PauseMenuTagComponent fakeTagInstance;
+
+            DrawComponentSection("Pause Menu Tag", &fakeTagInstance, [](void*) { return nullptr; }, true,
+                [&]() { ctx->scene.remove<Boom::PauseMenuTagComponent>(m_App->SelectedEntity()); });
+        }
+
         // ===== Add Component =====
         ImGui::Spacing(); ImGui::Separator(); ImGui::Spacing();
         if (ImGui::Button("Add Component", ImVec2(-1, 30))) {
@@ -1256,6 +1263,7 @@ namespace EditorUI {
                     UpdateComponent<Boom::AIComponent>(Boom::ComponentID::AI_COMPONENT, selected);
                     UpdateComponent<Boom::ThirdPersonCameraComponent>(Boom::ComponentID::THIRD_PERSON_CAMERA, selected);
 					UpdateComponent<Boom::SpriteComponent>(Boom::ComponentID::SPRITE, selected);
+                    UpdateComponent<Boom::PauseMenuTagComponent>(Boom::ComponentID::PAUSE_MENU_TAG, selected);
                     ImGui::EndTable();
                 }
             }

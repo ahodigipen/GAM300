@@ -35,6 +35,7 @@ XPROPERTY_REG(PointLightComponent)
 XPROPERTY_REG(SpotLightComponent)
 XPROPERTY_REG(ThirdPersonCameraComponent)
 XPROPERTY_REG(SpriteComponent)
+XPROPERTY_REG(PauseMenuTagComponent)
 
 //===============ASSETS================= 
 XPROPERTY_REG(MaterialAsset)

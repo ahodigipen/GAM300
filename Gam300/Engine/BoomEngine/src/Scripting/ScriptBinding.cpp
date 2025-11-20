@@ -13,6 +13,8 @@
      
 #include "AppWindow.h"
 #include "Input/InputHandler.h"
+
+#include "Application/Application.h"
 namespace Boom {
 
     static AppContext* s_Ctx = nullptr;
@@ -103,7 +105,65 @@ namespace Boom {
         return s_Ctx->window->input.mouseDown(button);
     }
 
+    static void ICALL_API_LoadScene(MonoString* sceneName) {
+        if (!sceneName || !s_Ctx || !s_Ctx->app) return;
+        char* s = mono_string_to_utf8(sceneName);
+        if (s) {
+            std::string sceneNameStr(s);
 
+            if (sceneNameStr == "PauseMenu") {
+                std::string currentPath = s_Ctx->app->GetCurrentScenePath();
+                s_Ctx->app->SetPreviousScenePath(currentPath);
+            }
+
+            s_Ctx->app->LoadScene(sceneNameStr);
+            mono_free(s);
+        }
+    }
+
+    static MonoString* ICALL_API_GetCurrentSceneName() {
+        if (!s_Ctx || !s_Ctx->app) return mono_string_new(mono_domain_get(), "");
+
+        std::string path = s_Ctx->app->GetCurrentScenePath();
+        if (path.empty()) {
+            return mono_string_new(mono_domain_get(), "");
+        }
+
+        std::filesystem::path p(path);
+        std::string sceneName = p.stem().string();
+        return mono_string_new(mono_domain_get(), sceneName.c_str());
+    }
+
+    static void ICALL_API_QuitGame() {
+        if (s_Ctx && s_Ctx->app) {
+            s_Ctx->app->Stop();
+        }
+    }
+
+    static void ICALL_API_LoadSceneAdditive(MonoString* sceneName) {
+        if (!sceneName || !s_Ctx || !s_Ctx->app) return;
+        char* s = mono_string_to_utf8(sceneName);
+        if (s) {
+            s_Ctx->app->LoadSceneAdditive(s);
+            mono_free(s);
+        }
+    }
+
+    static void ICALL_API_UnloadPauseMenu() {
+        if (!s_Ctx || !s_Ctx->app) return;
+        s_Ctx->app->UnloadAdditiveScene<PauseMenuTagComponent>();
+    }
+
+    static void ICALL_API_TogglePause() {
+        if (s_Ctx && s_Ctx->app) {
+            s_Ctx->app->TogglePause();
+        }
+    }
+
+    static int ICALL_API_GetApplicationState() {
+        if (!s_Ctx || !s_Ctx->app) return (int)ApplicationState::STOPPED;
+        return (int)s_Ctx->app->GetState();
+    }
 
     void RegisterScriptInternalCalls(AppContext* ctx)
     {
@@ -121,5 +181,12 @@ namespace Boom {
         mono_add_internal_call("GameScripts.Native::Boom_API_IsKeyDown", (const void*)ICALL_API_IsKeyDown);
         mono_add_internal_call("GameScripts.Native::Boom_API_IsMouseDown", (const void*)ICALL_API_IsMouseDown);
 
+        mono_add_internal_call("GameScripts.Native::Boom_API_LoadScene", (const void*)ICALL_API_LoadScene);
+        mono_add_internal_call("GameScripts.Native::Boom_API_GetCurrentSceneName", (const void*)ICALL_API_GetCurrentSceneName);
+        mono_add_internal_call("GameScripts.Native::Boom_API_QuitGame", (const void*)ICALL_API_QuitGame);
+        mono_add_internal_call("GameScripts.Native::Boom_API_LoadSceneAdditive", (const void*)ICALL_API_LoadSceneAdditive);
+        mono_add_internal_call("GameScripts.Native::Boom_API_UnloadPauseMenu", (const void*)ICALL_API_UnloadPauseMenu);
+        mono_add_internal_call("GameScripts.Native::Boom_API_TogglePause", (const void*)ICALL_API_TogglePause);
+        mono_add_internal_call("GameScripts.Native::Boom_API_GetApplicationState", (const void*)ICALL_API_GetApplicationState);
     }
 }

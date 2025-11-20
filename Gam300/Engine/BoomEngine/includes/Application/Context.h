@@ -14,7 +14,7 @@ namespace Boom
 {
 	// Forward declaration of the base interface
 	struct  AppInterface;
-
+	struct Application;
 
 	/**
 	* @brief Holds global state and owns all attached layers.
@@ -45,6 +45,8 @@ namespace Boom
 		//		BOOM_DELETE(layer);
 		//	}
 		//}
+
+		Application* app = nullptr;
 
 		/**
 		 * @brief Container of all active layers in the application.
