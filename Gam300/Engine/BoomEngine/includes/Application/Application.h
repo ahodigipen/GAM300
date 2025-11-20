@@ -144,7 +144,6 @@ namespace Boom
         BOOM_INLINE ~Application()
         {
             DestroyPhysicsActors();
-            ShutdownMonoRuntime();
             BOOM_DELETE(m_Context);
             //called here in case of the need of multiple windows
             glfwTerminate();
@@ -731,6 +730,17 @@ namespace Boom
                 m_Context->physics->AddRigidBody(entity, *m_Context->assets);
                 });
 
+            // Creating a script instances 
+            int scriptsCreated = 0;
+            EnttView<Entity, ScriptComponent>([this, &scriptsCreated](auto entity, ScriptComponent& sc) {
+                if (m_Context->scriptingSystem->RecreateForEntity(entity, sc)) {
+                    scriptsCreated++;
+                }
+                });
+
+            if (scriptsCreated > 0) {
+                BOOM_INFO("[Scene] Created {} script instances", scriptsCreated);
+            }
 
             BOOM_INFO("[Scene] Scene systems reinitialization complete");
         }
@@ -930,203 +940,17 @@ namespace Boom
 #endif
         }
 
-        BOOM_INLINE bool InitMonoRuntime(const std::string& monoBaseDir,
-            const std::string& assembliesDir,
-            const char* domainName = "BoomDomain")
+        BOOM_INLINE void RecreateScriptForEntity(entt::entity entity)
         {
-            // 0) sanity on folders
-            if (!std::filesystem::exists(monoBaseDir) ||
-                !std::filesystem::exists(monoBaseDir + "/lib") ||
-                !std::filesystem::exists(monoBaseDir + "/etc"))
-            {
+            if (!m_Context->scene.valid(entity)) return;
 
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] Invalid mono base folder: '{}'", monoBaseDir);
+            auto* sc = m_Context->scene.try_get<ScriptComponent>(entity);
+            if (!sc) return;
 
-#endif // DEBUG
-                return false;
-            }
-            if (!std::filesystem::exists(assembliesDir))
-            {
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] Assemblies folder not found: '{}'", assembliesDir);
-
-#endif // DEBUG
-
-                return false;
-            }
-
-            m_MonoBase = monoBaseDir;
-            m_AssembliesPath = assembliesDir;
-
-            // 1) point Mono at its runtime folders
-            //    On Windows, make sure the Mono DLLs (e.g., mono-2.0-sgen.dll) are next to the EXE or in PATH.
-            mono_set_dirs((m_MonoBase + "/lib").c_str(),
-                (m_MonoBase + "/etc").c_str());
-
-            // 2) config (enables machine.config etc.)
-            //mono_config_parse(nullptr);
-
-            // 3) assembly search paths (so "GameScripts.dll" can be found by name)
-            mono_set_assemblies_path(m_AssembliesPath.c_str());
-
-            // 4) root domain
-            m_MonoRootDomain = mono_jit_init_version(domainName, "v4.0.30319");
-            if (!m_MonoRootDomain)
-            {
-                BOOM_ERROR("[Mono] mono_jit_init_version failed.");
-                return false;
-            }
-
-            // 5) create a child/app domain (optional but recommended for unload/reload patterns)
-            m_MonoAppDomain = mono_domain_create_appdomain(const_cast<char*>("BoomAppDomain"), nullptr);
-            if (!m_MonoAppDomain)
-            {
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] mono_domain_create_appdomain failed.");
-
-#endif // DEBUG
-                return false;
-            }
-            mono_domain_set(m_MonoAppDomain, /* force */ false);
-#ifdef _DEBUG
-            BOOM_INFO("[Mono] Initialized. Base='{}', Assemblies='{}'", m_MonoBase, m_AssembliesPath);
-#endif // DEBUG
-            return true;
+            m_Context->scriptingSystem->RecreateForEntity(entity, *sc);
         }
 
-        BOOM_INLINE void ShutdownMonoRuntime()
-        {
-            if (m_MonoAppDomain)
-            {
-                // Switch back to root to safely unload app domain
-                mono_domain_set(m_MonoRootDomain, false);
-                mono_domain_unload(m_MonoAppDomain);
-                m_MonoAppDomain = nullptr;
-            }
-            if (m_MonoRootDomain)
-            {
-                mono_jit_cleanup(m_MonoRootDomain);
-                m_MonoRootDomain = nullptr;
-            }
-            m_GameAssembly = nullptr;
-            m_GameImage = nullptr;
-
-#ifdef _DEBUG
-            BOOM_INFO("[Mono] Shutdown complete.");
-#endif // DEBUG
-
-        }
-
-        BOOM_INLINE bool LoadGameAssembly(const std::string& dllName /* e.g., "GameScripts.dll" */)
-        {
-            if (!m_MonoAppDomain)
-            {
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] App domain not initialized.");
-#endif // DEBUG
-
-                return false;
-            }
-
-            const std::string full = (std::filesystem::path(m_AssembliesPath) / dllName).string();
-            if (!std::filesystem::exists(full))
-            {
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] Assembly not found: {}", full);
-
-#endif // DEBUG
-                return false;
-            }
-
-            m_GameAssembly = mono_domain_assembly_open(m_MonoAppDomain, full.c_str());
-            if (!m_GameAssembly)
-            {
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] Failed to load assembly: {}", full);
-#endif // DEBUG
-                return false;
-            }
-
-            m_GameImage = mono_assembly_get_image(m_GameAssembly);
-            if (!m_GameImage)
-            {
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] mono_assembly_get_image failed.");
-#endif // DEBUG
-                return false;
-            }
-#ifdef _DEBUG
-            BOOM_INFO("[Mono] Loaded assembly: {}", full);
-#endif // DEBUG
-            return true;
-        }
-
-        BOOM_INLINE bool InvokeStaticVoid(const char* nsName,
-            const char* className,
-            const char* methodName,
-            void** args = nullptr)
-        {
-            if (!m_GameImage) { BOOM_ERROR("[Mono] No assembly image loaded."); return false; }
-
-            MonoClass* klass = mono_class_from_name(m_GameImage, nsName, className);
-            if (!klass) { BOOM_ERROR("[Mono] Class not found: {}.{}", nsName, className); return false; }
-
-            MonoMethod* method = mono_class_get_method_from_name(klass, methodName, /*param_count*/ 0);
-            if (!method) { BOOM_ERROR("[Mono] Method not found: {}.{}", className, methodName); return false; }
-
-            MonoObject* exc = nullptr;
-            mono_runtime_invoke(method, /*this*/ nullptr, args, &exc);
-            if (exc)
-            {
-                // print exception
-                MonoString* s = mono_object_to_string(exc, nullptr);
-                char* utf8 = mono_string_to_utf8(s);
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] Exception: {}", utf8 ? utf8 : "(null)");
-#endif // DEBUG
-                if (utf8) mono_free(utf8);
-                return false;
-            }
-            return true;
-        }
-
-        BOOM_INLINE bool InvokeStatic1Float(const char* nsName,
-            const char* className,
-            const char* methodName,
-            float value)
-        {
-            if (!m_GameImage) { BOOM_ERROR("[Mono] No assembly image loaded."); return false; }
-
-            MonoClass* klass = mono_class_from_name(m_GameImage, nsName, className);
-            if (!klass) { BOOM_ERROR("[Mono] Class not found: {}.{}", nsName, className); return false; }
-
-            // method with 1 parameter
-            MonoMethod* method = mono_class_get_method_from_name(klass, methodName, 1);
-            if (!method) { BOOM_ERROR("[Mono] Method not found: {}.{}", className, methodName); return false; }
-
-            void* args[1];
-            args[0] = &value;
-
-            MonoObject* exc = nullptr;
-            mono_runtime_invoke(method, nullptr, args, &exc);
-            if (exc)
-            {
-                MonoString* s = mono_object_to_string(exc, nullptr);
-                char* utf8 = mono_string_to_utf8(s);
-                BOOM_ERROR("[Mono] Exception: {}", utf8 ? utf8 : "(null)");
-                if (utf8) mono_free(utf8);
-                return false;
-            }
-            return true;
-        }
-
-        /*BOOM_INLINE void DrawDebugTPC() {
-            ModelAsset const* mdl{ m_Context->assets->TryGet<ModelAsset>("Cube.FBX") };
-            m_Context->renderer->Draw(mdl->data, Transform3D{ pivotPosition, glm::vec3(0.f), glm::vec3(.2f) });
-        }*/
     };
-
 
 
 }

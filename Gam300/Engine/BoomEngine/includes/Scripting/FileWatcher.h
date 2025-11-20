@@ -48,13 +48,4 @@ namespace Boom {
 		static TimePoint GetFileWriteTime(const std::string& filepath);
 	};
 
-	
-
-	//FileWatcher::FileWatcher()
-	//{
-	//}
-
-	//FileWatcher::~FileWatcher()
-	//{
-	//}
 }

@@ -127,5 +127,5 @@ namespace {
         BOOM_INFO("Maximum generic vertex attributes: {}", output);
         glGetIntegerv(GL_MAX_VERTEX_ATTRIB_BINDINGS, &output);
         BOOM_INFO("Maximum vertex buffer bindings: {}\n", output);
-    }
+    };
 }
