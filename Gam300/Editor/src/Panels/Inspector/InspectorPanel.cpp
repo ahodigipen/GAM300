@@ -920,8 +920,20 @@ namespace EditorUI {
 
         if (selected.Has<PointLightComponent>()) {
             auto& pl = selected.Get<PointLightComponent>();
-            DrawComponentSection("Point Light", &pl, GetPointLightComponentProperties, true,
-                [&]() { ctx->scene.remove<PointLightComponent>(m_App->SelectedEntity()); });
+
+            DrawComponentSection(
+                "Point Light",
+                &pl,
+                [&](void* p) -> const xproperty::type::object*
+                {
+                    auto* comp = static_cast<PointLightComponent*>(p);
+                    ImGui::ColorEdit3("Irradiance", &comp->light.radiance[0]);
+
+                    return GetPointLightComponentProperties(p);
+                },
+                true,
+                [&]() { ctx->scene.remove<PointLightComponent>(m_App->SelectedEntity()); }
+            );
         }
 
         if (selected.Has<SpotLightComponent>()) {
