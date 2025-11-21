@@ -64,9 +64,14 @@ namespace GameScripts
         public const int KEY_W = 87, KEY_A = 65, KEY_S = 83, KEY_D = 68, KEY_SPACE = 32;
         public const int MOUSE_LEFT = 0;
         public const int MOUSE_RIGHT = 1;
+
+        public const int KEY_H = 72; // For How to Play
+
         public const int KEY_P = 80; // For Pause
         public const int KEY_R = 82; // For Resume
+        public const int KEY_Y = 89; // For Restart
         public const int KEY_M = 77; // For Main Menu
+
         public const int KEY_Q = 81; // For Quit
         public const int KEY_LEFT_CONTROL = 341;
 

@@ -7,7 +7,8 @@ namespace Boom
     void Application::RunContext(bool showFrame)
     {
         BOOM_INFO("[Application] RunContext started");
-        LoadScene("level");
+        //LoadScene("level");
+        LoadScene("MainMenu");
 
 
         // -- LOADING in MONO --
