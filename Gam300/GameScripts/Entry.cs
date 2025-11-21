@@ -6,10 +6,8 @@ namespace GameScripts
     public static class Entry
     {
         private static ulong _player;
-        private static float _speed = 10f;
-
-        private static float _vy = 0f, _gravity = -20f, _jumpSpeed = 8f, _groundY = 0f;
-        private static bool _grounded = true;
+        private static float _speed = 10f;   // movement speed (units per second)
+        private static float _jumpSpeed = 8f; // vertical jump velocity
 
         public static void Start()
         {
@@ -37,8 +35,6 @@ namespace GameScripts
                 }
 
                 API.Log("[C#] Samurai has required components (Transform + Script) - OK");
-                _groundY = API.GetPosition(_player).Y;
-                API.Log("[C#] Ground Y set to: " + _groundY);
             }
             else
             {
@@ -67,10 +63,18 @@ namespace GameScripts
                 return;
             }
 
-            var pos = API.GetPosition(_player);
+            // =============== PHYSX-BASED MOVEMENT =================
 
+            // 1. Get the player's CURRENT velocity from PhysX
+            var vel = API.GetLinearVelocity(_player);
+
+            // 2. Check if the player is allowed to move (RMB held disables movement)
             bool allowMove = !API.IsMouseDown(API.MOUSE_RIGHT);
 
+            // 3. Check if the player is "grounded" via collision flag
+            bool isGrounded = API.IsColliding(_player);
+
+            // 4. Calculate horizontal movement input
             float dx = 0f, dz = 0f;
             if (allowMove)
             {
@@ -78,33 +82,38 @@ namespace GameScripts
                 if (API.IsKeyDown(API.KEY_D)) dx += 1f;
                 if (API.IsKeyDown(API.KEY_W)) dz -= 1f; // forward = -Z
                 if (API.IsKeyDown(API.KEY_S)) dz += 1f;
-
-                if (dx != 0f || dz != 0f)
-                {
-                    float len = (float)Math.Sqrt(dx * dx + dz * dz);
-                    dx /= len; dz /= len;
-                    pos.X += dx * _speed * dt;
-                    pos.Z += dz * _speed * dt;
-                }
-
-                if (_grounded && API.IsKeyDown(API.KEY_SPACE))
-                {
-                    _vy = _jumpSpeed;
-                    _grounded = false;
-                }
             }
 
-            _vy += _gravity * dt;
-            pos.Y += _vy * dt;
-
-            if (pos.Y <= _groundY)
+            // 5. Apply horizontal velocity
+            if (dx != 0f || dz != 0f)
             {
-                pos.Y = _groundY;
-                _vy = 0f;
-                _grounded = true;
+                // Normalize to prevent faster diagonal movement
+                float len = (float)Math.Sqrt(dx * dx + dz * dz);
+                vel.X = (dx / len) * _speed;
+                vel.Z = (dz / len) * _speed;
+            }
+            else
+            {
+                // No input, so stop horizontal movement
+                vel.X = 0f;
+                vel.Z = 0f;
             }
 
-            API.SetPosition(_player, pos);
+            // 6. Apply vertical velocity (Jumping)
+            if (allowMove && isGrounded && API.IsKeyDown(API.KEY_SPACE))
+            {
+                // Apply a one-time upward velocity.
+                vel.Y = _jumpSpeed;
+            }
+            // NOTE: We do NOT apply gravity here.
+            // PhysX already applies gravity every simulation step.
+            // We just modify vel.X / vel.Z + jump impulse, and let PhysX handle the rest.
+
+            // 7. Set the FINAL velocity back into PhysX
+            API.SetLinearVelocity(_player, vel);
+
+            // No more manual position / gravity / ground clamping.
+            // Transform is driven entirely by the physics simulation.
         }
     }
 }
