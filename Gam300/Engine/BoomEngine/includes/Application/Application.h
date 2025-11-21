@@ -190,8 +190,13 @@ namespace Boom
             BOOM_INFO("[Application] Saved pre-play scene state");
 
             // Initialize physics actors for all rigid bodies
-            EnttView<Entity, RigidBodyComponent>([this](auto entity, auto&) {
-                if (!entity.template Get<RigidBodyComponent>().RigidBody.actor) {
+            EnttView<Entity, ColliderComponent>([this](auto entity, auto&) {
+                // Only add if it DOESN'T have a RigidBodyComponent
+                if (!entity.Has<RigidBodyComponent>()) {
+                    m_Context->physics->AddColliderOnly(entity, *m_Context->assets);
+                }
+                else {
+                    // Has both collider and rigidbody - use existing logic
                     m_Context->physics->AddRigidBody(entity, *m_Context->assets);
                 }
                 });
@@ -859,11 +864,79 @@ namespace Boom
 
         BOOM_INLINE void RegisterEventCallbacks()
         {
-            // Set physics event callback (mark unused param to avoid warnings)
+            // Set physics event callback
             m_Context->physics->SetEventCallback([this](auto e)
                 {
-                    // Check if this is a contact event
-                    if (e.Event == PxEvent::CONTACT)
+                    // Handle TRIGGER events
+                    if (e.Event == PxEvent::TRIGGER)
+                    {
+                        // Get both entities from the event payload
+                        entt::entity triggerEntity = (entt::entity)e.Entity2;  // The trigger volume
+                        entt::entity enteringEntity = (entt::entity)e.Entity1; // The entity entering
+
+                        // Validate both entities exist
+                        if (!m_Context->scene.valid(triggerEntity) || !m_Context->scene.valid(enteringEntity))
+                            return;
+
+                        // Get entity names for logging (if they have InfoComponent)
+                        std::string triggerName = "Unknown";
+                        std::string enteringName = "Unknown";
+
+                        if (m_Context->scene.all_of<InfoComponent>(triggerEntity))
+                        {
+                            triggerName = m_Context->scene.get<InfoComponent>(triggerEntity).name;
+                        }
+
+                        if (m_Context->scene.all_of<InfoComponent>(enteringEntity))
+                        {
+                            enteringName = m_Context->scene.get<InfoComponent>(enteringEntity).name;
+                        }
+
+                        BOOM_INFO("[Trigger] '{}' entered trigger '{}'", enteringName, triggerName);
+
+                        // ===== CUSTOM TRIGGER LOGIC =====
+                        // Example: Checkpoint trigger
+                        if (triggerName == "Checkpoint")
+                        {
+                            BOOM_INFO("Checkpoint activated by '{}'!", enteringName);
+                            // Add your checkpoint logic here
+                            // e.g., save player position, play sound, etc.
+                        }
+
+                        // Example: Damage zone
+                        if (triggerName == "DamageZone" && enteringName == "Player")
+                        {
+                            BOOM_WARN("Player entered damage zone!");
+                            // Apply damage logic here
+                        }
+
+                        // Example: Collectible item
+                        if (triggerName.find("Coin") != std::string::npos)
+                        {
+                            BOOM_INFO("Coin collected by '{}'", enteringName);
+                            // Destroy the coin entity
+                            // m_Context->scene.destroy(triggerEntity);
+                            // Add score, play sound, etc.
+                        }
+
+                        // Example: Door activation
+                        if (triggerName == "DoorTrigger" && enteringName == "Player")
+                        {
+                            BOOM_INFO("Player approached door - opening...");
+                            // Find and open the associated door
+                            // You could store a reference to the door entity in a component
+                        }
+
+                        // Example: Enemy aggro zone
+                        if (triggerName.find("AggroZone") != std::string::npos)
+                        {
+                            BOOM_INFO("'{}' entered enemy aggro zone", enteringName);
+                            // Activate enemy AI, start chase behavior, etc.
+                        }
+                    }
+
+                    // Handle CONTACT events (existing code)
+                    else if (e.Event == PxEvent::CONTACT)
                     {
                         // Get both entities from the event payload
                         entt::entity ent1 = (entt::entity)e.Entity1;

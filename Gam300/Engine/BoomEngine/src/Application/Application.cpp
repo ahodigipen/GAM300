@@ -667,14 +667,14 @@ namespace Boom
 
         std::vector<Boom::LineVert> verts;
         verts.reserve(1024);
-        //const glm::vec4 color(0.1f, 1.0f, 0.1f, 1.0f);
 
+        // 1. Draw entities WITH RigidBodyComponent (existing code)
         EnttView<Entity, RigidBodyComponent>([&](auto entity, RigidBodyComponent& rb) {
             if (!entity.template Has<ColliderComponent>()) return;
 
             const glm::vec4 color = rb.RigidBody.isColliding
                 ? glm::vec4(1.0f, 0.0f, 0.0f, 1.0f) // Bright Red when colliding
-                : glm::vec4(1.1f, 0.0f, 1.0f, 1.0f);
+                : glm::vec4(1.1f, 0.0f, 1.0f, 1.0f); // Magenta for normal rigidbodies
 
             physx::PxRigidActor* actor = rb.RigidBody.actor;
             if (!actor) return;
@@ -701,14 +701,102 @@ namespace Boom
                     AppendCapsuleWire(gh.capsule().radius, gh.capsule().halfHeight, world, verts, color);
                     break;
                 default:
-                    // For mesh/convex/etc. you can add more if needed; skip for now.
                     break;
                 }
+            }
+            });
+
+        // 2. NEW: Draw entities with ONLY ColliderComponent (no RigidBodyComponent)
+        EnttView<Entity, ColliderComponent>([&](auto entity, ColliderComponent& col) {
+            // Skip if it has a RigidBodyComponent (already drawn above)
+            if (entity.template Has<RigidBodyComponent>()) return;
+
+            // Use a distinct color for collider-only entities
+            // Cyan for triggers, Yellow for non-triggers
+            const glm::vec4 color = col.Collider.isTrigger
+                ? glm::vec4(0.0f, 1.0f, 1.0f, 1.0f) // Cyan for triggers
+                : glm::vec4(1.0f, 1.0f, 0.0f, 1.0f); // Yellow for static colliders
+
+            // Get the actor from the collider (AddColliderOnly stores it)
+            // We need to check if there's a temporary RigidBodyComponent created by AddColliderOnly
+            // OR we can use the transform directly
+            auto& transform = entity.template Get<TransformComponent>().transform;
+
+            // Create a transform for the collider
+            glm::vec3 eulerRadians = glm::radians(transform.rotate);
+            glm::quat rot = glm::quat(eulerRadians);
+            rot = glm::normalize(rot);
+
+            physx::PxTransform pose(
+                physx::PxVec3(transform.translate.x, transform.translate.y, transform.translate.z),
+                physx::PxQuat(rot.x, rot.y, rot.z, rot.w)
+            );
+
+            // Apply local collider offset
+            physx::PxTransform localPose(
+                ToPxVec3(col.Collider.localPosition),
+                ToPxQuat(col.Collider.localRotation)
+            );
+            physx::PxTransform world = pose * localPose;
+
+            // Draw based on collider type
+            switch (col.Collider.type)
+            {
+            case Collider3D::Type::BOX:
+            {
+                glm::vec3 halfExtents = (transform.scale * col.Collider.localScale) / 2.0f;
+                physx::PxBoxGeometry box(halfExtents.x, halfExtents.y, halfExtents.z);
+                AppendBoxWire(box, world, verts, color);
+                break;
+            }
+            case Collider3D::Type::SPHERE:
+            {
+                float radius = (transform.scale.x * col.Collider.localScale.x) / 2.0f;
+                AppendSphereWire(radius, world, verts, color);
+                break;
+            }
+            case Collider3D::Type::CAPSULE:
+            {
+                const glm::vec3 s = glm::abs(transform.scale * col.Collider.localScale);
+                enum Axis { AXIS_X = 0, AXIS_Y = 1, AXIS_Z = 2 };
+                Axis majorAxis = AXIS_X;
+                if (s.y > s.x && s.y > s.z) majorAxis = AXIS_Y;
+                else if (s.z > s.x && s.z > s.y) majorAxis = AXIS_Z;
+
+                float radius, halfHeight;
+                if (majorAxis == AXIS_Y) {
+                    radius = 0.5f * std::max(s.x, s.z);
+                    halfHeight = 0.5f * s.y;
+                }
+                else if (majorAxis == AXIS_Z) {
+                    radius = 0.5f * std::max(s.x, s.y);
+                    halfHeight = 0.5f * s.z;
+                }
+                else {
+                    radius = 0.5f * std::max(s.y, s.z);
+                    halfHeight = 0.5f * s.x;
+                }
+
+                halfHeight = halfHeight - radius;
+                const float kMin = 0.01f;
+                if (radius <= 0.0f) radius = kMin;
+                if (halfHeight <= 0.0f) halfHeight = kMin;
+
+                // Apply capsule axis rotation
+                physx::PxQuat localQ = physx::PxQuat(physx::PxIdentity);
+                if (majorAxis == AXIS_Y) localQ = physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.0f, 0.0f, 1.0f));
+                else if (majorAxis == AXIS_Z) localQ = physx::PxQuat(-physx::PxHalfPi, physx::PxVec3(0.0f, 1.0f, 0.0f));
+
+                physx::PxTransform capsuleWorld = world * physx::PxTransform(physx::PxVec3(0.0f), localQ);
+                AppendCapsuleWire(radius, halfHeight, capsuleWorld, verts, color);
+                break;
+            }
+            default:
+                break;
             }
             });
 
         if (!verts.empty())
             m_DebugLinesShader->Draw(view, proj, verts, 10.5f);
     }
-
 }
