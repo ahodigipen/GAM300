@@ -174,11 +174,16 @@ namespace Boom
             BOOM_INFO("[Application] Saved pre-play scene state");
 
             // Initialize physics actors for all rigid bodies
-            EnttView<Entity, RigidBodyComponent>([this](auto entity, auto&) {
-                if (!entity.template Get<RigidBodyComponent>().RigidBody.actor) {
+            EnttView<Entity, ColliderComponent>([this](auto entity, auto&) {
+                // Only add if it DOESN'T have a RigidBodyComponent
+                if (!entity.Has<RigidBodyComponent>()) {
+                    m_Context->physics->AddColliderOnly(entity, *m_Context->assets);
+                }
+                else {
+                    // Has both collider and rigidbody - use existing logic
                     m_Context->physics->AddRigidBody(entity, *m_Context->assets);
                 }
-            });
+                });
 
             // Reset time tracking
             m_PausedTime = 0.0;
