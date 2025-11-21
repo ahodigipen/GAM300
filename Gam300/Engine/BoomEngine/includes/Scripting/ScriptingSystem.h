@@ -51,6 +51,9 @@ namespace Boom {
         bool IsAutoHotReloadEnabled() const { return m_AutoHotReload; }
         void UpdateFileWatcher();
 
+        // Get available script types for dropdown
+        std::vector<std::string> GetAvailableScriptTypes() const;
+
     private:
         MonoRuntime    m_Mono;
         MonoAssembly* m_Scripts = nullptr;
@@ -70,6 +73,7 @@ namespace Boom {
 
         std::unordered_map<uint64_t, Instance> m_Instances;
         uint64_t    m_NextId = 1;      // to mint InstanceId values
+
     };
 
 #ifdef _MSC_VER

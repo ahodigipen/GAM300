@@ -69,17 +69,15 @@ namespace Boom {
             return false;
         }
 
-        // Store the DLL path for hot reload
         m_DllPath = dllPath;
 
-        // Setup file watcher for automatic hot reload
         if (m_AutoHotReload) {
             m_FileWatcher.AddWatch(dllPath,
                 [this](const std::string& path) {
                     BOOM_INFO("[Scripting] DLL modified, triggering hot reload...");
                     this->ReloadScripts();
                 },
-                1000  // 1 second debounce to handle build systems
+                1000
             );
         }
 
@@ -199,10 +197,10 @@ namespace Boom {
         // Destroy old instance first
         DestroyForEntity(e, sc);
 
-        // If disabled, just return success (instance stays destroyed)
-        if (!sc.Enabled) {
+        // If disabled or no type name, just return success (instance stays destroyed)
+        if (!sc.Enabled || sc.TypeName.empty()) {
 #ifdef DEBUG
-            BOOM_INFO("[Scripting] Script disabled for entity {}, skipping recreation",
+            BOOM_INFO("[Scripting] Script disabled or empty for entity {}, skipping recreation",
                 static_cast<uint32_t>(e));
 #endif
             return true;
@@ -278,7 +276,7 @@ namespace Boom {
         m_Instances.clear();
         m_NextId = 1;
 
-        // 2. Clear assembly reference BEFORE unloading domain
+        // 2. Clear assembly reference and function pointers BEFORE unloading domain
         m_Scripts = nullptr;
         BOOM_INFO("[Scripting] Cleared assembly references");
 
@@ -299,7 +297,7 @@ namespace Boom {
         BOOM_INFO("[Scripting] Re-registering internal calls...");
         RegisterScriptInternalCalls(m_Ctx);
 
-        // 6. Reload the DLL
+        // 6. Reload the DLL (this will also reload the function pointers)
         BOOM_INFO("[Scripting] Loading assembly: {}", m_DllPath);
         if (!LoadScriptsDll(m_DllPath)) {
             BOOM_ERROR("[Scripting] Failed to reload GameScripts.dll");
@@ -351,7 +349,6 @@ namespace Boom {
         return (failed == 0);
     }
 
-    // NEW: Control auto hot reload
     void ScriptingSystem::EnableAutoHotReload(bool enable)
     {
         if (m_AutoHotReload == enable) return;
@@ -374,12 +371,66 @@ namespace Boom {
         }
     }
 
-    // NEW: Update file watcher (call every frame)
     void ScriptingSystem::UpdateFileWatcher()
     {
         if (m_AutoHotReload && m_Alive && !m_Reloading) {
             m_FileWatcher.Update();
         }
     }
+
+    std::vector<std::string> ScriptingSystem::GetAvailableScriptTypes() const
+    {
+        std::vector<std::string> types;
+
+        if (!m_Alive || !m_Scripts)
+            return types;
+
+        MonoImage* image = mono_assembly_get_image(m_Scripts);
+        if (!image)
+            return types;
+
+        // Find GameScripts.ScriptRegistry
+        MonoClass* registryClass = mono_class_from_name(image, "GameScripts", "ScriptRegistry");
+        if (!registryClass) {
+            BOOM_WARN("[Scripting] ScriptRegistry class not found - dropdown will be empty");
+            return types;
+        }
+
+        // Find static string[] GetAvailableScriptTypes()
+        MonoMethod* getTypesMethod =
+            mono_class_get_method_from_name(registryClass, "GetAvailableScriptTypes", 0);
+        if (!getTypesMethod) {
+            BOOM_WARN("[Scripting] GetAvailableScriptTypes() method not found - dropdown will be empty");
+            return types;
+        }
+
+        MonoObject* exc = nullptr;
+        MonoObject* result = mono_runtime_invoke(getTypesMethod, nullptr, nullptr, &exc);
+        if (exc) {
+            const_cast<MonoRuntime&>(m_Mono).LogException(exc, "[Scripting] GetAvailableScriptTypes");
+            return types;
+        }
+
+        if (!result)
+            return types;
+
+        MonoArray* arr = reinterpret_cast<MonoArray*>(result);
+        uint32_t len = mono_array_length(arr);
+        types.reserve(len);
+
+        for (uint32_t i = 0; i < len; ++i) {
+            MonoString* ms = mono_array_get(arr, MonoString*, i);
+            if (!ms) continue;
+
+            char* utf8 = mono_string_to_utf8(ms);
+            if (!utf8) continue;
+
+            types.emplace_back(utf8);
+            mono_free(utf8);
+        }
+
+        return types;
+    }
+
 
 } // namespace Boom

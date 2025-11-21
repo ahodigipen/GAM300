@@ -1,6 +1,7 @@
-﻿// Boom/API.cs
-// Single API file for all script-side engine calls. You do NOT need a separate Native.cs.
+﻿// Boom/API.cs - MONO COMPATIBLE VERSION
 using System;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 
@@ -33,17 +34,14 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Boom_API_HasScript(ulong handle);
 
-        // ========= NEW PHYSICS / RIGIDBODY INTERNAL CALLS =========
+        // ========= PHYSICS / RIGIDBODY INTERNAL CALLS =========
 
-        // Get the current linear velocity from the physics engine
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_GetLinearVelocity(ulong handle, out Vec3 vel);
 
-        // Set the current linear velocity in the physics engine
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_SetLinearVelocity(ulong handle, ref Vec3 vel);
 
-        // Query if the rigidbody is currently colliding / grounded
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Boom_API_IsColliding(ulong handle);
     }
@@ -101,26 +99,17 @@ namespace Boom
 
         // ===== PHYSICS / RIGIDBODY HELPERS =====
 
-        /// <summary>
-        /// Get the current linear velocity of the rigidbody attached to this entity.
-        /// </summary>
         public static Vec3 GetLinearVelocity(ulong h)
         {
             Native.Boom_API_GetLinearVelocity(h, out var v);
             return v;
         }
 
-        /// <summary>
-        /// Set the current linear velocity of the rigidbody attached to this entity.
-        /// </summary>
         public static void SetLinearVelocity(ulong h, Vec3 v)
         {
             Native.Boom_API_SetLinearVelocity(h, ref v);
         }
 
-        /// <summary>
-        /// Returns true if the rigidbody is colliding / grounded according to the engine.
-        /// </summary>
         public static bool IsColliding(ulong h) => Native.Boom_API_IsColliding(h);
 
         // ===== GLFW key codes =====
@@ -144,5 +133,58 @@ namespace Boom
     {
         public static Vec3 GetPosition(ulong handle) => API.GetPosition(handle);
         public static void SetPosition(ulong handle, Vec3 p) => API.SetPosition(handle, p);
+    }
+}
+
+namespace GameScripts
+{
+    /// <summary>
+    /// Script registry that exposes available script types to the C++ engine.
+    /// Returns a managed string[], C++ will use mono_runtime_invoke to read it.
+    /// </summary>
+    public static class ScriptRegistry
+    {
+        public static string[] GetAvailableScriptTypes()
+        {
+            try
+            {
+                // Get all non-abstract classes that look like scripts
+                var scriptTypes = System.Reflection.Assembly.GetExecutingAssembly()
+                    .GetTypes()
+                    .Where(t => t.IsClass && !t.IsAbstract && IsScriptType(t))
+                    .Select(t => t.FullName ?? t.Name)
+                    .OrderBy(name => name)
+                    .ToArray();
+
+                Boom.API.Log($"[C# ScriptRegistry] Found {scriptTypes.Length} script types");
+                return scriptTypes;
+            }
+            catch (Exception ex)
+            {
+                Boom.API.Log($"[C# ScriptRegistry] Error getting script types: {ex.Message}");
+                return Array.Empty<string>();
+            }
+        }
+
+        /// <summary>
+        /// Determines if a type is a valid script that can be instantiated.
+        /// A valid script must have at least one of: OnStart, OnUpdate, or OnDestroy methods.
+        /// </summary>
+        private static bool IsScriptType(Type type)
+        {
+            bool hasOnStart = type.GetMethod("OnStart",
+                BindingFlags.Public | BindingFlags.Instance,
+                null, new[] { typeof(string) }, null) != null;
+
+            bool hasOnUpdate = type.GetMethod("OnUpdate",
+                BindingFlags.Public | BindingFlags.Instance,
+                null, new[] { typeof(float) }, null) != null;
+
+            bool hasOnDestroy = type.GetMethod("OnDestroy",
+                BindingFlags.Public | BindingFlags.Instance,
+                null, Type.EmptyTypes, null) != null;
+
+            return hasOnStart || hasOnUpdate || hasOnDestroy;
+        }
     }
 }
