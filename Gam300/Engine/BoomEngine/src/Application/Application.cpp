@@ -149,7 +149,13 @@ namespace Boom
 
             // Always update delta time, but adjust for pause state
             ComputeFrameDeltaTime();
-
+            if (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) {
+               // InvokeStatic1Float("GameScripts", "Entry", "Update", static_cast<float>(m_Context->DeltaTime));
+                m_AIagents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime));
+                if (m_Nav) {
+                    m_NavAgents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime), *m_Nav);
+                }
+            }
             float dt = static_cast<float>(m_Context->DeltaTime);
             m_Context->scriptingSystem->UpdateFileWatcher();
             m_Context->scriptingSystem->CallUpdate(dt);
