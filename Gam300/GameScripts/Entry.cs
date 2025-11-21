@@ -31,25 +31,17 @@ namespace GameScripts
         {
             // Reset keys every time a scene loads
             _h_KeyWasDown = false;
-
             _p_KeyWasDown = false;
             _r_KeyWasDown = false;
             _y_KeyWasDown = false;
             _m_KeyWasDown = false;
-
             _q_KeyWasDown = false;
 
             _currentSceneName = API.GetCurrentSceneName();
 
+            API.Log("[C#] Entry.Start() called for scene: " + _currentSceneName);
+
             // Find the player
-        private static ulong _player;
-        private static float _speed = 10f;   // movement speed (units per second)
-        private static float _jumpSpeed = 8f; // vertical jump velocity
-
-        public static void Start()
-        {
-            API.Log("[C#] Entry.Start() called");
-
             _player = API.FindEntity("Samurai");
             API.Log("[C#] Samurai handle = " + _player);
 
@@ -63,6 +55,7 @@ namespace GameScripts
                     return;
                 }
 
+                // NOTE: Assuming API.HasScript() exists. If not, remove this check.
                 if (!API.HasScript(_player))
                 {
                     API.Log("[C#] ERROR: Samurai entity does not have ScriptComponent!");
@@ -75,24 +68,26 @@ namespace GameScripts
             }
             else
             {
-                API.Log("[C#] WARNING: Could not find Samurai entity");
+                API.Log("[C#] WARNING: Could not find Samurai entity (This is normal for menu scenes).");
             }
         }
 
         public static void Update(float dt)
         {
-            if (API.GetApplicationState() == API.APP_STATE_PAUSED)
+            int state = API.GetApplicationState();
+
+            if (state == API.APP_STATE_RUNNING)
             {
+                // --- STATE: RUNNING ---
+                UpdateGame(dt);
+            }
+            else if (state == API.APP_STATE_PAUSED)
+            {
+                // --- STATE: PAUSED ---
                 if (API.IsPauseMenuLoaded())
                 {
-                    // Run pause menu logic
                     UpdatePauseMenu();
                 }
-            }
-            else
-            {
-                // Run normal game logic
-                UpdateGame(dt);
             }
         }
 

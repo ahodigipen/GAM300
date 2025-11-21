@@ -953,6 +953,8 @@ namespace EditorUI {
 
             DrawComponentSection("Pause Menu Tag", &fakeTagInstance, [](void*) { return nullptr; }, true,
                 [&]() { ctx->scene.remove<Boom::PauseMenuTagComponent>(m_App->SelectedEntity()); });
+        }
+
         if (selected.Has<Boom::ScriptComponent>()) {
             auto& sc = selected.Get<Boom::ScriptComponent>();
 

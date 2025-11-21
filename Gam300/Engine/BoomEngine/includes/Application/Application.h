@@ -205,7 +205,7 @@ namespace Boom
             m_AppState = ApplicationState::RUNNING;
             m_ShouldExit = false;
 
-            InvokeStaticVoid("GameScripts", "Entry", "Start");
+            m_Context->scriptingSystem->CallStart();
 
             BOOM_INFO("[Application] Entered play mode");
         }
@@ -428,8 +428,6 @@ namespace Boom
             // Reinitialize systems that need it
             ReinitializeSceneSystems();
 
-            InvokeStaticVoid("GameScripts", "Entry", "Start");
-
             BOOM_INFO("[Scene] Successfully loaded scene '{}'", sceneName);
             return true;
         }
@@ -455,8 +453,6 @@ namespace Boom
                     m_Context->physics->AddRigidBody(entity, *m_Context->assets);
                 }
             }
-
-            InvokeStaticVoid("GameScripts", "Entry", "Start");
 
             BOOM_INFO("[Scene] Successfully added scene '{}'", sceneName);
             return true;
@@ -839,6 +835,8 @@ namespace Boom
             if (scriptsCreated > 0) {
                 BOOM_INFO("[Scene] Created {} script instances", scriptsCreated);
             }
+
+            m_Context->scriptingSystem->CallStart();
 
             BOOM_INFO("[Scene] Scene systems reinitialization complete");
         }

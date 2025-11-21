@@ -16,7 +16,6 @@ namespace Boom
 	// Forward declaration of the base interface
 	
 	struct Application;
-	
 	struct AppInterface;
 	class ScriptingSystem;
 
