@@ -37,12 +37,16 @@ namespace Boom {
                             ag.follow = fe;
                             ag.dirty = true;
                             ag.repathTimer = 0.f;
+#ifdef _DEBUG
                             BOOM_INFO("[NavAgent] Found follow target: {}", ag.followName);
+#endif
                             break;
                         }
                     }
                     if (ag.follow == entt::null) {
+#ifdef _DEBUG
                         BOOM_WARN("[NavAgent] Could not find follow target: {}", ag.followName);
+#endif
                     }
                 }
 
@@ -61,13 +65,17 @@ namespace Boom {
                         ag.target = desired;
                         ag.dirty = true;
                         ag.repathTimer = ag.repathCooldown;
+#ifdef _DEBUG
                         BOOM_INFO("[NavAgent] Repathing to: ({}, {}, {})", desired.x, desired.y, desired.z);
+#endif
                     }
                 }
 
                 if (ag.dirty) {
                     requestPath(reg, e, nav);
+                #ifdef _DEBUG
                     BOOM_INFO("[NavAgent] Path has {} waypoints", ag.path.size());
+                #endif
                 }
 
                 if (ag.path.empty() || ag.waypoint >= (int)ag.path.size()) {
@@ -97,10 +105,11 @@ namespace Boom {
                 //  Calculate direction in XZ plane only, keep Y = 0
                 const glm::vec3 dirXZ = (dXZ > 0.f) ? (toXZ / dXZ) : glm::vec3(0);
                 ag.velocity = dirXZ * ag.speed;
-
+#ifdef _DEBUG
                 BOOM_INFO("[NavAgent] Pos: ({:.2f}, {:.2f}, {:.2f}), Goal: ({:.2f}, {:.2f}, {:.2f}), Velocity: ({:.2f}, {:.2f}, {:.2f}), Dist: {:.2f}, Waypoint {}/{}",
                     pos.x, pos.y, pos.z, goal.x, goal.y, goal.z,
                     ag.velocity.x, ag.velocity.y, ag.velocity.z, dXZ, ag.waypoint, ag.path.size());
+#endif
             }
         }
     };
