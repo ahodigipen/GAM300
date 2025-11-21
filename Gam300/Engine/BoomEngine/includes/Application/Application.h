@@ -182,6 +182,8 @@ namespace Boom
                 return;
             }
 
+            m_PrePlayScene_OriginalPath = m_CurrentScenePath;
+
             // Save current scene state to temporary file
             m_PrePlayScenePath = "Scenes/__temp_preplay_state__.yaml";
             DataSerializer serializer;
@@ -274,6 +276,11 @@ namespace Boom
 
                 // Deserialize the saved state
                 serializer.Deserialize(m_Context->scene, *m_Context->assets, m_PrePlayScenePath);
+
+                // Restore the original scene path
+                strncpy_s(m_CurrentScenePath, sizeof(m_CurrentScenePath), m_PrePlayScene_OriginalPath.c_str(), _TRUNCATE);
+                m_PrePlayScene_OriginalPath.clear();
+                m_SceneLoaded = (m_CurrentScenePath[0] != '\0'); // Update scene loaded status
 
                 // Delete the temporary file
                 std::filesystem::remove(m_PrePlayScenePath);
@@ -643,6 +650,7 @@ namespace Boom
 
         // Pre-play state storage for Unity-like play/stop behavior
         std::string m_PrePlayScenePath = "";
+        std::string m_PrePlayScene_OriginalPath = "";
         bool m_IsInPlayMode = false;
        
         Boom::AISystem                         m_AIagents;
