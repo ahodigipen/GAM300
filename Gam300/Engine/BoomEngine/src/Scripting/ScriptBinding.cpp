@@ -165,6 +165,13 @@ namespace Boom {
         return (int)s_Ctx->app->GetState();
     }
 
+    static bool ICALL_API_IsPauseMenuLoaded() {
+        if (!s_Ctx) return false;
+        // Check if any entity in the scene has the pause menu tag
+        auto view = s_Ctx->scene.view<PauseMenuTagComponent>();
+        return !view.empty();
+    }
+
     void RegisterScriptInternalCalls(AppContext* ctx)
     {
         s_Ctx = ctx;
@@ -188,5 +195,6 @@ namespace Boom {
         mono_add_internal_call("GameScripts.Native::Boom_API_UnloadPauseMenu", (const void*)ICALL_API_UnloadPauseMenu);
         mono_add_internal_call("GameScripts.Native::Boom_API_TogglePause", (const void*)ICALL_API_TogglePause);
         mono_add_internal_call("GameScripts.Native::Boom_API_GetApplicationState", (const void*)ICALL_API_GetApplicationState);
+        mono_add_internal_call("GameScripts.Native::Boom_API_IsPauseMenuLoaded", (const void*)ICALL_API_IsPauseMenuLoaded);
     }
 }

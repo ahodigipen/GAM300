@@ -148,6 +148,16 @@ namespace Boom
          */
         BOOM_INLINE ~Application()
         {
+            if (m_Context) {
+                for (AppInterface*& layer : m_Context->layers)
+                {
+                    BOOM_DELETE(layer);
+                }
+                // Clear the vector to prevent the AppContext destructor
+                // from trying to delete them a second time.
+                m_Context->layers.clear();
+            }
+
             DestroyPhysicsActors();
             ShutdownMonoRuntime();
             BOOM_DELETE(m_Context);
@@ -193,6 +203,8 @@ namespace Boom
             m_IsInPlayMode = true;
             m_AppState = ApplicationState::RUNNING;
             m_ShouldExit = false;
+
+            InvokeStaticVoid("GameScripts", "Entry", "Start");
 
             BOOM_INFO("[Application] Entered play mode");
         }
@@ -329,6 +341,13 @@ namespace Boom
          * @brief Checks if the application is paused (in play mode but not updating)
          */
         BOOM_INLINE bool IsPaused() const { return m_IsInPlayMode && m_AppState == ApplicationState::PAUSED; }
+
+        BOOM_INLINE bool IsInGamePauseMenuLoaded() const
+        {
+            if (!m_Context) return false;
+            auto view = m_Context->scene.view<PauseMenuTagComponent>();
+            return !view.empty();
+        }
 
         /**
          * @brief Gets the adjusted time (excluding paused time)

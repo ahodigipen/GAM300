@@ -138,8 +138,12 @@ namespace Boom
             ComputeFrameDeltaTime();
 
             // Only run scripts and AI in play mode when RUNNING
-            if (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) {
+            if (m_IsInPlayMode) {
                 InvokeStatic1Float("GameScripts", "Entry", "Update", static_cast<float>(m_Context->DeltaTime));
+            }
+
+            // 2. Only run C++ AI and Navigation systems when the game is not paused.
+            if (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) {
                 m_AIagents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime));
                 if (m_Nav) {
                     m_NavAgents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime), *m_Nav);

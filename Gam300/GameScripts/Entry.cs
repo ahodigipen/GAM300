@@ -42,11 +42,13 @@ namespace GameScripts
 
         public static void Update(float dt)
         {
-            // Your C++ engine will send dt = 0.0 when paused
             if (API.GetApplicationState() == API.APP_STATE_PAUSED)
             {
-                // Run pause menu logic
-                UpdatePauseMenu();
+                if (API.IsPauseMenuLoaded())
+                {
+                    // Run pause menu logic
+                    UpdatePauseMenu();
+                }
             }
             else
             {
@@ -65,11 +67,12 @@ namespace GameScripts
 
             // --- 1. Check for Pause Key ---
             bool p_KeyDown = API.IsKeyDown(API.KEY_P);
-            if (p_KeyDown && !_p_KeyWasDown)
+            bool ctrl_KeyDown = API.IsKeyDown(API.KEY_LEFT_CONTROL);
+
+            if (p_KeyDown && !_p_KeyWasDown && !ctrl_KeyDown)
             {
                 API.Log("Pausing game...");
 
-                // --- NEW PAUSE LOGIC ---
                 API.TogglePause(); // 1. Freeze the game
                 API.LoadSceneAdditive(PAUSE_SCENE_NAME); // 2. Load menu on top
 
@@ -117,8 +120,6 @@ namespace GameScripts
         // This function runs all your pause menu logic
         private static void UpdatePauseMenu()
         {
-            // This logic is now running "on top" of your frozen game.
-
             // --- Resume Button (R) ---
             bool r_KeyDown = API.IsKeyDown(API.KEY_R);
             if (r_KeyDown && !_r_KeyWasDown)
@@ -140,7 +141,6 @@ namespace GameScripts
             {
                 API.Log("Returning to Main Menu...");
 
-                // --- NEW MAIN MENU LOGIC ---
                 API.TogglePause(); // 1. Un-pause the engine first...
                 API.LoadScene(MAIN_MENU_SCENE_NAME); // 2. ...THEN load the new scene (this will clear everything)
 

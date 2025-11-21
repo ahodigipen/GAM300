@@ -27,6 +27,7 @@ namespace GameScripts
         [MethodImpl(MethodImplOptions.InternalCall)] internal static extern void Boom_API_UnloadPauseMenu();
         [MethodImpl(MethodImplOptions.InternalCall)] internal static extern void Boom_API_TogglePause();
         [MethodImpl(MethodImplOptions.InternalCall)] internal static extern int Boom_API_GetApplicationState();
+        [MethodImpl(MethodImplOptions.InternalCall)] internal static extern bool Boom_API_IsPauseMenuLoaded();
     }
 
     public static class API
@@ -52,6 +53,7 @@ namespace GameScripts
         public static void UnloadPauseMenu() => Native.Boom_API_UnloadPauseMenu();
         public static void TogglePause() => Native.Boom_API_TogglePause();
         public static int GetApplicationState() => Native.Boom_API_GetApplicationState();
+        public static bool IsPauseMenuLoaded() => Native.Boom_API_IsPauseMenuLoaded();
 
         // GLFW key codes
         public const int KEY_LEFT = 263;
@@ -66,6 +68,7 @@ namespace GameScripts
         public const int KEY_R = 82; // For Resume
         public const int KEY_M = 77; // For Main Menu
         public const int KEY_Q = 81; // For Quit
+        public const int KEY_LEFT_CONTROL = 341;
 
         public const int APP_STATE_RUNNING = 0;
         public const int APP_STATE_PAUSED = 1;
