@@ -168,24 +168,25 @@ namespace GameScripts
             dirToTarget.X /= distance;
             dirToTarget.Z /= distance;
 
-            // CORRECTED: Calculate enemy forward direction to match your coordinate system
-            // Your coordinate system: Forward = -Z, Right = +X
-            // Y rotation: 0° = facing -Z, 90° = facing +X
+            // FIXED: Calculate enemy forward direction correctly
+            // The enemy's rotation.Y directly represents the yaw angle
+            // 0° = facing +Z, 90° = facing +X, 180° = facing -Z, 270° = facing -X
             float yawRadians = enemyRot.Y * (float)Math.PI / 180f;
+
             var forward = new Vec3(
-                (float)Math.Sin(yawRadians),   // X component: 0° = 0, 90° = 1
+                (float)Math.Sin(yawRadians),
                 0f,
-                (float)-Math.Cos(yawRadians)  // Z component: 0° = -1, 90° = 0
+                (float)Math.Cos(yawRadians)
             );
 
-            // Calculate angle
+            // Calculate angle between forward direction and direction to target
             float dotProduct = dirToTarget.X * forward.X + dirToTarget.Z * forward.Z;
             float angle = (float)Math.Acos(Math.Max(-1f, Math.Min(1f, dotProduct))) * 180f / (float)Math.PI;
 
             if (_settings.debugLog && _currentState == VisionState.Alert)
             {
                 API.Log($"[VisionComponent] Enemy rot: {enemyRot.Y}°, Forward: ({forward.X:F2}, {forward.Z:F2}), " +
-                       $"DirToTarget: ({dirToTarget.X:F2}, {dirToTarget.Z:F2}), Angle: {angle:F1}°");
+                       $"DirToTarget: ({dirToTarget.X:F2}, {dirToTarget.Z:F2}), Angle: {angle:F1}°, MaxAngle: {maxAngle * 0.5f:F1}°");
             }
 
             return angle <= (maxAngle * 0.5f); // maxAngle is total cone, so half for each side

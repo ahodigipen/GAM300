@@ -34,6 +34,7 @@ namespace GameScripts
 
             _currentYRotation = 0f;
             API.Log("[EnemyController] Controller initialized with vision system");
+            _currentYRotation = API.GetRotation(Entity).Y;
         }
 
         public void OnUpdate(float dt)
@@ -43,11 +44,11 @@ namespace GameScripts
             // Update vision system
             _vision?.OnUpdate(dt);
 
-            // Handle rotation (only when not alert)
-            //if (_vision?.GetState() != VisionComponent.VisionState.Alert)
-            //{
+            //Handle rotation(only when not alert)
+            if (_vision?.GetState() != VisionComponent.VisionState.Alert)
+            {
                 UpdateRotation(dt);
-            //}
+            }
         }
 
         private void UpdateRotation(float dt)
