@@ -684,10 +684,10 @@ namespace EditorUI {
                                         break;
                                     }
                                     if (ImGui::MenuItem("Insert After (use Selected Transform if any)")) {
-                                        glm::vec3 p = a->path[i];
+                                        glm::vec3 insertPos = a->path[i];
                                         if (selected.Has<Boom::TransformComponent>())
-                                            p = selected.Get<Boom::TransformComponent>().transform.translate;
-                                        a->path.insert(a->path.begin() + i + 1, p);
+                                            insertPos = selected.Get<Boom::TransformComponent>().transform.translate;
+                                        a->path.insert(a->path.begin() + i + 1, insertPos);
                                         ImGui::EndPopup();
                                         break;
                                     }

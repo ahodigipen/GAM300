@@ -270,7 +270,7 @@ namespace EditorUI {
         // Drag source for animation files
         if (!root->isDirectory) {
             std::string ext = root->fullPath.extension().string();
-            std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+            std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
             if (ext == ".fbx" || ext == ".gltf" || ext == ".glb" || ext == ".dae") {
                 if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
                     std::string pathStr = root->fullPath.string();

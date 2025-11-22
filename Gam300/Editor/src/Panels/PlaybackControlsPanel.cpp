@@ -27,7 +27,6 @@ namespace EditorUI {
             auto* app = m_App;
             if (!app) { ImGui::TextDisabled("Application not wired"); ImGui::End(); return; }
 
-            auto state = app->GetState();
             bool isPlaying = app->IsPlaying();
             bool isPaused = app->IsPaused();
 
