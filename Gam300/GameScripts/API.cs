@@ -33,6 +33,17 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Boom_API_HasScript(ulong handle);
 
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_GetRotation(ulong handle, out Vec3 outRot);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetRotation(ulong handle, ref Vec3 rot);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_DrawDebugVisionCone(ulong entityHandle,
+            float range, float angle, float r, float g, float b, float a);
+
+
         // ========= NEW PHYSICS / RIGIDBODY INTERNAL CALLS =========
 
         // Get the current linear velocity from the physics engine
@@ -128,6 +139,49 @@ namespace Boom
             Native.Boom_API_SetLinearVelocity(h, ref v);
         }
 
+        // ===== Rotation methods =====
+        public static Vec3 GetRotation(ulong h)
+        {
+            if (!Native.Boom_API_HasTransform(h))
+            {
+                Log($"[WARNING] Entity {h} does not have TransformComponent!");
+                return new Vec3(0, 0, 0);
+            }
+            Native.Boom_API_GetRotation(h, out var r);
+            return r;
+        }
+
+        public static void SetRotation(ulong h, Vec3 r)
+        {
+            if (!Native.Boom_API_HasTransform(h))
+            {
+                Log($"[WARNING] Entity {h} does not have TransformComponent! Cannot set rotation.");
+                return;
+            }
+            Native.Boom_API_SetRotation(h, ref r);
+        }
+
+        public static void DrawDebugVisionCone(ulong entityHandle, float range, float halfAngle, Vec4 color)
+        {
+            Native.Boom_API_DrawDebugVisionCone(entityHandle, range, halfAngle,
+                color.X, color.Y, color.Z, color.W);
+        }
+
+        public static void DrawDebugVisionCone(ulong entityHandle, float range, float halfAngle)
+        {
+            DrawDebugVisionCone(entityHandle, range, halfAngle, new Vec4(0f, 1f, 0f, 0.3f));
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Vec4
+        {
+            public float X, Y, Z, W;
+
+            public Vec4(float x, float y, float z, float w)
+            {
+                X = x; Y = y; Z = z; W = w;
+            }
+        }
         /// <summary>
         /// Returns true if the rigidbody is colliding / grounded according to the engine.
         /// </summary>

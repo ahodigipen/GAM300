@@ -110,6 +110,53 @@ namespace Boom {
         t.translate = *pos;
     }
 
+    static glm::vec3* ICALL_API_GetRotation(uint64_t handle, glm::vec3* outRot) {
+        if (!s_Ctx) return nullptr;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+
+        if (e == entt::null) {
+            BOOM_WARN("[ScriptBinding] GetRotation: Invalid entity handle");
+            return nullptr;
+        }
+
+        if (!s_Ctx->scene.valid(e)) {
+            BOOM_WARN("[ScriptBinding] GetRotation: Entity no longer valid");
+            return nullptr;
+        }
+
+        if (!s_Ctx->scene.any_of<TransformComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] GetRotation: Entity {} has no TransformComponent", static_cast<uint32_t>(e));
+            return nullptr;
+        }
+
+        auto& t = s_Ctx->scene.get<TransformComponent>(e).transform;
+        if (outRot) *outRot = t.rotate;
+        return outRot;
+    }
+
+    static void ICALL_API_SetRotation(uint64_t handle, glm::vec3* rot) {
+        if (!rot || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+
+        if (e == entt::null) {
+            BOOM_WARN("[ScriptBinding] SetRotation: Invalid entity handle");
+            return;
+        }
+
+        if (!s_Ctx->scene.valid(e)) {
+            BOOM_WARN("[ScriptBinding] SetRotation: Entity no longer valid");
+            return;
+        }
+
+        if (!s_Ctx->scene.any_of<TransformComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetRotation: Entity {} has no TransformComponent", static_cast<uint32_t>(e));
+            return;
+        }
+
+        auto& t = s_Ctx->scene.get<TransformComponent>(e).transform;
+        t.rotate = *rot;
+    }
+
     static bool ICALL_API_IsKeyDown(int key)
     {
         if (!s_Ctx || !s_Ctx->window) return false;
@@ -286,6 +333,8 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_FindEntity", (const void*)ICALL_API_FindEntity);
         mono_add_internal_call("Boom.Native::Boom_API_GetPosition", (const void*)ICALL_API_GetPosition);
         mono_add_internal_call("Boom.Native::Boom_API_SetPosition", (const void*)ICALL_API_SetPosition);
+        mono_add_internal_call("Boom.Native::Boom_API_GetRotation", (const void*)ICALL_API_GetRotation);
+        mono_add_internal_call("Boom.Native::Boom_API_SetRotation", (const void*)ICALL_API_SetRotation);
         mono_add_internal_call("Boom.Native::Boom_API_IsKeyDown", (const void*)ICALL_API_IsKeyDown);
         mono_add_internal_call("Boom.Native::Boom_API_IsMouseDown", (const void*)ICALL_API_IsMouseDown);
 

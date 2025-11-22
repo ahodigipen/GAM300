@@ -81,6 +81,10 @@ ENTITIES:
   - {}
   - {}
   - {}
+  - {}
+  - {}
+  - {}
+  - {}
   - InfoComponent:
       Parent: 0
       Name: Indoor_Hanging_Lanturn_Back_1
@@ -265,7 +269,7 @@ ENTITIES:
       UID: 16439367912350421013
     TransformComponent:
       Transform:
-        Translate: [0.321215421, 0.545895696, 5.90508461]
+        Translate: [0.321215421, 0.545895696, 2.11850595]
         Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
@@ -347,14 +351,14 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-4.14935017, 6.84548569, -0.0405744687]
-        Rotate: [-29.6875, -19585.9375, 0]
+        Translate: [-1.52881455, 3.45248795, -2.16958618]
+        Rotate: [-42.4375, -19534.1875, 0]
         Scale: [1, 1, 1]
     CameraComponent:
       Camera:
         NearPlane: 0.300000012
         FarPlane: 1000
-        FOV: 86
+        FOV: 100
   - InfoComponent:
       Parent: 0
       Name: Skybox
@@ -1058,9 +1062,9 @@ ENTITIES:
       UID: 963547750710080490
     TransformComponent:
       Transform:
-        Translate: [-2.94899988, 5.90145254, 1.40525389]
-        Rotate: [0, -90, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+        Translate: [5.9694519, 2.07442474, -3.02867794]
+        Rotate: [0, 0, 0]
+        Scale: [0.0326999985, 0.0326999985, 0.0326999985]
     ModelComponent:
       ModelID: 6829728261434427183
       MaterialID: 0
@@ -1660,5 +1664,9 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+  - {}
+  - {}
+  - {}
+  - {}
   - {}
   - {}
