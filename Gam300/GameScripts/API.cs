@@ -38,6 +38,18 @@ namespace Boom
         internal extern static bool Boom_API_HasScript(ulong handle);
 
         // ========= PHYSICS / RIGIDBODY INTERNAL CALLS =========
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_GetRotation(ulong handle, out Vec3 outRot);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetRotation(ulong handle, ref Vec3 rot);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_DrawDebugVisionCone(ulong entityHandle,
+            float range, float angle, float r, float g, float b, float a);
+
+
+        // ========= NEW PHYSICS / RIGIDBODY INTERNAL CALLS =========
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_GetLinearVelocity(ulong handle, out Vec3 vel);
@@ -61,6 +73,14 @@ namespace Boom
         
         
 
+        [MethodImpl(MethodImplOptions.InternalCall)] internal static extern void Boom_API_LoadScene(string name);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal static extern string Boom_API_GetCurrentSceneName();
+        [MethodImpl(MethodImplOptions.InternalCall)] internal static extern void Boom_API_QuitGame();
+        [MethodImpl(MethodImplOptions.InternalCall)] internal static extern void Boom_API_LoadSceneAdditive(string name);
+        [MethodImpl(MethodImplOptions.InternalCall)] internal static extern void Boom_API_UnloadPauseMenu();
+        [MethodImpl(MethodImplOptions.InternalCall)] internal static extern void Boom_API_TogglePause();
+        [MethodImpl(MethodImplOptions.InternalCall)] internal static extern int Boom_API_GetApplicationState();
+        [MethodImpl(MethodImplOptions.InternalCall)] internal static extern bool Boom_API_IsPauseMenuLoaded();
 
     }
 
@@ -128,7 +148,62 @@ namespace Boom
             Native.Boom_API_SetLinearVelocity(h, ref v);
         }
 
+        // ===== Rotation methods =====
+        public static Vec3 GetRotation(ulong h)
+        {
+            if (!Native.Boom_API_HasTransform(h))
+            {
+                Log($"[WARNING] Entity {h} does not have TransformComponent!");
+                return new Vec3(0, 0, 0);
+            }
+            Native.Boom_API_GetRotation(h, out var r);
+            return r;
+        }
+
+        public static void SetRotation(ulong h, Vec3 r)
+        {
+            if (!Native.Boom_API_HasTransform(h))
+            {
+                Log($"[WARNING] Entity {h} does not have TransformComponent! Cannot set rotation.");
+                return;
+            }
+            Native.Boom_API_SetRotation(h, ref r);
+        }
+
+        public static void DrawDebugVisionCone(ulong entityHandle, float range, float halfAngle, Vec4 color)
+        {
+            Native.Boom_API_DrawDebugVisionCone(entityHandle, range, halfAngle,
+                color.X, color.Y, color.Z, color.W);
+        }
+
+        public static void DrawDebugVisionCone(ulong entityHandle, float range, float halfAngle)
+        {
+            DrawDebugVisionCone(entityHandle, range, halfAngle, new Vec4(0f, 1f, 0f, 0.3f));
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Vec4
+        {
+            public float X, Y, Z, W;
+
+            public Vec4(float x, float y, float z, float w)
+            {
+                X = x; Y = y; Z = z; W = w;
+            }
+        }
+        /// <summary>
+        /// Returns true if the rigidbody is colliding / grounded according to the engine.
+        /// </summary>
         public static bool IsColliding(ulong h) => Native.Boom_API_IsColliding(h);
+
+        public static void LoadScene(string name) => Native.Boom_API_LoadScene(name);
+        public static string GetCurrentSceneName() => Native.Boom_API_GetCurrentSceneName();
+        public static void QuitGame() => Native.Boom_API_QuitGame();
+        public static void LoadSceneAdditive(string name) => Native.Boom_API_LoadSceneAdditive(name);
+        public static void UnloadPauseMenu() => Native.Boom_API_UnloadPauseMenu();
+        public static void TogglePause() => Native.Boom_API_TogglePause();
+        public static int GetApplicationState() => Native.Boom_API_GetApplicationState();
+        public static bool IsPauseMenuLoaded() => Native.Boom_API_IsPauseMenuLoaded();
 
         // ===== GLFW key codes =====
         public const int KEY_LEFT = 263;
@@ -140,6 +215,20 @@ namespace Boom
         public const int KEY_S = 83;
         public const int KEY_D = 68;
         public const int KEY_SPACE = 32;
+
+        public const int KEY_H = 72; // For How to Play
+
+        public const int KEY_P = 80; // For Pause
+        public const int KEY_R = 82; // For Resume
+        public const int KEY_Y = 89; // For Restart
+        public const int KEY_M = 77; // For Main Menu
+
+        public const int KEY_Q = 81; // For Quit
+        public const int KEY_LEFT_CONTROL = 341;
+
+        public const int APP_STATE_RUNNING = 0;
+        public const int APP_STATE_PAUSED = 1;
+        public const int APP_STATE_STOPPED = 2;
 
         // ===== Mouse buttons =====
         public const int MOUSE_LEFT = 0;

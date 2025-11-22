@@ -15,6 +15,7 @@
 #include "AppWindow.h"
 #include "Input/InputHandler.h"
 
+#include "Application/Application.h"
 
 namespace Boom {
 
@@ -110,6 +111,53 @@ namespace Boom {
         t.translate = *pos;
     }
 
+    static glm::vec3* ICALL_API_GetRotation(uint64_t handle, glm::vec3* outRot) {
+        if (!s_Ctx) return nullptr;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+
+        if (e == entt::null) {
+            BOOM_WARN("[ScriptBinding] GetRotation: Invalid entity handle");
+            return nullptr;
+        }
+
+        if (!s_Ctx->scene.valid(e)) {
+            BOOM_WARN("[ScriptBinding] GetRotation: Entity no longer valid");
+            return nullptr;
+        }
+
+        if (!s_Ctx->scene.any_of<TransformComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] GetRotation: Entity {} has no TransformComponent", static_cast<uint32_t>(e));
+            return nullptr;
+        }
+
+        auto& t = s_Ctx->scene.get<TransformComponent>(e).transform;
+        if (outRot) *outRot = t.rotate;
+        return outRot;
+    }
+
+    static void ICALL_API_SetRotation(uint64_t handle, glm::vec3* rot) {
+        if (!rot || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+
+        if (e == entt::null) {
+            BOOM_WARN("[ScriptBinding] SetRotation: Invalid entity handle");
+            return;
+        }
+
+        if (!s_Ctx->scene.valid(e)) {
+            BOOM_WARN("[ScriptBinding] SetRotation: Entity no longer valid");
+            return;
+        }
+
+        if (!s_Ctx->scene.any_of<TransformComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetRotation: Entity {} has no TransformComponent", static_cast<uint32_t>(e));
+            return;
+        }
+
+        auto& t = s_Ctx->scene.get<TransformComponent>(e).transform;
+        t.rotate = *rot;
+    }
+
     static bool ICALL_API_IsKeyDown(int key)
     {
         if (!s_Ctx || !s_Ctx->window) return false;
@@ -121,6 +169,7 @@ namespace Boom {
         return s_Ctx->window->input.mouseDown(button);
     }
 
+    
     static glm::vec3* ICALL_API_GetLinearVelocity(uint64_t handle, glm::vec3* outVel)
     {
         if (!s_Ctx || !outVel)
@@ -195,7 +244,7 @@ namespace Boom {
         entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
         if (e == entt::null || !s_Ctx->scene.valid(e))
         {
-            // Don’t spam too hard here, this might be called every frame
+            // Donï¿½t spam too hard here, this might be called every frame
             // BOOM_WARN("[ScriptBinding] IsColliding: Invalid or dead entity");
             return false;
         }
@@ -234,7 +283,71 @@ namespace Boom {
     }
 
 
+    static void ICALL_API_LoadScene(MonoString* sceneName) {
+        if (!sceneName || !s_Ctx || !s_Ctx->app) return;
+        char* s = mono_string_to_utf8(sceneName);
+        if (s) {
+            std::string sceneNameStr(s);
+            if (sceneNameStr == "PauseMenu") {
+                std::string currentPath = s_Ctx->app->GetCurrentScenePath();
+                s_Ctx->app->SetPreviousScenePath(currentPath);
+            }
 
+            s_Ctx->app->LoadScene(sceneNameStr);
+            mono_free(s);
+        }
+    }
+
+    static MonoString* ICALL_API_GetCurrentSceneName() {
+        if (!s_Ctx || !s_Ctx->app) return mono_string_new(mono_domain_get(), "");
+
+        std::string path = s_Ctx->app->GetCurrentScenePath();
+        if (path.empty()) {
+            return mono_string_new(mono_domain_get(), "");
+        }
+
+        std::filesystem::path p(path);
+        std::string sceneName = p.stem().string();
+        return mono_string_new(mono_domain_get(), sceneName.c_str());
+    }
+
+    static void ICALL_API_QuitGame() {
+        if (s_Ctx && s_Ctx->app) {
+            s_Ctx->app->Stop();
+        }
+    }
+
+    static void ICALL_API_LoadSceneAdditive(MonoString* sceneName) {
+        if (!sceneName || !s_Ctx || !s_Ctx->app) return;
+        char* s = mono_string_to_utf8(sceneName);
+        if (s) {
+            s_Ctx->app->LoadSceneAdditive(s);
+            mono_free(s);
+        }
+    }
+
+    static void ICALL_API_UnloadPauseMenu() {
+        if (!s_Ctx || !s_Ctx->app) return;
+        s_Ctx->app->UnloadAdditiveScene<PauseMenuTagComponent>();
+    }
+
+    static void ICALL_API_TogglePause() {
+        if (s_Ctx && s_Ctx->app) {
+            s_Ctx->app->TogglePause();
+        }
+    }
+
+    static int ICALL_API_GetApplicationState() {
+        if (!s_Ctx || !s_Ctx->app) return (int)ApplicationState::STOPPED;
+        return (int)s_Ctx->app->GetState();
+    }
+
+    static bool ICALL_API_IsPauseMenuLoaded() {
+        if (!s_Ctx) return false;
+        // Check if any entity in the scene has the pause menu tag
+        auto view = s_Ctx->scene.view<PauseMenuTagComponent>();
+        return !view.empty();
+    }
 
     void RegisterScriptInternalCalls(AppContext* ctx)
     {
@@ -245,9 +358,19 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_FindEntity", (const void*)ICALL_API_FindEntity);
         mono_add_internal_call("Boom.Native::Boom_API_GetPosition", (const void*)ICALL_API_GetPosition);
         mono_add_internal_call("Boom.Native::Boom_API_SetPosition", (const void*)ICALL_API_SetPosition);
+        mono_add_internal_call("Boom.Native::Boom_API_GetRotation", (const void*)ICALL_API_GetRotation);
+        mono_add_internal_call("Boom.Native::Boom_API_SetRotation", (const void*)ICALL_API_SetRotation);
         mono_add_internal_call("Boom.Native::Boom_API_IsKeyDown", (const void*)ICALL_API_IsKeyDown);
         mono_add_internal_call("Boom.Native::Boom_API_IsMouseDown", (const void*)ICALL_API_IsMouseDown);
 
+        mono_add_internal_call("Boom.Native::Boom_API_LoadScene", (const void*)ICALL_API_LoadScene);
+        mono_add_internal_call("Boom.Native::Boom_API_GetCurrentSceneName", (const void*)ICALL_API_GetCurrentSceneName);
+        mono_add_internal_call("Boom.Native::Boom_API_QuitGame", (const void*)ICALL_API_QuitGame);
+        mono_add_internal_call("Boom.Native::Boom_API_LoadSceneAdditive", (const void*)ICALL_API_LoadSceneAdditive);
+        mono_add_internal_call("Boom.Native::Boom_API_UnloadPauseMenu", (const void*)ICALL_API_UnloadPauseMenu);
+        mono_add_internal_call("Boom.Native::Boom_API_TogglePause", (const void*)ICALL_API_TogglePause);
+        mono_add_internal_call("Boom.Native::Boom_API_GetApplicationState", (const void*)ICALL_API_GetApplicationState);
+        mono_add_internal_call("Boom.Native::Boom_API_IsPauseMenuLoaded", (const void*)ICALL_API_IsPauseMenuLoaded);
         // Component checking functions
         mono_add_internal_call("Boom.Native::Boom_API_HasTransform", (const void*)ICALL_API_HasTransform);
         mono_add_internal_call("Boom.Native::Boom_API_HasScript", (const void*)ICALL_API_HasScript);

@@ -3,7 +3,6 @@
 
 #include <DetourNavMeshBuilder.h>
 #include <DetourAlloc.h>
-#include <fstream>
 
 namespace Boom {
     static bool ValidatePolyIndices(const BoomNavCreateParams& p, std::string& why)

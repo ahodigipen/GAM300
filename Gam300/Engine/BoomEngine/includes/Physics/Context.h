@@ -4,8 +4,6 @@
 #include "Utilities.h"
 #include "Auxiliaries/Assets.h"
 #include <iostream>
-#include "PxPhysicsAPI.h"
-#include <foundation/PxMath.h>
 
 namespace Boom {
     struct PhysicsContext {
@@ -183,7 +181,6 @@ namespace Boom {
                 collider.Shape->setLocalPose(userLocalPose);
             }
             else if (collider.type == Collider3D::CAPSULE) {
-                // (Your existing, correct capsule creation logic goes here)
                 const glm::vec3 s = glm::abs(transform.scale * collider.localScale);
                 enum Axis { AXIS_X = 0, AXIS_Y = 1, AXIS_Z = 2 };
                 Axis majorAxis = AXIS_X;
@@ -208,7 +205,7 @@ namespace Boom {
             else if (collider.type == Collider3D::MESH) {
                 if (collider.physicsMeshID == EMPTY_ASSET) {
                     BOOM_WARN("Mesh collider has no PhysicsMeshAsset assigned. No shape will be created.");
-                    return; // Return early, leaving Shape as nullptr
+                    return;
                 }
 
                 auto& physicsMeshAsset = assetRegistry.Get<PhysicsMeshAsset>(collider.physicsMeshID);
@@ -218,51 +215,56 @@ namespace Boom {
                 }
 
                 if (physicsMeshAsset.mesh) {
-                    // Create the geometry and apply the entity's scale
                     PxConvexMeshGeometry convexGeom(physicsMeshAsset.mesh, PxMeshScale(ToPxVec3(transform.scale * collider.localScale)));
                     collider.Shape = m_Physics->createShape(convexGeom, *collider.material);
                     collider.Shape->setLocalPose(userLocalPose);
                 }
                 else {
                     BOOM_ERROR("Failed to load or create mesh shape for asset ID {}", collider.physicsMeshID);
-                    return; // Return early
+                    return;
                 }
             }
-            else if (collider.type == Collider3D::PLANE)
-            {
+            else if (collider.type == Collider3D::PLANE) {
                 if (body.type == RigidBody3D::DYNAMIC) {
                     BOOM_WARN("Plane colliders must be STATIC. Forcing body type to STATIC.");
                     body.type = RigidBody3D::STATIC;
                 }
 
-                // Create the default plane geometry
                 PxPlaneGeometry planeGeom;
                 collider.Shape = m_Physics->createShape(planeGeom, *collider.material);
 
-                // Check rotation and adjust normal accordingly
                 const glm::vec3 s = glm::abs(transform.scale * collider.localScale);
-                PxQuat planeRot = PxQuat(PxIdentity); // Default: +X normal (for YZ walls)
+                PxQuat planeRot = PxQuat(PxIdentity);
 
                 if (s.y < s.x && s.y < s.z) {
-                    // Y is smallest -> Ground plane (+Y normal)
-                    planeRot = PxQuat(PxHalfPi, PxVec3(0.0f, 0.0f, 1.0f)); // +90 deg around Z
+                    planeRot = PxQuat(PxHalfPi, PxVec3(0.0f, 0.0f, 1.0f));
                 }
                 else if (s.z < s.x && s.z < s.y) {
-                    // Z is smallest -> XY wall (+Z normal)
-                    planeRot = PxQuat(-PxHalfPi, PxVec3(0.0f, 1.0f, 0.0f)); // -90 deg around Y
+                    planeRot = PxQuat(-PxHalfPi, PxVec3(0.0f, 1.0f, 0.0f));
                 }
-                // Else: X is smallest, use Identity (default +X normal)
 
-                // Combine user's local pose with our auto-rotation
                 collider.Shape->setLocalPose(userLocalPose * PxTransform(PxVec3(0.0f), planeRot));
             }
 
-            // 3. --- Attach the new shape and update physics properties ---
+            // 3. --- Set all flags BEFORE attaching the shape ---
             if (collider.Shape) {
+                // Set visualization flag
                 collider.Shape->setFlag(PxShapeFlag::eVISUALIZATION, true);
+
+                // Configure trigger vs collision behavior
+                if (collider.isTrigger) {
+                    collider.Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+                    collider.Shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+                }
+                else {
+                    collider.Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
+                    collider.Shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, false);
+                }
+
+                // NOW attach the shape to the actor
                 body.actor->attachShape(*collider.Shape);
+
                 if (body.type == RigidBody3D::DYNAMIC) {
-                    // This is CRITICAL for stability after a shape change!
                     PxRigidBodyExt::updateMassAndInertia(*static_cast<PxRigidBody*>(body.actor), body.density);
                 }
             }
@@ -433,9 +435,19 @@ namespace Boom {
                     collider.Shape->setLocalPose(userLocalPose * PxTransform(PxVec3(0.0f), planeRot));
                 }
 
-                // Ensure shape is included in debug viz
+                // Ensure shape is included in debug viz and set trigger flags BEFORE attaching
                 if (collider.Shape) {
                     collider.Shape->setFlag(PxShapeFlag::eVISUALIZATION, true);
+
+                    // Configure trigger vs collision behavior
+                    if (collider.isTrigger) {
+                        collider.Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+                        collider.Shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+                    }
+                    else {
+                        collider.Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
+                        collider.Shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, false);
+                    }
                 }
 
                 // create actor instanace
@@ -495,6 +507,156 @@ namespace Boom {
 
             // add actor to the m_Scene
             m_Scene->addActor(*body.actor);
+        }
+
+        // Add this new method to PhysicsContext
+        BOOM_INLINE void AddColliderOnly(Entity& entity, AssetRegistry& assetRegistry) {
+            if (!entity.Has<ColliderComponent>()) {
+                BOOM_WARN("AddColliderOnly called on entity without ColliderComponent");
+                return;
+            }
+
+            auto& transform = entity.Get<TransformComponent>().transform;
+            auto& collider = entity.Get<ColliderComponent>().Collider;
+
+            // Create transformation
+            PxTransform pose(ToPxVec3(transform.translate));
+            glm::vec3 eulerRadians = glm::radians(transform.rotate);
+            glm::quat rot = glm::quat(eulerRadians);
+            rot = glm::normalize(rot);
+            pose.q = PxQuat(rot.x, rot.y, rot.z, rot.w);
+
+            // Create collider material
+            collider.material = m_Physics->createMaterial(
+                collider.staticFriction,
+                collider.dynamicFriction,
+                collider.restitution
+            );
+
+            PxTransform userLocalPose(ToPxVec3(collider.localPosition), ToPxQuat(collider.localRotation));
+
+            // Create shape based on type (same logic as before)
+            if (collider.type == Collider3D::BOX) {
+                PxBoxGeometry box(ToPxVec3((transform.scale * collider.localScale) / 2.0f));
+                collider.Shape = m_Physics->createShape(box, *collider.material);
+                collider.Shape->setLocalPose(userLocalPose);
+            }
+            else if (collider.type == Collider3D::SPHERE) {
+                PxSphereGeometry sphere((transform.scale.x * collider.localScale.x) / 2.0f);
+                collider.Shape = m_Physics->createShape(sphere, *collider.material);
+                collider.Shape->setLocalPose(userLocalPose);
+            }
+            else if (collider.type == Collider3D::CAPSULE) {
+                const glm::vec3 s = glm::abs(transform.scale * collider.localScale);
+                enum Axis { AXIS_X = 0, AXIS_Y = 1, AXIS_Z = 2 };
+                Axis majorAxis = AXIS_X;
+                if (s.y > s.x && s.y > s.z) majorAxis = AXIS_Y;
+                else if (s.z > s.x && s.z > s.y) majorAxis = AXIS_Z;
+
+                float radius, halfHeight;
+                if (majorAxis == AXIS_Y) {
+                    radius = 0.5f * std::max(s.x, s.z);
+                    halfHeight = 0.5f * s.y;
+                }
+                else if (majorAxis == AXIS_Z) {
+                    radius = 0.5f * std::max(s.x, s.y);
+                    halfHeight = 0.5f * s.z;
+                }
+                else {
+                    radius = 0.5f * std::max(s.y, s.z);
+                    halfHeight = 0.5f * s.x;
+                }
+
+                halfHeight = halfHeight - radius;
+                const float kMin = 0.01f;
+                if (radius <= 0.0f) radius = kMin;
+                if (halfHeight <= 0.0f) halfHeight = kMin;
+
+                PxCapsuleGeometry capsule(radius, halfHeight);
+                collider.Shape = m_Physics->createShape(capsule, *collider.material);
+
+                PxQuat localQ = PxQuat(PxIdentity);
+                if (majorAxis == AXIS_Y) localQ = PxQuat(PxHalfPi, PxVec3(0.0f, 0.0f, 1.0f));
+                else if (majorAxis == AXIS_Z) localQ = PxQuat(-PxHalfPi, PxVec3(0.0f, 1.0f, 0.0f));
+
+                PxTransform capsuleAxisPose(PxVec3(0.0f), localQ);
+                collider.Shape->setLocalPose(userLocalPose * capsuleAxisPose);
+            }
+            else if (collider.type == Collider3D::MESH) {
+                if (collider.physicsMeshID == EMPTY_ASSET) {
+                    BOOM_WARN("Mesh collider has no PhysicsMeshAsset assigned.");
+                    return;
+                }
+
+                auto& physicsMeshAsset = assetRegistry.Get<PhysicsMeshAsset>(collider.physicsMeshID);
+                if (!physicsMeshAsset.mesh) {
+                    physicsMeshAsset.mesh = LoadCookedMesh(physicsMeshAsset.cookedMeshPath);
+                }
+
+                if (physicsMeshAsset.mesh) {
+                    PxConvexMeshGeometry convexGeom(physicsMeshAsset.mesh);
+                    convexGeom.scale.scale = ToPxVec3(transform.scale * collider.localScale);
+                    collider.Shape = m_Physics->createShape(convexGeom, *collider.material);
+                    collider.Shape->setLocalPose(userLocalPose);
+                }
+            }
+            else if (collider.type == Collider3D::PLANE) {
+                PxPlaneGeometry planeGeom;
+                collider.Shape = m_Physics->createShape(planeGeom, *collider.material);
+
+                const glm::vec3 s = glm::abs(transform.scale * collider.localScale);
+                PxQuat planeRot = PxQuat(PxIdentity);
+
+                if (s.y < s.x && s.y < s.z) {
+                    planeRot = PxQuat(PxHalfPi, PxVec3(0.0f, 0.0f, 1.0f));
+                }
+                else if (s.z < s.x && s.z < s.y) {
+                    planeRot = PxQuat(-PxHalfPi, PxVec3(0.0f, 1.0f, 0.0f));
+                }
+
+                collider.Shape->setLocalPose(userLocalPose * PxTransform(PxVec3(0.0f), planeRot));
+            }
+
+            if (collider.Shape) {
+                collider.Shape->setFlag(PxShapeFlag::eVISUALIZATION, true);
+
+                // NEW: Configure trigger vs collision behavior
+                if (collider.isTrigger) {
+                    collider.Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+                    collider.Shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+                }
+                else {
+                    collider.Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
+                    collider.Shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, false);
+                }
+            }
+
+            // Create a STATIC actor to hold the shape
+            PxRigidStatic* staticActor = m_Physics->createRigidStatic(pose);
+            if (!staticActor) {
+                BOOM_ERROR("Failed to create static actor for collider-only entity");
+                collider.Shape->release();
+                collider.Shape = nullptr;
+                return;
+            }
+
+            // Attach shape to actor
+            staticActor->attachShape(*collider.Shape);
+            staticActor->setActorFlag(PxActorFlag::eVISUALIZATION, true);
+
+            // Store entity ID
+            staticActor->userData = new EntityID(entity.ID());
+
+            // Add to scene
+            m_Scene->addActor(*staticActor);
+
+            // Store actor reference in a RigidBodyComponent if it exists, or create a minimal one
+            if (entity.Has<RigidBodyComponent>()) {
+                entity.Get<RigidBodyComponent>().RigidBody.actor = staticActor;
+                entity.Get<RigidBodyComponent>().RigidBody.type = RigidBody3D::STATIC;
+            }
+
+            BOOM_INFO("Created collider-only entity");
         }
 
         BOOM_INLINE void SetRigidBodyType(Entity& entity, RigidBody3D::Type newType)
@@ -841,11 +1003,24 @@ namespace Boom {
         {
             (void)constantBlock;
             (void)constantBlockSize;
-            // generate contacts and triggers for actors
-            pairFlags |= PxPairFlag::eCONTACT_DEFAULT |
-                PxPairFlag::eTRIGGER_DEFAULT |
-                PxPairFlag::eNOTIFY_TOUCH_FOUND |
-                PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+
+            // Check if either object is a trigger
+            bool isTriggerPair = PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1);
+
+            if (isTriggerPair) {
+                // For trigger pairs: only use supported flags
+                pairFlags = PxPairFlag::eTRIGGER_DEFAULT |
+                    PxPairFlag::eNOTIFY_TOUCH_FOUND |
+                    PxPairFlag::eNOTIFY_TOUCH_LOST;
+            }
+            else {
+                // For regular collision pairs: use all flags including eNOTIFY_TOUCH_PERSISTS
+                pairFlags = PxPairFlag::eCONTACT_DEFAULT |
+                    PxPairFlag::eTRIGGER_DEFAULT |
+                    PxPairFlag::eNOTIFY_TOUCH_FOUND |
+                    PxPairFlag::eNOTIFY_TOUCH_PERSISTS |
+                    PxPairFlag::eNOTIFY_TOUCH_LOST;
+            }
 
             return PxFilterFlag::eDEFAULT;
         }

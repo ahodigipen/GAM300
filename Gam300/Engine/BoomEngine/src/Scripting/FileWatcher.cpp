@@ -131,8 +131,9 @@ namespace Boom {
             return sctp;
         }
         catch (const std::filesystem::filesystem_error& e) {
+            const char* error_msg = e.what();
             BOOM_ERROR("[FileWatcher] Failed to get write time for {}: {}",
-                filepath, e.what());
+                filepath, error_msg);
             return std::chrono::system_clock::now();
         }
     }

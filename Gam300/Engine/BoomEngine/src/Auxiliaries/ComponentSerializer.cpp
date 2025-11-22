@@ -440,7 +440,12 @@ namespace Boom
         // === THIRD PERSON CAMERA COMPONENT ===
         RegisterPropertyComponent<ThirdPersonCameraComponent>("ThirdPersonCameraComponent");
 
+        // === SPRITE COMPONENT ===
         RegisterPropertyComponent<SpriteComponent>("SpriteComponent");
+
+        // === PAUSE MEN TAG COMPONENT ===
+        RegisterPropertyComponent<PauseMenuTagComponent>("PauseMenuTagComponent");
+
         
        
 

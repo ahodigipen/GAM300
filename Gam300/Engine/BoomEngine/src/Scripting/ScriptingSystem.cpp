@@ -37,13 +37,13 @@ namespace Boom {
         // 3. Destroy all instances (safe GCHandle cleanup)
         for (auto& [id, inst] : m_Instances) {
             if (inst.gchandle) {
-                MonoObject* obj = mono_gchandle_get_target(inst.gchandle);
+                MonoObject* obj = mono_gchandle_get_target(static_cast<uint32_t>(inst.gchandle));
                 if (inst.onDestroy && obj) {
                     MonoObject* exc = nullptr;
                     mono_runtime_invoke(inst.onDestroy, obj, nullptr, &exc);
                     if (exc) m_Mono.LogException(exc, "[Scripting] OnDestroy (shutdown)");
                 }
-                mono_gchandle_free(inst.gchandle);
+                mono_gchandle_free(static_cast<uint32_t>(inst.gchandle));
             }
         }
         m_Instances.clear();
@@ -73,7 +73,7 @@ namespace Boom {
 
         if (m_AutoHotReload) {
             m_FileWatcher.AddWatch(dllPath,
-                [this](const std::string& path) {
+                [this](const std::string&) {
                     BOOM_INFO("[Scripting] DLL modified, triggering hot reload...");
                     this->ReloadScripts();
                 },
@@ -171,7 +171,7 @@ namespace Boom {
         return true;
     }
 
-    void ScriptingSystem::DestroyForEntity(entt::entity e, ScriptComponent& sc)
+    void ScriptingSystem::DestroyForEntity(entt::entity, ScriptComponent& sc)
     {
         if (!sc.InstanceId) return;
 
@@ -179,13 +179,13 @@ namespace Boom {
         if (it != m_Instances.end()) {
             Instance& inst = it->second;
             if (inst.gchandle) {
-                MonoObject* obj = mono_gchandle_get_target(inst.gchandle);
+                MonoObject* obj = mono_gchandle_get_target(static_cast<uint32_t>(inst.gchandle));
                 if (inst.onDestroy && obj) {
                     MonoObject* exc = nullptr;
                     mono_runtime_invoke(inst.onDestroy, obj, nullptr, &exc);
                     if (exc) m_Mono.LogException(exc, "[Scripting] OnDestroy");
                 }
-                mono_gchandle_free(inst.gchandle);
+                mono_gchandle_free(static_cast<uint32_t>(inst.gchandle));
             }
             m_Instances.erase(it);
         }
@@ -225,7 +225,7 @@ namespace Boom {
         return true;
     }
 
-    bool ScriptingSystem::TickEntity(entt::entity e, ScriptComponent& sc, float dt)
+    bool ScriptingSystem::TickEntity(entt::entity, ScriptComponent& sc, float dt)
     {
         if (!m_Alive || !sc.Enabled || !sc.InstanceId)
             return false;
@@ -236,7 +236,7 @@ namespace Boom {
         Instance& inst = it->second;
         if (!inst.onUpdate || !inst.gchandle) return false;
 
-        MonoObject* obj = mono_gchandle_get_target(inst.gchandle);
+        MonoObject* obj = mono_gchandle_get_target(static_cast<uint32_t>(inst.gchandle));
         if (!obj) return false;
 
         void* a[1] = { &dt };
@@ -261,16 +261,17 @@ namespace Boom {
         m_FileWatcher.ClearAll();
 
         // 1. Call OnDestroy on all existing instances
-        BOOM_INFO("[Scripting] Destroying {} existing instances...", m_Instances.size());
+        size_t instanceCount = m_Instances.size();
+        BOOM_INFO("[Scripting] Destroying {} existing instances...", instanceCount);
         for (auto& [id, inst] : m_Instances) {
             if (inst.gchandle) {
-                MonoObject* obj = mono_gchandle_get_target(inst.gchandle);
+                MonoObject* obj = mono_gchandle_get_target(static_cast<uint32_t>(inst.gchandle));
                 if (inst.onDestroy && obj) {
                     MonoObject* exc = nullptr;
                     mono_runtime_invoke(inst.onDestroy, obj, nullptr, &exc);
                     if (exc) m_Mono.LogException(exc, "[Scripting] OnDestroy (reload)");
                 }
-                mono_gchandle_free(inst.gchandle);
+                mono_gchandle_free(static_cast<uint32_t>(inst.gchandle));
             }
         }
         m_Instances.clear();
@@ -308,7 +309,7 @@ namespace Boom {
         // Re-enable file watching if it was enabled
         if (wasAutoReloadEnabled) {
             m_FileWatcher.AddWatch(m_DllPath,
-                [this](const std::string& path) {
+                [this](const std::string&) {
                     BOOM_INFO("[Scripting] DLL modified, triggering hot reload...");
                     this->ReloadScripts();
                 },
@@ -327,7 +328,8 @@ namespace Boom {
         auto view = registry.view<ScriptComponent>();
         int recreated = 0, failed = 0;
 
-        BOOM_INFO("[Scripting] Recreating script instances for {} entities...", view.size());
+        size_t entityCount = view.size();
+        BOOM_INFO("[Scripting] Recreating script instances for {} entities...", entityCount);
         for (auto entity : view) {
             auto& sc = view.get<ScriptComponent>(entity);
             if (RecreateForEntity(entity, sc)) {
@@ -357,7 +359,7 @@ namespace Boom {
 
         if (enable && !m_DllPath.empty()) {
             m_FileWatcher.AddWatch(m_DllPath,
-                [this](const std::string& path) {
+                [this](const std::string&) {
                     BOOM_INFO("[Scripting] DLL modified, triggering hot reload...");
                     this->ReloadScripts();
                 },

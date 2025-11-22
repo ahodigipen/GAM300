@@ -23,6 +23,7 @@ namespace Boom {
         NAV_AGENT_COMPONENT,
         AI_COMPONENT,
         SPRITE,
+        PAUSE_MENU_TAG,
         COUNT
     };
     constexpr std::string_view COMPONENT_NAMES[]{
@@ -41,7 +42,8 @@ namespace Boom {
         "Third Person Camera" , //12
         "Nav Agent Component",  //13
         "AI Component",         //14
-        "Sprite"                //15
+        "Sprite",               //15
+        "Pause Menu Tag"        //16
     };
 
     // transform component
@@ -373,6 +375,18 @@ namespace Boom {
             obj_member<"uiOverlay", &SpriteComponent::uiOverlay>
         )
     };
+
+    struct PauseMenuTagComponent {
+        BOOM_INLINE PauseMenuTagComponent(const PauseMenuTagComponent&) = default;
+        BOOM_INLINE PauseMenuTagComponent() = default;
+
+        bool isTag = true;
+
+        XPROPERTY_DEF(
+            "PauseMenuTagComponent", PauseMenuTagComponent
+        )
+    };
+
     struct Entity
     {
         BOOM_INLINE Entity(EntityRegistry* registry, EntityID entity) :
@@ -442,4 +456,6 @@ namespace Boom {
         EntityRegistry* m_Registry = nullptr;
         EntityID m_EnttID = NENTT;
     };
+
+
 }

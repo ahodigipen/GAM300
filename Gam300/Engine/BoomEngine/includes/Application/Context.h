@@ -13,7 +13,9 @@
 
 namespace Boom
 {
-	// Forward declarations
+	// Forward declaration of the base interface
+	
+	struct Application;
 	struct AppInterface;
 	class ScriptingSystem;
 
@@ -27,6 +29,8 @@ namespace Boom
 
 		/** @brief Destructor that deletes and nulls out all layer pointers. */
 		~AppContext(); // Defined in Context.cpp
+
+		Application* app = nullptr;
 
 		/**
 		 * @brief Container of all active layers in the application.

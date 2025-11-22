@@ -83,7 +83,9 @@ namespace Boom
         BOOM_INLINE void EnttView(Fn&& fn) {
             auto view = m_Context->scene.view<Components...>();
             for (auto e : view) {
-                fn(EntityType{ &m_Context->scene, e }, m_Context->scene.get<Components>(e)...);
+                // fn(EntityType{ &m_Context->scene, e }, m_Context->scene.get<Components>(e)...);
+                EntityType entity{ &m_Context->scene, e };
+                fn(entity, m_Context->scene.get<Components>(e)...);
             }
         }
 
@@ -121,6 +123,9 @@ namespace Boom
         {
             m_LayerID = TypeID<Application>();
             m_Context = new AppContext();
+
+            m_Context->app = this;
+
             RegisterEventCallbacks();
 
             AttachCallback<WindowResizeEvent>([this](auto e) {
@@ -143,6 +148,16 @@ namespace Boom
          */
         BOOM_INLINE ~Application()
         {
+            if (m_Context) {
+                for (AppInterface*& layer : m_Context->layers)
+                {
+                    BOOM_DELETE(layer);
+                }
+                // Clear the vector to prevent the AppContext destructor
+                // from trying to delete them a second time.
+                m_Context->layers.clear();
+            }
+
             DestroyPhysicsActors();
             BOOM_DELETE(m_Context);
             //called here in case of the need of multiple windows
@@ -166,6 +181,8 @@ namespace Boom
                 return;
             }
 
+            m_PrePlayScene_OriginalPath = m_CurrentScenePath;
+
             // Save current scene state to temporary file
             m_PrePlayScenePath = "Scenes/__temp_preplay_state__.yaml";
             DataSerializer serializer;
@@ -173,8 +190,13 @@ namespace Boom
             BOOM_INFO("[Application] Saved pre-play scene state");
 
             // Initialize physics actors for all rigid bodies
-            EnttView<Entity, RigidBodyComponent>([this](auto entity, auto&) {
-                if (!entity.template Get<RigidBodyComponent>().RigidBody.actor) {
+            EnttView<Entity, ColliderComponent>([this](auto entity, auto&) {
+                // Only add if it DOESN'T have a RigidBodyComponent
+                if (!entity.Has<RigidBodyComponent>()) {
+                    m_Context->physics->AddColliderOnly(entity, *m_Context->assets);
+                }
+                else {
+                    // Has both collider and rigidbody - use existing logic
                     m_Context->physics->AddRigidBody(entity, *m_Context->assets);
                 }
                 });
@@ -187,6 +209,8 @@ namespace Boom
             m_IsInPlayMode = true;
             m_AppState = ApplicationState::RUNNING;
             m_ShouldExit = false;
+
+            m_Context->scriptingSystem->CallStart();
 
             BOOM_INFO("[Application] Entered play mode");
         }
@@ -257,6 +281,11 @@ namespace Boom
                 // Deserialize the saved state
                 serializer.Deserialize(m_Context->scene, *m_Context->assets, m_PrePlayScenePath);
 
+                // Restore the original scene path
+                strncpy_s(m_CurrentScenePath, sizeof(m_CurrentScenePath), m_PrePlayScene_OriginalPath.c_str(), _TRUNCATE);
+                m_PrePlayScene_OriginalPath.clear();
+                m_SceneLoaded = (m_CurrentScenePath[0] != '\0'); // Update scene loaded status
+
                 // Delete the temporary file
                 std::filesystem::remove(m_PrePlayScenePath);
                 m_PrePlayScenePath.clear();
@@ -323,6 +352,13 @@ namespace Boom
          * @brief Checks if the application is paused (in play mode but not updating)
          */
         BOOM_INLINE bool IsPaused() const { return m_IsInPlayMode && m_AppState == ApplicationState::PAUSED; }
+
+        BOOM_INLINE bool IsInGamePauseMenuLoaded() const
+        {
+            if (!m_Context) return false;
+            auto view = m_Context->scene.view<PauseMenuTagComponent>();
+            return !view.empty();
+        }
 
         /**
          * @brief Gets the adjusted time (excluding paused time)
@@ -399,6 +435,52 @@ namespace Boom
 
             BOOM_INFO("[Scene] Successfully loaded scene '{}'", sceneName);
             return true;
+        }
+
+
+        BOOM_INLINE bool LoadSceneAdditive(const std::string& sceneName, const std::string& scenePath = "Scenes/")
+        {
+            DataSerializer serializer;
+            const std::string sceneFilePath = scenePath + sceneName + ".yaml";
+            BOOM_INFO("[Scene] Additively loading scene '{}'", sceneName, sceneFilePath);
+
+            // Deserialize new entities and components into the EXISTING scene
+            serializer.Deserialize(m_Context->scene, *m_Context->assets, sceneFilePath);
+
+            // Reinitialize systems, but ONLY for the newly loaded objects.
+            BOOM_INFO("[Scene] Initializing physics for additive objects...");
+            auto view = m_Context->scene.view<PauseMenuTagComponent, RigidBodyComponent>();
+            for (auto e : view) {
+                // Check if it's already been added
+                auto& rb = view.get<RigidBodyComponent>(e);
+                if (!rb.RigidBody.actor) {
+                    Boom::Entity entity{ &m_Context->scene, e };
+                    m_Context->physics->AddRigidBody(entity, *m_Context->assets);
+                }
+            }
+
+            BOOM_INFO("[Scene] Successfully added scene '{}'", sceneName);
+            return true;
+        }
+
+        template<typename TagComponent>
+        BOOM_INLINE void UnloadAdditiveScene()
+        {
+            BOOM_INFO("[Scene] Unloading additive scene with tag...");
+            auto& reg = m_Context->scene;
+            auto view = reg.view<TagComponent>();
+
+            for (auto e : view) {
+                if (reg.all_of<RigidBodyComponent>(e)) {
+                    auto& rb = reg.get<RigidBodyComponent>(e);
+                    if (rb.RigidBody.actor) {
+                        rb.RigidBody.actor->release();
+                        rb.RigidBody.actor = nullptr;
+                    }
+                }
+            }
+            reg.destroy(view.begin(), view.end());
+            BOOM_INFO("[Scene] Unload complete.");
         }
 
         BOOM_INLINE void LightsUpdate() {
@@ -539,6 +621,21 @@ namespace Boom
             out.push_back(Boom::LineVert{ b, cB });
         }
 
+        BOOM_INLINE void SetPreviousScenePath(const std::string& path)
+        {
+            strncpy_s(m_PreviousScenePath, 512, path.c_str(), _TRUNCATE);
+        }
+
+        BOOM_INLINE std::string GetPreviousScenePath() const
+        {
+            return std::string(m_PreviousScenePath);
+        }
+
+        BOOM_INLINE void SetCurrentScenePath(const std::string& path)
+        {
+            strncpy_s(m_CurrentScenePath, 512, path.c_str(), _TRUNCATE);
+        }
+
     private:
         std::unordered_map<std::string, std::pair<glm::vec3, glm::vec3>> m_SphereInitialStates;
 
@@ -548,11 +645,13 @@ namespace Boom
         std::unique_ptr<Boom::DebugLinesShader> m_DebugLinesShader;
         std::vector<Boom::PhysicsContext::DebugLine> m_PhysLinesCPU;
         char m_CurrentScenePath[512] = "\0";
+        char m_PreviousScenePath[512] = "\0";
         bool m_SceneLoaded = false;
         std::unique_ptr<DetourNavSystem> m_Nav;
 
         // Pre-play state storage for Unity-like play/stop behavior
         std::string m_PrePlayScenePath = "";
+        std::string m_PrePlayScene_OriginalPath = "";
         bool m_IsInPlayMode = false;
 
         Boom::AISystem                         m_AIagents;
@@ -742,6 +841,8 @@ namespace Boom
                 BOOM_INFO("[Scene] Created {} script instances", scriptsCreated);
             }
 
+            m_Context->scriptingSystem->CallStart();
+
             BOOM_INFO("[Scene] Scene systems reinitialization complete");
         }
 
@@ -763,11 +864,79 @@ namespace Boom
 
         BOOM_INLINE void RegisterEventCallbacks()
         {
-            // Set physics event callback (mark unused param to avoid warnings)
+            // Set physics event callback
             m_Context->physics->SetEventCallback([this](auto e)
                 {
-                    // Check if this is a contact event
-                    if (e.Event == PxEvent::CONTACT)
+                    // Handle TRIGGER events
+                    if (e.Event == PxEvent::TRIGGER)
+                    {
+                        // Get both entities from the event payload
+                        entt::entity triggerEntity = (entt::entity)e.Entity2;  // The trigger volume
+                        entt::entity enteringEntity = (entt::entity)e.Entity1; // The entity entering
+
+                        // Validate both entities exist
+                        if (!m_Context->scene.valid(triggerEntity) || !m_Context->scene.valid(enteringEntity))
+                            return;
+
+                        // Get entity names for logging (if they have InfoComponent)
+                        std::string triggerName = "Unknown";
+                        std::string enteringName = "Unknown";
+
+                        if (m_Context->scene.all_of<InfoComponent>(triggerEntity))
+                        {
+                            triggerName = m_Context->scene.get<InfoComponent>(triggerEntity).name;
+                        }
+
+                        if (m_Context->scene.all_of<InfoComponent>(enteringEntity))
+                        {
+                            enteringName = m_Context->scene.get<InfoComponent>(enteringEntity).name;
+                        }
+
+                        BOOM_INFO("[Trigger] '{}' entered trigger '{}'", enteringName, triggerName);
+
+                        // ===== CUSTOM TRIGGER LOGIC =====
+                        // Example: Checkpoint trigger
+                        if (triggerName == "Checkpoint")
+                        {
+                            BOOM_INFO("Checkpoint activated by '{}'!", enteringName);
+                            // Add your checkpoint logic here
+                            // e.g., save player position, play sound, etc.
+                        }
+
+                        // Example: Damage zone
+                        if (triggerName == "DamageZone" && enteringName == "Player")
+                        {
+                            BOOM_WARN("Player entered damage zone!");
+                            // Apply damage logic here
+                        }
+
+                        // Example: Collectible item
+                        if (triggerName.find("Coin") != std::string::npos)
+                        {
+                            BOOM_INFO("Coin collected by '{}'", enteringName);
+                            // Destroy the coin entity
+                            // m_Context->scene.destroy(triggerEntity);
+                            // Add score, play sound, etc.
+                        }
+
+                        // Example: Door activation
+                        if (triggerName == "DoorTrigger" && enteringName == "Player")
+                        {
+                            BOOM_INFO("Player approached door - opening...");
+                            // Find and open the associated door
+                            // You could store a reference to the door entity in a component
+                        }
+
+                        // Example: Enemy aggro zone
+                        if (triggerName.find("AggroZone") != std::string::npos)
+                        {
+                            BOOM_INFO("'{}' entered enemy aggro zone", enteringName);
+                            // Activate enemy AI, start chase behavior, etc.
+                        }
+                    }
+
+                    // Handle CONTACT events (existing code)
+                    else if (e.Event == PxEvent::CONTACT)
                     {
                         // Get both entities from the event payload
                         entt::entity ent1 = (entt::entity)e.Entity1;

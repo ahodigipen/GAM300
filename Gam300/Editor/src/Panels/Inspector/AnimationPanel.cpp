@@ -134,8 +134,8 @@ namespace EditorUI {
                         BOOM_INFO("Loaded animation clip from file: {}", filePath);
                     }
                     // Also accept model asset (from resource panel)
-                    else if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(CONSTANTS::DND_PAYLOAD_MODEL.data())) {
-                        Boom::AssetID assetID = *(Boom::AssetID*)payload->Data;
+                    else if (const ImGuiPayload* modelPayload = ImGui::AcceptDragDropPayload(CONSTANTS::DND_PAYLOAD_MODEL.data())) {
+                        Boom::AssetID assetID = *(Boom::AssetID*)modelPayload->Data;
                         auto& assetReg = m_App->GetAssetRegistry();
                         auto* modelAsset = assetReg.TryGet<Boom::ModelAsset>(assetID);
                         if (modelAsset && modelAsset->uid != EMPTY_ASSET) {
@@ -270,7 +270,8 @@ namespace EditorUI {
                     if (!isCurrent) {
                         if (ImGui::Button("Set Default", ImVec2(80, 0))) {
                             animator->SetDefaultState(i);
-                            BOOM_INFO("Set '%s' as default state", state->name.c_str());
+                            const char* stateName = state->name.c_str();
+                            BOOM_INFO("Set '%s' as default state", stateName);
                         }
                     }
                     else {

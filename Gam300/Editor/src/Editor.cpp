@@ -286,9 +286,22 @@ namespace EditorUI {
             if (!m_App->IsPlaying()) {
                 m_App->Play();
                 BOOM_INFO("[Shortcut] Play mode started (Ctrl+P)");
-            } else if (m_App->IsPaused()) {
-                m_App->Resume();
-                BOOM_INFO("[Shortcut] Resumed from pause (Ctrl+P)");
+            }
+            else if (m_App->IsPaused())
+            {
+                // Check if the pause was from the Editor OR from the Game.
+                if (m_App->IsInGamePauseMenuLoaded())
+                {
+                    // The game is paused by 'Escape', so 'Ctrl+P' does nothing.
+                    // Only the 'R' key (handled by C#) should resume.
+                    BOOM_WARN("[Shortcut] Ctrl+P ignored. Game is paused, use 'R' key to resume.");
+                }
+                else
+                {
+                    // The game is paused by the Editor (Ctrl+Shift+P), so 'Ctrl+P' can resume.
+                    m_App->Resume();
+                    BOOM_INFO("[Shortcut] Resumed from editor pause (Ctrl+P)");
+                }
             }
         }
 
