@@ -270,7 +270,8 @@ namespace EditorUI {
                     if (!isCurrent) {
                         if (ImGui::Button("Set Default", ImVec2(80, 0))) {
                             animator->SetDefaultState(i);
-                            BOOM_INFO("Set '%s' as default state", state->name.c_str());
+                            const char* stateName = state->name.c_str();
+                            BOOM_INFO("Set '%s' as default state", stateName);
                         }
                     }
                     else {
