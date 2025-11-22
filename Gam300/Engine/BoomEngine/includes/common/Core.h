@@ -41,6 +41,10 @@
 #include <atomic>
 #include <thread>
 #include <chrono>
+
+//physics
+#include "PxPhysicsAPI.h"
+#include <foundation/PxMath.h>
 #pragma warning(pop)
 
 

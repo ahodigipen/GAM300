@@ -790,7 +790,7 @@ namespace EditorUI {
                 glm::vec3 oldPos = collider->localPosition;
                 glm::vec3 oldRot = collider->localRotation;
                 glm::vec3 oldScale = collider->localScale;
-                bool oldIsTrigger = collider->isTrigger; // NEW
+                //bool oldIsTrigger = collider->isTrigger; // NEW
 
                 // --- NEW: IS TRIGGER CHECKBOX ---
                 ImGui::Spacing();

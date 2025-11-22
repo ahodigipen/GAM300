@@ -539,8 +539,8 @@ void AnimatorGraphPanel::MoveSelectedNodes(const ImVec2 delta)
     }
 }
 
-void AnimatorGraphPanel::AddLink(GraphEditor::NodeIndex inputNodeIndex, GraphEditor::SlotIndex inputSlotIndex,
-    GraphEditor::NodeIndex outputNodeIndex, GraphEditor::SlotIndex outputSlotIndex)
+void AnimatorGraphPanel::AddLink(GraphEditor::NodeIndex inputNodeIndex, GraphEditor::SlotIndex /*inputSlotIndex*/,
+    GraphEditor::NodeIndex outputNodeIndex, GraphEditor::SlotIndex /*outputSlotIndex*/)
 {
     if (!m_CurrentAnimator) return;
 
@@ -612,8 +612,8 @@ void AnimatorGraphPanel::CustomDraw(ImDrawList* drawList, ImRect rectangle, Grap
     }
 }
 
-void AnimatorGraphPanel::RightClick(GraphEditor::NodeIndex nodeIndex, GraphEditor::SlotIndex slotIndexInput,
-    GraphEditor::SlotIndex slotIndexOutput)
+void AnimatorGraphPanel::RightClick(GraphEditor::NodeIndex /*nodeIndex*/, GraphEditor::SlotIndex /*slotIndexInput*/,
+    GraphEditor::SlotIndex /*slotIndexOutput*/)
 {
     //// nodeIndex is -1 when clicking on empty space
     //if (nodeIndex == (GraphEditor::NodeIndex)-1) {
@@ -629,7 +629,7 @@ const size_t AnimatorGraphPanel::GetTemplateCount()
     return 1; // Single template for state nodes
 }
 
-const GraphEditor::Template AnimatorGraphPanel::GetTemplate(GraphEditor::TemplateIndex index)
+const GraphEditor::Template AnimatorGraphPanel::GetTemplate(GraphEditor::TemplateIndex /*index*/)
 {
     static const char* inputs[] = { "In" };
     static const char* outputs[] = { "Out" };
