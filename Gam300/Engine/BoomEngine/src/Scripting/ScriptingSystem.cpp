@@ -263,7 +263,8 @@ namespace Boom {
         m_FileWatcher.ClearAll();
 
         // 1. Call OnDestroy on all existing instances
-        BOOM_INFO("[Scripting] Destroying {} existing instances...", m_Instances.size());
+        size_t instanceCount = m_Instances.size();
+        BOOM_INFO("[Scripting] Destroying {} existing instances...", instanceCount);
         for (auto& [id, inst] : m_Instances) {
             if (inst.gchandle) {
                 MonoObject* obj = mono_gchandle_get_target(static_cast<uint32_t>(inst.gchandle));
@@ -329,7 +330,8 @@ namespace Boom {
         auto view = registry.view<ScriptComponent>();
         int recreated = 0, failed = 0;
 
-        BOOM_INFO("[Scripting] Recreating script instances for {} entities...", view.size());
+        size_t entityCount = view.size();
+        BOOM_INFO("[Scripting] Recreating script instances for {} entities...", entityCount);
         for (auto entity : view) {
             auto& sc = view.get<ScriptComponent>(entity);
             if (RecreateForEntity(entity, sc)) {

@@ -247,9 +247,7 @@ namespace Boom {
         if (!exc) return;
         MonoString* s = mono_object_to_string(exc, nullptr);
         char* c = mono_string_to_utf8(s);
-#ifdef _DEBUG
         BOOM_ERROR("{}: {}", prefix ? prefix : "[Mono] Exception", c ? c : "(null)");
-#endif
         if (c) mono_free(c);
     }
 
