@@ -339,8 +339,8 @@ namespace EditorUI {
         }
 
         if (selected.Has<Boom::SpriteComponent>()) {
-            ImGui::PushID("Quad 2D");
-            if (ImGui::CollapsingHeader("Quad 2D", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap)) {
+            ImGui::PushID("Sprite");
+            if (ImGui::CollapsingHeader("Sprite", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap)) {
                 if (ComponentSettings<Boom::SpriteComponent>(ctx)) {
                     ImGui::PopID();
                     return; // Component was removed, exit early
