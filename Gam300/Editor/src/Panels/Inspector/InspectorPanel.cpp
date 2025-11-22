@@ -333,6 +333,22 @@ namespace EditorUI {
             }
         }
 
+        if (selected.Has<Boom::SpriteComponent>()) {
+            if (ImGui::CollapsingHeader("Quad 2D", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap)) {
+                ComponentSettings<Boom::SpriteComponent>(ctx);
+
+                auto& q = selected.Get<Boom::SpriteComponent>();
+
+                ImGui::Checkbox("GUI", &q.uiOverlay);
+                ImGui::BeginTable("##maps", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersInnerV);
+                ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Asset", ImGuiTableColumnFlags_WidthStretch);
+                InputAssetWidget<CONSTANTS::DND_PAYLOAD_TEXTURE>("texture", q.textureID);
+                ImGui::EndTable();
+                ImGui::ColorEdit3("color", &q.color[0]);
+            }
+        }
+
         if (selected.Has<Boom::AnimatorComponent>()) {
             AnimatorComponentUI(selected);
         }
