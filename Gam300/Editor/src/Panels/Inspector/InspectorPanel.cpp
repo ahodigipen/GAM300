@@ -443,6 +443,49 @@ namespace EditorUI {
                 ImGui::SetNextItemWidth(-1);
                 ImGui::DragFloat("##Mass", &rigidBody->mass, 0.1f, 0.0f, 1000.0f);
 
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Initial Velocity");
+                ImGui::SameLine(150);
+                ImGui::SetNextItemWidth(-1);
+                ImGui::DragFloat3("##InitialVelocity", &rigidBody->initialVelocity.x, 0.01f);
+
+                // --- ADD THIS NEW SECTION ---
+                ImGui::Spacing();
+                ImGui::SeparatorText("Constraints"); // Uses a nice separator
+                ImGui::Spacing();
+
+                // Store old values to detect changes
+                bool oldFreezeX = rigidBody->freezeRotationX;
+                bool oldFreezeY = rigidBody->freezeRotationY;
+                bool oldFreezeZ = rigidBody->freezeRotationZ;
+
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Freeze Rotation");
+                ImGui::SameLine(150);
+
+                // We use Push/PopID to make the labels unique for ImGui
+                ImGui::PushID("FreezeRot");
+                ImGui::Checkbox("X", &rigidBody->freezeRotationX);
+                ImGui::SameLine();
+                ImGui::Checkbox("Y", &rigidBody->freezeRotationY);
+                ImGui::SameLine();
+                ImGui::Checkbox("Z", &rigidBody->freezeRotationZ);
+                ImGui::PopID();
+
+                // If any value changed, notify the physics context
+                if (rigidBody->freezeRotationX != oldFreezeX ||
+                    rigidBody->freezeRotationY != oldFreezeY ||
+                    rigidBody->freezeRotationZ != oldFreezeZ)
+                {
+                    // This is a new function we will need to create in PhysicsContext 
+                    m_App->GetPhysicsContext().SetRotationLock(
+                        selected,
+                        rigidBody->freezeRotationX,
+                        rigidBody->freezeRotationY,
+                        rigidBody->freezeRotationZ
+                    );
+                }
+
                 ImGui::Spacing();
                 ImGui::Unindent(12.0f);
             }
