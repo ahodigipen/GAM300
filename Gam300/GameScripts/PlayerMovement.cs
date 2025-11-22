@@ -13,7 +13,7 @@ namespace GameScripts
         public ulong Entity;
 
         // Movement parameters (hardcoded for now - customize in code)
-        private float _speed = 20f;
+        private float _speed = 10f;
         private float _jumpSpeed = 8f;
         private float _gravity = -20f;
 

@@ -39,36 +39,74 @@ namespace Boom {
     {
         auto now = std::chrono::system_clock::now();
 
-        for (auto& [path, entry] : m_Watches) {
-            if (!std::filesystem::exists(entry.filepath)) {
-                continue; // File was deleted, skip this frame
-            }
+        // Create a list of paths to process (avoid issues with corrupted strings during iteration)
+        std::vector<std::string> pathsToCheck;
+        pathsToCheck.reserve(m_Watches.size());
 
-            TimePoint currentWriteTime = GetFileWriteTime(entry.filepath);
-
-            // Check if file was modified
-            if (currentWriteTime != entry.lastModified) {
-                entry.lastModified = currentWriteTime;
-                entry.pendingTrigger = true;
-                entry.lastTriggered = now;
-
-                //BOOM_INFO("[FileWatcher] Detected change: {}", entry.filepath);
-            }
-
-            // Trigger callback after debounce period
-            if (entry.pendingTrigger) {
-                auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
-                    now - entry.lastTriggered
-                );
-
-                if (elapsed >= entry.debounceTime) {
-                    BOOM_INFO("[FileWatcher] Triggering callback for: {}", entry.filepath);
-                    entry.callback(entry.filepath);
-                    entry.pendingTrigger = false;
+        for (const auto& [path, entry] : m_Watches) {
+            try {
+                // Validate the path string before using it
+                if (path.empty()) {
+                    BOOM_WARN("[FileWatcher] Empty path found in watches, skipping");
+                    continue;
                 }
+                pathsToCheck.push_back(path);
+            }
+            catch (...) {
+                BOOM_ERROR("[FileWatcher] Corrupted path found in watches, skipping");
+                continue;
+            }
+        }
+
+        // Now process each path safely
+        for (const auto& path : pathsToCheck) {
+            auto it = m_Watches.find(path);
+            if (it == m_Watches.end()) continue;
+
+            auto& entry = it->second;
+
+            try {
+                // Check if file exists
+                if (!std::filesystem::exists(path)) {
+                    continue; // File was deleted, skip this frame
+                }
+
+                TimePoint currentWriteTime = GetFileWriteTime(path);
+
+                // Check if file was modified
+                if (currentWriteTime != entry.lastModified) {
+                    entry.lastModified = currentWriteTime;
+                    entry.pendingTrigger = true;
+                    entry.lastTriggered = now;
+                }
+
+                // Trigger callback after debounce period
+                if (entry.pendingTrigger) {
+                    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
+                        now - entry.lastTriggered
+                    );
+                    if (elapsed >= entry.debounceTime) {
+                        BOOM_INFO("[FileWatcher] Triggering callback for: {}", path);
+                        entry.callback(path);
+                        entry.pendingTrigger = false;
+                    }
+                }
+            }
+            catch (const std::filesystem::filesystem_error& e) {
+                BOOM_ERROR("[FileWatcher] Filesystem error for {}: {}", path, e.what());
+                continue;
+            }
+            catch (const std::exception& e) {
+                BOOM_ERROR("[FileWatcher] Error processing {}: {}", path, e.what());
+                continue;
+            }
+            catch (...) {
+                BOOM_ERROR("[FileWatcher] Unknown error processing file");
+                continue;
             }
         }
     }
+
 
     void FileWatcher::ClearAll()
     {

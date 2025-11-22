@@ -7,6 +7,9 @@ using System.Runtime.CompilerServices;
 
 namespace Boom
 {
+
+
+
     // Internal calls implemented in C++ and registered with Mono
     internal static class Native
     {
@@ -44,6 +47,21 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Boom_API_IsColliding(ulong handle);
+
+        // ========= ANIMATOR INTERNAL   CALLS =========
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_AnimatorSetFloat(ulong h, string name, float v);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_AnimatorSetBool(ulong h, string name, bool v);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_AnimatorSetTrigger(ulong h, string name);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_AnimatorPlay(ulong h, string state);
+        
+        
+
+
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -127,6 +145,12 @@ namespace Boom
         public const int MOUSE_LEFT = 0;
         public const int MOUSE_RIGHT = 1;
         public const int MOUSE_MIDDLE = 2;
+
+
+        public static void AnimatorSetFloat(ulong h, string n, float v) => Native.Boom_API_AnimatorSetFloat(h, n, v);
+        public static void AnimatorSetBool(ulong h, string n, bool v) => Native.Boom_API_AnimatorSetBool(h, n, v);
+        public static void AnimatorSetTrigger(ulong h, string n) => Native.Boom_API_AnimatorSetTrigger(h, n);
+        public static void AnimatorPlay(ulong h, string state) => Native.Boom_API_AnimatorPlay(h, state);
     }
 
     public static class Transform
@@ -134,6 +158,8 @@ namespace Boom
         public static Vec3 GetPosition(ulong handle) => API.GetPosition(handle);
         public static void SetPosition(ulong handle, Vec3 p) => API.SetPosition(handle, p);
     }
+
+
 }
 
 namespace GameScripts
@@ -156,7 +182,7 @@ namespace GameScripts
                     .OrderBy(name => name)
                     .ToArray();
 
-                Boom.API.Log($"[C# ScriptRegistry] Found {scriptTypes.Length} script types");
+                //Boom.API.Log($"[C# ScriptRegistry] Found {scriptTypes.Length} script types");
                 return scriptTypes;
             }
             catch (Exception ex)

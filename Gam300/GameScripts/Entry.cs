@@ -13,9 +13,6 @@ namespace GameScripts
         {
             API.Log("[C#] Entry.Start() called");
 
-            _player = API.FindEntity("Samurai");
-            API.Log("[C#] Samurai handle = " + _player);
-
             if (_player != 0)
             {
                 // Check if entity has required components
@@ -114,6 +111,21 @@ namespace GameScripts
 
             // No more manual position / gravity / ground clamping.
             // Transform is driven entirely by the physics simulation.
+
+
+            // ========================= Animation Movement ============================
+
+            float horizSpeed = (float)Math.Sqrt(vel.X * vel.X + vel.Z * vel.Z);
+            bool grounded = API.IsColliding(_player);
+
+            API.AnimatorSetFloat(_player, "Speed", horizSpeed);
+            API.AnimatorSetBool(_player, "IsGrounded", grounded);
+            if (grounded && API.IsKeyDown(API.KEY_SPACE)) API.AnimatorSetTrigger(_player, "Jump");
+
+            // optional: attack
+            if (API.IsMouseDown(API.MOUSE_LEFT)) API.AnimatorSetTrigger(_player, "Attack");
+
+
         }
     }
 }
