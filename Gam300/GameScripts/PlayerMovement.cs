@@ -3,117 +3,71 @@ using Boom;
 
 namespace GameScripts
 {
-    /// <summary>
-    /// Handles player movement with WASD, jumping with Space, and mouse-look control.
-    /// Attach this script to any entity with TransformComponent and ScriptComponent.
-    /// </summary>
-    public class PlayerMovement
+    public class PlayerMovement 
     {
-        // This field is automatically set by the scripting system
-        public ulong Entity;
+        // Tunables
+        private float _speed = 6.0f;      // horizontal speed (m/s)
+        private float _jump = 8.0f;      // jump impulse (m/s)
 
-        // Movement parameters (hardcoded for now - customize in code)
-        private float _speed = 10f;
-        private float _jumpSpeed = 8f;
-        private float _gravity = -20f;
+        public ulong Entity { get; set; }
 
-        // Runtime state
-        private float _vy = 0f;
-        private float _groundY = 0f;
-        private bool _grounded = true;
-
-        /// <summary>
-        /// Called once when the script is first created.
-        /// </summary>
-        public void OnStart(string jsonParams)
+        public void OnStart()
         {
-            API.Log($"[PlayerMovement] OnStart() - Entity: {Entity}");
-
-            // Validate entity has required components
+            // Require a transform; don't force a ScriptComponent check on self.
             if (!API.HasTransform(Entity))
             {
-                API.Log("[PlayerMovement] ERROR: Entity missing TransformComponent!");
-                return;
+                API.Log("[PlayerMovement] Entity has no Transform; disabling.");
             }
-
-            if (!API.HasScript(Entity))
-            {
-                API.Log("[PlayerMovement] ERROR: Entity missing ScriptComponent!");
-                return;
-            }
-
-            // Note: JSON parsing removed for simplicity
-            // To change values, edit _speed, _jumpSpeed, _gravity above
-            API.Log($"[PlayerMovement] Using defaults: speed={_speed}, jumpSpeed={_jumpSpeed}, gravity={_gravity}");
-
-            // Store initial ground position
-            _groundY = API.GetPosition(Entity).Y;
-            API.Log($"[PlayerMovement] Ground Y set to: {_groundY}");
         }
 
-        /// <summary>
-        /// Called every frame to update movement.
-        /// </summary>
         public void OnUpdate(float dt)
         {
-            // Safety check
-            if (!API.HasTransform(Entity) || !API.HasScript(Entity))
+            // If RMB is held (common for mouselook), we pause movement.
+            // Remove this gate if you don't want it.
+            if (API.IsMouseDown(API.MOUSE_RIGHT))
                 return;
 
-            var pos = API.GetPosition(Entity);
+            // Read current linear velocity (Dynamic body friendly)
+            var vel = API.GetLinearVelocity(Entity);
 
-            // Check if right mouse button is held (disables movement)
-            bool allowMove = !API.IsMouseDown(API.MOUSE_RIGHT);
-
-            // Horizontal movement (WASD)
+            // Build desired planar direction from WASD
             float dx = 0f, dz = 0f;
-            if (allowMove)
+            if (API.IsKeyDown(API.KEY_A)) dx -= 1f;
+            if (API.IsKeyDown(API.KEY_D)) dx += 1f;
+            if (API.IsKeyDown(API.KEY_W)) dz -= 1f;   // -Z forward in your engine
+            if (API.IsKeyDown(API.KEY_S)) dz += 1f;
+
+            // Normalize input (so diagonals aren't faster)
+            if (dx != 0f || dz != 0f)
             {
-                if (API.IsKeyDown(API.KEY_A)) dx -= 1f;
-                if (API.IsKeyDown(API.KEY_D)) dx += 1f;
-                if (API.IsKeyDown(API.KEY_W)) dz -= 1f; // forward = -Z
-                if (API.IsKeyDown(API.KEY_S)) dz += 1f;
+                float len = (float)Math.Sqrt(dx * dx + dz * dz);
+                dx /= len; dz /= len;
+                vel.X = dx * _speed;
+                vel.Z = dz * _speed;
+            }
+            else
+            {
+                vel.X = 0f;
+                vel.Z = 0f;
+            }
 
-                // Normalize diagonal movement
-                if (dx != 0f || dz != 0f)
+            // Jump only when grounded
+            if (API.IsKeyDown(API.KEY_SPACE))   // or IsKeyDown if you prefer
+            {
+                // If you have a better ground check, use it here.
+                if (API.IsColliding(Entity))       // simple “touching something” ground check
                 {
-                    float len = (float)Math.Sqrt(dx * dx + dz * dz);
-                    dx /= len;
-                    dz /= len;
-                    pos.X += dx * _speed * dt;
-                    pos.Z += dz * _speed * dt;
-                }
-
-                // Jump
-                if (_grounded && API.IsKeyDown(API.KEY_SPACE))
-                {
-                    _vy = _jumpSpeed;
-                    _grounded = false;
+                    vel.Y = _jump;                 // upward impulse; let gravity handle the rest
                 }
             }
 
-            // Apply gravity
-            _vy += _gravity * dt;
-            pos.Y += _vy * dt;
+            API.SetLinearVelocity(Entity, vel);
 
-            // Ground collision
-            if (pos.Y <= _groundY)
-            {
-                pos.Y = _groundY;
-                _vy = 0f;
-                _grounded = true;
-            }
-
-            // Apply final position
-            API.SetPosition(Entity, pos);
-        }
-
-        /// <summary>
-        /// Called when the script is destroyed (optional cleanup).
-        /// </summary>
-        public void OnDestroy()
-        {
-            API.Log($"[PlayerMovement] OnDestroy() - Entity: {Entity}");
+            // (Optional) Drive animator parameters if present
+            // This won't throw if AnimatorComponent doesn't exist — native side should no-op.
+            float speed = (float)Math.Sqrt(vel.X * vel.X + vel.Z * vel.Z);
+            API.AnimatorSetFloat(Entity, "Speed", speed);
+            API.AnimatorSetBool(Entity, "IsMoving", speed > 0.1f);
         }
     }
 }
