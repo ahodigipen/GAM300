@@ -878,7 +878,14 @@ namespace Boom
                         if (!m_Context->scene.valid(triggerEntity) || !m_Context->scene.valid(enteringEntity))
                             return;
 
-                        // Get entity names for logging (if they have InfoComponent)
+                        // Convert to handles for script callbacks
+                        uint64_t triggerHandle = static_cast<uint64_t>(static_cast<uint32_t>(triggerEntity));
+                        uint64_t enteringHandle = static_cast<uint64_t>(static_cast<uint32_t>(enteringEntity));
+
+                        // Call script callbacks instead of hardcoded logic
+                        CallTriggerEnterCallbacks(triggerHandle, enteringHandle);
+
+                        // Optional: Keep basic logging for debugging
                         std::string triggerName = "Unknown";
                         std::string enteringName = "Unknown";
 
@@ -893,46 +900,6 @@ namespace Boom
                         }
 
                         BOOM_INFO("[Trigger] '{}' entered trigger '{}'", enteringName, triggerName);
-
-                        // ===== CUSTOM TRIGGER LOGIC =====
-                        // Example: Checkpoint trigger
-                        if (triggerName == "Checkpoint")
-                        {
-                            BOOM_INFO("Checkpoint activated by '{}'!", enteringName);
-                            // Add your checkpoint logic here
-                            // e.g., save player position, play sound, etc.
-                        }
-
-                        // Example: Damage zone
-                        if (triggerName == "DamageZone" && enteringName == "Player")
-                        {
-                            BOOM_WARN("Player entered damage zone!");
-                            // Apply damage logic here
-                        }
-
-                        // Example: Collectible item
-                        if (triggerName.find("Coin") != std::string::npos)
-                        {
-                            BOOM_INFO("Coin collected by '{}'", enteringName);
-                            // Destroy the coin entity
-                            // m_Context->scene.destroy(triggerEntity);
-                            // Add score, play sound, etc.
-                        }
-
-                        // Example: Door activation
-                        if (triggerName == "DoorTrigger" && enteringName == "Player")
-                        {
-                            BOOM_INFO("Player approached door - opening...");
-                            // Find and open the associated door
-                            // You could store a reference to the door entity in a component
-                        }
-
-                        // Example: Enemy aggro zone
-                        if (triggerName.find("AggroZone") != std::string::npos)
-                        {
-                            BOOM_INFO("'{}' entered enemy aggro zone", enteringName);
-                            // Activate enemy AI, start chase behavior, etc.
-                        }
                     }
 
                     // Handle CONTACT events (existing code)

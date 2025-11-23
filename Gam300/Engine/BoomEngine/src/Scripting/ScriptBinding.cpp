@@ -349,6 +349,111 @@ namespace Boom {
         return !view.empty();
     }
 
+    static float ICALL_API_GetThirdPersonCameraYaw() {
+        if (!s_Ctx) return 0.0f;
+
+        // Find the active third-person camera
+        auto& registry = s_Ctx->scene;
+        auto view = registry.view<ThirdPersonCameraComponent>();
+
+        for (auto entity : view) {
+            auto& cam = view.get<ThirdPersonCameraComponent>(entity);
+            // For now, return the first third-person camera found
+            // You might want to add logic to find the "active" one
+            return cam.currentYaw;
+        }
+
+        return 0.0f; // No third-person camera found
+    }
+
+    // Add these new functions after the existing ICALL functions
+
+    static bool ICALL_API_HasCollider(uint64_t handle) {
+        if (!s_Ctx) return false;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return false;
+        return s_Ctx->scene.any_of<ColliderComponent>(e);
+    }
+
+    static bool ICALL_API_IsTrigger(uint64_t handle) {
+        if (!s_Ctx) return false;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return false;
+
+        if (!s_Ctx->scene.any_of<ColliderComponent>(e)) return false;
+
+        auto& collider = s_Ctx->scene.get<ColliderComponent>(e);
+        return collider.Collider.isTrigger;
+    }
+
+    static void ICALL_API_SetTrigger(uint64_t handle, bool isTrigger) {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+
+        if (!s_Ctx->scene.any_of<ColliderComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetTrigger: Entity {} has no ColliderComponent", static_cast<uint32_t>(e));
+            return;
+        }
+
+        auto& collider = s_Ctx->scene.get<ColliderComponent>(e);
+        collider.Collider.isTrigger = isTrigger;
+
+        // Update the physics shape flags if the actor exists
+        if (collider.Collider.Shape) {
+            if (isTrigger) {
+                collider.Collider.Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+                collider.Collider.Shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+            }
+            else {
+                collider.Collider.Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
+                collider.Collider.Shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, false);
+            }
+        }
+    }
+
+    // Global trigger callback storage
+    static std::unordered_map<uint64_t, std::function<void(uint64_t, uint64_t)>> s_TriggerEnterCallbacks;
+    static std::unordered_map<uint64_t, std::function<void(uint64_t, uint64_t)>> s_TriggerExitCallbacks;
+
+    // Function pointer types for C# callbacks
+    typedef void (*TriggerCallback)(uint64_t triggerEntity, uint64_t otherEntity);
+
+    static void ICALL_API_RegisterTriggerEnterCallback(uint64_t triggerHandle, TriggerCallback callback) {
+        if (!callback) return;
+        s_TriggerEnterCallbacks[triggerHandle] = [callback](uint64_t trigger, uint64_t other) {
+            callback(trigger, other);
+            };
+    }
+
+    static void ICALL_API_RegisterTriggerExitCallback(uint64_t triggerHandle, TriggerCallback callback) {
+        if (!callback) return;
+        s_TriggerExitCallbacks[triggerHandle] = [callback](uint64_t trigger, uint64_t other) {
+            callback(trigger, other);
+            };
+    }
+
+    static void ICALL_API_UnregisterTriggerCallbacks(uint64_t triggerHandle) {
+        s_TriggerEnterCallbacks.erase(triggerHandle);
+        s_TriggerExitCallbacks.erase(triggerHandle);
+    }
+
+    // Function to call trigger callbacks (called from Application.h)
+    void CallTriggerEnterCallbacks(uint64_t triggerEntity, uint64_t otherEntity) {
+        auto it = s_TriggerEnterCallbacks.find(triggerEntity);
+        if (it != s_TriggerEnterCallbacks.end()) {
+            it->second(triggerEntity, otherEntity);
+        }
+    }
+
+    void CallTriggerExitCallbacks(uint64_t triggerEntity, uint64_t otherEntity) {
+        auto it = s_TriggerExitCallbacks.find(triggerEntity);
+        if (it != s_TriggerExitCallbacks.end()) {
+            it->second(triggerEntity, otherEntity);
+        }
+    }
+
+
     void RegisterScriptInternalCalls(AppContext* ctx)
     {
         s_Ctx = ctx;
@@ -391,5 +496,13 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_AnimatorSetBool", (const void*)ICALL_API_AnimatorSetBool);
         mono_add_internal_call("Boom.Native::Boom_API_AnimatorSetTrigger", (const void*)ICALL_API_AnimatorSetTrigger);
         mono_add_internal_call("Boom.Native::Boom_API_AnimatorPlay", (const void*)ICALL_API_AnimatorPlay);
+        mono_add_internal_call("Boom.Native::Boom_API_GetThirdPersonCameraYaw", (const void*)ICALL_API_GetThirdPersonCameraYaw);
+
+        mono_add_internal_call("Boom.Native::Boom_API_HasCollider", (const void*)ICALL_API_HasCollider);
+        mono_add_internal_call("Boom.Native::Boom_API_IsTrigger", (const void*)ICALL_API_IsTrigger);
+        mono_add_internal_call("Boom.Native::Boom_API_SetTrigger", (const void*)ICALL_API_SetTrigger);
+        mono_add_internal_call("Boom.Native::Boom_API_RegisterTriggerEnterCallback", (const void*)ICALL_API_RegisterTriggerEnterCallback);
+        mono_add_internal_call("Boom.Native::Boom_API_RegisterTriggerExitCallback", (const void*)ICALL_API_RegisterTriggerExitCallback);
+        mono_add_internal_call("Boom.Native::Boom_API_UnregisterTriggerCallbacks", (const void*)ICALL_API_UnregisterTriggerCallbacks);
     }
 }

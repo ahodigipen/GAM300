@@ -250,17 +250,21 @@ namespace Boom {
 
             // 3. --- Set all flags BEFORE attaching the shape ---
             if (collider.Shape) {
-                // Set visualization flag
+                // Set visualization flag (for debug rendering)
                 collider.Shape->setFlag(PxShapeFlag::eVISUALIZATION, true);
 
                 // Configure trigger vs collision behavior
                 if (collider.isTrigger) {
+                    // PURE TRIGGER: No physical simulation, only trigger events
                     collider.Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
                     collider.Shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+                    collider.Shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, false); // Optional: exclude from scene queries too
                 }
                 else {
+                    // NORMAL COLLIDER: Physical simulation enabled
                     collider.Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
                     collider.Shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, false);
+                    collider.Shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, true);
                 }
 
                 // NOW attach the shape to the actor
@@ -1018,15 +1022,15 @@ namespace Boom {
             bool isTriggerPair = PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1);
 
             if (isTriggerPair) {
-                // For trigger pairs: only use supported flags
-                pairFlags = PxPairFlag::eTRIGGER_DEFAULT |
-                    PxPairFlag::eNOTIFY_TOUCH_FOUND |
-                    PxPairFlag::eNOTIFY_TOUCH_LOST;
+                // For trigger pairs: ONLY trigger events, no physical simulation
+                pairFlags = PxPairFlag::eNOTIFY_TOUCH_FOUND |
+                    PxPairFlag::eNOTIFY_TOUCH_LOST |
+                    PxPairFlag::eDETECT_DISCRETE_CONTACT;
+                // DO NOT include eSIMULATION_SHAPE or eCONTACT_DEFAULT
             }
             else {
-                // For regular collision pairs: use all flags including eNOTIFY_TOUCH_PERSISTS
+                // For regular collision pairs: physical simulation + contact events
                 pairFlags = PxPairFlag::eCONTACT_DEFAULT |
-                    PxPairFlag::eTRIGGER_DEFAULT |
                     PxPairFlag::eNOTIFY_TOUCH_FOUND |
                     PxPairFlag::eNOTIFY_TOUCH_PERSISTS |
                     PxPairFlag::eNOTIFY_TOUCH_LOST;

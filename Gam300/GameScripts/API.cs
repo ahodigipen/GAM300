@@ -48,7 +48,28 @@ namespace Boom
         internal extern static void Boom_API_DrawDebugVisionCone(ulong entityHandle,
             float range, float angle, float r, float g, float b, float a);
 
+        //
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static float Boom_API_GetThirdPersonCameraYaw();
+        //
 
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern bool Boom_API_HasCollider(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern bool Boom_API_IsTrigger(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetTrigger(ulong handle, bool isTrigger);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_RegisterTriggerEnterCallback(ulong triggerHandle, TriggerCallback callback);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_RegisterTriggerExitCallback(ulong triggerHandle, TriggerCallback callback);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_UnregisterTriggerCallbacks(ulong triggerHandle);
         // ========= NEW PHYSICS / RIGIDBODY INTERNAL CALLS =========
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -83,6 +104,9 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)] internal static extern bool Boom_API_IsPauseMenuLoaded();
 
     }
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void TriggerCallback(ulong triggerEntity, ulong otherEntity);
 
     [StructLayout(LayoutKind.Sequential)]
     public struct Vec3
@@ -181,6 +205,9 @@ namespace Boom
             DrawDebugVisionCone(entityHandle, range, halfAngle, new Vec4(0f, 1f, 0f, 0.3f));
         }
 
+        public static float GetThirdPersonCameraYaw() => Native.Boom_API_GetThirdPersonCameraYaw();
+
+
         [StructLayout(LayoutKind.Sequential)]
         public struct Vec4
         {
@@ -194,6 +221,37 @@ namespace Boom
         /// <summary>
         /// Returns true if the rigidbody is colliding / grounded according to the engine.
         /// </summary>
+        /// 
+
+        public static bool HasCollider(ulong entity)
+        {
+            return Native.Boom_API_HasCollider(entity);
+        }
+
+        public static bool IsTrigger(ulong entity)
+        {
+            return Native.Boom_API_IsTrigger(entity);
+        }
+
+        public static void SetTrigger(ulong entity, bool isTrigger)
+        {
+            Native.Boom_API_SetTrigger(entity, isTrigger);
+        }
+
+        public static void RegisterTriggerEnterCallback(ulong triggerEntity, TriggerCallback callback)
+        {
+            Native.Boom_API_RegisterTriggerEnterCallback(triggerEntity, callback);
+        }
+
+        public static void RegisterTriggerExitCallback(ulong triggerEntity, TriggerCallback callback)
+        {
+            Native.Boom_API_RegisterTriggerExitCallback(triggerEntity, callback);
+        }
+
+        public static void UnregisterTriggerCallbacks(ulong triggerEntity)
+        {
+            Native.Boom_API_UnregisterTriggerCallbacks(triggerEntity);
+        }
         public static bool IsColliding(ulong h) => Native.Boom_API_IsColliding(h);
 
         public static void LoadScene(string name) => Native.Boom_API_LoadScene(name);
