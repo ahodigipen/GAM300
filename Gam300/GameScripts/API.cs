@@ -58,10 +58,10 @@ namespace Boom
         internal static extern void Boom_API_SetTrigger(ulong handle, bool isTrigger);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void Boom_API_RegisterTriggerEnterCallback(ulong triggerHandle, TriggerCallback callback);
+        internal static extern void Boom_API_RegisterTriggerEnterCallback(ulong triggerHandle, object delegateObj);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void Boom_API_RegisterTriggerExitCallback(ulong triggerHandle, TriggerCallback callback);
+        internal static extern void Boom_API_RegisterTriggerExitCallback(ulong triggerHandle, object delegateObj);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_UnregisterTriggerCallbacks(ulong triggerHandle);
@@ -132,6 +132,10 @@ namespace Boom
 
     public static class API
     {
+        // Cache trigger callbacks to prevent garbage collection
+        private static System.Collections.Generic.Dictionary<ulong, TriggerCallback> s_TriggerEnterCallbacks = new System.Collections.Generic.Dictionary<ulong, TriggerCallback>();
+        private static System.Collections.Generic.Dictionary<ulong, TriggerCallback> s_TriggerExitCallbacks = new System.Collections.Generic.Dictionary<ulong, TriggerCallback>();
+
         // ===== Logging =====
         public static void Log(string s) => Native.Boom_API_Log(s);
 
@@ -255,16 +259,23 @@ namespace Boom
 
         public static void RegisterTriggerEnterCallback(ulong triggerEntity, TriggerCallback callback)
         {
+            // Cache the delegate to prevent garbage collection
+            s_TriggerEnterCallbacks[triggerEntity] = callback;
             Native.Boom_API_RegisterTriggerEnterCallback(triggerEntity, callback);
         }
 
         public static void RegisterTriggerExitCallback(ulong triggerEntity, TriggerCallback callback)
         {
+            // Cache the delegate to prevent garbage collection
+            s_TriggerExitCallbacks[triggerEntity] = callback;
             Native.Boom_API_RegisterTriggerExitCallback(triggerEntity, callback);
         }
 
         public static void UnregisterTriggerCallbacks(ulong triggerEntity)
         {
+            // Remove from cache
+            s_TriggerEnterCallbacks.Remove(triggerEntity);
+            s_TriggerExitCallbacks.Remove(triggerEntity);
             Native.Boom_API_UnregisterTriggerCallbacks(triggerEntity);
         }
         public static bool IsColliding(ulong h) => Native.Boom_API_IsColliding(h);

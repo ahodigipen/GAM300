@@ -388,11 +388,11 @@ namespace Boom {
         }
     }
 
-    // Global trigger callback storage
-    static std::unordered_map<uint64_t, std::function<void(uint64_t, uint64_t)>> s_TriggerEnterCallbacks;
-    static std::unordered_map<uint64_t, std::function<void(uint64_t, uint64_t)>> s_TriggerExitCallbacks;
+    // Store GC handles to delegate objects instead of raw function pointers
+    static std::unordered_map<uint64_t, uint32_t> s_TriggerEnterCallbackHandles;
+    static std::unordered_map<uint64_t, uint32_t> s_TriggerExitCallbackHandles;
 
-    // Function pointer types for C# callbacks
+    // Function pointer types for C# callbacks (kept for backward compatibility)
     typedef void (*TriggerCallback)(uint64_t triggerEntity, uint64_t otherEntity);
 
     // REMOVE THESE DUPLICATE FUNCTIONS (lines ~376-387):
@@ -413,8 +413,18 @@ namespace Boom {
     */
 
     static void ICALL_API_UnregisterTriggerCallbacks(uint64_t triggerHandle) {
-        s_TriggerEnterCallbacks.erase(triggerHandle);
-        s_TriggerExitCallbacks.erase(triggerHandle);
+        // Free GC handles before removing
+        auto enterIt = s_TriggerEnterCallbackHandles.find(triggerHandle);
+        if (enterIt != s_TriggerEnterCallbackHandles.end()) {
+            mono_gchandle_free(enterIt->second);
+            s_TriggerEnterCallbackHandles.erase(enterIt);
+        }
+
+        auto exitIt = s_TriggerExitCallbackHandles.find(triggerHandle);
+        if (exitIt != s_TriggerExitCallbackHandles.end()) {
+            mono_gchandle_free(exitIt->second);
+            s_TriggerExitCallbackHandles.erase(exitIt);
+        }
     }
 
     // Function to call trigger callbacks (called from Application.h)
@@ -435,27 +445,38 @@ namespace Boom {
             return;
         }
 
-        auto it = s_TriggerEnterCallbacks.find(triggerEntity);
-        if (it != s_TriggerEnterCallbacks.end()) {
-            try {
-                // Additional safety: check if the function is valid before calling
-                if (it->second) {
-                    it->second(triggerEntity, otherEntity);
-                    BOOM_INFO("[ScriptBinding] Successfully called trigger enter callback for trigger {} and entity {}",
-                        triggerEntity, otherEntity);
-                }
-                else {
-                    BOOM_WARN("[ScriptBinding] Trigger enter callback for {} is null", triggerEntity);
-                    s_TriggerEnterCallbacks.erase(it); // Remove invalid callback
+        auto it = s_TriggerEnterCallbackHandles.find(triggerEntity);
+        if (it != s_TriggerEnterCallbackHandles.end()) {
+            // Get the delegate object from GC handle
+            MonoObject* delegateObj = mono_gchandle_get_target(it->second);
+            if (!delegateObj) {
+                BOOM_WARN("[ScriptBinding] Trigger enter callback GC handle is invalid for {}", triggerEntity);
+                mono_gchandle_free(it->second);
+                s_TriggerEnterCallbackHandles.erase(it);
+                return;
+            }
+
+            // Prepare arguments for delegate invocation
+            void* args[2];
+            args[0] = &triggerEntity;
+            args[1] = &otherEntity;
+
+            // Invoke the delegate safely using Mono runtime
+            MonoObject* exc = nullptr;
+            mono_runtime_delegate_invoke(delegateObj, args, &exc);
+
+            if (exc) {
+                BOOM_ERROR("[ScriptBinding] Exception in trigger enter callback for trigger {}", triggerEntity);
+                // Log the exception details if possible
+                MonoClass* excClass = mono_object_get_class(exc);
+                if (excClass) {
+                    const char* excName = mono_class_get_name(excClass);
+                    BOOM_ERROR("[ScriptBinding] Exception type: {}", excName);
                 }
             }
-            catch (const std::exception& e) {
-                BOOM_ERROR("[ScriptBinding] Exception in trigger enter callback: {}", e.what());
-                s_TriggerEnterCallbacks.erase(it); // Remove problematic callback
-            }
-            catch (...) {
-                BOOM_ERROR("[ScriptBinding] Unknown exception in trigger enter callback for trigger {}", triggerEntity);
-                s_TriggerEnterCallbacks.erase(it); // Remove problematic callback
+            else {
+                BOOM_INFO("[ScriptBinding] Successfully called trigger enter callback for trigger {} and entity {}",
+                    triggerEntity, otherEntity);
             }
         }
         else {
@@ -480,27 +501,38 @@ namespace Boom {
             return;
         }
 
-        auto it = s_TriggerExitCallbacks.find(triggerEntity);
-        if (it != s_TriggerExitCallbacks.end()) {
-            try {
-                // Additional safety: check if the function is valid before calling
-                if (it->second) {
-                    it->second(triggerEntity, otherEntity);
-                    BOOM_INFO("[ScriptBinding] Successfully called trigger exit callback for trigger {} and entity {}",
-                        triggerEntity, otherEntity);
-                }
-                else {
-                    BOOM_WARN("[ScriptBinding] Trigger exit callback for {} is null", triggerEntity);
-                    s_TriggerExitCallbacks.erase(it); // Remove invalid callback
+        auto it = s_TriggerExitCallbackHandles.find(triggerEntity);
+        if (it != s_TriggerExitCallbackHandles.end()) {
+            // Get the delegate object from GC handle
+            MonoObject* delegateObj = mono_gchandle_get_target(it->second);
+            if (!delegateObj) {
+                BOOM_WARN("[ScriptBinding] Trigger exit callback GC handle is invalid for {}", triggerEntity);
+                mono_gchandle_free(it->second);
+                s_TriggerExitCallbackHandles.erase(it);
+                return;
+            }
+
+            // Prepare arguments for delegate invocation
+            void* args[2];
+            args[0] = &triggerEntity;
+            args[1] = &otherEntity;
+
+            // Invoke the delegate safely using Mono runtime
+            MonoObject* exc = nullptr;
+            mono_runtime_delegate_invoke(delegateObj, args, &exc);
+
+            if (exc) {
+                BOOM_ERROR("[ScriptBinding] Exception in trigger exit callback for trigger {}", triggerEntity);
+                // Log the exception details if possible
+                MonoClass* excClass = mono_object_get_class(exc);
+                if (excClass) {
+                    const char* excName = mono_class_get_name(excClass);
+                    BOOM_ERROR("[ScriptBinding] Exception type: {}", excName);
                 }
             }
-            catch (const std::exception& e) {
-                BOOM_ERROR("[ScriptBinding] Exception in trigger exit callback: {}", e.what());
-                s_TriggerExitCallbacks.erase(it); // Remove problematic callback
-            }
-            catch (...) {
-                BOOM_ERROR("[ScriptBinding] Unknown exception in trigger exit callback for trigger {}", triggerEntity);
-                s_TriggerExitCallbacks.erase(it); // Remove problematic callback
+            else {
+                BOOM_INFO("[ScriptBinding] Successfully called trigger exit callback for trigger {} and entity {}",
+                    triggerEntity, otherEntity);
             }
         }
         else {
@@ -508,11 +540,11 @@ namespace Boom {
         }
     }
 
-    // KEEP ONLY THESE ENHANCED VERSIONS:
-    static void ICALL_API_RegisterTriggerEnterCallback(uint64_t triggerHandle, TriggerCallback callback) {
+    // NEW GCHANDLE-BASED VERSIONS:
+    static void ICALL_API_RegisterTriggerEnterCallback(uint64_t triggerHandle, MonoObject* delegateObj) {
         // Add comprehensive safety checks
-        if (!callback) {
-            BOOM_WARN("[ScriptBinding] RegisterTriggerEnterCallback: Null callback provided");
+        if (!delegateObj) {
+            BOOM_WARN("[ScriptBinding] RegisterTriggerEnterCallback: Null delegate provided");
             return;
         }
 
@@ -528,41 +560,24 @@ namespace Boom {
             return;
         }
 
-        // CRITICAL FIX: Store the callback with additional validation
-        s_TriggerEnterCallbacks[triggerHandle] = [callback, triggerHandle](uint64_t trigger, uint64_t other) {
-            // Additional runtime validation before calling the callback
-            if (!s_Ctx) {
-                BOOM_ERROR("[ScriptBinding] Callback invoked but no script context");
-                return;
-            }
+        // Free existing handle if one exists
+        auto existingIt = s_TriggerEnterCallbackHandles.find(triggerHandle);
+        if (existingIt != s_TriggerEnterCallbackHandles.end()) {
+            mono_gchandle_free(existingIt->second);
+            BOOM_INFO("[ScriptBinding] Freed existing trigger enter callback for entity {}", triggerHandle);
+        }
 
-            try {
-                // Verify entities still exist before calling
-                entt::entity triggerEntity = static_cast<entt::entity>(static_cast<uint32_t>(trigger));
-                entt::entity otherEntity = static_cast<entt::entity>(static_cast<uint32_t>(other));
+        // Create a GC handle to prevent the delegate from being collected
+        uint32_t gcHandle = mono_gchandle_new(delegateObj, false);
+        s_TriggerEnterCallbackHandles[triggerHandle] = gcHandle;
 
-                if (!s_Ctx->scene.valid(triggerEntity) || !s_Ctx->scene.valid(otherEntity)) {
-                    BOOM_WARN("[ScriptBinding] Callback entities became invalid");
-                    return;
-                }
-
-                // Call the actual C# callback
-                callback(trigger, other);
-            }
-            catch (...) {
-                BOOM_ERROR("[ScriptBinding] Exception in callback wrapper for trigger {}", triggerHandle);
-                // Remove the problematic callback
-                s_TriggerEnterCallbacks.erase(triggerHandle);
-            }
-            };
-
-        BOOM_INFO("[ScriptBinding] Registered trigger enter callback for entity {}", triggerHandle);
+        BOOM_INFO("[ScriptBinding] Registered trigger enter callback (GCHandle: {}) for entity {}", gcHandle, triggerHandle);
     }
 
-    static void ICALL_API_RegisterTriggerExitCallback(uint64_t triggerHandle, TriggerCallback callback) {
+    static void ICALL_API_RegisterTriggerExitCallback(uint64_t triggerHandle, MonoObject* delegateObj) {
         // Add comprehensive safety checks
-        if (!callback) {
-            BOOM_WARN("[ScriptBinding] RegisterTriggerExitCallback: Null callback provided");
+        if (!delegateObj) {
+            BOOM_WARN("[ScriptBinding] RegisterTriggerExitCallback: Null delegate provided");
             return;
         }
 
@@ -578,35 +593,18 @@ namespace Boom {
             return;
         }
 
-        // CRITICAL FIX: Store the callback with additional validation
-        s_TriggerExitCallbacks[triggerHandle] = [callback, triggerHandle](uint64_t trigger, uint64_t other) {
-            // Additional runtime validation before calling the callback
-            if (!s_Ctx) {
-                BOOM_ERROR("[ScriptBinding] Callback invoked but no script context");
-                return;
-            }
+        // Free existing handle if one exists
+        auto existingIt = s_TriggerExitCallbackHandles.find(triggerHandle);
+        if (existingIt != s_TriggerExitCallbackHandles.end()) {
+            mono_gchandle_free(existingIt->second);
+            BOOM_INFO("[ScriptBinding] Freed existing trigger exit callback for entity {}", triggerHandle);
+        }
 
-            try {
-                // Verify entities still exist before calling
-                entt::entity triggerEntity = static_cast<entt::entity>(static_cast<uint32_t>(trigger));
-                entt::entity otherEntity = static_cast<entt::entity>(static_cast<uint32_t>(other));
+        // Create a GC handle to prevent the delegate from being collected
+        uint32_t gcHandle = mono_gchandle_new(delegateObj, false);
+        s_TriggerExitCallbackHandles[triggerHandle] = gcHandle;
 
-                if (!s_Ctx->scene.valid(triggerEntity) || !s_Ctx->scene.valid(otherEntity)) {
-                    BOOM_WARN("[ScriptBinding] Callback entities became invalid");
-                    return;
-                }
-
-                // Call the actual C# callback
-                callback(trigger, other);
-            }
-            catch (...) {
-                BOOM_ERROR("[ScriptBinding] Exception in callback wrapper for trigger {}", triggerHandle);
-                // Remove the problematic callback
-                s_TriggerExitCallbacks.erase(triggerHandle);
-            }
-            };
-
-        BOOM_INFO("[ScriptBinding] Registered trigger exit callback for entity {}", triggerHandle);
+        BOOM_INFO("[ScriptBinding] Registered trigger exit callback (GCHandle: {}) for entity {}", gcHandle, triggerHandle);
     }
 
     // ========= SOUND / AUDIO BINDINGS =========
@@ -714,9 +712,17 @@ namespace Boom {
     }
     // Add this function to clean up all trigger callbacks when Mono domain is unloaded
     void ClearAllTriggerCallbacks() {
-        s_TriggerEnterCallbacks.clear();
-        s_TriggerExitCallbacks.clear();
-        BOOM_INFO("[ScriptBinding] Cleared all trigger callbacks (domain unload)");
+        // Free all GC handles before clearing
+        for (auto& pair : s_TriggerEnterCallbackHandles) {
+            mono_gchandle_free(pair.second);
+        }
+        for (auto& pair : s_TriggerExitCallbackHandles) {
+            mono_gchandle_free(pair.second);
+        }
+
+        s_TriggerEnterCallbackHandles.clear();
+        s_TriggerExitCallbackHandles.clear();
+        BOOM_INFO("[ScriptBinding] Cleared all trigger callbacks and freed GC handles (domain unload)");
     }
 
     void RegisterScriptInternalCalls(AppContext* ctx)

@@ -221,23 +221,25 @@ namespace GameScripts
         /// </summary>
         private static void OnTriggerEnter(ulong triggerEntity, ulong otherEntity)
         {
-            API.Log($"[PlayerMovement] Trigger Enter - Trigger: {triggerEntity}, Other: {otherEntity}, Player: {s_playerEntity}");
-
-            // Check if the "other" entity is actually the player
-            if (otherEntity != s_playerEntity)
+            try
             {
-                API.Log($"[PlayerMovement] Trigger not involving player - ignoring");
-                return;
-            }
+                API.Log($"[PlayerMovement] Trigger Enter - Trigger: {triggerEntity}, Other: {otherEntity}, Player: {s_playerEntity}");
 
-            API.Log($"[PlayerMovement] Player entered trigger! Trigger ID: {triggerEntity}");
+                // Check if the "other" entity is actually the player
+                if (otherEntity != s_playerEntity)
+                {
+                    API.Log($"[PlayerMovement] Trigger not involving player - ignoring");
+                    return;
+                }
 
-            // Get the position for 3D sound
-            Vec3 triggerPos = new Vec3(0, 0, 0);
-            if (API.HasTransform(triggerEntity))
-            {
-                triggerPos = API.GetPosition(triggerEntity);
-            }
+                API.Log($"[PlayerMovement] Player entered trigger! Trigger ID: {triggerEntity}");
+
+                // Get the position for 3D sound
+                Vec3 triggerPos = new Vec3(0, 0, 0);
+                if (API.HasTransform(triggerEntity))
+                {
+                    triggerPos = API.GetPosition(triggerEntity);
+                }
 
             // Try to identify trigger by name lookup
             // Note: This approach searches for known trigger names
@@ -278,12 +280,17 @@ namespace GameScripts
                 soundPlayed = true;
             }
 
-            // If no specific trigger was found, play a generic trigger sound
-            if (!soundPlayed)
+                // If no specific trigger was found, play a generic trigger sound
+                if (!soundPlayed)
+                {
+                    API.Log($"[PlayerMovement] Generic trigger entered with entity ID: {triggerEntity}");
+                    API.PlaySoundAt("generic_trigger", "Resources/Audio/playerPunch_1.wav", triggerPos, false);
+                    API.SetSoundVolume("generic_trigger", 0.7f);
+                }
+            }
+            catch (Exception ex)
             {
-                API.Log($"[PlayerMovement] Generic trigger entered with entity ID: {triggerEntity}");
-                API.PlaySoundAt("generic_trigger", "Resources/Audio/playerPunch_1.wav", triggerPos, false);
-                API.SetSoundVolume("generic_trigger", 0.7f);
+                API.Log($"[PlayerMovement] ERROR in OnTriggerEnter: {ex.Message}");
             }
         }
 
@@ -292,42 +299,49 @@ namespace GameScripts
         /// </summary>
         private static void OnTriggerExit(ulong triggerEntity, ulong otherEntity)
         {
-            API.Log($"[PlayerMovement] Trigger Exit - Trigger: {triggerEntity}, Other: {otherEntity}, Player: {s_playerEntity}");
-
-            // Check if the "other" entity is actually the player
-            if (otherEntity != s_playerEntity)
+            try
             {
-                API.Log($"[PlayerMovement] Trigger exit not involving player - ignoring");
-                return;
-            }
+                API.Log($"[PlayerMovement] Trigger Exit - Trigger: {triggerEntity}, Other: {otherEntity}, Player: {s_playerEntity}");
 
-            API.Log($"[PlayerMovement] Player exited trigger! Trigger ID: {triggerEntity}");
-
-            // Find the trigger entity's name for more specific handling
-            ulong damageZone = API.FindEntity("DamageZone");
-            ulong door = API.FindEntity("DoorTrigger");
-
-            // Handle trigger exit events
-            if (triggerEntity == damageZone && damageZone != 0)
-            {
-                API.Log(">>> PLAYER SAFE FROM DAMAGE! <<<");
-                API.StopSound("damage");
-            }
-            else if (triggerEntity == door && door != 0)
-            {
-                API.Log(">>> PLAYER LEFT DOOR AREA <<<");
-                // Get door position for 3D sound
-                Vec3 doorPos = new Vec3(0, 0, 0);
-                if (API.HasTransform(triggerEntity))
+                // Check if the "other" entity is actually the player
+                if (otherEntity != s_playerEntity)
                 {
-                    doorPos = API.GetPosition(triggerEntity);
+                    API.Log($"[PlayerMovement] Trigger exit not involving player - ignoring");
+                    return;
                 }
-                API.PlaySoundAt("door_close", "Resources/Audio/playerPunch_1.wav", doorPos, false);
-                API.SetSoundVolume("door_close", 0.75f);
+
+                API.Log($"[PlayerMovement] Player exited trigger! Trigger ID: {triggerEntity}");
+
+                // Find the trigger entity's name for more specific handling
+                ulong damageZone = API.FindEntity("DamageZone");
+                ulong door = API.FindEntity("DoorTrigger");
+
+                // Handle trigger exit events
+                if (triggerEntity == damageZone && damageZone != 0)
+                {
+                    API.Log(">>> PLAYER SAFE FROM DAMAGE! <<<");
+                    API.StopSound("damage");
+                }
+                else if (triggerEntity == door && door != 0)
+                {
+                    API.Log(">>> PLAYER LEFT DOOR AREA <<<");
+                    // Get door position for 3D sound
+                    Vec3 doorPos = new Vec3(0, 0, 0);
+                    if (API.HasTransform(triggerEntity))
+                    {
+                        doorPos = API.GetPosition(triggerEntity);
+                    }
+                    API.PlaySoundAt("door_close", "Resources/Audio/playerPunch_1.wav", doorPos, false);
+                    API.SetSoundVolume("door_close", 0.75f);
+                }
+                else
+                {
+                    API.Log($"[PlayerMovement] Exited unknown trigger with entity ID: {triggerEntity}");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                API.Log($"[PlayerMovement] Exited unknown trigger with entity ID: {triggerEntity}");
+                API.Log($"[PlayerMovement] ERROR in OnTriggerExit: {ex.Message}");
             }
         }
 

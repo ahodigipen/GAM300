@@ -885,8 +885,7 @@ namespace Boom
                     // Handle TRIGGER events
                     if (e.Event == PxEvent::TRIGGER)
                     {
-                        // TEMPORARILY DISABLE SCRIPT CALLBACKS FOR DEBUGGING
-                        BOOM_INFO("[Trigger] Trigger event detected but callbacks disabled for debugging");
+                        BOOM_INFO("[Trigger] Trigger event detected");
 
                         // Based on Callback.h, Entity1 is otherActor, Entity2 is triggerActor
                         entt::entity triggerEntity = (entt::entity)e.Entity2;  // triggerActor
@@ -896,16 +895,12 @@ namespace Boom
                         if (!m_Context->scene.valid(triggerEntity) || !m_Context->scene.valid(enteringEntity))
                             return;
 
-                        // Just log for now - disable actual callback invocation
+                        // Log entity names for debugging
                         std::string triggerName = "Unknown", enteringName = "Unknown";
                         if (m_Context->scene.valid(triggerEntity) && m_Context->scene.all_of<InfoComponent>(triggerEntity))
                             triggerName = m_Context->scene.get<InfoComponent>(triggerEntity).name;
                         if (m_Context->scene.valid(enteringEntity) && m_Context->scene.all_of<InfoComponent>(enteringEntity))
                             enteringName = m_Context->scene.get<InfoComponent>(enteringEntity).name;
-
-                        BOOM_INFO("[Trigger] '{}' ENTERED trigger '{}' (callbacks disabled)", enteringName, triggerName);
-
-                        // TODO: Re-enable this once we fix the callback system
                         
                         // Convert to handles for script callbacks
                         uint64_t triggerHandle = static_cast<uint64_t>(static_cast<uint32_t>(triggerEntity));
@@ -924,6 +919,8 @@ namespace Boom
                             // This is an ENTER event
                             m_ActiveTriggerPairs.insert(triggerPair);
 
+                            BOOM_INFO("[Trigger] '{}' ENTERED trigger '{}' - invoking callbacks", enteringName, triggerName);
+
                             // Call enter callbacks with safety
                             try {
                                 CallTriggerEnterCallbacks(triggerHandle, enteringHandle);
@@ -932,8 +929,6 @@ namespace Boom
                                 BOOM_ERROR("[Trigger] Exception in enter callback for trigger {} and entity {}",
                                     triggerHandle, enteringHandle);
                             }
-
-                            BOOM_INFO("[Trigger] '{}' ENTERED trigger '{}'", enteringName, triggerName);
                         }
                         
                     }
