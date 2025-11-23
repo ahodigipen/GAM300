@@ -244,7 +244,7 @@ namespace Boom {
         entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
         if (e == entt::null || !s_Ctx->scene.valid(e))
         {
-            // Don�t spam too hard here, this might be called every frame
+            // Don't spam too hard here, this might be called every frame
             // BOOM_WARN("[ScriptBinding] IsColliding: Invalid or dead entity");
             return false;
         }
@@ -332,10 +332,11 @@ namespace Boom {
         auto& registry = s_Ctx->scene;
         auto view = registry.view<ThirdPersonCameraComponent>();
 
-        for (auto entity : view) {
+        // Check if there are any third-person cameras
+        if (!view.empty()) {
+            // Return the first third-person camera found
+            auto entity = *view.begin();
             auto& cam = view.get<ThirdPersonCameraComponent>(entity);
-            // For now, return the first third-person camera found
-            // You might want to add logic to find the "active" one
             return cam.currentYaw;
         }
 
