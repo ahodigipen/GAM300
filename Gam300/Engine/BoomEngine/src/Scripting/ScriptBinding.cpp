@@ -395,22 +395,6 @@ namespace Boom {
     // Function pointer types for C# callbacks (kept for backward compatibility)
     typedef void (*TriggerCallback)(uint64_t triggerEntity, uint64_t otherEntity);
 
-    // REMOVE THESE DUPLICATE FUNCTIONS (lines ~376-387):
-    /*
-    static void ICALL_API_RegisterTriggerEnterCallback(uint64_t triggerHandle, TriggerCallback callback) {
-        if (!callback) return;
-        s_TriggerEnterCallbacks[triggerHandle] = [callback](uint64_t trigger, uint64_t other) {
-            callback(trigger, other);
-            };
-    }
-
-    static void ICALL_API_RegisterTriggerExitCallback(uint64_t triggerHandle, TriggerCallback callback) {
-        if (!callback) return;
-        s_TriggerExitCallbacks[triggerHandle] = [callback](uint64_t trigger, uint64_t other) {
-            callback(trigger, other);
-            };
-    }
-    */
 
     static void ICALL_API_UnregisterTriggerCallbacks(uint64_t triggerHandle) {
         // Free GC handles before removing
