@@ -67,6 +67,20 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)] internal static extern int Boom_API_GetApplicationState();
         [MethodImpl(MethodImplOptions.InternalCall)] internal static extern bool Boom_API_IsPauseMenuLoaded();
 
+
+        //AI STUFF
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static int Boom_API_AI_GetPatrolPointCount(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_AI_GetPatrolPoint(ulong handle, int index, out Vec3 pos);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static int Boom_API_AI_GetMode(ulong handle);
+
+        //Animator Stuff
+
+
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -90,6 +104,28 @@ namespace Boom
         // ===== Entity queries =====
         public static ulong FindEntity(string name) => Native.Boom_API_FindEntity(name);
 
+        //AI Helpers
+        public enum AIMode
+        {
+            Auto = 0,
+            Idle = 1,
+            Patrol = 2,
+            Seek = 3
+        }
+        public static int GetAIPatrolPointCount(ulong h)
+    => Native.Boom_API_AI_GetPatrolPointCount(h);
+
+        public static Vec3 GetAIPatrolPoint(ulong h, int index)
+        {
+            Native.Boom_API_AI_GetPatrolPoint(h, index, out var p);
+            return p;
+        }
+
+        public static AIMode GetAIMode(ulong h)
+        {
+            int mode = Native.Boom_API_AI_GetMode(h);
+            return (AIMode)mode;
+        }
         // ===== Transform with validation =====
         public static Vec3 GetPosition(ulong h)
         {

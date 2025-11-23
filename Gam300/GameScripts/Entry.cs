@@ -11,7 +11,7 @@ namespace GameScripts
         private static float _jumpSpeed = 8f;
 
         // --- Scene Management ---
-        private const string LEVEL_SCENE_NAME = "level";
+        private const string LEVEL_SCENE_NAME = "Level";
         private const string PAUSE_SCENE_NAME = "PauseMenu";
         private const string MAIN_MENU_SCENE_NAME = "MainMenu";
         private const string HOW_TO_PLAY_SCENE_NAME = "HowToPlay";

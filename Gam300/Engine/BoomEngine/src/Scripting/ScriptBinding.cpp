@@ -323,7 +323,42 @@ namespace Boom {
         auto view = s_Ctx->scene.view<PauseMenuTagComponent>();
         return !view.empty();
     }
+	//AI Component functions
+    static int ICALL_API_AI_GetPatrolPointCount(uint64_t entityHandle)
+    {
+        auto e = static_cast<entt::entity>(entityHandle);
+        auto& reg = s_Ctx->scene;
+        if (!reg.valid(e) || !reg.all_of<Boom::AIComponent>(e))
+            return 0;
 
+        auto& ai = reg.get<Boom::AIComponent>(e);
+        return static_cast<int>(ai.patrolPoints.size());
+    }
+
+    static void ICALL_API_AI_GetPatrolPoint(uint64_t entityHandle, int index, glm::vec3* outPos)
+    {
+        auto e = static_cast<entt::entity>(entityHandle);
+        auto& reg = s_Ctx->scene;
+        if (!outPos || !reg.valid(e) || !reg.all_of<Boom::AIComponent>(e))
+            return;
+
+        auto& ai = reg.get<Boom::AIComponent>(e);
+        if (index < 0 || index >= static_cast<int>(ai.patrolPoints.size()))
+            return;
+
+        *outPos = ai.patrolPoints[static_cast<size_t>(index)];
+    }
+
+    static int ICALL_API_AI_GetMode(uint64_t entityHandle)
+    {
+        auto e = static_cast<entt::entity>(entityHandle);
+        auto& reg = s_Ctx->scene;
+        if (!reg.valid(e) || !reg.all_of<Boom::AIComponent>(e))
+            return static_cast<int>(Boom::AIComponent::AIMode::Auto);
+
+        auto& ai = reg.get<Boom::AIComponent>(e);
+        return static_cast<int>(ai.mode);
+    }
     void RegisterScriptInternalCalls(AppContext* ctx)
     {
         s_Ctx = ctx;
@@ -359,5 +394,12 @@ namespace Boom {
 
         mono_add_internal_call("Boom.Native::Boom_API_IsColliding",
             (const void*)ICALL_API_IsColliding);
+		// AI Component functions
+        mono_add_internal_call("Boom.Native::Boom_API_AI_GetPatrolPointCount",
+            (const void*)ICALL_API_AI_GetPatrolPointCount);
+        mono_add_internal_call("Boom.Native::Boom_API_AI_GetPatrolPoint",
+            (const void*)ICALL_API_AI_GetPatrolPoint);
+        mono_add_internal_call("Boom.Native::Boom_API_AI_GetMode",
+            (const void*)ICALL_API_AI_GetMode);
     }
 }
