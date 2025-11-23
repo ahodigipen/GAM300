@@ -10,6 +10,7 @@
 #include "Auxiliaries/Assets.h"
 #include <glm/vec3.hpp>
 #include <GLFW/glfw3.h>
+#include "../includes/Graphics/Models/Animator.h"
 
 #include "AppWindow.h"
 #include "Input/InputHandler.h"
@@ -258,6 +259,30 @@ namespace Boom {
         return rb.isColliding;
     }
 
+    // Addition of Animator
+    static Animator* GetAnimator(entt::entity e) {
+        if (!s_Ctx || e == entt::null || !s_Ctx->scene.valid(e)) return nullptr;
+        if (!s_Ctx->scene.any_of<AnimatorComponent>(e)) return nullptr;
+        return s_Ctx->scene.get<AnimatorComponent>(e).animator.get();
+    }
+    static void ICALL_API_AnimatorSetFloat(uint64_t h, MonoString* name, float v) {
+        auto* anim = GetAnimator((entt::entity)(uint32_t)h); if (!anim) return;
+        char* n = mono_string_to_utf8(name); if (!n) return; anim->SetFloat(n, v); mono_free(n);
+    }
+    static void ICALL_API_AnimatorSetBool(uint64_t h, MonoString* name, bool v) {
+        auto* anim = GetAnimator((entt::entity)(uint32_t)h); if (!anim) return;
+        char* n = mono_string_to_utf8(name); if (!n) return; anim->SetBool(n, v); mono_free(n);
+    }
+    static void ICALL_API_AnimatorSetTrigger(uint64_t h, MonoString* name) {
+        auto* anim = GetAnimator((entt::entity)(uint32_t)h); if (!anim) return;
+        char* n = mono_string_to_utf8(name); if (!n) return; anim->SetTrigger(n); mono_free(n);
+    }
+    static void ICALL_API_AnimatorPlay(uint64_t h, MonoString* stateName) {
+        auto* anim = GetAnimator((entt::entity)(uint32_t)h); if (!anim) return;
+        char* n = mono_string_to_utf8(stateName); if (!n) return; anim->PlayClip(n); mono_free(n);
+    }
+
+
     static void ICALL_API_LoadScene(MonoString* sceneName) {
         if (!sceneName || !s_Ctx || !s_Ctx->app) return;
         char* s = mono_string_to_utf8(sceneName);
@@ -401,5 +426,12 @@ namespace Boom {
             (const void*)ICALL_API_AI_GetPatrolPoint);
         mono_add_internal_call("Boom.Native::Boom_API_AI_GetMode",
             (const void*)ICALL_API_AI_GetMode);
+
+
+        // Animator function
+        mono_add_internal_call("Boom.Native::Boom_API_AnimatorSetFloat", (const void*)ICALL_API_AnimatorSetFloat);
+        mono_add_internal_call("Boom.Native::Boom_API_AnimatorSetBool", (const void*)ICALL_API_AnimatorSetBool);
+        mono_add_internal_call("Boom.Native::Boom_API_AnimatorSetTrigger", (const void*)ICALL_API_AnimatorSetTrigger);
+        mono_add_internal_call("Boom.Native::Boom_API_AnimatorPlay", (const void*)ICALL_API_AnimatorPlay);
     }
 }

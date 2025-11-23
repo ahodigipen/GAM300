@@ -46,6 +46,7 @@
     <Compile Include="EnemyAI.cs" />
     <Compile Include="VisionComponent.cs" />
     <Compile Include="Entry.cs" />
+    <Compile Include="MovementAnimator.cs" />
     <Compile Include="EnemyController.cs" />
     <Compile Include="PlayerMovement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -3,117 +3,55 @@ using Boom;
 
 namespace GameScripts
 {
-    /// <summary>
-    /// Handles player movement with WASD, jumping with Space, and mouse-look control.
-    /// Attach this script to any entity with TransformComponent and ScriptComponent.
-    /// </summary>
-    public class PlayerMovement
+    public class PlayerMovement 
     {
-        // This field is automatically set by the scripting system
+        private float _moveSpeed = 6.0f;
+        private float _jumpSpeed = 8.0f;
+        private bool _gateRmbToPauseMove = true;
+
         public ulong Entity;
+        private bool _wasSpaceDown = false;
 
-        // Movement parameters (hardcoded for now - customize in code)
-        private float _speed = 20f;
-        private float _jumpSpeed = 8f;
-        private float _gravity = -20f;
-
-        // Runtime state
-        private float _vy = 0f;
-        private float _groundY = 0f;
-        private bool _grounded = true;
-
-        /// <summary>
-        /// Called once when the script is first created.
-        /// </summary>
         public void OnStart(string jsonParams)
         {
-            API.Log($"[PlayerMovement] OnStart() - Entity: {Entity}");
-
-            // Validate entity has required components
+            // Not using JSON params yet — safe to ignore.
             if (!API.HasTransform(Entity))
-            {
-                API.Log("[PlayerMovement] ERROR: Entity missing TransformComponent!");
-                return;
-            }
-
-            if (!API.HasScript(Entity))
-            {
-                API.Log("[PlayerMovement] ERROR: Entity missing ScriptComponent!");
-                return;
-            }
-
-            // Note: JSON parsing removed for simplicity
-            // To change values, edit _speed, _jumpSpeed, _gravity above
-            API.Log($"[PlayerMovement] Using defaults: speed={_speed}, jumpSpeed={_jumpSpeed}, gravity={_gravity}");
-
-            // Store initial ground position
-            _groundY = API.GetPosition(Entity).Y;
-            API.Log($"[PlayerMovement] Ground Y set to: {_groundY}");
+                API.Log("[PlayerMovement] Entity has no TransformComponent.");
         }
 
-        /// <summary>
-        /// Called every frame to update movement.
-        /// </summary>
         public void OnUpdate(float dt)
         {
-            // Safety check
-            if (!API.HasTransform(Entity) || !API.HasScript(Entity))
+            if (_gateRmbToPauseMove && API.IsMouseDown(API.MOUSE_RIGHT))
                 return;
 
-            var pos = API.GetPosition(Entity);
-
-            // Check if right mouse button is held (disables movement)
-            bool allowMove = !API.IsMouseDown(API.MOUSE_RIGHT);
-
-            // Horizontal movement (WASD)
             float dx = 0f, dz = 0f;
-            if (allowMove)
-            {
-                if (API.IsKeyDown(API.KEY_A)) dx -= 1f;
-                if (API.IsKeyDown(API.KEY_D)) dx += 1f;
-                if (API.IsKeyDown(API.KEY_W)) dz -= 1f; // forward = -Z
-                if (API.IsKeyDown(API.KEY_S)) dz += 1f;
+            if (API.IsKeyDown(API.KEY_A)) dx -= 1f;
+            if (API.IsKeyDown(API.KEY_D)) dx += 1f;
+            if (API.IsKeyDown(API.KEY_W)) dz -= 1f;
+            if (API.IsKeyDown(API.KEY_S)) dz += 1f;
 
-                // Normalize diagonal movement
-                if (dx != 0f || dz != 0f)
-                {
-                    float len = (float)Math.Sqrt(dx * dx + dz * dz);
-                    dx /= len;
-                    dz /= len;
-                    pos.X += dx * _speed * dt;
-                    pos.Z += dz * _speed * dt;
-                }
+            float len = (float)Math.Sqrt(dx * dx + dz * dz);
+            if (len > 0f) { dx /= len; dz /= len; }
 
-                // Jump
-                if (_grounded && API.IsKeyDown(API.KEY_SPACE))
-                {
-                    _vy = _jumpSpeed;
-                    _grounded = false;
-                }
-            }
+            var vel = API.GetLinearVelocity(Entity);
+            vel.X = dx * _moveSpeed;
+            vel.Z = dz * _moveSpeed;
 
-            // Apply gravity
-            _vy += _gravity * dt;
-            pos.Y += _vy * dt;
+            bool grounded = API.IsColliding(Entity);
+            bool spaceDown = API.IsKeyDown(API.KEY_SPACE);
 
-            // Ground collision
-            if (pos.Y <= _groundY)
-            {
-                pos.Y = _groundY;
-                _vy = 0f;
-                _grounded = true;
-            }
+            if (spaceDown && !_wasSpaceDown && grounded)
+                vel.Y = _jumpSpeed;
 
-            // Apply final position
-            API.SetPosition(Entity, pos);
+            _wasSpaceDown = spaceDown;
+
+            API.SetLinearVelocity(Entity, vel);
+
+            float planarSpeed = (float)Math.Sqrt(vel.X * vel.X + vel.Z * vel.Z);
+            API.AnimatorSetFloat(Entity, "Speed", planarSpeed);
+            API.AnimatorSetBool(Entity, "IsMoving", planarSpeed > 0.1f);
         }
 
-        /// <summary>
-        /// Called when the script is destroyed (optional cleanup).
-        /// </summary>
-        public void OnDestroy()
-        {
-            API.Log($"[PlayerMovement] OnDestroy() - Entity: {Entity}");
-        }
+        public void OnDestroy() { }
     }
 }
