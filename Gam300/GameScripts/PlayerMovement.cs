@@ -4,7 +4,9 @@ using Boom;
 namespace GameScripts
 {
     /// <summary>
-    /// Handles player movement with WASD, jumping with Space, and mouse-look control.
+    /// Handles player movement using PhysX linear velocity control.
+    /// Supports WASD movement, jumping with Space, and mouse-look control.
+    /// Movement is relative to the camera's facing direction.
     /// Attach this script to any entity with TransformComponent and ScriptComponent.
     /// </summary>
     public class PlayerMovement
@@ -12,15 +14,9 @@ namespace GameScripts
         // This field is automatically set by the scripting system
         public ulong Entity;
 
-        // Movement parameters (hardcoded for now - customize in code)
-        private float _speed = 20f;
+        // Movement parameters (configurable)
+        private float _speed = 5f;
         private float _jumpSpeed = 8f;
-        private float _gravity = -20f;
-
-        // Runtime state
-        private float _vy = 0f;
-        private float _groundY = 0f;
-        private bool _grounded = true;
 
         /// <summary>
         /// Called once when the script is first created.
@@ -42,17 +38,19 @@ namespace GameScripts
                 return;
             }
 
-            // Note: JSON parsing removed for simplicity
-            // To change values, edit _speed, _jumpSpeed, _gravity above
-            API.Log($"[PlayerMovement] Using defaults: speed={_speed}, jumpSpeed={_jumpSpeed}, gravity={_gravity}");
+            // Register trigger callbacks if this entity has a collider
+            if (API.HasCollider(Entity))
+            {
+                API.RegisterTriggerEnterCallback(Entity, OnTriggerEnter);
+                API.RegisterTriggerExitCallback(Entity, OnTriggerExit);
+                API.Log("[PlayerMovement] Registered trigger callbacks for player");
+            }
 
-            // Store initial ground position
-            _groundY = API.GetPosition(Entity).Y;
-            API.Log($"[PlayerMovement] Ground Y set to: {_groundY}");
+            API.Log($"[PlayerMovement] Using camera-relative PhysX movement: speed={_speed}, jumpSpeed={_jumpSpeed}");
         }
 
         /// <summary>
-        /// Called every frame to update movement.
+        /// Called every frame to update movement using PhysX linear velocity.
         /// </summary>
         public void OnUpdate(float dt)
         {
@@ -60,52 +58,149 @@ namespace GameScripts
             if (!API.HasTransform(Entity) || !API.HasScript(Entity))
                 return;
 
-            var pos = API.GetPosition(Entity);
+            // =============== CAMERA-RELATIVE PHYSX MOVEMENT =================
 
-            // Check if right mouse button is held (disables movement)
+            var vel = API.GetLinearVelocity(Entity);
+
+            // Check if the player is allowed to move (RMB held disables movement)
             bool allowMove = !API.IsMouseDown(API.MOUSE_RIGHT);
 
-            // Horizontal movement (WASD)
-            float dx = 0f, dz = 0f;
+            // Check if the player is "grounded" via collision flag
+            bool isGrounded = API.IsColliding(Entity);
+
+            // Calculate horizontal movement input
+            float inputX = 0f, inputZ = 0f;
             if (allowMove)
             {
-                if (API.IsKeyDown(API.KEY_A)) dx -= 1f;
-                if (API.IsKeyDown(API.KEY_D)) dx += 1f;
-                if (API.IsKeyDown(API.KEY_W)) dz -= 1f; // forward = -Z
-                if (API.IsKeyDown(API.KEY_S)) dz += 1f;
-
-                // Normalize diagonal movement
-                if (dx != 0f || dz != 0f)
-                {
-                    float len = (float)Math.Sqrt(dx * dx + dz * dz);
-                    dx /= len;
-                    dz /= len;
-                    pos.X += dx * _speed * dt;
-                    pos.Z += dz * _speed * dt;
-                }
-
-                // Jump
-                if (_grounded && API.IsKeyDown(API.KEY_SPACE))
-                {
-                    _vy = _jumpSpeed;
-                    _grounded = false;
-                }
+                if (API.IsKeyDown(API.KEY_A)) inputX += 1f; // Left
+                if (API.IsKeyDown(API.KEY_D)) inputX -= 1f; // Right
+                if (API.IsKeyDown(API.KEY_W)) inputZ += 1f; // Forward
+                if (API.IsKeyDown(API.KEY_S)) inputZ -= 1f; // Backward
             }
 
-            // Apply gravity
-            _vy += _gravity * dt;
-            pos.Y += _vy * dt;
-
-            // Ground collision
-            if (pos.Y <= _groundY)
+            // Apply camera-relative movement
+            if (inputX != 0f || inputZ != 0f)
             {
-                pos.Y = _groundY;
-                _vy = 0f;
-                _grounded = true;
+                // Get camera's yaw angle in degrees
+                float cameraYawDegrees = API.GetThirdPersonCameraYaw();
+
+                // Convert to radians for math calculations
+                float cameraYawRadians = cameraYawDegrees * (float)Math.PI / 180f;
+
+                // Calculate camera's forward and right vectors
+                // Forward direction: where the camera is looking (negative Z in camera space becomes world space direction)
+                Vec3 cameraForward = new Vec3(
+                    (float)Math.Sin(cameraYawRadians),
+                    0f,
+                    (float)Math.Cos(cameraYawRadians)
+                );
+
+                // Right direction: 90 degrees to the right of forward
+                Vec3 cameraRight = new Vec3(
+                    (float)Math.Cos(cameraYawRadians),
+                    0f,
+                    -(float)Math.Sin(cameraYawRadians)
+                );
+
+                // Calculate world-space movement direction based on camera orientation
+                Vec3 moveDirection = new Vec3(
+                    cameraRight.X * inputX + cameraForward.X * inputZ,
+                    0f, // Keep Y at 0 for ground movement
+                    cameraRight.Z * inputX + cameraForward.Z * inputZ
+                );
+
+                // Normalize and apply speed
+                float len = (float)Math.Sqrt(moveDirection.X * moveDirection.X + moveDirection.Z * moveDirection.Z);
+                if (len > 0f)
+                {
+                    vel.X = (moveDirection.X / len) * _speed;
+                    vel.Z = (moveDirection.Z / len) * _speed;
+                }
+            }
+            else
+            {
+                // No input - stop horizontal movement
+                vel.X = 0f;
+                vel.Z = 0f;
             }
 
-            // Apply final position
-            API.SetPosition(Entity, pos);
+            // Apply vertical velocity (Jumping)
+            if (allowMove && isGrounded && API.IsKeyDown(API.KEY_SPACE))
+            {
+                vel.Y = _jumpSpeed;
+            }
+            // NOTE: We do NOT apply gravity here.
+            // PhysX already applies gravity every simulation step.
+
+            API.SetLinearVelocity(Entity, vel);
+        }
+
+        /// <summary>
+        /// Trigger enter callback - called when the player enters a trigger volume
+        /// </summary>
+        private static void OnTriggerEnter(ulong triggerEntity, ulong otherEntity)
+        {
+            API.Log($"[PlayerMovement] Player entered trigger! Trigger: {triggerEntity}, Other: {otherEntity}");
+
+            // Find the trigger entity's name for more specific handling
+            ulong checkpoint = API.FindEntity("Checkpoint");
+            ulong damageZone = API.FindEntity("DamageZone");
+            ulong powerup = API.FindEntity("PowerUp");
+            ulong door = API.FindEntity("DoorTrigger");
+
+            // Test different trigger types
+            if (triggerEntity == checkpoint)
+            {
+                API.Log(">>> CHECKPOINT REACHED! <<<");
+                // TODO: Save game state, play sound effect, show UI feedback
+            }
+            else if (triggerEntity == damageZone)
+            {
+                API.Log(">>> PLAYER TAKING DAMAGE! <<<");
+                // TODO: Apply damage, screen effect, health reduction
+            }
+            else if (triggerEntity == powerup)
+            {
+                API.Log(">>> POWER-UP COLLECTED! <<<");
+                // TODO: Apply power-up effect, destroy trigger entity, play sound
+            }
+            else if (triggerEntity == door)
+            {
+                API.Log(">>> DOOR ACTIVATED! <<<");
+                // TODO: Open door, play animation, unlock path
+            }
+            else
+            {
+                API.Log($"[PlayerMovement] Unknown trigger type with entity ID: {triggerEntity}");
+            }
+        }
+
+        /// <summary>
+        /// Trigger exit callback - called when the player exits a trigger volume
+        /// </summary>
+        private static void OnTriggerExit(ulong triggerEntity, ulong otherEntity)
+        {
+            API.Log($"[PlayerMovement] Player exited trigger! Trigger: {triggerEntity}, Other: {otherEntity}");
+
+            // Find the trigger entity's name for more specific handling
+            ulong damageZone = API.FindEntity("DamageZone");
+            ulong door = API.FindEntity("DoorTrigger");
+
+            // Handle trigger exit events
+            if (triggerEntity == damageZone)
+            {
+                API.Log(">>> PLAYER SAFE FROM DAMAGE! <<<");
+                // TODO: Stop damage over time effects, remove screen effects
+            }
+            else if (triggerEntity == door)
+            {
+                API.Log(">>> PLAYER LEFT DOOR AREA <<<");
+                // TODO: Close door after delay, or keep it open
+            }
+            else
+            {
+                API.Log($"[PlayerMovement] Exited unknown trigger with entity ID: {triggerEntity}");
+            }
         }
 
         /// <summary>
@@ -114,6 +209,13 @@ namespace GameScripts
         public void OnDestroy()
         {
             API.Log($"[PlayerMovement] OnDestroy() - Entity: {Entity}");
+
+            // Unregister trigger callbacks to prevent memory leaks
+            if (API.HasCollider(Entity))
+            {
+                API.UnregisterTriggerCallbacks(Entity);
+                API.Log("[PlayerMovement] Unregistered trigger callbacks for player");
+            }
         }
     }
 }

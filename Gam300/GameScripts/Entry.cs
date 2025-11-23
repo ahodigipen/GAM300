@@ -5,11 +5,6 @@ namespace GameScripts
 {
     public static class Entry
     {
-        // --- Player properties ---
-        private static ulong _player;
-        private static float _speed = 5f;
-        private static float _jumpSpeed = 8f;
-
         // --- Scene Management ---
         private const string LEVEL_SCENE_NAME = "level";
         private const string PAUSE_SCENE_NAME = "PauseMenu";
@@ -19,12 +14,10 @@ namespace GameScripts
 
         // Key state trackers
         private static bool _h_KeyWasDown = false;
-
         private static bool _p_KeyWasDown = false;
         private static bool _r_KeyWasDown = false;
         private static bool _y_KeyWasDown = false;
         private static bool _m_KeyWasDown = false;
-
         private static bool _q_KeyWasDown = false;
 
         public static void Start()
@@ -40,36 +33,6 @@ namespace GameScripts
             _currentSceneName = API.GetCurrentSceneName();
 
             API.Log("[C#] Entry.Start() called for scene: " + _currentSceneName);
-
-            // Find the player
-            _player = API.FindEntity("Samurai");
-            API.Log("[C#] Samurai handle = " + _player);
-
-            if (_player != 0)
-            {
-                // Check if entity has required components
-                if (!API.HasTransform(_player))
-                {
-                    API.Log("[C#] ERROR: Samurai entity does not have TransformComponent!");
-                    _player = 0; // Invalidate so Update won't try to use it
-                    return;
-                }
-
-                // NOTE: Assuming API.HasScript() exists. If not, remove this check.
-                if (!API.HasScript(_player))
-                {
-                    API.Log("[C#] ERROR: Samurai entity does not have ScriptComponent!");
-                    API.Log("[C#] Player movement requires a ScriptComponent to be attached.");
-                    _player = 0; // Invalidate so Update won't try to use it
-                    return;
-                }
-
-                API.Log("[C#] Samurai has required components (Transform + Script) - OK");
-            }
-            else
-            {
-                API.Log("[C#] WARNING: Could not find Samurai entity (This is normal for menu scenes).");
-            }
         }
 
         public static void Update(float dt)
@@ -163,7 +126,7 @@ namespace GameScripts
 
             // --- LOGIC FOR IN-GAME ---
 
-            // 1. Check for 'P' (without Ctrl) to PAUSE the game
+            // Check for 'P' (without Ctrl) to PAUSE the game
             if (p_KeyDown && !_p_KeyWasDown && !ctrl_KeyDown)
             {
                 API.Log("Pausing game (P key)...");
@@ -174,69 +137,8 @@ namespace GameScripts
             }
             _p_KeyWasDown = p_KeyDown;
 
-            // 2. Run Player Logic
-            if (_player == 0) return;
-            // Only process if we have a valid player with required components
-            if (_player == 0)
-                return;
-
-            // Double-check components still exist (in case they were removed at runtime)
-            if (!API.HasTransform(_player))
-            {
-                API.Log("[C#] ERROR: Player lost TransformComponent!");
-                _player = 0;
-                return;
-            }
-
-            if (!API.HasScript(_player))
-            {
-                API.Log("[C#] ERROR: Player lost ScriptComponent! Movement disabled.");
-                _player = 0;
-                return;
-            }
-
-            // =============== PHYSX-BASED MOVEMENT =================
-
-            var vel = API.GetLinearVelocity(_player);
-
-            // 2. Check if the player is allowed to move (RMB held disables movement)
-            bool allowMove = !API.IsMouseDown(API.MOUSE_RIGHT);
-
-            // 3. Check if the player is "grounded" via collision flag
-            bool isGrounded = API.IsColliding(_player);
-
-            // 4. Calculate horizontal movement input
-            float dx = 0f, dz = 0f;
-            if (allowMove)
-            {
-                if (API.IsKeyDown(API.KEY_A)) dx -= 1f;
-                if (API.IsKeyDown(API.KEY_D)) dx += 1f;
-                if (API.IsKeyDown(API.KEY_W)) dz -= 1f; // forward = -Z
-                if (API.IsKeyDown(API.KEY_S)) dz += 1f;
-            }
-
-            if (dx != 0f || dz != 0f)
-            {
-                float len = (float)Math.Sqrt(dx * dx + dz * dz);
-                vel.X = (dx / len) * _speed;
-                vel.Z = (dz / len) * _speed;
-            }
-            else
-            {
-                vel.X = 0f;
-                vel.Z = 0f;
-            }
-
-            // 6. Apply vertical velocity (Jumping)
-            if (allowMove && isGrounded && API.IsKeyDown(API.KEY_SPACE))
-            {
-                vel.Y = _jumpSpeed;
-            }
-            // NOTE: We do NOT apply gravity here.
-            // PhysX already applies gravity every simulation step.
-            // We just modify vel.X / vel.Z + jump impulse, and let PhysX handle the rest.
-
-            API.SetLinearVelocity(_player, vel);
+            // NOTE: Player movement is now handled by PlayerMovement.cs script
+            // The PlayerMovement script should be attached to the player entity
         }
 
         // This function runs all your pause menu logic
