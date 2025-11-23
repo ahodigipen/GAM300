@@ -901,7 +901,7 @@ namespace Boom
                             triggerName = m_Context->scene.get<InfoComponent>(triggerEntity).name;
                         if (m_Context->scene.valid(enteringEntity) && m_Context->scene.all_of<InfoComponent>(enteringEntity))
                             enteringName = m_Context->scene.get<InfoComponent>(enteringEntity).name;
-                        
+
                         // Convert to handles for script callbacks
                         uint64_t triggerHandle = static_cast<uint64_t>(static_cast<uint32_t>(triggerEntity));
                         uint64_t enteringHandle = static_cast<uint64_t>(static_cast<uint32_t>(enteringEntity));
@@ -930,7 +930,21 @@ namespace Boom
                                     triggerHandle, enteringHandle);
                             }
                         }
-                        
+                        else {
+                            // This is an EXIT event - the pair was already active
+                            m_ActiveTriggerPairs.erase(triggerPair);
+
+                            BOOM_INFO("[Trigger] '{}' EXITED trigger '{}' - invoking callbacks", enteringName, triggerName);
+
+                            // Call exit callbacks with safety
+                            try {
+                                CallTriggerExitCallbacks(triggerHandle, enteringHandle);
+                            }
+                            catch (...) {
+                                BOOM_ERROR("[Trigger] Exception in exit callback for trigger {} and entity {}",
+                                    triggerHandle, enteringHandle);
+                            }
+                        }
                     }
 
                     // Handle CONTACT events (existing code is fine)
