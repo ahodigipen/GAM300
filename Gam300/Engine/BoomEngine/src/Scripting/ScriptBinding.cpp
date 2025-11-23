@@ -395,6 +395,8 @@ namespace Boom {
     // Function pointer types for C# callbacks
     typedef void (*TriggerCallback)(uint64_t triggerEntity, uint64_t otherEntity);
 
+    // REMOVE THESE DUPLICATE FUNCTIONS (lines ~376-387):
+    /*
     static void ICALL_API_RegisterTriggerEnterCallback(uint64_t triggerHandle, TriggerCallback callback) {
         if (!callback) return;
         s_TriggerEnterCallbacks[triggerHandle] = [callback](uint64_t trigger, uint64_t other) {
@@ -408,6 +410,7 @@ namespace Boom {
             callback(trigger, other);
             };
     }
+    */
 
     static void ICALL_API_UnregisterTriggerCallbacks(uint64_t triggerHandle) {
         s_TriggerEnterCallbacks.erase(triggerHandle);
@@ -415,6 +418,97 @@ namespace Boom {
     }
 
     // Function to call trigger callbacks (called from Application.h)
+    void CallTriggerEnterCallbacks(uint64_t triggerEntity, uint64_t otherEntity) {
+        // Add comprehensive safety checks
+        if (!s_Ctx) {
+            BOOM_WARN("[ScriptBinding] CallTriggerEnterCallbacks: No script context");
+            return;
+        }
+
+        // Validate entities still exist
+        entt::entity trigger = static_cast<entt::entity>(static_cast<uint32_t>(triggerEntity));
+        entt::entity other = static_cast<entt::entity>(static_cast<uint32_t>(otherEntity));
+
+        if (!s_Ctx->scene.valid(trigger) || !s_Ctx->scene.valid(other)) {
+            BOOM_WARN("[ScriptBinding] CallTriggerEnterCallbacks: Invalid entities {} or {}",
+                static_cast<uint32_t>(trigger), static_cast<uint32_t>(other));
+            return;
+        }
+
+        auto it = s_TriggerEnterCallbacks.find(triggerEntity);
+        if (it != s_TriggerEnterCallbacks.end()) {
+            try {
+                // Additional safety: check if the function is valid before calling
+                if (it->second) {
+                    it->second(triggerEntity, otherEntity);
+                    BOOM_INFO("[ScriptBinding] Successfully called trigger enter callback for trigger {} and entity {}",
+                        triggerEntity, otherEntity);
+                }
+                else {
+                    BOOM_WARN("[ScriptBinding] Trigger enter callback for {} is null", triggerEntity);
+                    s_TriggerEnterCallbacks.erase(it); // Remove invalid callback
+                }
+            }
+            catch (const std::exception& e) {
+                BOOM_ERROR("[ScriptBinding] Exception in trigger enter callback: {}", e.what());
+                s_TriggerEnterCallbacks.erase(it); // Remove problematic callback
+            }
+            catch (...) {
+                BOOM_ERROR("[ScriptBinding] Unknown exception in trigger enter callback for trigger {}", triggerEntity);
+                s_TriggerEnterCallbacks.erase(it); // Remove problematic callback
+            }
+        }
+        else {
+            BOOM_INFO("[ScriptBinding] No trigger enter callback registered for entity {}", triggerEntity);
+        }
+    }
+
+    void CallTriggerExitCallbacks(uint64_t triggerEntity, uint64_t otherEntity) {
+        // Add comprehensive safety checks
+        if (!s_Ctx) {
+            BOOM_WARN("[ScriptBinding] CallTriggerExitCallbacks: No script context");
+            return;
+        }
+
+        // Validate entities still exist
+        entt::entity trigger = static_cast<entt::entity>(static_cast<uint32_t>(triggerEntity));
+        entt::entity other = static_cast<entt::entity>(static_cast<uint32_t>(otherEntity));
+
+        if (!s_Ctx->scene.valid(trigger) || !s_Ctx->scene.valid(other)) {
+            BOOM_WARN("[ScriptBinding] CallTriggerExitCallbacks: Invalid entities {} or {}",
+                static_cast<uint32_t>(trigger), static_cast<uint32_t>(other));
+            return;
+        }
+
+        auto it = s_TriggerExitCallbacks.find(triggerEntity);
+        if (it != s_TriggerExitCallbacks.end()) {
+            try {
+                // Additional safety: check if the function is valid before calling
+                if (it->second) {
+                    it->second(triggerEntity, otherEntity);
+                    BOOM_INFO("[ScriptBinding] Successfully called trigger exit callback for trigger {} and entity {}",
+                        triggerEntity, otherEntity);
+                }
+                else {
+                    BOOM_WARN("[ScriptBinding] Trigger exit callback for {} is null", triggerEntity);
+                    s_TriggerExitCallbacks.erase(it); // Remove invalid callback
+                }
+            }
+            catch (const std::exception& e) {
+                BOOM_ERROR("[ScriptBinding] Exception in trigger exit callback: {}", e.what());
+                s_TriggerExitCallbacks.erase(it); // Remove problematic callback
+            }
+            catch (...) {
+                BOOM_ERROR("[ScriptBinding] Unknown exception in trigger exit callback for trigger {}", triggerEntity);
+                s_TriggerExitCallbacks.erase(it); // Remove problematic callback
+            }
+        }
+        else {
+            BOOM_INFO("[ScriptBinding] No trigger exit callback registered for entity {}", triggerEntity);
+        }
+    }
+
+    // KEEP ONLY THESE ENHANCED VERSIONS:
     static void ICALL_API_RegisterTriggerEnterCallback(uint64_t triggerHandle, TriggerCallback callback) {
         // Add comprehensive safety checks
         if (!callback) {
