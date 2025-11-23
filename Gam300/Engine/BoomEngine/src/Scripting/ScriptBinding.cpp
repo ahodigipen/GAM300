@@ -15,6 +15,7 @@
 #include "Input/InputHandler.h"
 
 #include "Application/Application.h"
+#include "Audio/Audio.hpp"  // Add this include for sound engine
 
 namespace Boom {
 
@@ -414,24 +415,221 @@ namespace Boom {
     }
 
     // Function to call trigger callbacks (called from Application.h)
-    void CallTriggerEnterCallbacks(uint64_t triggerEntity, uint64_t otherEntity) {
-        auto it = s_TriggerEnterCallbacks.find(triggerEntity);
-        if (it != s_TriggerEnterCallbacks.end()) {
-            it->second(triggerEntity, otherEntity);
+    static void ICALL_API_RegisterTriggerEnterCallback(uint64_t triggerHandle, TriggerCallback callback) {
+        // Add comprehensive safety checks
+        if (!callback) {
+            BOOM_WARN("[ScriptBinding] RegisterTriggerEnterCallback: Null callback provided");
+            return;
         }
+
+        if (!s_Ctx) {
+            BOOM_WARN("[ScriptBinding] RegisterTriggerEnterCallback: No script context");
+            return;
+        }
+
+        // Validate the trigger entity exists
+        entt::entity trigger = static_cast<entt::entity>(static_cast<uint32_t>(triggerHandle));
+        if (!s_Ctx->scene.valid(trigger)) {
+            BOOM_WARN("[ScriptBinding] RegisterTriggerEnterCallback: Invalid trigger entity {}", triggerHandle);
+            return;
+        }
+
+        // CRITICAL FIX: Store the callback with additional validation
+        s_TriggerEnterCallbacks[triggerHandle] = [callback, triggerHandle](uint64_t trigger, uint64_t other) {
+            // Additional runtime validation before calling the callback
+            if (!s_Ctx) {
+                BOOM_ERROR("[ScriptBinding] Callback invoked but no script context");
+                return;
+            }
+
+            try {
+                // Verify entities still exist before calling
+                entt::entity triggerEntity = static_cast<entt::entity>(static_cast<uint32_t>(trigger));
+                entt::entity otherEntity = static_cast<entt::entity>(static_cast<uint32_t>(other));
+
+                if (!s_Ctx->scene.valid(triggerEntity) || !s_Ctx->scene.valid(otherEntity)) {
+                    BOOM_WARN("[ScriptBinding] Callback entities became invalid");
+                    return;
+                }
+
+                // Call the actual C# callback
+                callback(trigger, other);
+            }
+            catch (...) {
+                BOOM_ERROR("[ScriptBinding] Exception in callback wrapper for trigger {}", triggerHandle);
+                // Remove the problematic callback
+                s_TriggerEnterCallbacks.erase(triggerHandle);
+            }
+            };
+
+        BOOM_INFO("[ScriptBinding] Registered trigger enter callback for entity {}", triggerHandle);
     }
 
-    void CallTriggerExitCallbacks(uint64_t triggerEntity, uint64_t otherEntity) {
-        auto it = s_TriggerExitCallbacks.find(triggerEntity);
-        if (it != s_TriggerExitCallbacks.end()) {
-            it->second(triggerEntity, otherEntity);
+    static void ICALL_API_RegisterTriggerExitCallback(uint64_t triggerHandle, TriggerCallback callback) {
+        // Add comprehensive safety checks
+        if (!callback) {
+            BOOM_WARN("[ScriptBinding] RegisterTriggerExitCallback: Null callback provided");
+            return;
         }
+
+        if (!s_Ctx) {
+            BOOM_WARN("[ScriptBinding] RegisterTriggerExitCallback: No script context");
+            return;
+        }
+
+        // Validate the trigger entity exists
+        entt::entity trigger = static_cast<entt::entity>(static_cast<uint32_t>(triggerHandle));
+        if (!s_Ctx->scene.valid(trigger)) {
+            BOOM_WARN("[ScriptBinding] RegisterTriggerExitCallback: Invalid trigger entity {}", triggerHandle);
+            return;
+        }
+
+        // CRITICAL FIX: Store the callback with additional validation
+        s_TriggerExitCallbacks[triggerHandle] = [callback, triggerHandle](uint64_t trigger, uint64_t other) {
+            // Additional runtime validation before calling the callback
+            if (!s_Ctx) {
+                BOOM_ERROR("[ScriptBinding] Callback invoked but no script context");
+                return;
+            }
+
+            try {
+                // Verify entities still exist before calling
+                entt::entity triggerEntity = static_cast<entt::entity>(static_cast<uint32_t>(trigger));
+                entt::entity otherEntity = static_cast<entt::entity>(static_cast<uint32_t>(other));
+
+                if (!s_Ctx->scene.valid(triggerEntity) || !s_Ctx->scene.valid(otherEntity)) {
+                    BOOM_WARN("[ScriptBinding] Callback entities became invalid");
+                    return;
+                }
+
+                // Call the actual C# callback
+                callback(trigger, other);
+            }
+            catch (...) {
+                BOOM_ERROR("[ScriptBinding] Exception in callback wrapper for trigger {}", triggerHandle);
+                // Remove the problematic callback
+                s_TriggerExitCallbacks.erase(triggerHandle);
+            }
+            };
+
+        BOOM_INFO("[ScriptBinding] Registered trigger exit callback for entity {}", triggerHandle);
     }
 
+    // ========= SOUND / AUDIO BINDINGS =========
+    
+    static void ICALL_API_PlaySound(MonoString* name, MonoString* filePath, bool loop) {
+        if (!name || !filePath) return;
+        
+        char* nameStr = mono_string_to_utf8(name);
+        char* pathStr = mono_string_to_utf8(filePath);
+        
+        if (nameStr && pathStr) {
+            auto& soundEngine = SoundEngine::Instance();
+            soundEngine.PlaySound(std::string(nameStr), std::string(pathStr), loop);
+        }
+        
+        if (nameStr) mono_free(nameStr);
+        if (pathStr) mono_free(pathStr);
+    }
+    
+    static void ICALL_API_PlaySoundAt(MonoString* name, MonoString* filePath, glm::vec3* position, bool loop) {
+        if (!name || !filePath || !position) return;
+        
+        char* nameStr = mono_string_to_utf8(name);
+        char* pathStr = mono_string_to_utf8(filePath);
+        
+        if (nameStr && pathStr) {
+            auto& soundEngine = SoundEngine::Instance();
+            soundEngine.PlaySoundAt(std::string(nameStr), std::string(pathStr), *position, loop);
+        }
+        
+        if (nameStr) mono_free(nameStr);
+        if (pathStr) mono_free(pathStr);
+    }
+    
+    static void ICALL_API_StopSound(MonoString* name) {
+        if (!name) return;
+        
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& soundEngine = SoundEngine::Instance();
+            soundEngine.StopSound(std::string(nameStr));
+            mono_free(nameStr);
+        }
+    }
+    
+    static void ICALL_API_SetSoundVolume(MonoString* name, float volume) {
+        if (!name) return;
+        
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& soundEngine = SoundEngine::Instance();
+            soundEngine.SetVolume(std::string(nameStr), volume);
+            mono_free(nameStr);
+        }
+    }
+    
+    static bool ICALL_API_IsSoundPlaying(MonoString* name) {
+        if (!name) return false;
+        
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& soundEngine = SoundEngine::Instance();
+            bool result = soundEngine.IsPlaying(std::string(nameStr));
+            mono_free(nameStr);
+            return result;
+        }
+        return false;
+    }
+    
+    static void ICALL_API_PauseSound(MonoString* name, bool pause) {
+        if (!name) return;
+        
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& soundEngine = SoundEngine::Instance();
+            soundEngine.Pause(std::string(nameStr), pause);
+            mono_free(nameStr);
+        }
+    }
+    
+    static void ICALL_API_PreloadSound(MonoString* name, MonoString* filePath, bool loop) {
+        if (!name || !filePath) return;
+        
+        char* nameStr = mono_string_to_utf8(name);
+        char* pathStr = mono_string_to_utf8(filePath);
+        
+        if (nameStr && pathStr) {
+            auto& soundEngine = SoundEngine::Instance();
+            soundEngine.PreloadSound(std::string(nameStr), std::string(pathStr), false, loop);
+        }
+        
+        if (nameStr) mono_free(nameStr);
+        if (pathStr) mono_free(pathStr);
+    }
+    
+    static void ICALL_API_SetSoundPosition(MonoString* name, glm::vec3* position) {
+        if (!name || !position) return;
+        
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& soundEngine = SoundEngine::Instance();
+            soundEngine.SetSoundPosition(std::string(nameStr), *position);
+            mono_free(nameStr);
+        }
+    }
+    // Add this function to clean up all trigger callbacks when Mono domain is unloaded
+    void ClearAllTriggerCallbacks() {
+        s_TriggerEnterCallbacks.clear();
+        s_TriggerExitCallbacks.clear();
+        BOOM_INFO("[ScriptBinding] Cleared all trigger callbacks (domain unload)");
+    }
 
     void RegisterScriptInternalCalls(AppContext* ctx)
     {
         s_Ctx = ctx;
+
+        ClearAllTriggerCallbacks();
 
         // IMPORTANT: These namespaces MUST match the C# side (Boom.Native)
         mono_add_internal_call("Boom.Native::Boom_API_Log", (const void*)ICALL_API_Log);
@@ -473,5 +671,15 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_RegisterTriggerEnterCallback", (const void*)ICALL_API_RegisterTriggerEnterCallback);
         mono_add_internal_call("Boom.Native::Boom_API_RegisterTriggerExitCallback", (const void*)ICALL_API_RegisterTriggerExitCallback);
         mono_add_internal_call("Boom.Native::Boom_API_UnregisterTriggerCallbacks", (const void*)ICALL_API_UnregisterTriggerCallbacks);
+
+        // Sound/Audio internal calls
+        mono_add_internal_call("Boom.Native::Boom_API_PlaySound", (const void*)ICALL_API_PlaySound);
+        mono_add_internal_call("Boom.Native::Boom_API_PlaySoundAt", (const void*)ICALL_API_PlaySoundAt);
+        mono_add_internal_call("Boom.Native::Boom_API_StopSound", (const void*)ICALL_API_StopSound);
+        mono_add_internal_call("Boom.Native::Boom_API_SetSoundVolume", (const void*)ICALL_API_SetSoundVolume);
+        mono_add_internal_call("Boom.Native::Boom_API_IsSoundPlaying", (const void*)ICALL_API_IsSoundPlaying);
+        mono_add_internal_call("Boom.Native::Boom_API_PauseSound", (const void*)ICALL_API_PauseSound);
+        mono_add_internal_call("Boom.Native::Boom_API_PreloadSound", (const void*)ICALL_API_PreloadSound);
+        mono_add_internal_call("Boom.Native::Boom_API_SetSoundPosition", (const void*)ICALL_API_SetSoundPosition);
     }
 }

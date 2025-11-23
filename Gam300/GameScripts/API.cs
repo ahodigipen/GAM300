@@ -88,6 +88,30 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)] internal static extern int Boom_API_GetApplicationState();
         [MethodImpl(MethodImplOptions.InternalCall)] internal static extern bool Boom_API_IsPauseMenuLoaded();
 
+        // ========= SOUND / AUDIO INTERNAL CALLS =========
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_PlaySound(string name, string filePath, bool loop);
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_PlaySoundAt(string name, string filePath, ref Vec3 position, bool loop);
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_StopSound(string name);
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetSoundVolume(string name, float volume);
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern bool Boom_API_IsSoundPlaying(string name);
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_PauseSound(string name, bool pause);
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_PreloadSound(string name, string filePath, bool loop);
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetSoundPosition(string name, ref Vec3 position);
     }
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -253,6 +277,72 @@ namespace Boom
         public static void TogglePause() => Native.Boom_API_TogglePause();
         public static int GetApplicationState() => Native.Boom_API_GetApplicationState();
         public static bool IsPauseMenuLoaded() => Native.Boom_API_IsPauseMenuLoaded();
+
+        // ===== SOUND / AUDIO API =====
+        
+        /// <summary>
+        /// Play a 2D sound effect
+        /// </summary>
+        public static void PlaySound(string name, string filePath, bool loop = false)
+        {
+            Native.Boom_API_PlaySound(name, filePath, loop);
+        }
+        
+        /// <summary>
+        /// Play a 3D positional sound at specific world coordinates
+        /// </summary>
+        public static void PlaySoundAt(string name, string filePath, Vec3 position, bool loop = false)
+        {
+            Native.Boom_API_PlaySoundAt(name, filePath, ref position, loop);
+        }
+        
+        /// <summary>
+        /// Stop a playing sound
+        /// </summary>
+        public static void StopSound(string name)
+        {
+            Native.Boom_API_StopSound(name);
+        }
+        
+        /// <summary>
+        /// Set the volume of a sound (0.0 - 1.0)
+        /// </summary>
+        public static void SetSoundVolume(string name, float volume)
+        {
+            Native.Boom_API_SetSoundVolume(name, volume);
+        }
+        
+        /// <summary>
+        /// Check if a sound is currently playing
+        /// </summary>
+        public static bool IsSoundPlaying(string name)
+        {
+            return Native.Boom_API_IsSoundPlaying(name);
+        }
+        
+        /// <summary>
+        /// Pause or unpause a sound
+        /// </summary>
+        public static void PauseSound(string name, bool pause)
+        {
+            Native.Boom_API_PauseSound(name, pause);
+        }
+        
+        /// <summary>
+        /// Preload a sound for faster playback later
+        /// </summary>
+        public static void PreloadSound(string name, string filePath, bool loop = false)
+        {
+            Native.Boom_API_PreloadSound(name, filePath, loop);
+        }
+        
+        /// <summary>
+        /// Update the position of a 3D sound that's already playing
+        /// </summary>
+        public static void SetSoundPosition(string name, Vec3 position)
+        {
+            Native.Boom_API_SetSoundPosition(name, ref position);
+        }
 
         // ===== GLFW key codes =====
         public const int KEY_LEFT = 263;

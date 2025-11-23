@@ -1,5 +1,6 @@
 #include "Core.h"
 #include "Scripting/MonoRuntime.h"
+#include "Scripting/ScriptBinding.h"
 
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
@@ -98,10 +99,14 @@ namespace Boom {
 
     void MonoRuntime::UnloadDomain()
     {
-        // 1) Invalidate all assembly handles immediately
+        // 1) CRITICAL: Clear all trigger callbacks FIRST before domain unload
+        //    This prevents access violations when callbacks try to call into destroyed Mono domain
+        ClearAllTriggerCallbacks();
+
+        // 2) Invalidate all assembly handles immediately
         m_LoadedAssemblies.clear();
 
-        // 2) Then unload the app domain (if any)
+        // 3) Then unload the app domain (if any)
         if (m_AppDomain) {
             mono_domain_set(m_RootDomain, /*force*/ false);
             mono_domain_unload(m_AppDomain);
