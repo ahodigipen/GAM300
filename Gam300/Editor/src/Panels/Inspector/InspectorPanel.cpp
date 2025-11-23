@@ -236,11 +236,15 @@ namespace EditorUI {
 
         // Model Component
         if (selected.Has<Boom::ModelComponent>()) {
+            ImGui::PushID("Model Renderer");
             auto& mc = selected.Get<Boom::ModelComponent>();
 
             // Use CollapsingHeader to match the style
             if (ImGui::CollapsingHeader("Model Renderer", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap)) {
-                ComponentSettings<Boom::ModelComponent>(ctx);
+                if (ComponentSettings<Boom::ModelComponent>(ctx)) {
+                    ImGui::PopID();
+                    return; // Component was removed, exit early
+                }
 
                 // Track previous model per-entity to detect change
                 static std::unordered_map<entt::entity, AssetID> previousModelIDs;
@@ -331,11 +335,16 @@ namespace EditorUI {
                     ImGui::TextDisabled("Assign a model to enable mesh cooking.");
                 }
             }
+            ImGui::PopID();
         }
 
         if (selected.Has<Boom::SpriteComponent>()) {
-            if (ImGui::CollapsingHeader("Quad 2D", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap)) {
-                ComponentSettings<Boom::SpriteComponent>(ctx);
+            ImGui::PushID("Sprite");
+            if (ImGui::CollapsingHeader("Sprite", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap)) {
+                if (ComponentSettings<Boom::SpriteComponent>(ctx)) {
+                    ImGui::PopID();
+                    return; // Component was removed, exit early
+                }
 
                 auto& q = selected.Get<Boom::SpriteComponent>();
 
@@ -347,6 +356,7 @@ namespace EditorUI {
                 ImGui::EndTable();
                 ImGui::ColorEdit3("color", &q.color[0]);
             }
+            ImGui::PopID();
         }
 
         if (selected.Has<Boom::AnimatorComponent>()) {
@@ -433,6 +443,49 @@ namespace EditorUI {
                 ImGui::SetNextItemWidth(-1);
                 ImGui::DragFloat("##Mass", &rigidBody->mass, 0.1f, 0.0f, 1000.0f);
 
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Initial Velocity");
+                ImGui::SameLine(150);
+                ImGui::SetNextItemWidth(-1);
+                ImGui::DragFloat3("##InitialVelocity", &rigidBody->initialVelocity.x, 0.01f);
+
+                // --- ADD THIS NEW SECTION ---
+                ImGui::Spacing();
+                ImGui::SeparatorText("Constraints"); // Uses a nice separator
+                ImGui::Spacing();
+
+                // Store old values to detect changes
+                bool oldFreezeX = rigidBody->freezeRotationX;
+                bool oldFreezeY = rigidBody->freezeRotationY;
+                bool oldFreezeZ = rigidBody->freezeRotationZ;
+
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Freeze Rotation");
+                ImGui::SameLine(150);
+
+                // We use Push/PopID to make the labels unique for ImGui
+                ImGui::PushID("FreezeRot");
+                ImGui::Checkbox("X", &rigidBody->freezeRotationX);
+                ImGui::SameLine();
+                ImGui::Checkbox("Y", &rigidBody->freezeRotationY);
+                ImGui::SameLine();
+                ImGui::Checkbox("Z", &rigidBody->freezeRotationZ);
+                ImGui::PopID();
+
+                // If any value changed, notify the physics context
+                if (rigidBody->freezeRotationX != oldFreezeX ||
+                    rigidBody->freezeRotationY != oldFreezeY ||
+                    rigidBody->freezeRotationZ != oldFreezeZ)
+                {
+                    // This is a new function we will need to create in PhysicsContext 
+                    m_App->GetPhysicsContext().SetRotationLock(
+                        selected,
+                        rigidBody->freezeRotationX,
+                        rigidBody->freezeRotationY,
+                        rigidBody->freezeRotationZ
+                    );
+                }
+
                 ImGui::Spacing();
                 ImGui::Unindent(12.0f);
             }
@@ -440,6 +493,8 @@ namespace EditorUI {
             ImGui::PopID();
 
             if (removed) {
+                // Clean up physics before removing component
+                m_App->GetPhysicsContext().RemoveRigidBody(selected);
                 ctx->scene.remove<Boom::RigidBodyComponent>(m_App->SelectedEntity());
                 return; // Exit EntityUpdate early
             }
@@ -973,7 +1028,10 @@ namespace EditorUI {
 
             if (removed) {
                 // Clean up physics before removing component
-                m_App->GetPhysicsContext().RemoveRigidBody(selected);
+                // Only remove rigid body if the entity has one
+                if (selected.Has<Boom::RigidBodyComponent>()) {
+                    m_App->GetPhysicsContext().RemoveRigidBody(selected);
+                }
                 ctx->scene.remove<Boom::ColliderComponent>(m_App->SelectedEntity());
                 return;
             }
@@ -1024,6 +1082,7 @@ namespace EditorUI {
         }
 
         if (selected.Has<Boom::ScriptComponent>()) {
+            ImGui::PushID("Script");
             auto& sc = selected.Get<Boom::ScriptComponent>();
 
             // Collapsing header + settings ("..." to remove)
@@ -1194,6 +1253,8 @@ namespace EditorUI {
 
                 ImGui::Unindent(12.0f);
             }
+
+            ImGui::PopID();
 
             if (removed) {
                 // Destroy the script instance before removing component
@@ -1376,7 +1437,7 @@ namespace EditorUI {
                         ImGui::CloseCurrentPopup();
                     }
 
-                    
+                    ImGui::PopID();
                 }
             }
         }
@@ -1473,19 +1534,22 @@ namespace EditorUI {
     }
 
     template <class CType>
-    void InspectorPanel::ComponentSettings(Boom::AppContext* ctx) {
+    bool InspectorPanel::ComponentSettings(Boom::AppContext* ctx) {
         const ImVec2 headerMin = ImGui::GetItemRectMin();
         const ImVec2 headerMax = ImGui::GetItemRectMax();
         const float  lineH = ImGui::GetFrameHeight();
         ImGui::SetCursorScreenPos(ImVec2(headerMax.x - lineH, headerMin.y + (headerMax.y - headerMin.y - lineH) * 0.5f));
         if (ImGui::Button("...", ImVec2(lineH, lineH)))
             ImGui::OpenPopup("ComponentSettings");
+        bool removed = false;
         if (ImGui::BeginPopup("ComponentSettings")) {
             if (ImGui::MenuItem("Remove Component")) {
                 ctx->scene.remove<CType>(m_App->SelectedEntity());
+                removed = true;
             }
             ImGui::EndPopup();
         }
+        return removed;
     }
 
     void InspectorPanel::AcceptIDDrop(uint64_t& data, char const* payloadType) {

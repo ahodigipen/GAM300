@@ -4,6 +4,8 @@
 #include "Utilities.h"
 #include "Auxiliaries/Assets.h"
 #include <iostream>
+#include "PxPhysicsAPI.h"
+#include <foundation/PxMath.h>
 
 namespace Boom {
     struct PhysicsContext {
@@ -464,11 +466,13 @@ namespace Boom {
                     if (dyn) {
                         dyn->setLinearVelocity(PxVec3(body.initialVelocity.x, body.initialVelocity.y, body.initialVelocity.z));
 
-                        // --- THIS IS THE NEW PART ---
-                        // If it's KINEMATIC, set the PhysX flag
+
                         if (body.type == RigidBody3D::KINEMATIC) {
                             dyn->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
                         }
+                        dyn->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, body.freezeRotationX);
+                        dyn->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, body.freezeRotationY);
+                        dyn->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, body.freezeRotationZ);
                     }
                 }
                 else // STATIC
@@ -691,13 +695,19 @@ namespace Boom {
                 PxRigidDynamic* dyn = m_Physics->createRigidDynamic(transform);
                 PxRigidBodyExt::updateMassAndInertia(*dyn, body.density);
                 dyn->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, false); // Ensure it's not kinematic
+                dyn->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, body.freezeRotationX);
+                dyn->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, body.freezeRotationY);
+                dyn->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, body.freezeRotationZ);
                 newActor = dyn;
             }
-            else if (newType == RigidBody3D::KINEMATIC) // --- NEW BLOCK ---
+            else if (newType == RigidBody3D::KINEMATIC)
             {
                 PxRigidDynamic* dyn = m_Physics->createRigidDynamic(transform);
                 PxRigidBodyExt::updateMassAndInertia(*dyn, body.density);
                 dyn->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true); // Set it to kinematic
+                dyn->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, body.freezeRotationX);
+                dyn->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, body.freezeRotationY);
+                dyn->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, body.freezeRotationZ);
                 newActor = dyn;
             }
             else // newType is STATIC

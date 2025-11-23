@@ -35,7 +35,7 @@ namespace EditorUI {
         void ComponentSelector(Boom::Entity& selected);
         template <class Type> void UpdateComponent(Boom::ComponentID id, Boom::Entity& selected);
         //to be placed right below collapsing header that has flag: ImGuiTreeNodeFlags_AllowItemOverlap
-        template <class CType> void ComponentSettings(Boom::AppContext* ctx);
+        template <class CType> bool ComponentSettings(Boom::AppContext* ctx);
 
         void AcceptIDDrop(uint64_t& data, char const* payloadType);
         template <std::string_view const& Payload>
