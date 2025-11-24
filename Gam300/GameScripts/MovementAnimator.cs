@@ -101,7 +101,7 @@ namespace GameScripts
             if (mag > 1e-4f) { rawX /= mag; rawZ /= mag; }
 
             // ---- Sprint (Left Shift) ----
-            bool sprint = API.IsKeyDown(API.KEY_LEFT_SHIFT);
+            bool sprint = API.IsKeyDown(API.KEY_LEFT_CONTROL);
             _currentMoveSpeed = sprint ? _runSpeed : _walkSpeed;
 
             // ---- Camera-relative direction (XZ) ----
