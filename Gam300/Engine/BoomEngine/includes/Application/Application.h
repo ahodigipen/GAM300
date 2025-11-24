@@ -34,6 +34,16 @@
 #include "AI/NavAgent.h"
 #include "AI/AISystem.h"
 
+namespace std {
+    template<>
+    struct hash<std::pair<uint32_t, uint32_t>> {
+        size_t operator()(const std::pair<uint32_t, uint32_t>& p) const {
+            auto h1 = std::hash<uint32_t>{}(p.first);
+            auto h2 = std::hash<uint32_t>{}(p.second);
+            return h1 ^ (h2 << 1); // Simple hash combination
+        }
+    };
+}
 
 namespace Boom {
 
@@ -639,6 +649,8 @@ namespace Boom
     private:
         std::unordered_map<std::string, std::pair<glm::vec3, glm::vec3>> m_SphereInitialStates;
 
+        std::unordered_set<std::pair<uint32_t, uint32_t>> m_ActiveTriggerPairs;
+
         glm::vec3 pivotPosition{};
         bool m_NavInitialized = false;
         bool m_AIinitialized = false;
@@ -770,6 +782,9 @@ namespace Boom
             // Destroy physics actors before clearing scene
             DestroyPhysicsActors();
 
+            // Clear trigger tracking
+            m_ActiveTriggerPairs.clear();
+
             // Clear the ECS scene
             m_Context->scene.clear();
 
@@ -870,72 +885,69 @@ namespace Boom
                     // Handle TRIGGER events
                     if (e.Event == PxEvent::TRIGGER)
                     {
-                        // Get both entities from the event payload
-                        entt::entity triggerEntity = (entt::entity)e.Entity2;  // The trigger volume
-                        entt::entity enteringEntity = (entt::entity)e.Entity1; // The entity entering
+                        BOOM_INFO("[Trigger] Trigger event detected");
+
+                        // Based on Callback.h, Entity1 is otherActor, Entity2 is triggerActor
+                        entt::entity triggerEntity = (entt::entity)e.Entity2;  // triggerActor
+                        entt::entity enteringEntity = (entt::entity)e.Entity1; // otherActor
 
                         // Validate both entities exist
                         if (!m_Context->scene.valid(triggerEntity) || !m_Context->scene.valid(enteringEntity))
                             return;
 
-                        // Get entity names for logging (if they have InfoComponent)
-                        std::string triggerName = "Unknown";
-                        std::string enteringName = "Unknown";
-
-                        if (m_Context->scene.all_of<InfoComponent>(triggerEntity))
-                        {
+                        // Log entity names for debugging
+                        std::string triggerName = "Unknown", enteringName = "Unknown";
+                        if (m_Context->scene.valid(triggerEntity) && m_Context->scene.all_of<InfoComponent>(triggerEntity))
                             triggerName = m_Context->scene.get<InfoComponent>(triggerEntity).name;
-                        }
-
-                        if (m_Context->scene.all_of<InfoComponent>(enteringEntity))
-                        {
+                        if (m_Context->scene.valid(enteringEntity) && m_Context->scene.all_of<InfoComponent>(enteringEntity))
                             enteringName = m_Context->scene.get<InfoComponent>(enteringEntity).name;
+
+                        // Convert to handles for script callbacks
+                        uint64_t triggerHandle = static_cast<uint64_t>(static_cast<uint32_t>(triggerEntity));
+                        uint64_t enteringHandle = static_cast<uint64_t>(static_cast<uint32_t>(enteringEntity));
+
+                        // Create pair for tracking enter/exit state
+                        std::pair<uint32_t, uint32_t> triggerPair = {
+                            static_cast<uint32_t>(triggerEntity),
+                            static_cast<uint32_t>(enteringEntity)
+                        };
+
+                        // Determine if this is enter or exit based on our tracking
+                        bool wasAlreadyActive = (m_ActiveTriggerPairs.find(triggerPair) != m_ActiveTriggerPairs.end());
+
+                        if (!wasAlreadyActive) {
+                            // This is an ENTER event
+                            m_ActiveTriggerPairs.insert(triggerPair);
+
+                            BOOM_INFO("[Trigger] '{}' ENTERED trigger '{}' - invoking callbacks", enteringName, triggerName);
+
+                            // Call enter callbacks with safety
+                            try {
+                                CallTriggerEnterCallbacks(triggerHandle, enteringHandle);
+                            }
+                            catch (...) {
+                                BOOM_ERROR("[Trigger] Exception in enter callback for trigger {} and entity {}",
+                                    triggerHandle, enteringHandle);
+                            }
                         }
+                        else {
+                            // This is an EXIT event - the pair was already active
+                            m_ActiveTriggerPairs.erase(triggerPair);
 
-                        BOOM_INFO("[Trigger] '{}' entered trigger '{}'", enteringName, triggerName);
+                            BOOM_INFO("[Trigger] '{}' EXITED trigger '{}' - invoking callbacks", enteringName, triggerName);
 
-                        // ===== CUSTOM TRIGGER LOGIC =====
-                        // Example: Checkpoint trigger
-                        if (triggerName == "Checkpoint")
-                        {
-                            BOOM_INFO("Checkpoint activated by '{}'!", enteringName);
-                            // Add your checkpoint logic here
-                            // e.g., save player position, play sound, etc.
-                        }
-
-                        // Example: Damage zone
-                        if (triggerName == "DamageZone" && enteringName == "Player")
-                        {
-                            BOOM_WARN("Player entered damage zone!");
-                            // Apply damage logic here
-                        }
-
-                        // Example: Collectible item
-                        if (triggerName.find("Coin") != std::string::npos)
-                        {
-                            BOOM_INFO("Coin collected by '{}'", enteringName);
-                            // Destroy the coin entity
-                            // m_Context->scene.destroy(triggerEntity);
-                            // Add score, play sound, etc.
-                        }
-
-                        // Example: Door activation
-                        if (triggerName == "DoorTrigger" && enteringName == "Player")
-                        {
-                            BOOM_INFO("Player approached door - opening...");
-                            // Find and open the associated door
-                            // You could store a reference to the door entity in a component
-                        }
-
-                        // Example: Enemy aggro zone
-                        if (triggerName.find("AggroZone") != std::string::npos)
-                        {
-                            BOOM_INFO("'{}' entered enemy aggro zone", enteringName);
-                            // Activate enemy AI, start chase behavior, etc.
+                            // Call exit callbacks with safety
+                            try {
+                                CallTriggerExitCallbacks(triggerHandle, enteringHandle);
+                            }
+                            catch (...) {
+                                BOOM_ERROR("[Trigger] Exception in exit callback for trigger {} and entity {}",
+                                    triggerHandle, enteringHandle);
+                            }
                         }
                     }
 
-                    // Handle CONTACT events (existing code)
+                    // Handle CONTACT events (existing code is fine)
                     else if (e.Event == PxEvent::CONTACT)
                     {
                         // Get both entities from the event payload
@@ -1117,6 +1129,23 @@ namespace Boom
             if (!sc) return;
 
             m_Context->scriptingSystem->RecreateForEntity(entity, *sc);
+        }
+        // Add this as a private method
+        BOOM_INLINE void CleanupTriggerPairs()
+        {
+            // Clean up any invalid trigger pairs (entities that no longer exist)
+            auto it = m_ActiveTriggerPairs.begin();
+            while (it != m_ActiveTriggerPairs.end()) {
+                entt::entity triggerEntity = static_cast<entt::entity>(it->first);
+                entt::entity enteringEntity = static_cast<entt::entity>(it->second);
+
+                if (!m_Context->scene.valid(triggerEntity) || !m_Context->scene.valid(enteringEntity)) {
+                    it = m_ActiveTriggerPairs.erase(it);
+                }
+                else {
+                    ++it;
+                }
+            }
         }
 
     };

@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="API.cs" />
     <Compile Include="EnemyAI.cs" />
+    <Compile Include="PlayerFootsteps.cs" />
     <Compile Include="VisionComponent.cs" />
     <Compile Include="Entry.cs" />
     <Compile Include="MovementAnimator.cs" />
