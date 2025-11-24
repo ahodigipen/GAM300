@@ -20,7 +20,13 @@ namespace Boom {
 
 
 
-        BOOM_INLINE PhysicsContext() {
+        BOOM_INLINE PhysicsContext()
+            : m_Foundation(nullptr)
+            , m_Physics(nullptr)
+            , m_Dispatcher(nullptr)
+            , m_Scene(nullptr)
+            , m_DebugVisEnabled(false)
+            {
             // sinitialize physX SDK
             m_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_AllocatorCallback, m_ErrorCallback);
             if (!m_Foundation)
@@ -247,6 +253,74 @@ namespace Boom {
 
                 collider.Shape->setLocalPose(userLocalPose * PxTransform(PxVec3(0.0f), planeRot));
             }
+            else if (collider.type == Collider3D::CYLINDER) {
+                const glm::vec3 s = glm::abs(transform.scale * collider.localScale);
+
+                // Determine cylinder axis (longest axis)
+                enum Axis { AXIS_X = 0, AXIS_Y = 1, AXIS_Z = 2 };
+                Axis majorAxis = AXIS_Y; // Default to Y-up
+                if (s.x > s.y && s.x > s.z) majorAxis = AXIS_X;
+                else if (s.z > s.y && s.z > s.x) majorAxis = AXIS_Z;
+
+                float radius, halfHeight;
+                if (majorAxis == AXIS_Y) {
+                    radius = 0.5f * std::max(s.x, s.z);
+                    halfHeight = 0.5f * s.y;
+                }
+                else if (majorAxis == AXIS_Z) {
+                    radius = 0.5f * std::max(s.x, s.y);
+                    halfHeight = 0.5f * s.z;
+                }
+                else { // AXIS_X
+                    radius = 0.5f * std::max(s.y, s.z);
+                    halfHeight = 0.5f * s.x;
+                }
+
+                const float kMin = 0.01f;
+                if (radius <= 0.0f) radius = kMin;
+                if (halfHeight <= 0.0f) halfHeight = kMin;
+
+                // Create cylinder mesh
+                PxConvexMesh* cylinderMesh = CreateCylinderMesh(radius, halfHeight);
+                if (cylinderMesh) {
+                    PxConvexMeshGeometry convexGeom(cylinderMesh);
+                    collider.Shape = m_Physics->createShape(convexGeom, *collider.material);
+
+                    // Rotate to align with chosen axis
+                    PxQuat localQ = PxQuat(PxIdentity);
+                    if (majorAxis == AXIS_Y) {
+                        localQ = PxQuat(PxIdentity); // Already Y-up
+                    }
+                    else if (majorAxis == AXIS_Z) {
+                        localQ = PxQuat(PxHalfPi, PxVec3(1.0f, 0.0f, 0.0f)); // Rotate to Z-up
+                    }
+                    else { // AXIS_X
+                        localQ = PxQuat(PxHalfPi, PxVec3(0.0f, 0.0f, 1.0f)); // Rotate to X-forward
+                    }
+
+                    PxTransform cylinderPose(PxVec3(0.0f), localQ);
+                    collider.Shape->setLocalPose(userLocalPose * cylinderPose);
+                }
+                else {
+                    BOOM_ERROR("Failed to create cylinder mesh");
+                    return;
+                }
+            }
+            else if (collider.type == Collider3D::TRIANGLE) {
+                const glm::vec3 s = glm::abs(transform.scale * collider.localScale);
+
+                // Create triangle mesh
+                PxConvexMesh* triangleMesh = CreateTriangleMesh(s);
+                if (triangleMesh) {
+                    PxConvexMeshGeometry convexGeom(triangleMesh);
+                    collider.Shape = m_Physics->createShape(convexGeom, *collider.material);
+                    collider.Shape->setLocalPose(userLocalPose);
+                }
+                else {
+                    BOOM_ERROR("Failed to create triangle mesh");
+                    return;
+                }
+            }
 
             // 3. --- Set all flags BEFORE attaching the shape ---
             if (collider.Shape) {
@@ -273,6 +347,9 @@ namespace Boom {
                 if (body.type == RigidBody3D::DYNAMIC) {
                     PxRigidBodyExt::updateMassAndInertia(*static_cast<PxRigidBody*>(body.actor), body.density);
                 }
+            }
+            else {
+                BOOM_ERROR("Failed to create collider shape in UpdateColliderShape");
             }
         }
 
@@ -440,6 +517,56 @@ namespace Boom {
                     // Combine user's local pose with our auto-rotation
                     collider.Shape->setLocalPose(userLocalPose * PxTransform(PxVec3(0.0f), planeRot));
                 }
+                else if (collider.type == Collider3D::CYLINDER) {
+                    const glm::vec3 s = glm::abs(transform.scale * collider.localScale);
+
+                    enum Axis { AXIS_X = 0, AXIS_Y = 1, AXIS_Z = 2 };
+                    Axis majorAxis = AXIS_Y;
+                    if (s.x > s.y && s.x > s.z) majorAxis = AXIS_X;
+                    else if (s.z > s.y && s.z > s.x) majorAxis = AXIS_Z;
+
+                    float radius, halfHeight;
+                    if (majorAxis == AXIS_Y) {
+                        radius = 0.5f * std::max(s.x, s.z);
+                        halfHeight = 0.5f * s.y;
+                    }
+                    else if (majorAxis == AXIS_Z) {
+                        radius = 0.5f * std::max(s.x, s.y);
+                        halfHeight = 0.5f * s.z;
+                    }
+                    else {
+                        radius = 0.5f * std::max(s.y, s.z);
+                        halfHeight = 0.5f * s.x;
+                    }
+
+                    const float kMin = 0.01f;
+                    if (radius <= 0.0f) radius = kMin;
+                    if (halfHeight <= 0.0f) halfHeight = kMin;
+
+                    PxConvexMesh* cylinderMesh = CreateCylinderMesh(radius, halfHeight);
+                    if (cylinderMesh) {
+                        PxConvexMeshGeometry convexGeom(cylinderMesh);
+                        collider.Shape = m_Physics->createShape(convexGeom, *collider.material);
+
+                        PxQuat localQ = PxQuat(PxIdentity);
+                        if (majorAxis == AXIS_Y) localQ = PxQuat(PxIdentity);
+                        else if (majorAxis == AXIS_Z) localQ = PxQuat(PxHalfPi, PxVec3(1.0f, 0.0f, 0.0f));
+                        else localQ = PxQuat(PxHalfPi, PxVec3(0.0f, 0.0f, 1.0f));
+
+                        PxTransform cylinderPose(PxVec3(0.0f), localQ);
+                        collider.Shape->setLocalPose(userLocalPose * cylinderPose);
+                    }
+}
+                else if (collider.type == Collider3D::TRIANGLE) {
+                    const glm::vec3 s = glm::abs(transform.scale * collider.localScale);
+
+                    PxConvexMesh* triangleMesh = CreateTriangleMesh(s);
+                    if (triangleMesh) {
+                        PxConvexMeshGeometry convexGeom(triangleMesh);
+                        collider.Shape = m_Physics->createShape(convexGeom, *collider.material);
+                        collider.Shape->setLocalPose(userLocalPose);
+                    }
+                    }
 
                 // Ensure shape is included in debug viz and set trigger flags BEFORE attaching
                 if (collider.Shape) {
@@ -624,6 +751,56 @@ namespace Boom {
 
                 collider.Shape->setLocalPose(userLocalPose * PxTransform(PxVec3(0.0f), planeRot));
             }
+            else if (collider.type == Collider3D::CYLINDER) {
+                const glm::vec3 s = glm::abs(transform.scale * collider.localScale);
+
+                enum Axis { AXIS_X = 0, AXIS_Y = 1, AXIS_Z = 2 };
+                Axis majorAxis = AXIS_Y;
+                if (s.x > s.y && s.x > s.z) majorAxis = AXIS_X;
+                else if (s.z > s.y && s.z > s.x) majorAxis = AXIS_Z;
+
+                float radius, halfHeight;
+                if (majorAxis == AXIS_Y) {
+                    radius = 0.5f * std::max(s.x, s.z);
+                    halfHeight = 0.5f * s.y;
+                }
+                else if (majorAxis == AXIS_Z) {
+                    radius = 0.5f * std::max(s.x, s.y);
+                    halfHeight = 0.5f * s.z;
+                }
+                else {
+                    radius = 0.5f * std::max(s.y, s.z);
+                    halfHeight = 0.5f * s.x;
+                }
+
+                const float kMin = 0.01f;
+                if (radius <= 0.0f) radius = kMin;
+                if (halfHeight <= 0.0f) halfHeight = kMin;
+
+                PxConvexMesh* cylinderMesh = CreateCylinderMesh(radius, halfHeight);
+                if (cylinderMesh) {
+                    PxConvexMeshGeometry convexGeom(cylinderMesh);
+                    collider.Shape = m_Physics->createShape(convexGeom, *collider.material);
+
+                    PxQuat localQ = PxQuat(PxIdentity);
+                    if (majorAxis == AXIS_Y) localQ = PxQuat(PxIdentity);
+                    else if (majorAxis == AXIS_Z) localQ = PxQuat(PxHalfPi, PxVec3(1.0f, 0.0f, 0.0f));
+                    else localQ = PxQuat(PxHalfPi, PxVec3(0.0f, 0.0f, 1.0f));
+
+                    PxTransform cylinderPose(PxVec3(0.0f), localQ);
+                    collider.Shape->setLocalPose(userLocalPose * cylinderPose);
+                }
+            }
+            else if (collider.type == Collider3D::TRIANGLE) {
+                const glm::vec3 s = glm::abs(transform.scale * collider.localScale);
+
+                PxConvexMesh* triangleMesh = CreateTriangleMesh(s);
+                if (triangleMesh) {
+                    PxConvexMeshGeometry convexGeom(triangleMesh);
+                    collider.Shape = m_Physics->createShape(convexGeom, *collider.material);
+                    collider.Shape->setLocalPose(userLocalPose);
+                }
+            }
 
             if (collider.Shape) {
                 collider.Shape->setFlag(PxShapeFlag::eVISUALIZATION, true);
@@ -637,6 +814,10 @@ namespace Boom {
                     collider.Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
                     collider.Shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, false);
                 }
+            }
+            else {
+                BOOM_ERROR("Failed to create collider shape in AddColliderOnly");
+                return;
             }
 
             // Create a STATIC actor to hold the shape
@@ -1040,6 +1221,107 @@ namespace Boom {
         }
 
 
+        // Add these helper functions in the private section of PhysicsContext
+
+private:
+    // Helper: Create a cylinder convex mesh
+    BOOM_INLINE PxConvexMesh* CreateCylinderMesh(float radius, float halfHeight, int segments = 16)
+    {
+        std::vector<PxVec3> vertices;
+        vertices.reserve(segments * 2 + 2); // top and bottom circles + centers
+
+        // Top circle
+        for (int i = 0; i < segments; ++i) {
+            float angle = (float)i / segments * PxTwoPi;
+            float x = radius * cosf(angle);
+            float z = radius * sinf(angle);
+            vertices.push_back(PxVec3(x, halfHeight, z));
+        }
+
+        // Bottom circle
+        for (int i = 0; i < segments; ++i) {
+            float angle = (float)i / segments * PxTwoPi;
+            float x = radius * cosf(angle);
+            float z = radius * sinf(angle);
+            vertices.push_back(PxVec3(x, -halfHeight, z));
+        }
+
+        // Top and bottom center points
+        vertices.push_back(PxVec3(0, halfHeight, 0));
+        vertices.push_back(PxVec3(0, -halfHeight, 0));
+
+        PxConvexMeshDesc meshDesc;
+        meshDesc.points.data = vertices.data();
+        meshDesc.points.stride = sizeof(PxVec3);
+        meshDesc.points.count = static_cast<PxU32>(vertices.size());
+        meshDesc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
+
+        PxCookingParams params(m_Physics->getTolerancesScale());
+        PxCooking* cooking = PxCreateCooking(PX_PHYSICS_VERSION, *m_Foundation, params);
+        if (!cooking) {
+            BOOM_ERROR("Failed to create PhysX cooking for cylinder");
+            return nullptr;
+        }
+
+        PxDefaultMemoryOutputStream buf;
+        bool status = cooking->cookConvexMesh(meshDesc, buf);
+        cooking->release();
+
+        if (!status) {
+            BOOM_ERROR("Failed to cook cylinder mesh");
+            return nullptr;
+        }
+
+        PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
+        return m_Physics->createConvexMesh(input);
+    }
+
+    // Helper: Create a triangle convex mesh
+    BOOM_INLINE PxConvexMesh* CreateTriangleMesh(const glm::vec3& scale)
+    {
+        // Create an equilateral triangle in XZ plane
+        std::vector<PxVec3> vertices;
+        vertices.reserve(6); // 3 top vertices + 3 bottom vertices for thickness
+
+        float height = scale.y * 0.5f; // Half-height for thickness
+        float sizeX = scale.x;
+        float sizeZ = scale.z;
+
+        // Top triangle (Y = +height)
+        vertices.push_back(PxVec3(0.0f, height, sizeZ * 0.5f));           // front vertex
+        vertices.push_back(PxVec3(-sizeX * 0.5f, height, -sizeZ * 0.5f)); // back-left
+        vertices.push_back(PxVec3(sizeX * 0.5f, height, -sizeZ * 0.5f));  // back-right
+
+        // Bottom triangle (Y = -height) - for thickness
+        vertices.push_back(PxVec3(0.0f, -height, sizeZ * 0.5f));
+        vertices.push_back(PxVec3(-sizeX * 0.5f, -height, -sizeZ * 0.5f));
+        vertices.push_back(PxVec3(sizeX * 0.5f, -height, -sizeZ * 0.5f));
+
+        PxConvexMeshDesc meshDesc;
+        meshDesc.points.data = vertices.data();
+        meshDesc.points.stride = sizeof(PxVec3);
+        meshDesc.points.count = static_cast<PxU32>(vertices.size());
+        meshDesc.flags = PxConvexFlag::eCOMPUTE_CONVEX;
+
+        PxCookingParams params(m_Physics->getTolerancesScale());
+        PxCooking* cooking = PxCreateCooking(PX_PHYSICS_VERSION, *m_Foundation, params);
+        if (!cooking) {
+            BOOM_ERROR("Failed to create PhysX cooking for triangle");
+            return nullptr;
+        }
+
+        PxDefaultMemoryOutputStream buf;
+        bool status = cooking->cookConvexMesh(meshDesc, buf);
+        cooking->release();
+
+        if (!status) {
+            BOOM_ERROR("Failed to cook triangle mesh");
+            return nullptr;
+        }
+
+        PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
+        return m_Physics->createConvexMesh(input);
+    }
 
     private:
         PxDefaultErrorCallback m_ErrorCallback;

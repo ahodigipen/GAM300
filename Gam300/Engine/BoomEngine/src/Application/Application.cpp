@@ -661,6 +661,89 @@ namespace Boom
         }
     }
 
+    void Application::AppendCylinderWire(float radius, float halfHeight, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color)
+    {
+        const glm::mat4 M = PxToGlm(world);
+        const int segments = 16;
+
+        // Create direction array for circle generation (cached for performance)
+        static std::vector<glm::vec2> dir;
+        if (dir.empty()) {
+            dir.resize(segments);
+            for (int i = 0; i < segments; ++i) {
+                const float a = (float)i / (float)segments * glm::two_pi<float>();
+                dir[i] = glm::vec2(cosf(a), sinf(a));
+            }
+        }
+
+        // Draw top circle (Y = +halfHeight)
+        for (int i = 0; i < segments; ++i) {
+            int next = (i + 1) % segments;
+            glm::vec3 p0 = glm::vec3(M * glm::vec4(dir[i].x * radius, halfHeight, dir[i].y * radius, 1.0f));
+            glm::vec3 p1 = glm::vec3(M * glm::vec4(dir[next].x * radius, halfHeight, dir[next].y * radius, 1.0f));
+            AppendLine(out, p0, p1, color, color);
+        }
+
+        // Draw bottom circle (Y = -halfHeight)
+        for (int i = 0; i < segments; ++i) {
+            int next = (i + 1) % segments;
+            glm::vec3 p0 = glm::vec3(M * glm::vec4(dir[i].x * radius, -halfHeight, dir[i].y * radius, 1.0f));
+            glm::vec3 p1 = glm::vec3(M * glm::vec4(dir[next].x * radius, -halfHeight, dir[next].y * radius, 1.0f));
+            AppendLine(out, p0, p1, color, color);
+        }
+
+        // Draw vertical rails connecting top and bottom circles (every 4th segment for clarity)
+        for (int i = 0; i < segments; i += segments / 4) {
+            glm::vec3 top = glm::vec3(M * glm::vec4(dir[i].x * radius, halfHeight, dir[i].y * radius, 1.0f));
+            glm::vec3 bot = glm::vec3(M * glm::vec4(dir[i].x * radius, -halfHeight, dir[i].y * radius, 1.0f));
+            AppendLine(out, top, bot, color, color);
+        }
+    }
+
+    void Application::AppendTriangleWire(const glm::vec3& scale, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color)
+{
+    const glm::mat4 M = PxToGlm(world);
+    const float height = scale.y * 0.5f;
+    const float sizeX = scale.x;
+    const float sizeZ = scale.z;
+    
+    // Define triangle vertices (top face)
+    const glm::vec3 topVerts[3] = {
+        glm::vec3(0.0f, height, sizeZ * 0.5f),           // Front vertex
+        glm::vec3(-sizeX * 0.5f, height, -sizeZ * 0.5f), // Back-left
+        glm::vec3(sizeX * 0.5f, height, -sizeZ * 0.5f)   // Back-right
+    };
+    
+    // Define triangle vertices (bottom face)
+    const glm::vec3 botVerts[3] = {
+        glm::vec3(0.0f, -height, sizeZ * 0.5f),
+        glm::vec3(-sizeX * 0.5f, -height, -sizeZ * 0.5f),
+        glm::vec3(sizeX * 0.5f, -height, -sizeZ * 0.5f)
+    };
+    
+    // Transform vertices to world space
+    auto Transform = [&](const glm::vec3& v) {
+        return glm::vec3(M * glm::vec4(v, 1.0f));
+    };
+    
+    // Draw top triangle edges
+    for (int i = 0; i < 3; ++i) {
+        int next = (i + 1) % 3;
+        AppendLine(out, Transform(topVerts[i]), Transform(topVerts[next]), color, color);
+    }
+    
+    // Draw bottom triangle edges
+    for (int i = 0; i < 3; ++i) {
+        int next = (i + 1) % 3;
+        AppendLine(out, Transform(botVerts[i]), Transform(botVerts[next]), color, color);
+    }
+    
+    // Draw vertical edges connecting top and bottom
+    for (int i = 0; i < 3; ++i) {
+        AppendLine(out, Transform(topVerts[i]), Transform(botVerts[i]), color, color);
+    }
+}
+
     void Application::DrawRigidBodiesDebugOnly(const glm::mat4& view, const glm::mat4& proj)
     {
         if (!m_DebugLinesShader) return;
@@ -700,6 +783,54 @@ namespace Boom
                 case physx::PxGeometryType::eCAPSULE:
                     AppendCapsuleWire(gh.capsule().radius, gh.capsule().halfHeight, world, verts, color);
                     break;
+                case physx::PxGeometryType::eCONVEXMESH:
+                {
+                    if (entity.template Has<ColliderComponent>()) {
+                        auto& col = entity.template Get<ColliderComponent>();
+                        auto& transform = entity.template Get<TransformComponent>().transform;
+
+                        if (col.Collider.type == Collider3D::Type::CYLINDER) {
+                            const glm::vec3 s = glm::abs(transform.scale * col.Collider.localScale);
+
+                            enum Axis { AXIS_X = 0, AXIS_Y = 1, AXIS_Z = 2 };
+                            Axis majorAxis = AXIS_Y;
+                            if (s.x > s.y && s.x > s.z) majorAxis = AXIS_X;
+                            else if (s.z > s.y && s.z > s.x) majorAxis = AXIS_Z;
+
+                            float radius, halfHeight;
+                            if (majorAxis == AXIS_Y) {
+                                radius = 0.5f * std::max(s.x, s.z);
+                                halfHeight = 0.5f * s.y;
+                            }
+                            else if (majorAxis == AXIS_Z) {
+                                radius = 0.5f * std::max(s.x, s.y);
+                                halfHeight = 0.5f * s.z;
+                            }
+                            else {
+                                radius = 0.5f * std::max(s.y, s.z);
+                                halfHeight = 0.5f * s.x;
+                            }
+
+                            const float kMin = 0.01f;
+                            if (radius <= 0.0f) radius = kMin;
+                            if (halfHeight <= 0.0f) halfHeight = kMin;
+
+                            // Apply cylinder axis rotation
+                            physx::PxQuat localQ = physx::PxQuat(physx::PxIdentity);
+                            if (majorAxis == AXIS_Y) localQ = physx::PxQuat(physx::PxIdentity);
+                            else if (majorAxis == AXIS_Z) localQ = physx::PxQuat(physx::PxHalfPi, physx::PxVec3(1.0f, 0.0f, 0.0f));
+                            else localQ = physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.0f, 0.0f, 1.0f));
+
+                            physx::PxTransform cylinderWorld = world * physx::PxTransform(physx::PxVec3(0.0f), localQ);
+                            AppendCylinderWire(radius, halfHeight, cylinderWorld, verts, color);
+                        }
+                        else if (col.Collider.type == Collider3D::Type::TRIANGLE) {
+                            const glm::vec3 s = glm::abs(transform.scale * col.Collider.localScale);
+                            AppendTriangleWire(s, world, verts, color);
+                        }
+                    }
+                    break;
+                }
                 default:
                     break;
                 }
@@ -789,6 +920,49 @@ namespace Boom
 
                 physx::PxTransform capsuleWorld = world * physx::PxTransform(physx::PxVec3(0.0f), localQ);
                 AppendCapsuleWire(radius, halfHeight, capsuleWorld, verts, color);
+                break;
+            }
+            case Collider3D::Type::CYLINDER:
+            {
+                const glm::vec3 s = glm::abs(transform.scale * col.Collider.localScale);
+
+                enum Axis { AXIS_X = 0, AXIS_Y = 1, AXIS_Z = 2 };
+                Axis majorAxis = AXIS_Y;
+                if (s.x > s.y && s.x > s.z) majorAxis = AXIS_X;
+                else if (s.z > s.y && s.z > s.x) majorAxis = AXIS_Z;
+
+                float radius, halfHeight;
+                if (majorAxis == AXIS_Y) {
+                    radius = 0.5f * std::max(s.x, s.z);
+                    halfHeight = 0.5f * s.y;
+                }
+                else if (majorAxis == AXIS_Z) {
+                    radius = 0.5f * std::max(s.x, s.y);
+                    halfHeight = 0.5f * s.z;
+                }
+                else {
+                    radius = 0.5f * std::max(s.y, s.z);
+                    halfHeight = 0.5f * s.x;
+                }
+
+                const float kMin = 0.01f;
+                if (radius <= 0.0f) radius = kMin;
+                if (halfHeight <= 0.0f) halfHeight = kMin;
+
+                physx::PxQuat localQ = physx::PxQuat(physx::PxIdentity);
+                if (majorAxis == AXIS_Y) localQ = physx::PxQuat(physx::PxIdentity);
+                else if (majorAxis == AXIS_Z) localQ = physx::PxQuat(physx::PxHalfPi, physx::PxVec3(1.0f, 0.0f, 0.0f));
+                else localQ = physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.0f, 0.0f, 1.0f));
+
+                physx::PxTransform cylinderWorld = world * physx::PxTransform(physx::PxVec3(0.0f), localQ);
+                AppendCylinderWire(radius, halfHeight, cylinderWorld, verts, color);
+                break;
+            }
+
+            case Collider3D::Type::TRIANGLE:
+            {
+                const glm::vec3 s = glm::abs(transform.scale * col.Collider.localScale);
+                AppendTriangleWire(s, world, verts, color);
                 break;
             }
             default:

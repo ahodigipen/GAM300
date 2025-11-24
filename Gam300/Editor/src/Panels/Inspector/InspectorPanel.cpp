@@ -896,7 +896,7 @@ namespace EditorUI {
 
                 if (ImGui::BeginCombo("##ColliderType", currentTypeName))
                 {
-                    const char* types[] = { "Box", "Sphere", "Capsule", "Mesh", "Plane" };
+                    const char* types[] = { "Box", "Sphere", "Capsule", "Mesh", "Plane", "Cylinder", "Triangle" };
                     for (int i = 0; i < IM_ARRAYSIZE(types); ++i) {
                         bool isSelected = (currentType == static_cast<Collider3D::Type>(i));
                         if (ImGui::Selectable(types[i], isSelected)) {
@@ -906,7 +906,6 @@ namespace EditorUI {
                     }
                     ImGui::EndCombo();
                 }
-
                 // Mesh asset picker (only for MESH type)
                 if (currentType == Collider3D::Type::MESH)
                 {
@@ -1019,6 +1018,25 @@ namespace EditorUI {
                         col.Collider.restitution != oldRestitution))
                 {
                     m_App->GetPhysicsContext().UpdatePhysicsMaterial(selected);
+                }
+
+                // Fit to Transform button
+                ImGui::Spacing();
+                if (ImGui::Button("Fit to Transform")) {
+                    auto& transform = selected.Get<TransformComponent>().transform;
+                    auto& collider = selected.Get<ColliderComponent>().Collider;
+                    
+                    // Reset to match transform exactly
+                    collider.localScale = glm::vec3(1.0f, 1.0f, 1.0f);
+                    
+                    // Update the physics shape
+                    m_App->GetPhysicsContext().UpdateColliderShape(selected, 
+                                                                     m_App->GetAssetRegistry());
+                }
+                ImGui::SameLine();
+                ImGui::TextDisabled("(?)");
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Reset collider to match the entity's transform scale");
                 }
 
                 ImGui::Spacing();
