@@ -105,10 +105,6 @@ ASSETS:
     Name: Lion_Statue2
     Source: Resources/Physics/Lion_Statue2.pxm
   - Type: PHYSICS_MESH
-    UID: 13363018715106104855
-    Name: Statue
-    Source: Resources/Physics/Statue.pxm
-  - Type: PHYSICS_MESH
     UID: 4431181016770564176
     Name: Floor_Cushion
     Source: Resources/Physics/Floor_Cushion.pxm
@@ -120,6 +116,34 @@ ASSETS:
     UID: 14118317202290831515
     Name: Floor_Cushion
     Source: Resources/Physics/Floor_Cushion.pxm
+  - Type: PHYSICS_MESH
+    UID: 9351549157791107372
+    Name: Floor_Cushion
+    Source: Resources/Physics/Floor_Cushion.pxm
+  - Type: PHYSICS_MESH
+    UID: 7849896674810615893
+    Name: Stairs_Handle
+    Source: Resources/Physics/Stairs_Handle.pxm
+  - Type: PHYSICS_MESH
+    UID: 53427998423929220
+    Name: Hut_Roof
+    Source: Resources/Physics/Hut_Roof.pxm
+  - Type: PHYSICS_MESH
+    UID: 13244744886219103757
+    Name: WallTest
+    Source: Resources/Physics/WallTest.pxm
+  - Type: PHYSICS_MESH
+    UID: 18311705917173916947
+    Name: Japanese_Table
+    Source: Resources/Physics/Japanese_Table.pxm
+  - Type: PHYSICS_MESH
+    UID: 6729413007522777642
+    Name: Statue
+    Source: Resources/Physics/Statue.pxm
+  - Type: PHYSICS_MESH
+    UID: 330654023275890549
+    Name: Indoor_Lanturn_Hangingfbx
+    Source: Resources/Physics/Indoor_Lanturn_Hangingfbx.pxm
   - Type: PREFAB
     UID: 5076640578672151242
     Name: Dance
