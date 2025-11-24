@@ -3,77 +3,61 @@ using Boom;
 
 namespace GameScripts
 {
-    /// <summary>
-    /// Industry-standard vision cone component that can be attached to any enemy entity.
-    /// Handles detection, line of sight, and provides events for other systems.
-    /// </summary>
     public class VisionComponent
     {
         public ulong Entity;
+        // Tracks whether native linecast succeeded at least once. If it fails we stop trying.
+        private static bool _linecastAvailable = true;
+        private static bool _warnedNoLinecast = false;
 
-        // === CONFIGURABLE PARAMETERS ===
-        [System.Serializable]
+        public delegate void VisionEventHandler(ulong target, Vec3 position);
+        public event VisionEventHandler OnTargetDetected;
+        public event VisionEventHandler OnTargetUpdated;
+        public event VisionEventHandler OnTargetLost;
+
+        [Serializable]
         public class VisionSettings
         {
-            public float detectionRange = 15f;           // Max detection distance
-            public float detectionAngle = 60f;           // Total cone angle (not half)
-            public float loseTargetRange = 18f;          // Lose target beyond this range (hysteresis)
-            public float loseTargetAngle = 75f;          // Lose target beyond this angle (hysteresis)
-            public float updateInterval = 0.1f;          // How often to check (optimization)
-            public float alertDuration = 5f;             // How long to stay alert after losing target
-            public string[] targetTags = { "Samurai" };  // What entities to detect
-            public bool requireLineOfSight = false;      // Enable raycast validation (future)
-            public bool debugLog = true;                 // Enable debug logging
+            public float detectionRange = 12f;
+            public float loseTargetRange = 15f;
+            public float detectionAngle = 60f;
+            public float updateInterval = 0.1f;
+            public float alertDuration = 4f;
+            public float verticalMaxDifference = 2.5f;
+            public string[] targetNames = { "Samurai", "Player" };
+            public bool requireLineOfSight = true;
+            public bool debugLog = true;
+            public bool debugReasons = false;
+            public bool debugLOS = false;
         }
 
-        // === VISION STATE ===
-        public enum VisionState
-        {
-            Idle,        // No target detected
-            Suspicious,  // Target detected but not confirmed
-            Alert,       // Target confirmed and tracking
-            Searching    // Lost target, searching area
-        }
+        public enum VisionState { Idle, Suspicious, Alert, Searching }
 
-        // === PRIVATE FIELDS ===
         private VisionSettings _settings = new VisionSettings();
         private VisionState _currentState = VisionState.Idle;
         private ulong _currentTarget = 0;
-        private float _lastUpdateTime = 0f;
-        private float _alertTimer = 0f;
+        private float _lastUpdateTime;
+        private float _alertTimer;
         private Vec3 _lastKnownTargetPosition;
         private bool _hasValidTarget = false;
 
-        // === EVENTS (for other systems to listen to) ===
-        public delegate void VisionEventHandler(ulong target, Vec3 position);
-        public event VisionEventHandler OnTargetDetected;
-        public event VisionEventHandler OnTargetLost;
-        public event VisionEventHandler OnTargetUpdated;
+
+        private string _lastLosReason = "";
 
         public void OnStart(string jsonParams)
         {
             if (_settings.debugLog)
-                API.Log($"[VisionComponent] Initialized on Entity: {Entity}");
-
-            // TODO: Parse jsonParams for custom settings in the future
+                API.Log($"[VisionComponent] Start on {Entity}");
             ValidateEntity();
         }
 
         public void OnUpdate(float dt)
         {
             if (!ValidateEntity()) return;
-
-            // Update timers
             _lastUpdateTime += dt;
             _alertTimer += dt;
-
-            // Staggered updates for optimization
-            if (_lastUpdateTime < _settings.updateInterval)
-                return;
-
+            if (_lastUpdateTime < _settings.updateInterval) return;
             _lastUpdateTime = 0f;
-
-            // State machine update
             UpdateVisionState(dt);
         }
 
@@ -84,130 +68,150 @@ namespace GameScripts
                 case VisionState.Idle:
                     CheckForTargets();
                     break;
-
-                case VisionState.Suspicious:
                 case VisionState.Alert:
                     if (_currentTarget != 0)
                     {
-                        if (ValidateTarget(_currentTarget))
-                        {
-                            UpdateTargetTracking();
-                        }
-                        else
-                        {
+                        if (!ValidateTarget(_currentTarget))
                             LoseTarget();
-                        }
+                        else
+                            UpdateTargetTracking();
                     }
                     else
-                    {
                         CheckForTargets();
-                    }
                     break;
-
                 case VisionState.Searching:
                     if (_alertTimer >= _settings.alertDuration)
                     {
                         _currentState = VisionState.Idle;
                         if (_settings.debugLog)
-                            API.Log("[VisionComponent] Stopped searching, returning to idle");
+                            API.Log("[VisionComponent] Search expired -> Idle");
                     }
                     else
-                    {
-                        CheckForTargets(); // Might spot target again
-                    }
+                        CheckForTargets();
+                    break;
+                case VisionState.Suspicious:
+                    CheckForTargets();
                     break;
             }
         }
 
         private void CheckForTargets()
         {
-            // Check each potential target type
-            foreach (string targetTag in _settings.targetTags)
+            ulong best = 0;
+            float bestDist2 = float.MaxValue;
+            foreach (string name in _settings.targetNames)
             {
-                ulong target = API.FindEntity(targetTag);
-                if (target != 0 && ValidateTarget(target))
-                {
-                    DetectTarget(target);
-                    return; // Only track one target at a time
-                }
+                ulong e = API.FindEntity(name);
+                if (e == 0) continue;
+                if (!ValidateTarget(e)) continue;
+
+                var enemyPos = API.GetPosition(Entity);
+                var targetPos = API.GetPosition(e);
+                float d2 = (targetPos.X - enemyPos.X) * (targetPos.X - enemyPos.X) +
+                           (targetPos.Z - enemyPos.Z) * (targetPos.Z - enemyPos.Z);
+                if (d2 < bestDist2) { best = e; bestDist2 = d2; }
             }
+            if (best != 0)
+                DetectTarget(best);
         }
 
         private bool ValidateTarget(ulong target)
         {
             if (target == 0) return false;
-
             var enemyPos = API.GetPosition(Entity);
             var enemyRot = API.GetRotation(Entity);
             var targetPos = API.GetPosition(target);
 
-            return IsTargetInVisionCone(enemyPos, enemyRot, targetPos);
-        }
-
-        private bool IsTargetInVisionCone(Vec3 enemyPos, Vec3 enemyRot, Vec3 targetPos)
-        {
-            // Calculate direction to target
-            var dirToTarget = new Vec3(
-                targetPos.X - enemyPos.X,
-                0f,
-                targetPos.Z - enemyPos.Z
-            );
-
-            // Calculate distance
-            float distance = (float)Math.Sqrt(dirToTarget.X * dirToTarget.X + dirToTarget.Z * dirToTarget.Z);
-
-            // Use different thresholds based on current state (hysteresis)
-            float maxRange = (_currentState == VisionState.Alert) ? _settings.loseTargetRange : _settings.detectionRange;
-            float maxAngle = (_currentState == VisionState.Alert) ? _settings.loseTargetAngle : _settings.detectionAngle;
-
-            // Range check
-            if (distance > maxRange) return false;
-            if (distance < 0.1f) return true; // Very close always detected
-
-            // Normalize direction
-            dirToTarget.X /= distance;
-            dirToTarget.Z /= distance;
-
-            // FIXED: Calculate enemy forward direction correctly
-            // The enemy's rotation.Y directly represents the yaw angle
-            // 0° = facing +Z, 90° = facing +X, 180° = facing -Z, 270° = facing -X
-            float yawRadians = enemyRot.Y * (float)Math.PI / 180f;
-
-            var forward = new Vec3(
-                (float)Math.Sin(yawRadians),
-                0f,
-                (float)Math.Cos(yawRadians)
-            );
-
-            // Calculate angle between forward direction and direction to target
-            float dotProduct = dirToTarget.X * forward.X + dirToTarget.Z * forward.Z;
-            float angle = (float)Math.Acos(Math.Max(-1f, Math.Min(1f, dotProduct))) * 180f / (float)Math.PI;
-
-            if (_settings.debugLog && _currentState == VisionState.Alert)
+            float verticalDiff = Math.Abs(targetPos.Y - enemyPos.Y);
+            if (verticalDiff > _settings.verticalMaxDifference)
             {
-                API.Log($"[VisionComponent] Enemy rot: {enemyRot.Y}°, Forward: ({forward.X:F2}, {forward.Z:F2}), " +
-                       $"DirToTarget: ({dirToTarget.X:F2}, {dirToTarget.Z:F2}), Angle: {angle:F1}°, MaxAngle: {maxAngle * 0.5f:F1}°");
+                if (_settings.debugReasons)
+                    API.Log($"[VisionComponent] Reject vertical diff {verticalDiff:F2} > {_settings.verticalMaxDifference:F2}");
+                return false;
             }
 
-            return angle <= (maxAngle * 0.5f); // maxAngle is total cone, so half for each side
+            return IsTargetInVisionConeAndLOS(enemyPos, enemyRot, targetPos, target);
+        }
+
+        private bool IsTargetInVisionConeAndLOS(Vec3 enemyPos, Vec3 enemyRot, Vec3 targetPos, ulong targetHandle)
+        {
+            float dx = targetPos.X - enemyPos.X;
+            float dz = targetPos.Z - enemyPos.Z;
+            float dist2 = dx * dx + dz * dz;
+            float dist = (float)Math.Sqrt(Math.Max(1e-6f, dist2));
+
+            float maxRange = (_currentState == VisionState.Alert) ? _settings.loseTargetRange : _settings.detectionRange;
+            if (dist > maxRange)
+            {
+                if (_settings.debugReasons) API.Log($"[VisionComponent] Reject dist {dist:F2} > {maxRange:F2}");
+                return false;
+            }
+
+            float tx = dx / dist;
+            float tz = dz / dist;
+
+            float yawRad = enemyRot.Y * (float)Math.PI / 180f;
+            float fx = (float)Math.Sin(yawRad);
+            float fz = (float)Math.Cos(yawRad);
+
+            float dot = tx * fx + tz * fz;
+            float halfAngleRad = (_settings.detectionAngle * 0.5f) * (float)Math.PI / 180f;
+            float cosHalf = (float)Math.Cos(halfAngleRad);
+
+            if (dot < cosHalf)
+            {
+                if (_settings.debugReasons)
+                    API.Log($"[VisionComponent] Reject angle cos={dot:F3} < {cosHalf:F3} (yaw={enemyRot.Y:F1})");
+                return false;
+            }
+
+            if (_settings.requireLineOfSight && !HasLineOfSight(enemyPos, targetPos))
+            {
+                if (_settings.debugReasons)
+                    API.Log($"[VisionComponent] Reject LOS blocked ({_lastLosReason})");
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool HasLineOfSight(Vec3 from, Vec3 to)
+        {
+            if (!_settings.requireLineOfSight) return true;
+            if (!_linecastAvailable) return true;
+
+            try
+            {
+                // Pass Entity so native code can ignore enemy's own collider
+                bool clear = API.Linecast(from, to, Entity);
+                _lastLosReason = clear ? "clear" : "ray blocked before target";
+                if (_settings.debugLOS)
+                    API.Log($"[VisionComponent] LOS {(clear ? "CLEAR" : "BLOCKED")}");
+                return clear;
+            }
+            catch
+            {
+                _linecastAvailable = false;
+                _settings.requireLineOfSight = false;
+                if (!_warnedNoLinecast)
+                {
+                    _warnedNoLinecast = true;
+                    API.Log("[VisionComponent] WARN: Native Linecast missing -> LOS disabled.");
+                }
+                return true;
+            }
         }
 
         private void DetectTarget(ulong target)
         {
-            if (_currentTarget != target)
-            {
-                _currentTarget = target;
-                _lastKnownTargetPosition = API.GetPosition(target);
-                _alertTimer = 0f;
-
-                _currentState = VisionState.Alert;
-
-                if (_settings.debugLog)
-                    API.Log(">>> TARGET DETECTED! <<<");
-
-                // Trigger event for other systems
-                OnTargetDetected?.Invoke(target, _lastKnownTargetPosition);
-            }
+            if (_currentTarget == target) return;
+            _currentTarget = target;
+            _lastKnownTargetPosition = API.GetPosition(target);
+            _alertTimer = 0f;
+            _currentState = VisionState.Alert;
+            if (_settings.debugLog)
+                API.Log($"[VisionComponent] >>> TARGET DETECTED ({target}) <<<");
+            OnTargetDetected?.Invoke(target, _lastKnownTargetPosition);
         }
 
         private void UpdateTargetTracking()
@@ -218,59 +222,52 @@ namespace GameScripts
             if (_settings.debugLog)
             {
                 var enemyPos = API.GetPosition(Entity);
-                float distance = (float)Math.Sqrt(
+                float d = (float)Math.Sqrt(
                     (targetPos.X - enemyPos.X) * (targetPos.X - enemyPos.X) +
-                    (targetPos.Z - enemyPos.Z) * (targetPos.Z - enemyPos.Z)
-                );
-                API.Log($"[VisionComponent] Tracking target - Distance: {distance:F1}");
+                    (targetPos.Z - enemyPos.Z) * (targetPos.Z - enemyPos.Z));
+                API.Log($"[VisionComponent] Tracking target {_currentTarget} dist={d:F1}");
             }
 
-            // Trigger update event
             OnTargetUpdated?.Invoke(_currentTarget, targetPos);
         }
 
         private void LoseTarget()
         {
-            if (_currentTarget != 0)
-            {
-                if (_settings.debugLog)
-                    API.Log("[VisionComponent] Target lost, entering search mode");
-
-                // Trigger event
-                OnTargetLost?.Invoke(_currentTarget, _lastKnownTargetPosition);
-
-                _currentTarget = 0;
-                _currentState = VisionState.Searching;
-                _alertTimer = 0f;
-            }
+            if (_currentTarget == 0) return;
+            if (_settings.debugLog) API.Log("[VisionComponent] Target lost -> Searching");
+            OnTargetLost?.Invoke(_currentTarget, _lastKnownTargetPosition);
+            _currentTarget = 0;
+            _currentState = VisionState.Searching;
+            _alertTimer = 0f;
         }
 
         private bool ValidateEntity()
         {
             if (!API.HasTransform(Entity))
             {
-                if (_settings.debugLog)
-                    API.Log("[VisionComponent] ERROR: Entity missing TransformComponent!");
+                if (_settings.debugLog) API.Log("[VisionComponent] ERROR: Missing TransformComponent");
                 return false;
             }
             return true;
         }
 
-        // === PUBLIC INTERFACE ===
         public VisionState GetState() => _currentState;
         public ulong GetCurrentTarget() => _currentTarget;
         public Vec3 GetLastKnownTargetPosition() => _lastKnownTargetPosition;
         public bool HasTarget() => _currentTarget != 0;
 
-        // Allow runtime parameter adjustment
-        public void SetDetectionRange(float range) => _settings.detectionRange = range;
-        public void SetDetectionAngle(float angle) => _settings.detectionAngle = angle;
-        public void SetUpdateInterval(float interval) => _settings.updateInterval = interval;
+        public void SetDetectionRange(float r) => _settings.detectionRange = r;
+        public void SetDetectionAngle(float a) => _settings.detectionAngle = a;
+        public void SetUpdateInterval(float i) => _settings.updateInterval = i;
+        public void SetVerticalTolerance(float v) => _settings.verticalMaxDifference = v;
+        public void SetRequireLineOfSight(bool v) => _settings.requireLineOfSight = v;
+        public void EnableDebugReasons(bool v) => _settings.debugReasons = v;
+        public void EnableDebugLOS(bool v) => _settings.debugLOS = v;
 
         public void OnDestroy()
         {
             if (_settings.debugLog)
-                API.Log($"[VisionComponent] Destroyed on Entity: {Entity}");
+                API.Log($"[VisionComponent] Destroyed ({Entity})");
         }
     }
 }

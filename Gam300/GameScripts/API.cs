@@ -112,6 +112,9 @@ namespace Boom
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_SetSoundPosition(string name, ref Vec3 position);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Boom_API_Linecast(ref Vec3 from, ref Vec3 to, ulong ignoreEntity);
     }
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -353,6 +356,11 @@ namespace Boom
         public static void SetSoundPosition(string name, Vec3 position)
         {
             Native.Boom_API_SetSoundPosition(name, ref position);
+        }
+
+        public static bool Linecast(Vec3 from, Vec3 to, ulong ignoreEntity = 0)
+        {
+            return Native.Boom_API_Linecast(ref from, ref to, ignoreEntity);
         }
 
         // ===== GLFW key codes =====
