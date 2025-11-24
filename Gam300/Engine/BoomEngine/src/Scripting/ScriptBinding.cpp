@@ -780,6 +780,61 @@ namespace Boom {
         BOOM_INFO("[ScriptBinding] Cleared all trigger callbacks and freed GC handles (domain unload)");
     }
 
+    static void ICALL_API_SetRotationY(uint64_t handle, float yawDegrees)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+
+        if (e == entt::null || !s_Ctx->scene.valid(e)) {
+            BOOM_WARN("[ScriptBinding] SetRotationY: Invalid entity");
+            return;
+        }
+
+        if (!s_Ctx->scene.any_of<TransformComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetRotationY: Entity has no TransformComponent");
+            return;
+        }
+
+        if (!s_Ctx->scene.any_of<RigidBodyComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetRotationY: Entity has no RigidBodyComponent");
+            return;
+        }
+
+        auto& rb = s_Ctx->scene.get<RigidBodyComponent>(e).RigidBody;
+        if (!rb.actor) return;
+
+        // Get the current PhysX transform
+        PxTransform currentPose = rb.actor->getGlobalPose();
+
+        // Convert yaw to quaternion (only Y-axis rotation)
+        float yawRadians = glm::radians(yawDegrees);
+        PxQuat newRotation = PxQuat(yawRadians, PxVec3(0, 1, 0));
+
+        // Update the pose with new rotation, keeping position
+        PxTransform newPose(currentPose.p, newRotation);
+
+        // For dynamic bodies, use kinematic target or direct pose update
+        if (PxRigidDynamic* dyn = rb.actor->is<PxRigidDynamic>()) {
+            if (dyn->getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC) {
+                dyn->setKinematicTarget(newPose);
+            }
+            else {
+                // For dynamic bodies, directly set the pose
+                // This is safe because X/Z rotation is locked
+                dyn->setGlobalPose(newPose);
+            }
+        }
+        else {
+            // For static bodies
+            rb.actor->setGlobalPose(newPose);
+        }
+
+        // Also update the transform component for rendering
+        auto& transform = s_Ctx->scene.get<TransformComponent>(e).transform;
+        transform.rotate.y = yawDegrees;
+    }
+
+
     void RegisterScriptInternalCalls(AppContext* ctx)
     {
         s_Ctx = ctx;
@@ -838,5 +893,7 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetSoundPosition", (const void*)ICALL_API_SetSoundPosition);
 
         mono_add_internal_call("Boom.Native::Boom_API_Linecast", (const void*)ICALL_API_Linecast);
+
+        mono_add_internal_call("Boom.Native::Boom_API_SetRotationY", (const void*)ICALL_API_SetRotationY);
     }
 }

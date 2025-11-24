@@ -115,6 +115,11 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Boom_API_Linecast(ref Vec3 from, ref Vec3 to, ulong ignoreEntity);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetRotationY(ulong handle, float yawDegrees);
+
+
     }
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -361,6 +366,11 @@ namespace Boom
         public static bool Linecast(Vec3 from, Vec3 to, ulong ignoreEntity = 0)
         {
             return Native.Boom_API_Linecast(ref from, ref to, ignoreEntity);
+        }
+
+        public static void SetRotationY(ulong h, float yawDegrees)
+        {
+            Native.Boom_API_SetRotationY(h, yawDegrees);
         }
 
         // ===== GLFW key codes =====
