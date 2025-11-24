@@ -438,6 +438,13 @@ namespace Boom {
         s_TriggerExitCallbacks.erase(triggerHandle);
     }
 
+    static bool ICALL_API_HasAnimator(uint64_t handle) {
+        if (!s_Ctx) return false;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return false;
+        return s_Ctx->scene.any_of<AnimatorComponent>(e);
+    }
+
     // Function to call trigger callbacks (called from Application.h)
     void CallTriggerEnterCallbacks(uint64_t triggerEntity, uint64_t otherEntity) {
         auto it = s_TriggerEnterCallbacks.find(triggerEntity);
@@ -451,6 +458,74 @@ namespace Boom {
         if (it != s_TriggerExitCallbacks.end()) {
             it->second(triggerEntity, otherEntity);
         }
+    }
+
+    struct ScriptTransform {
+        float posX, posY, posZ;
+        float rotX, rotY, rotZ;
+        float scaleX, scaleY, scaleZ;
+    };
+
+    static ScriptTransform* ICALL_API_GetTransform(uint64_t handle, ScriptTransform* outTransform) {
+        if (!s_Ctx || !outTransform) return nullptr;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+
+        if (e == entt::null || !s_Ctx->scene.valid(e)) {
+            BOOM_WARN("[ScriptBinding] GetTransform: Invalid entity");
+            return nullptr;
+        }
+
+        if (!s_Ctx->scene.any_of<TransformComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] GetTransform: Entity {} has no TransformComponent",
+                static_cast<uint32_t>(e));
+            return nullptr;
+        }
+
+        auto& t = s_Ctx->scene.get<TransformComponent>(e).transform;
+
+        outTransform->posX = t.translate.x;
+        outTransform->posY = t.translate.y;
+        outTransform->posZ = t.translate.z;
+
+        outTransform->rotX = t.rotate.x;
+        outTransform->rotY = t.rotate.y;
+        outTransform->rotZ = t.rotate.z;
+
+        outTransform->scaleX = t.scale.x;
+        outTransform->scaleY = t.scale.y;
+        outTransform->scaleZ = t.scale.z;
+
+        return outTransform;
+    }
+
+    static void ICALL_API_SetTransform(uint64_t handle, ScriptTransform* transform) {
+        if (!s_Ctx || !transform) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+
+        if (e == entt::null || !s_Ctx->scene.valid(e)) {
+            BOOM_WARN("[ScriptBinding] SetTransform: Invalid entity");
+            return;
+        }
+
+        if (!s_Ctx->scene.any_of<TransformComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetTransform: Entity {} has no TransformComponent",
+                static_cast<uint32_t>(e));
+            return;
+        }
+
+        auto& t = s_Ctx->scene.get<TransformComponent>(e).transform;
+
+        t.translate.x = transform->posX;
+        t.translate.y = transform->posY;
+        t.translate.z = transform->posZ;
+
+        t.rotate.x = transform->rotX;
+        t.rotate.y = transform->rotY;
+        t.rotate.z = transform->rotZ;
+
+        t.scale.x = transform->scaleX;
+        t.scale.y = transform->scaleY;
+        t.scale.z = transform->scaleZ;
     }
 
 
@@ -504,5 +579,11 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_RegisterTriggerEnterCallback", (const void*)ICALL_API_RegisterTriggerEnterCallback);
         mono_add_internal_call("Boom.Native::Boom_API_RegisterTriggerExitCallback", (const void*)ICALL_API_RegisterTriggerExitCallback);
         mono_add_internal_call("Boom.Native::Boom_API_UnregisterTriggerCallbacks", (const void*)ICALL_API_UnregisterTriggerCallbacks);
+        mono_add_internal_call("Boom.Native::Boom_API_HasAnimator",
+            (const void*)ICALL_API_HasAnimator);
+        mono_add_internal_call("Boom.Native::Boom_API_GetTransform",
+            (const void*)ICALL_API_GetTransform);
+        mono_add_internal_call("Boom.Native::Boom_API_SetTransform",
+            (const void*)ICALL_API_SetTransform);
     }
 }
