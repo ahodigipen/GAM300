@@ -91,7 +91,6 @@ namespace Boom {
 			SetUniform(GetUniformVar(intensity), light.intensity);
 			SetUniform(GetUniformVar(range), light.range);
 		}
-
 		BOOM_INLINE void SetSpotLightCount(int32_t count) {
 			SetUniform(noSpotLightLoc, count);
 		}
@@ -186,10 +185,10 @@ namespace Boom {
 
 			SetUniform(jointsLoc, model->HasJoint());
 			model->Draw();
-			UnUse();
 		}
 		
 		BOOM_INLINE void DrawDebug(Model3D const& model, Transform3D const& transform, glm::vec3 albedo, bool showNormal = false) {
+			Use();
 			SetUniform(isDebugModeLoc, true);
 			SetUniform(ditherThresholdLoc, showDither ? ditherThreshold : 0.f);
 			SetUniform(showNormalTextureLoc, showNormal);

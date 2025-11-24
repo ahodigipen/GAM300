@@ -23,6 +23,7 @@ namespace Boom {
         NAV_AGENT_COMPONENT,
         AI_COMPONENT,
         SPRITE,
+        PAUSE_MENU_TAG,
         COUNT
     };
     constexpr std::string_view COMPONENT_NAMES[]{
@@ -41,7 +42,8 @@ namespace Boom {
         "Third Person Camera" , //12
         "Nav Agent Component",  //13
         "AI Component",         //14
-        "Sprite"                //15
+        "Sprite",               //15
+        "Pause Menu Tag"        //16
     };
 
     // transform component
@@ -55,7 +57,7 @@ namespace Boom {
         ("TransformComponent", TransformComponent
             , obj_member<"Transform", &TransformComponent::transform>
         )
-    }; 
+    };
 
     // camera component
     struct CameraComponent
@@ -334,7 +336,7 @@ namespace Boom {
         int   waypoint = 0;
         float speed = 2.5f;  // m/s
         float arrive = 0.15f; // meters
-		glm::vec3 velocity = glm::vec3(0.f);
+        glm::vec3 velocity = glm::vec3(0.f);
         bool  active = true;
         bool  dirty = false; // set true when target changes
         std::string followName;
@@ -346,7 +348,7 @@ namespace Boom {
         ("NavAgentComponent", NavAgentComponent
             , obj_member<"Target", &NavAgentComponent::target>
             , obj_member<"Speed", &NavAgentComponent::speed>
-			, obj_member<"Velocity", &NavAgentComponent::velocity>
+            , obj_member<"Velocity", &NavAgentComponent::velocity>
             , obj_member<"ArriveRadius", &NavAgentComponent::arrive>
             , obj_member<"Active", &NavAgentComponent::active>
             , obj_member<"RepathCooldown", &NavAgentComponent::repathCooldown>
@@ -378,14 +380,14 @@ namespace Boom {
             , obj_member<"IdleWait", &AIComponent::idleWait>
             , obj_member<"IdleTimer", &AIComponent::idleTimer>    // include if you want to see the live timer
             , obj_member<"PlayerName", &AIComponent::playerName>
-           
+
             , obj_member<"PatrolIndex", &AIComponent::patrolIndex>
         )
     };
 
     struct SpriteComponent {
         AssetID textureID{ EMPTY_ASSET };
-		glm::vec4 color{ 1.0f };
+        glm::vec4 color{ 1.0f };
         bool uiOverlay{ true };
 
         XPROPERTY_DEF(
@@ -395,6 +397,18 @@ namespace Boom {
             obj_member<"uiOverlay", &SpriteComponent::uiOverlay>
         )
     };
+
+    struct PauseMenuTagComponent {
+        BOOM_INLINE PauseMenuTagComponent(const PauseMenuTagComponent&) = default;
+        BOOM_INLINE PauseMenuTagComponent() = default;
+
+        bool isTag = true;
+
+        XPROPERTY_DEF(
+            "PauseMenuTagComponent", PauseMenuTagComponent
+        )
+    };
+
     struct Entity
     {
         BOOM_INLINE Entity(EntityRegistry* registry, EntityID entity) :
@@ -464,4 +478,6 @@ namespace Boom {
         EntityRegistry* m_Registry = nullptr;
         EntityID m_EnttID = NENTT;
     };
+
+
 }

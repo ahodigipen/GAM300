@@ -21,7 +21,7 @@ namespace Boom {
             DYNAMIC = 0,
             STATIC,
             KINEMATIC,
-        } type;
+        } type = STATIC;
 
         bool isColliding = false;
         bool freezeRotationX = false;
@@ -77,11 +77,14 @@ namespace Boom {
             SPHERE,
             CAPSULE,
             MESH,
-            PLANE
-        } type;
+            PLANE,
+            CYLINDER,
+			TRIANGLE
+        } type = BOX;
 
+        bool isTrigger = false; // New: Make this a trigger volume (no collision response)
 
-        // Collider3D
+        // Update XPROPERTY_DEF to include the new field
         XPROPERTY_DEF(
             "Collider3D", Boom::Collider3D,
             obj_member<"LocalPosition", &Boom::Collider3D::localPosition>,
@@ -90,13 +93,16 @@ namespace Boom {
             obj_member<"DynamicFriction", &Boom::Collider3D::dynamicFriction>,
             obj_member<"StaticFriction", &Boom::Collider3D::staticFriction>,
             obj_member<"Restitution", &Boom::Collider3D::restitution>,
+            obj_member<"IsTrigger", &Boom::Collider3D::isTrigger>, // NEW
             obj_member<"PhysicsMesh", &Boom::Collider3D::physicsMeshID>,
             obj_member<"Type", &Boom::Collider3D::type,
             member_enum_value<"BOX", Boom::Collider3D::Type::BOX>,
             member_enum_value<"SPHERE", Boom::Collider3D::Type::SPHERE>,
             member_enum_value<"CAPSULE", Boom::Collider3D::Type::CAPSULE>,
             member_enum_value<"MESH", Boom::Collider3D::Type::MESH>,
-            member_enum_value<"PLANE", Boom::Collider3D::Type::PLANE>
+            member_enum_value<"PLANE", Boom::Collider3D::Type::PLANE>,
+            member_enum_value<"CYLINDER", Boom::Collider3D::Type::CYLINDER>,  // NEW
+            member_enum_value<"TRIANGLE", Boom::Collider3D::Type::TRIANGLE>
             >
         )
     };

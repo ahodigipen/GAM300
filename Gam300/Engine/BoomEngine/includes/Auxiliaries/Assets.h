@@ -1,6 +1,5 @@
 #pragma once
-#include "common/Core.h"
-
+#include "PxPhysicsAPI.h" 
 #include "Graphics/Models/Model.h"
 #include "Graphics/Textures/Texture.h"
 #include "Graphics/Utilities/Data.h"
@@ -175,17 +174,6 @@ namespace Boom {
 		}
 
 		template <class T>
-		BOOM_INLINE T* TryGet(const std::string& name) {
-			auto& map = GetMap<T>();
-			for (auto& [uid, asset] : map) {
-				if (uid != EMPTY_ASSET && asset->name == name) {
-					return dynamic_cast<T*>(asset.get());
-				}
-			}
-			return nullptr;
-		}
-
-		template <class T>
 		BOOM_INLINE T* TryGet(AssetID uid)
 		{
 			const uint32_t type = TypeID<T>();
@@ -315,6 +303,25 @@ namespace Boom {
 				}
 			}
 			return EMPTY_ASSET;
+		}
+
+		BOOM_INLINE PhysicsMeshAsset* FindPhysicsMeshByPath(const std::string& path) {
+			auto& map = GetMap<PhysicsMeshAsset>();
+
+			// Normalize path for comparison (optional but recommended)
+			std::filesystem::path searchPath(path);
+
+			for (auto& [uid, asset] : map) {
+				if (uid == EMPTY_ASSET) continue;
+
+				auto* pm = static_cast<PhysicsMeshAsset*>(asset.get());
+
+				// Compare the stored path with the one we are looking for
+				if (pm && std::filesystem::path(pm->cookedMeshPath) == searchPath) {
+					return pm;
+				}
+			}
+			return nullptr;
 		}
 
 		template <class T>

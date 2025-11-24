@@ -28,12 +28,22 @@
 #include "Scripting/MonoRuntime.h"
 #include "Scripting/ScriptingSystem.h"
 #include "Scripting/ScriptBinding.h"
-
+#include "Scripting/FileWatcher.h"
 #include "AI/GridChaseAI.h"
 #include "AI/DetourNavSystem.h"
 #include "AI/NavAgent.h"
 #include "AI/AISystem.h"
 
+namespace std {
+    template<>
+    struct hash<std::pair<uint32_t, uint32_t>> {
+        size_t operator()(const std::pair<uint32_t, uint32_t>& p) const {
+            auto h1 = std::hash<uint32_t>{}(p.first);
+            auto h2 = std::hash<uint32_t>{}(p.second);
+            return h1 ^ (h2 << 1); // Simple hash combination
+        }
+    };
+}
 
 namespace Boom {
 
@@ -54,7 +64,7 @@ namespace Boom {
         matrix = glm::scale(matrix, scale);
         return matrix;
     }
-   
+
 }
 
 namespace Boom
@@ -69,7 +79,7 @@ namespace Boom
         PAUSED,
         STOPPED
     };
-   
+
     /**
      * @class Application
      * @brief Core application that owns the context and drives all layers.
@@ -83,13 +93,15 @@ namespace Boom
         BOOM_INLINE void EnttView(Fn&& fn) {
             auto view = m_Context->scene.view<Components...>();
             for (auto e : view) {
-                fn(EntityType{ &m_Context->scene, e }, m_Context->scene.get<Components>(e)...);
+                // fn(EntityType{ &m_Context->scene, e }, m_Context->scene.get<Components>(e)...);
+                EntityType entity{ &m_Context->scene, e };
+                fn(entity, m_Context->scene.get<Components>(e)...);
             }
         }
 
 
         // Application state management
-        ApplicationState m_AppState = ApplicationState::RUNNING;
+        ApplicationState m_AppState = ApplicationState::STOPPED;  // Start in edit mode (like Unity)
         double m_PausedTime = 0.0;  // Track time spent paused
         double m_LastPauseTime = 0.0;  // When the last pause started
         bool m_ShouldExit = false;  // Flag for graceful shutdown
@@ -121,6 +133,9 @@ namespace Boom
         {
             m_LayerID = TypeID<Application>();
             m_Context = new AppContext();
+
+            m_Context->app = this;
+
             RegisterEventCallbacks();
 
             AttachCallback<WindowResizeEvent>([this](auto e) {
@@ -143,8 +158,17 @@ namespace Boom
          */
         BOOM_INLINE ~Application()
         {
+            if (m_Context) {
+                for (AppInterface*& layer : m_Context->layers)
+                {
+                    BOOM_DELETE(layer);
+                }
+                // Clear the vector to prevent the AppContext destructor
+                // from trying to delete them a second time.
+                m_Context->layers.clear();
+            }
+
             DestroyPhysicsActors();
-            ShutdownMonoRuntime();
             BOOM_DELETE(m_Context);
             //called here in case of the need of multiple windows
             glfwTerminate();
@@ -157,10 +181,60 @@ namespace Boom
         glm::mat4 GetWorldMatrix(Entity& entity);
 
         /**
+        * @brief Enters play mode (like Unity's Play button)
+        * Saves the current scene state so it can be restored when Stop is called
+        */
+        BOOM_INLINE void Play()
+        {
+            if (m_IsInPlayMode) {
+                BOOM_WARN("[Application] Already in play mode");
+                return;
+            }
+
+            m_PrePlayScene_OriginalPath = m_CurrentScenePath;
+
+            // Save current scene state to temporary file
+            m_PrePlayScenePath = "Scenes/__temp_preplay_state__.yaml";
+            DataSerializer serializer;
+            serializer.Serialize(m_Context->scene, m_PrePlayScenePath);
+            BOOM_INFO("[Application] Saved pre-play scene state");
+
+            // Initialize physics actors for all rigid bodies
+            EnttView<Entity, ColliderComponent>([this](auto entity, auto&) {
+                // Only add if it DOESN'T have a RigidBodyComponent
+                if (!entity.Has<RigidBodyComponent>()) {
+                    m_Context->physics->AddColliderOnly(entity, *m_Context->assets);
+                }
+                else {
+                    // Has both collider and rigidbody - use existing logic
+                    m_Context->physics->AddRigidBody(entity, *m_Context->assets);
+                }
+                });
+
+            // Reset time tracking
+            m_PausedTime = 0.0;
+            m_LastPauseTime = 0.0;
+
+            // Enter play mode
+            m_IsInPlayMode = true;
+            m_AppState = ApplicationState::RUNNING;
+            m_ShouldExit = false;
+
+            m_Context->scriptingSystem->CallStart();
+
+            BOOM_INFO("[Application] Entered play mode");
+        }
+
+        /**
         * @brief Pauses the application (stops updates but continues rendering)
         */
         BOOM_INLINE void Pause()
         {
+            if (!m_IsInPlayMode) {
+                BOOM_WARN("[Application] Cannot pause - not in play mode");
+                return;
+            }
+
             if (m_AppState == ApplicationState::RUNNING) {
                 m_AppState = ApplicationState::PAUSED;
                 m_LastPauseTime = glfwGetTime();
@@ -175,6 +249,11 @@ namespace Boom
          */
         BOOM_INLINE void Resume()
         {
+            if (!m_IsInPlayMode) {
+                BOOM_WARN("[Application] Cannot resume - not in play mode");
+                return;
+            }
+
             if (m_AppState == ApplicationState::PAUSED) {
                 m_AppState = ApplicationState::RUNNING;
 
@@ -188,22 +267,79 @@ namespace Boom
         }
 
         /**
-         * @brief Stops the application gracefully
+         * @brief Stops play mode and restores the scene to pre-play state (like Unity's Stop button)
          */
         BOOM_INLINE void Stop()
         {
-            m_AppState = ApplicationState::STOPPED;
-            m_ShouldExit = true;
-            BOOM_INFO("[Application] Stopping application...");
+            if (!m_IsInPlayMode) {
+                BOOM_WARN("[Application] Not in play mode, nothing to stop");
+                return;
+            }
 
-            // Stop audio if available
+            BOOM_INFO("[Application] Stopping play mode...");
+
+            // Destroy all physics actors before restoring scene
+            DestroyPhysicsActors();
+
+            // Restore pre-play scene state
+            if (!m_PrePlayScenePath.empty() && std::filesystem::exists(m_PrePlayScenePath)) {
+                DataSerializer serializer;
+
+                // Clear the current scene
+                m_Context->scene.clear();
+
+                // Deserialize the saved state
+                serializer.Deserialize(m_Context->scene, *m_Context->assets, m_PrePlayScenePath);
+
+                // Restore the original scene path
+                strncpy_s(m_CurrentScenePath, sizeof(m_CurrentScenePath), m_PrePlayScene_OriginalPath.c_str(), _TRUNCATE);
+                m_PrePlayScene_OriginalPath.clear();
+                m_SceneLoaded = (m_CurrentScenePath[0] != '\0'); // Update scene loaded status
+
+                // Delete the temporary file
+                std::filesystem::remove(m_PrePlayScenePath);
+                m_PrePlayScenePath.clear();
+
+                BOOM_INFO("[Application] Restored pre-play scene state");
+            }
+
+            // Reinitialize systems (skybox, etc.) but NOT physics
+            EnttView<Entity, SkyboxComponent>([this](auto, auto& comp) {
+                SkyboxAsset& skybox{ m_Context->assets->Get<SkyboxAsset>(comp.skyboxID) };
+                m_Context->renderer->InitSkybox(skybox.data, skybox.envMap, skybox.size);
+                });
+
+            // Reset time tracking
+            m_PausedTime = 0.0;
+            m_LastPauseTime = 0.0;
+
+            // Exit play mode but keep application running
+            m_IsInPlayMode = false;
+            m_AppState = ApplicationState::STOPPED;
+            // NOTE: m_ShouldExit stays false - we don't exit the app!
+
+            BOOM_INFO("[Application] Exited play mode");
         }
 
         /**
-         * @brief Toggles between pause and resume
+         * @brief Exits the application completely
+         */
+        BOOM_INLINE void Exit()
+        {
+            m_ShouldExit = true;
+            BOOM_INFO("[Application] Exiting application...");
+        }
+
+        /**
+         * @brief Toggles between pause and resume (only works in play mode)
          */
         BOOM_INLINE void TogglePause()
         {
+            if (!m_IsInPlayMode) {
+                BOOM_WARN("[Application] Cannot toggle pause - not in play mode");
+                return;
+            }
+
             if (m_AppState == ApplicationState::RUNNING) {
                 Pause();
             }
@@ -216,6 +352,23 @@ namespace Boom
          * @brief Gets the current application state
          */
         BOOM_INLINE ApplicationState GetState() const { return m_AppState; }
+
+        /**
+         * @brief Checks if the application is currently in play mode
+         */
+        BOOM_INLINE bool IsPlaying() const { return m_IsInPlayMode; }
+
+        /**
+         * @brief Checks if the application is paused (in play mode but not updating)
+         */
+        BOOM_INLINE bool IsPaused() const { return m_IsInPlayMode && m_AppState == ApplicationState::PAUSED; }
+
+        BOOM_INLINE bool IsInGamePauseMenuLoaded() const
+        {
+            if (!m_Context) return false;
+            auto view = m_Context->scene.view<PauseMenuTagComponent>();
+            return !view.empty();
+        }
 
         /**
          * @brief Gets the adjusted time (excluding paused time)
@@ -234,7 +387,7 @@ namespace Boom
         }
 
         /**
-        * 
+        *
          * @brief Saves the current scene and assets to files
          * @param sceneName The name of the scene (without extension)
          * @param scenePath Optional custom path for scene files (defaults to "Scenes/")
@@ -292,6 +445,52 @@ namespace Boom
 
             BOOM_INFO("[Scene] Successfully loaded scene '{}'", sceneName);
             return true;
+        }
+
+
+        BOOM_INLINE bool LoadSceneAdditive(const std::string& sceneName, const std::string& scenePath = "Scenes/")
+        {
+            DataSerializer serializer;
+            const std::string sceneFilePath = scenePath + sceneName + ".yaml";
+            BOOM_INFO("[Scene] Additively loading scene '{}'", sceneName, sceneFilePath);
+
+            // Deserialize new entities and components into the EXISTING scene
+            serializer.Deserialize(m_Context->scene, *m_Context->assets, sceneFilePath);
+
+            // Reinitialize systems, but ONLY for the newly loaded objects.
+            BOOM_INFO("[Scene] Initializing physics for additive objects...");
+            auto view = m_Context->scene.view<PauseMenuTagComponent, RigidBodyComponent>();
+            for (auto e : view) {
+                // Check if it's already been added
+                auto& rb = view.get<RigidBodyComponent>(e);
+                if (!rb.RigidBody.actor) {
+                    Boom::Entity entity{ &m_Context->scene, e };
+                    m_Context->physics->AddRigidBody(entity, *m_Context->assets);
+                }
+            }
+
+            BOOM_INFO("[Scene] Successfully added scene '{}'", sceneName);
+            return true;
+        }
+
+        template<typename TagComponent>
+        BOOM_INLINE void UnloadAdditiveScene()
+        {
+            BOOM_INFO("[Scene] Unloading additive scene with tag...");
+            auto& reg = m_Context->scene;
+            auto view = reg.view<TagComponent>();
+
+            for (auto e : view) {
+                if (reg.all_of<RigidBodyComponent>(e)) {
+                    auto& rb = reg.get<RigidBodyComponent>(e);
+                    if (rb.RigidBody.actor) {
+                        rb.RigidBody.actor->release();
+                        rb.RigidBody.actor = nullptr;
+                    }
+                }
+            }
+            reg.destroy(view.begin(), view.end());
+            BOOM_INFO("[Scene] Unload complete.");
         }
 
         BOOM_INLINE void LightsUpdate() {
@@ -354,12 +553,12 @@ namespace Boom
                         DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
 
                         m_Context->renderer->DrawShadow(model.data, worldTransform, joints);
-                    });
-            
+                        });
+
                     m_Context->renderer->EndShadowPass();
                 });
         }
-        
+
 
         /**
          * @brief Creates a new empty scene
@@ -369,7 +568,7 @@ namespace Boom
         {
             BOOM_INFO("[Scene] Creating new scene '{}'", sceneName);
 
-			LoadScene("templateScene");
+            LoadScene("templateScene");
 
             m_CurrentScenePath[0] = '\0'; // Clear the path
             m_SceneLoaded = false;
@@ -392,6 +591,7 @@ namespace Boom
             EnttView<Entity, RigidBodyComponent>(
                 [this](auto entity, RigidBodyComponent& rb)
                 {
+
                     if (rb.RigidBody.type == RigidBody3D::Type::KINEMATIC) {
                         auto* actor = rb.RigidBody.actor;
                         if (!actor) return;
@@ -431,18 +631,41 @@ namespace Boom
             out.push_back(Boom::LineVert{ b, cB });
         }
 
+        BOOM_INLINE void SetPreviousScenePath(const std::string& path)
+        {
+            strncpy_s(m_PreviousScenePath, 512, path.c_str(), _TRUNCATE);
+        }
+
+        BOOM_INLINE std::string GetPreviousScenePath() const
+        {
+            return std::string(m_PreviousScenePath);
+        }
+
+        BOOM_INLINE void SetCurrentScenePath(const std::string& path)
+        {
+            strncpy_s(m_CurrentScenePath, 512, path.c_str(), _TRUNCATE);
+        }
+
     private:
         std::unordered_map<std::string, std::pair<glm::vec3, glm::vec3>> m_SphereInitialStates;
 
+        std::unordered_set<std::pair<uint32_t, uint32_t>> m_ActiveTriggerPairs;
+
         glm::vec3 pivotPosition{};
-		bool m_NavInitialized = false;
+        bool m_NavInitialized = false;
         bool m_AIinitialized = false;
         std::unique_ptr<Boom::DebugLinesShader> m_DebugLinesShader;
         std::vector<Boom::PhysicsContext::DebugLine> m_PhysLinesCPU;
         char m_CurrentScenePath[512] = "\0";
+        char m_PreviousScenePath[512] = "\0";
         bool m_SceneLoaded = false;
         std::unique_ptr<DetourNavSystem> m_Nav;
-       
+
+        // Pre-play state storage for Unity-like play/stop behavior
+        std::string m_PrePlayScenePath = "";
+        std::string m_PrePlayScene_OriginalPath = "";
+        bool m_IsInPlayMode = false;
+
         Boom::AISystem                         m_AIagents;
         Boom::NavAgentSystem                   m_NavAgents;
         entt::entity                           m_PlayerE = entt::null;
@@ -461,7 +684,7 @@ namespace Boom
 
             // Find or create the seeker named "Ninja"
             entt::entity ninja = Boom::FindEntityByName(reg, "Ninja");
-       
+
 
             // Ensure Ninja has a NavAgentComponent and configure it to follow Samurai
             auto& nac = reg.get_or_emplace<Boom::NavAgentComponent>(ninja);
@@ -475,7 +698,7 @@ namespace Boom
 
             BOOM_INFO("[Nav] 'Ninja' will seek 'Samurai'.");
         }
-        
+
         BOOM_INLINE void InitNavRuntime()
         {
             if (m_NavInitialized) return;
@@ -559,6 +782,9 @@ namespace Boom
             // Destroy physics actors before clearing scene
             DestroyPhysicsActors();
 
+            // Clear trigger tracking
+            m_ActiveTriggerPairs.clear();
+
             // Clear the ECS scene
             m_Context->scene.clear();
 
@@ -618,6 +844,19 @@ namespace Boom
                 m_Context->physics->AddRigidBody(entity, *m_Context->assets);
                 });
 
+            // Creating a script instances 
+            int scriptsCreated = 0;
+            EnttView<Entity, ScriptComponent>([this, &scriptsCreated](auto entity, ScriptComponent& sc) {
+                if (m_Context->scriptingSystem->RecreateForEntity(entity, sc)) {
+                    scriptsCreated++;
+                }
+                });
+
+            if (scriptsCreated > 0) {
+                BOOM_INFO("[Scene] Created {} script instances", scriptsCreated);
+            }
+
+            m_Context->scriptingSystem->CallStart();
 
             BOOM_INFO("[Scene] Scene systems reinitialization complete");
         }
@@ -640,11 +879,76 @@ namespace Boom
 
         BOOM_INLINE void RegisterEventCallbacks()
         {
-            // Set physics event callback (mark unused param to avoid warnings)
+            // Set physics event callback
             m_Context->physics->SetEventCallback([this](auto e)
                 {
-                    // Check if this is a contact event
-                    if (e.Event == PxEvent::CONTACT)
+                    // Handle TRIGGER events
+                    if (e.Event == PxEvent::TRIGGER)
+                    {
+                        BOOM_INFO("[Trigger] Trigger event detected");
+
+                        // Based on Callback.h, Entity1 is otherActor, Entity2 is triggerActor
+                        entt::entity triggerEntity = (entt::entity)e.Entity2;  // triggerActor
+                        entt::entity enteringEntity = (entt::entity)e.Entity1; // otherActor
+
+                        // Validate both entities exist
+                        if (!m_Context->scene.valid(triggerEntity) || !m_Context->scene.valid(enteringEntity))
+                            return;
+
+                        // Log entity names for debugging
+                        std::string triggerName = "Unknown", enteringName = "Unknown";
+                        if (m_Context->scene.valid(triggerEntity) && m_Context->scene.all_of<InfoComponent>(triggerEntity))
+                            triggerName = m_Context->scene.get<InfoComponent>(triggerEntity).name;
+                        if (m_Context->scene.valid(enteringEntity) && m_Context->scene.all_of<InfoComponent>(enteringEntity))
+                            enteringName = m_Context->scene.get<InfoComponent>(enteringEntity).name;
+
+                        // Convert to handles for script callbacks
+                        uint64_t triggerHandle = static_cast<uint64_t>(static_cast<uint32_t>(triggerEntity));
+                        uint64_t enteringHandle = static_cast<uint64_t>(static_cast<uint32_t>(enteringEntity));
+
+                        // Create pair for tracking enter/exit state
+                        std::pair<uint32_t, uint32_t> triggerPair = {
+                            static_cast<uint32_t>(triggerEntity),
+                            static_cast<uint32_t>(enteringEntity)
+                        };
+
+                        // Determine if this is enter or exit based on our tracking
+                        bool wasAlreadyActive = (m_ActiveTriggerPairs.find(triggerPair) != m_ActiveTriggerPairs.end());
+
+                        if (!wasAlreadyActive) {
+                            // This is an ENTER event
+                            m_ActiveTriggerPairs.insert(triggerPair);
+
+                            BOOM_INFO("[Trigger] '{}' ENTERED trigger '{}' - invoking callbacks", enteringName, triggerName);
+
+                            // Call enter callbacks with safety
+                            try {
+                                CallTriggerEnterCallbacks(triggerHandle, enteringHandle);
+                            }
+                            catch (...) {
+                                BOOM_ERROR("[Trigger] Exception in enter callback for trigger {} and entity {}",
+                                    triggerHandle, enteringHandle);
+                            }
+                        }
+                        else {
+                            // This is an EXIT event - the pair was already active
+                            m_ActiveTriggerPairs.erase(triggerPair);
+
+                            BOOM_INFO("[Trigger] '{}' EXITED trigger '{}' - invoking callbacks", enteringName, triggerName);
+
+                            // Call exit callbacks with safety
+                            try {
+                                CallTriggerExitCallbacks(triggerHandle, enteringHandle);
+                            }
+                            catch (...) {
+                                BOOM_ERROR("[Trigger] Exception in exit callback for trigger {} and entity {}",
+                                    triggerHandle, enteringHandle);
+                            }
+                        }
+                    }
+
+                    // Handle CONTACT events (existing code is fine)
+                    else if (e.Event == PxEvent::CONTACT)
                     {
                         // Get both entities from the event payload
                         entt::entity ent1 = (entt::entity)e.Entity1;
@@ -679,12 +983,21 @@ namespace Boom
             // Calculate raw delta time
             double rawDelta = (currentTime - sLastTime);
 
-            // Only update delta time if not paused
-            if (m_AppState == ApplicationState::RUNNING) {
+            // Delta time behavior:
+            // - Edit mode: Always update (for smooth camera movement)
+            // - Play mode running: Update normally
+            // - Play mode paused: No time progression (0)
+            if (!m_IsInPlayMode) {
+                // Edit mode - camera needs delta time
+                m_Context->DeltaTime = rawDelta;
+            }
+            else if (m_AppState == ApplicationState::RUNNING) {
+                // Play mode running - normal time
                 m_Context->DeltaTime = rawDelta;
             }
             else {
-                m_Context->DeltaTime = 0.0; // No time progression when paused
+                // Play mode paused - freeze time
+                m_Context->DeltaTime = 0.0;
             }
 
             sLastTime = currentTime;
@@ -781,6 +1094,13 @@ namespace Boom
             }
         }
 
+
+        static void AppendCylinderWire(float radius, float halfHeight, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color);
+
+        void AppendConvexMeshWire(const physx::PxConvexMeshGeometry& geom, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color);
+
+        static void AppendTriangleWire(const glm::vec3& scale, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color);
+
         BOOM_INLINE static float DistancePointSegment(const glm::vec3& p, const glm::vec3& a, const glm::vec3& b)
         {
             const glm::vec3 ab = b - a;
@@ -808,203 +1128,34 @@ namespace Boom
 #endif
         }
 
-        BOOM_INLINE bool InitMonoRuntime(const std::string& monoBaseDir,
-            const std::string& assembliesDir,
-            const char* domainName = "BoomDomain")
+        BOOM_INLINE void RecreateScriptForEntity(entt::entity entity)
         {
-            // 0) sanity on folders
-            if (!std::filesystem::exists(monoBaseDir) ||
-                !std::filesystem::exists(monoBaseDir + "/lib") ||
-                !std::filesystem::exists(monoBaseDir + "/etc"))
-            {
-                
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] Invalid mono base folder: '{}'", monoBaseDir);
+            if (!m_Context->scene.valid(entity)) return;
 
-#endif // DEBUG
-                return false;
-            }
-            if (!std::filesystem::exists(assembliesDir))
-            {
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] Assemblies folder not found: '{}'", assembliesDir);
+            auto* sc = m_Context->scene.try_get<ScriptComponent>(entity);
+            if (!sc) return;
 
-#endif // DEBUG
-                
-                return false;
-            }
-
-            m_MonoBase = monoBaseDir;
-            m_AssembliesPath = assembliesDir;
-
-            // 1) point Mono at its runtime folders
-            //    On Windows, make sure the Mono DLLs (e.g., mono-2.0-sgen.dll) are next to the EXE or in PATH.
-            mono_set_dirs((m_MonoBase + "/lib").c_str(),
-                (m_MonoBase + "/etc").c_str());
-
-            // 2) config (enables machine.config etc.)
-            //mono_config_parse(nullptr);
-
-            // 3) assembly search paths (so "GameScripts.dll" can be found by name)
-            mono_set_assemblies_path(m_AssembliesPath.c_str());
-
-            // 4) root domain
-            m_MonoRootDomain = mono_jit_init_version(domainName, "v4.0.30319");
-            if (!m_MonoRootDomain)
-            {
-                BOOM_ERROR("[Mono] mono_jit_init_version failed.");
-                return false;
-            }
-
-            // 5) create a child/app domain (optional but recommended for unload/reload patterns)
-            m_MonoAppDomain = mono_domain_create_appdomain(const_cast<char*>("BoomAppDomain"), nullptr);
-            if (!m_MonoAppDomain)
-            {
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] mono_domain_create_appdomain failed.");
-
-#endif // DEBUG
-                return false;
-            }
-            mono_domain_set(m_MonoAppDomain, /* force */ false);
-#ifdef _DEBUG
-            BOOM_INFO("[Mono] Initialized. Base='{}', Assemblies='{}'", m_MonoBase, m_AssembliesPath);
-#endif // DEBUG
-            return true;
+            m_Context->scriptingSystem->RecreateForEntity(entity, *sc);
         }
-
-        BOOM_INLINE void ShutdownMonoRuntime()
+        // Add this as a private method
+        BOOM_INLINE void CleanupTriggerPairs()
         {
-            if (m_MonoAppDomain)
-            {
-                // Switch back to root to safely unload app domain
-                mono_domain_set(m_MonoRootDomain, false);
-                mono_domain_unload(m_MonoAppDomain);
-                m_MonoAppDomain = nullptr;
-            }
-            if (m_MonoRootDomain)
-            {
-                mono_jit_cleanup(m_MonoRootDomain);
-                m_MonoRootDomain = nullptr;
-            }
-            m_GameAssembly = nullptr;
-            m_GameImage = nullptr;
+            // Clean up any invalid trigger pairs (entities that no longer exist)
+            auto it = m_ActiveTriggerPairs.begin();
+            while (it != m_ActiveTriggerPairs.end()) {
+                entt::entity triggerEntity = static_cast<entt::entity>(it->first);
+                entt::entity enteringEntity = static_cast<entt::entity>(it->second);
 
-#ifdef _DEBUG
-            BOOM_INFO("[Mono] Shutdown complete.");
-#endif // DEBUG
-
+                if (!m_Context->scene.valid(triggerEntity) || !m_Context->scene.valid(enteringEntity)) {
+                    it = m_ActiveTriggerPairs.erase(it);
+                }
+                else {
+                    ++it;
+                }
+            }
         }
 
-        BOOM_INLINE bool LoadGameAssembly(const std::string& dllName /* e.g., "GameScripts.dll" */)
-        {
-            if (!m_MonoAppDomain)
-            {
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] App domain not initialized.");
-#endif // DEBUG
-
-                return false;
-            }
-
-            const std::string full = (std::filesystem::path(m_AssembliesPath) / dllName).string();
-            if (!std::filesystem::exists(full))
-            {
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] Assembly not found: {}", full);
-
-#endif // DEBUG
-                return false;
-            }
-
-            m_GameAssembly = mono_domain_assembly_open(m_MonoAppDomain, full.c_str());
-            if (!m_GameAssembly)
-            {
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] Failed to load assembly: {}", full);
-#endif // DEBUG
-                return false;
-            }
-
-            m_GameImage = mono_assembly_get_image(m_GameAssembly);
-            if (!m_GameImage)
-            {
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] mono_assembly_get_image failed.");
-#endif // DEBUG
-                return false;
-            }
-#ifdef _DEBUG
-            BOOM_INFO("[Mono] Loaded assembly: {}", full);
-#endif // DEBUG
-            return true;
-        }
-
-        BOOM_INLINE bool InvokeStaticVoid(const char* nsName,
-            const char* className,
-            const char* methodName,
-            void** args = nullptr)
-        {
-            if (!m_GameImage) { BOOM_ERROR("[Mono] No assembly image loaded."); return false; }
-
-            MonoClass* klass = mono_class_from_name(m_GameImage, nsName, className);
-            if (!klass) { BOOM_ERROR("[Mono] Class not found: {}.{}", nsName, className); return false; }
-
-            MonoMethod* method = mono_class_get_method_from_name(klass, methodName, /*param_count*/ 0);
-            if (!method) { BOOM_ERROR("[Mono] Method not found: {}.{}", className, methodName); return false; }
-
-            MonoObject* exc = nullptr;
-            mono_runtime_invoke(method, /*this*/ nullptr, args, &exc);
-            if (exc)
-            {
-                // print exception
-                MonoString* s = mono_object_to_string(exc, nullptr);
-                char* utf8 = mono_string_to_utf8(s);
-#ifdef _DEBUG
-                BOOM_ERROR("[Mono] Exception: {}", utf8 ? utf8 : "(null)");
-#endif // DEBUG
-                if (utf8) mono_free(utf8);
-                return false;
-            }
-            return true;
-        }
-
-        BOOM_INLINE bool InvokeStatic1Float(const char* nsName,
-            const char* className,
-            const char* methodName,
-            float value)
-        {
-            if (!m_GameImage) { BOOM_ERROR("[Mono] No assembly image loaded."); return false; }
-
-            MonoClass* klass = mono_class_from_name(m_GameImage, nsName, className);
-            if (!klass) { BOOM_ERROR("[Mono] Class not found: {}.{}", nsName, className); return false; }
-
-            // method with 1 parameter
-            MonoMethod* method = mono_class_get_method_from_name(klass, methodName, 1);
-            if (!method) { BOOM_ERROR("[Mono] Method not found: {}.{}", className, methodName); return false; }
-
-            void* args[1];
-            args[0] = &value;
-
-            MonoObject* exc = nullptr;
-            mono_runtime_invoke(method, nullptr, args, &exc);
-            if (exc)
-            {
-                MonoString* s = mono_object_to_string(exc, nullptr);
-                char* utf8 = mono_string_to_utf8(s);
-                BOOM_ERROR("[Mono] Exception: {}", utf8 ? utf8 : "(null)");
-                if (utf8) mono_free(utf8);
-                return false;
-            }
-            return true;
-        }
-
-        BOOM_INLINE void DrawDebugTPC() {
-            ModelAsset const* mdl{ m_Context->assets->TryGet<ModelAsset>("Cube.FBX") };
-            m_Context->renderer->Draw(mdl->data, Transform3D{ pivotPosition, glm::vec3(0.f), glm::vec3(.2f) });
-        }
     };
-
 
 
 }

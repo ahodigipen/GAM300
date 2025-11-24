@@ -69,9 +69,17 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
   - Type: PHYSICS_MESH
+    UID: 16135378917386993712
+    Name: Sliding_Door
+    Source: Resources/Physics/Sliding_Door.pxm
+  - Type: PHYSICS_MESH
     UID: 6932420578595885980
     Name: sphere
     Source: Resources/Physics/sphere.pxm
+  - Type: PHYSICS_MESH
+    UID: 2061877446978793964
+    Name: Stairs_Handle
+    Source: Resources/Physics/Stairs_Handle.pxm
   - Type: PHYSICS_MESH
     UID: 6064271428936207948
     Name: Cube.FBX
@@ -80,6 +88,108 @@ ASSETS:
     UID: 3201291568342370610
     Name: GAM300_Ninja
     Source: Resources/Physics/GAM300_Ninja.pxm
+  - Type: PHYSICS_MESH
+    UID: 13626919571269201074
+    Name: Fruit_Tree
+    Source: Resources/Physics/Fruit_Tree.pxm
+  - Type: PHYSICS_MESH
+    UID: 10282509391466741466
+    Name: Sliding_Door
+    Source: Resources/Physics/Sliding_Door.pxm
+  - Type: PHYSICS_MESH
+    UID: 4462591176276306201
+    Name: Stairs
+    Source: Resources/Physics/Stairs.pxm
+  - Type: PHYSICS_MESH
+    UID: 675814903367683746
+    Name: Lion_Statue2
+    Source: Resources/Physics/Lion_Statue2.pxm
+  - Type: PHYSICS_MESH
+    UID: 4431181016770564176
+    Name: Floor_Cushion
+    Source: Resources/Physics/Floor_Cushion.pxm
+  - Type: PHYSICS_MESH
+    UID: 14994902549669501522
+    Name: Stairs_Handle
+    Source: Resources/Physics/Stairs_Handle.pxm
+  - Type: PHYSICS_MESH
+    UID: 14118317202290831515
+    Name: Floor_Cushion
+    Source: Resources/Physics/Floor_Cushion.pxm
+  - Type: PHYSICS_MESH
+    UID: 9351549157791107372
+    Name: Floor_Cushion
+    Source: Resources/Physics/Floor_Cushion.pxm
+  - Type: PHYSICS_MESH
+    UID: 7849896674810615893
+    Name: Stairs_Handle
+    Source: Resources/Physics/Stairs_Handle.pxm
+  - Type: PHYSICS_MESH
+    UID: 53427998423929220
+    Name: Hut_Roof
+    Source: Resources/Physics/Hut_Roof.pxm
+  - Type: PHYSICS_MESH
+    UID: 13244744886219103757
+    Name: WallTest
+    Source: Resources/Physics/WallTest.pxm
+  - Type: PHYSICS_MESH
+    UID: 18311705917173916947
+    Name: Japanese_Table
+    Source: Resources/Physics/Japanese_Table.pxm
+  - Type: PHYSICS_MESH
+    UID: 6729413007522777642
+    Name: Statue
+    Source: Resources/Physics/Statue.pxm
+  - Type: PHYSICS_MESH
+    UID: 330654023275890549
+    Name: Indoor_Lanturn_Hangingfbx
+    Source: Resources/Physics/Indoor_Lanturn_Hangingfbx.pxm
+  - Type: PREFAB
+    UID: 5076640578672151242
+    Name: Dance
+    Source: Prefabs/Dance.prefab
+    Properties:
+      SerializedData: |
+        InfoComponent:
+          UID: 18299148976802030936
+          Name: Player
+          Parent: 0
+        TransformComponent:
+          Translate: [0, -1.20000005, 0]
+          Rotate: [0, 0, 0]
+          Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+        ModelComponent:
+          ModelID: 9625104056789884581
+          MaterialID: 11573253777835523025
+          ModelSource: dance.fbx
+          MaterialSource: Marble
+        AnimatorComponent:
+          Sequence: 0
+          Time: 832.96283
+
+  - Type: PREFAB
+    UID: 18004803294149376765
+    Name: Walk
+    Source: Prefabs/Walk.prefab
+    Properties:
+      SerializedData: |
+        InfoComponent:
+          UID: 18299148976802030936
+          Name: Model walk
+          Parent: 0
+        TransformComponent:
+          Translate: [0, -1.5, 0]
+          Rotate: [0, 0, 0]
+          Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+        ModelComponent:
+          ModelID: 12369161784125194221
+          MaterialID: 11573253777835523025
+          ModelSource: walking.fbx
+          MaterialSource: Marble
+        AnimatorComponent:
+          Sequence: 0
+          Time: 30.0344028
+
   - Type: PREFAB
     UID: 5076640578672151242
     Name: Dance
@@ -151,13 +261,6 @@ ASSETS:
         AnimatorComponent:
           Sequence: 0
           Time: 870.897278
-
-  - Type: PREFAB
-    UID: 17959731737648018740
-    Name: Dancing Model
-    Source: Resources/Prefabs/Dancing Model.prefab
-    Properties:
-      SerializedData: |
 
   - Type: TEXTURE
     UID: 16300877889967123005
@@ -262,6 +365,17 @@ ASSETS:
     UID: 7762259362424041595
     Name: height.png
     Source: Resources/Textures/Marble/height.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 14452546169200855872
+    Name: HowToPlayButton
+    Source: Resources/Textures/MainMenu/HowToPlayButton.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -501,6 +615,17 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
+    UID: 10451005038005756580
+    Name: MainMenuMockup
+    Source: Resources/Textures/MainMenu/MainMenuMockup.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
     UID: 1275277109388505073
     Name: Grass_Dense_Tint_02_Leaves_B_Normal
     Source: Resources/Textures/Cartoon_Texture_Pack/GRASS/GRASS_Dense_Tint_02/Grass_Dense_Tint_02_Leaves_B_Normal.png
@@ -625,6 +750,17 @@ ASSETS:
     UID: 12699356419827675960
     Name: Grass_Dense_Tint_01_Leaves_A_Metallic
     Source: Resources/Textures/Cartoon_Texture_Pack/GRASS/GRASS_Dense_Tint_01/Grass_Dense_Tint_01_Leaves_A_Metallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 12678405704945466943
+    Name: NewGameButton_Clicked
+    Source: Resources/Textures/MainMenu/NewGameButton_Clicked.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -787,20 +923,9 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 4180272005981950022
-    Name: Grass_Dense_Tint_01_Base_Basecolor_C
-    Source: Resources/Textures/Cartoon_Texture_Pack/GRASS/GRASS_Dense_Tint_01/Grass_Dense_Tint_01_Base_Basecolor_C.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 7527779657416384175
-    Name: Red_Gem_Glow
-    Source: Resources/UnityOtherFiles/UI Assets/Red_Gem_Glow.png
+    UID: 3397359786255767116
+    Name: Paper003_1K-PNG_ColorTorn
+    Source: Resources/Textures/Paper003_1K-PNG_ColorTorn.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -820,9 +945,9 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 3397359786255767116
-    Name: Paper003_1K-PNG_ColorTorn
-    Source: Resources/Textures/Paper003_1K-PNG_ColorTorn.png
+    UID: 7527779657416384175
+    Name: Red_Gem_Glow
+    Source: Resources/UnityOtherFiles/UI Assets/Red_Gem_Glow.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -834,6 +959,28 @@ ASSETS:
     UID: 5633507845722200628
     Name: Grass_Dense_Tint_02_Base_Basecolor_A
     Source: Resources/Textures/Cartoon_Texture_Pack/GRASS/GRASS_Dense_Tint_02/Grass_Dense_Tint_02_Base_Basecolor_A.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 4180272005981950022
+    Name: Grass_Dense_Tint_01_Base_Basecolor_C
+    Source: Resources/Textures/Cartoon_Texture_Pack/GRASS/GRASS_Dense_Tint_01/Grass_Dense_Tint_01_Base_Basecolor_C.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 4271895845596125777
+    Name: ExitButton
+    Source: Resources/Textures/MainMenu/ExitButton.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -922,6 +1069,17 @@ ASSETS:
     UID: 18028454470801986305
     Name: UnderRoof_Hay_Metallic
     Source: Resources/Textures/Cartoon_Texture_Pack/ROOF/ROOF_HAY/UnderRoof_Hay_Metallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 8298581291578973732
+    Name: PauseMenuMockup
+    Source: Resources/Textures/PauseMenu/PauseMenuMockup.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1329,6 +1487,17 @@ ASSETS:
     UID: 16732117466802027743
     Name: Grass_Flower_Tint_01_Base_Metallic
     Source: Resources/Textures/Cartoon_Texture_Pack/GRASS/GRASS_Flower_Tint_01/Grass_Flower_Tint_01_Base_Metallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 10420817796548402854
+    Name: HowToPlayButton_Clicked
+    Source: Resources/Textures/MainMenu/HowToPlayButton_Clicked.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3053,6 +3222,17 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
+    UID: 11793825276519391915
+    Name: ExitButton_Clicked
+    Source: Resources/Textures/MainMenu/ExitButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
     UID: 9017638651819819096
     Name: UnderRoof_RoundTile_Bump_Basecolor_C
     Source: Resources/Textures/Cartoon_Texture_Pack/ROOF/ROOF_RoundTile_Bump/UnderRoof_RoundTile_Bump_Basecolor_C.png
@@ -3350,9 +3530,20 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 10182225850865254727
-    Name: Roof_SquareTile_Bump_Normal
-    Source: Resources/Textures/Cartoon_Texture_Pack/ROOF/ROOF_SquareTile_Bump/Roof_SquareTile_Bump_Normal.png
+    UID: 9401454698162006202
+    Name: PauseMenuScroll
+    Source: Resources/Textures/PauseMenu/PauseMenuScroll.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 13404082957034322021
+    Name: UnderRoof_SquareTile_Flat_Basecolor_D
+    Source: Resources/Textures/Cartoon_Texture_Pack/ROOF/ROOF_SquareTile_Flat/UnderRoof_SquareTile_Flat_Basecolor_D.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3713,6 +3904,17 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
+    UID: 13898311701991055595
+    Name: ReturnMenuButton_Clicked
+    Source: Resources/Textures/PauseMenu/ReturnMenuButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
     UID: 16877092693229611915
     Name: Wall_Brick_Height
     Source: Resources/Textures/Cartoon_Texture_Pack/WALLS/WALL_Bricks/Wall_Brick_Height.png
@@ -4054,6 +4256,17 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
+    UID: 13461473539925509901
+    Name: RestartButton
+    Source: Resources/Textures/PauseMenu/RestartButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
     UID: 17345783567382088003
     Name: HEIGHT MAPseamless sand zen garden texture
     Source: Resources/Textures/Environment Textures/HEIGHT MAPseamless sand zen garden texture.png
@@ -4329,6 +4542,17 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
+    UID: 15426909549303303183
+    Name: QuitButton
+    Source: Resources/Textures/PauseMenu/QuitButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
     UID: 6921674894745876052
     Name: Blue_Gem_Glow
     Source: Resources/UnityOtherFiles/UI Assets/Blue_Gem_Glow.png
@@ -4431,6 +4655,72 @@ ASSETS:
     UID: 11950368214552098348
     Name: Trickle dmg
     Source: Resources/UnityOtherFiles/UI Assets/Trickle dmg.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 18098974966956010645
+    Name: NewGameButton
+    Source: Resources/Textures/MainMenu/NewGameButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 6358066585089950257
+    Name: QuitButton_Clicked
+    Source: Resources/Textures/PauseMenu/QuitButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 16238148320953236535
+    Name: RestartButton_Clicked
+    Source: Resources/Textures/PauseMenu/RestartButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 13384554175947983795
+    Name: ResumeButton
+    Source: Resources/Textures/PauseMenu/ResumeButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 17046029094205163093
+    Name: ResumeButton_Clicked
+    Source: Resources/Textures/PauseMenu/ResumeButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 17744112895544050321
+    Name: ReturnMenuButton
+    Source: Resources/Textures/PauseMenu/ReturnMenuButton.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -4819,6 +5109,17 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
+    UID: 17773246069672836568
+    Name: Stairs
+    Source: Resources/Models/Stairs.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
     UID: 4002821080489291504
     Name: Magic Spell Casting
     Source: Resources/Models/Player/NewPlayerAttack/Magic Spell Casting.fbx
@@ -5036,7 +5337,7 @@ ASSETS:
         transform:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
-          Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+          Scale: [1, 1, 1]
       HasJoints: true
   - Type: MODEL
     UID: 5857660347989881526
@@ -5105,6 +5406,17 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
+    UID: 6686588003040734580
+    Name: Flooring
+    Source: Resources/Models/Flooring.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
     UID: 3957557556641863430
     Name: Sword
     Source: Resources/Models/Player/Sword.fbx
@@ -5160,6 +5472,17 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: true
   - Type: MODEL
+    UID: 5963078964798272625
+    Name: Sliding_Door
+    Source: Resources/Models/Sliding_Door.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
     UID: 10504076749405191173
     Name: Great Sword Walk
     Source: Resources/Models/PlayerAnimations/Great Sword Walk.fbx
@@ -5201,7 +5524,7 @@ ASSETS:
         transform:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
-          Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+          Scale: [1, 1, 1]
       HasJoints: true
   - Type: MODEL
     UID: 15734322141743840447
@@ -5435,6 +5758,17 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
+    UID: 12206031679676868600
+    Name: Door_Divider_With_Hole
+    Source: Resources/Models/Door_Divider_With_Hole.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
     UID: 4137517056597156407
     Name: Floor_Desert_01_Big_0_1
     Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Floor_Desert_01_Big_0_1.fbx
@@ -5511,147 +5845,146 @@ ASSETS:
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
       HasJoints: false
-  - Type: AUDIO
-    UID: 13231283646619960476
-    Name: enemyAtk_3
-    Source: Resources/Audio/enemyAtk_3.wav
-  - Type: AUDIO
-    UID: 5172170177427580613
-    Name: disappear
-    Source: Resources/Audio/disappear.wav
-  - Type: AUDIO
-    UID: 5888642589876066344
-    Name: playerHurt_1
-    Source: Resources/Audio/playerHurt_1.wav
-  - Type: AUDIO
-    UID: 15703267302175957142
-    Name: enemyAtk_1
-    Source: Resources/Audio/enemyAtk_1.wav
-  - Type: AUDIO
-    UID: 1557409197895366975
-    Name: enemyAtk_2
-    Source: Resources/Audio/enemyAtk_2.wav
-  - Type: AUDIO
-    UID: 11913777506126812821
-    Name: enemyHurt_1
-    Source: Resources/Audio/enemyHurt_1.wav
-  - Type: AUDIO
-    UID: 10537137308875949976
-    Name: enemyHurt_2
-    Source: Resources/Audio/enemyHurt_2.wav
-  - Type: AUDIO
-    UID: 12194483933275878756
-    Name: Fetty Wap
-    Source: Resources/Audio/Fetty Wap.wav
-  - Type: AUDIO
-    UID: 1895387429347608138
-    Name: FISH
-    Source: Resources/Audio/FISH.wav
-  - Type: AUDIO
-    UID: 962560488053106255
-    Name: freeze
-    Source: Resources/Audio/freeze.wav
-  - Type: AUDIO
-    UID: 9475792980569845103
-    Name: landing
-    Source: Resources/Audio/landing.wav
-  - Type: AUDIO
-    UID: 545094823311612520
-    Name: outdoorAmbience
-    Source: Resources/Audio/outdoorAmbience.wav
-  - Type: AUDIO
-    UID: 15029563346532604645
-    Name: playerAttack_1
-    Source: Resources/Audio/playerAttack_1.wav
-  - Type: AUDIO
-    UID: 7389825723535328104
-    Name: playerAttack_2
-    Source: Resources/Audio/playerAttack_2.wav
-  - Type: AUDIO
-    UID: 13283778458063452581
-    Name: playerHurt_2
-    Source: Resources/Audio/playerHurt_2.wav
-  - Type: AUDIO
-    UID: 12744037939485381771
-    Name: playerPunch_1
-    Source: Resources/Audio/playerPunch_1.wav
-  - Type: AUDIO
-    UID: 10831851872083716194
-    Name: playerPunch_2
-    Source: Resources/Audio/playerPunch_2.wav
-  - Type: AUDIO
-    UID: 3065010712173088277
-    Name: playerPunch_3
-    Source: Resources/Audio/playerPunch_3.wav
-  - Type: AUDIO
-    UID: 17462265830430448954
-    Name: playerRun_03
-    Source: Resources/Audio/playerRun_03.wav
-  - Type: AUDIO
-    UID: 5628124252299819376
-    Name: playerRun_01
-    Source: Resources/Audio/playerRun_01.wav
-  - Type: AUDIO
-    UID: 15958803571243056749
-    Name: playerRun_02
-    Source: Resources/Audio/playerRun_02.wav
-  - Type: AUDIO
-    UID: 4631183016260115183
-    Name: playerRun_04
-    Source: Resources/Audio/playerRun_04.wav
-  - Type: AUDIO
-    UID: 1512395405601140110
-    Name: playerWalk_05
-    Source: Resources/Audio/playerWalk_05.wav
-  - Type: AUDIO
-    UID: 3876527587234858444
-    Name: playerRun_05
-    Source: Resources/Audio/playerRun_05.wav
-  - Type: AUDIO
-    UID: 7540292727515433577
-    Name: playerRun_06
-    Source: Resources/Audio/playerRun_06.wav
-  - Type: AUDIO
-    UID: 7254744251562406754
-    Name: the voices
-    Source: Resources/Audio/the voices.wav
-  - Type: AUDIO
-    UID: 1593459110826043138
-    Name: playerWalk_01
-    Source: Resources/Audio/playerWalk_01.wav
-  - Type: AUDIO
-    UID: 3505363703250886699
-    Name: playerWalk_02
-    Source: Resources/Audio/playerWalk_02.wav
-  - Type: AUDIO
-    UID: 11333566408096603704
-    Name: playerWalk_03
-    Source: Resources/Audio/playerWalk_03.wav
-  - Type: AUDIO
-    UID: 13000570178548683569
-    Name: playerWalk_04
-    Source: Resources/Audio/playerWalk_04.wav
-  - Type: AUDIO
-    UID: 13937765315506416748
-    Name: poison
-    Source: Resources/Audio/poison.wav
-  - Type: AUDIO
-    UID: 8138212289225094274
-    Name: power absorb
-    Source: Resources/Audio/power absorb.wav
-  - Type: AUDIO
-    UID: 15658658186560412188
-    Name: Sheathe
-    Source: Resources/Audio/Sheathe.wav
-  - Type: AUDIO
-    UID: 17537976810560703968
-    Name: unfreeze
-    Source: Resources/Audio/unfreeze.wav
-  - Type: AUDIO
-    UID: 3974660092659929545
-    Name: Unsheathe
-    Source: Resources/Audio/Unsheathe.wav
-  - Type: AUDIO
-    UID: 12107561116841852505
-    Name: vboom
-    Source: Resources/Audio/vboom.wav
+  - Type: MODEL
+    UID: 13779674563758479505
+    Name: Cushion
+    Source: Resources/Models/Cushion.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 618926925563278836
+    Name: Floor_Cushion
+    Source: Resources/Models/Floor_Cushion.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 5156670162497623977
+    Name: Fruit_Tree
+    Source: Resources/Models/Fruit_Tree.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 8039408713556627694
+    Name: Hut_Roof
+    Source: Resources/Models/Hut_Roof.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 17862911105458314379
+    Name: Indoor_Lanturn_Hangingfbx
+    Source: Resources/Models/Indoor_Lanturn_Hangingfbx.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 5838446488854438722
+    Name: Japanese_Table
+    Source: Resources/Models/Japanese_Table.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 17971063540041505471
+    Name: Outdoor_Stone_Lantern
+    Source: Resources/Models/Outdoor_Stone_Lantern.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 14419591904238952119
+    Name: Stairs_Handle
+    Source: Resources/Models/Stairs_Handle.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 4826384296126717694
+    Name: Statue
+    Source: Resources/Models/Statue.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 3620272457406166050
+    Name: Turning_Point
+    Source: Resources/Models/Turning_Point.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 12488520825890969207
+    Name: Untitled
+    Source: Resources/Models/Untitled.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 3890036720565027074
+    Name: Wall
+    Source: Resources/Models/Wall.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 1441742420851203854
+    Name: WallTest
+    Source: Resources/Models/WallTest.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false

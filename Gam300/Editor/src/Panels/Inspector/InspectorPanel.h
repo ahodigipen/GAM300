@@ -1,4 +1,5 @@
 ﻿#pragma once
+#pragma once
 #include <functional>
 #include <entt/entt.hpp>
 #include "Vendors/imgui/imgui.h"
@@ -34,7 +35,7 @@ namespace EditorUI {
         void ComponentSelector(Boom::Entity& selected);
         template <class Type> void UpdateComponent(Boom::ComponentID id, Boom::Entity& selected);
         //to be placed right below collapsing header that has flag: ImGuiTreeNodeFlags_AllowItemOverlap
-        template <class CType> void ComponentSettings(Boom::AppContext* ctx);
+        template <class CType> bool ComponentSettings(Boom::AppContext* ctx);
 
         void AcceptIDDrop(uint64_t& data, char const* payloadType);
         template <std::string_view const& Payload>
@@ -65,13 +66,6 @@ namespace EditorUI {
         bool           m_OpenEditTransitionPopup = false;
         Boom::Animator::Transition m_TempTransition;
         char           m_TransitionParamNameBuffer[128]{};
-
-        // Animation events
-        int            m_EditingClipIndex = -1;
-        int            m_EditingEventIndex = -1;
-        bool           m_OpenEditEventPopup = false;
-        Boom::AnimationEvent m_TempEvent;
-        char           m_EventFunctionNameBuffer[128]{};
 
         template<typename TComponent, typename GetPropsFn>
         void DrawComponentSection(const char* title,

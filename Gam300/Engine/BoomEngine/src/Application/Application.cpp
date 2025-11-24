@@ -7,7 +7,8 @@ namespace Boom
     void Application::RunContext(bool showFrame)
     {
         BOOM_INFO("[Application] RunContext started");
-        LoadScene("level");
+        //LoadScene("level");
+        LoadScene("MainMenu");
 
 
         // -- LOADING in MONO --
@@ -27,32 +28,45 @@ namespace Boom
         const std::string asmDir = (repoRoot / "Gam300" / "GameScripts" / "bin" / "x64" / "Release").string();
 #endif
 
-        if (!InitMonoRuntime(monoBase, asmDir, "BoomDomain"))
-        {
-#ifdef _DEBUG
-            BOOM_ERROR("[Scripting] Failed to initialize Mono runtime!");
-#endif // DEBUG
-        }
 
+        if (!m_Context->scriptingSystem->Init(asmDir, m_Context))
+        {
+            BOOM_ERROR("[Scripting] Failed to initialize scripting system!");
+        }
         else
         {
-            RegisterScriptInternalCalls(m_Context);
-            if (!LoadGameAssembly("GameScripts.dll"))
+
+            std::string dllPath = (std::filesystem::path(asmDir) / "GameScripts.dll").string();
+
+            if (!m_Context->scriptingSystem->LoadScriptsDll(dllPath))
             {
-#ifdef _DEBUG
                 BOOM_ERROR("[Scripting] Failed to load GameScripts.dll");
-
-#endif // DEBUG
-
             }
             else
             {
 
-                InvokeStaticVoid("GameScripts", "Entry", "Start", nullptr);
-#ifdef _DEBUG
-                BOOM_INFO("[Scripting] GameScripts entry invoked.");
-#endif // DEBUG
+                // Auto enabling of hot reload
+                m_Context->scriptingSystem->EnableAutoHotReload(true);
 
+                if (!m_Context->scriptingSystem->CallStart())
+                    BOOM_ERROR("[Scripting] GameScripts.Entry:Start() failed");
+                else
+                    BOOM_INFO("[Scripting] GameScripts entry invoked.");
+
+                int scriptsCreated = 0;
+                auto& registry = m_Context->scene;
+                auto scriptView = registry.view<Boom::ScriptComponent>();
+                for (auto entity : scriptView) {
+                    auto& sc = scriptView.get<Boom::ScriptComponent>(entity);
+                    if (m_Context->scriptingSystem->RecreateForEntity(entity, sc)) {
+                        scriptsCreated++;
+                        BOOM_INFO("[Scripting] Created instance for entity {} (type: {})",
+                            static_cast<uint32_t>(entity), sc.TypeName);
+                    }
+                }
+                if (scriptsCreated > 0) {
+                    BOOM_INFO("[Scripting] Created {} script instances after scene load", scriptsCreated);
+                }
             }
         }
         // --- END MONO INITIALIZE ---
@@ -136,10 +150,22 @@ namespace Boom
 
             // Always update delta time, but adjust for pause state
             ComputeFrameDeltaTime();
-            InvokeStatic1Float("GameScripts", "Entry", "Update", static_cast<float>(m_Context->DeltaTime));
-            m_AIagents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime));
-            if (m_Nav) {
-                m_NavAgents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime), *m_Nav);
+            if (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) {
+               // InvokeStatic1Float("GameScripts", "Entry", "Update", static_cast<float>(m_Context->DeltaTime));
+                m_AIagents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime));
+                if (m_Nav) {
+                    m_NavAgents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime), *m_Nav);
+                }
+            }
+            float dt = static_cast<float>(m_Context->DeltaTime);
+            m_Context->scriptingSystem->UpdateFileWatcher();
+            m_Context->scriptingSystem->CallUpdate(dt);
+            
+            auto& registry = m_Context->scene;
+            auto scriptView = registry.view<Boom::ScriptComponent>();
+            for (auto entity : scriptView) {
+                auto& sc = scriptView.get<Boom::ScriptComponent>(entity);
+                m_Context->scriptingSystem->TickEntity(entity, sc, dt);
             }
 
             //compute camera position to colliders
@@ -155,8 +181,8 @@ namespace Boom
             m_Context->renderer->NewFrame();
             m_Context->profiler.End("Renderer Start Frame");
 
-            // Only update rotation when running
-            if (m_AppState == ApplicationState::RUNNING) {
+            // Only update physics/gameplay when in play mode
+            if (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) {
                 EnttView<Entity, RigidBodyComponent>([](auto, RigidBodyComponent& rb) {
                     rb.RigidBody.isColliding = false;
                     });
@@ -171,8 +197,8 @@ namespace Boom
 
             //temp input for mouse motion
             glfwGetCursorPos(m_Context->window->Handle().get(), &curMP.x, &curMP.y);
-            // ONLY update the flycam controller if the game is PAUSED
-            if (m_AppState != ApplicationState::RUNNING) {
+            // ONLY update the flycam controller if NOT in play mode (edit mode)
+            if (!m_IsInPlayMode) {
                 camera.update(static_cast<float>(m_Context->DeltaTime));
             }
 
@@ -183,10 +209,10 @@ namespace Boom
             EnttView<Entity, CameraComponent>([this, &curMP, &prevMP, &dbgView, &dbgProj, &dbgCamPos](auto entity, CameraComponent& comp) {
                 Transform3D& transform{ entity.template Get<TransformComponent>().transform };
 
-                // ONLY apply flycam logic if the game is PAUSED
-                if (m_AppState != ApplicationState::RUNNING)
+                // ONLY apply flycam logic if NOT in play mode (edit mode camera)
+                if (!m_IsInPlayMode)
                 {
-                    // This is the flycam logic, only run when not playing
+                    // This is the flycam logic, only run in edit mode
                     transform.rotate.x += m_Context->window->camRot.x;
                     transform.rotate.y += m_Context->window->camRot.y;
                     glm::quat quat{ glm::radians(transform.rotate) };
@@ -200,7 +226,7 @@ namespace Boom
                     }
                 }
 
-                // This part is needed by BOTH cameras, so leave it outside the 'if'
+                // This part is needed by BOTH edit and play mode cameras
                 m_Context->renderer->SetCamera(comp.camera, transform);
                 dbgView = comp.camera.View(transform);
                 dbgProj = comp.camera.Projection(m_Context->renderer->Aspect());
@@ -238,7 +264,7 @@ namespace Boom
                         lineVerts.push_back(Boom::LineVert{ l.p1, l.c1 });
                     }
 
-                    // Cull any segments within a small radius of the camera (fix “ball in face”)
+                    // Cull any segments within a small radius of the camera (fix ï¿½ball in faceï¿½)
                     std::vector<Boom::LineVert> filtered;
                     filtered.reserve(lineVerts.size());
                     const float camCullRadius = 0.6f;
@@ -270,7 +296,7 @@ namespace Boom
             }
             if (m_Context->ShowNavDebug && m_DebugLinesShader && m_Nav) {
                 // Draw navmesh edges & centroids near the camera. Tweak radius to taste.
-                const float navDrawRadius = 60.0f; // try 40–100 to see more/less
+                const float navDrawRadius = 60.0f; // try 40ï¿½100 to see more/less
                 m_Nav->DrawDetourNavMesh_Query(*m_DebugLinesShader, dbgView, dbgProj, dbgCamPos, navDrawRadius);
             }
 
@@ -310,12 +336,13 @@ namespace Boom
                 ModelAsset& model{ m_Context->assets->Get<ModelAsset>(comp.modelID) };
                 if (entity.Has<AnimatorComponent>()) {
                     auto& an = entity.Get<AnimatorComponent>();
-                    float dt = (m_AppState == ApplicationState::RUNNING) ? (float)m_Context->DeltaTime : 0.0f;
+                    // Only update animations in play mode when RUNNING
+                    float dt = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) ? (float)m_Context->DeltaTime : 0.0f;
                     auto& joints = an.animator->Animate(dt);
-                    m_Context->renderer->SetJoints(joints);           // existing
+                    m_Context->renderer->SetJoints(joints);
                 }
                 else {
-                    // NEW: ensure no stale palette leaks into this draw
+                    // Ensure no stale palette leaks into this draw
                     if (model.hasJoints)
                     {
                         static std::vector<glm::mat4> identityPalette(100, glm::mat4(1.0f));
@@ -634,20 +661,143 @@ namespace Boom
         }
     }
 
+    void Application::AppendCylinderWire(float radius, float halfHeight, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color)
+    {
+        const glm::mat4 M = PxToGlm(world);
+        const int segments = 16;
+
+        // Create direction array for circle generation (cached for performance)
+        static std::vector<glm::vec2> dir;
+        if (dir.empty()) {
+            dir.resize(segments);
+            for (int i = 0; i < segments; ++i) {
+                const float a = (float)i / (float)segments * glm::two_pi<float>();
+                dir[i] = glm::vec2(cosf(a), sinf(a));
+            }
+        }
+
+        // Draw top circle (Y = +halfHeight)
+        for (int i = 0; i < segments; ++i) {
+            int next = (i + 1) % segments;
+            glm::vec3 p0 = glm::vec3(M * glm::vec4(dir[i].x * radius, halfHeight, dir[i].y * radius, 1.0f));
+            glm::vec3 p1 = glm::vec3(M * glm::vec4(dir[next].x * radius, halfHeight, dir[next].y * radius, 1.0f));
+            AppendLine(out, p0, p1, color, color);
+        }
+
+        // Draw bottom circle (Y = -halfHeight)
+        for (int i = 0; i < segments; ++i) {
+            int next = (i + 1) % segments;
+            glm::vec3 p0 = glm::vec3(M * glm::vec4(dir[i].x * radius, -halfHeight, dir[i].y * radius, 1.0f));
+            glm::vec3 p1 = glm::vec3(M * glm::vec4(dir[next].x * radius, -halfHeight, dir[next].y * radius, 1.0f));
+            AppendLine(out, p0, p1, color, color);
+        }
+
+        // Draw vertical rails connecting top and bottom circles (every 4th segment for clarity)
+        for (int i = 0; i < segments; i += segments / 4) {
+            glm::vec3 top = glm::vec3(M * glm::vec4(dir[i].x * radius, halfHeight, dir[i].y * radius, 1.0f));
+            glm::vec3 bot = glm::vec3(M * glm::vec4(dir[i].x * radius, -halfHeight, dir[i].y * radius, 1.0f));
+            AppendLine(out, top, bot, color, color);
+        }
+    }
+
+void Application::AppendConvexMeshWire(const physx::PxConvexMeshGeometry& geom, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color)
+    {
+        const physx::PxConvexMesh* mesh = geom.convexMesh;
+        if (!mesh) return;
+
+        // A Convex Mesh is made of polygons. We iterate through them to draw edges.
+        const physx::PxU32 nbPolys = mesh->getNbPolygons();
+        const physx::PxVec3* verts = mesh->getVertices();
+        const physx::PxU8* indices = mesh->getIndexBuffer();
+
+        for (physx::PxU32 i = 0; i < nbPolys; ++i)
+        {
+            physx::PxHullPolygon poly;
+            mesh->getPolygonData(i, poly);
+
+            for (physx::PxU32 j = 0; j < poly.mNbVerts; ++j)
+            {
+                // 1. Get the indices for the current edge (vertex j to j+1)
+                physx::PxU32 idx1 = indices[poly.mIndexBase + j];
+                physx::PxU32 idx2 = indices[poly.mIndexBase + (j + 1) % poly.mNbVerts];
+
+                // 2. Retrieve raw vertices
+                physx::PxVec3 v1 = verts[idx1];
+                physx::PxVec3 v2 = verts[idx2];
+
+                // 3. Apply the Mesh Scale (Important! Physics meshes can be scaled independently)
+                v1 = geom.scale.transform(v1);
+                v2 = geom.scale.transform(v2);
+
+                // 4. Apply the World Transform (Actor position/rotation)
+                v1 = world.transform(v1);
+                v2 = world.transform(v2);
+
+                // 5. Add to line buffer
+                out.push_back({ ToGLMVec3(v1), color });
+                out.push_back({ ToGLMVec3(v2), color });
+            }
+        }
+    }
+
+    void Application::AppendTriangleWire(const glm::vec3& scale, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color)
+{
+    const glm::mat4 M = PxToGlm(world);
+    const float height = scale.y * 0.5f;
+    const float sizeX = scale.x;
+    const float sizeZ = scale.z;
+    
+    // Define triangle vertices (top face)
+    const glm::vec3 topVerts[3] = {
+        glm::vec3(0.0f, height, sizeZ * 0.5f),           // Front vertex
+        glm::vec3(-sizeX * 0.5f, height, -sizeZ * 0.5f), // Back-left
+        glm::vec3(sizeX * 0.5f, height, -sizeZ * 0.5f)   // Back-right
+    };
+    
+    // Define triangle vertices (bottom face)
+    const glm::vec3 botVerts[3] = {
+        glm::vec3(0.0f, -height, sizeZ * 0.5f),
+        glm::vec3(-sizeX * 0.5f, -height, -sizeZ * 0.5f),
+        glm::vec3(sizeX * 0.5f, -height, -sizeZ * 0.5f)
+    };
+    
+    // Transform vertices to world space
+    auto Transform = [&](const glm::vec3& v) {
+        return glm::vec3(M * glm::vec4(v, 1.0f));
+    };
+    
+    // Draw top triangle edges
+    for (int i = 0; i < 3; ++i) {
+        int next = (i + 1) % 3;
+        AppendLine(out, Transform(topVerts[i]), Transform(topVerts[next]), color, color);
+    }
+    
+    // Draw bottom triangle edges
+    for (int i = 0; i < 3; ++i) {
+        int next = (i + 1) % 3;
+        AppendLine(out, Transform(botVerts[i]), Transform(botVerts[next]), color, color);
+    }
+    
+    // Draw vertical edges connecting top and bottom
+    for (int i = 0; i < 3; ++i) {
+        AppendLine(out, Transform(topVerts[i]), Transform(botVerts[i]), color, color);
+    }
+}
+
     void Application::DrawRigidBodiesDebugOnly(const glm::mat4& view, const glm::mat4& proj)
     {
         if (!m_DebugLinesShader) return;
 
         std::vector<Boom::LineVert> verts;
         verts.reserve(1024);
-        //const glm::vec4 color(0.1f, 1.0f, 0.1f, 1.0f);
 
+        // 1. Draw entities WITH RigidBodyComponent (existing code)
         EnttView<Entity, RigidBodyComponent>([&](auto entity, RigidBodyComponent& rb) {
             if (!entity.template Has<ColliderComponent>()) return;
 
             const glm::vec4 color = rb.RigidBody.isColliding
                 ? glm::vec4(1.0f, 0.0f, 0.0f, 1.0f) // Bright Red when colliding
-                : glm::vec4(1.1f, 0.0f, 1.0f, 1.0f);
+                : glm::vec4(1.1f, 0.0f, 1.0f, 1.0f); // Magenta for normal rigidbodies
 
             physx::PxRigidActor* actor = rb.RigidBody.actor;
             if (!actor) return;
@@ -673,15 +823,183 @@ namespace Boom
                 case physx::PxGeometryType::eCAPSULE:
                     AppendCapsuleWire(gh.capsule().radius, gh.capsule().halfHeight, world, verts, color);
                     break;
-                default:
-                    // For mesh/convex/etc. you can add more if needed; skip for now.
+                case physx::PxGeometryType::eCONVEXMESH:
+                {
+                    if (entity.template Has<ColliderComponent>()) {
+                        auto& col = entity.template Get<ColliderComponent>();
+                        auto& transform = entity.template Get<TransformComponent>().transform;
+
+                        if (col.Collider.type == Collider3D::Type::CYLINDER) {
+                            const glm::vec3 s = glm::abs(transform.scale * col.Collider.localScale);
+
+                            // Standard Y-Up logic matching Physics
+                            float radius = 0.5f * std::max(s.x, s.z);
+
+                            // --- FIX: Rename 'height' to 'halfHeight' ---
+                            float halfHeight = 0.5f * s.y;
+
+                            // Safety clamps
+                            const float kMin = 0.01f;
+                            if (radius <= 0.0f) radius = kMin;
+                            if (halfHeight <= 0.0f) halfHeight = kMin;
+
+                            // Pass 'world' directly.
+                            AppendCylinderWire(radius, halfHeight, world, verts, color);
+                        }
+                        else if (col.Collider.type == Collider3D::Type::TRIANGLE) {
+                            const glm::vec3 s = glm::abs(transform.scale * col.Collider.localScale);
+                            AppendTriangleWire(s, world, verts, color);
+                        }
+                        else {
+                            // === NEW: Handle standard Mesh Colliders ===
+                            // If it's not a Cylinder or Triangle, it's a generic Convex Mesh.
+                            AppendConvexMeshWire(gh.convexMesh(), world, verts, color);
+                        }
+                    }
                     break;
                 }
+                default:
+                    break;
+                }
+            }
+            });
+
+        // 2. NEW: Draw entities with ONLY ColliderComponent (no RigidBodyComponent)
+        EnttView<Entity, ColliderComponent>([&](auto entity, ColliderComponent& col) {
+            // Skip if it has a RigidBodyComponent (already drawn above)
+            if (entity.template Has<RigidBodyComponent>()) return;
+
+            // Use a distinct color for collider-only entities
+            // Cyan for triggers, Yellow for non-triggers
+            const glm::vec4 color = col.Collider.isTrigger
+                ? glm::vec4(0.0f, 1.0f, 1.0f, 1.0f) // Cyan for triggers
+                : glm::vec4(1.0f, 1.0f, 0.0f, 1.0f); // Yellow for static colliders
+
+            // Get the actor from the collider (AddColliderOnly stores it)
+            // We need to check if there's a temporary RigidBodyComponent created by AddColliderOnly
+            // OR we can use the transform directly
+            auto& transform = entity.template Get<TransformComponent>().transform;
+
+            // Create a transform for the collider
+            glm::vec3 eulerRadians = glm::radians(transform.rotate);
+            glm::quat rot = glm::quat(eulerRadians);
+            rot = glm::normalize(rot);
+
+            physx::PxTransform pose(
+                physx::PxVec3(transform.translate.x, transform.translate.y, transform.translate.z),
+                physx::PxQuat(rot.x, rot.y, rot.z, rot.w)
+            );
+
+            // Apply local collider offset
+            physx::PxTransform localPose(
+                ToPxVec3(col.Collider.localPosition),
+                ToPxQuat(col.Collider.localRotation)
+            );
+            physx::PxTransform world = pose * localPose;
+
+            // Draw based on collider type
+            switch (col.Collider.type)
+            {
+            case Collider3D::Type::BOX:
+            {
+                glm::vec3 halfExtents = (transform.scale * col.Collider.localScale) / 2.0f;
+                physx::PxBoxGeometry box(halfExtents.x, halfExtents.y, halfExtents.z);
+                AppendBoxWire(box, world, verts, color);
+                break;
+            }
+            case Collider3D::Type::SPHERE:
+            {
+                float radius = (transform.scale.x * col.Collider.localScale.x) / 2.0f;
+                AppendSphereWire(radius, world, verts, color);
+                break;
+            }
+            case Collider3D::Type::CAPSULE:
+            {
+                const glm::vec3 s = glm::abs(transform.scale * col.Collider.localScale);
+                enum Axis { AXIS_X = 0, AXIS_Y = 1, AXIS_Z = 2 };
+                Axis majorAxis = AXIS_X;
+                if (s.y > s.x && s.y > s.z) majorAxis = AXIS_Y;
+                else if (s.z > s.x && s.z > s.y) majorAxis = AXIS_Z;
+
+                float radius, halfHeight;
+                if (majorAxis == AXIS_Y) {
+                    radius = 0.5f * std::max(s.x, s.z);
+                    halfHeight = 0.5f * s.y;
+                }
+                else if (majorAxis == AXIS_Z) {
+                    radius = 0.5f * std::max(s.x, s.y);
+                    halfHeight = 0.5f * s.z;
+                }
+                else {
+                    radius = 0.5f * std::max(s.y, s.z);
+                    halfHeight = 0.5f * s.x;
+                }
+
+                halfHeight = halfHeight - radius;
+                const float kMin = 0.01f;
+                if (radius <= 0.0f) radius = kMin;
+                if (halfHeight <= 0.0f) halfHeight = kMin;
+
+                // Apply capsule axis rotation
+                physx::PxQuat localQ = physx::PxQuat(physx::PxIdentity);
+                if (majorAxis == AXIS_Y) localQ = physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.0f, 0.0f, 1.0f));
+                else if (majorAxis == AXIS_Z) localQ = physx::PxQuat(-physx::PxHalfPi, physx::PxVec3(0.0f, 1.0f, 0.0f));
+
+                physx::PxTransform capsuleWorld = world * physx::PxTransform(physx::PxVec3(0.0f), localQ);
+                AppendCapsuleWire(radius, halfHeight, capsuleWorld, verts, color);
+                break;
+            }
+            case Collider3D::Type::CYLINDER:
+            {
+                const glm::vec3 s = glm::abs(transform.scale * col.Collider.localScale);
+
+                // Standard Y-Up logic
+                float radius = 0.5f * std::max(s.x, s.z);
+                float halfHeight = 0.5f * s.y;
+
+                const float kMin = 0.01f;
+                if (radius <= 0.0f) radius = kMin;
+                if (halfHeight <= 0.0f) halfHeight = kMin;
+
+                // Remove the rotation logic here as well
+                physx::PxTransform cylinderWorld = world;
+                AppendCylinderWire(radius, halfHeight, cylinderWorld, verts, color);
+                break;
+            }
+
+            case Collider3D::Type::TRIANGLE:
+            {
+                const glm::vec3 s = glm::abs(transform.scale * col.Collider.localScale);
+                AppendTriangleWire(s, world, verts, color);
+                break;
+            }
+            case Collider3D::Type::MESH:
+            {
+                // 1. Check if the mesh asset exists
+                if (col.Collider.physicsMeshID == EMPTY_ASSET) break;
+                auto& asset = m_Context->assets->Get<PhysicsMeshAsset>(col.Collider.physicsMeshID);
+                if (!asset.mesh) break;
+
+                // 2. Construct geometry manually since we don't have a PxShape
+                physx::PxConvexMeshGeometry geom;
+                geom.convexMesh = asset.mesh;
+
+                // 3. Calculate Scale (Transform Scale * Collider Local Scale)
+                glm::vec3 totalScale = transform.scale * col.Collider.localScale;
+                geom.scale = physx::PxMeshScale(ToPxVec3(totalScale));
+
+                // 4. Draw
+                AppendConvexMeshWire(geom, world, verts, color);
+                break;
+            }
+            default:
+                break;
             }
             });
 
         if (!verts.empty())
             m_DebugLinesShader->Draw(view, proj, verts, 10.5f);
     }
+
 
 }
