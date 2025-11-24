@@ -301,29 +301,51 @@ namespace EditorUI {
                 ImGui::Spacing();
                 ImGui::SeparatorText("Physics");
 
-                // --- UI for cooking the mesh collider (unchanged UX) ---
+                // --- UI for cooking the mesh collider ---
                 if (mc.modelID != EMPTY_ASSET) {
                     ModelAsset& modelAsset = m_App->GetAssetRegistry().Get<ModelAsset>(mc.modelID);
 
                     if (modelAsset.data) {
-                        if (ImGui::Button("Compile Mesh Collider from this Model", ImVec2(-1, 0))) {
-                            std::string saveDir = "Resources/Physics/";
-                            if (!std::filesystem::exists(saveDir)) {
-                                std::filesystem::create_directories(saveDir);
-                            }
+                        // 1. Construct the intended path based on the model name
+                        std::string saveDir = "Resources/Physics/";
+                        std::string savePath = saveDir + modelAsset.name + ".pxm";
 
-                            // Use model name for the .pxm file
-                            std::string savePath = saveDir + modelAsset.name + ".pxm";
-                            bool success = m_App->GetPhysicsContext().CompileAndSavePhysicsMesh(modelAsset, savePath);
+                        // 2. Check if this asset already exists in the Registry
+                        auto* existingAsset = m_App->GetAssetRegistry().FindPhysicsMeshByPath(savePath);
 
-                            if (success) {
-                                AssetID newID = RandomU64();
-                                m_App->GetAssetRegistry().AddPhysicsMesh(newID, savePath)->name = modelAsset.name;
-                                BOOM_INFO("Successfully cooked and created PhysicsMeshAsset '{}'", modelAsset.name);
-                                m_App->SaveAssets();
+                        // 3. Check if the file already exists on Disk
+                        bool fileExists = std::filesystem::exists(savePath);
+
+                        // 4. Logic: Only allow compilation if NEITHER exists
+                        if (existingAsset || fileExists) {
+                            ImGui::BeginDisabled();
+                            ImGui::Button("Physics Mesh Already Compiled", ImVec2(-1, 0));
+                            ImGui::EndDisabled();
+
+                            if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+                                if (existingAsset)
+                                    ImGui::SetTooltip("Asset already registered (UID: %llu)", existingAsset->uid);
+                                else
+                                    ImGui::SetTooltip("File already exists at: %s", savePath.c_str());
                             }
-                            else {
-                                BOOM_ERROR("Failed to cook physics mesh for '{}'. Check model data.", modelAsset.name);
+                        }
+                        else {
+                            if (ImGui::Button("Compile Mesh Collider from this Model", ImVec2(-1, 0))) {
+                                if (!std::filesystem::exists(saveDir)) {
+                                    std::filesystem::create_directories(saveDir);
+                                }
+
+                                bool success = m_App->GetPhysicsContext().CompileAndSavePhysicsMesh(modelAsset, savePath);
+
+                                if (success) {
+                                    AssetID newID = RandomU64();
+                                    m_App->GetAssetRegistry().AddPhysicsMesh(newID, savePath)->name = modelAsset.name;
+                                    BOOM_INFO("Successfully cooked and created PhysicsMeshAsset '{}'", modelAsset.name);
+                                    m_App->SaveAssets();
+                                }
+                                else {
+                                    BOOM_ERROR("Failed to cook physics mesh for '{}'. Check model data.", modelAsset.name);
+                                }
                             }
                         }
                     }
@@ -886,6 +908,8 @@ namespace EditorUI {
                 case Collider3D::Type::SPHERE:  currentTypeName = "Sphere";  break;
                 case Collider3D::Type::CAPSULE: currentTypeName = "Capsule"; break;
                 case Collider3D::Type::MESH:    currentTypeName = "Mesh";    break;
+				case Collider3D::Type::CYLINDER:currentTypeName = "Cylinder";break;
+				case Collider3D::Type::TRIANGLE:currentTypeName = "Triangle";break;
                 case Collider3D::Type::PLANE:   currentTypeName = "Plane";   break;
                 }
 
@@ -896,7 +920,7 @@ namespace EditorUI {
 
                 if (ImGui::BeginCombo("##ColliderType", currentTypeName))
                 {
-                    const char* types[] = { "Box", "Sphere", "Capsule", "Mesh", "Plane" };
+                    const char* types[] = { "Box", "Sphere", "Capsule", "Mesh", "Plane", "Cylinder", "Triangle"};
                     for (int i = 0; i < IM_ARRAYSIZE(types); ++i) {
                         bool isSelected = (currentType == static_cast<Collider3D::Type>(i));
                         if (ImGui::Selectable(types[i], isSelected)) {
@@ -906,7 +930,6 @@ namespace EditorUI {
                     }
                     ImGui::EndCombo();
                 }
-
                 // Mesh asset picker (only for MESH type)
                 if (currentType == Collider3D::Type::MESH)
                 {
@@ -934,9 +957,25 @@ namespace EditorUI {
                         }
                         if (isNoneSelected) ImGui::SetItemDefaultFocus();
 
+                        // --- FIX START: Create a set to track displayed names ---
+                        std::unordered_set<std::string> displayedNames;
+
                         for (auto& [uid, asset] : map)
                         {
                             if (uid == EMPTY_ASSET) continue;
+
+                            // 1. Check if we have already displayed a mesh with this name
+                            if (displayedNames.find(asset->name) != displayedNames.end()) {
+                                continue; // Skip duplicates
+                            }
+
+                            // 2. Mark this name as displayed
+                            displayedNames.insert(asset->name);
+
+                            // 3. PushID ensures ImGui differentiates items even if names were identical 
+                            // (though the set check above prevents that, this is good safety)
+                            ImGui::PushID(static_cast<int>(uid));
+
                             bool isSelected = (col.Collider.physicsMeshID == uid);
                             if (ImGui::Selectable(asset->name.c_str(), isSelected))
                             {
@@ -944,7 +983,11 @@ namespace EditorUI {
                                 m_App->GetPhysicsContext().UpdateColliderShape(selected, m_App->GetAssetRegistry());
                             }
                             if (isSelected) ImGui::SetItemDefaultFocus();
+
+                            ImGui::PopID();
                         }
+                        // --- FIX END ---
+
                         ImGui::EndCombo();
                     }
                     ImGui::Separator();
@@ -1019,6 +1062,25 @@ namespace EditorUI {
                         col.Collider.restitution != oldRestitution))
                 {
                     m_App->GetPhysicsContext().UpdatePhysicsMaterial(selected);
+                }
+
+                // Fit to Transform button
+                ImGui::Spacing();
+                if (ImGui::Button("Fit to Transform")) {
+                    auto& transform = selected.Get<TransformComponent>().transform;
+                    auto& collider = selected.Get<ColliderComponent>().Collider;
+                    
+                    // Reset to match transform exactly
+                    collider.localScale = glm::vec3(1.0f, 1.0f, 1.0f);
+                    
+                    // Update the physics shape
+                    m_App->GetPhysicsContext().UpdateColliderShape(selected, 
+                                                                     m_App->GetAssetRegistry());
+                }
+                ImGui::SameLine();
+                ImGui::TextDisabled("(?)");
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Reset collider to match the entity's transform scale");
                 }
 
                 ImGui::Spacing();

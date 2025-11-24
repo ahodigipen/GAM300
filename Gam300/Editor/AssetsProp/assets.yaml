@@ -77,6 +77,10 @@ ASSETS:
     Name: sphere
     Source: Resources/Physics/sphere.pxm
   - Type: PHYSICS_MESH
+    UID: 2061877446978793964
+    Name: Stairs_Handle
+    Source: Resources/Physics/Stairs_Handle.pxm
+  - Type: PHYSICS_MESH
     UID: 6064271428936207948
     Name: Cube.FBX
     Source: Resources/Physics/Cube.FBX.pxm
@@ -85,9 +89,61 @@ ASSETS:
     Name: GAM300_Ninja
     Source: Resources/Physics/GAM300_Ninja.pxm
   - Type: PHYSICS_MESH
+    UID: 13626919571269201074
+    Name: Fruit_Tree
+    Source: Resources/Physics/Fruit_Tree.pxm
+  - Type: PHYSICS_MESH
     UID: 10282509391466741466
     Name: Sliding_Door
     Source: Resources/Physics/Sliding_Door.pxm
+  - Type: PHYSICS_MESH
+    UID: 4462591176276306201
+    Name: Stairs
+    Source: Resources/Physics/Stairs.pxm
+  - Type: PHYSICS_MESH
+    UID: 675814903367683746
+    Name: Lion_Statue2
+    Source: Resources/Physics/Lion_Statue2.pxm
+  - Type: PHYSICS_MESH
+    UID: 4431181016770564176
+    Name: Floor_Cushion
+    Source: Resources/Physics/Floor_Cushion.pxm
+  - Type: PHYSICS_MESH
+    UID: 14994902549669501522
+    Name: Stairs_Handle
+    Source: Resources/Physics/Stairs_Handle.pxm
+  - Type: PHYSICS_MESH
+    UID: 14118317202290831515
+    Name: Floor_Cushion
+    Source: Resources/Physics/Floor_Cushion.pxm
+  - Type: PHYSICS_MESH
+    UID: 9351549157791107372
+    Name: Floor_Cushion
+    Source: Resources/Physics/Floor_Cushion.pxm
+  - Type: PHYSICS_MESH
+    UID: 7849896674810615893
+    Name: Stairs_Handle
+    Source: Resources/Physics/Stairs_Handle.pxm
+  - Type: PHYSICS_MESH
+    UID: 53427998423929220
+    Name: Hut_Roof
+    Source: Resources/Physics/Hut_Roof.pxm
+  - Type: PHYSICS_MESH
+    UID: 13244744886219103757
+    Name: WallTest
+    Source: Resources/Physics/WallTest.pxm
+  - Type: PHYSICS_MESH
+    UID: 18311705917173916947
+    Name: Japanese_Table
+    Source: Resources/Physics/Japanese_Table.pxm
+  - Type: PHYSICS_MESH
+    UID: 6729413007522777642
+    Name: Statue
+    Source: Resources/Physics/Statue.pxm
+  - Type: PHYSICS_MESH
+    UID: 330654023275890549
+    Name: Indoor_Lanturn_Hangingfbx
+    Source: Resources/Physics/Indoor_Lanturn_Hangingfbx.pxm
   - Type: PREFAB
     UID: 8959324902145137880
     Name: Dancing Model
@@ -821,9 +877,20 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 7873796094980076848
-    Name: Outdoor_Stone_Lantern2_midsection_BaseColor
-    Source: Resources/Textures/Stone Lantern Textures/Outdoor_Stone_Lantern2_midsection_BaseColor.png
+    UID: 3397359786255767116
+    Name: Paper003_1K-PNG_ColorTorn
+    Source: Resources/Textures/Paper003_1K-PNG_ColorTorn.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 4271895845596125777
+    Name: ExitButton
+    Source: Resources/Textures/MainMenu/ExitButton.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -846,28 +913,6 @@ ASSETS:
     UID: 5633507845722200628
     Name: Grass_Dense_Tint_02_Base_Basecolor_A
     Source: Resources/Textures/Cartoon_Texture_Pack/GRASS/GRASS_Dense_Tint_02/Grass_Dense_Tint_02_Base_Basecolor_A.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 3397359786255767116
-    Name: Paper003_1K-PNG_ColorTorn
-    Source: Resources/Textures/Paper003_1K-PNG_ColorTorn.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 4271895845596125777
-    Name: ExitButton
-    Source: Resources/Textures/MainMenu/ExitButton.png
     Properties:
       Data:
         CompileAsCompressed: true
