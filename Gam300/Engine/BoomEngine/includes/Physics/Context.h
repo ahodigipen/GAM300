@@ -254,52 +254,28 @@ namespace Boom {
                 collider.Shape->setLocalPose(userLocalPose * PxTransform(PxVec3(0.0f), planeRot));
             }
             else if (collider.type == Collider3D::CYLINDER) {
+                // 1. Get absolute scale
                 const glm::vec3 s = glm::abs(transform.scale * collider.localScale);
 
-                // Determine cylinder axis (longest axis)
-                enum Axis { AXIS_X = 0, AXIS_Y = 1, AXIS_Z = 2 };
-                Axis majorAxis = AXIS_Y; // Default to Y-up
-                if (s.x > s.y && s.x > s.z) majorAxis = AXIS_X;
-                else if (s.z > s.y && s.z > s.x) majorAxis = AXIS_Z;
+                // 2. Create Unit Cylinder (Radius 1, HalfHeight 1)
+                PxConvexMesh* cylinderMesh = CreateCylinderMesh(1.0f, 1.0f);
 
-                float radius, halfHeight;
-                if (majorAxis == AXIS_Y) {
-                    radius = 0.5f * std::max(s.x, s.z);
-                    halfHeight = 0.5f * s.y;
-                }
-                else if (majorAxis == AXIS_Z) {
-                    radius = 0.5f * std::max(s.x, s.y);
-                    halfHeight = 0.5f * s.z;
-                }
-                else { // AXIS_X
-                    radius = 0.5f * std::max(s.y, s.z);
-                    halfHeight = 0.5f * s.x;
-                }
-
-                const float kMin = 0.01f;
-                if (radius <= 0.0f) radius = kMin;
-                if (halfHeight <= 0.0f) halfHeight = kMin;
-
-                // Create cylinder mesh
-                PxConvexMesh* cylinderMesh = CreateCylinderMesh(radius, halfHeight);
                 if (cylinderMesh) {
                     PxConvexMeshGeometry convexGeom(cylinderMesh);
+
+                    // 3. Map Scale consistently:
+                    //    - Y is always Height
+                    //    - Max(X, Z) is Radius
+                    //    - Multiply by 0.5f so standard scale 1.0 = size 1.0 (Diameter)
+                    float radius = 0.5f * std::max(s.x, s.z);
+                    float height = 0.5f * s.y;
+
+                    convexGeom.scale = PxMeshScale(PxVec3(radius, height, radius));
                     collider.Shape = m_Physics->createShape(convexGeom, *collider.material);
 
-                    // Rotate to align with chosen axis
-                    PxQuat localQ = PxQuat(PxIdentity);
-                    if (majorAxis == AXIS_Y) {
-                        localQ = PxQuat(PxIdentity); // Already Y-up
-                    }
-                    else if (majorAxis == AXIS_Z) {
-                        localQ = PxQuat(PxHalfPi, PxVec3(1.0f, 0.0f, 0.0f)); // Rotate to Z-up
-                    }
-                    else { // AXIS_X
-                        localQ = PxQuat(PxHalfPi, PxVec3(0.0f, 0.0f, 1.0f)); // Rotate to X-forward
-                    }
-
-                    PxTransform cylinderPose(PxVec3(0.0f), localQ);
-                    collider.Shape->setLocalPose(userLocalPose * cylinderPose);
+                    // 4. No dynamic rotation based on scale. 
+                    //    Use userLocalPose directly (handles manual offsets).
+                    collider.Shape->setLocalPose(userLocalPose);
                 }
                 else {
                     BOOM_ERROR("Failed to create cylinder mesh");
@@ -518,45 +494,34 @@ namespace Boom {
                     collider.Shape->setLocalPose(userLocalPose * PxTransform(PxVec3(0.0f), planeRot));
                 }
                 else if (collider.type == Collider3D::CYLINDER) {
+                    // 1. Get absolute scale
                     const glm::vec3 s = glm::abs(transform.scale * collider.localScale);
 
-                    enum Axis { AXIS_X = 0, AXIS_Y = 1, AXIS_Z = 2 };
-                    Axis majorAxis = AXIS_Y;
-                    if (s.x > s.y && s.x > s.z) majorAxis = AXIS_X;
-                    else if (s.z > s.y && s.z > s.x) majorAxis = AXIS_Z;
+                    // 2. Create Unit Cylinder (Radius 1, HalfHeight 1)
+                    PxConvexMesh* cylinderMesh = CreateCylinderMesh(1.0f, 1.0f);
 
-                    float radius, halfHeight;
-                    if (majorAxis == AXIS_Y) {
-                        radius = 0.5f * std::max(s.x, s.z);
-                        halfHeight = 0.5f * s.y;
-                    }
-                    else if (majorAxis == AXIS_Z) {
-                        radius = 0.5f * std::max(s.x, s.y);
-                        halfHeight = 0.5f * s.z;
-                    }
-                    else {
-                        radius = 0.5f * std::max(s.y, s.z);
-                        halfHeight = 0.5f * s.x;
-                    }
-
-                    const float kMin = 0.01f;
-                    if (radius <= 0.0f) radius = kMin;
-                    if (halfHeight <= 0.0f) halfHeight = kMin;
-
-                    PxConvexMesh* cylinderMesh = CreateCylinderMesh(radius, halfHeight);
                     if (cylinderMesh) {
                         PxConvexMeshGeometry convexGeom(cylinderMesh);
+
+                        // 3. Map Scale consistently:
+                        //    - Y is always Height
+                        //    - Max(X, Z) is Radius
+                        //    - Multiply by 0.5f so standard scale 1.0 = size 1.0 (Diameter)
+                        float radius = 0.5f * std::max(s.x, s.z);
+                        float height = 0.5f * s.y;
+
+                        convexGeom.scale = PxMeshScale(PxVec3(radius, height, radius));
                         collider.Shape = m_Physics->createShape(convexGeom, *collider.material);
 
-                        PxQuat localQ = PxQuat(PxIdentity);
-                        if (majorAxis == AXIS_Y) localQ = PxQuat(PxIdentity);
-                        else if (majorAxis == AXIS_Z) localQ = PxQuat(PxHalfPi, PxVec3(1.0f, 0.0f, 0.0f));
-                        else localQ = PxQuat(PxHalfPi, PxVec3(0.0f, 0.0f, 1.0f));
-
-                        PxTransform cylinderPose(PxVec3(0.0f), localQ);
-                        collider.Shape->setLocalPose(userLocalPose * cylinderPose);
+                        // 4. No dynamic rotation based on scale. 
+                        //    Use userLocalPose directly (handles manual offsets).
+                        collider.Shape->setLocalPose(userLocalPose);
                     }
-}
+                    else {
+                        BOOM_ERROR("Failed to create cylinder mesh");
+                        return;
+                    }
+                }
                 else if (collider.type == Collider3D::TRIANGLE) {
                     const glm::vec3 s = glm::abs(transform.scale * collider.localScale);
 
@@ -752,43 +717,32 @@ namespace Boom {
                 collider.Shape->setLocalPose(userLocalPose * PxTransform(PxVec3(0.0f), planeRot));
             }
             else if (collider.type == Collider3D::CYLINDER) {
+                // 1. Get absolute scale
                 const glm::vec3 s = glm::abs(transform.scale * collider.localScale);
 
-                enum Axis { AXIS_X = 0, AXIS_Y = 1, AXIS_Z = 2 };
-                Axis majorAxis = AXIS_Y;
-                if (s.x > s.y && s.x > s.z) majorAxis = AXIS_X;
-                else if (s.z > s.y && s.z > s.x) majorAxis = AXIS_Z;
+                // 2. Create Unit Cylinder (Radius 1, HalfHeight 1)
+                PxConvexMesh* cylinderMesh = CreateCylinderMesh(1.0f, 1.0f);
 
-                float radius, halfHeight;
-                if (majorAxis == AXIS_Y) {
-                    radius = 0.5f * std::max(s.x, s.z);
-                    halfHeight = 0.5f * s.y;
-                }
-                else if (majorAxis == AXIS_Z) {
-                    radius = 0.5f * std::max(s.x, s.y);
-                    halfHeight = 0.5f * s.z;
-                }
-                else {
-                    radius = 0.5f * std::max(s.y, s.z);
-                    halfHeight = 0.5f * s.x;
-                }
-
-                const float kMin = 0.01f;
-                if (radius <= 0.0f) radius = kMin;
-                if (halfHeight <= 0.0f) halfHeight = kMin;
-
-                PxConvexMesh* cylinderMesh = CreateCylinderMesh(radius, halfHeight);
                 if (cylinderMesh) {
                     PxConvexMeshGeometry convexGeom(cylinderMesh);
+
+                    // 3. Map Scale consistently:
+                    //    - Y is always Height
+                    //    - Max(X, Z) is Radius
+                    //    - Multiply by 0.5f so standard scale 1.0 = size 1.0 (Diameter)
+                    float radius = 0.5f * std::max(s.x, s.z);
+                    float height = 0.5f * s.y;
+
+                    convexGeom.scale = PxMeshScale(PxVec3(radius, height, radius));
                     collider.Shape = m_Physics->createShape(convexGeom, *collider.material);
 
-                    PxQuat localQ = PxQuat(PxIdentity);
-                    if (majorAxis == AXIS_Y) localQ = PxQuat(PxIdentity);
-                    else if (majorAxis == AXIS_Z) localQ = PxQuat(PxHalfPi, PxVec3(1.0f, 0.0f, 0.0f));
-                    else localQ = PxQuat(PxHalfPi, PxVec3(0.0f, 0.0f, 1.0f));
-
-                    PxTransform cylinderPose(PxVec3(0.0f), localQ);
-                    collider.Shape->setLocalPose(userLocalPose * cylinderPose);
+                    // 4. No dynamic rotation based on scale. 
+                    //    Use userLocalPose directly (handles manual offsets).
+                    collider.Shape->setLocalPose(userLocalPose);
+                }
+                else {
+                    BOOM_ERROR("Failed to create cylinder mesh");
+                    return;
                 }
             }
             else if (collider.type == Collider3D::TRIANGLE) {

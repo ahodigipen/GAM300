@@ -886,6 +886,8 @@ namespace EditorUI {
                 case Collider3D::Type::SPHERE:  currentTypeName = "Sphere";  break;
                 case Collider3D::Type::CAPSULE: currentTypeName = "Capsule"; break;
                 case Collider3D::Type::MESH:    currentTypeName = "Mesh";    break;
+				case Collider3D::Type::CYLINDER:currentTypeName = "Cylinder";break;
+				case Collider3D::Type::TRIANGLE:currentTypeName = "Triangle";break;
                 case Collider3D::Type::PLANE:   currentTypeName = "Plane";   break;
                 }
 
@@ -896,7 +898,7 @@ namespace EditorUI {
 
                 if (ImGui::BeginCombo("##ColliderType", currentTypeName))
                 {
-                    const char* types[] = { "Box", "Sphere", "Capsule", "Mesh", "Plane", "Cylinder", "Triangle" };
+                    const char* types[] = { "Box", "Sphere", "Capsule", "Mesh", "Plane", "Cylinder", "Triangle"};
                     for (int i = 0; i < IM_ARRAYSIZE(types); ++i) {
                         bool isSelected = (currentType == static_cast<Collider3D::Type>(i));
                         if (ImGui::Selectable(types[i], isSelected)) {

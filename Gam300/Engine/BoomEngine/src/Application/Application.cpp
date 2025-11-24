@@ -700,6 +700,46 @@ namespace Boom
         }
     }
 
+void Application::AppendConvexMeshWire(const physx::PxConvexMeshGeometry& geom, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color)
+    {
+        const physx::PxConvexMesh* mesh = geom.convexMesh;
+        if (!mesh) return;
+
+        // A Convex Mesh is made of polygons. We iterate through them to draw edges.
+        const physx::PxU32 nbPolys = mesh->getNbPolygons();
+        const physx::PxVec3* verts = mesh->getVertices();
+        const physx::PxU8* indices = mesh->getIndexBuffer();
+
+        for (physx::PxU32 i = 0; i < nbPolys; ++i)
+        {
+            physx::PxHullPolygon poly;
+            mesh->getPolygonData(i, poly);
+
+            for (physx::PxU32 j = 0; j < poly.mNbVerts; ++j)
+            {
+                // 1. Get the indices for the current edge (vertex j to j+1)
+                physx::PxU32 idx1 = indices[poly.mIndexBase + j];
+                physx::PxU32 idx2 = indices[poly.mIndexBase + (j + 1) % poly.mNbVerts];
+
+                // 2. Retrieve raw vertices
+                physx::PxVec3 v1 = verts[idx1];
+                physx::PxVec3 v2 = verts[idx2];
+
+                // 3. Apply the Mesh Scale (Important! Physics meshes can be scaled independently)
+                v1 = geom.scale.transform(v1);
+                v2 = geom.scale.transform(v2);
+
+                // 4. Apply the World Transform (Actor position/rotation)
+                v1 = world.transform(v1);
+                v2 = world.transform(v2);
+
+                // 5. Add to line buffer
+                out.push_back({ ToGLMVec3(v1), color });
+                out.push_back({ ToGLMVec3(v2), color });
+            }
+        }
+    }
+
     void Application::AppendTriangleWire(const glm::vec3& scale, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color)
 {
     const glm::mat4 M = PxToGlm(world);
@@ -792,41 +832,28 @@ namespace Boom
                         if (col.Collider.type == Collider3D::Type::CYLINDER) {
                             const glm::vec3 s = glm::abs(transform.scale * col.Collider.localScale);
 
-                            enum Axis { AXIS_X = 0, AXIS_Y = 1, AXIS_Z = 2 };
-                            Axis majorAxis = AXIS_Y;
-                            if (s.x > s.y && s.x > s.z) majorAxis = AXIS_X;
-                            else if (s.z > s.y && s.z > s.x) majorAxis = AXIS_Z;
+                            // Standard Y-Up logic matching Physics
+                            float radius = 0.5f * std::max(s.x, s.z);
 
-                            float radius, halfHeight;
-                            if (majorAxis == AXIS_Y) {
-                                radius = 0.5f * std::max(s.x, s.z);
-                                halfHeight = 0.5f * s.y;
-                            }
-                            else if (majorAxis == AXIS_Z) {
-                                radius = 0.5f * std::max(s.x, s.y);
-                                halfHeight = 0.5f * s.z;
-                            }
-                            else {
-                                radius = 0.5f * std::max(s.y, s.z);
-                                halfHeight = 0.5f * s.x;
-                            }
+                            // --- FIX: Rename 'height' to 'halfHeight' ---
+                            float halfHeight = 0.5f * s.y;
 
+                            // Safety clamps
                             const float kMin = 0.01f;
                             if (radius <= 0.0f) radius = kMin;
                             if (halfHeight <= 0.0f) halfHeight = kMin;
 
-                            // Apply cylinder axis rotation
-                            physx::PxQuat localQ = physx::PxQuat(physx::PxIdentity);
-                            if (majorAxis == AXIS_Y) localQ = physx::PxQuat(physx::PxIdentity);
-                            else if (majorAxis == AXIS_Z) localQ = physx::PxQuat(physx::PxHalfPi, physx::PxVec3(1.0f, 0.0f, 0.0f));
-                            else localQ = physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.0f, 0.0f, 1.0f));
-
-                            physx::PxTransform cylinderWorld = world * physx::PxTransform(physx::PxVec3(0.0f), localQ);
-                            AppendCylinderWire(radius, halfHeight, cylinderWorld, verts, color);
+                            // Pass 'world' directly.
+                            AppendCylinderWire(radius, halfHeight, world, verts, color);
                         }
                         else if (col.Collider.type == Collider3D::Type::TRIANGLE) {
                             const glm::vec3 s = glm::abs(transform.scale * col.Collider.localScale);
                             AppendTriangleWire(s, world, verts, color);
+                        }
+                        else {
+                            // === NEW: Handle standard Mesh Colliders ===
+                            // If it's not a Cylinder or Triangle, it's a generic Convex Mesh.
+                            AppendConvexMeshWire(gh.convexMesh(), world, verts, color);
                         }
                     }
                     break;
@@ -926,35 +953,16 @@ namespace Boom
             {
                 const glm::vec3 s = glm::abs(transform.scale * col.Collider.localScale);
 
-                enum Axis { AXIS_X = 0, AXIS_Y = 1, AXIS_Z = 2 };
-                Axis majorAxis = AXIS_Y;
-                if (s.x > s.y && s.x > s.z) majorAxis = AXIS_X;
-                else if (s.z > s.y && s.z > s.x) majorAxis = AXIS_Z;
-
-                float radius, halfHeight;
-                if (majorAxis == AXIS_Y) {
-                    radius = 0.5f * std::max(s.x, s.z);
-                    halfHeight = 0.5f * s.y;
-                }
-                else if (majorAxis == AXIS_Z) {
-                    radius = 0.5f * std::max(s.x, s.y);
-                    halfHeight = 0.5f * s.z;
-                }
-                else {
-                    radius = 0.5f * std::max(s.y, s.z);
-                    halfHeight = 0.5f * s.x;
-                }
+                // Standard Y-Up logic
+                float radius = 0.5f * std::max(s.x, s.z);
+                float halfHeight = 0.5f * s.y;
 
                 const float kMin = 0.01f;
                 if (radius <= 0.0f) radius = kMin;
                 if (halfHeight <= 0.0f) halfHeight = kMin;
 
-                physx::PxQuat localQ = physx::PxQuat(physx::PxIdentity);
-                if (majorAxis == AXIS_Y) localQ = physx::PxQuat(physx::PxIdentity);
-                else if (majorAxis == AXIS_Z) localQ = physx::PxQuat(physx::PxHalfPi, physx::PxVec3(1.0f, 0.0f, 0.0f));
-                else localQ = physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0.0f, 0.0f, 1.0f));
-
-                physx::PxTransform cylinderWorld = world * physx::PxTransform(physx::PxVec3(0.0f), localQ);
+                // Remove the rotation logic here as well
+                physx::PxTransform cylinderWorld = world;
                 AppendCylinderWire(radius, halfHeight, cylinderWorld, verts, color);
                 break;
             }
@@ -963,6 +971,25 @@ namespace Boom
             {
                 const glm::vec3 s = glm::abs(transform.scale * col.Collider.localScale);
                 AppendTriangleWire(s, world, verts, color);
+                break;
+            }
+            case Collider3D::Type::MESH:
+            {
+                // 1. Check if the mesh asset exists
+                if (col.Collider.physicsMeshID == EMPTY_ASSET) break;
+                auto& asset = m_Context->assets->Get<PhysicsMeshAsset>(col.Collider.physicsMeshID);
+                if (!asset.mesh) break;
+
+                // 2. Construct geometry manually since we don't have a PxShape
+                physx::PxConvexMeshGeometry geom;
+                geom.convexMesh = asset.mesh;
+
+                // 3. Calculate Scale (Transform Scale * Collider Local Scale)
+                glm::vec3 totalScale = transform.scale * col.Collider.localScale;
+                geom.scale = physx::PxMeshScale(ToPxVec3(totalScale));
+
+                // 4. Draw
+                AppendConvexMeshWire(geom, world, verts, color);
                 break;
             }
             default:
