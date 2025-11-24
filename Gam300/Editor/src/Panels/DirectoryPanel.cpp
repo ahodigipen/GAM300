@@ -96,7 +96,7 @@ namespace EditorUI {
 
         static std::future<std::unique_ptr<FileNode>> refreshFuture;
 
-        if ((ImGui::Button("Refresh") || ((rTimer += dt) > AUTO_REFRESH_SEC) && !refreshFuture.valid()))
+        if (((rTimer += dt) > AUTO_REFRESH_SEC) && !refreshFuture.valid())
         {
             refreshFuture = std::async(std::launch::async, [this]() {return BuildDirectoryTree(); });
             rTimer = 0.0;

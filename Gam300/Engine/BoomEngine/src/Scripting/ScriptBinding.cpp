@@ -16,6 +16,7 @@
 #include "Input/InputHandler.h"
 
 #include "Application/Application.h"
+#include "Audio/Audio.hpp"  // Add this include for sound engine
 
 namespace Boom {
 
@@ -244,7 +245,7 @@ namespace Boom {
         entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
         if (e == entt::null || !s_Ctx->scene.valid(e))
         {
-            // Don�t spam too hard here, this might be called every frame
+            // Don't spam too hard here, this might be called every frame
             // BOOM_WARN("[ScriptBinding] IsColliding: Invalid or dead entity");
             return false;
         }
@@ -356,10 +357,11 @@ namespace Boom {
         auto& registry = s_Ctx->scene;
         auto view = registry.view<ThirdPersonCameraComponent>();
 
-        for (auto entity : view) {
+        // Check if there are any third-person cameras
+        if (!view.empty()) {
+            // Return the first third-person camera found
+            auto entity = *view.begin();
             auto& cam = view.get<ThirdPersonCameraComponent>(entity);
-            // For now, return the first third-person camera found
-            // You might want to add logic to find the "active" one
             return cam.currentYaw;
         }
 
@@ -412,30 +414,27 @@ namespace Boom {
         }
     }
 
-    // Global trigger callback storage
-    static std::unordered_map<uint64_t, std::function<void(uint64_t, uint64_t)>> s_TriggerEnterCallbacks;
-    static std::unordered_map<uint64_t, std::function<void(uint64_t, uint64_t)>> s_TriggerExitCallbacks;
+    // Store GC handles to delegate objects instead of raw function pointers
+    static std::unordered_map<uint64_t, uint32_t> s_TriggerEnterCallbackHandles;
+    static std::unordered_map<uint64_t, uint32_t> s_TriggerExitCallbackHandles;
 
-    // Function pointer types for C# callbacks
+    // Function pointer types for C# callbacks (kept for backward compatibility)
     typedef void (*TriggerCallback)(uint64_t triggerEntity, uint64_t otherEntity);
 
-    static void ICALL_API_RegisterTriggerEnterCallback(uint64_t triggerHandle, TriggerCallback callback) {
-        if (!callback) return;
-        s_TriggerEnterCallbacks[triggerHandle] = [callback](uint64_t trigger, uint64_t other) {
-            callback(trigger, other);
-            };
-    }
-
-    static void ICALL_API_RegisterTriggerExitCallback(uint64_t triggerHandle, TriggerCallback callback) {
-        if (!callback) return;
-        s_TriggerExitCallbacks[triggerHandle] = [callback](uint64_t trigger, uint64_t other) {
-            callback(trigger, other);
-            };
-    }
 
     static void ICALL_API_UnregisterTriggerCallbacks(uint64_t triggerHandle) {
-        s_TriggerEnterCallbacks.erase(triggerHandle);
-        s_TriggerExitCallbacks.erase(triggerHandle);
+        // Free GC handles before removing
+        auto enterIt = s_TriggerEnterCallbackHandles.find(triggerHandle);
+        if (enterIt != s_TriggerEnterCallbackHandles.end()) {
+            mono_gchandle_free(enterIt->second);
+            s_TriggerEnterCallbackHandles.erase(enterIt);
+        }
+
+        auto exitIt = s_TriggerExitCallbackHandles.find(triggerHandle);
+        if (exitIt != s_TriggerExitCallbackHandles.end()) {
+            mono_gchandle_free(exitIt->second);
+            s_TriggerExitCallbackHandles.erase(exitIt);
+        }
     }
 
     static bool ICALL_API_HasAnimator(uint64_t handle) {
@@ -447,16 +446,114 @@ namespace Boom {
 
     // Function to call trigger callbacks (called from Application.h)
     void CallTriggerEnterCallbacks(uint64_t triggerEntity, uint64_t otherEntity) {
-        auto it = s_TriggerEnterCallbacks.find(triggerEntity);
-        if (it != s_TriggerEnterCallbacks.end()) {
-            it->second(triggerEntity, otherEntity);
+        // Add comprehensive safety checks
+        if (!s_Ctx) {
+            BOOM_WARN("[ScriptBinding] CallTriggerEnterCallbacks: No script context");
+            return;
+        }
+
+        // Validate entities still exist
+        entt::entity trigger = static_cast<entt::entity>(static_cast<uint32_t>(triggerEntity));
+        entt::entity other = static_cast<entt::entity>(static_cast<uint32_t>(otherEntity));
+
+        if (!s_Ctx->scene.valid(trigger) || !s_Ctx->scene.valid(other)) {
+            BOOM_WARN("[ScriptBinding] CallTriggerEnterCallbacks: Invalid entities {} or {}",
+                static_cast<uint32_t>(trigger), static_cast<uint32_t>(other));
+            return;
+        }
+
+        auto it = s_TriggerEnterCallbackHandles.find(triggerEntity);
+        if (it != s_TriggerEnterCallbackHandles.end()) {
+            // Get the delegate object from GC handle
+            MonoObject* delegateObj = mono_gchandle_get_target(it->second);
+            if (!delegateObj) {
+                BOOM_WARN("[ScriptBinding] Trigger enter callback GC handle is invalid for {}", triggerEntity);
+                mono_gchandle_free(it->second);
+                s_TriggerEnterCallbackHandles.erase(it);
+                return;
+            }
+
+            // Prepare arguments for delegate invocation
+            void* args[2];
+            args[0] = &triggerEntity;
+            args[1] = &otherEntity;
+
+            // Invoke the delegate safely using Mono runtime
+            MonoObject* exc = nullptr;
+            mono_runtime_delegate_invoke(delegateObj, args, &exc);
+
+            if (exc) {
+                BOOM_ERROR("[ScriptBinding] Exception in trigger enter callback for trigger {}", triggerEntity);
+                // Log the exception details if possible
+                MonoClass* excClass = mono_object_get_class(exc);
+                if (excClass) {
+                    const char* excName = mono_class_get_name(excClass);
+                    BOOM_ERROR("[ScriptBinding] Exception type: {}", excName);
+                }
+            }
+            else {
+                BOOM_INFO("[ScriptBinding] Successfully called trigger enter callback for trigger {} and entity {}",
+                    triggerEntity, otherEntity);
+            }
+        }
+        else {
+            BOOM_INFO("[ScriptBinding] No trigger enter callback registered for entity {}", triggerEntity);
         }
     }
 
     void CallTriggerExitCallbacks(uint64_t triggerEntity, uint64_t otherEntity) {
-        auto it = s_TriggerExitCallbacks.find(triggerEntity);
-        if (it != s_TriggerExitCallbacks.end()) {
-            it->second(triggerEntity, otherEntity);
+        // Add comprehensive safety checks
+        if (!s_Ctx) {
+            BOOM_WARN("[ScriptBinding] CallTriggerExitCallbacks: No script context");
+            return;
+        }
+
+        // Validate entities still exist
+        entt::entity trigger = static_cast<entt::entity>(static_cast<uint32_t>(triggerEntity));
+        entt::entity other = static_cast<entt::entity>(static_cast<uint32_t>(otherEntity));
+
+        if (!s_Ctx->scene.valid(trigger) || !s_Ctx->scene.valid(other)) {
+            BOOM_WARN("[ScriptBinding] CallTriggerExitCallbacks: Invalid entities {} or {}",
+                static_cast<uint32_t>(trigger), static_cast<uint32_t>(other));
+            return;
+        }
+
+        auto it = s_TriggerExitCallbackHandles.find(triggerEntity);
+        if (it != s_TriggerExitCallbackHandles.end()) {
+            // Get the delegate object from GC handle
+            MonoObject* delegateObj = mono_gchandle_get_target(it->second);
+            if (!delegateObj) {
+                BOOM_WARN("[ScriptBinding] Trigger exit callback GC handle is invalid for {}", triggerEntity);
+                mono_gchandle_free(it->second);
+                s_TriggerExitCallbackHandles.erase(it);
+                return;
+            }
+
+            // Prepare arguments for delegate invocation
+            void* args[2];
+            args[0] = &triggerEntity;
+            args[1] = &otherEntity;
+
+            // Invoke the delegate safely using Mono runtime
+            MonoObject* exc = nullptr;
+            mono_runtime_delegate_invoke(delegateObj, args, &exc);
+
+            if (exc) {
+                BOOM_ERROR("[ScriptBinding] Exception in trigger exit callback for trigger {}", triggerEntity);
+                // Log the exception details if possible
+                MonoClass* excClass = mono_object_get_class(exc);
+                if (excClass) {
+                    const char* excName = mono_class_get_name(excClass);
+                    BOOM_ERROR("[ScriptBinding] Exception type: {}", excName);
+                }
+            }
+            else {
+                BOOM_INFO("[ScriptBinding] Successfully called trigger exit callback for trigger {} and entity {}",
+                    triggerEntity, otherEntity);
+            }
+        }
+        else {
+            BOOM_INFO("[ScriptBinding] No trigger exit callback registered for entity {}", triggerEntity);
         }
     }
 
@@ -528,10 +625,196 @@ namespace Boom {
         t.scale.z = transform->scaleZ;
     }
 
+    // NEW GCHANDLE-BASED VERSIONS:
+    static void ICALL_API_RegisterTriggerEnterCallback(uint64_t triggerHandle, MonoObject* delegateObj) {
+        // Add comprehensive safety checks
+        if (!delegateObj) {
+            BOOM_WARN("[ScriptBinding] RegisterTriggerEnterCallback: Null delegate provided");
+            return;
+        }
+
+        if (!s_Ctx) {
+            BOOM_WARN("[ScriptBinding] RegisterTriggerEnterCallback: No script context");
+            return;
+        }
+
+        // Validate the trigger entity exists
+        entt::entity trigger = static_cast<entt::entity>(static_cast<uint32_t>(triggerHandle));
+        if (!s_Ctx->scene.valid(trigger)) {
+            BOOM_WARN("[ScriptBinding] RegisterTriggerEnterCallback: Invalid trigger entity {}", triggerHandle);
+            return;
+        }
+
+        // Free existing handle if one exists
+        auto existingIt = s_TriggerEnterCallbackHandles.find(triggerHandle);
+        if (existingIt != s_TriggerEnterCallbackHandles.end()) {
+            mono_gchandle_free(existingIt->second);
+            BOOM_INFO("[ScriptBinding] Freed existing trigger enter callback for entity {}", triggerHandle);
+        }
+
+        // Create a GC handle to prevent the delegate from being collected
+        uint32_t gcHandle = mono_gchandle_new(delegateObj, false);
+        s_TriggerEnterCallbackHandles[triggerHandle] = gcHandle;
+
+        BOOM_INFO("[ScriptBinding] Registered trigger enter callback (GCHandle: {}) for entity {}", gcHandle, triggerHandle);
+    }
+
+    static void ICALL_API_RegisterTriggerExitCallback(uint64_t triggerHandle, MonoObject* delegateObj) {
+        // Add comprehensive safety checks
+        if (!delegateObj) {
+            BOOM_WARN("[ScriptBinding] RegisterTriggerExitCallback: Null delegate provided");
+            return;
+        }
+
+        if (!s_Ctx) {
+            BOOM_WARN("[ScriptBinding] RegisterTriggerExitCallback: No script context");
+            return;
+        }
+
+        // Validate the trigger entity exists
+        entt::entity trigger = static_cast<entt::entity>(static_cast<uint32_t>(triggerHandle));
+        if (!s_Ctx->scene.valid(trigger)) {
+            BOOM_WARN("[ScriptBinding] RegisterTriggerExitCallback: Invalid trigger entity {}", triggerHandle);
+            return;
+        }
+
+        // Free existing handle if one exists
+        auto existingIt = s_TriggerExitCallbackHandles.find(triggerHandle);
+        if (existingIt != s_TriggerExitCallbackHandles.end()) {
+            mono_gchandle_free(existingIt->second);
+            BOOM_INFO("[ScriptBinding] Freed existing trigger exit callback for entity {}", triggerHandle);
+        }
+
+        // Create a GC handle to prevent the delegate from being collected
+        uint32_t gcHandle = mono_gchandle_new(delegateObj, false);
+        s_TriggerExitCallbackHandles[triggerHandle] = gcHandle;
+
+        BOOM_INFO("[ScriptBinding] Registered trigger exit callback (GCHandle: {}) for entity {}", gcHandle, triggerHandle);
+    }
+
+    // ========= SOUND / AUDIO BINDINGS =========
+    
+    static void ICALL_API_PlaySound(MonoString* name, MonoString* filePath, bool loop) {
+        if (!name || !filePath) return;
+        
+        char* nameStr = mono_string_to_utf8(name);
+        char* pathStr = mono_string_to_utf8(filePath);
+        
+        if (nameStr && pathStr) {
+            auto& soundEngine = SoundEngine::Instance();
+            soundEngine.PlaySound(std::string(nameStr), std::string(pathStr), loop);
+        }
+        
+        if (nameStr) mono_free(nameStr);
+        if (pathStr) mono_free(pathStr);
+    }
+    
+    static void ICALL_API_PlaySoundAt(MonoString* name, MonoString* filePath, glm::vec3* position, bool loop) {
+        if (!name || !filePath || !position) return;
+        
+        char* nameStr = mono_string_to_utf8(name);
+        char* pathStr = mono_string_to_utf8(filePath);
+        
+        if (nameStr && pathStr) {
+            auto& soundEngine = SoundEngine::Instance();
+            soundEngine.PlaySoundAt(std::string(nameStr), std::string(pathStr), *position, loop);
+        }
+        
+        if (nameStr) mono_free(nameStr);
+        if (pathStr) mono_free(pathStr);
+    }
+    
+    static void ICALL_API_StopSound(MonoString* name) {
+        if (!name) return;
+        
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& soundEngine = SoundEngine::Instance();
+            soundEngine.StopSound(std::string(nameStr));
+            mono_free(nameStr);
+        }
+    }
+    
+    static void ICALL_API_SetSoundVolume(MonoString* name, float volume) {
+        if (!name) return;
+        
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& soundEngine = SoundEngine::Instance();
+            soundEngine.SetVolume(std::string(nameStr), volume);
+            mono_free(nameStr);
+        }
+    }
+    
+    static bool ICALL_API_IsSoundPlaying(MonoString* name) {
+        if (!name) return false;
+        
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& soundEngine = SoundEngine::Instance();
+            bool result = soundEngine.IsPlaying(std::string(nameStr));
+            mono_free(nameStr);
+            return result;
+        }
+        return false;
+    }
+    
+    static void ICALL_API_PauseSound(MonoString* name, bool pause) {
+        if (!name) return;
+        
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& soundEngine = SoundEngine::Instance();
+            soundEngine.Pause(std::string(nameStr), pause);
+            mono_free(nameStr);
+        }
+    }
+    
+    static void ICALL_API_PreloadSound(MonoString* name, MonoString* filePath, bool loop) {
+        if (!name || !filePath) return;
+        
+        char* nameStr = mono_string_to_utf8(name);
+        char* pathStr = mono_string_to_utf8(filePath);
+        
+        if (nameStr && pathStr) {
+            auto& soundEngine = SoundEngine::Instance();
+            soundEngine.PreloadSound(std::string(nameStr), std::string(pathStr), false, loop);
+        }
+        
+        if (nameStr) mono_free(nameStr);
+        if (pathStr) mono_free(pathStr);
+    }
+    
+    static void ICALL_API_SetSoundPosition(MonoString* name, glm::vec3* position) {
+        if (!name || !position) return;
+        
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& soundEngine = SoundEngine::Instance();
+            soundEngine.SetSoundPosition(std::string(nameStr), *position);
+            mono_free(nameStr);
+        }
+    }
+    // Add this function to clean up all trigger callbacks when Mono domain is unloaded
+    void ClearAllTriggerCallbacks() {
+        // Free all GC handles before clearing
+        for (auto& pair : s_TriggerEnterCallbackHandles) {
+            mono_gchandle_free(pair.second);
+        }
+        for (auto& pair : s_TriggerExitCallbackHandles) {
+            mono_gchandle_free(pair.second);
+        }
+
+        s_TriggerEnterCallbackHandles.clear();
+        s_TriggerExitCallbackHandles.clear();
+        BOOM_INFO("[ScriptBinding] Cleared all trigger callbacks and freed GC handles (domain unload)");
+    }
 
     void RegisterScriptInternalCalls(AppContext* ctx)
     {
         s_Ctx = ctx;
+
+        ClearAllTriggerCallbacks();
 
         // IMPORTANT: These namespaces MUST match the C# side (Boom.Native)
         mono_add_internal_call("Boom.Native::Boom_API_Log", (const void*)ICALL_API_Log);
@@ -585,5 +868,15 @@ namespace Boom {
             (const void*)ICALL_API_GetTransform);
         mono_add_internal_call("Boom.Native::Boom_API_SetTransform",
             (const void*)ICALL_API_SetTransform);
+
+        // Sound/Audio internal calls
+        mono_add_internal_call("Boom.Native::Boom_API_PlaySound", (const void*)ICALL_API_PlaySound);
+        mono_add_internal_call("Boom.Native::Boom_API_PlaySoundAt", (const void*)ICALL_API_PlaySoundAt);
+        mono_add_internal_call("Boom.Native::Boom_API_StopSound", (const void*)ICALL_API_StopSound);
+        mono_add_internal_call("Boom.Native::Boom_API_SetSoundVolume", (const void*)ICALL_API_SetSoundVolume);
+        mono_add_internal_call("Boom.Native::Boom_API_IsSoundPlaying", (const void*)ICALL_API_IsSoundPlaying);
+        mono_add_internal_call("Boom.Native::Boom_API_PauseSound", (const void*)ICALL_API_PauseSound);
+        mono_add_internal_call("Boom.Native::Boom_API_PreloadSound", (const void*)ICALL_API_PreloadSound);
+        mono_add_internal_call("Boom.Native::Boom_API_SetSoundPosition", (const void*)ICALL_API_SetSoundPosition);
     }
 }
