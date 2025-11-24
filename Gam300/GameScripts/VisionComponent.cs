@@ -42,7 +42,6 @@ namespace GameScripts
         private float _lastUpdateTime = 0f;
         private float _alertTimer = 0f;
         private Vec3 _lastKnownTargetPosition;
-        private bool _hasValidTarget = false;
 
         // === EVENTS (for other systems to listen to) ===
         public delegate void VisionEventHandler(ulong target, Vec3 position);

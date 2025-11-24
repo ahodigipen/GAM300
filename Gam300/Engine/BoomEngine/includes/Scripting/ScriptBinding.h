@@ -7,5 +7,7 @@ namespace Boom {
     void CallTriggerEnterCallbacks(uint64_t triggerEntity, uint64_t otherEntity);
     void CallTriggerExitCallbacks(uint64_t triggerEntity, uint64_t otherEntity);
 
+    void ClearAllTriggerCallbacks();
+
     void BOOM_API RegisterScriptInternalCalls(AppContext* ctx);
 }
