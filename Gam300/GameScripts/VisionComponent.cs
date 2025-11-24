@@ -39,7 +39,6 @@ namespace GameScripts
         private float _lastUpdateTime;
         private float _alertTimer;
         private Vec3 _lastKnownTargetPosition;
-        private bool _hasValidTarget = false;
 
 
         private string _lastLosReason = "";
