@@ -368,6 +368,76 @@ namespace Boom {
         return 0.0f; // No third-person camera found
     }
 
+    // Add near other ICALL functions (after ICALL_API_SetSoundPosition)
+
+    // Physics line-of-sight raycast
+    static bool ICALL_API_Linecast(glm::vec3* from, glm::vec3* to, uint64_t ignoreEntityHandle)
+    {
+        if (!s_Ctx || !from || !to) return true;
+        if (!s_Ctx->physics) return true;
+
+        PxScene* scene = s_Ctx->physics->GetPxScene();
+        if (!scene) return true;
+
+        glm::vec3 delta = *to - *from;
+        float len2 = glm::dot(delta, delta);
+        if (len2 < 1e-6f) return true;
+
+        float len = std::sqrt(len2);
+
+        // Start ray slightly above ground and from entity origin
+        PxVec3 origin(from->x, from->y + 0.15f, from->z);
+        PxVec3 dir(delta.x / len, delta.y / len, delta.z / len);
+
+        PxQueryFilterData filter;
+        filter.flags = PxQueryFlag::eSTATIC | PxQueryFlag::eDYNAMIC | PxQueryFlag::ePREFILTER;
+
+        // Convert C# entity handle to entt::entity
+        entt::entity ignoreEntity = static_cast<entt::entity>(static_cast<uint32_t>(ignoreEntityHandle));
+
+        // Pre-filter to skip triggers AND the entity doing the looking
+        struct PreFilter : PxQueryFilterCallback {
+            entt::entity entityToIgnore;
+
+            PreFilter(entt::entity ignore) : entityToIgnore(ignore) {}
+
+            PxQueryHitType::Enum preFilter(const PxFilterData&, const PxShape* shape,
+                const PxRigidActor* actor, PxHitFlags&) override
+            {
+                // Skip triggers
+                if (shape->getFlags() & PxShapeFlag::eTRIGGER_SHAPE)
+                    return PxQueryHitType::eNONE;
+
+                // Skip the entity doing the raycast (the enemy itself)
+                if (actor && actor->userData)
+                {
+                    EntityID* entityID = static_cast<EntityID*>(actor->userData);
+                    if (entityID && *entityID == entityToIgnore)
+                        return PxQueryHitType::eNONE;
+                }
+
+                return PxQueryHitType::eBLOCK;
+            }
+
+            PxQueryHitType::Enum postFilter(const PxFilterData&, const PxQueryHit&) override
+            {
+                return PxQueryHitType::eBLOCK;
+            }
+        } preFilter(ignoreEntity);
+
+        PxRaycastBuffer hit;
+        bool blocked = scene->raycast(origin, dir, len, hit, PxHitFlag::eDEFAULT, filter, &preFilter);
+
+        if (!blocked) return true;
+
+        // If hit is very close to target, treat as clear (hitting the target entity itself is OK)
+        const float epsilon = 0.2f;
+        if (hit.block.distance + epsilon >= len)
+            return true;
+
+        return false; // Something solid blocked before target
+    }
+
     // Add these new functions after the existing ICALL functions
 
     static bool ICALL_API_HasCollider(uint64_t handle) {
@@ -810,6 +880,61 @@ namespace Boom {
         BOOM_INFO("[ScriptBinding] Cleared all trigger callbacks and freed GC handles (domain unload)");
     }
 
+    static void ICALL_API_SetRotationY(uint64_t handle, float yawDegrees)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+
+        if (e == entt::null || !s_Ctx->scene.valid(e)) {
+            BOOM_WARN("[ScriptBinding] SetRotationY: Invalid entity");
+            return;
+        }
+
+        if (!s_Ctx->scene.any_of<TransformComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetRotationY: Entity has no TransformComponent");
+            return;
+        }
+
+        if (!s_Ctx->scene.any_of<RigidBodyComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetRotationY: Entity has no RigidBodyComponent");
+            return;
+        }
+
+        auto& rb = s_Ctx->scene.get<RigidBodyComponent>(e).RigidBody;
+        if (!rb.actor) return;
+
+        // Get the current PhysX transform
+        PxTransform currentPose = rb.actor->getGlobalPose();
+
+        // Convert yaw to quaternion (only Y-axis rotation)
+        float yawRadians = glm::radians(yawDegrees);
+        PxQuat newRotation = PxQuat(yawRadians, PxVec3(0, 1, 0));
+
+        // Update the pose with new rotation, keeping position
+        PxTransform newPose(currentPose.p, newRotation);
+
+        // For dynamic bodies, use kinematic target or direct pose update
+        if (PxRigidDynamic* dyn = rb.actor->is<PxRigidDynamic>()) {
+            if (dyn->getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC) {
+                dyn->setKinematicTarget(newPose);
+            }
+            else {
+                // For dynamic bodies, directly set the pose
+                // This is safe because X/Z rotation is locked
+                dyn->setGlobalPose(newPose);
+            }
+        }
+        else {
+            // For static bodies
+            rb.actor->setGlobalPose(newPose);
+        }
+
+        // Also update the transform component for rendering
+        auto& transform = s_Ctx->scene.get<TransformComponent>(e).transform;
+        transform.rotate.y = yawDegrees;
+    }
+
+
     void RegisterScriptInternalCalls(AppContext* ctx)
     {
         s_Ctx = ctx;
@@ -878,5 +1003,9 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_PauseSound", (const void*)ICALL_API_PauseSound);
         mono_add_internal_call("Boom.Native::Boom_API_PreloadSound", (const void*)ICALL_API_PreloadSound);
         mono_add_internal_call("Boom.Native::Boom_API_SetSoundPosition", (const void*)ICALL_API_SetSoundPosition);
+
+        mono_add_internal_call("Boom.Native::Boom_API_Linecast", (const void*)ICALL_API_Linecast);
+
+        mono_add_internal_call("Boom.Native::Boom_API_SetRotationY", (const void*)ICALL_API_SetRotationY);
     }
 }
