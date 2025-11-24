@@ -21,7 +21,7 @@ namespace GameScripts
 
         // Movement parameters (configurable)
         private float _speed = 5f;
-        private float _jumpSpeed = 8f;
+      
 
         // Footstep system
         private FootstepComponent _footstepComponent;

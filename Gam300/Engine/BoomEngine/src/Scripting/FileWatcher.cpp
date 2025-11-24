@@ -1,6 +1,5 @@
 #include "Core.h"
 #include "Scripting/FileWatcher.h"
-#include <vector>
 
 namespace Boom {
 
@@ -40,35 +39,16 @@ namespace Boom {
     {
         auto now = std::chrono::system_clock::now();
 
-        // Collect callbacks to invoke (prevents iterator invalidation if callback clears m_Watches)
-        std::vector<std::pair<std::string, Callback>> callbacksToInvoke;
+        // Create a list of paths to process (avoid issues with corrupted strings during iteration)
+        std::vector<std::string> pathsToCheck;
+        pathsToCheck.reserve(m_Watches.size());
 
-        for (auto& [path, entry] : m_Watches) {
-            if (!std::filesystem::exists(entry.filepath)) {
-                continue; // File was deleted, skip this frame
-            }
-
-            TimePoint currentWriteTime = GetFileWriteTime(entry.filepath);
-
-            // Check if file was modified
-            if (currentWriteTime != entry.lastModified) {
-                entry.lastModified = currentWriteTime;
-                entry.pendingTrigger = true;
-                entry.lastTriggered = now;
-
-                //BOOM_INFO("[FileWatcher] Detected change: {}", entry.filepath);
-            }
-
-            // Check if callback should be triggered after debounce period
-            if (entry.pendingTrigger) {
-                auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
-                    now - entry.lastTriggered
-                );
-
-                if (elapsed >= entry.debounceTime) {
-                    // Store callback to invoke later (after loop completes)
-                    callbacksToInvoke.emplace_back(entry.filepath, entry.callback);
-                    entry.pendingTrigger = false;
+        for (const auto& [path, entry] : m_Watches) {
+            try {
+                // Validate the path string before using it
+                if (path.empty()) {
+                    BOOM_WARN("[FileWatcher] Empty path found in watches, skipping");
+                    continue;
                 }
                 pathsToCheck.push_back(path);
             }
@@ -124,12 +104,6 @@ namespace Boom {
                 BOOM_ERROR("[FileWatcher] Unknown error processing file");
                 continue;
             }
-        }
-
-        // Invoke callbacks after iteration completes (safe from iterator invalidation)
-        for (auto& [filepath, callback] : callbacksToInvoke) {
-            BOOM_INFO("[FileWatcher] Triggering callback for: {}", filepath);
-            callback(filepath);
         }
     }
 
