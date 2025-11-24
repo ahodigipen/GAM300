@@ -1,5 +1,11 @@
-  Version: 1.0
+Version: 1.0
 ENTITIES:
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
   - {}
   - {}
   - {}
@@ -88,9 +94,9 @@ ENTITIES:
       UID: 8397657597773060979
     TransformComponent:
       Transform:
-        Translate: [2.54740143, 2.11938071, 7.02198458]
+        Translate: [6.36850357, 5.2984519, 17.5549622]
         Rotate: [-90, -180, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 0
@@ -104,9 +110,9 @@ ENTITIES:
       UID: 2848513897976485529
     TransformComponent:
       Transform:
-        Translate: [0, 2.25708127, 7.51626062]
+        Translate: [0, 5.64270306, 18.7906513]
         Rotate: [0, 0, 0]
-        Scale: [0.25, 0.349999994, 0.00999999978]
+        Scale: [0.625, 0.875, 0.0250000004]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -120,9 +126,9 @@ ENTITIES:
       UID: 14120173863723679001
     TransformComponent:
       Transform:
-        Translate: [-0.170380652, 2.75797558, 8.14420033]
+        Translate: [-0.42595163, 6.89493895, 20.3605003]
         Rotate: [0, 0, 0]
-        Scale: [0.5, 0.5, 0.129999995]
+        Scale: [1.25, 1.25, 0.324999988]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -137,9 +143,9 @@ ENTITIES:
       UID: 11643618183334345394
     TransformComponent:
       Transform:
-        Translate: [4.46447659, 0.654805005, 1.98579729]
+        Translate: [11.1611919, 1.63701248, 4.96449327]
         Rotate: [90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 618926925563278836
       MaterialID: 0
@@ -153,9 +159,9 @@ ENTITIES:
       UID: 3918560396689782353
     TransformComponent:
       Transform:
-        Translate: [4.49292707, 0.494542837, 4.12997246]
+        Translate: [11.2323179, 1.23635709, 10.3249311]
         Rotate: [-90, 0, 0]
-        Scale: [0.75, 0.75, 0.75]
+        Scale: [1.875, 1.875, 1.875]
     ModelComponent:
       ModelID: 5838446488854438722
       MaterialID: 0
@@ -169,9 +175,9 @@ ENTITIES:
       UID: 13247074783709319581
     TransformComponent:
       Transform:
-        Translate: [2.49039984, 0.673674226, 4.09162426]
+        Translate: [6.22599983, 1.68418562, 10.2290611]
         Rotate: [90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 618926925563278836
       MaterialID: 0
@@ -185,9 +191,9 @@ ENTITIES:
       UID: 17309648256235657590
     TransformComponent:
       Transform:
-        Translate: [4.44657707, 0.593032777, 5.98622751]
+        Translate: [11.1164427, 1.48258197, 14.9655685]
         Rotate: [90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 618926925563278836
       MaterialID: 0
@@ -195,15 +201,36 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0.49000001, 0.75999999, -0.189999998]
+        LocalRotation: [0, 0, 42.9000015]
+        LocalScale: [37.9249992, 8, 10.8249998]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: Stairs_Left
       UID: 14807325083218498713
     TransformComponent:
       Transform:
-        Translate: [-4.82700014, 1.5408051, -7.46138382]
+        Translate: [-12.0675001, 3.66364145, -18.6534595]
         Rotate: [0, -180, 0]
-        Scale: [0.5, 0.5, 0.400000006]
+        Scale: [1.25, 1.25, 1]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.25, 1.25, 1]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 17773246069672836568
       MaterialID: 0
@@ -217,9 +244,9 @@ ENTITIES:
       UID: 1078971789643419703
     TransformComponent:
       Transform:
-        Translate: [4.94170618, 1.49225128, -6.95350695]
+        Translate: [12.3542652, 3.73062825, -17.3837681]
         Rotate: [0, 0, 0]
-        Scale: [0.5, 0.5, 0.400000006]
+        Scale: [1.25, 1.25, 1]
     ModelComponent:
       ModelID: 17773246069672836568
       MaterialID: 0
@@ -233,9 +260,9 @@ ENTITIES:
       UID: 43420598284529509
     TransformComponent:
       Transform:
-        Translate: [-5.38700008, 0.764999866, -6.40092468]
+        Translate: [-13.4674997, 1.91249967, -16.0023117]
         Rotate: [0, -90, 0]
-        Scale: [0.230000004, 0.5, 0.5]
+        Scale: [0.574999988, 1.25, 1.25]
     ModelComponent:
       ModelID: 14419591904238952119
       MaterialID: 0
@@ -250,9 +277,9 @@ ENTITIES:
       UID: 14423942184205972563
     TransformComponent:
       Transform:
-        Translate: [5.44700003, 0.765302062, -6.33206367]
+        Translate: [13.6175003, 1.9132551, -15.8301592]
         Rotate: [0, 90, 0]
-        Scale: [0.200000003, 0.5, 0.5]
+        Scale: [0.5, 1.25, 1.25]
     ModelComponent:
       ModelID: 14419591904238952119
       MaterialID: 0
@@ -264,21 +291,12 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [2.5, 2.5, 2.5]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
         PhysicsMesh: 0
-        Type: CAPSULE
-    InfoComponent:
-      Parent: 0
-      Name: Player
-      UID: 17033057198746013049
-    TransformComponent:
-      Transform:
-        Translate: [2.20106959, -0.947028697, 0.583293498]
-        Rotate: [0, 0, 0]
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -286,17 +304,17 @@ ENTITIES:
       UID: 16439367912350421013
     TransformComponent:
       Transform:
-        Translate: [0.321215421, 0.545895696, 5.90508461]
-        Rotate: [0, -0, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+        Translate: [-5.74967051, 1.36473906, 12.7487936]
+        Rotate: [0, 0.379795283, 0]
+        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+        Previous Scale: [0.0199999996, 0.0199999996, 0.0199999996]
         FreezeRotationX: true
-        FreezeRotationY: false
+        FreezeRotationY: true
         FreezeRotationZ: true
         Type: DYNAMIC
     ModelComponent:
@@ -306,156 +324,40 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-    AnimatorComponent:
-      Clips:
-        - name: mixamo.com
-          filePath: ""
-        - name: Fast Run
-          filePath: Resources/Models/PlayerAnimations/Fast Run.fbx
-        - name: Samurai Idle (1)
-          filePath: Resources/Samurai Idle (1).fbx
-      States:
-        - name: State 0
-          clipIndex: 2
-          speed: 1
-          loop: true
-          transitions:
-            []
-        - name: State 1
-          clipIndex: 0
-          speed: 1
-          loop: true
-          transitions:
-            []
-        - name: State 2
-          clipIndex: 0
-          speed: 1
-          loop: true
-          transitions:
-            []
-        - name: State 3
-          clipIndex: 0
-          speed: 1
-          loop: true
-          transitions:
-            []
-      FloatParams:
-        Speed: 0
-      BoolParams:
-        IsMoving: false
-      CurrentStateIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PlayerMovement
       ParamsJSON: "{}"
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 0, 0]
+        LocalPosition: [0.00999999978, 0.0199999996, 0.129999995]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [150.25, 495.975006, 78.0749969]
         DynamicFriction: 0.5
-        StaticFriction: 0.5
-        Restitution: 0
+        StaticFriction: 0
+        Restitution: 0.100000001
         IsTrigger: false
         PhysicsMesh: 0
         Type: BOX
     InfoComponent:
       Parent: 0
-      Name: Ground
-      UID: 10000000000000000002
-    TransformComponent:
-      Transform:
-        Translate: [0, -1.29999995, 0]
-        Rotate: [0, 0, 0]
-        Scale: [20, 0.200000003, 20]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 0
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [20, 0.200000003, 20]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 7633162898494281895
-      MaterialID: 11573253777835523025
-      ModelName: Cube
-      MaterialName: ""
-      ModelSource: Resources/Models/Cube.fbx
-      MaterialSource: Marble
-  - {}
-  - InfoComponent:
-      Parent: 0
-      Name: Skybox
-      UID: 3009173759421305309
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    SkyboxComponent:
-      SkyboxID: 10427935764841817814
-  - InfoComponent:
-      Parent: 0
-      Name: Camera
-      UID: 9201024860084647067
-    TransformComponent:
-      Transform:
-        Translate: [0.443855196, 1.21253562, 2.94374704]
-        Rotate: [-19.375, 1.6875, 0]
-        Scale: [1, 1, 1]
-    CameraComponent:
-      Camera:
-        NearPlane: 0.300000012
-        FarPlane: 1000
-        FOV: 91
-  - {}
-  - InfoComponent:
-      Parent: 0
-      Name: Point Light
-      UID: 5315588240363654174
-    TransformComponent:
-      Transform:
-        Translate: [0, 0.5, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    PointLightComponent:
-      Light:
-        Radiance: [1, 0.899999976, 0.699999988]
-        Intensity: 10
-        Range: 0
-  - InfoComponent:
-      Parent: 0
-      Name: Directional Light
-      UID: 16395980114807373968
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [6, 0, 0]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [1, 1, 0.899999976]
-        Intensity: 3
-  - InfoComponent:
-      Parent: 0
       Name: Ninja
       UID: 12784200605494588253
     TransformComponent:
       Transform:
-        Translate: [-1.16412485, -1.14540207, -0.968141139]
-        Rotate: [0, -0, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+        Translate: [-8.68057919, 5.59822607, -12.1313381]
+        Rotate: [0, 0, 0]
+        Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 15771049607565255665
       MaterialID: 0
@@ -476,199 +378,15 @@ ENTITIES:
       UID: 12363776012929465708
     TransformComponent:
       Transform:
-        Translate: [2, 2, 2]
+        Translate: [5, 5, 5]
         Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     SpotLightComponent:
       Light:
         Radiance: [0.699999988, 0.800000012, 1]
         Intensity: 15
         FallOff: 1.05592418
         CutOff: 0.34906584
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
   - InfoComponent:
       Parent: 0
       Name: Directional Light
@@ -677,7 +395,7 @@ ENTITIES:
       Transform:
         Translate: [0, 0, 0]
         Rotate: [0, -1, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     DirectLightComponent:
       Light:
         Radiance: [1, 1, 0.899999976]
@@ -688,9 +406,9 @@ ENTITIES:
       UID: 5315588240363654174
     TransformComponent:
       Transform:
-        Translate: [0, 0.5, 0]
+        Translate: [0, 1.25, 0]
         Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     PointLightComponent:
       Light:
         Radiance: [1, 0.899999976, 0.699999988]
@@ -703,14 +421,14 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-2.35962653, 3.91291356, 5.2747364]
-        Rotate: [-31.8125, -19481.625, 0]
-        Scale: [1, 1, 1]
+        Translate: [-6.9259758, 4.57560349, 17.0543556]
+        Rotate: [3.3125, -19469.125, 0]
+        Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.300000012
         FarPlane: 1000
-        FOV: 86
+        FOV: 100
     ThirdPersonCameraComponent:
       Offset: [0, 2, 0]
       Current Distance: 2
@@ -728,7 +446,7 @@ ENTITIES:
       Transform:
         Translate: [0, 0, 0]
         Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     SkyboxComponent:
       SkyboxID: 10427935764841817814
   - {}
@@ -736,7 +454,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [2.5, 2.5, 2.5]
         DynamicFriction: 0.5
         StaticFriction: 0.5
         Restitution: 0
@@ -751,13 +469,13 @@ ENTITIES:
       Transform:
         Translate: [0, 0, 0]
         Rotate: [0, -90, 0]
-        Scale: [16, 0.959999979, 15]
+        Scale: [40, 2.39999986, 37.5]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 0
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [16, 0.959999979, 15]
+        Previous Scale: [40, 2.39999986, 37.5]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -781,7 +499,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [2.5, 2.5, 2.5]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -794,15 +512,15 @@ ENTITIES:
       UID: 1992698266524408743
     TransformComponent:
       Transform:
-        Translate: [2, 1, 2]
+        Translate: [5, 2.5, 5]
         Rotate: [0, 0, 0]
-        Scale: [0.5, 0.5, 0.5]
+        Scale: [1.25, 1.25, 1.25]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.5, 0.5, 0.5]
+        Previous Scale: [1.25, 1.25, 1.25]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -814,9 +532,9 @@ ENTITIES:
       UID: 7363969942927904993
     TransformComponent:
       Transform:
-        Translate: [6.51026154, 0.6516186, 4.07478905]
+        Translate: [16.2756538, 1.62904656, 10.1869726]
         Rotate: [90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 618926925563278836
       MaterialID: 0
@@ -830,9 +548,9 @@ ENTITIES:
       UID: 5913887949040983159
     TransformComponent:
       Transform:
-        Translate: [-4.49300003, 0.495000005, 4.13000011]
+        Translate: [-11.2325001, 1.23750007, 10.3249998]
         Rotate: [-90, 0, 0]
-        Scale: [0.75, 0.75, 0.5]
+        Scale: [1.875, 1.875, 1.25]
     ModelComponent:
       ModelID: 5838446488854438722
       MaterialID: 0
@@ -846,9 +564,9 @@ ENTITIES:
       UID: 10308551160317092666
     TransformComponent:
       Transform:
-        Translate: [-4.5131979, 0.668016315, 2.09022999]
+        Translate: [-11.2829952, 1.67004085, 5.22557497]
         Rotate: [90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 618926925563278836
       MaterialID: 0
@@ -862,9 +580,9 @@ ENTITIES:
       UID: 10400619248710891178
     TransformComponent:
       Transform:
-        Translate: [-6.4369998, 0.922999978, 4.05907249]
+        Translate: [-16.0924988, 2.30749989, 10.1476812]
         Rotate: [90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 618926925563278836
       MaterialID: 0
@@ -878,9 +596,9 @@ ENTITIES:
       UID: 13043223207672938563
     TransformComponent:
       Transform:
-        Translate: [-4.5120883, 0.647244036, 6.21350145]
+        Translate: [-11.280221, 1.61811006, 15.5337534]
         Rotate: [90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 618926925563278836
       MaterialID: 0
@@ -894,9 +612,9 @@ ENTITIES:
       UID: 17302200089018243406
     TransformComponent:
       Transform:
-        Translate: [-2.45228195, 0.598316491, 4.07493305]
+        Translate: [-6.13070488, 1.4957912, 10.1873322]
         Rotate: [90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 618926925563278836
       MaterialID: 0
@@ -904,15 +622,26 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [15.5250006, 0.349999994, 8.375]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: Sliding_Door_1
       UID: 3774918408726337557
     TransformComponent:
       Transform:
-        Translate: [-4.36929417, 2, 0.699999988]
+        Translate: [-10.9232359, 5, 1.75]
         Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 5963078964798272625
       MaterialID: 0
@@ -926,9 +655,9 @@ ENTITIES:
       UID: 9465372809338157749
     TransformComponent:
       Transform:
-        Translate: [4.36788893, 2, 0.699999988]
+        Translate: [10.9197226, 5, 1.75]
         Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 5963078964798272625
       MaterialID: 0
@@ -943,9 +672,9 @@ ENTITIES:
       UID: 10544585563166090371
     TransformComponent:
       Transform:
-        Translate: [0, 2.11899996, 7.02199984]
+        Translate: [0, 5.29750013, 17.5550003]
         Rotate: [-90, 180, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 0
@@ -959,9 +688,9 @@ ENTITIES:
       UID: 6145440951459576746
     TransformComponent:
       Transform:
-        Translate: [-2.54699993, 2.11899996, 7.02199984]
+        Translate: [-6.36749983, 5.29750013, 17.5550003]
         Rotate: [270, 180, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 0.0199999996]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 0
@@ -975,9 +704,9 @@ ENTITIES:
       UID: 15313398657113075594
     TransformComponent:
       Transform:
-        Translate: [-0.167802811, 4.31562233, 0.883240342]
+        Translate: [-0.419507027, 10.7890558, 2.2081008]
         Rotate: [0, 0, 0]
-        Scale: [0.5, 0.170000002, 0.129999995]
+        Scale: [1.25, 0.425000012, 0.324999988]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -991,9 +720,9 @@ ENTITIES:
       UID: 11914392841982844469
     TransformComponent:
       Transform:
-        Translate: [8.75599957, 2.65515637, 1.43616533]
+        Translate: [21.8899994, 6.63789082, 3.59041333]
         Rotate: [0, 0, 0]
-        Scale: [0.0799999982, 0.550000012, 1.87]
+        Scale: [0.199999988, 1.375, 4.67500019]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1001,15 +730,26 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [78.9499969, 24.5250015, 25.2500019]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: Floor_Left_Floor_2
       UID: 16568992521348852646
     TransformComponent:
       Transform:
-        Translate: [-8.75599957, 2.66317177, 1.40950298]
+        Translate: [-21.8899994, 6.65792942, 3.52375746]
         Rotate: [0, 0, 0]
-        Scale: [0.0799999982, 0.550000012, 1.87]
+        Scale: [0.199999988, 1.375, 4.67500019]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1023,9 +763,9 @@ ENTITIES:
       UID: 7415020258449908952
     TransformComponent:
       Transform:
-        Translate: [-6.91149378, 3.60819101, 4.14313507]
+        Translate: [-17.2787342, 9.02047729, 10.3578377]
         Rotate: [0, 0, 0]
-        Scale: [0.0299999993, 0.0500000007, 0.680000007]
+        Scale: [0.0749999955, 0.125, 1.70000005]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1033,15 +773,36 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [71.125, 33.9249992, 25.2250004]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: Ceiling_Floor_1
       UID: 13500012620144209348
     TransformComponent:
       Transform:
-        Translate: [-0.111000001, 5.30469227, 2.29807973]
+        Translate: [-0.277500004, 13.2617311, 5.7451992]
         Rotate: [0, 0, 0]
-        Scale: [0.519999981, 0.00999999978, 1.69000006]
+        Scale: [1.29999995, 0.0250000004, 4.22500038]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.29999995, 0.0250000004, 4.22500038]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1055,9 +816,9 @@ ENTITIES:
       UID: 7163372545072077516
     TransformComponent:
       Transform:
-        Translate: [5.05190849, 2.02082253, -5.83411884]
+        Translate: [12.6297712, 5.05205631, -14.5852966]
         Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 0
@@ -1071,9 +832,9 @@ ENTITIES:
       UID: 15777117760288992777
     TransformComponent:
       Transform:
-        Translate: [-5.05200005, 2.02099991, -5.83400011]
+        Translate: [-12.6300001, 5.05249977, -14.585]
         Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 0
@@ -1087,9 +848,9 @@ ENTITIES:
       UID: 18246797781755518409
     TransformComponent:
       Transform:
-        Translate: [3.29032755, 0.505058229, -5.89107418]
+        Translate: [8.22581863, 1.2626456, -14.727685]
         Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17971063540041505471
       MaterialID: 0
@@ -1103,9 +864,9 @@ ENTITIES:
       UID: 1410473377364073382
     TransformComponent:
       Transform:
-        Translate: [-3.28999996, 0.504999995, -5.89099979]
+        Translate: [-8.22499943, 1.26249993, -14.727499]
         Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17971063540041505471
       MaterialID: 0
@@ -1113,15 +874,36 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0.140000001, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [65.5250015, 24.5499992, 93.0749969]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: Wall_Front_Floor_1
       UID: 10276433539658323172
     TransformComponent:
       Transform:
-        Translate: [-0.420805216, 4.09516048, -8.11089039]
+        Translate: [-1.05201304, 10.2379007, -20.2772255]
         Rotate: [0, 0, 0]
-        Scale: [0.720000029, 0.769999981, 0.00999999978]
+        Scale: [2.04999995, 1.92499995, 0.0250000004]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.04999995, 1.92499995, 0.0250000004]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1135,9 +917,9 @@ ENTITIES:
       UID: 12662354917274233329
     TransformComponent:
       Transform:
-        Translate: [-7.48526812, 5.44336605, -6.33193684]
+        Translate: [-18.713171, 13.6084146, -15.8298426]
         Rotate: [-90, 0, 0]
-        Scale: [0.25, 0.219999999, 0.25]
+        Scale: [0.625, 0.550000012, 0.625]
     ModelComponent:
       ModelID: 3620272457406166050
       MaterialID: 0
@@ -1151,9 +933,9 @@ ENTITIES:
       UID: 4738938337717066563
     TransformComponent:
       Transform:
-        Translate: [7.52178001, 5.66800022, -6.38551712]
+        Translate: [18.8044491, 14.1700001, -15.9637928]
         Rotate: [0, 0, 0]
-        Scale: [0.25, 0.25, 0.129999995]
+        Scale: [0.625, 0.625, 0.324999988]
     ModelComponent:
       ModelID: 3620272457406166050
       MaterialID: 0
@@ -1167,9 +949,9 @@ ENTITIES:
       UID: 360363283426413035
     TransformComponent:
       Transform:
-        Translate: [-0.0700000003, 5.34700012, -6.2579999]
+        Translate: [-0.174999997, 13.3675003, -15.6449995]
         Rotate: [0, 0, 0]
-        Scale: [0.5, 0.0900000036, 0.00999999978]
+        Scale: [1.25, 0.225000009, 0.0250000004]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1183,9 +965,9 @@ ENTITIES:
       UID: 13596785614986856921
     TransformComponent:
       Transform:
-        Translate: [-10.4250002, 4.84008408, 1.10099995]
+        Translate: [-26.0625, 12.1002102, 2.75249982]
         Rotate: [0, -90, 0]
-        Scale: [0.629999995, 1, 0.0900000036]
+        Scale: [1.57499993, 2.0250001, 0.225000009]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1199,9 +981,9 @@ ENTITIES:
       UID: 9853635101962824744
     TransformComponent:
       Transform:
-        Translate: [10.4253016, 4.84000015, 1.100703]
+        Translate: [26.0632534, 12.1000004, 2.75175738]
         Rotate: [0, -90, 0]
-        Scale: [0.629999995, 1, 0.0900000036]
+        Scale: [1.57499993, 2.5, 0.225000009]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1215,9 +997,9 @@ ENTITIES:
       UID: 9981075119489624857
     TransformComponent:
       Transform:
-        Translate: [-6.93069267, 6.00632, -5.59486437]
+        Translate: [-17.3267307, 15.0158005, -13.9871607]
         Rotate: [0, -270, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+        Scale: [0.0250000004, 0.0250000004, 0.0250000004]
     ModelComponent:
       ModelID: 6829728261434427183
       MaterialID: 0
@@ -1231,9 +1013,9 @@ ENTITIES:
       UID: 7838097312144507883
     TransformComponent:
       Transform:
-        Translate: [6.93100023, 6.00600004, -5.59499979]
+        Translate: [17.3275013, 15.0150003, -13.9874992]
         Rotate: [0, -270, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+        Scale: [0.0250000004, 0.0250000004, 0.0250000004]
     ModelComponent:
       ModelID: 6829728261434427183
       MaterialID: 0
@@ -1247,9 +1029,9 @@ ENTITIES:
       UID: 9585209574695702259
     TransformComponent:
       Transform:
-        Translate: [-4.69100332, 6.33327866, -5.58261061]
+        Translate: [-11.7275085, 15.8331966, -13.9565268]
         Rotate: [90, 0, 0]
-        Scale: [0.860000014, 0.800000012, 0.560000002]
+        Scale: [2.1500001, 2, 1.39999998]
     ModelComponent:
       ModelID: 4826384296126717694
       MaterialID: 0
@@ -1263,9 +1045,9 @@ ENTITIES:
       UID: 14909493107942851076
     TransformComponent:
       Transform:
-        Translate: [4.69099998, 6.3447547, -5.58300018]
+        Translate: [11.7275, 15.861887, -13.9575005]
         Rotate: [90, 0, 0]
-        Scale: [0.860000014, 0.800000012, 0.560000002]
+        Scale: [2.1500001, 2, 1.39999998]
     ModelComponent:
       ModelID: 4826384296126717694
       MaterialID: 0
@@ -1279,9 +1061,9 @@ ENTITIES:
       UID: 2870292450877532431
     TransformComponent:
       Transform:
-        Translate: [-3.0777154, 5.4523015, -5.57244444]
+        Translate: [-7.69428873, 13.6307535, -13.9311113]
         Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17971063540041505471
       MaterialID: 0
@@ -1295,9 +1077,9 @@ ENTITIES:
       UID: 2218775839040934482
     TransformComponent:
       Transform:
-        Translate: [3.06999993, 5.42199993, -5.57200003]
+        Translate: [7.67499971, 13.5549994, -13.9300003]
         Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17971063540041505471
       MaterialID: 0
@@ -1311,9 +1093,9 @@ ENTITIES:
       UID: 717955065497441822
     TransformComponent:
       Transform:
-        Translate: [9.45704746, 7.52171564, -2.42534971]
+        Translate: [23.6426182, 18.8042889, -6.06337404]
         Rotate: [-90, -90, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 0
@@ -1327,9 +1109,9 @@ ENTITIES:
       UID: 14749266138962598626
     TransformComponent:
       Transform:
-        Translate: [-9.45699978, 7.52199984, -2.42499995]
+        Translate: [-23.6424999, 18.8050003, -6.0625]
         Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 0
@@ -1343,9 +1125,9 @@ ENTITIES:
       UID: 13394401403227967988
     TransformComponent:
       Transform:
-        Translate: [9.05116749, 2.85573363, -0.797999978]
+        Translate: [22.6279182, 7.1393342, -1.99499989]
         Rotate: [0, 0, 0]
-        Scale: [0.0299999993, 0.959999979, 0.189999998]
+        Scale: [0.0749999955, 2.39999986, 0.474999994]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1359,9 +1141,9 @@ ENTITIES:
       UID: 6831113887765089259
     TransformComponent:
       Transform:
-        Translate: [-9.05099964, 2.85599995, -0.797999978]
+        Translate: [-22.6274986, 7.13999987, -1.99499989]
         Rotate: [0, 0, 0]
-        Scale: [0.0299999993, 0.959999979, 0.189999998]
+        Scale: [0.0749999955, 2.39999986, 0.474999994]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1375,9 +1157,9 @@ ENTITIES:
       UID: 12279501084326585378
     TransformComponent:
       Transform:
-        Translate: [3.09216499, 5.93260193, 1.35184038]
+        Translate: [7.73041248, 14.8315048, 3.379601]
         Rotate: [0, -90, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+        Scale: [0.0250000004, 0.0250000004, 0.0250000004]
     ModelComponent:
       ModelID: 6829728261434427183
       MaterialID: 0
@@ -1391,9 +1173,9 @@ ENTITIES:
       UID: 17346385537782786279
     TransformComponent:
       Transform:
-        Translate: [0.0326473713, 6.7774725, -2.09365273]
+        Translate: [0.0816184282, 16.9436817, -5.23413181]
         Rotate: [-90, 0, 0]
-        Scale: [1.66999996, 0.699999988, 0.699999988]
+        Scale: [4.17499971, 1.75, 1.75]
     ModelComponent:
       ModelID: 4826384296126717694
       MaterialID: 0
@@ -1407,9 +1189,9 @@ ENTITIES:
       UID: 13972879706102874778
     TransformComponent:
       Transform:
-        Translate: [0.0452557206, 5.46009874, 0.800237417]
+        Translate: [0.113139302, 13.6502466, 2.00059342]
         Rotate: [-90, 0, 0]
-        Scale: [0.699999988, 0.699999988, 0.699999988]
+        Scale: [1.75, 1.75, 1.75]
     ModelComponent:
       ModelID: 5156670162497623977
       MaterialID: 0
@@ -1423,9 +1205,9 @@ ENTITIES:
       UID: 963547750710080490
     TransformComponent:
       Transform:
-        Translate: [-2.94899988, 5.90145254, 1.40525389]
+        Translate: [-7.37249947, 14.7536316, 3.51313472]
         Rotate: [0, -90, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+        Scale: [0.0250000004, 0.0250000004, 0.0250000004]
     ModelComponent:
       ModelID: 6829728261434427183
       MaterialID: 0
@@ -1439,9 +1221,9 @@ ENTITIES:
       UID: 11469306329295438326
     TransformComponent:
       Transform:
-        Translate: [4.3500762, 6.34499979, 7.7891655]
+        Translate: [10.8751907, 15.8624992, 19.4729137]
         Rotate: [-90, 0, 0]
-        Scale: [0.860000014, 0.800000012, 0.560000002]
+        Scale: [2.1500001, 2, 1.39999998]
     ModelComponent:
       ModelID: 4826384296126717694
       MaterialID: 0
@@ -1455,9 +1237,9 @@ ENTITIES:
       UID: 16900605180980820779
     TransformComponent:
       Transform:
-        Translate: [-4.3499999, 6.34499979, 7.78900003]
+        Translate: [-10.875, 15.8624992, 19.4724998]
         Rotate: [-90, 0, 0]
-        Scale: [0.860000014, 0.800000012, 0.560000002]
+        Scale: [2.1500001, 2, 1.39999998]
     ModelComponent:
       ModelID: 4826384296126717694
       MaterialID: 0
@@ -1471,9 +1253,9 @@ ENTITIES:
       UID: 6365037268832649934
     TransformComponent:
       Transform:
-        Translate: [7.2042923, 4.84000015, 11.2019997]
+        Translate: [18.0107307, 12.1000004, 28.0049992]
         Rotate: [0, 0, 0]
-        Scale: [0.239999995, 1, 0.0900000036]
+        Scale: [0.599999964, 2.5, 0.225000009]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1487,9 +1269,9 @@ ENTITIES:
       UID: 2136373434774079840
     TransformComponent:
       Transform:
-        Translate: [-0.0612011552, 6.06108761, 19.4486046]
+        Translate: [-0.153002888, 15.1527195, 48.6215134]
         Rotate: [0, 0, 0]
-        Scale: [0.189999998, 0.180000007, 1.70000005]
+        Scale: [0.474999994, 0.450000018, 4.25]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1503,9 +1285,9 @@ ENTITIES:
       UID: 16133961965073669139
     TransformComponent:
       Transform:
-        Translate: [0.0952050686, 12.8137045, 19.0912914]
+        Translate: [0.238012671, 32.0342598, 47.7282295]
         Rotate: [-90, 0, 0]
-        Scale: [0.400000006, 0.5, 0.400000006]
+        Scale: [1, 1.25, 1]
     ModelComponent:
       ModelID: 8039408713556627694
       MaterialID: 0
@@ -1519,9 +1301,9 @@ ENTITIES:
       UID: 468644347822796871
     TransformComponent:
       Transform:
-        Translate: [3.26690149, 6.1747036, 19.2622204]
+        Translate: [8.16725349, 15.436759, 48.1555519]
         Rotate: [0, -90, 0]
-        Scale: [0.579999983, 0.930000007, 0.0900000036]
+        Scale: [1.44999993, 2.32500005, 0.225000009]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1535,9 +1317,9 @@ ENTITIES:
       UID: 5123991758905279357
     TransformComponent:
       Transform:
-        Translate: [-0.0916185081, 6.04893637, 10.7932482]
+        Translate: [-0.22904627, 15.1223412, 26.98312]
         Rotate: [0, 0, 0]
-        Scale: [0.189999998, 0.180000007, 0.00999999978]
+        Scale: [0.474999994, 0.450000018, 0.0250000004]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1551,9 +1333,9 @@ ENTITIES:
       UID: 8618011661999532453
     TransformComponent:
       Transform:
-        Translate: [-3.26699996, 4.69700003, 19.2793369]
+        Translate: [-8.16749954, 11.7425003, 48.1983414]
         Rotate: [0, -90, 0]
-        Scale: [0.579999983, 0.460000008, 0.0900000036]
+        Scale: [1.44999993, 1.14999998, 0.225000009]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1567,9 +1349,9 @@ ENTITIES:
       UID: 4636965599594259602
     TransformComponent:
       Transform:
-        Translate: [-3.26874661, 8.86853123, 11.1978216]
+        Translate: [-8.17186642, 22.1713276, 27.9945545]
         Rotate: [0, -90, 0]
-        Scale: [0.0299999993, 0.379999995, 0.0900000036]
+        Scale: [0.0749999955, 0.949999988, 0.225000009]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1583,9 +1365,9 @@ ENTITIES:
       UID: 13337176872369800048
     TransformComponent:
       Transform:
-        Translate: [-3.66751552, 8.86410904, 16.3406048]
+        Translate: [-9.16878891, 22.1602726, 40.8515129]
         Rotate: [0, -90, 0]
-        Scale: [0.319999993, 0.389999986, 0.00999999978]
+        Scale: [0.800000012, 0.974999964, 0.0250000004]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1599,9 +1381,9 @@ ENTITIES:
       UID: 8732369213151081285
     TransformComponent:
       Transform:
-        Translate: [2.72148895, 8.0676527, 12.8961515]
+        Translate: [6.80372238, 20.1691322, 32.2403793]
         Rotate: [-90, -90, 0]
-        Scale: [0.49000001, 1, 0.430000007]
+        Scale: [1.22500002, 2.5, 1.07500005]
     ModelComponent:
       ModelID: 5963078964798272625
       MaterialID: 0
@@ -1615,9 +1397,9 @@ ENTITIES:
       UID: 13900569791274339863
     TransformComponent:
       Transform:
-        Translate: [-3.59384489, 9.08797836, 13.8118]
+        Translate: [-8.98461246, 22.7199459, 34.5294991]
         Rotate: [-90, -90, 0]
-        Scale: [0.49000001, 1, 0.430000007]
+        Scale: [1.22500002, 2.5, 1.07500005]
     ModelComponent:
       ModelID: 5963078964798272625
       MaterialID: 0
@@ -1631,9 +1413,9 @@ ENTITIES:
       UID: 15969626093444568412
     TransformComponent:
       Transform:
-        Translate: [2.35679793, 8.31258202, 11.0734425]
+        Translate: [5.89199495, 20.781456, 27.6836071]
         Rotate: [-90, -90, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 0
@@ -1647,9 +1429,9 @@ ENTITIES:
       UID: 10698932820107530939
     TransformComponent:
       Transform:
-        Translate: [-0.128716052, 9.76780701, 19.1329632]
+        Translate: [-0.321790129, 24.4195175, 47.8324089]
         Rotate: [-90, 0, 0]
-        Scale: [0.560000002, 0.00999999978, 0.860000014]
+        Scale: [1.39999998, 0.0250000004, 2.1500001]
     ModelComponent:
       ModelID: 12206031679676868600
       MaterialID: 0
@@ -1663,9 +1445,9 @@ ENTITIES:
       UID: 3543104788695067941
     TransformComponent:
       Transform:
-        Translate: [1.76196325, 8.39826775, 18.9760723]
+        Translate: [4.40490818, 20.9956703, 47.4401817]
         Rotate: [-90, 0, 0]
-        Scale: [0.280000001, 1, 0.819999993]
+        Scale: [0.699999988, 2.5, 2.04999995]
     ModelComponent:
       ModelID: 5963078964798272625
       MaterialID: 0
@@ -1679,9 +1461,9 @@ ENTITIES:
       UID: 2081698451890565235
     TransformComponent:
       Transform:
-        Translate: [-2.35043693, 8.22786045, 19.0880756]
+        Translate: [-5.87609243, 20.5696507, 47.7201881]
         Rotate: [-90, 0, -90]
-        Scale: [0.400000006, 1, 0.400000006]
+        Scale: [1, 2.5, 1]
     ModelComponent:
       ModelID: 5963078964798272625
       MaterialID: 0
@@ -1695,9 +1477,9 @@ ENTITIES:
       UID: 13695423098878404332
     TransformComponent:
       Transform:
-        Translate: [-2.05211997, 7.74855328, 16.4219799]
+        Translate: [-5.13030005, 19.3713837, 41.0549507]
         Rotate: [0, 0, 0]
-        Scale: [0.0199999996, 0.159999996, 0.0500000007]
+        Scale: [0.0500000007, 0.399999976, 0.125]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1711,9 +1493,9 @@ ENTITIES:
       UID: 3598504729430996576
     TransformComponent:
       Transform:
-        Translate: [2.55417776, 8.98913956, 24.5170364]
+        Translate: [6.38544416, 22.4728489, 61.2925911]
         Rotate: [-90, -90, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 0
@@ -1727,9 +1509,9 @@ ENTITIES:
       UID: 1153291360730907286
     TransformComponent:
       Transform:
-        Translate: [-0.164256454, 7.69880104, 27.7867355]
+        Translate: [-0.410641134, 19.2470016, 69.466835]
         Rotate: [0, 0, 0]
-        Scale: [0.25, 0.600000024, 0.100000001]
+        Scale: [0.625, 1.50000012, 0.25]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1743,9 +1525,9 @@ ENTITIES:
       UID: 13237089712335802159
     TransformComponent:
       Transform:
-        Translate: [-3.15832329, 8.98900032, 20.0626869]
+        Translate: [-7.89580822, 22.4724998, 50.1567154]
         Rotate: [-90, 90, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 0
@@ -1759,9 +1541,9 @@ ENTITIES:
       UID: 16020692895328883736
     TransformComponent:
       Transform:
-        Translate: [0.312098205, 6.9697957, 23.5159836]
+        Translate: [0.780245483, 17.42449, 58.789959]
         Rotate: [-90, 0, 0]
-        Scale: [0.75, 0.75, 0.75]
+        Scale: [1.875, 1.875, 1.875]
     ModelComponent:
       ModelID: 5838446488854438722
       MaterialID: 0
@@ -1775,9 +1557,9 @@ ENTITIES:
       UID: 2249271849963366371
     TransformComponent:
       Transform:
-        Translate: [-1.81015885, 6.94593334, 23.2560787]
+        Translate: [-4.5253973, 17.3648338, 58.1401978]
         Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 618926925563278836
       MaterialID: 0
@@ -1791,9 +1573,9 @@ ENTITIES:
       UID: 1861805954047498574
     TransformComponent:
       Transform:
-        Translate: [0.204311401, 6.92272282, 21.923996]
+        Translate: [0.510778487, 17.3068066, 54.8099899]
         Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 618926925563278836
       MaterialID: 0
@@ -1807,9 +1589,9 @@ ENTITIES:
       UID: 8415643198172161472
     TransformComponent:
       Transform:
-        Translate: [0.124401093, 6.93855667, 25.5353737]
+        Translate: [0.311002731, 17.3463917, 63.8384361]
         Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 618926925563278836
       MaterialID: 0
@@ -1823,9 +1605,9 @@ ENTITIES:
       UID: 3820564189371600480
     TransformComponent:
       Transform:
-        Translate: [2.18723488, 7.07267046, 23.5372181]
+        Translate: [5.4680872, 17.6816769, 58.8430443]
         Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 618926925563278836
       MaterialID: 0
@@ -1839,9 +1621,9 @@ ENTITIES:
       UID: 6129246695125078299
     TransformComponent:
       Transform:
-        Translate: [1.37384689, 8.20676899, 26.2187805]
+        Translate: [3.43461728, 20.516922, 65.5469513]
         Rotate: [0, 0, 0]
-        Scale: [0.0500000007, 0.100000001, 0.0399999991]
+        Scale: [0.125, 0.25, 0.099999994]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1855,9 +1637,9 @@ ENTITIES:
       UID: 5980189267885289823
     TransformComponent:
       Transform:
-        Translate: [-6.92690706, 1.28178191, 19.4394035]
+        Translate: [-17.3172684, 3.20445466, 48.5985069]
         Rotate: [0, 0, 0]
-        Scale: [0.209999993, 0.829999983, 1.73000002]
+        Scale: [0.524999976, 2.07500005, 4.32500029]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1871,9 +1653,9 @@ ENTITIES:
       UID: 5352366284023826398
     TransformComponent:
       Transform:
-        Translate: [8.16831017, 8.41599655, 10.1492701]
+        Translate: [20.4207764, 21.0399914, 25.3731747]
         Rotate: [-90, 180, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 0
@@ -1887,9 +1669,9 @@ ENTITIES:
       UID: 685986689009478695
     TransformComponent:
       Transform:
-        Translate: [9.50593281, 8.41600037, 8.86550426]
+        Translate: [23.7648315, 21.0400009, 22.1637611]
         Rotate: [-90, -90, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 0
@@ -1903,9 +1685,9 @@ ENTITIES:
       UID: 6757287925914476890
     TransformComponent:
       Transform:
-        Translate: [9.66293144, 5.40338898, 10.2786779]
+        Translate: [24.1573277, 13.5084724, 25.6966953]
         Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17971063540041505471
       MaterialID: 0
@@ -1919,9 +1701,9 @@ ENTITIES:
       UID: 9657880931208710085
     TransformComponent:
       Transform:
-        Translate: [6.00529718, 8.51433277, 10.1490002]
+        Translate: [15.0132427, 21.2858315, 25.3725014]
         Rotate: [-90, -180, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 0
@@ -1935,9 +1717,9 @@ ENTITIES:
       UID: 11709975980184754523
     TransformComponent:
       Transform:
-        Translate: [-4.43575573, 6.67131472, 12.6486578]
+        Translate: [-11.0893898, 16.6782875, 31.621645]
         Rotate: [90, -90, 0]
-        Scale: [1.71000004, 1, 0.74000001]
+        Scale: [4.2750001, 2.5, 1.85000002]
     ModelComponent:
       ModelID: 4826384296126717694
       MaterialID: 0
@@ -1951,9 +1733,9 @@ ENTITIES:
       UID: 4028690314670065481
     TransformComponent:
       Transform:
-        Translate: [-3.9240365, 8.3279171, 15.7997236]
+        Translate: [-9.81009102, 20.8197937, 39.4993095]
         Rotate: [-90, -90, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 0
@@ -1967,9 +1749,9 @@ ENTITIES:
       UID: 7787992081072199843
     TransformComponent:
       Transform:
-        Translate: [-4.43599987, 6.671, 18.2755013]
+        Translate: [-11.0899992, 16.6774998, 45.688755]
         Rotate: [-90, -90, 0]
-        Scale: [1.71000004, 1, 0.74000001]
+        Scale: [4.2750001, 2.5, 1.85000002]
     ModelComponent:
       ModelID: 4826384296126717694
       MaterialID: 0
@@ -1983,9 +1765,9 @@ ENTITIES:
       UID: 8978989599714003870
     TransformComponent:
       Transform:
-        Translate: [-3.92400002, 8.32800007, 20.2729282]
+        Translate: [-9.81000042, 20.8199997, 50.6823196]
         Rotate: [-90, -90, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 0
@@ -1999,9 +1781,9 @@ ENTITIES:
       UID: 11500368858515465967
     TransformComponent:
       Transform:
-        Translate: [-3.92400002, 8.32800007, 27.8326893]
+        Translate: [-9.81000042, 20.8199997, 69.5817261]
         Rotate: [-90, -90, 0]
-        Scale: [1, 1, 1]
+        Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 0
@@ -2015,9 +1797,9 @@ ENTITIES:
       UID: 17261417048716064848
     TransformComponent:
       Transform:
-        Translate: [-5.93293285, 7.06382227, 27.1147251]
+        Translate: [-14.8323317, 17.6595554, 67.7868118]
         Rotate: [0, -90, 0]
-        Scale: [0.0299999993, 0.349999994, 0.189999998]
+        Scale: [0.0749999955, 0.875, 0.474999994]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -2031,7 +1813,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [2.5, 2.5, 2.5]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -2044,7 +1826,86 @@ ENTITIES:
       UID: 6690567421051034129
     TransformComponent:
       Transform:
-        Translate: [0, 2.03490233, 0.561911941]
+        Translate: [0, 5.08725595, 1.40477991]
         Rotate: [0, 0, 0]
-        Scale: [2.52162647, 3.14866662, 1]
+        Scale: [6.30406618, 7.87166643, 2.5]
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
   - {}

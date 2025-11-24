@@ -1,330 +1,412 @@
-﻿using System;
-using Boom;
+﻿using Boom;
 
+using System;
+
+/// <summary>
+/// Handles player movement using PhysX linear velocity control.
+/// Supports WASD movement, jumping with Space, and mouse-look control.
+/// Movement is relative to the camera's facing direction.
+/// Attach this script to any entity with TransformComponent and ScriptComponent.
+/// </summary>
 namespace GameScripts
 {
-    /// <summary>
-    /// Camera-relative WASD using PhysX linear velocity.
-    /// Space = jump (edge; only when grounded). Left Shift = sprint.
-    /// Animator is driven by parameters: Speed (float), IsGrounded (bool), Jump (trigger).
-    /// Requires TransformComponent; AnimatorComponent is optional (guarded).
-    /// </summary>
     public class PlayerMovement
     {
-        // ====== TUNABLES ======
-        private float _walkSpeed = 3.5f;     // speed when not sprinting
-        private float _runSpeed = 6.0f;     // speed when sprinting (Left Shift)
-        private float _jumpSpeed = 8.0f;     // upward velocity applied on jump
-        private bool _gateRmbToPauseMove = true; // if true, holding RMB pauses movement (useful in editor)
-
-        // Animator parameter names (match your graph!)
-        private const string PARAM_SPEED = "Speed";
-        private const string PARAM_GROUNDED = "IsGrounded";
-        private const string PARAM_JUMP = "Jump";
-
-        // ====== ENGINE ======
+        // This field is automatically set by the scripting system
         public ulong Entity;
 
-        // ====== STATE ======
-        private bool _prevSpaceDown = false;   // for edge-detect
-        private bool _hasJumped = false;       // prevents multiple jumps in one airtime
-        private float _currentMoveSpeed;        // cached per-frame (walk vs run)
+        // Movement parameters (configurable)
+        private float _speed = 5f;
+        private float _jumpSpeed = 8f;
 
-        private FootstepComponent _footstep;    // optional helper
-        private static ulong s_playerEntity = 0; // used to identify "the player" in static trigger callbacks
+        // Footstep system
+        private FootstepComponent _footstepComponent;
 
-        // ---------------------------------------------------------
-        // Lifecycle
-        // ---------------------------------------------------------
+        // Jump state tracking
+        private bool _wasSpacePressed = false;
+        private bool _hasJumped = false;
+
+        // Static reference to player entity for trigger callbacks
+        private static ulong s_playerEntity = 0;
+
+        // NEW: Rotation smoothing
+        //private float _rotationSpeed = 10f; // degrees per frame to turn
+
+        // NEW: Model forward direction offset (adjust if model faces wrong way)
+        private float _modelForwardOffset = 180f; // 180° if model faces backwards, 0° if correct
+
+        /// <summary>
+        /// Called once when the script is first created.
+        /// </summary>
         public void OnStart(string jsonParams)
         {
-            API.Log($"[PlayerMovement] OnStart - Entity={Entity}");
+            API.Log($"[PlayerMovement] OnStart() - Entity: {Entity}");
+
+            // Store player entity reference for static callbacks
             s_playerEntity = Entity;
 
+            // Validate entity has required components
             if (!API.HasTransform(Entity))
             {
-                API.Log("[PlayerMovement] ERROR: Missing TransformComponent.");
+                API.Log("[PlayerMovement] ERROR: Entity missing TransformComponent!");
                 return;
             }
 
-            // Initialize animator defaults (if present)
-            if (API.HasAnimator(Entity))
+            if (!API.HasScript(Entity))
             {
-                API.AnimatorSetFloat(Entity, PARAM_SPEED, 0f);
-                API.AnimatorSetBool(Entity, PARAM_GROUNDED, true);
-            }
-            else
-            {
-                API.Log("[PlayerMovement] WARN: No AnimatorComponent detected.");
+                API.Log("[PlayerMovement] ERROR: Entity missing ScriptComponent!");
+                return;
             }
 
-            // Optional footstep helper
-            try
-            {
-                _footstep = new FootstepComponent { Entity = Entity };
-                _footstep.OnStart("");
-            }
-            catch { _footstep = null; }
+            // Initialize footstep component
+            _footstepComponent = new FootstepComponent();
+            _footstepComponent.Entity = Entity;
+            _footstepComponent.OnStart("");
 
+            // RE-ENABLE trigger callbacks (simple version)
+            API.Log("[PlayerMovement] Registering trigger callbacks...");
             RegisterTriggerCallbacksOnAllTriggers();
-            API.Log("[PlayerMovement] Init complete.");
+
+            API.Log($"[PlayerMovement] Using camera-relative PhysX movement: speed={_speed}, jumpSpeed={_jumpSpeed}");
+            API.Log($"[PlayerMovement] Model forward offset: {_modelForwardOffset} degrees");
         }
 
-        public void OnDestroy()
+        private void RegisterTriggerCallbacksOnAllTriggers()
         {
-            if (s_playerEntity == Entity) s_playerEntity = 0;
-            try { _footstep?.OnDestroy(); } catch { }
-            // If engine exposes UnregisterTrigger* APIs, call them here to clean up.
+            // Try to find common trigger entities and register callbacks on them
+            string[] triggerNames = { "Checkpoint", "DamageZone", "PowerUp", "DoorTrigger", "TriggerVolume", "AreaTrigger" };
+
+            int registeredCount = 0;
+            foreach (string triggerName in triggerNames)
+            {
+                ulong triggerEntity = API.FindEntity(triggerName);
+                API.Log($"[PlayerMovement] Looking for trigger: {triggerName}, found ID: {triggerEntity}");
+
+                if (triggerEntity != 0)
+                {
+                    // Validate it has a collider and is a trigger
+                    bool hasCollider = API.HasCollider(triggerEntity);
+                    bool isTrigger = API.IsTrigger(triggerEntity);
+
+                    API.Log($"[PlayerMovement] {triggerName} - HasCollider: {hasCollider}, IsTrigger: {isTrigger}");
+
+                    if (hasCollider && isTrigger)
+                    {
+                        API.Log($"[PlayerMovement] Registering callbacks on {triggerName} (ID: {triggerEntity})");
+                        API.RegisterTriggerEnterCallback(triggerEntity, OnTriggerEnter);
+                        API.RegisterTriggerExitCallback(triggerEntity, OnTriggerExit);
+                        registeredCount++;
+                        API.Log($"[PlayerMovement] Successfully registered callbacks on {triggerName}");
+                    }
+                    else
+                    {
+                        API.Log($"[PlayerMovement] Skipping {triggerName} - not a proper trigger");
+                    }
+                }
+                else
+                {
+                    API.Log($"[PlayerMovement] Trigger '{triggerName}' not found in scene");
+                }
+            }
+
+            API.Log($"[PlayerMovement] Total callbacks registered: {registeredCount}");
         }
 
-        // ---------------------------------------------------------
-        // Update
-        // ---------------------------------------------------------
+        /// <summary>
+        /// Called every frame to update movement using PhysX linear velocity.
+        /// </summary>
         public void OnUpdate(float dt)
         {
-            // RMB gate (e.g., when orbiting camera in editor)
-            if (_gateRmbToPauseMove && API.IsMouseDown(API.MOUSE_RIGHT))
+            // Safety check
+            if (!API.HasTransform(Entity) || !API.HasScript(Entity))
                 return;
 
-            try { _footstep?.OnUpdate(dt); } catch { }
+            // Update footstep component
+            _footstepComponent?.OnUpdate(dt);
 
-            // ---- Input: WASD ----
-            float rawX = 0f, rawZ = 0f;
-            if (API.IsKeyDown(API.KEY_A)) rawX -= 1f;
-            if (API.IsKeyDown(API.KEY_D)) rawX += 1f;
-            if (API.IsKeyDown(API.KEY_W)) rawZ += 1f;
-            if (API.IsKeyDown(API.KEY_S)) rawZ -= 1f;
+            // =============== CAMERA-RELATIVE PHYSX MOVEMENT =================
 
-            // Normalize input
-            float mag = (float)Math.Sqrt(rawX * rawX + rawZ * rawZ);
-            if (mag > 1e-4f) { rawX /= mag; rawZ /= mag; }
+            var vel = API.GetLinearVelocity(Entity);
 
-            // ---- Sprint ----
-            bool sprint = API.IsKeyDown(API.KEY_LEFT_CONTROL);
-            _currentMoveSpeed = sprint ? _runSpeed : _walkSpeed;
+            // Check if the player is allowed to move (RMB held disables movement)
+            bool allowMove = !API.IsMouseDown(API.MOUSE_RIGHT);
 
-            // ---- Camera-relative direction (XZ) ----
-            Vec3 moveDir = new Vec3(0, 0, 0);
-            if (mag > 0f)
+            // Check if the player is "grounded" via collision flag
+            bool isGrounded = API.IsColliding(Entity);
+
+            // Calculate horizontal movement input
+            float inputX = 0f, inputZ = 0f;
+            if (allowMove)
             {
-                float yawDeg = API.GetThirdPersonCameraYaw();
-                float yawRad = yawDeg * (float)Math.PI / 180f;
-
-                Vec3 fwd = new Vec3((float)Math.Sin(yawRad), 0f, (float)Math.Cos(yawRad));
-                Vec3 right = new Vec3((float)Math.Cos(yawRad), 0f, -(float)Math.Sin(yawRad));
-
-                moveDir = new Vec3(
-                    right.X * rawX + fwd.X * rawZ,
-                    0f,
-                    right.Z * rawX + fwd.Z * rawZ
-                );
-
-                // re-normalize
-                float len = (float)Math.Sqrt(moveDir.X * moveDir.X + moveDir.Z * moveDir.Z);
-                if (len > 1e-4f) { moveDir.X /= len; moveDir.Z /= len; }
+                if (API.IsKeyDown(API.KEY_A)) inputX += 1f; // Left
+                if (API.IsKeyDown(API.KEY_D)) inputX -= 1f; // Right
+                if (API.IsKeyDown(API.KEY_W)) inputZ += 1f; // Forward
+                if (API.IsKeyDown(API.KEY_S)) inputZ -= 1f; // Backward
             }
 
-            // ---- Write horizontal velocity from input ----
-            var vel = API.GetLinearVelocity(Entity);
-            if (mag > 0f)
+            // Apply camera-relative movement
+            if (inputX != 0f || inputZ != 0f)
             {
-                vel.X = moveDir.X * _currentMoveSpeed;
-                vel.Z = moveDir.Z * _currentMoveSpeed;
+                // Get camera's yaw angle in degrees
+                float cameraYawDegrees = API.GetThirdPersonCameraYaw();
+
+                // Convert to radians for math calculations
+                float cameraYawRadians = cameraYawDegrees * (float)Math.PI / 180f;
+
+                // Calculate camera's forward and right vectors
+                // Forward direction: where the camera is looking (negative Z in camera space becomes world space direction)
+                Vec3 cameraForward = new Vec3(
+                    (float)Math.Sin(cameraYawRadians),
+                    0f,
+                    (float)Math.Cos(cameraYawRadians)
+                );
+
+                // Right direction: 90 degrees to the right of forward
+                Vec3 cameraRight = new Vec3(
+                    (float)Math.Cos(cameraYawRadians),
+                    0f,
+                    -(float)Math.Sin(cameraYawRadians)
+                );
+
+                // Calculate world-space movement direction based on camera orientation
+                Vec3 moveDirection = new Vec3(
+                    cameraRight.X * inputX + cameraForward.X * inputZ,
+                    0f, // Keep Y at 0 for ground movement
+                    cameraRight.Z * inputX + cameraForward.Z * inputZ
+                );
+
+                // Normalize and apply speed
+                float len = (float)Math.Sqrt(moveDirection.X * moveDirection.X + moveDirection.Z * moveDirection.Z);
+                if (len > 0f)
+                {
+                    vel.X = (moveDirection.X / len) * _speed;
+                    vel.Z = (moveDirection.Z / len) * _speed;
+
+                    // NEW: Calculate rotation with model forward offset correction
+                    float targetYaw = (float)(Math.Atan2(moveDirection.X, moveDirection.Z) * 180.0 / Math.PI);
+
+                    // Apply the offset to correct for model's wrong forward direction
+                    targetYaw += _modelForwardOffset;
+
+                    // Normalize angle to [-180, 180] range
+                    while (targetYaw > 180f) targetYaw -= 360f;
+                    while (targetYaw < -180f) targetYaw += 360f;
+
+                    API.SetRotationY(Entity, targetYaw);
+                }
             }
             else
             {
+                // No input - stop horizontal movement
                 vel.X = 0f;
                 vel.Z = 0f;
             }
 
-            // ---- Jump (edge on press, only when grounded) ----
-            bool isGrounded = API.IsColliding(Entity);
-            bool spaceDown = API.IsKeyDown(API.KEY_SPACE);
+            // =============== JUMPING LOGIC WITH PROPER STATE TRACKING =================
 
+            bool spacePressed = API.IsKeyDown(API.KEY_SPACE);
+
+            // Reset jump state when we land
             if (isGrounded && _hasJumped)
-                _hasJumped = false; // landed → can jump again
+            {
+                _hasJumped = false;
+            }
 
-            if (isGrounded && spaceDown && !_prevSpaceDown && !_hasJumped)
+            // Jump only on space key press (not hold) and when grounded
+            if (allowMove && isGrounded && spacePressed && !_wasSpacePressed && !_hasJumped)
             {
                 vel.Y = _jumpSpeed;
                 _hasJumped = true;
 
-                // Optional: jump SFX
-                try
-                {
-                    Vec3 pos = API.GetPosition(Entity);
-                    API.PlaySoundAt("jump_sound", "Resources/Audio/playerPunch_1.wav", pos, false);
-                    API.SetSoundVolume("jump_sound", 0.9f);
-                }
-                catch { }
+                // Play jump sound only once
+                Vec3 playerPos = API.GetPosition(Entity);
+                API.PlaySoundAt("jump_sound", "Resources/Audio/playerPunch_1.wav", playerPos, false);
+                API.SetSoundVolume("jump_sound", 0.9f);
 
-                // Drive jump via Trigger (Animator graph handles the pose)
-                if (API.HasAnimator(Entity))
-                    API.AnimatorSetTrigger(Entity, PARAM_JUMP);
-
-                API.Log("[PlayerMovement] Jump!");
+                API.Log("[PlayerMovement] Jump executed!");
             }
 
-            _prevSpaceDown = spaceDown;
+            // Update space key state for next frame
+            _wasSpacePressed = spacePressed;
 
-            // PhysX applies gravity; we just set velocity.
+            // NOTE: We do NOT apply gravity here.
+            // PhysX already applies gravity every simulation step.
+
             API.SetLinearVelocity(Entity, vel);
-
-            // ---- Animator Parameters ----
-            if (API.HasAnimator(Entity))
-            {
-                // Planar speed for 1D blend (Idle/Walk/Run)
-                float planarSpeed = (float)Math.Sqrt(vel.X * vel.X + vel.Z * vel.Z);
-                API.AnimatorSetFloat(Entity, PARAM_SPEED, planarSpeed);
-
-                // Grounded
-                API.AnimatorSetBool(Entity, PARAM_GROUNDED, isGrounded);
-            }
-
-            // ---- Face movement direction (instant) ----
-            if (mag > 0.1f && API.HasTransform(Entity))
-            {
-                float angleRad = (float)Math.Atan2(moveDir.X, moveDir.Z); // Atan2(x, z)
-                float angleDeg = angleRad * 180.0f / (float)Math.PI;
-
-                var t = API.GetTransform(Entity);
-                t.RotationY = angleDeg;
-                API.SetTransform(Entity, t);
-            }
         }
 
-        // ---------------------------------------------------------
-        // Triggers
-        // ---------------------------------------------------------
-        private void RegisterTriggerCallbacksOnAllTriggers()
-        {
-            string[] names = { "Checkpoint", "DamageZone", "PowerUp", "DoorTrigger", "TriggerVolume", "AreaTrigger" };
-            int count = 0;
-
-            foreach (var name in names)
-            {
-                ulong trig = API.FindEntity(name);
-                API.Log($"[PlayerMovement] Lookup trigger '{name}' -> {trig}");
-                if (trig == 0) continue;
-
-                bool hasCol = API.HasCollider(trig);
-                bool isTrig = API.IsTrigger(trig);
-                API.Log($"[PlayerMovement]   hasCol={hasCol}, isTrigger={isTrig}");
-
-                if (hasCol && isTrig)
-                {
-                    API.RegisterTriggerEnterCallback(trig, OnTriggerEnter);
-                    API.RegisterTriggerExitCallback(trig, OnTriggerExit);
-                    count++;
-                }
-            }
-
-            API.Log($"[PlayerMovement] Registered trigger callbacks on {count} entities.");
-        }
-
+        /// <summary>
+        /// Trigger enter callback - called when the player enters a trigger volume
+        /// </summary>
         private static void OnTriggerEnter(ulong triggerEntity, ulong otherEntity)
         {
             try
             {
-                if (otherEntity != s_playerEntity) return;
+                API.Log($"[PlayerMovement] Trigger Enter - Trigger: {triggerEntity}, Other: {otherEntity}, Player: {s_playerEntity}");
 
-                Vec3 pos = new Vec3(0, 0, 0);
-                if (API.HasTransform(triggerEntity)) pos = API.GetPosition(triggerEntity);
+                // Check if the "other" entity is actually the player
+                if (otherEntity != s_playerEntity)
+                {
+                    API.Log($"[PlayerMovement] Trigger not involving player - ignoring");
+                    return;
+                }
 
+                API.Log($"[PlayerMovement] Player entered trigger! Trigger ID: {triggerEntity}");
+
+                // Get the position for 3D sound
+                Vec3 triggerPos = new Vec3(0, 0, 0);
+                if (API.HasTransform(triggerEntity))
+                {
+                    triggerPos = API.GetPosition(triggerEntity);
+                }
+
+                // Try to identify trigger by name lookup
+                // Note: This approach searches for known trigger names
+                bool soundPlayed = false;
+
+                // Try common trigger names
                 ulong checkpoint = API.FindEntity("Checkpoint");
                 ulong damageZone = API.FindEntity("DamageZone");
                 ulong powerup = API.FindEntity("PowerUp");
                 ulong door = API.FindEntity("DoorTrigger");
 
-                bool played = false;
-
                 if (triggerEntity == checkpoint && checkpoint != 0)
                 {
-                    API.Log("[PlayerMovement] >>> CHECKPOINT <<<");
-                    API.PlaySoundAt("checkpoint", "Resources/Audio/playerPunch_1.wav", pos, false);
+                    API.Log(">>> CHECKPOINT REACHED! <<<");
+                    API.PlaySoundAt("checkpoint", "Resources/Audio/playerPunch_1.wav", triggerPos, false);
                     API.SetSoundVolume("checkpoint", 0.95f);
-                    played = true;
+                    soundPlayed = true;
                 }
                 else if (triggerEntity == damageZone && damageZone != 0)
                 {
-                    API.Log("[PlayerMovement] >>> DAMAGE ZONE <<<");
-                    API.PlaySoundAt("damage", "Resources/Audio/playerPunch_1.wav", pos, false);
+                    API.Log(">>> PLAYER TAKING DAMAGE! <<<");
+                    API.PlaySoundAt("damage", "Resources/Audio/playerPunch_1.wav", triggerPos, false);
                     API.SetSoundVolume("damage", 0.8f);
-                    played = true;
+                    soundPlayed = true;
                 }
                 else if (triggerEntity == powerup && powerup != 0)
                 {
-                    API.Log("[PlayerMovement] >>> POWER-UP <<<");
-                    API.PlaySoundAt("powerup", "Resources/Audio/playerPunch_1.wav", pos, false);
+                    API.Log(">>> POWER-UP COLLECTED! <<<");
+                    API.PlaySoundAt("powerup", "Resources/Audio/playerPunch_1.wav", triggerPos, false);
                     API.SetSoundVolume("powerup", 0.9f);
-                    played = true;
+                    soundPlayed = true;
                 }
                 else if (triggerEntity == door && door != 0)
                 {
-                    API.Log("[PlayerMovement] >>> DOOR OPEN <<<");
-                    API.PlaySoundAt("door_open", "Resources/Audio/playerPunch_1.wav", pos, false);
+                    API.Log(">>> DOOR ACTIVATED! <<<");
+                    API.PlaySoundAt("door_open", "Resources/Audio/playerPunch_1.wav", triggerPos, false);
                     API.SetSoundVolume("door_open", 0.85f);
-                    played = true;
+                    soundPlayed = true;
                 }
 
-                if (!played)
+                // If no specific trigger was found, play a generic trigger sound
+                if (!soundPlayed)
                 {
-                    API.PlaySoundAt("generic_trigger", "Resources/Audio/playerPunch_1.wav", pos, false);
+                    API.Log($"[PlayerMovement] Generic trigger entered with entity ID: {triggerEntity}");
+                    API.PlaySoundAt("generic_trigger", "Resources/Audio/playerPunch_1.wav", triggerPos, false);
                     API.SetSoundVolume("generic_trigger", 0.7f);
                 }
             }
             catch (Exception ex)
             {
-                API.Log($"[PlayerMovement] OnTriggerEnter ERROR: {ex.Message}");
+                API.Log($"[PlayerMovement] ERROR in OnTriggerEnter: {ex.Message}");
             }
         }
 
+        /// <summary>
+        /// Trigger exit callback - called when the player exits a trigger volume
+        /// </summary>
         private static void OnTriggerExit(ulong triggerEntity, ulong otherEntity)
         {
             try
             {
-                if (otherEntity != s_playerEntity) return;
+                API.Log($"[PlayerMovement] Trigger Exit - Trigger: {triggerEntity}, Other: {otherEntity}, Player: {s_playerEntity}");
 
+                // Check if the "other" entity is actually the player
+                if (otherEntity != s_playerEntity)
+                {
+                    API.Log($"[PlayerMovement] Trigger exit not involving player - ignoring");
+                    return;
+                }
+
+                API.Log($"[PlayerMovement] Player exited trigger! Trigger ID: {triggerEntity}");
+
+                // Find the trigger entity's name for more specific handling
                 ulong damageZone = API.FindEntity("DamageZone");
                 ulong door = API.FindEntity("DoorTrigger");
 
+                // Handle trigger exit events
                 if (triggerEntity == damageZone && damageZone != 0)
                 {
-                    API.Log("[PlayerMovement] >>> LEAVE DAMAGE ZONE <<<");
+                    API.Log(">>> PLAYER SAFE FROM DAMAGE! <<<");
                     API.StopSound("damage");
                 }
                 else if (triggerEntity == door && door != 0)
                 {
-                    API.Log("[PlayerMovement] >>> DOOR CLOSE <<<");
-                    Vec3 pos = new Vec3(0, 0, 0);
-                    if (API.HasTransform(triggerEntity)) pos = API.GetPosition(triggerEntity);
-                    API.PlaySoundAt("door_close", "Resources/Audio/playerPunch_1.wav", pos, false);
+                    API.Log(">>> PLAYER LEFT DOOR AREA <<<");
+                    // Get door position for 3D sound
+                    Vec3 doorPos = new Vec3(0, 0, 0);
+                    if (API.HasTransform(triggerEntity))
+                    {
+                        doorPos = API.GetPosition(triggerEntity);
+                    }
+                    API.PlaySoundAt("door_close", "Resources/Audio/playerPunch_1.wav", doorPos, false);
                     API.SetSoundVolume("door_close", 0.75f);
+                }
+                else
+                {
+                    API.Log($"[PlayerMovement] Exited unknown trigger with entity ID: {triggerEntity}");
                 }
             }
             catch (Exception ex)
             {
-                API.Log($"[PlayerMovement] OnTriggerExit ERROR: {ex.Message}");
+                API.Log($"[PlayerMovement] ERROR in OnTriggerExit: {ex.Message}");
             }
         }
 
-        // ---------------------------------------------------------
-        // Public knobs
-        // ---------------------------------------------------------
-        public void SetWalkSpeed(float s) => _walkSpeed = Math.Max(0f, s);
-        public void SetRunSpeed(float s) => _runSpeed = Math.Max(0f, s);
-        public void SetJumpSpeed(float j) => _jumpSpeed = Math.Max(0f, j);
-
-        public bool IsMoving()
+        /// <summary>
+        /// Called when the script is destroyed (optional cleanup).
+        /// </summary>
+        public void OnDestroy()
         {
-            var v = API.GetLinearVelocity(Entity);
-            float planar = (float)Math.Sqrt(v.X * v.X + v.Z * v.Z);
-            return planar > 0.1f;
+            API.Log($"[PlayerMovement] OnDestroy() - Entity: {Entity}");
+
+            // Clear static reference
+            if (s_playerEntity == Entity)
+            {
+                s_playerEntity = 0;
+            }
+
+            // Cleanup footstep component
+            _footstepComponent?.OnDestroy();
+
+            // Unregister trigger callbacks to prevent memory leaks
+            if (API.HasCollider(Entity))
+            {
+                API.UnregisterTriggerCallbacks(Entity);
+                API.Log("[PlayerMovement] Unregistered trigger callbacks for player");
+            }
         }
 
-        public bool IsGrounded() => API.IsColliding(Entity);
+        // Public methods for customization
+        public void SetFootstepVolume(float volume)
+        {
+            _footstepComponent?.SetFootstepVolume(volume);
+        }
 
-        public void SetFootstepVolume(float volume) { try { _footstep?.SetFootstepVolume(volume); } catch { } }
-        public void SetFootstepInterval(float interval) { try { _footstep?.SetFootstepInterval(interval); } catch { } }
+        public void SetFootstepInterval(float interval)
+        {
+            _footstepComponent?.SetFootstepInterval(interval);
+        }
+
+        /// <summary>
+        /// Set the model forward direction offset if your model faces the wrong way
+        /// Common values: 0° (correct), 180° (backwards), 90° (right), -90° (left)
+        /// </summary>
+        public void SetModelForwardOffset(float degrees)
+        {
+            _modelForwardOffset = degrees;
+            API.Log($"[PlayerMovement] Model forward offset set to: {_modelForwardOffset} degrees");
+        }
     }
 }

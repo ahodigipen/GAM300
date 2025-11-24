@@ -417,7 +417,7 @@ namespace Boom {
             return types;
 
         MonoArray* arr = reinterpret_cast<MonoArray*>(result);
-        uint32_t len = mono_array_length(arr);
+        uint32_t len = (uint32_t)mono_array_length(arr);
         types.reserve(len);
 
         for (uint32_t i = 0; i < len; ++i) {
