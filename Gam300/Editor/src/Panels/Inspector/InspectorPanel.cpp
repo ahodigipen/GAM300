@@ -1068,10 +1068,10 @@ namespace EditorUI {
                 ImGui::Spacing();
                 if (ImGui::Button("Fit to Transform")) {
                     auto& transform = selected.Get<TransformComponent>().transform;
-                    auto& collider = selected.Get<ColliderComponent>().Collider;
+                    auto& col = selected.Get<ColliderComponent>().Collider;
                     
                     // Reset to match transform exactly
-                    collider.localScale = glm::vec3(1.0f, 1.0f, 1.0f);
+                    col.localScale = glm::vec3(1.0f, 1.0f, 1.0f);
                     
                     // Update the physics shape
                     m_App->GetPhysicsContext().UpdateColliderShape(selected, 
