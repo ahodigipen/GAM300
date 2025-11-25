@@ -1,5 +1,20 @@
 Version: 1.0
 ENTITIES:
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
   - InfoComponent:
       Parent: 0
       Name: New Entity
@@ -1502,36 +1517,7 @@ ENTITIES:
       ModelSource: ""
       MaterialSource: ""
   - {}
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: NavAgent
-      UID: 1992698266524408743
-    TransformComponent:
-      Transform:
-        Translate: [2, 1, 2]
-        Rotate: [0, 0, 0]
-        Scale: [0.5, 0.5, 0.5]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.5, 0.5, 0.5]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
+  - {}
   - {}
   - {}
   - {}
@@ -1557,7 +1543,7 @@ ENTITIES:
       UID: 10000000000000000002
     TransformComponent:
       Transform:
-        Translate: [0.0559083223, 0, 0.0839233398]
+        Translate: [0.0559083223, 0, 0.812294245]
         Rotate: [0, -90, 0]
         Scale: [16, 0.959999979, 15]
     RigidBodyComponent:
@@ -1595,8 +1581,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [2.28409696, 12.5299387, 4.73579311]
-        Rotate: [-54.6875, -316.6875, -6.68639499e-09]
+        Translate: [4.65714264, 2.13589501, 5.98303366]
+        Rotate: [-9, -287.3125, -6.68639499e-09]
         Scale: [1, 1, 1]
     CameraComponent:
       Camera:
@@ -1633,15 +1619,15 @@ ENTITIES:
         Restitution: 0.100000001
         IsTrigger: false
         PhysicsMesh: 0
-        Type: BOX
+        Type: CAPSULE
     InfoComponent:
       Parent: 0
       Name: Ninja
       UID: 12784200605494588253
     TransformComponent:
       Transform:
-        Translate: [-3.47223186, 2.23929048, -4.85253525]
-        Rotate: [0, 0, 0]
+        Translate: [-4.65829563, 0.419325471, -3.99752164]
+        Rotate: [0, 90, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
       RigidBody:
@@ -1649,17 +1635,50 @@ ENTITIES:
         Mass: 1
         InitialVelocity: [0, 0, 0]
         Previous Scale: [0.00999999978, 0.00999999978, 0.00999999978]
-        FreezeRotationX: false
+        FreezeRotationX: true
         FreezeRotationY: false
-        FreezeRotationZ: false
+        FreezeRotationZ: true
         Type: STATIC
     ModelComponent:
-      ModelID: 15771049607565255665
+      ModelID: 4951778228521458548
       MaterialID: 0
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    AnimatorComponent:
+      Clips:
+        - name: Take 001
+          filePath: ""
+      States:
+        []
+      FloatParams:
+        {}
+      BoolParams:
+        {}
+      CurrentStateIndex: 0
+    NavAgentComponent:
+      Target: [4.51327944, 0.312175691, -2.08724332]
+      Speed: 2.5
+      ArriveRadius: 0.150000006
+      Active: true
+      RepathCooldown: 0.25
+      RetargetDistance: 0.5
+      FollowName: ""
+    AIComponent:
+      Mode: 0
+      PlayerName: Samurai
+      DetectRadius: 4
+      LoseRadius: 12
+      IdleWait: 1
+      PatrolPoints:
+        - [4.51327944, 0.312175691, -2.08724332]
+        - [-4.65829563, 0.419325471, -3.99752164]
+      PatrolIndex: 0
+    ScriptComponent:
+      Enabled: true
+      TypeName: ""
+      ParamsJSON: "{}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1677,8 +1696,8 @@ ENTITIES:
       UID: 16439367912350421013
     TransformComponent:
       Transform:
-        Translate: [2.10225463, 0.694814503, 4.85572958]
-        Rotate: [0, -175.999985, 0]
+        Translate: [2.10217524, 0.485000074, 4.85578918]
+        Rotate: [180, -4.00001335, 180]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
       RigidBody:
@@ -1691,15 +1710,121 @@ ENTITIES:
         FreezeRotationZ: true
         Type: DYNAMIC
     ModelComponent:
-      ModelID: 9858498430227169258
+      ModelID: 7033540437426745380
       MaterialID: 0
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    AnimatorComponent:
+      Clips:
+        - name: mixamo.com
+          filePath: ""
+        - name: Samurai Idle
+          filePath: Resources/Samurai Idle.fbx
+        - name: Samurai New Walk
+          filePath: Resources/Samurai New Walk.fbx
+        - name: Fast Run
+          filePath: Resources/Models/PlayerAnimations/Fast Run.fbx
+      States:
+        - name: walking
+          clipIndex: 2
+          speed: 1
+          loop: false
+          transitions:
+            - targetStateIndex: 2
+              conditionType: 1
+              parameterName: Speed
+              floatValue: 2.79999995
+              boolValue: false
+              transitionDuration: 0.100000001
+              hasExitTime: false
+              exitTime: 0.899999976
+            - targetStateIndex: 1
+              conditionType: 2
+              parameterName: Speed
+              floatValue: 0.100000001
+              boolValue: false
+              transitionDuration: 0.100000001
+              hasExitTime: false
+              exitTime: 0.899999976
+            - targetStateIndex: 0
+              conditionType: 3
+              parameterName: Sprint
+              floatValue: 0
+              boolValue: true
+              transitionDuration: 0.100000001
+              hasExitTime: false
+              exitTime: 0.899999976
+        - name: idle
+          clipIndex: 1
+          speed: 1
+          loop: true
+          transitions:
+            - targetStateIndex: 0
+              conditionType: 1
+              parameterName: Speed
+              floatValue: 0.200000003
+              boolValue: false
+              transitionDuration: 0.100000001
+              hasExitTime: false
+              exitTime: 0.899999976
+            - targetStateIndex: 0
+              conditionType: 3
+              parameterName: IsMoving
+              floatValue: 0
+              boolValue: true
+              transitionDuration: 0.100000001
+              hasExitTime: false
+              exitTime: 0.899999976
+            - targetStateIndex: 2
+              conditionType: 3
+              parameterName: Sprint
+              floatValue: 0
+              boolValue: true
+              transitionDuration: 0.100000001
+              hasExitTime: false
+              exitTime: 0.899999976
+        - name: running
+          clipIndex: 3
+          speed: 1
+          loop: true
+          transitions:
+            - targetStateIndex: 0
+              conditionType: 3
+              parameterName: Sprint
+              floatValue: 2.5
+              boolValue: false
+              transitionDuration: 0.100000001
+              hasExitTime: false
+              exitTime: 0.899999976
+            - targetStateIndex: 0
+              conditionType: 2
+              parameterName: Speed
+              floatValue: 2.4000001
+              boolValue: false
+              transitionDuration: 0.100000001
+              hasExitTime: false
+              exitTime: 0.899999976
+            - targetStateIndex: 1
+              conditionType: 2
+              parameterName: Speed
+              floatValue: 0.100000001
+              boolValue: false
+              transitionDuration: 0.100000001
+              hasExitTime: false
+              exitTime: 0.899999976
+      FloatParams:
+        Speed: 0
+      BoolParams:
+        IsMoving: false
+        IsGrounded: false
+        Sprint: false
+        IsSneaking: false
+      CurrentStateIndex: 1
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.PlayerMovement
+      TypeName: GameScripts.CharacterAnimator
       ParamsJSON: "{}"
   - InfoComponent:
       Parent: 0
@@ -1900,6 +2025,21 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
   - {}
   - {}
   - {}

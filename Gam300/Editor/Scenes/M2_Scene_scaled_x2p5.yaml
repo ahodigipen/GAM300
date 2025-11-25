@@ -1,4394 +1,2923 @@
 Version: 1.0
 ENTITIES:
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - InfoComponent:
-========
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [29.3500004, 9.82999992, 9.94999981]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-      Parent: 0
-      Name: Prism_Outside_Hut
-      UID: 17261417048716064848
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [6.36850357, 5.2984519, 17.5549622]
-        Rotate: [-90, -180, 0]
-        Scale: [2.5, 2.5, 2.5]
-========
-        Translate: [-5.93293285, 7.06382227, 27.1147251]
-        Rotate: [0, -90, 0]
-        Scale: [0.0299999993, 0.349999994, 0.189999998]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0299999993, 0.349999994, 0.189999998]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hanging_Lantern_Outside_Hut_6
-      UID: 11500368858515465967
-    TransformComponent:
-      Transform:
-        Translate: [-3.92400002, 8.32800007, 27.8326893]
-        Rotate: [-90, -90, 0]
-        Scale: [1, 1, 1]
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hanging_Lantern_Outside_Hut_5
-      UID: 8978989599714003870
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [0, 5.64270306, 18.7906513]
-        Rotate: [0, 0, 0]
-        Scale: [0.625, 0.875, 0.0250000004]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Wall_Back_Floor_1
-      UID: 14120173863723679001
-    TransformComponent:
-      Transform:
-        Translate: [-0.42595163, 6.89493895, 20.3605003]
-        Rotate: [0, 0, 0]
-        Scale: [1.25, 1.25, 0.324999988]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - {}
-  - InfoComponent:
-      Parent: 0
-      Name: Cushion_1
-      UID: 11643618183334345394
-    TransformComponent:
-      Transform:
-        Translate: [11.1611919, 1.63701248, 4.96449327]
-        Rotate: [90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-========
-        Translate: [-3.92400002, 8.32800007, 20.2729282]
-        Rotate: [-90, -90, 0]
-        Scale: [1, 1, 1]
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [0.889999986, 0.319999993, 3.58999991]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Statue_Outside_Hut_2
-      UID: 7787992081072199843
-    TransformComponent:
-      Transform:
-        Translate: [-4.43599987, 6.671, 18.2755013]
-        Rotate: [-90, -90, 0]
-        Scale: [1.71000004, 1, 0.74000001]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.71000004, 1, 0.74000001]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 4826384296126717694
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hanging_Lantern_Outside_Hut_4
-      UID: 4028690314670065481
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [11.2323179, 1.23635709, 10.3249311]
-        Rotate: [-90, 0, 0]
-        Scale: [1.875, 1.875, 1.875]
-========
-        Translate: [-3.9240365, 8.3279171, 15.7997236]
-        Rotate: [-90, -90, 0]
-        Scale: [1, 1, 1]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [0.889999986, 0.300000012, 3.57999992]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Statue_Outside_Hut_1
-      UID: 11709975980184754523
-    TransformComponent:
-      Transform:
-        Translate: [-4.43575573, 6.67131472, 12.6486578]
-        Rotate: [90, -90, 0]
-        Scale: [1.71000004, 1, 0.74000001]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.71000004, 1, 0.74000001]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 4826384296126717694
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hanging_Lantern_Outside_Hut_3
-      UID: 9657880931208710085
-    TransformComponent:
-      Transform:
-        Translate: [6.00529718, 8.51433277, 10.1490002]
-        Rotate: [-90, -180, 0]
-        Scale: [1, 1, 1]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [0.589999974, 0.600000024, 2.3599999]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Standing_Lantern_Outside_Hut
-      UID: 6757287925914476890
-    TransformComponent:
-      Transform:
-        Translate: [9.66293144, 5.40338898, 10.2786779]
-        Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-    ModelComponent:
-      ModelID: 17971063540041505471
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hanging_Lantern_Outside_Hut_2
-      UID: 685986689009478695
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [6.22599983, 1.68418562, 10.2290611]
-        Rotate: [90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-========
-        Translate: [9.50593281, 8.41600037, 8.86550426]
-        Rotate: [-90, -90, 0]
-        Scale: [1, 1, 1]
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hanging_Lantern_Outside_Hut_1
-      UID: 5352366284023826398
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [11.1164427, 1.48258197, 14.9655685]
-        Rotate: [90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-========
-        Translate: [8.16831017, 8.41599655, 10.1492701]
-        Rotate: [-90, 180, 0]
-        Scale: [1, 1, 1]
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        LocalPosition: [0.49000001, 0.75999999, -0.189999998]
-        LocalRotation: [0, 0, 42.9000015]
-        LocalScale: [37.9249992, 8, 10.8249998]
-========
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [29.3500004, 9.81000042, 1]
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Floor_Of_Level_2_Back
-      UID: 5980189267885289823
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [-12.0675001, 3.66364145, -18.6534595]
-        Rotate: [0, -180, 0]
-        Scale: [1.25, 1.25, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.25, 1.25, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 17773246069672836568
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Stairs_Right
-      UID: 1078971789643419703
-    TransformComponent:
-      Transform:
-        Translate: [12.3542652, 3.73062825, -17.3837681]
-        Rotate: [0, 0, 0]
-        Scale: [1.25, 1.25, 1]
-========
-        Translate: [-6.92690706, 1.28178191, 19.4394035]
-        Rotate: [0, 0, 0]
-        Scale: [0.209999993, 0.829999983, 1.73000002]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.209999993, 0.829999983, 1.73000002]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Prism_Inside_Back_Of_Hut
-      UID: 6129246695125078299
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [-13.4674997, 1.91249967, -16.0023117]
-        Rotate: [0, -90, 0]
-        Scale: [0.574999988, 1.25, 1.25]
-    ModelComponent:
-      ModelID: 14419591904238952119
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - {}
-  - InfoComponent:
-      Parent: 0
-      Name: Stairs_Handle_Right
-      UID: 14423942184205972563
-    TransformComponent:
-      Transform:
-        Translate: [13.6175003, 1.9132551, -15.8301592]
-        Rotate: [0, 90, 0]
-        Scale: [0.5, 1.25, 1.25]
-    ModelComponent:
-      ModelID: 14419591904238952119
-========
-        Translate: [1.37384689, 8.20676899, 26.2187805]
-        Rotate: [0, 0, 0]
-        Scale: [0.0500000007, 0.100000001, 0.0399999991]
-    ModelComponent:
-      ModelID: 1441742420851203854
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [2.5, 2.5, 2.5]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 4431181016770564176
-        Type: MESH
-    InfoComponent:
-      Parent: 0
-      Name: Cushion_4_Second_Floor
-      UID: 3820564189371600480
-    TransformComponent:
-      Transform:
-        Translate: [2.18723488, 7.07267046, 23.5372181]
-        Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 618926925563278836
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 4431181016770564176
-        Type: MESH
-    InfoComponent:
-      Parent: 0
-      Name: Cushion_3_Second_Floor
-      UID: 8415643198172161472
-    TransformComponent:
-      Transform:
-        Translate: [0.124401093, 6.93855667, 25.5353737]
-        Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 618926925563278836
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 4431181016770564176
-        Type: MESH
-    InfoComponent:
-      Parent: 0
-      Name: Cushion_2_Second_Floor
-      UID: 1861805954047498574
-    TransformComponent:
-      Transform:
-        Translate: [0.204311401, 6.92272282, 21.923996]
-        Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 618926925563278836
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 4431181016770564176
-        Type: MESH
-    InfoComponent:
-      Parent: 0
-      Name: Cushion_1_Second_Floor
-      UID: 2249271849963366371
-    TransformComponent:
-      Transform:
-        Translate: [-1.81015885, 6.94593334, 23.2560787]
-        Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 618926925563278836
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 18311705917173916947
-        Type: MESH
-    InfoComponent:
-      Parent: 0
-      Name: Table_Second_Floor
-      UID: 16020692895328883736
-    TransformComponent:
-      Transform:
-        Translate: [0.312098205, 6.9697957, 23.5159836]
-        Rotate: [-90, 0, 0]
-        Scale: [0.75, 0.75, 0.75]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.75, 0.75, 0.75]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 5838446488854438722
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hanging_Lantern_Exit_Of_Hut
-      UID: 13237089712335802159
-    TransformComponent:
-      Transform:
-        Translate: [-3.15832329, 8.98900032, 20.0626869]
-        Rotate: [-90, 90, 0]
-        Scale: [1, 1, 1]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Back_Wall_Of_Hut
-      UID: 1153291360730907286
-    TransformComponent:
-      Transform:
-        Translate: [-0.164256454, 7.69880104, 27.7867355]
-        Rotate: [0, 0, 0]
-        Scale: [0.25, 0.600000024, 0.100000001]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hanging_Lantern_Back_Of_Hut
-      UID: 3598504729430996576
-    TransformComponent:
-      Transform:
-        Translate: [2.55417776, 8.98913956, 24.5170364]
-        Rotate: [-90, -90, 0]
-        Scale: [1, 1, 1]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [30.5, 9.80000019, 10]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Prism_Inside_Hut
-      UID: 13695423098878404332
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [-5.74967051, 1.36473906, 12.7487936]
-        Rotate: [0, 0.379795283, 0]
-        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-========
-        Translate: [-2.05211997, 7.74855328, 16.4219799]
-        Rotate: [0, 0, 0]
-        Scale: [0.0199999996, 0.159999996, 0.0500000007]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0199999996, 0.159999996, 0.0500000007]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Interior_Sliding_Door_Left
-      UID: 2081698451890565235
-    TransformComponent:
-      Transform:
-        Translate: [-2.35043693, 8.22786045, 19.0880756]
-        Rotate: [-90, 0, -90]
-        Scale: [0.400000006, 1, 0.400000006]
-    ModelComponent:
-      ModelID: 5963078964798272625
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Interior_Sliding_Door_Right
-      UID: 3543104788695067941
-    TransformComponent:
-      Transform:
-        Translate: [1.76196325, 8.39826775, 18.9760723]
-        Rotate: [-90, 0, 0]
-        Scale: [0.280000001, 1, 0.819999993]
-    ModelComponent:
-      ModelID: 5963078964798272625
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Door_Divider_For_Hut
-      UID: 10698932820107530939
-    TransformComponent:
-      Transform:
-        Translate: [-0.128716052, 9.76780701, 19.1329632]
-        Rotate: [-90, 0, 0]
-        Scale: [0.560000002, 0.00999999978, 0.860000014]
-    ModelComponent:
-      ModelID: 12206031679676868600
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hanging_Lantern_Front_Of_Hut
-      UID: 15969626093444568412
-    TransformComponent:
-      Transform:
-        Translate: [2.35679793, 8.31258202, 11.0734425]
-        Rotate: [-90, -90, 0]
-        Scale: [1, 1, 1]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Interior_Decor_RIght_Of_Hut
-      UID: 13900569791274339863
-    TransformComponent:
-      Transform:
-        Translate: [-3.59384489, 9.08797836, 13.8118]
-        Rotate: [-90, -90, 0]
-        Scale: [0.49000001, 1, 0.430000007]
-    ModelComponent:
-      ModelID: 5963078964798272625
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Interior_Decor_RIght_Of_Hut
-      UID: 8732369213151081285
-    TransformComponent:
-      Transform:
-        Translate: [2.72148895, 8.0676527, 12.8961515]
-        Rotate: [-90, -90, 0]
-        Scale: [0.49000001, 1, 0.430000007]
-    ModelComponent:
-      ModelID: 5963078964798272625
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 13244744886219103757
-        Type: MESH
-    InfoComponent:
-      Parent: 0
-      Name: Left_Wall_Of_Hut_Top
-      UID: 13337176872369800048
-    TransformComponent:
-      Transform:
-        Translate: [-3.66751552, 8.86410904, 16.3406048]
-        Rotate: [0, -90, 0]
-        Scale: [0.319999993, 0.389999986, 0.00999999978]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.319999993, 0.389999986, 0.00999999978]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Front_Pillar_Left_Of_Hut
-      UID: 4636965599594259602
-    TransformComponent:
-      Transform:
-        Translate: [-3.26874661, 8.86853123, 11.1978216]
-        Rotate: [0, -90, 0]
-        Scale: [0.0299999993, 0.379999995, 0.0900000036]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Left_Wall_Of_Hut_Bottom
-      UID: 8618011661999532453
-    TransformComponent:
-      Transform:
-        Translate: [-3.26699996, 4.69700003, 19.2793369]
-        Rotate: [0, -90, 0]
-        Scale: [0.579999983, 0.460000008, 0.0900000036]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Texture_Front_Of_Hut
-      UID: 5123991758905279357
-    TransformComponent:
-      Transform:
-        Translate: [-0.0916185081, 6.04893637, 10.7932482]
-        Rotate: [0, 0, 0]
-        Scale: [0.189999998, 0.180000007, 0.00999999978]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0.230000004, -0.100000001, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [29.8999996, 9.88000011, 10.5100002]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Right_Wall_Of_Hut
-      UID: 468644347822796871
-    TransformComponent:
-      Transform:
-        Translate: [3.26690149, 6.1747036, 19.2622204]
-        Rotate: [0, -90, 0]
-        Scale: [0.579999983, 0.930000007, 0.0900000036]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.579999983, 0.930000007, 0.0900000036]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 53427998423929220
-        Type: MESH
-    InfoComponent:
-      Parent: 0
-      Name: Hut_Roof
-      UID: 16133961965073669139
-    TransformComponent:
-      Transform:
-        Translate: [0.0952050686, 12.8137045, 19.0912914]
-        Rotate: [-90, 0, 0]
-        Scale: [0.400000006, 0.5, 0.400000006]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.400000006, 0.5, 0.400000006]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 8039408713556627694
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [38.5400009, 9.80000019, 10.25]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Hut_Base
-      UID: 2136373434774079840
-    TransformComponent:
-      Transform:
-        Translate: [-0.0612011552, 6.06108761, 19.4486046]
-        Rotate: [0, 0, 0]
-        Scale: [0.189999998, 0.180000007, 1.70000005]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.189999998, 0.180000007, 1.70000005]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0.189999998, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [29.0499992, 9.81000042, 9.97999954]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Wall_Middle_Floor_2
-      UID: 6365037268832649934
-    TransformComponent:
-      Transform:
-        Translate: [7.2042923, 4.84000015, 11.2019997]
-        Rotate: [0, 0, 0]
-        Scale: [0.239999995, 1, 0.0900000036]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.239999995, 1, 0.0900000036]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 6729413007522777642
-        Type: MESH
-    InfoComponent:
-      Parent: 0
-      Name: Statue_Before_Hut_Left
-      UID: 16900605180980820779
-    TransformComponent:
-      Transform:
-        Translate: [-4.3499999, 6.34499979, 7.78900003]
-        Rotate: [-90, 0, 0]
-        Scale: [0.860000014, 0.800000012, 0.560000002]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.860000014, 0.800000012, 0.560000002]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 4826384296126717694
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [0.889999986, 0.319999993, 3.57999992]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Statue_Before_Hut_Right
-      UID: 11469306329295438326
-    TransformComponent:
-      Transform:
-        Translate: [4.3500762, 6.34499979, 7.7891655]
-        Rotate: [-90, 0, 0]
-        Scale: [0.860000014, 0.800000012, 0.560000002]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.860000014, 0.800000012, 0.560000002]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 4826384296126717694
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0.00999999978, -0.0799999982, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [77.3899994, 92.7600021, 80.6200027]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Lion_Statue_Middle_Left_Floor_2
-      UID: 963547750710080490
-    TransformComponent:
-      Transform:
-        Translate: [-2.94899988, 5.90145254, 1.40525389]
-        Rotate: [0, -90, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Previous Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-        FreezeRotationX: true
-        FreezeRotationY: true
-        FreezeRotationZ: true
-        Type: DYNAMIC
-========
-        Previous Scale: [0.00999999978, 0.00999999978, 0.00999999978]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-    ModelComponent:
-      ModelID: 6829728261434427183
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PlayerMovement
-      ParamsJSON: "{}"
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0.00999999978, 0.0199999996, 0.129999995]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [150.25, 495.975006, 78.0749969]
-========
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0.0799999982, -0.119999997, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [0.560000002, 0.629999995, 4.19999981]
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Fruit_Tree_Middle_Floor_2
-      UID: 13972879706102874778
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [-8.68057919, 5.59822607, -12.1313381]
-        Rotate: [0, 0, 0]
-        Scale: [0.0250000004, 0.0250000004, 0.0250000004]
-========
-        Translate: [0.0452557206, 5.46009874, 0.800237417]
-        Rotate: [-90, 0, 0]
-        Scale: [0.699999988, 0.699999988, 0.699999988]
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Previous Scale: [0.0250000004, 0.0250000004, 0.0250000004]
-========
-        Previous Scale: [0.699999988, 0.699999988, 0.699999988]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 5156670162497623977
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [0.889999986, 0.319999993, 3.57999992]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Stone_Statue_Middle_Floor_2
-      UID: 17346385537782786279
-    TransformComponent:
-      Transform:
-        Translate: [0.0326473713, 6.7774725, -2.09365273]
-        Rotate: [-90, 0, 0]
-        Scale: [1.66999996, 0.699999988, 0.699999988]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.66999996, 0.699999988, 0.699999988]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 4826384296126717694
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0.0500000007, -0.0500000007, 0.0199999996]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [80, 104.209999, 73.1500015]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 675814903367683746
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Lion_Statue_Middle_Right_Floor_2
-      UID: 12279501084326585378
-    TransformComponent:
-      Transform:
-        Translate: [3.09216499, 5.93260193, 1.35184038]
-        Rotate: [0, -90, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.00999999978, 0.00999999978, 0.00999999978]
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 6829728261434427183
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 3.5999999, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [30, 2.29999995, 10.1099997]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Block_Floor_2_Left
-      UID: 6831113887765089259
-    TransformComponent:
-      Transform:
-        Translate: [-9.05099964, 2.85599995, -0.797999978]
-        Rotate: [0, 0, 0]
-        Scale: [0.0299999993, 0.959999979, 0.189999998]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0299999993, 0.959999979, 0.189999998]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 3.5999999, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [29.3600006, 2.29999995, 10.1099997]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Block_Floor_2_Right
-      UID: 13394401403227967988
-    TransformComponent:
-      Transform:
-        Translate: [9.05116749, 2.85573363, -0.797999978]
-        Rotate: [0, 0, 0]
-        Scale: [0.0299999993, 0.959999979, 0.189999998]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0299999993, 0.959999979, 0.189999998]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Outdoor_Hanging_Lamp_Left
-      UID: 14749266138962598626
-    TransformComponent:
-      Transform:
-        Translate: [-9.45699978, 7.52199984, -2.42499995]
-        Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Outdoor_Hanging_Lamp_Right
-      UID: 717955065497441822
-    TransformComponent:
-      Transform:
-        Translate: [9.45704746, 7.52171564, -2.42534971]
-        Rotate: [-90, -90, 0]
-        Scale: [1, 1, 1]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0.449999988]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [0.600000024, 0.579999983, 1.48000002]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Outdoor_Lantern_Floor_2_Right
-      UID: 2218775839040934482
-    TransformComponent:
-      Transform:
-        Translate: [3.06999993, 5.42199993, -5.57200003]
-        Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 17971063540041505471
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0.449999988]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [0.600000024, 0.600000024, 1.5]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Outdoor_Lantern_Floor_2_Left
-      UID: 2870292450877532431
-    TransformComponent:
-      Transform:
-        Translate: [-3.0777154, 5.4523015, -5.57244444]
-        Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 17971063540041505471
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [0.889999986, 0.319999993, 3.50999999]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Statue_Right
-      UID: 14909493107942851076
-    TransformComponent:
-      Transform:
-        Translate: [4.69099998, 6.3447547, -5.58300018]
-        Rotate: [90, 0, 0]
-        Scale: [0.860000014, 0.800000012, 0.560000002]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.860000014, 0.800000012, 0.560000002]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 4826384296126717694
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [0.899999976, 0.330000013, 3.5999999]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Statue_Left
-      UID: 9585209574695702259
-    TransformComponent:
-      Transform:
-        Translate: [-4.69100332, 6.33327866, -5.58261061]
-        Rotate: [90, 0, 0]
-        Scale: [0.860000014, 0.800000012, 0.560000002]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.860000014, 0.800000012, 0.560000002]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 4826384296126717694
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, -0.129999995, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [80.0999985, 104.209999, 73.1500015]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Lion_Statue_Right
-      UID: 7838097312144507883
-    TransformComponent:
-      Transform:
-        Translate: [6.93100023, 6.00600004, -5.59499979]
-        Rotate: [0, -270, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.00999999978, 0.00999999978, 0.00999999978]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 6829728261434427183
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, -0.129999995, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [80, 104, 73.1500015]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Lion_Statue_Left
-      UID: 9981075119489624857
-    TransformComponent:
-      Transform:
-        Translate: [-6.93069267, 6.00632, -5.59486437]
-        Rotate: [0, -270, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.00999999978, 0.00999999978, 0.00999999978]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 6829728261434427183
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0.170000002, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [30.1000004, 9.81000042, 10.1599998]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Walls_Right_Floor_2
-      UID: 9853635101962824744
-    TransformComponent:
-      Transform:
-        Translate: [10.4253016, 4.84000015, 1.100703]
-        Rotate: [0, -90, 0]
-        Scale: [0.629999995, 1, 0.0900000036]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.629999995, 1, 0.0900000036]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0.180000007, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [30.0499992, 9.81000042, 9.88000011]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Walls_Left_Floor_2
-      UID: 13596785614986856921
-    TransformComponent:
-      Transform:
-        Translate: [-10.4250002, 4.84008408, 1.10099995]
-        Rotate: [0, -90, 0]
-        Scale: [0.629999995, 1, 0.0900000036]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.629999995, 1, 0.0900000036]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Fence_Level_2
-      UID: 360363283426413035
-    TransformComponent:
-      Transform:
-        Translate: [-0.0700000003, 5.34700012, -6.2579999]
-        Rotate: [0, 0, 0]
-        Scale: [0.5, 0.0900000036, 0.00999999978]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Turn_Point_Right
-      UID: 4738938337717066563
-    TransformComponent:
-      Transform:
-        Translate: [7.52178001, 5.66800022, -6.38551712]
-        Rotate: [0, 0, 0]
-        Scale: [0.25, 0.25, 0.129999995]
-    ModelComponent:
-      ModelID: 3620272457406166050
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Turn_Point_Left
-      UID: 12662354917274233329
-    TransformComponent:
-      Transform:
-        Translate: [-7.48526812, 5.44336605, -6.33193684]
-        Rotate: [-90, 0, 0]
-        Scale: [0.25, 0.219999999, 0.25]
-    ModelComponent:
-      ModelID: 3620272457406166050
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [28.9899998, 9.81000042, 9.43999958]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Wall_Front_Floor_1
-      UID: 10276433539658323172
-    TransformComponent:
-      Transform:
-        Translate: [-0.420805216, 4.09516048, -8.11089039]
-        Rotate: [0, 0, 0]
-        Scale: [0.720000029, 0.769999981, 0.00999999978]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.720000029, 0.769999981, 0.00999999978]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [0.589999974, 0.589999974, 2.38000011]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Outdoor_Stone_Lantern_Left
-      UID: 1410473377364073382
-    TransformComponent:
-      Transform:
-        Translate: [-3.28999996, 0.504999995, -5.89099979]
-        Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 17971063540041505471
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [0.600000024, 0.610000014, 2.3599999]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Outdoor_Stone_Lantern_Right
-      UID: 18246797781755518409
-    TransformComponent:
-      Transform:
-        Translate: [3.29032755, 0.505058229, -5.89107418]
-        Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 17971063540041505471
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Indoor_Hanging_Lanturn_Front_Left
-      UID: 15777117760288992777
-    TransformComponent:
-      Transform:
-        Translate: [-5.05200005, 2.02099991, -5.83400011]
-        Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Indoor_Hanging_Lanturn_Front_Right
-      UID: 7163372545072077516
-    TransformComponent:
-      Transform:
-        Translate: [5.05190849, 2.02082253, -5.83411884]
-        Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [41.7400017, 10, 10.0299997]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Ceiling_Floor_1
-      UID: 13500012620144209348
-    TransformComponent:
-      Transform:
-        Translate: [-0.111000001, 5.30469227, 2.29807973]
-        Rotate: [0, 0, 0]
-        Scale: [0.519999981, 0.00999999978, 1.69000006]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.519999981, 0.00999999978, 1.69000006]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Plank_Wall_Floor_1
-      UID: 7415020258449908952
-    TransformComponent:
-      Transform:
-        Translate: [-6.91149378, 3.60819101, 4.14313507]
-        Rotate: [0, 0, 0]
-        Scale: [0.0299999993, 0.0500000007, 0.680000007]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [-0.389999986, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [40.3300018, 9.80000019, 10.2399998]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Floor_Left_Floor_2
-      UID: 16568992521348852646
-    TransformComponent:
-      Transform:
-        Translate: [-8.75599957, 2.66317177, 1.40950298]
-        Rotate: [0, 0, 0]
-        Scale: [0.0799999982, 0.550000012, 1.87]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0799999982, 0.550000012, 1.87]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Floor_Right_Floor_2
-      UID: 11914392841982844469
-    TransformComponent:
-      Transform:
-        Translate: [8.75599957, 2.65515637, 1.43616533]
-        Rotate: [0, 0, 0]
-        Scale: [0.0799999982, 0.550000012, 1.87]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Wall_Divider_Floor_1
-      UID: 15313398657113075594
-    TransformComponent:
-      Transform:
-        Translate: [-0.167802811, 4.31562233, 0.883240342]
-        Rotate: [0, 0, 0]
-        Scale: [0.5, 0.170000002, 0.129999995]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1.20000005, 1.20000005, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 330654023275890549
-        Type: MESH
-    InfoComponent:
-      Parent: 0
-      Name: Indoor_Hanging_Lanturn_Back_3
-      UID: 6145440951459576746
-    TransformComponent:
-      Transform:
-        Translate: [-2.54699993, 2.11899996, 7.02199984]
-        Rotate: [270, 180, 0]
-        Scale: [1, 1, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Indoor_Hanging_Lanturn_Back_2
-      UID: 10544585563166090371
-    TransformComponent:
-      Transform:
-        Translate: [0, 2.11899996, 7.02199984]
-        Rotate: [-90, 180, 0]
-        Scale: [1, 1, 1]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - {}
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [6.26000023, 0.00999999978, 3.02999997]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Sliding_Door_2
-      UID: 9465372809338157749
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [5, 5, 5]
-        Rotate: [0, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.699999988, 0.800000012, 1]
-        Intensity: 15
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-========
-        Translate: [4.36788893, 2, 0.699999988]
-        Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 5963078964798272625
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [6.28000021, 0.00999999978, 3.01999998]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-      Parent: 0
-      Name: Sliding_Door_1
-      UID: 3774918408726337557
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [0, 0, 0]
-        Rotate: [0, -1, 0]
-        Scale: [2.5, 2.5, 2.5]
-    DirectLightComponent:
-      Light:
-        Radiance: [1, 1, 0.899999976]
-        Intensity: 0.879999995
-  - InfoComponent:
-========
-        Translate: [-4.36929417, 2, 0.699999988]
-        Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 5963078964798272625
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 4431181016770564176
-        Type: MESH
-    InfoComponent:
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-      Parent: 0
-      Name: Cushion_8
-      UID: 17302200089018243406
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [0, 1.25, 0]
-        Rotate: [0, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    PointLightComponent:
-      Light:
-        Radiance: [1, 0.899999976, 0.699999988]
-        Intensity: 10
-        Range: 0
-  - {}
-  - InfoComponent:
-========
-        Translate: [-2.45228195, 0.598316491, 4.07493305]
-        Rotate: [90, 0, 0]
-        Scale: [1, 1, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 618926925563278836
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 4431181016770564176
-        Type: MESH
-    InfoComponent:
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-      Parent: 0
-      Name: Cushion_7
-      UID: 13043223207672938563
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [-6.9259758, 4.57560349, 17.0543556]
-        Rotate: [3.3125, -19469.125, 0]
-        Scale: [2.5, 2.5, 2.5]
-    CameraComponent:
-      Camera:
-        NearPlane: 0.300000012
-        FarPlane: 1000
-        FOV: 100
-    ThirdPersonCameraComponent:
-      Offset: [0, 2, 0]
-      Current Distance: 2
-      Min Distance: 1
-      Max Distance: 5
-      Current Yaw: 0
-      Current Pitch: 20
-      Mouse Sensitivity: 1
-      Scroll Sensitivity: 1
-  - InfoComponent:
-========
-        Translate: [-4.5120883, 0.647244036, 6.21350145]
-        Rotate: [90, 0, 0]
-        Scale: [1, 1, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 618926925563278836
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 4431181016770564176
-        Type: MESH
-    InfoComponent:
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-      Parent: 0
-      Name: Cushion_6
-      UID: 10400619248710891178
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    SkyboxComponent:
-      SkyboxID: 10427935764841817814
-========
-        Translate: [-6.4369998, 0.922999978, 4.05907249]
-        Rotate: [90, 0, 0]
-        Scale: [1, 1, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 618926925563278836
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 4431181016770564176
-        Type: MESH
-    InfoComponent:
-      Parent: 0
-      Name: Cushion_5
-      UID: 10308551160317092666
-    TransformComponent:
-      Transform:
-        Translate: [-4.5131979, 0.668016315, 2.09022999]
-        Rotate: [90, 0, 0]
-        Scale: [1, 1, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 618926925563278836
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [90, 0, 0]
-        LocalScale: [3.31999993, 1.23000002, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: CYLINDER
-    InfoComponent:
-      Parent: 0
-      Name: Table_2
-      UID: 5913887949040983159
-    TransformComponent:
-      Transform:
-        Translate: [-4.49300003, 0.495000005, 4.13000011]
-        Rotate: [-90, 0, 0]
-        Scale: [0.75, 0.75, 0.5]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.75, 0.75, 0.5]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 5838446488854438722
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 4431181016770564176
-        Type: MESH
-    InfoComponent:
-      Parent: 0
-      Name: Cushion_3
-      UID: 7363969942927904993
-    TransformComponent:
-      Transform:
-        Translate: [6.51026154, 0.6516186, 4.07478905]
-        Rotate: [90, 0, 0]
-        Scale: [1, 1, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 618926925563278836
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-  - {}
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [2.5, 2.5, 2.5]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: NavAgent
-      UID: 1992698266524408743
-    TransformComponent:
-      Transform:
-        Translate: [2, 1, 2]
-        Rotate: [0, 0, 0]
-        Scale: [0.5, 0.5, 0.5]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.5, 0.5, 0.5]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 9.5, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0.5
-        Restitution: 0
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: nig
-      UID: 10000000000000000002
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, -90, 0]
-        Scale: [40, 2.39999986, 37.5]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 0
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [40, 2.39999986, 37.5]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 7633162898494281895
-      MaterialID: 11573253777835523025
-      ModelName: Cube
-      MaterialName: ""
-      ModelSource: Resources/Models/Cube.fbx
-      MaterialSource: Marble
-  - {}
-  - InfoComponent:
-      Parent: 0
-      Name: Skybox
-      UID: 3009173759421305309
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    SkyboxComponent:
-      SkyboxID: 10427935764841817814
-  - InfoComponent:
-      Parent: 0
-      Name: Camera
-      UID: 9201024860084647067
-    TransformComponent:
-      Transform:
-        Translate: [-0.667226672, 3.29010034, -4.82890224]
-        Rotate: [-9.5, -18853.625, 0]
-        Scale: [1, 1, 1]
-    CameraComponent:
-      Camera:
-        NearPlane: 0.300000012
-        FarPlane: 1000
-        FOV: 100
-  - {}
-  - InfoComponent:
-      Parent: 0
-      Name: Point Light
-      UID: 5315588240363654174
-    TransformComponent:
-      Transform:
-        Translate: [0, 0.5, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    PointLightComponent:
-      Light:
-        Radiance: [1, 0.899999976, 0.699999988]
-        Intensity: 10
-        Range: 0
-  - InfoComponent:
-      Parent: 0
-      Name: Directional Light
-      UID: 16395980114807373968
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, -1, 0]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [1, 1, 0.899999976]
-        Intensity: 0.879999995
-  - InfoComponent:
-      Parent: 0
-      Name: Spot Light
-      UID: 12363776012929465708
-    TransformComponent:
-      Transform:
-        Translate: [2, 2, 2]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.699999988, 0.800000012, 1]
-        Intensity: 15
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - InfoComponent:
-      Parent: 0
-      Name: Ninja
-      UID: 12784200605494588253
-    TransformComponent:
-      Transform:
-        Translate: [-1.16412485, -1.14540207, -0.968141139]
-        Rotate: [0, -0, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
-    ModelComponent:
-      ModelID: 15771049607565255665
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Samurai
-      UID: 16439367912350421013
-    TransformComponent:
-      Transform:
-        Translate: [0.321215421, 0.545895696, 5.90508461]
-        Rotate: [0, -0, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
-    ModelComponent:
-      ModelID: 9858498430227169258
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 2061877446978793964
-        Type: MESH
-    InfoComponent:
-      Parent: 0
-      Name: Stairs_Handle_Right
-      UID: 14423942184205972563
-    TransformComponent:
-      Transform:
-        Translate: [5.44700003, 0.765302062, -6.33206367]
-        Rotate: [0, 90, 0]
-        Scale: [0.200000003, 0.5, 0.5]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.200000003, 0.5, 0.5]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 14419591904238952119
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - {}
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [2.5, 2.5, 2.5]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 2061877446978793964
-        Type: MESH
-    InfoComponent:
-      Parent: 0
-      Name: Stairs_Handle_Left
-      UID: 43420598284529509
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [5, 2.5, 5]
-        Rotate: [0, 0, 0]
-        Scale: [1.25, 1.25, 1.25]
-========
-        Translate: [-5.38700008, 0.764999866, -6.40092468]
-        Rotate: [0, -90, 0]
-        Scale: [0.230000004, 0.5, 0.5]
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Previous Scale: [1.25, 1.25, 1.25]
-========
-        Previous Scale: [0.230000004, 0.5, 0.5]
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 14419591904238952119
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [-0.779999971, 0.280000001, -0.230000004]
-        LocalRotation: [0, 0, 44.2999992]
-        LocalScale: [19.7399998, 0.75999999, 4.05000019]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Stairs_Right
-      UID: 1078971789643419703
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [16.2756538, 1.62904656, 10.1869726]
-        Rotate: [90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-========
-        Translate: [4.94170618, 1.49225128, -6.95350695]
-        Rotate: [0, 0, 0]
-        Scale: [0.5, 0.5, 0.400000006]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.5, 0.5, 0.400000006]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 17773246069672836568
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [-0.5, 0.109999999, -0.230000004]
-        LocalRotation: [0, 0, 43.0999985]
-        LocalScale: [19.7399998, 1.99000001, 4]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Stairs_Left
-      UID: 14807325083218498713
-    TransformComponent:
-      Transform:
-        Translate: [-4.82700014, 1.5408051, -7.46138382]
-        Rotate: [0, -180, 0]
-        Scale: [0.5, 0.5, 0.400000006]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.5, 0.5, 0.400000006]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 17773246069672836568
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 4431181016770564176
-        Type: MESH
-    InfoComponent:
-      Parent: 0
-      Name: Cushion_4
-      UID: 17309648256235657590
-    TransformComponent:
-      Transform:
-        Translate: [4.44657707, 0.593032777, 5.98622751]
-        Rotate: [90, 0, 0]
-        Scale: [1, 1, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-    ModelComponent:
-      ModelID: 618926925563278836
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 4431181016770564176
-        Type: MESH
-    InfoComponent:
-      Parent: 0
-      Name: Cushion_2
-      UID: 13247074783709319581
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [-11.2325001, 1.23750007, 10.3249998]
-        Rotate: [-90, 0, 0]
-        Scale: [1.875, 1.875, 1.25]
-    ModelComponent:
-      ModelID: 5838446488854438722
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Cushion_5
-      UID: 10308551160317092666
-    TransformComponent:
-      Transform:
-        Translate: [-11.2829952, 1.67004085, 5.22557497]
-        Rotate: [90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-========
-        Translate: [2.49039984, 0.673674226, 4.09162426]
-        Rotate: [90, 0, 0]
-        Scale: [1, 1, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-    ModelComponent:
-      ModelID: 618926925563278836
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [90, 0, 0]
-        LocalScale: [3.29999995, 1.82000005, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: CYLINDER
-    InfoComponent:
-      Parent: 0
-      Name: Table_1
-      UID: 3918560396689782353
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [-16.0924988, 2.30749989, 10.1476812]
-        Rotate: [90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 618926925563278836
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Cushion_7
-      UID: 13043223207672938563
-    TransformComponent:
-      Transform:
-        Translate: [-11.280221, 1.61811006, 15.5337534]
-        Rotate: [90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 618926925563278836
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Cushion_8
-      UID: 17302200089018243406
-    TransformComponent:
-      Transform:
-        Translate: [-6.13070488, 1.4957912, 10.1873322]
-        Rotate: [90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 618926925563278836
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [15.5250006, 0.349999994, 8.375]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Sliding_Door_1
-      UID: 3774918408726337557
-    TransformComponent:
-      Transform:
-        Translate: [-10.9232359, 5, 1.75]
-        Rotate: [-90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 5963078964798272625
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Sliding_Door_2
-      UID: 9465372809338157749
-    TransformComponent:
-      Transform:
-        Translate: [10.9197226, 5, 1.75]
-        Rotate: [-90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 5963078964798272625
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - {}
-  - InfoComponent:
-      Parent: 0
-      Name: Indoor_Hanging_Lanturn_Back_2
-      UID: 10544585563166090371
-    TransformComponent:
-      Transform:
-        Translate: [0, 5.29750013, 17.5550003]
-        Rotate: [-90, 180, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Indoor_Hanging_Lanturn_Back_3
-      UID: 6145440951459576746
-    TransformComponent:
-      Transform:
-        Translate: [-6.36749983, 5.29750013, 17.5550003]
-        Rotate: [270, 180, 0]
-        Scale: [2.5, 2.5, 0.0199999996]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Wall_Divider_Floor_1
-      UID: 15313398657113075594
-    TransformComponent:
-      Transform:
-        Translate: [-0.419507027, 10.7890558, 2.2081008]
-        Rotate: [0, 0, 0]
-        Scale: [1.25, 0.425000012, 0.324999988]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Floor_Right_Floor_2
-      UID: 11914392841982844469
-    TransformComponent:
-      Transform:
-        Translate: [21.8899994, 6.63789082, 3.59041333]
-        Rotate: [0, 0, 0]
-        Scale: [0.199999988, 1.375, 4.67500019]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [78.9499969, 24.5250015, 25.2500019]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Floor_Left_Floor_2
-      UID: 16568992521348852646
-    TransformComponent:
-      Transform:
-        Translate: [-21.8899994, 6.65792942, 3.52375746]
-        Rotate: [0, 0, 0]
-        Scale: [0.199999988, 1.375, 4.67500019]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Plank_Wall_Floor_1
-      UID: 7415020258449908952
-    TransformComponent:
-      Transform:
-        Translate: [-17.2787342, 9.02047729, 10.3578377]
-        Rotate: [0, 0, 0]
-        Scale: [0.0749999955, 0.125, 1.70000005]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [71.125, 33.9249992, 25.2250004]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Ceiling_Floor_1
-      UID: 13500012620144209348
-    TransformComponent:
-      Transform:
-        Translate: [-0.277500004, 13.2617311, 5.7451992]
-        Rotate: [0, 0, 0]
-        Scale: [1.29999995, 0.0250000004, 4.22500038]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.29999995, 0.0250000004, 4.22500038]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Indoor_Hanging_Lanturn_Front_Right
-      UID: 7163372545072077516
-    TransformComponent:
-      Transform:
-        Translate: [12.6297712, 5.05205631, -14.5852966]
-        Rotate: [-90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Indoor_Hanging_Lanturn_Front_Left
-      UID: 15777117760288992777
-    TransformComponent:
-      Transform:
-        Translate: [-12.6300001, 5.05249977, -14.585]
-        Rotate: [-90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Outdoor_Stone_Lantern_Right
-      UID: 18246797781755518409
-    TransformComponent:
-      Transform:
-        Translate: [8.22581863, 1.2626456, -14.727685]
-        Rotate: [-90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 17971063540041505471
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Outdoor_Stone_Lantern_Left
-      UID: 1410473377364073382
-    TransformComponent:
-      Transform:
-        Translate: [-8.22499943, 1.26249993, -14.727499]
-        Rotate: [-90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 17971063540041505471
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0.140000001, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [65.5250015, 24.5499992, 93.0749969]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Wall_Front_Floor_1
-      UID: 10276433539658323172
-    TransformComponent:
-      Transform:
-        Translate: [-1.05201304, 10.2379007, -20.2772255]
-        Rotate: [0, 0, 0]
-        Scale: [2.04999995, 1.92499995, 0.0250000004]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [2.04999995, 1.92499995, 0.0250000004]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Turn_Point_Left
-      UID: 12662354917274233329
-    TransformComponent:
-      Transform:
-        Translate: [-18.713171, 13.6084146, -15.8298426]
-        Rotate: [-90, 0, 0]
-        Scale: [0.625, 0.550000012, 0.625]
-    ModelComponent:
-      ModelID: 3620272457406166050
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Turn_Point_Right
-      UID: 4738938337717066563
-    TransformComponent:
-      Transform:
-        Translate: [18.8044491, 14.1700001, -15.9637928]
-        Rotate: [0, 0, 0]
-        Scale: [0.625, 0.625, 0.324999988]
-    ModelComponent:
-      ModelID: 3620272457406166050
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Fence_Level_2
-      UID: 360363283426413035
-    TransformComponent:
-      Transform:
-        Translate: [-0.174999997, 13.3675003, -15.6449995]
-        Rotate: [0, 0, 0]
-        Scale: [1.25, 0.225000009, 0.0250000004]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Walls_Left_Floor_2
-      UID: 13596785614986856921
-    TransformComponent:
-      Transform:
-        Translate: [-26.0625, 12.1002102, 2.75249982]
-        Rotate: [0, -90, 0]
-        Scale: [1.57499993, 2.0250001, 0.225000009]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Walls_Right_Floor_2
-      UID: 9853635101962824744
-    TransformComponent:
-      Transform:
-        Translate: [26.0632534, 12.1000004, 2.75175738]
-        Rotate: [0, -90, 0]
-        Scale: [1.57499993, 2.5, 0.225000009]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Lion_Statue_Left
-      UID: 9981075119489624857
-    TransformComponent:
-      Transform:
-        Translate: [-17.3267307, 15.0158005, -13.9871607]
-        Rotate: [0, -270, 0]
-        Scale: [0.0250000004, 0.0250000004, 0.0250000004]
-    ModelComponent:
-      ModelID: 6829728261434427183
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Lion_Statue_Right
-      UID: 7838097312144507883
-    TransformComponent:
-      Transform:
-        Translate: [17.3275013, 15.0150003, -13.9874992]
-        Rotate: [0, -270, 0]
-        Scale: [0.0250000004, 0.0250000004, 0.0250000004]
-    ModelComponent:
-      ModelID: 6829728261434427183
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Statue_Left
-      UID: 9585209574695702259
-    TransformComponent:
-      Transform:
-        Translate: [-11.7275085, 15.8331966, -13.9565268]
-        Rotate: [90, 0, 0]
-        Scale: [2.1500001, 2, 1.39999998]
-    ModelComponent:
-      ModelID: 4826384296126717694
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Statue_Right
-      UID: 14909493107942851076
-    TransformComponent:
-      Transform:
-        Translate: [11.7275, 15.861887, -13.9575005]
-        Rotate: [90, 0, 0]
-        Scale: [2.1500001, 2, 1.39999998]
-    ModelComponent:
-      ModelID: 4826384296126717694
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Outdoor_Lantern_Floor_2_Left
-      UID: 2870292450877532431
-    TransformComponent:
-      Transform:
-        Translate: [-7.69428873, 13.6307535, -13.9311113]
-        Rotate: [-90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 17971063540041505471
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Outdoor_Lantern_Floor_2_Right
-      UID: 2218775839040934482
-    TransformComponent:
-      Transform:
-        Translate: [7.67499971, 13.5549994, -13.9300003]
-        Rotate: [-90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 17971063540041505471
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Outdoor_Hanging_Lamp_Right
-      UID: 717955065497441822
-    TransformComponent:
-      Transform:
-        Translate: [23.6426182, 18.8042889, -6.06337404]
-        Rotate: [-90, -90, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Outdoor_Hanging_Lamp_Left
-      UID: 14749266138962598626
-    TransformComponent:
-      Transform:
-        Translate: [-23.6424999, 18.8050003, -6.0625]
-        Rotate: [-90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Block_Floor_2_Right
-      UID: 13394401403227967988
-    TransformComponent:
-      Transform:
-        Translate: [22.6279182, 7.1393342, -1.99499989]
-        Rotate: [0, 0, 0]
-        Scale: [0.0749999955, 2.39999986, 0.474999994]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Block_Floor_2_Left
-      UID: 6831113887765089259
-    TransformComponent:
-      Transform:
-        Translate: [-22.6274986, 7.13999987, -1.99499989]
-        Rotate: [0, 0, 0]
-        Scale: [0.0749999955, 2.39999986, 0.474999994]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Lion_Statue_Middle_Right_Floor_2
-      UID: 12279501084326585378
-    TransformComponent:
-      Transform:
-        Translate: [7.73041248, 14.8315048, 3.379601]
-        Rotate: [0, -90, 0]
-        Scale: [0.0250000004, 0.0250000004, 0.0250000004]
-    ModelComponent:
-      ModelID: 6829728261434427183
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Stone_Statue_Middle_Floor_2
-      UID: 17346385537782786279
-    TransformComponent:
-      Transform:
-        Translate: [0.0816184282, 16.9436817, -5.23413181]
-        Rotate: [-90, 0, 0]
-        Scale: [4.17499971, 1.75, 1.75]
-    ModelComponent:
-      ModelID: 4826384296126717694
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Fruit_Tree_Middle_Floor_2
-      UID: 13972879706102874778
-    TransformComponent:
-      Transform:
-        Translate: [0.113139302, 13.6502466, 2.00059342]
-        Rotate: [-90, 0, 0]
-        Scale: [1.75, 1.75, 1.75]
-    ModelComponent:
-      ModelID: 5156670162497623977
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Lion_Statue_Middle_Left_Floor_2
-      UID: 963547750710080490
-    TransformComponent:
-      Transform:
-        Translate: [-7.37249947, 14.7536316, 3.51313472]
-        Rotate: [0, -90, 0]
-        Scale: [0.0250000004, 0.0250000004, 0.0250000004]
-    ModelComponent:
-      ModelID: 6829728261434427183
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Statue_Before_Hut_Right
-      UID: 11469306329295438326
-    TransformComponent:
-      Transform:
-        Translate: [10.8751907, 15.8624992, 19.4729137]
-        Rotate: [-90, 0, 0]
-        Scale: [2.1500001, 2, 1.39999998]
-    ModelComponent:
-      ModelID: 4826384296126717694
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Statue_Before_Hut_Left
-      UID: 16900605180980820779
-    TransformComponent:
-      Transform:
-        Translate: [-10.875, 15.8624992, 19.4724998]
-        Rotate: [-90, 0, 0]
-        Scale: [2.1500001, 2, 1.39999998]
-    ModelComponent:
-      ModelID: 4826384296126717694
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Wall_Middle_Floor_2
-      UID: 6365037268832649934
-    TransformComponent:
-      Transform:
-        Translate: [18.0107307, 12.1000004, 28.0049992]
-        Rotate: [0, 0, 0]
-        Scale: [0.599999964, 2.5, 0.225000009]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hut_Base
-      UID: 2136373434774079840
-    TransformComponent:
-      Transform:
-        Translate: [-0.153002888, 15.1527195, 48.6215134]
-        Rotate: [0, 0, 0]
-        Scale: [0.474999994, 0.450000018, 4.25]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hut_Roof
-      UID: 16133961965073669139
-    TransformComponent:
-      Transform:
-        Translate: [0.238012671, 32.0342598, 47.7282295]
-        Rotate: [-90, 0, 0]
-        Scale: [1, 1.25, 1]
-    ModelComponent:
-      ModelID: 8039408713556627694
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Right_Wall_Of_Hut
-      UID: 468644347822796871
-    TransformComponent:
-      Transform:
-        Translate: [8.16725349, 15.436759, 48.1555519]
-        Rotate: [0, -90, 0]
-        Scale: [1.44999993, 2.32500005, 0.225000009]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Texture_Front_Of_Hut
-      UID: 5123991758905279357
-    TransformComponent:
-      Transform:
-        Translate: [-0.22904627, 15.1223412, 26.98312]
-        Rotate: [0, 0, 0]
-        Scale: [0.474999994, 0.450000018, 0.0250000004]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Left_Wall_Of_Hut_Bottom
-      UID: 8618011661999532453
-    TransformComponent:
-      Transform:
-        Translate: [-8.16749954, 11.7425003, 48.1983414]
-        Rotate: [0, -90, 0]
-        Scale: [1.44999993, 1.14999998, 0.225000009]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Front_Pillar_Left_Of_Hut
-      UID: 4636965599594259602
-    TransformComponent:
-      Transform:
-        Translate: [-8.17186642, 22.1713276, 27.9945545]
-        Rotate: [0, -90, 0]
-        Scale: [0.0749999955, 0.949999988, 0.225000009]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Left_Wall_Of_Hut_Top
-      UID: 13337176872369800048
-    TransformComponent:
-      Transform:
-        Translate: [-9.16878891, 22.1602726, 40.8515129]
-        Rotate: [0, -90, 0]
-        Scale: [0.800000012, 0.974999964, 0.0250000004]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Interior_Decor_RIght_Of_Hut
-      UID: 8732369213151081285
-    TransformComponent:
-      Transform:
-        Translate: [6.80372238, 20.1691322, 32.2403793]
-        Rotate: [-90, -90, 0]
-        Scale: [1.22500002, 2.5, 1.07500005]
-    ModelComponent:
-      ModelID: 5963078964798272625
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Interior_Decor_RIght_Of_Hut
-      UID: 13900569791274339863
-    TransformComponent:
-      Transform:
-        Translate: [-8.98461246, 22.7199459, 34.5294991]
-        Rotate: [-90, -90, 0]
-        Scale: [1.22500002, 2.5, 1.07500005]
-    ModelComponent:
-      ModelID: 5963078964798272625
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hanging_Lantern_Front_Of_Hut
-      UID: 15969626093444568412
-    TransformComponent:
-      Transform:
-        Translate: [5.89199495, 20.781456, 27.6836071]
-        Rotate: [-90, -90, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Door_Divider_For_Hut
-      UID: 10698932820107530939
-    TransformComponent:
-      Transform:
-        Translate: [-0.321790129, 24.4195175, 47.8324089]
-        Rotate: [-90, 0, 0]
-        Scale: [1.39999998, 0.0250000004, 2.1500001]
-    ModelComponent:
-      ModelID: 12206031679676868600
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Interior_Sliding_Door_Right
-      UID: 3543104788695067941
-    TransformComponent:
-      Transform:
-        Translate: [4.40490818, 20.9956703, 47.4401817]
-        Rotate: [-90, 0, 0]
-        Scale: [0.699999988, 2.5, 2.04999995]
-    ModelComponent:
-      ModelID: 5963078964798272625
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Interior_Sliding_Door_Left
-      UID: 2081698451890565235
-    TransformComponent:
-      Transform:
-        Translate: [-5.87609243, 20.5696507, 47.7201881]
-        Rotate: [-90, 0, -90]
-        Scale: [1, 2.5, 1]
-    ModelComponent:
-      ModelID: 5963078964798272625
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Prism_Inside_Hut
-      UID: 13695423098878404332
-    TransformComponent:
-      Transform:
-        Translate: [-5.13030005, 19.3713837, 41.0549507]
-        Rotate: [0, 0, 0]
-        Scale: [0.0500000007, 0.399999976, 0.125]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hanging_Lantern_Back_Of_Hut
-      UID: 3598504729430996576
-    TransformComponent:
-      Transform:
-        Translate: [6.38544416, 22.4728489, 61.2925911]
-        Rotate: [-90, -90, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Back_Wall_Of_Hut
-      UID: 1153291360730907286
-    TransformComponent:
-      Transform:
-        Translate: [-0.410641134, 19.2470016, 69.466835]
-        Rotate: [0, 0, 0]
-        Scale: [0.625, 1.50000012, 0.25]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hanging_Lantern_Exit_Of_Hut
-      UID: 13237089712335802159
-    TransformComponent:
-      Transform:
-        Translate: [-7.89580822, 22.4724998, 50.1567154]
-        Rotate: [-90, 90, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Table_Second_Floor
-      UID: 16020692895328883736
-    TransformComponent:
-      Transform:
-        Translate: [0.780245483, 17.42449, 58.789959]
-        Rotate: [-90, 0, 0]
-        Scale: [1.875, 1.875, 1.875]
-========
-        Translate: [4.49292707, 0.494542837, 4.12997246]
-        Rotate: [-90, 0, 0]
-        Scale: [0.75, 0.75, 0.75]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.75, 0.75, 0.75]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-    ModelComponent:
-      ModelID: 5838446488854438722
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 4431181016770564176
-        Type: MESH
-    InfoComponent:
-      Parent: 0
-      Name: Cushion_1
-      UID: 11643618183334345394
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [-4.5253973, 17.3648338, 58.1401978]
-        Rotate: [-90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-========
-        Translate: [4.46447659, 0.654805005, 1.98579729]
-        Rotate: [90, 0, 0]
-        Scale: [1, 1, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-    ModelComponent:
-      ModelID: 618926925563278836
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - {}
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [31, 9.5, 10.1199999]
-        DynamicFriction: 0.5
-        StaticFriction: 0.5
-        Restitution: 0
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Wall_Back_Floor_1
-      UID: 14120173863723679001
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [0.510778487, 17.3068066, 54.8099899]
-        Rotate: [-90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 618926925563278836
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Cushion_3_Second_Floor
-      UID: 8415643198172161472
-    TransformComponent:
-      Transform:
-        Translate: [0.311002731, 17.3463917, 63.8384361]
-        Rotate: [-90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 618926925563278836
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Cushion_4_Second_Floor
-      UID: 3820564189371600480
-    TransformComponent:
-      Transform:
-        Translate: [5.4680872, 17.6816769, 58.8430443]
-        Rotate: [-90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 618926925563278836
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Prism_Inside_Back_Of_Hut
-      UID: 6129246695125078299
-    TransformComponent:
-      Transform:
-        Translate: [3.43461728, 20.516922, 65.5469513]
-        Rotate: [0, 0, 0]
-        Scale: [0.125, 0.25, 0.099999994]
-========
-        Translate: [-0.170380652, 2.75797558, 8.14420033]
-        Rotate: [0, 0, 0]
-        Scale: [0.5, 0.5, 0.129999995]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.5, 0.5, 0.129999995]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Wall_Back2_Floor_1
-      UID: 2848513897976485529
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [-17.3172684, 3.20445466, 48.5985069]
-        Rotate: [0, 0, 0]
-        Scale: [0.524999976, 2.07500005, 4.32500029]
-========
-        Translate: [0, 2.25708127, 7.51626062]
-        Rotate: [0, 0, 0]
-        Scale: [0.25, 0.349999994, 0.00999999978]
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Indoor_Hanging_Lanturn_Back_1
-      UID: 8397657597773060979
-    TransformComponent:
-      Transform:
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-        Translate: [20.4207764, 21.0399914, 25.3731747]
-        Rotate: [-90, 180, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hanging_Lantern_Outside_Hut_2
-      UID: 685986689009478695
-    TransformComponent:
-      Transform:
-        Translate: [23.7648315, 21.0400009, 22.1637611]
-        Rotate: [-90, -90, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Standing_Lantern_Outside_Hut
-      UID: 6757287925914476890
-    TransformComponent:
-      Transform:
-        Translate: [24.1573277, 13.5084724, 25.6966953]
-        Rotate: [-90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 17971063540041505471
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hanging_Lantern_Outside_Hut_3
-      UID: 9657880931208710085
-    TransformComponent:
-      Transform:
-        Translate: [15.0132427, 21.2858315, 25.3725014]
-========
-        Translate: [2.54740143, 2.11938071, 7.02198458]
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-        Rotate: [-90, -180, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-<<<<<<<< HEAD:Gam300/Editor/Scenes/M2_Scene_scaled_x2p5.yaml
-  - InfoComponent:
-      Parent: 0
-      Name: Statue_Outside_Hut_1
-      UID: 11709975980184754523
-    TransformComponent:
-      Transform:
-        Translate: [-11.0893898, 16.6782875, 31.621645]
-        Rotate: [90, -90, 0]
-        Scale: [4.2750001, 2.5, 1.85000002]
-    ModelComponent:
-      ModelID: 4826384296126717694
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hanging_Lantern_Outside_Hut_4
-      UID: 4028690314670065481
-    TransformComponent:
-      Transform:
-        Translate: [-9.81009102, 20.8197937, 39.4993095]
-        Rotate: [-90, -90, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Statue_Outside_Hut_2
-      UID: 7787992081072199843
-    TransformComponent:
-      Transform:
-        Translate: [-11.0899992, 16.6774998, 45.688755]
-        Rotate: [-90, -90, 0]
-        Scale: [4.2750001, 2.5, 1.85000002]
-    ModelComponent:
-      ModelID: 4826384296126717694
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hanging_Lantern_Outside_Hut_5
-      UID: 8978989599714003870
-    TransformComponent:
-      Transform:
-        Translate: [-9.81000042, 20.8199997, 50.6823196]
-        Rotate: [-90, -90, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hanging_Lantern_Outside_Hut_6
-      UID: 11500368858515465967
-    TransformComponent:
-      Transform:
-        Translate: [-9.81000042, 20.8199997, 69.5817261]
-        Rotate: [-90, -90, 0]
-        Scale: [2.5, 2.5, 2.5]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Prism_Outside_Hut
-      UID: 17261417048716064848
-    TransformComponent:
-      Transform:
-        Translate: [-14.8323317, 17.6595554, 67.7868118]
-        Rotate: [0, -90, 0]
-        Scale: [0.0749999955, 0.875, 0.474999994]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - {}
-  - {}
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [2.5, 2.5, 2.5]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: true
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Checkpoint
-      UID: 6690567421051034129
-    TransformComponent:
-      Transform:
-        Translate: [0, 5.08725595, 1.40477991]
-        Rotate: [0, 0, 0]
-        Scale: [6.30406618, 7.87166643, 2.5]
-========
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
->>>>>>>> main:Gam300/Editor/Scenes/M2_Scene_Test.yaml
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- ColliderComponent:
+    Collider:
+      LocalPosition:
+      - 0
+      - 0
+      - 0
+      LocalRotation:
+      - 0
+      - 0
+      - 0
+      LocalScale:
+      - 2.5
+      - 2.5
+      - 2.5
+      DynamicFriction: 0.5
+      StaticFriction: 0
+      Restitution: 0.100000001
+      IsTrigger: true
+      PhysicsMesh: 0
+      Type: BOX
+  InfoComponent:
+    Parent: 0
+    Name: Checkpoint
+    UID: 6690567421051034129
+  TransformComponent:
+    Transform:
+      Translate:
+      - 0.0
+      - 5.087255825
+      - 1.4047798525
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 6.304066175000001
+      - 7.8716665500000005
+      - 2.5
+- {}
+- {}
+- InfoComponent:
+    Parent: 0
+    Name: Prism_Outside_Hut
+    UID: 17261417048716064848
+  TransformComponent:
+    Transform:
+      Translate:
+      - -14.832332125
+      - 17.659555675
+      - 67.78681275
+      Rotate:
+      - 0
+      - -90
+      - 0
+      Scale:
+      - 0.07499999825
+      - 0.874999985
+      - 0.474999995
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Hanging_Lantern_Outside_Hut_6
+    UID: 11500368858515465967
+  TransformComponent:
+    Transform:
+      Translate:
+      - -9.81000005
+      - 20.820000175
+      - 69.58172325
+      Rotate:
+      - -90
+      - -90
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 17862911105458314379
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Hanging_Lantern_Outside_Hut_5
+    UID: 8978989599714003870
+  TransformComponent:
+    Transform:
+      Translate:
+      - -9.81000005
+      - 20.820000175
+      - 50.682320499999996
+      Rotate:
+      - -90
+      - -90
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 17862911105458314379
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Statue_Outside_Hut_2
+    UID: 7787992081072199843
+  TransformComponent:
+    Transform:
+      Translate:
+      - -11.089999675
+      - 16.677500000000002
+      - 45.68875325
+      Rotate:
+      - -90
+      - -90
+      - 0
+      Scale:
+      - 4.2750001
+      - 2.5
+      - 1.8500000250000002
+  ModelComponent:
+    ModelID: 4826384296126717694
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Hanging_Lantern_Outside_Hut_4
+    UID: 4028690314670065481
+  TransformComponent:
+    Transform:
+      Translate:
+      - -9.810091250000001
+      - 20.81979275
+      - 39.499309
+      Rotate:
+      - -90
+      - -90
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 17862911105458314379
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Statue_Outside_Hut_1
+    UID: 11709975980184754523
+  TransformComponent:
+    Transform:
+      Translate:
+      - -11.089389325
+      - 16.6782868
+      - 31.621644500000002
+      Rotate:
+      - 90
+      - -90
+      - 0
+      Scale:
+      - 4.2750001
+      - 2.5
+      - 1.8500000250000002
+  ModelComponent:
+    ModelID: 4826384296126717694
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Hanging_Lantern_Outside_Hut_3
+    UID: 9657880931208710085
+  TransformComponent:
+    Transform:
+      Translate:
+      - 15.01324295
+      - 21.285831924999997
+      - 25.3725005
+      Rotate:
+      - -90
+      - -180
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 17862911105458314379
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Standing_Lantern_Outside_Hut
+    UID: 6757287925914476890
+  TransformComponent:
+    Transform:
+      Translate:
+      - 24.1573286
+      - 13.50847245
+      - 25.69669475
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 17971063540041505471
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Hanging_Lantern_Outside_Hut_2
+    UID: 685986689009478695
+  TransformComponent:
+    Transform:
+      Translate:
+      - 23.764832024999997
+      - 21.040000925
+      - 22.16376065
+      Rotate:
+      - -90
+      - -90
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 17862911105458314379
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Hanging_Lantern_Outside_Hut_1
+    UID: 5352366284023826398
+  TransformComponent:
+    Transform:
+      Translate:
+      - 20.420775425
+      - 21.039991375
+      - 25.373175250000003
+      Rotate:
+      - -90
+      - 180
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 17862911105458314379
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Floor_Of_Level_2_Back
+    UID: 5980189267885289823
+  TransformComponent:
+    Transform:
+      Translate:
+      - -17.317267649999998
+      - 3.2044547750000003
+      - 48.59850875
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 0.5249999825
+      - 2.0749999575
+      - 4.32500005
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Prism_Inside_Back_Of_Hut
+    UID: 6129246695125078299
+  TransformComponent:
+    Transform:
+      Translate:
+      - 3.434617225
+      - 20.516922475
+      - 65.54695125
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 0.12500000175
+      - 0.2500000025
+      - 0.09999999775000001
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Cushion_4_Second_Floor
+    UID: 3820564189371600480
+  TransformComponent:
+    Transform:
+      Translate:
+      - 5.4680872
+      - 17.68167615
+      - 58.84304525
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 618926925563278836
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Cushion_3_Second_Floor
+    UID: 8415643198172161472
+  TransformComponent:
+    Transform:
+      Translate:
+      - 0.3110027325
+      - 17.346391675
+      - 63.838434250000006
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 618926925563278836
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Cushion_2_Second_Floor
+    UID: 1861805954047498574
+  TransformComponent:
+    Transform:
+      Translate:
+      - 0.5107785025
+      - 17.30680705
+      - 54.80999
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 618926925563278836
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Cushion_1_Second_Floor
+    UID: 2249271849963366371
+  TransformComponent:
+    Transform:
+      Translate:
+      - -4.5253971250000005
+      - 17.364833349999998
+      - 58.14019675
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 618926925563278836
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Table_Second_Floor
+    UID: 16020692895328883736
+  TransformComponent:
+    Transform:
+      Translate:
+      - 0.7802455125000001
+      - 17.42448925
+      - 58.789958999999996
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 1.875
+      - 1.875
+      - 1.875
+  ModelComponent:
+    ModelID: 5838446488854438722
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Hanging_Lantern_Exit_Of_Hut
+    UID: 13237089712335802159
+  TransformComponent:
+    Transform:
+      Translate:
+      - -7.895808225
+      - 22.472500800000002
+      - 50.15671725
+      Rotate:
+      - -90
+      - 90
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 17862911105458314379
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Back_Wall_Of_Hut
+    UID: 1153291360730907286
+  TransformComponent:
+    Transform:
+      Translate:
+      - -0.410641135
+      - 19.247002600000002
+      - 69.46683875
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 0.625
+      - 1.5000000599999999
+      - 0.2500000025
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Hanging_Lantern_Back_Of_Hut
+    UID: 3598504729430996576
+  TransformComponent:
+    Transform:
+      Translate:
+      - 6.3854444
+      - 22.4728489
+      - 61.292590999999994
+      Rotate:
+      - -90
+      - -90
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 17862911105458314379
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Prism_Inside_Hut
+    UID: 13695423098878404332
+  TransformComponent:
+    Transform:
+      Translate:
+      - -5.130299925
+      - 19.3713832
+      - 41.05494975
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 0.049999998999999996
+      - 0.39999999
+      - 0.12500000175
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Interior_Sliding_Door_Left
+    UID: 2081698451890565235
+  TransformComponent:
+    Transform:
+      Translate:
+      - -5.876092325
+      - 20.569651125
+      - 47.720189
+      Rotate:
+      - -90
+      - 0
+      - -90
+      Scale:
+      - 1.0000000150000001
+      - 2.5
+      - 1.0000000150000001
+  ModelComponent:
+    ModelID: 5963078964798272625
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Interior_Sliding_Door_Right
+    UID: 3543104788695067941
+  TransformComponent:
+    Transform:
+      Translate:
+      - 4.404908125
+      - 20.995669375000002
+      - 47.440180749999996
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 0.7000000024999999
+      - 2.5
+      - 2.0499999825
+  ModelComponent:
+    ModelID: 5963078964798272625
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Door_Divider_For_Hut
+    UID: 10698932820107530939
+  TransformComponent:
+    Transform:
+      Translate:
+      - -0.32179013
+      - 24.419517525
+      - 47.832408
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 1.4000000049999999
+      - 0.024999999449999998
+      - 2.150000035
+  ModelComponent:
+    ModelID: 12206031679676868600
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Hanging_Lantern_Front_Of_Hut
+    UID: 15969626093444568412
+  TransformComponent:
+    Transform:
+      Translate:
+      - 5.891994824999999
+      - 20.78145505
+      - 27.68360625
+      Rotate:
+      - -90
+      - -90
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 17862911105458314379
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Interior_Decor_RIght_Of_Hut
+    UID: 13900569791274339863
+  TransformComponent:
+    Transform:
+      Translate:
+      - -8.984612225000001
+      - 22.7199459
+      - 34.5295
+      Rotate:
+      - -90
+      - -90
+      - 0
+      Scale:
+      - 1.225000025
+      - 2.5
+      - 1.0750000175
+  ModelComponent:
+    ModelID: 5963078964798272625
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Interior_Decor_RIght_Of_Hut
+    UID: 8732369213151081285
+  TransformComponent:
+    Transform:
+      Translate:
+      - 6.8037223749999995
+      - 20.16913175
+      - 32.24037875
+      Rotate:
+      - -90
+      - -90
+      - 0
+      Scale:
+      - 1.225000025
+      - 2.5
+      - 1.0750000175
+  ModelComponent:
+    ModelID: 5963078964798272625
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Left_Wall_Of_Hut_Top
+    UID: 13337176872369800048
+  TransformComponent:
+    Transform:
+      Translate:
+      - -9.1687888
+      - 22.160272600000003
+      - 40.851512
+      Rotate:
+      - 0
+      - -90
+      - 0
+      Scale:
+      - 0.7999999824999999
+      - 0.9749999650000001
+      - 0.024999999449999998
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Front_Pillar_Left_Of_Hut
+    UID: 4636965599594259602
+  TransformComponent:
+    Transform:
+      Translate:
+      - -8.171866525
+      - 22.171328075
+      - 27.994553999999997
+      Rotate:
+      - 0
+      - -90
+      - 0
+      Scale:
+      - 0.07499999825
+      - 0.9499999874999999
+      - 0.225000009
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Left_Wall_Of_Hut_Bottom
+    UID: 8618011661999532453
+  TransformComponent:
+    Transform:
+      Translate:
+      - -8.167499900000001
+      - 11.742500074999999
+      - 48.19834225
+      Rotate:
+      - 0
+      - -90
+      - 0
+      Scale:
+      - 1.4499999575
+      - 1.15000002
+      - 0.225000009
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Texture_Front_Of_Hut
+    UID: 5123991758905279357
+  TransformComponent:
+    Transform:
+      Translate:
+      - -0.22904627025
+      - 15.122340925
+      - 26.983120500000002
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 0.474999995
+      - 0.45000001749999996
+      - 0.024999999449999998
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Right_Wall_Of_Hut
+    UID: 468644347822796871
+  TransformComponent:
+    Transform:
+      Translate:
+      - 8.167253725
+      - 15.436759
+      - 48.155551
+      Rotate:
+      - 0
+      - -90
+      - 0
+      Scale:
+      - 1.4499999575
+      - 2.3250000175
+      - 0.225000009
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Hut_Roof
+    UID: 16133961965073669139
+  TransformComponent:
+    Transform:
+      Translate:
+      - 0.2380126715
+      - 32.03426125
+      - 47.7282285
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 1.0000000150000001
+      - 1.25
+      - 1.0000000150000001
+  ModelComponent:
+    ModelID: 8039408713556627694
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Hut_Base
+    UID: 2136373434774079840
+  TransformComponent:
+    Transform:
+      Translate:
+      - -0.153002888
+      - 15.152719025000001
+      - 48.6215115
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 0.474999995
+      - 0.45000001749999996
+      - 4.250000125000001
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Wall_Middle_Floor_2
+    UID: 6365037268832649934
+  TransformComponent:
+    Transform:
+      Translate:
+      - 18.01073075
+      - 12.100000375
+      - 28.00499925
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 0.5999999874999999
+      - 2.5
+      - 0.225000009
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Statue_Before_Hut_Left
+    UID: 16900605180980820779
+  TransformComponent:
+    Transform:
+      Translate:
+      - -10.87499975
+      - 15.862499475
+      - 19.472500075
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 2.150000035
+      - 2.0000000300000003
+      - 1.4000000049999999
+  ModelComponent:
+    ModelID: 4826384296126717694
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Statue_Before_Hut_Right
+    UID: 11469306329295438326
+  TransformComponent:
+    Transform:
+      Translate:
+      - 10.8751905
+      - 15.862499475
+      - 19.47291375
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 2.150000035
+      - 2.0000000300000003
+      - 1.4000000049999999
+  ModelComponent:
+    ModelID: 4826384296126717694
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Lion_Statue_Middle_Left_Floor_2
+    UID: 963547750710080490
+  TransformComponent:
+    Transform:
+      Translate:
+      - -7.3724997000000005
+      - 14.753631350000001
+      - 3.513134725
+      Rotate:
+      - 0
+      - -90
+      - 0
+      Scale:
+      - 0.024999999449999998
+      - 0.024999999449999998
+      - 0.024999999449999998
+  ModelComponent:
+    ModelID: 6829728261434427183
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Fruit_Tree_Middle_Floor_2
+    UID: 13972879706102874778
+  TransformComponent:
+    Transform:
+      Translate:
+      - 0.1131393015
+      - 13.65024685
+      - 2.0005935425
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 1.74999997
+      - 1.74999997
+      - 1.74999997
+  ModelComponent:
+    ModelID: 5156670162497623977
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Stone_Statue_Middle_Floor_2
+    UID: 17346385537782786279
+  TransformComponent:
+    Transform:
+      Translate:
+      - 0.08161842825
+      - 16.94368125
+      - -5.234131825
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 4.1749998999999995
+      - 1.74999997
+      - 1.74999997
+  ModelComponent:
+    ModelID: 4826384296126717694
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Lion_Statue_Middle_Right_Floor_2
+    UID: 12279501084326585378
+  TransformComponent:
+    Transform:
+      Translate:
+      - 7.7304124750000005
+      - 14.831504825
+      - 3.3796009500000004
+      Rotate:
+      - 0
+      - -90
+      - 0
+      Scale:
+      - 0.024999999449999998
+      - 0.024999999449999998
+      - 0.024999999449999998
+  ModelComponent:
+    ModelID: 6829728261434427183
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Block_Floor_2_Left
+    UID: 6831113887765089259
+  TransformComponent:
+    Transform:
+      Translate:
+      - -22.6274991
+      - 7.139999875000001
+      - -1.994999945
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 0.07499999825
+      - 2.3999999475
+      - 0.474999995
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Block_Floor_2_Right
+    UID: 13394401403227967988
+  TransformComponent:
+    Transform:
+      Translate:
+      - 22.627918724999997
+      - 7.139334075
+      - -1.994999945
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 0.07499999825
+      - 2.3999999475
+      - 0.474999995
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Outdoor_Hanging_Lamp_Left
+    UID: 14749266138962598626
+  TransformComponent:
+    Transform:
+      Translate:
+      - -23.642499450000003
+      - 18.804999600000002
+      - -6.062499875
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 17862911105458314379
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Outdoor_Hanging_Lamp_Right
+    UID: 717955065497441822
+  TransformComponent:
+    Transform:
+      Translate:
+      - 23.64261865
+      - 18.8042891
+      - -6.063374274999999
+      Rotate:
+      - -90
+      - -90
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 17862911105458314379
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Outdoor_Lantern_Floor_2_Right
+    UID: 2218775839040934482
+  TransformComponent:
+    Transform:
+      Translate:
+      - 7.6749998249999996
+      - 13.554999825
+      - -13.930000074999999
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 17971063540041505471
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Outdoor_Lantern_Floor_2_Left
+    UID: 2870292450877532431
+  TransformComponent:
+    Transform:
+      Translate:
+      - -7.694288500000001
+      - 13.63075375
+      - -13.931111099999999
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 17971063540041505471
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Statue_Right
+    UID: 14909493107942851076
+  TransformComponent:
+    Transform:
+      Translate:
+      - 11.72749995
+      - 15.86188675
+      - -13.95750045
+      Rotate:
+      - 90
+      - 0
+      - 0
+      Scale:
+      - 2.150000035
+      - 2.0000000300000003
+      - 1.4000000049999999
+  ModelComponent:
+    ModelID: 4826384296126717694
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Statue_Left
+    UID: 9585209574695702259
+  TransformComponent:
+    Transform:
+      Translate:
+      - -11.7275083
+      - 15.833196650000001
+      - -13.956526525
+      Rotate:
+      - 90
+      - 0
+      - 0
+      Scale:
+      - 2.150000035
+      - 2.0000000300000003
+      - 1.4000000049999999
+  ModelComponent:
+    ModelID: 4826384296126717694
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Lion_Statue_Right
+    UID: 7838097312144507883
+  TransformComponent:
+    Transform:
+      Translate:
+      - 17.327500575000002
+      - 15.0150001
+      - -13.987499475
+      Rotate:
+      - 0
+      - -270
+      - 0
+      Scale:
+      - 0.024999999449999998
+      - 0.024999999449999998
+      - 0.024999999449999998
+  ModelComponent:
+    ModelID: 6829728261434427183
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Lion_Statue_Left
+    UID: 9981075119489624857
+  TransformComponent:
+    Transform:
+      Translate:
+      - -17.326731675
+      - 15.015799999999999
+      - -13.987160925
+      Rotate:
+      - 0
+      - -270
+      - 0
+      Scale:
+      - 0.024999999449999998
+      - 0.024999999449999998
+      - 0.024999999449999998
+  ModelComponent:
+    ModelID: 6829728261434427183
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Walls_Right_Floor_2
+    UID: 9853635101962824744
+  TransformComponent:
+    Transform:
+      Translate:
+      - 26.063253999999997
+      - 12.100000375
+      - 2.7517575
+      Rotate:
+      - 0
+      - -90
+      - 0
+      Scale:
+      - 1.5749999875
+      - 2.5
+      - 0.225000009
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Walls_Left_Floor_2
+    UID: 13596785614986856921
+  TransformComponent:
+    Transform:
+      Translate:
+      - -26.0625005
+      - 12.1002102
+      - 2.7524998750000003
+      Rotate:
+      - 0
+      - -90
+      - 0
+      Scale:
+      - 1.5749999875
+      - 2.025000005
+      - 0.225000009
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Fence_Level_2
+    UID: 360363283426413035
+  TransformComponent:
+    Transform:
+      Translate:
+      - -0.17500000075
+      - 13.3675003
+      - -15.64499975
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 1.25
+      - 0.225000009
+      - 0.024999999449999998
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Turn_Point_Right
+    UID: 4738938337717066563
+  TransformComponent:
+    Transform:
+      Translate:
+      - 18.804450024999998
+      - 14.17000055
+      - -15.9637928
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 0.625
+      - 0.625
+      - 0.32499998750000003
+  ModelComponent:
+    ModelID: 3620272457406166050
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Turn_Point_Left
+    UID: 12662354917274233329
+  TransformComponent:
+    Transform:
+      Translate:
+      - -18.713170299999998
+      - 13.608415125
+      - -15.8298421
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 0.625
+      - 0.5499999975000001
+      - 0.625
+  ModelComponent:
+    ModelID: 3620272457406166050
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- ColliderComponent:
+    Collider:
+      LocalPosition:
+      - 0
+      - 0.140000001
+      - 0
+      LocalRotation:
+      - 0
+      - 0
+      - 0
+      LocalScale:
+      - 65.52499775
+      - 24.549999225
+      - 93.07499874999999
+      DynamicFriction: 0.5
+      StaticFriction: 0
+      Restitution: 0.100000001
+      IsTrigger: false
+      PhysicsMesh: 0
+      Type: BOX
+  InfoComponent:
+    Parent: 0
+    Name: Wall_Front_Floor_1
+    UID: 10276433539658323172
+  TransformComponent:
+    Transform:
+      Translate:
+      - -1.0520130399999998
+      - 10.2379012
+      - -20.277225975
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 2.0499999825
+      - 1.9249999525
+      - 0.024999999449999998
+  RigidBodyComponent:
+    RigidBody:
+      Density: 1
+      Mass: 1
+      InitialVelocity:
+      - 0
+      - 0
+      - 0
+      Previous Scale:
+      - 2.0499999825
+      - 1.9249999525
+      - 0.024999999449999998
+      FreezeRotationX: false
+      FreezeRotationY: false
+      FreezeRotationZ: false
+      Type: STATIC
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Outdoor_Stone_Lantern_Left
+    UID: 1410473377364073382
+  TransformComponent:
+    Transform:
+      Translate:
+      - -8.2249999
+      - 1.2624999875
+      - -14.727499475000002
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 17971063540041505471
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Outdoor_Stone_Lantern_Right
+    UID: 18246797781755518409
+  TransformComponent:
+    Transform:
+      Translate:
+      - 8.225818875
+      - 1.2626455724999999
+      - -14.727685450000001
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 17971063540041505471
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Indoor_Hanging_Lanturn_Front_Left
+    UID: 15777117760288992777
+  TransformComponent:
+    Transform:
+      Translate:
+      - -12.630000125
+      - 5.052499775
+      - -14.585000274999999
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 17862911105458314379
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Indoor_Hanging_Lanturn_Front_Right
+    UID: 7163372545072077516
+  TransformComponent:
+    Transform:
+      Translate:
+      - 12.629771224999999
+      - 5.052056325
+      - -14.585297100000002
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 17862911105458314379
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- ColliderComponent:
+    Collider:
+      LocalPosition:
+      - 0
+      - 0
+      - 0
+      LocalRotation:
+      - 0
+      - 0
+      - 0
+      LocalScale:
+      - 71.12500200000001
+      - 33.92499925
+      - 25.2250005
+      DynamicFriction: 0.5
+      StaticFriction: 0
+      Restitution: 0.100000001
+      IsTrigger: false
+      PhysicsMesh: 0
+      Type: BOX
+  InfoComponent:
+    Parent: 0
+    Name: Ceiling_Floor_1
+    UID: 13500012620144209348
+  TransformComponent:
+    Transform:
+      Translate:
+      - -0.2775000025
+      - 13.261730675
+      - 5.745199325
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 1.2999999525
+      - 0.024999999449999998
+      - 4.22500015
+  RigidBodyComponent:
+    RigidBody:
+      Density: 1
+      Mass: 1
+      InitialVelocity:
+      - 0
+      - 0
+      - 0
+      Previous Scale:
+      - 1.2999999525
+      - 0.024999999449999998
+      - 4.22500015
+      FreezeRotationX: false
+      FreezeRotationY: false
+      FreezeRotationZ: false
+      Type: STATIC
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Plank_Wall_Floor_1
+    UID: 7415020258449908952
+  TransformComponent:
+    Transform:
+      Translate:
+      - -17.278734449999998
+      - 9.020477525
+      - 10.357837674999999
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 0.07499999825
+      - 0.12500000175
+      - 1.7000000174999998
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- ColliderComponent:
+    Collider:
+      LocalPosition:
+      - 0
+      - 0
+      - 0
+      LocalRotation:
+      - 0
+      - 0
+      - 0
+      LocalScale:
+      - 78.94999975
+      - 24.52500105
+      - 25.250001
+      DynamicFriction: 0.5
+      StaticFriction: 0
+      Restitution: 0.100000001
+      IsTrigger: false
+      PhysicsMesh: 0
+      Type: BOX
+  InfoComponent:
+    Parent: 0
+    Name: Floor_Left_Floor_2
+    UID: 16568992521348852646
+  TransformComponent:
+    Transform:
+      Translate:
+      - -21.889998925
+      - 6.657929425
+      - 3.52375745
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 0.19999999550000003
+      - 1.37500003
+      - 4.675000000000001
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Floor_Right_Floor_2
+    UID: 11914392841982844469
+  TransformComponent:
+    Transform:
+      Translate:
+      - 21.889998925
+      - 6.637890925
+      - 3.5904133249999997
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 0.19999999550000003
+      - 1.37500003
+      - 4.675000000000001
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Wall_Divider_Floor_1
+    UID: 15313398657113075594
+  TransformComponent:
+    Transform:
+      Translate:
+      - -0.4195070275
+      - 10.789055825
+      - 2.208100855
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 1.25
+      - 0.425000005
+      - 0.32499998750000003
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Indoor_Hanging_Lanturn_Back_3
+    UID: 6145440951459576746
+  TransformComponent:
+    Transform:
+      Translate:
+      - -6.367499825
+      - 5.2974999
+      - 17.554999600000002
+      Rotate:
+      - 270
+      - 180
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 17862911105458314379
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Indoor_Hanging_Lanturn_Back_2
+    UID: 10544585563166090371
+  TransformComponent:
+    Transform:
+      Translate:
+      - 0.0
+      - 5.2974999
+      - 17.554999600000002
+      Rotate:
+      - -90
+      - 180
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 17862911105458314379
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- {}
+- InfoComponent:
+    Parent: 0
+    Name: Sliding_Door_2
+    UID: 9465372809338157749
+  TransformComponent:
+    Transform:
+      Translate:
+      - 10.919722325
+      - 5.0
+      - 1.74999997
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 5963078964798272625
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- ColliderComponent:
+    Collider:
+      LocalPosition:
+      - 0
+      - 0
+      - 0
+      LocalRotation:
+      - 0
+      - 0
+      - 0
+      LocalScale:
+      - 15.5250001
+      - 0.3500000025
+      - 8.374999749999999
+      DynamicFriction: 0.5
+      StaticFriction: 0
+      Restitution: 0.100000001
+      IsTrigger: false
+      PhysicsMesh: 0
+      Type: BOX
+  InfoComponent:
+    Parent: 0
+    Name: Sliding_Door_1
+    UID: 3774918408726337557
+  TransformComponent:
+    Transform:
+      Translate:
+      - -10.923235425
+      - 5.0
+      - 1.74999997
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 5963078964798272625
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Cushion_8
+    UID: 17302200089018243406
+  TransformComponent:
+    Transform:
+      Translate:
+      - -6.130704875
+      - 1.4957912274999998
+      - 10.187332625
+      Rotate:
+      - 90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 618926925563278836
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Cushion_7
+    UID: 13043223207672938563
+  TransformComponent:
+    Transform:
+      Translate:
+      - -11.280220750000002
+      - 1.61811009
+      - 15.533753625
+      Rotate:
+      - 90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 618926925563278836
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Cushion_6
+    UID: 10400619248710891178
+  TransformComponent:
+    Transform:
+      Translate:
+      - -16.0924995
+      - 2.307499945
+      - 10.147681225
+      Rotate:
+      - 90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 618926925563278836
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Cushion_5
+    UID: 10308551160317092666
+  TransformComponent:
+    Transform:
+      Translate:
+      - -11.28299475
+      - 1.6700407875
+      - 5.225574975000001
+      Rotate:
+      - 90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 618926925563278836
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Table_2
+    UID: 5913887949040983159
+  TransformComponent:
+    Transform:
+      Translate:
+      - -11.232500075
+      - 1.2375000125
+      - 10.325000275
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 1.875
+      - 1.875
+      - 1.25
+  ModelComponent:
+    ModelID: 5838446488854438722
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Cushion_3
+    UID: 7363969942927904993
+  TransformComponent:
+    Transform:
+      Translate:
+      - 16.27565385
+      - 1.6290465
+      - 10.186972625
+      Rotate:
+      - 90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 618926925563278836
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- {}
+- ColliderComponent:
+    Collider:
+      LocalPosition:
+      - 0
+      - 0
+      - 0
+      LocalRotation:
+      - 0
+      - 0
+      - 0
+      LocalScale:
+      - 2.5
+      - 2.5
+      - 2.5
+      DynamicFriction: 0.5
+      StaticFriction: 0
+      Restitution: 0.100000001
+      IsTrigger: false
+      PhysicsMesh: 0
+      Type: BOX
+  InfoComponent:
+    Parent: 0
+    Name: NavAgent
+    UID: 1992698266524408743
+  TransformComponent:
+    Transform:
+      Translate:
+      - 5.0
+      - 2.5
+      - 5.0
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 1.25
+      - 1.25
+      - 1.25
+  RigidBodyComponent:
+    RigidBody:
+      Density: 1
+      Mass: 1
+      InitialVelocity:
+      - 0
+      - 0
+      - 0
+      Previous Scale:
+      - 1.25
+      - 1.25
+      - 1.25
+      FreezeRotationX: false
+      FreezeRotationY: false
+      FreezeRotationZ: false
+      Type: STATIC
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- ColliderComponent:
+    Collider:
+      LocalPosition:
+      - 0
+      - 0
+      - 0
+      LocalRotation:
+      - 0
+      - 0
+      - 0
+      LocalScale:
+      - 2.5
+      - 2.5
+      - 2.5
+      DynamicFriction: 0.5
+      StaticFriction: 0.5
+      Restitution: 0
+      IsTrigger: false
+      PhysicsMesh: 0
+      Type: BOX
+  InfoComponent:
+    Parent: 0
+    Name: nig
+    UID: 10000000000000000002
+  TransformComponent:
+    Transform:
+      Translate:
+      - 0
+      - 0
+      - 0
+      Rotate:
+      - 0
+      - -90
+      - 0
+      Scale:
+      - 40.0
+      - 2.3999999475
+      - 37.5
+  RigidBodyComponent:
+    RigidBody:
+      Density: 1
+      Mass: 0
+      InitialVelocity:
+      - 0
+      - 0
+      - 0
+      Previous Scale:
+      - 40.0
+      - 2.3999999475
+      - 37.5
+      FreezeRotationX: false
+      FreezeRotationY: false
+      FreezeRotationZ: false
+      Type: STATIC
+  ModelComponent:
+    ModelID: 7633162898494281895
+    MaterialID: 11573253777835523025
+    ModelName: Cube
+    MaterialName: ''
+    ModelSource: Resources/Models/Cube.fbx
+    MaterialSource: Marble
+- {}
+- InfoComponent:
+    Parent: 0
+    Name: Skybox
+    UID: 3009173759421305309
+  TransformComponent:
+    Transform:
+      Translate:
+      - 0
+      - 0
+      - 0
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  SkyboxComponent:
+    SkyboxID: 10427935764841817814
+- InfoComponent:
+    Parent: 0
+    Name: Camera
+    UID: 9201024860084647067
+  TransformComponent:
+    Transform:
+      Translate:
+      - -4.489194449999999
+      - 8.167867075
+      - 17.171717875000002
+      Rotate:
+      - -23.0625
+      - -19425.8125
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  CameraComponent:
+    Camera:
+      NearPlane: 0.300000012
+      FarPlane: 1000
+      FOV: 100
+  ThirdPersonCameraComponent:
+    Offset:
+    - 0
+    - 2
+    - 0
+    Current Distance: 2
+    Min Distance: 1
+    Max Distance: 5
+    Current Yaw: 0
+    Current Pitch: 20
+    Mouse Sensitivity: 1
+    Scroll Sensitivity: 1
+- {}
+- InfoComponent:
+    Parent: 0
+    Name: Point Light
+    UID: 5315588240363654174
+  TransformComponent:
+    Transform:
+      Translate:
+      - 0.0
+      - 1.25
+      - 0.0
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  PointLightComponent:
+    Light:
+      Radiance:
+      - 1
+      - 0.899999976
+      - 0.699999988
+      Intensity: 10
+      Range: 0
+- InfoComponent:
+    Parent: 0
+    Name: Directional Light
+    UID: 16395980114807373968
+  TransformComponent:
+    Transform:
+      Translate:
+      - 0
+      - 0
+      - 0
+      Rotate:
+      - 0
+      - -1
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  DirectLightComponent:
+    Light:
+      Radiance:
+      - 1
+      - 1
+      - 0.899999976
+      Intensity: 0.879999995
+- InfoComponent:
+    Parent: 0
+    Name: Spot Light
+    UID: 12363776012929465708
+  TransformComponent:
+    Transform:
+      Translate:
+      - 5.0
+      - 5.0
+      - 5.0
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  SpotLightComponent:
+    Light:
+      Radiance:
+      - 0.699999988
+      - 0.800000012
+      - 1
+      Intensity: 15
+      FallOff: 1.05592418
+      CutOff: 0.34906584
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- ColliderComponent:
+    Collider:
+      LocalPosition:
+      - 0.00999999978
+      - 0.0199999996
+      - 0.129999995
+      LocalRotation:
+      - 0
+      - 0
+      - 0
+      LocalScale:
+      - 150.24999624999998
+      - 495.9749975
+      - 78.07499875
+      DynamicFriction: 0.5
+      StaticFriction: 0
+      Restitution: 0.100000001
+      IsTrigger: false
+      PhysicsMesh: 0
+      Type: BOX
+  InfoComponent:
+    Parent: 0
+    Name: Ninja
+    UID: 12784200605494588253
+  TransformComponent:
+    Transform:
+      Translate:
+      - -8.68057965
+      - 5.598226200000001
+      - -12.131338125
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 0.024999999449999998
+      - 0.024999999449999998
+      - 0.024999999449999998
+  RigidBodyComponent:
+    RigidBody:
+      Density: 1
+      Mass: 1
+      InitialVelocity:
+      - 0
+      - 0
+      - 0
+      Previous Scale:
+      - 0.024999999449999998
+      - 0.024999999449999998
+      - 0.024999999449999998
+      FreezeRotationX: false
+      FreezeRotationY: false
+      FreezeRotationZ: false
+      Type: STATIC
+  ModelComponent:
+    ModelID: 15771049607565255665
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- ColliderComponent:
+    Collider:
+      LocalPosition:
+      - 0
+      - 0
+      - 0
+      LocalRotation:
+      - 0
+      - 0
+      - 0
+      LocalScale:
+      - 2.5
+      - 2.5
+      - 2.5
+      DynamicFriction: 0.5
+      StaticFriction: 0
+      Restitution: 0.100000001
+      IsTrigger: false
+      PhysicsMesh: 0
+      Type: BOX
+  InfoComponent:
+    Parent: 0
+    Name: Samurai
+    UID: 16439367912350421013
+  TransformComponent:
+    Transform:
+      Translate:
+      - -5.749670275
+      - 1.36473909
+      - 12.748793375
+      Rotate:
+      - 0
+      - 0.379795283
+      - 0
+      Scale:
+      - 0.024999999449999998
+      - 0.024999999449999998
+      - 0.024999999449999998
+  RigidBodyComponent:
+    RigidBody:
+      Density: 1
+      Mass: 1
+      InitialVelocity:
+      - 0
+      - 0
+      - 0
+      Previous Scale:
+      - 0.024999999449999998
+      - 0.024999999449999998
+      - 0.024999999449999998
+      FreezeRotationX: true
+      FreezeRotationY: true
+      FreezeRotationZ: true
+      Type: DYNAMIC
+  ModelComponent:
+    ModelID: 9858498430227169258
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Stairs_Handle_Right
+    UID: 14423942184205972563
+  TransformComponent:
+    Transform:
+      Translate:
+      - 13.617500074999999
+      - 1.9132551549999999
+      - -15.830159175
+      Rotate:
+      - 0
+      - 90
+      - 0
+      Scale:
+      - 0.5000000075000001
+      - 1.25
+      - 1.25
+  ModelComponent:
+    ModelID: 14419591904238952119
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- {}
+- InfoComponent:
+    Parent: 0
+    Name: Stairs_Handle_Left
+    UID: 43420598284529509
+  TransformComponent:
+    Transform:
+      Translate:
+      - -13.4675002
+      - 1.9124996650000001
+      - -16.0023117
+      Rotate:
+      - 0
+      - -90
+      - 0
+      Scale:
+      - 0.57500001
+      - 1.25
+      - 1.25
+  ModelComponent:
+    ModelID: 14419591904238952119
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Stairs_Right
+    UID: 1078971789643419703
+  TransformComponent:
+    Transform:
+      Translate:
+      - 12.35426545
+      - 3.7306282
+      - -17.383767375
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 1.25
+      - 1.25
+      - 1.0000000150000001
+  ModelComponent:
+    ModelID: 17773246069672836568
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- ColliderComponent:
+    Collider:
+      LocalPosition:
+      - 0.49000001
+      - 0.75999999
+      - -0.189999998
+      LocalRotation:
+      - 0
+      - 0
+      - 42.9000015
+      LocalScale:
+      - 37.92500025
+      - 8.000000125
+      - 10.824999799999999
+      DynamicFriction: 0.5
+      StaticFriction: 0
+      Restitution: 0.100000001
+      IsTrigger: false
+      PhysicsMesh: 0
+      Type: BOX
+  InfoComponent:
+    Parent: 0
+    Name: Stairs_Left
+    UID: 14807325083218498713
+  TransformComponent:
+    Transform:
+      Translate:
+      - -12.06750035
+      - 3.6636414999999998
+      - -18.65345955
+      Rotate:
+      - 0
+      - -180
+      - 0
+      Scale:
+      - 1.25
+      - 1.25
+      - 1.0000000150000001
+  RigidBodyComponent:
+    RigidBody:
+      Density: 1
+      Mass: 1
+      InitialVelocity:
+      - 0
+      - 0
+      - 0
+      Previous Scale:
+      - 1.25
+      - 1.25
+      - 1.0000000150000001
+      FreezeRotationX: false
+      FreezeRotationY: false
+      FreezeRotationZ: false
+      Type: STATIC
+  ModelComponent:
+    ModelID: 17773246069672836568
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Cushion_4
+    UID: 17309648256235657590
+  TransformComponent:
+    Transform:
+      Translate:
+      - 11.116442675
+      - 1.4825819425
+      - 14.965568775
+      Rotate:
+      - 90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 618926925563278836
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Cushion_2
+    UID: 13247074783709319581
+  TransformComponent:
+    Transform:
+      Translate:
+      - 6.2259996
+      - 1.6841855650000002
+      - 10.22906065
+      Rotate:
+      - 90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 618926925563278836
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Table_1
+    UID: 3918560396689782353
+  TransformComponent:
+    Transform:
+      Translate:
+      - 11.232317675000001
+      - 1.2363570925
+      - 10.324931150000001
+      Rotate:
+      - -90
+      - 0
+      - 0
+      Scale:
+      - 1.875
+      - 1.875
+      - 1.875
+  ModelComponent:
+    ModelID: 5838446488854438722
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Cushion_1
+    UID: 11643618183334345394
+  TransformComponent:
+    Transform:
+      Translate:
+      - 11.161191475
+      - 1.6370125125000001
+      - 4.964493225
+      Rotate:
+      - 90
+      - 0
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 618926925563278836
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- {}
+- InfoComponent:
+    Parent: 0
+    Name: Wall_Back_Floor_1
+    UID: 14120173863723679001
+  TransformComponent:
+    Transform:
+      Translate:
+      - -0.42595162999999997
+      - 6.89493895
+      - 20.360500825000003
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 1.25
+      - 1.25
+      - 0.32499998750000003
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Wall_Back2_Floor_1
+    UID: 2848513897976485529
+  TransformComponent:
+    Transform:
+      Translate:
+      - 0.0
+      - 5.642703175
+      - 18.79065155
+      Rotate:
+      - 0
+      - 0
+      - 0
+      Scale:
+      - 0.625
+      - 0.874999985
+      - 0.024999999449999998
+  ModelComponent:
+    ModelID: 1441742420851203854
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- InfoComponent:
+    Parent: 0
+    Name: Indoor_Hanging_Lanturn_Back_1
+    UID: 8397657597773060979
+  TransformComponent:
+    Transform:
+      Translate:
+      - 6.368503575
+      - 5.298451775
+      - 17.55496145
+      Rotate:
+      - -90
+      - -180
+      - 0
+      Scale:
+      - 2.5
+      - 2.5
+      - 2.5
+  ModelComponent:
+    ModelID: 17862911105458314379
+    MaterialID: 0
+    ModelName: ''
+    MaterialName: ''
+    ModelSource: ''
+    MaterialSource: ''
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
+- {}
