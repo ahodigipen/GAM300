@@ -475,4 +475,11 @@ namespace Boom {
         reg.emplace<SceneNavmeshComponent>(e);
         return e;
     }
+    BOOM_INLINE entt::entity TryGetSceneSettings(entt::registry& reg)
+    {
+        auto view = reg.view<SceneNavmeshComponent>();
+        if (!view.empty())
+            return *view.begin();
+        return entt::null;
+    }
 }
