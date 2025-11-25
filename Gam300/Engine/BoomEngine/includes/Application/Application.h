@@ -413,6 +413,46 @@ namespace Boom
             BOOM_INFO("[Scene] Successfully saved scene '{}' and assets", sceneName);
             return true;
         }
+        BOOM_INLINE void ApplySceneNavmeshFromScene()
+        {
+            if (!m_Context)
+                return;
+
+            auto& reg = m_Context->scene;
+            auto view = reg.view<SceneNavmeshComponent>();
+
+            // If this scene has no SceneNavmeshComponent, just clear nav
+            if (view.empty()) {
+                BOOM_INFO("[Nav] Scene has no SceneNavmeshComponent; clearing navmesh.");
+                m_Nav.reset();
+                m_NavInitialized = false;
+                return;
+            }
+
+            entt::entity e = *view.begin();
+            auto& sn = reg.get<SceneNavmeshComponent>(e);
+
+            if (sn.navmeshFile.empty()) {
+                BOOM_WARN("[Nav] SceneNavmeshComponent has empty path; clearing navmesh.");
+                m_Nav.reset();
+                m_NavInitialized = false;
+                return;
+            }
+
+           
+            m_Nav = std::make_unique<DetourNavSystem>();
+            m_NavInitialized = false;
+
+            bool ok = m_Nav->initFromFile(sn.navmeshFile.c_str());
+            if (ok) {
+                BOOM_INFO("[Nav] Loaded scene navmesh: {}", sn.navmeshFile);
+                m_NavInitialized = true;
+            }
+            else {
+                BOOM_ERROR("[Nav] Failed to load navmesh: {}", sn.navmeshFile);
+            }
+        }
+
 
         /**
          * @brief Loads a scene from files, replacing the current scene
@@ -439,10 +479,11 @@ namespace Boom
             // Update tracking
             strncpy_s(m_CurrentScenePath, sizeof(m_CurrentScenePath), sceneFilePath.c_str(), _TRUNCATE);
             m_SceneLoaded = true;
-
+            
             // Reinitialize systems that need it
             ReinitializeSceneSystems();
-
+           /* m_NavInitialized = false;
+            ApplySceneNavmeshFromScene();*/
             BOOM_INFO("[Scene] Successfully loaded scene '{}'", sceneName);
             return true;
         }
@@ -814,6 +855,11 @@ namespace Boom
             // RESTORE PREFABS after registry reset
             for (auto& [uid, asset] : savedPrefabs) {
                 m_Context->assets->GetMap<PrefabAsset>()[uid] = std::static_pointer_cast<PrefabAsset>(asset);
+            }
+            if (m_Nav) {
+                BOOM_INFO("[Nav] Releasing navmesh for previous scene");
+                m_Nav.reset();
+                m_NavInitialized = false;
             }
 #if defined(_DEBUG)
             BOOM_INFO("[Scene] Restored {} prefabs", savedPrefabs.size());

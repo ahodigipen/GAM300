@@ -107,30 +107,64 @@ namespace Boom {
         }
     };
 
-    // Drives NavAgent to walk patrol loop. Success when it *issued* movement; Running while moving.
+ 
+    // Drives NavAgent to walk patrol loop. 
+// - Ensures there's always a path to the current patrol point.
+// - Succeeds (and advances to next point) when we're within ArriveRadius in XZ.
     struct PatrolAction : BTNode {
         BTState tick(entt::registry& reg, entt::entity e, float) override {
-            if (!reg.all_of<NavAgentComponent, TransformComponent, AIComponent>(e))
+            if (!reg.all_of<AIComponent, NavAgentComponent, TransformComponent>(e))
                 return BTState::Failure;
+
             auto& ai = reg.get<AIComponent>(e);
             auto& ag = reg.get<NavAgentComponent>(e);
-
-            if (ai.patrolPoints.empty()) return BTState::Failure;
-
-            const glm::vec3 goal = ai.patrolPoints[ai.patrolIndex];
-            if (ag.target != goal) { ag.follow = entt::null; ag.target = goal; ag.dirty = true; }
-
-            // Have we reached this patrol point? (use arrive threshold from NavAgent)
             auto& tr = reg.get<TransformComponent>(e);
-            if (glm::distance(tr.transform.translate, goal) <= ag.arrive) {
-                // advance & idle
-                ai.patrolIndex = (ai.patrolIndex + 1) % static_cast<int>(ai.patrolPoints.size());
-                ai.idleTimer = ai.idleWait;
-                return BTState::Success; // let an IdleAction run next frame
+
+            if (ai.patrolPoints.empty())
+                return BTState::Failure;
+
+            // Clamp patrol index
+            if (ai.patrolIndex < 0 ||
+                ai.patrolIndex >= static_cast<int>(ai.patrolPoints.size()))
+            {
+                ai.patrolIndex = 0;
             }
+
+            const glm::vec3 patrolGoal = ai.patrolPoints[ai.patrolIndex];
+
+            // 1) Ensure nav agent is going to THIS patrol point.
+            //    Only mark dirty when target actually changes.
+            if (ag.target != patrolGoal) {
+                ag.follow = entt::null;      // patrol ignores follow
+                ag.target = patrolGoal;
+                ag.dirty = true;            // NavAgentSystem will rebuild path once
+            }
+
+            // 2) Check if we've reached the patrol point (XZ only, like NavAgent).
+            const glm::vec3 pos = tr.transform.translate;
+            const glm::vec3 posXZ = { pos.x, 0.0f, pos.z };
+            const glm::vec3 goalXZ = { patrolGoal.x, 0.0f, patrolGoal.z };
+            const float dXZ = glm::length(goalXZ - posXZ);
+
+            if (dXZ <= ag.arrive) {
+                // Reached this point: advance to next and start idle.
+                ai.patrolIndex = (ai.patrolIndex + 1) %
+                    static_cast<int>(ai.patrolPoints.size());
+                ai.idleTimer = ai.idleWait;
+				ag.dirty = true;  // force path rebuild to next point
+                // Clean up current path so next leg gets a fresh one.
+                ag.path.clear();
+                ag.waypoint = 0;
+                ag.velocity = glm::vec3(0.0f);
+
+                return BTState::Success; // Sequence will move to IdleAction
+            }
+
+            // Still walking towards patrolGoal.
             return BTState::Running;
         }
     };
+
 
     // Make agent chase the player by wiring NavAgent.follow
     struct SeekPlayerAction : BTNode

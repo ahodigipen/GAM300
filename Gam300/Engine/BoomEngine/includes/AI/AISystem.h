@@ -26,7 +26,8 @@ namespace Boom {
             ag.follow = entt::null;   // patrol ignores follow
             ag.dirty = true;         // force first path build
             ag.repathTimer = 0.f;
-
+            ag.waypoint = 0;      
+            ag.path.clear();      
             ai.idleTimer = 0.f;
             if (ai.patrolIndex < 0 || ai.patrolIndex >= (int)ai.patrolPoints.size())
                 ai.patrolIndex = 0;
