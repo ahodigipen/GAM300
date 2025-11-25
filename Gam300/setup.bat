@@ -103,6 +103,24 @@ if not exist "%COMPRESSONATOR_DIR%\Compressonator_MD.lib" (
 )
 echo [INFO] COMPRESSONATOR_DIR = "%COMPRESSONATOR_DIR%"
 
+REM ----------------------------------------------------------------
+REM 5.5) Ensure Mono is found and set paths
+REM ----------------------------------------------------------------
+echo [STEP] Locating Mono runtime...
+call :EnsureMono
+if errorlevel 1 (
+    echo [ERROR] Mono not found. Please install Mono MDK or place it in "%REPO_ROOT%\mono"
+    echo         Required structure:
+    echo           mono\bin\mono-2.0-sgen.dll
+    echo           mono\lib\mono-2.0-sgen.lib
+    echo           mono\include\mono-2.0\mono\jit\jit.h
+    echo.
+    echo [INFO] Download Mono MDK from: https://www.mono-project.com/download/stable/
+    pause & exit /b 1
+)
+echo [INFO] MONO_INCLUDE_DIR = "%MONO_INCLUDE_DIR%"
+echo [INFO] MONO_LIB_DIR     = "%MONO_LIB_DIR%"
+echo [INFO] MONO_BIN_DIR     = "%MONO_BIN_DIR%"
 
 REM ----------------------------------------------------------------
 REM 6) Conan profile + installs (MSBuildDeps)
@@ -142,6 +160,10 @@ call :CopyMonoDlls "%EDITOR_REL%"
 
 echo.
 echo ==== Setup Complete! ====
+echo - MONO_INCLUDE_DIR: "%MONO_INCLUDE_DIR%"
+echo - MONO_LIB_DIR:     "%MONO_LIB_DIR%"
+echo - MONO_BIN_DIR:     "%MONO_BIN_DIR%"
+echo.
 echo - CMake: include(^"${CMAKE_SNIPPET_DIR:\=\\}^/MonoPaths.cmake^")
 echo - Link BoomEngine with: ^"${MONO_LIB_DIR}\mono-2.0-sgen.lib^"
 echo - Keep code includes as: ^<mono/jit/jit.h^>, ^<mono/metadata/assembly.h^>, ^<mono/metadata/debug-helpers.h^>
@@ -233,6 +255,8 @@ if not exist "%DST%" (
 if exist "%MONO_BIN_DIR%\mono-2.0-sgen.dll" (
   copy /Y "%MONO_BIN_DIR%\mono-2.0-sgen.dll" "%DST%\mono-2.0-sgen.dll" >nul
   echo [INFO] Copied mono-2.0-sgen.dll to "%DST%"
+) else (
+  echo [WARN] mono-2.0-sgen.dll not found in "%MONO_BIN_DIR%"
 )
 if exist "%MONO_BIN_DIR%\MonoPosixHelper.dll" (
   copy /Y "%MONO_BIN_DIR%\MonoPosixHelper.dll" "%DST%\MonoPosixHelper.dll" >nul
@@ -243,27 +267,61 @@ goto :eof
 :EnsureMono
 REM 1) Prefer vendored mono in repo
 set "MONO_ROOT=%REPO_ROOT%\mono"
-if exist "%MONO_ROOT%\include\mono-2.0\mono\jit\jit.h" if exist "%MONO_ROOT%\lib\mono-2.0-sgen.lib" if exist "%MONO_ROOT%\bin\mono-2.0-sgen.dll" (
-  set "MONO_INCLUDE_DIR=%MONO_ROOT%\include\mono-2.0"
-  set "MONO_LIB_DIR=%MONO_ROOT%\lib"
-  set "MONO_BIN_DIR=%MONO_ROOT%\bin"
-  exit /b 0
-)
-
-REM 2) Try system-wide Mono MDK default installs (most common layouts)
-set "CANDIDATES[0]=%ProgramFiles%\Mono"
-set "CANDIDATES[1]=%ProgramFiles(x86)%\Mono"
-set "CANDIDATES[2]=C:\ProgramData\chocolatey\lib\mono\tools"   REM typical choco mono path
-for /l %%i in (0,1,2) do (
-  for %%d in ("!CANDIDATES[%%i]!") do (
-    if exist "%%~fd\include\mono-2.0\mono\jit\jit.h" if exist "%%~fd\lib\mono-2.0-sgen.lib" if exist "%%~fd\bin\mono-2.0-sgen.dll" (
-      set "MONO_INCLUDE_DIR=%%~fd\include\mono-2.0"
-      set "MONO_LIB_DIR=%%~fd\lib"
-      set "MONO_BIN_DIR=%%~fd\bin"
+echo [INFO] Checking for Mono in repo: "%MONO_ROOT%"
+if exist "%MONO_ROOT%\include\mono-2.0\mono\jit\jit.h" (
+  if exist "%MONO_ROOT%\lib\mono-2.0-sgen.lib" (
+    if exist "%MONO_ROOT%\bin\mono-2.0-sgen.dll" (
+      set "MONO_INCLUDE_DIR=%MONO_ROOT%\include\mono-2.0"
+      set "MONO_LIB_DIR=%MONO_ROOT%\lib"
+      set "MONO_BIN_DIR=%MONO_ROOT%\bin"
+      echo [INFO] Found Mono in repo: "%MONO_ROOT%"
       exit /b 0
     )
   )
 )
 
-REM 4) If we reach here, we failed
+REM 2) Try system-wide Mono MDK default installs
+echo [INFO] Checking system-wide Mono installations...
+
+REM Check Program Files
+if exist "%ProgramFiles%\Mono\include\mono-2.0\mono\jit\jit.h" (
+  if exist "%ProgramFiles%\Mono\lib\mono-2.0-sgen.lib" (
+    if exist "%ProgramFiles%\Mono\bin\mono-2.0-sgen.dll" (
+      set "MONO_INCLUDE_DIR=%ProgramFiles%\Mono\include\mono-2.0"
+      set "MONO_LIB_DIR=%ProgramFiles%\Mono\lib"
+      set "MONO_BIN_DIR=%ProgramFiles%\Mono\bin"
+      echo [INFO] Found Mono at: "%ProgramFiles%\Mono"
+      exit /b 0
+    )
+  )
+)
+
+REM Check Program Files (x86)
+if exist "%ProgramFiles(x86)%\Mono\include\mono-2.0\mono\jit\jit.h" (
+  if exist "%ProgramFiles(x86)%\Mono\lib\mono-2.0-sgen.lib" (
+    if exist "%ProgramFiles(x86)%\Mono\bin\mono-2.0-sgen.dll" (
+      set "MONO_INCLUDE_DIR=%ProgramFiles(x86)%\Mono\include\mono-2.0"
+      set "MONO_LIB_DIR=%ProgramFiles(x86)%\Mono\lib"
+      set "MONO_BIN_DIR=%ProgramFiles(x86)%\Mono\bin"
+      echo [INFO] Found Mono at: "%ProgramFiles(x86)%\Mono"
+      exit /b 0
+    )
+  )
+)
+
+REM Check Chocolatey location
+if exist "C:\ProgramData\chocolatey\lib\mono\tools\include\mono-2.0\mono\jit\jit.h" (
+  if exist "C:\ProgramData\chocolatey\lib\mono\tools\lib\mono-2.0-sgen.lib" (
+    if exist "C:\ProgramData\chocolatey\lib\mono\tools\bin\mono-2.0-sgen.dll" (
+      set "MONO_INCLUDE_DIR=C:\ProgramData\chocolatey\lib\mono\tools\include\mono-2.0"
+      set "MONO_LIB_DIR=C:\ProgramData\chocolatey\lib\mono\tools\lib"
+      set "MONO_BIN_DIR=C:\ProgramData\chocolatey\lib\mono\tools\bin"
+      echo [INFO] Found Mono at: C:\ProgramData\chocolatey\lib\mono\tools
+      exit /b 0
+    )
+  )
+)
+
+REM 3) If we reach here, we failed
+echo [ERROR] Mono not found in any standard location!
 exit /b 1

@@ -35,6 +35,9 @@ namespace GameScripts
             _currentYRotation = 0f;
             API.Log("[EnemyController] Controller initialized with vision system");
             _currentYRotation = API.GetRotation(Entity).Y;
+
+            _vision.EnableDebugReasons(true);  // See why targets are rejected
+            _vision.EnableDebugLOS(true);      // See LOS results
         }
 
         public void OnUpdate(float dt)

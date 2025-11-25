@@ -424,6 +424,65 @@ namespace Boom
                 // AISystem should rebuild the BT on start based on 'mode', patrol list, etc.
             }
         );
+
+        // === SCRIPT COMPONENT ===
+        registry.RegisterComponentSerializer(
+            "ScriptComponent",
+            // ----- SERIALIZE -----
+            [](YAML::Emitter& e, EntityRegistry& reg, EntityID ent)
+            {
+                if (!reg.all_of<ScriptComponent>(ent))
+                    return;
+
+                const auto& sc = reg.get<ScriptComponent>(ent);
+
+                e << YAML::Key << "ScriptComponent" << YAML::Value << YAML::BeginMap;
+
+                // Basic fields
+                e << YAML::Key << "Enabled" << YAML::Value << sc.Enabled;
+                e << YAML::Key << "TypeName" << YAML::Value << sc.TypeName;
+
+                // Params: store the JSON as a string (human-readable)
+                // (You could store key/values directly in YAML, but keeping it as JSON
+                // matches your Inspector UI and avoids schema drift.)
+                std::string jsonStr = sc.Params.dump(2); // pretty print
+                e << YAML::Key << "ParamsJSON" << YAML::Value << jsonStr;
+
+                // DO NOT serialize sc.InstanceId (runtime only)
+
+                e << YAML::EndMap;
+            },
+            // ----- DESERIALIZE -----
+            [](const YAML::Node& data, EntityRegistry& reg, EntityID ent, AssetRegistry&)
+            {
+                if (!data || !data.IsMap())
+                    return;
+
+                auto& sc = reg.get_or_emplace<ScriptComponent>(ent);
+
+                if (auto v = data["Enabled"])   sc.Enabled = v.as<bool>(false);
+                if (auto v = data["TypeName"])  sc.TypeName = v.as<std::string>("");
+
+                // Params JSON (robust to missing/invalid)
+                sc.Params = nlohmann::json::object();
+                if (auto v = data["ParamsJSON"])
+                {
+                    try {
+                        const std::string s = v.as<std::string>("");
+                        if (!s.empty())
+                            sc.Params = nlohmann::json::parse(s);
+                    }
+                    catch (...) {
+                        // leave as empty object on parse error
+                    }
+                }
+
+                // Reset runtime id on load; instance will be (re)created by the scripting system
+                sc.InstanceId = 0;
+            }
+        );
+
+
         // === DIRECT LIGHT COMPONENT ===
 		RegisterPropertyComponent<DirectLightComponent>("DirectLightComponent");
 

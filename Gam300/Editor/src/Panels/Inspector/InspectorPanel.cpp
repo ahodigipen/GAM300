@@ -1253,8 +1253,19 @@ namespace EditorUI {
 
         if (selected.Has<DirectLightComponent>()) {
             auto& dl = selected.Get<DirectLightComponent>();
-            DrawComponentSection("Directional Light", &dl, GetDirectLightComponentProperties, true,
-                [&]() { ctx->scene.remove<DirectLightComponent>(m_App->SelectedEntity()); });
+            DrawComponentSection(
+                "Point Light",
+                &dl,
+                [&](void* p) -> const xproperty::type::object*
+                {
+                    auto* comp = static_cast<DirectLightComponent*>(p);
+                    ImGui::ColorEdit3("Irradiance", &comp->light.radiance[0]);
+
+                    return GetDirectLightComponentProperties(p);
+                },
+                true,
+                [&]() { ctx->scene.remove<DirectLightComponent>(m_App->SelectedEntity()); }
+            );
         }
 
         if (selected.Has<PointLightComponent>()) {
@@ -1277,8 +1288,19 @@ namespace EditorUI {
 
         if (selected.Has<SpotLightComponent>()) {
             auto& sl = selected.Get<SpotLightComponent>();
-            DrawComponentSection("Spot Light", &sl, GetSpotLightComponentProperties, true,
-                [&]() { ctx->scene.remove<SpotLightComponent>(m_App->SelectedEntity()); });
+            DrawComponentSection(
+                "Point Light",
+                &sl,
+                [&](void* p) -> const xproperty::type::object*
+                {
+                    auto* comp = static_cast<SpotLightComponent*>(p);
+                    ImGui::ColorEdit3("Irradiance", &comp->light.radiance[0]);
+
+                    return GetSpotLightComponentProperties(p);
+                },
+                true,
+                [&]() { ctx->scene.remove<SpotLightComponent>(m_App->SelectedEntity()); }
+            );
         }
 
         if (selected.Has<SkyboxComponent>()) {
@@ -1298,7 +1320,7 @@ namespace EditorUI {
             ImGui::PushID("Script");
             auto& sc = selected.Get<Boom::ScriptComponent>();
 
-            // Collapsing header + settings ("..." to remove), matching your style
+            // Collapsing header + settings ("..." to remove)
             bool isOpen = ImGui::CollapsingHeader("Script",
                 ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap);
 
@@ -1325,60 +1347,73 @@ namespace EditorUI {
             if (isOpen) {
                 ImGui::Indent(12.0f);
 
-                // Track changes to trigger recreation
-                static std::string lastTypeName;
-                static bool lastEnabled = false;
-                static entt::entity lastEntity = entt::null;
+                // ===== Context / scripting system pointer =====
+                auto* appCtx = m_Owner ? m_Owner->GetContext() : nullptr;
 
+                // Get raw pointer from unique_ptr (or nullptr if missing)
+                auto* scripting = (appCtx && appCtx->scriptingSystem)
+                    ? appCtx->scriptingSystem.get()
+                    : nullptr;
                 entt::entity currentEntity = m_App->SelectedEntity();
 
-                // Reset tracking when switching entities
-                if (currentEntity != lastEntity) {
-                    lastTypeName = sc.TypeName;
-                    lastEnabled = sc.Enabled;
-                    lastEntity = currentEntity;
-                }
+                // Track if we need to recreate the instance this frame
+                bool enabledChanged = false;
+                bool typeNameChanged = false;
 
                 // ----- Enabled toggle -----
-                bool enabledChanged = false;
                 if (ImGui::Checkbox("Enabled", &sc.Enabled)) {
-                    if (sc.Enabled != lastEnabled) {
-                        enabledChanged = true;
-                        lastEnabled = sc.Enabled;
-                    }
+                    enabledChanged = true;
                 }
 
-                // ----- Type name (namespace.Type) -----
+                // ----- Type name DROPDOWN -----
                 ImGui::AlignTextToFramePadding();
                 ImGui::Text("Type");
                 ImGui::SameLine(150);
                 ImGui::SetNextItemWidth(-1);
 
-                static char typeBuf[256];
-#ifdef _MSC_VER
-                strncpy_s(typeBuf, sizeof(typeBuf), sc.TypeName.c_str(), sizeof(typeBuf) - 1);
-#else
-                std::snprintf(typeBuf, sizeof(typeBuf), "%s", sc.TypeName.c_str());
-#endif
-
-                bool typeNameChanged = false;
-                if (ImGui::InputText("##ScriptTypeName", typeBuf, sizeof(typeBuf),
-                    ImGuiInputTextFlags_EnterReturnsTrue))
-                {
-                    sc.TypeName = typeBuf;
-                    if (sc.TypeName != lastTypeName) {
-                        typeNameChanged = true;
-                        lastTypeName = sc.TypeName;
-                    }
+                std::vector<std::string> availableTypes;
+                if (scripting && scripting->IsAlive()) {
+                    availableTypes = scripting->GetAvailableScriptTypes();
                 }
 
-                // Auto-recreate if TypeName changed (on Enter) or Enabled toggled
-                if ((typeNameChanged || enabledChanged) && m_Owner && m_Owner->GetContext()) {
-                    auto* appCtx = m_Owner->GetContext();
-                    if (appCtx->scriptingSystem) {
-                        appCtx->scriptingSystem->RecreateForEntity(currentEntity, sc);
-                        BOOM_INFO("[Inspector] Auto-reloaded script due to changes");
+                // Current selection or "None"
+                const char* currentPreview = sc.TypeName.empty()
+                    ? "None"
+                    : sc.TypeName.c_str();
+
+                // If scripting system isn't ready, we still show the combo but empty
+                if (ImGui::BeginCombo("##ScriptTypeDropdown", currentPreview)) {
+                    // "None" option
+                    bool isNoneSelected = sc.TypeName.empty();
+                    if (ImGui::Selectable("None", isNoneSelected)) {
+                        if (!sc.TypeName.empty()) {
+                            sc.TypeName.clear();
+                            typeNameChanged = true;
+                        }
                     }
+                    if (isNoneSelected)
+                        ImGui::SetItemDefaultFocus();
+
+                    // All available script types
+                    for (const auto& typeName : availableTypes) {
+                        bool isSelected = (sc.TypeName == typeName);
+                        if (ImGui::Selectable(typeName.c_str(), isSelected)) {
+                            if (sc.TypeName != typeName) {
+                                sc.TypeName = typeName;
+                                typeNameChanged = true;
+                            }
+                        }
+                        if (isSelected)
+                            ImGui::SetItemDefaultFocus();
+                    }
+
+                    ImGui::EndCombo();
+                }
+
+                // Auto-recreate instance if TypeName or Enabled changed
+                if ((typeNameChanged || enabledChanged) && scripting) {
+                    scripting->RecreateForEntity(currentEntity, sc);
+                    BOOM_INFO("[Inspector] Auto-reloaded script due to changes");
                 }
 
                 // ----- Params (JSON) -----
@@ -1387,7 +1422,6 @@ namespace EditorUI {
                 ImGui::SameLine(150);
                 ImGui::SetNextItemWidth(-1);
 
-                // persistent buffer per-selected entity
                 static char paramsBuf[2048];
                 static entt::entity lastJsonEntity = entt::null;
 
@@ -1423,7 +1457,6 @@ namespace EditorUI {
                 ImGui::TextDisabled("Runtime Info");
                 ImGui::Text("Instance ID: %llu", (unsigned long long)sc.InstanceId);
 
-                // Show if script is actually running
                 if (sc.InstanceId != 0 && sc.Enabled) {
                     ImGui::TextColored(ImVec4(0, 1, 0, 1), "Active");
                 }
@@ -1440,22 +1473,16 @@ namespace EditorUI {
                 ImGui::Spacing();
 
                 if (ImGui::Button("Reload This Script", ImVec2(-1, 0))) {
-                    if (m_Owner && m_Owner->GetContext()) {
-                        auto* appCtx = m_Owner->GetContext();
-                        if (appCtx->scriptingSystem) {
-                            appCtx->scriptingSystem->RecreateForEntity(currentEntity, sc);
-                            BOOM_INFO("[Inspector] Manually reloaded script instance");
-                        }
+                    if (scripting) {
+                        scripting->RecreateForEntity(currentEntity, sc);
+                        BOOM_INFO("[Inspector] Manually reloaded script instance");
                     }
                 }
 
                 if (ImGui::Button("Hot Reload All Scripts (DLL)", ImVec2(-1, 0))) {
-                    if (m_Owner && m_Owner->GetContext()) {
-                        auto* appCtx = m_Owner->GetContext();
-                        if (appCtx->scriptingSystem) {
-                            appCtx->scriptingSystem->ReloadScripts();
-                            BOOM_INFO("[Inspector] Hot reloaded all scripts from DLL!");
-                        }
+                    if (scripting) {
+                        scripting->ReloadScripts();
+                        BOOM_INFO("[Inspector] Hot reloaded all scripts from DLL!");
                     }
                 }
 
@@ -1466,15 +1493,19 @@ namespace EditorUI {
 
             if (removed) {
                 // Destroy the script instance before removing component
-                if (m_Owner && m_Owner->GetContext()) {
-                    auto* appCtx = m_Owner->GetContext();
-                    if (appCtx->scriptingSystem) {
-                        appCtx->scriptingSystem->DestroyForEntity(m_App->SelectedEntity(), sc);
-                    }
+                auto* appCtx = m_Owner ? m_Owner->GetContext() : nullptr;
+
+                // Get raw pointer from unique_ptr (or nullptr if missing)
+                auto* scripting = (appCtx && appCtx->scriptingSystem)
+                    ? appCtx->scriptingSystem.get()
+                    : nullptr;
+                if (scripting) {
+                    scripting->DestroyForEntity(m_App->SelectedEntity(), sc);
                 }
                 ctx->scene.remove<Boom::ScriptComponent>(m_App->SelectedEntity());
                 return;
             }
+
             ImGui::Spacing();
         }
 
@@ -1483,7 +1514,6 @@ namespace EditorUI {
         if (ImGui::Button("Add Component", ImVec2(-1, 30))) {
             ImGui::OpenPopup("AddComponentPopup");
         }
-        // (AddComponentPopup contents go here)
         ComponentSelector(selected);
     }
 

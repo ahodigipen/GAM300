@@ -1,5 +1,84 @@
 Version: 1.0
 ENTITIES:
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -862,7 +941,7 @@ ENTITIES:
       Transform:
         Translate: [-10.4250002, 4.84008408, 1.10099995]
         Rotate: [0, -90, 0]
-        Scale: [0.629999995, 1, 0.0900000036]
+        Scale: [0.629999995, 0.810000002, 0.0900000036]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -918,7 +997,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0.140000001, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [26.2099991, 9.81999969, 37.2299995]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: Wall_Front_Floor_1
       UID: 10276433539658323172
@@ -926,7 +1016,17 @@ ENTITIES:
       Transform:
         Translate: [-0.420805216, 4.09516048, -8.11089039]
         Rotate: [0, 0, 0]
-        Scale: [0.720000029, 0.769999981, 0.00999999978]
+        Scale: [0.819999993, 0.769999981, 0.00999999978]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.819999993, 0.769999981, 0.00999999978]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -998,7 +1098,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [28.4500008, 13.5699997, 10.0900002]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: Ceiling_Floor_1
       UID: 13500012620144209348
@@ -1007,6 +1118,16 @@ ENTITIES:
         Translate: [-0.111000001, 5.30469227, 2.29807973]
         Rotate: [0, 0, 0]
         Scale: [0.519999981, 0.00999999978, 1.69000006]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.519999981, 0.00999999978, 1.69000006]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1030,7 +1151,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [31.5799999, 9.81000042, 10.1000004]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: Floor_Left_Floor_2
       UID: 16568992521348852646
@@ -1127,7 +1259,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [6.21000004, 0.140000001, 3.3499999]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: Sliding_Door_1
       UID: 3774918408726337557
@@ -1333,14 +1476,14 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-2.35962653, 3.91291356, 5.2747364]
-        Rotate: [-31.8125, -19481.625, 0]
+        Translate: [-1.79567778, 3.26714683, 6.86868715]
+        Rotate: [-23.0625, -19425.8125, 0]
         Scale: [1, 1, 1]
     CameraComponent:
       Camera:
         NearPlane: 0.300000012
         FarPlane: 1000
-        FOV: 86
+        FOV: 100
     ThirdPersonCameraComponent:
       Offset: [0, 2, 0]
       Current Distance: 2
@@ -1400,15 +1543,36 @@ ENTITIES:
   - {}
   - {}
   - {}
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0.00999999978, 0.0199999996, 0.129999995]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [60.0999985, 198.389999, 31.2299995]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: Ninja
       UID: 12784200605494588253
     TransformComponent:
       Transform:
-        Translate: [-1.16412485, -1.14540207, -0.968141139]
-        Rotate: [0, -0, 0]
+        Translate: [-3.47223186, 2.23929048, -4.85253525]
+        Rotate: [0, 0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 15771049607565255665
       MaterialID: 0
@@ -1433,8 +1597,8 @@ ENTITIES:
       UID: 16439367912350421013
     TransformComponent:
       Transform:
-        Translate: [0.321215421, 0.545895696, 5.90508461]
-        Rotate: [0, -0, 0]
+        Translate: [-2.29986811, 0.545895636, 5.09951735]
+        Rotate: [0, 0.379795283, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
       RigidBody:
@@ -1443,7 +1607,7 @@ ENTITIES:
         InitialVelocity: [0, 0, 0]
         Previous Scale: [0.00999999978, 0.00999999978, 0.00999999978]
         FreezeRotationX: true
-        FreezeRotationY: false
+        FreezeRotationY: true
         FreezeRotationZ: true
         Type: DYNAMIC
     ModelComponent:
@@ -1502,15 +1666,36 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0.49000001, 0.75999999, -0.189999998]
+        LocalRotation: [0, 0, 42.9000015]
+        LocalScale: [15.1700001, 3.20000005, 4.32999992]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: Stairs_Left
       UID: 14807325083218498713
     TransformComponent:
       Transform:
-        Translate: [-4.82700014, 1.5408051, -7.46138382]
+        Translate: [-4.82700014, 1.4654566, -7.46138382]
         Rotate: [0, -180, 0]
         Scale: [0.5, 0.5, 0.400000006]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.5, 0.5, 0.400000006]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 17773246069672836568
       MaterialID: 0
@@ -1631,6 +1816,12 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
   - {}
   - {}
   - {}
