@@ -73,13 +73,13 @@ ASSETS:
     Name: Sliding_Door
     Source: Resources/Physics/Sliding_Door.pxm
   - Type: PHYSICS_MESH
-    UID: 2061877446978793964
-    Name: Stairs_Handle
-    Source: Resources/Physics/Stairs_Handle.pxm
-  - Type: PHYSICS_MESH
     UID: 6932420578595885980
     Name: sphere
     Source: Resources/Physics/sphere.pxm
+  - Type: PHYSICS_MESH
+    UID: 2061877446978793964
+    Name: Stairs_Handle
+    Source: Resources/Physics/Stairs_Handle.pxm
   - Type: PHYSICS_MESH
     UID: 6064271428936207948
     Name: Cube.FBX
@@ -113,11 +113,11 @@ ASSETS:
     Name: Stairs_Handle
     Source: Resources/Physics/Stairs_Handle.pxm
   - Type: PHYSICS_MESH
-    UID: 9351549157791107372
+    UID: 14118317202290831515
     Name: Floor_Cushion
     Source: Resources/Physics/Floor_Cushion.pxm
   - Type: PHYSICS_MESH
-    UID: 14118317202290831515
+    UID: 9351549157791107372
     Name: Floor_Cushion
     Source: Resources/Physics/Floor_Cushion.pxm
   - Type: PHYSICS_MESH
@@ -145,52 +145,6 @@ ASSETS:
     Name: Indoor_Lanturn_Hangingfbx
     Source: Resources/Physics/Indoor_Lanturn_Hangingfbx.pxm
   - Type: PREFAB
-    UID: 5076640578672151242
-    Name: Dance
-    Source: Prefabs/Dance.prefab
-    Properties:
-      SerializedData: |
-        InfoComponent:
-          UID: 18299148976802030936
-          Name: Player
-          Parent: 0
-        TransformComponent:
-          Translate: [0, -1.20000005, 0]
-          Rotate: [0, 0, 0]
-          Scale: [0.00999999978, 0.00999999978, 0.00999999978]
-        ModelComponent:
-          ModelID: 9625104056789884581
-          MaterialID: 11573253777835523025
-          ModelSource: dance.fbx
-          MaterialSource: Marble
-        AnimatorComponent:
-          Sequence: 0
-          Time: 832.96283
-
-  - Type: PREFAB
-    UID: 18004803294149376765
-    Name: Walk
-    Source: Prefabs/Walk.prefab
-    Properties:
-      SerializedData: |
-        InfoComponent:
-          UID: 18299148976802030936
-          Name: Model walk
-          Parent: 0
-        TransformComponent:
-          Translate: [0, -1.5, 0]
-          Rotate: [0, 0, 0]
-          Scale: [0.00999999978, 0.00999999978, 0.00999999978]
-        ModelComponent:
-          ModelID: 12369161784125194221
-          MaterialID: 11573253777835523025
-          ModelSource: walking.fbx
-          MaterialSource: Marble
-        AnimatorComponent:
-          Sequence: 0
-          Time: 30.0344028
-
-  - Type: PREFAB
     UID: 8959324902145137880
     Name: Dancing Model
     Source: Prefabs/Dancing Model.prefab
@@ -216,72 +170,52 @@ ASSETS:
           Sequence: 0
           Time: 870.897278
 
-  - Type: TEXTURE
-    UID: 14452546169200855872
-    Name: HowToPlayButton
-    Source: Resources/Textures/MainMenu/HowToPlayButton.png
+  - Type: PREFAB
+    UID: 18004803294149376765
+    Name: Walk
+    Source: Prefabs/Walk.prefab
     Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 12364827878238943988
-    Name: Outdoor_Stone_Lantern2_midsection_BaseColor
-    Source: Resources/Models/Props/Stone_Lantern_Textures/Outdoor_Stone_Lantern2_midsection_BaseColor.png
+      SerializedData: |
+        InfoComponent:
+          UID: 18299148976802030936
+          Name: Model walk
+          Parent: 0
+        TransformComponent:
+          Translate: [0, -1.5, 0]
+          Rotate: [0, 0, 0]
+          Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+        ModelComponent:
+          ModelID: 12369161784125194221
+          MaterialID: 11573253777835523025
+          ModelSource: walking.fbx
+          MaterialSource: Marble
+        AnimatorComponent:
+          Sequence: 0
+          Time: 30.0344028
+
+  - Type: PREFAB
+    UID: 5076640578672151242
+    Name: Dance
+    Source: Prefabs/Dance.prefab
     Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 4669697712673348506
-    Name: Scissors_Ninja_Body_Normal
-    Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Body_Normal.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 6648352726293174554
-    Name: Lantern_Hanging_openPBR_shader1_Height
-    Source: Resources/Models/Props/1_JAN_Lantern Textures/Lantern_Hanging_openPBR_shader1_Height.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 1821848361694167965
-    Name: Lantern_Hanging_openPBR_shader1_BaseColor
-    Source: Resources/Models/Props/1_JAN_Lantern Textures/Lantern_Hanging_openPBR_shader1_BaseColor.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 2600166467088307522
-    Name: Indoor_Lantern_Hanging_2_openPBR_shader1_Roughness
-    Source: Resources/Models/Props/1_JAN_Lantern Textures/Indoor_Lantern_Hanging_2_openPBR_shader1_Roughness.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+      SerializedData: |
+        InfoComponent:
+          UID: 18299148976802030936
+          Name: Player
+          Parent: 0
+        TransformComponent:
+          Translate: [0, -1.20000005, 0]
+          Rotate: [0, 0, 0]
+          Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+        ModelComponent:
+          ModelID: 9625104056789884581
+          MaterialID: 11573253777835523025
+          ModelSource: dance.fbx
+          MaterialSource: Marble
+        AnimatorComponent:
+          Sequence: 0
+          Time: 832.96283
+
   - Type: TEXTURE
     UID: 4036289525977957957
     Name: Indoor_Lantern_Hanging_2_openPBR_shader1_Height
@@ -316,9 +250,9 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 728858489320520180
-    Name: arrow3
-    Source: Resources/UnityOtherFiles/UI Assets/arrow3.png
+    UID: 2600166467088307522
+    Name: Indoor_Lantern_Hanging_2_openPBR_shader1_Roughness
+    Source: Resources/Models/Props/1_JAN_Lantern Textures/Indoor_Lantern_Hanging_2_openPBR_shader1_Roughness.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -327,9 +261,86 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 12678405704945466943
-    Name: NewGameButton_Clicked
-    Source: Resources/Textures/MainMenu/NewGameButton_Clicked.png
+    UID: 4067648091469832735
+    Name: Ninja_occlusionRoughnessMetallic
+    Source: Resources/Models/Enemy/Stationary Sentry/Ninja_occlusionRoughnessMetallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 14452546169200855872
+    Name: HowToPlayButton
+    Source: Resources/Textures/MainMenu/HowToPlayButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 11555272199408419487
+    Name: Red_Gem
+    Source: Resources/UnityOtherFiles/UI Assets/Red_Gem.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 4669697712673348506
+    Name: Scissors_Ninja_Body_Normal
+    Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Body_Normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 12364827878238943988
+    Name: Outdoor_Stone_Lantern2_midsection_BaseColor
+    Source: Resources/Models/Props/Stone_Lantern_Textures/Outdoor_Stone_Lantern2_midsection_BaseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 6648352726293174554
+    Name: Lantern_Hanging_openPBR_shader1_Height
+    Source: Resources/Models/Props/1_JAN_Lantern Textures/Lantern_Hanging_openPBR_shader1_Height.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 1821848361694167965
+    Name: Lantern_Hanging_openPBR_shader1_BaseColor
+    Source: Resources/Models/Props/1_JAN_Lantern Textures/Lantern_Hanging_openPBR_shader1_BaseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 728858489320520180
+    Name: arrow3
+    Source: Resources/UnityOtherFiles/UI Assets/arrow3.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -349,9 +360,9 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 7527779657416384175
-    Name: Red_Gem_Glow
-    Source: Resources/UnityOtherFiles/UI Assets/Red_Gem_Glow.png
+    UID: 12678405704945466943
+    Name: NewGameButton_Clicked
+    Source: Resources/Textures/MainMenu/NewGameButton_Clicked.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -363,6 +374,17 @@ ASSETS:
     UID: 4271895845596125777
     Name: ExitButton
     Source: Resources/Textures/MainMenu/ExitButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 7527779657416384175
+    Name: Red_Gem_Glow
+    Source: Resources/UnityOtherFiles/UI Assets/Red_Gem_Glow.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -404,6 +426,17 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
+    UID: 6938335913285189209
+    Name: Cold Night__Cam_1_Back-Z
+    Source: Resources/UnityOtherFiles/Cold Night/Cold Night__Cam_1_Back-Z.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
     UID: 15166625253463898815
     Name: Cold Night__Cam_5_Down-Y
     Source: Resources/UnityOtherFiles/Cold Night/Cold Night__Cam_5_Down-Y.png
@@ -415,9 +448,9 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 6938335913285189209
-    Name: Cold Night__Cam_1_Back-Z
-    Source: Resources/UnityOtherFiles/Cold Night/Cold Night__Cam_1_Back-Z.png
+    UID: 3319781495498037179
+    Name: bottom roof texture
+    Source: Resources/Textures/Wall Textures/bottom roof texture.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -448,6 +481,17 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
+    UID: 13461473539925509901
+    Name: RestartButton
+    Source: Resources/Textures/PauseMenu/RestartButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
     UID: 11795212342725236264
     Name: lantern_colour_2_MaskMap
     Source: Resources/Models/Props/lantern mat/lantern_colour_2_MaskMap.png
@@ -470,6 +514,17 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
+    UID: 10559148284126310835
+    Name: Indoor_Lantern_Hanging_2_openPBR_shader1_Height
+    Source: Resources/Models/Props/3_PON_LanternTextures/Indoor_Lantern_Hanging_2_openPBR_shader1_Height.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
     UID: 15452675258460406062
     Name: roof texture
     Source: Resources/Textures/Wall Textures/roof texture.png
@@ -481,9 +536,31 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
+    UID: 11793825276519391915
+    Name: ExitButton_Clicked
+    Source: Resources/Textures/MainMenu/ExitButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
     UID: 9814913805119522920
     Name: Lantern_Hanging_openPBR_shader1_Normal
     Source: Resources/Models/Props/3_PON_LanternTextures/Lantern_Hanging_openPBR_shader1_Normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 2779217692485608494
+    Name: Tatami_Indoor
+    Source: Resources/Textures/Floor Texture/Tatami_Indoor.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -506,248 +583,6 @@ ASSETS:
     UID: 13671418689435228455
     Name: arrow2
     Source: Resources/UnityOtherFiles/UI Assets/arrow2.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 4067648091469832735
-    Name: Ninja_occlusionRoughnessMetallic
-    Source: Resources/Models/Enemy/Stationary Sentry/Ninja_occlusionRoughnessMetallic.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 10743047858016871760
-    Name: Lantern_Hanging_openPBR_shader1_Height
-    Source: Resources/Models/Props/3_PON_LanternTextures/Lantern_Hanging_openPBR_shader1_Height.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 255836083165499956
-    Name: Sliding door long texture
-    Source: Resources/Textures/Wall Textures/Sliding door long texture.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 13725429989173629243
-    Name: Pedastal_baseColor
-    Source: Resources/Models/Enemy/Stationary Sentry/Pedastal_baseColor.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 10559148284126310835
-    Name: Indoor_Lantern_Hanging_2_openPBR_shader1_Height
-    Source: Resources/Models/Props/3_PON_LanternTextures/Indoor_Lantern_Hanging_2_openPBR_shader1_Height.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 7299876130980789758
-    Name: HP_Bar_Fill
-    Source: Resources/UnityOtherFiles/UI Assets/HP_Bar_Fill.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 5426351751634759504
-    Name: WoodenButton
-    Source: Resources/UnityOtherFiles/UI Assets/WoodenButton.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 3670703154944615175
-    Name: Wall_Stone_C_Basecolor
-    Source: Resources/Textures/Wall Textures/Wall stone/Wall_Stone_C_Basecolor.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 14485376290015927854
-    Name: blackfadebg
-    Source: Resources/UnityOtherFiles/UI Assets/blackfadebg.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 284235029935849495
-    Name: Outdoor_Stone_Lantern2_Roof_BaseColor
-    Source: Resources/Models/Props/Stone_Lantern_Textures/Outdoor_Stone_Lantern2_Roof_BaseColor.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 17877369498989114048
-    Name: Cold Night__Cam_3_Right-X
-    Source: Resources/UnityOtherFiles/Cold Night/Cold Night__Cam_3_Right-X.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 482575242868564674
-    Name: Lantern_Hanging_openPBR_shader1_Normal
-    Source: Resources/Models/Props/1_JAN_Lantern Textures/Lantern_Hanging_openPBR_shader1_Normal.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 2335343751038784486
-    Name: HEIGHT MAPseamless sand zen garden texture_Outdoor
-    Source: Resources/Textures/Floor Texture/HEIGHT MAPseamless sand zen garden texture_Outdoor.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 8080306587810410516
-    Name: Stone_Outdoor
-    Source: Resources/Textures/Floor Texture/Stone_Outdoor.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 11793825276519391915
-    Name: ExitButton_Clicked
-    Source: Resources/Textures/MainMenu/ExitButton_Clicked.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 9150606754582668073
-    Name: back
-    Source: Resources/UnityOtherFiles/UI Assets/back.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 17985620306014501229
-    Name: Indoor_Lantern_Hanging_2_openPBR_shader1_Normal
-    Source: Resources/Models/Props/1_JAN_Lantern Textures/Indoor_Lantern_Hanging_2_openPBR_shader1_Normal.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 17039813470002885239
-    Name: Lantern_Hanging_openPBR_shader1_BaseColor
-    Source: Resources/Models/Props/2_KEN_LanternTextures/Lantern_Hanging_openPBR_shader1_BaseColor.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 3319781495498037179
-    Name: bottom roof texture
-    Source: Resources/Textures/Wall Textures/bottom roof texture.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 3489333510165140307
-    Name: seamless sand zen garden texture_Outdoor
-    Source: Resources/Textures/Floor Texture/seamless sand zen garden texture_Outdoor.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 9401454698162006202
-    Name: PauseMenuScroll
-    Source: Resources/Textures/PauseMenu/PauseMenuScroll.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 5007598784380969136
-    Name: lantern_openPBR_shader1_MaskMap
-    Source: Resources/Models/Props/lantern mat/lantern_openPBR_shader1_MaskMap.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -789,9 +624,9 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 955542765422159676
-    Name: pngtree-keyboard-keys-vector-png-image_6705739
-    Source: Resources/UnityOtherFiles/UI Assets/pngtree-keyboard-keys-vector-png-image_6705739.png
+    UID: 10743047858016871760
+    Name: Lantern_Hanging_openPBR_shader1_Height
+    Source: Resources/Models/Props/3_PON_LanternTextures/Lantern_Hanging_openPBR_shader1_Height.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -800,9 +635,207 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 2779217692485608494
-    Name: Tatami_Indoor
-    Source: Resources/Textures/Floor Texture/Tatami_Indoor.png
+    UID: 13898311701991055595
+    Name: ReturnMenuButton_Clicked
+    Source: Resources/Textures/PauseMenu/ReturnMenuButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 3670703154944615175
+    Name: Wall_Stone_C_Basecolor
+    Source: Resources/Textures/Wall Textures/Wall stone/Wall_Stone_C_Basecolor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 255836083165499956
+    Name: Sliding door long texture
+    Source: Resources/Textures/Wall Textures/Sliding door long texture.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 7299876130980789758
+    Name: HP_Bar_Fill
+    Source: Resources/UnityOtherFiles/UI Assets/HP_Bar_Fill.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 5426351751634759504
+    Name: WoodenButton
+    Source: Resources/UnityOtherFiles/UI Assets/WoodenButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 13725429989173629243
+    Name: Pedastal_baseColor
+    Source: Resources/Models/Enemy/Stationary Sentry/Pedastal_baseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 14485376290015927854
+    Name: blackfadebg
+    Source: Resources/UnityOtherFiles/UI Assets/blackfadebg.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 3489333510165140307
+    Name: seamless sand zen garden texture_Outdoor
+    Source: Resources/Textures/Floor Texture/seamless sand zen garden texture_Outdoor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 9401454698162006202
+    Name: PauseMenuScroll
+    Source: Resources/Textures/PauseMenu/PauseMenuScroll.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 284235029935849495
+    Name: Outdoor_Stone_Lantern2_Roof_BaseColor
+    Source: Resources/Models/Props/Stone_Lantern_Textures/Outdoor_Stone_Lantern2_Roof_BaseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 17877369498989114048
+    Name: Cold Night__Cam_3_Right-X
+    Source: Resources/UnityOtherFiles/Cold Night/Cold Night__Cam_3_Right-X.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 5007598784380969136
+    Name: lantern_openPBR_shader1_MaskMap
+    Source: Resources/Models/Props/lantern mat/lantern_openPBR_shader1_MaskMap.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 482575242868564674
+    Name: Lantern_Hanging_openPBR_shader1_Normal
+    Source: Resources/Models/Props/1_JAN_Lantern Textures/Lantern_Hanging_openPBR_shader1_Normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 2335343751038784486
+    Name: HEIGHT MAPseamless sand zen garden texture_Outdoor
+    Source: Resources/Textures/Floor Texture/HEIGHT MAPseamless sand zen garden texture_Outdoor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 8080306587810410516
+    Name: Stone_Outdoor
+    Source: Resources/Textures/Floor Texture/Stone_Outdoor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 9150606754582668073
+    Name: back
+    Source: Resources/UnityOtherFiles/UI Assets/back.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 17985620306014501229
+    Name: Indoor_Lantern_Hanging_2_openPBR_shader1_Normal
+    Source: Resources/Models/Props/1_JAN_Lantern Textures/Indoor_Lantern_Hanging_2_openPBR_shader1_Normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 17039813470002885239
+    Name: Lantern_Hanging_openPBR_shader1_BaseColor
+    Source: Resources/Models/Props/2_KEN_LanternTextures/Lantern_Hanging_openPBR_shader1_BaseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 955542765422159676
+    Name: pngtree-keyboard-keys-vector-png-image_6705739
+    Source: Resources/UnityOtherFiles/UI Assets/pngtree-keyboard-keys-vector-png-image_6705739.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -833,31 +866,9 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 11555272199408419487
-    Name: Red_Gem
-    Source: Resources/UnityOtherFiles/UI Assets/Red_Gem.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
     UID: 18284772037872114494
     Name: NORMAL MAPseamless sand zen garden texture_Outdoor
     Source: Resources/Textures/Floor Texture/NORMAL MAPseamless sand zen garden texture_Outdoor.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 13898311701991055595
-    Name: ReturnMenuButton_Clicked
-    Source: Resources/Textures/PauseMenu/ReturnMenuButton_Clicked.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -891,17 +902,6 @@ ASSETS:
     UID: 9425825932550323732
     Name: lantern_colour_1_Normal
     Source: Resources/Models/Props/lantern mat/lantern_colour_1_Normal.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 13461473539925509901
-    Name: RestartButton
-    Source: Resources/Textures/PauseMenu/RestartButton.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -965,9 +965,9 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 15426909549303303183
-    Name: QuitButton
-    Source: Resources/Textures/PauseMenu/QuitButton.png
+    UID: 6921674894745876052
+    Name: Blue_Gem_Glow
+    Source: Resources/UnityOtherFiles/UI Assets/Blue_Gem_Glow.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -976,9 +976,9 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 6921674894745876052
-    Name: Blue_Gem_Glow
-    Source: Resources/UnityOtherFiles/UI Assets/Blue_Gem_Glow.png
+    UID: 15426909549303303183
+    Name: QuitButton
+    Source: Resources/Textures/PauseMenu/QuitButton.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1108,9 +1108,9 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 12220421531860267391
-    Name: Pedastal_occlusionRoughnessMetallic
-    Source: Resources/Models/Enemy/Stationary Sentry/Pedastal_occlusionRoughnessMetallic.png
+    UID: 16238148320953236535
+    Name: RestartButton_Clicked
+    Source: Resources/Textures/PauseMenu/RestartButton_Clicked.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1119,9 +1119,9 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 16238148320953236535
-    Name: RestartButton_Clicked
-    Source: Resources/Textures/PauseMenu/RestartButton_Clicked.png
+    UID: 12220421531860267391
+    Name: Pedastal_occlusionRoughnessMetallic
+    Source: Resources/Models/Enemy/Stationary Sentry/Pedastal_occlusionRoughnessMetallic.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1196,9 +1196,9 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 7568472483619014978
-    Name: Indoor_Lantern_Hanging_2_openPBR_shader1_BaseColor
-    Source: Resources/Models/Props/2_KEN_LanternTextures/Indoor_Lantern_Hanging_2_openPBR_shader1_BaseColor.png
+    UID: 11246060146662733147
+    Name: Scissors_Ninja_Body_Roughness
+    Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Body_Roughness.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1207,9 +1207,9 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 11246060146662733147
-    Name: Scissors_Ninja_Body_Roughness
-    Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Body_Roughness.png
+    UID: 7568472483619014978
+    Name: Indoor_Lantern_Hanging_2_openPBR_shader1_BaseColor
+    Source: Resources/Models/Props/2_KEN_LanternTextures/Indoor_Lantern_Hanging_2_openPBR_shader1_BaseColor.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1229,9 +1229,9 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 16738226509792806577
-    Name: lantern_colour_1_MaskMap
-    Source: Resources/Models/Props/lantern mat/lantern_colour_1_MaskMap.png
+    UID: 18116571246883620302
+    Name: Scissors_Ninja_Hood_Metallic
+    Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Hood_Metallic.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1240,9 +1240,9 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 18116571246883620302
-    Name: Scissors_Ninja_Hood_Metallic
-    Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Hood_Metallic.png
+    UID: 16738226509792806577
+    Name: lantern_colour_1_MaskMap
+    Source: Resources/Models/Props/lantern mat/lantern_colour_1_MaskMap.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1306,9 +1306,9 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 15050805329289275236
-    Name: Wall_Stone_C_Normal
-    Source: Resources/Textures/Wall Textures/Wall stone/Wall_Stone_C_Normal.png
+    UID: 15684685430910489836
+    Name: Pedastal_emissive
+    Source: Resources/Models/Enemy/Stationary Sentry/Pedastal_emissive.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1317,9 +1317,9 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 15684685430910489836
-    Name: Pedastal_emissive
-    Source: Resources/Models/Enemy/Stationary Sentry/Pedastal_emissive.png
+    UID: 15050805329289275236
+    Name: Wall_Stone_C_Normal
+    Source: Resources/Textures/Wall Textures/Wall stone/Wall_Stone_C_Normal.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1405,9 +1405,9 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 5444082718129606842
-    Name: wooden plank texture
-    Source: Resources/Textures/Wall Textures/wooden plank texture.png
+    UID: 18036222300221331622
+    Name: Indoor_Lantern_Hanging_2_openPBR_shader1_BaseColor
+    Source: Resources/Models/Props/3_PON_LanternTextures/Indoor_Lantern_Hanging_2_openPBR_shader1_BaseColor.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1416,9 +1416,9 @@ ASSETS:
         mipLevel: 10
         isGamma: true
   - Type: TEXTURE
-    UID: 18036222300221331622
-    Name: Indoor_Lantern_Hanging_2_openPBR_shader1_BaseColor
-    Source: Resources/Models/Props/3_PON_LanternTextures/Indoor_Lantern_Hanging_2_openPBR_shader1_BaseColor.png
+    UID: 5444082718129606842
+    Name: wooden plank texture
+    Source: Resources/Textures/Wall Textures/wooden plank texture.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1558,12 +1558,45 @@ ASSETS:
         alphaThreshold: 128
         mipLevel: 10
         isGamma: true
+  - Type: TEXTURE
+    UID: 16300877889967123005
+    Name: asset
+    Source: Resources/Textures/Icons/asset.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 2000641971401327177
+    Name: folder
+    Source: Resources/Textures/Icons/folder.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
   - Type: SKYBOX
     UID: 10427935764841817814
     Name: sky.DDS
     Source: Resources/Textures/Skybox/sky.DDS
     Properties:
       Size: 2048
+  - Type: MODEL
+    UID: 17862911105458314379
+    Name: Indoor_Lanturn_Hangingfbx
+    Source: Resources/Models/Indoor_Lanturn_Hangingfbx.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
   - Type: MODEL
     UID: 9625104056789884581
     Name: dance.FBX
@@ -1572,17 +1605,6 @@ ASSETS:
       Model Transform:
         transform:
           Translate: [0, -1, 0]
-          Rotate: [0, 0, 0]
-          Scale: [0.00999999978, 0.00999999978, 0.00999999978]
-      HasJoints: true
-  - Type: MODEL
-    UID: 10510038847207197447
-    Name: run.fbx
-    Source: Resources/Models/run.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [0.00999999978, 0.00999999978, 0.00999999978]
       HasJoints: true
@@ -1597,6 +1619,17 @@ ASSETS:
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
       HasJoints: false
+  - Type: MODEL
+    UID: 10510038847207197447
+    Name: run.fbx
+    Source: Resources/Models/run.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+      HasJoints: true
   - Type: MODEL
     UID: 11565258723769024311
     Name: sphere.fbx
@@ -1620,6 +1653,28 @@ ASSETS:
           Scale: [0.00999999978, 0.00999999978, 0.00999999978]
       HasJoints: true
   - Type: MODEL
+    UID: 17047777006874206768
+    Name: JanKenPon_Lantern
+    Source: Resources/Models/Maya files/JanKenPon_Lantern.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 17971063540041505471
+    Name: Outdoor_Stone_Lantern
+    Source: Resources/Models/Outdoor_Stone_Lantern.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
     UID: 11271718863933913868
     Name: idle.fbx
     Source: Resources/Models/idle.fbx
@@ -1634,6 +1689,17 @@ ASSETS:
     UID: 6829728261434427183
     Name: Lion_Statue2
     Source: Resources/Models/Environmental Props/Lion_Statue2.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 5607527584775828236
+    Name: Desert_Plant_06_Small_0_1
+    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Desert_Plant_06_Small_0_1.fbx
     Properties:
       Model Transform:
         transform:
@@ -1675,9 +1741,53 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: true
   - Type: MODEL
+    UID: 4878958897926110889
+    Name: Walking
+    Source: Resources/Models/Player/animations/Walking.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
+  - Type: MODEL
+    UID: 7477699483648389514
+    Name: Desert_Plant_04_Small_0_1
+    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Desert_Plant_04_Small_0_1.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
     UID: 4447526863727165212
     Name: New folder
     Source: Resources/Models/New folder.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 109962362927819430
+    Name: Gate_Desert_Big_0_1
+    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Gate_Desert_Big_0_1.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 6736459313355784400
+    Name: Desert_Plant_02_Small_0_1
+    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Desert_Plant_02_Small_0_1.fbx
     Properties:
       Model Transform:
         transform:
@@ -1719,6 +1829,17 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
+    UID: 16876243872413922063
+    Name: Desert_Skull_Small_0_1
+    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Desert_Skull_Small_0_1.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
     UID: 5790576149006634497
     Name: Outdoor_Stone_Lantern2
     Source: Resources/Models/Environmental Props/Outdoor_Stone_Lantern2.fbx
@@ -1730,9 +1851,9 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 3566111065211576240
-    Name: Level
-    Source: Resources/Models/Level.fbx
+    UID: 17773246069672836568
+    Name: Stairs
+    Source: Resources/Models/Stairs.fbx
     Properties:
       Model Transform:
         transform:
@@ -1741,9 +1862,9 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 17773246069672836568
-    Name: Stairs
-    Source: Resources/Models/Stairs.fbx
+    UID: 3566111065211576240
+    Name: Level
+    Source: Resources/Models/Level.fbx
     Properties:
       Model Transform:
         transform:
@@ -1788,6 +1909,17 @@ ASSETS:
     UID: 3890115912180241845
     Name: Floating_Island_2_Bioma2
     Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Floating_Island_2_Bioma2.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 7746641044800409692
+    Name: Floating_Island_3_Bioma2
+    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Floating_Island_3_Bioma2.fbx
     Properties:
       Model Transform:
         transform:
@@ -1851,6 +1983,17 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
+    UID: 13255697117107322585
+    Name: Monuntain_Desert_02_Big_0_1
+    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Monuntain_Desert_02_Big_0_1.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
     UID: 14319818634218203947
     Name: Sword
     Source: Resources/Models/Sword.fbx
@@ -1873,42 +2016,9 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 6736459313355784400
-    Name: Desert_Plant_02_Small_0_1
-    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Desert_Plant_02_Small_0_1.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
     UID: 7900470207975455239
     Name: Desert_Plant_03_Small_0_1
     Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Desert_Plant_03_Small_0_1.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 4878958897926110889
-    Name: Walking
-    Source: Resources/Models/Player/animations/Walking.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: true
-  - Type: MODEL
-    UID: 7477699483648389514
-    Name: Desert_Plant_04_Small_0_1
-    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Desert_Plant_04_Small_0_1.fbx
     Properties:
       Model Transform:
         transform:
@@ -1928,9 +2038,9 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 5607527584775828236
-    Name: Desert_Plant_06_Small_0_1
-    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Desert_Plant_06_Small_0_1.fbx
+    UID: 8736150507930359929
+    Name: Desert_Rock_03_Small_0_1
+    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Desert_Rock_03_Small_0_1.fbx
     Properties:
       Model Transform:
         transform:
@@ -1961,6 +2071,17 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
+    UID: 7382839964237602523
+    Name: Rock_Desert_01_Small_0_1
+    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Rock_Desert_01_Small_0_1.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
     UID: 14613304312840923883
     Name: Desert_Plant_10_Small_0_1
     Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Desert_Plant_10_Small_0_1.fbx
@@ -1983,9 +2104,42 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
+    UID: 5156670162497623977
+    Name: Fruit_Tree
+    Source: Resources/Models/Fruit_Tree.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 1210694132816957575
+    Name: Plant_Desert_Small_0_1
+    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Plant_Desert_Small_0_1.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
     UID: 1392450154355743361
     Name: Desert_Plant_12_Small_0_1
     Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Desert_Plant_12_Small_0_1.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 13779674563758479505
+    Name: Cushion
+    Source: Resources/Models/Cushion.fbx
     Properties:
       Model Transform:
         transform:
@@ -2038,39 +2192,6 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 8736150507930359929
-    Name: Desert_Rock_03_Small_0_1
-    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Desert_Rock_03_Small_0_1.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 16876243872413922063
-    Name: Desert_Skull_Small_0_1
-    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Desert_Skull_Small_0_1.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 7746641044800409692
-    Name: Floating_Island_3_Bioma2
-    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Floating_Island_3_Bioma2.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
     UID: 976269438033975207
     Name: Floating_Island_4_Bioma2
     Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Floating_Island_4_Bioma2.fbx
@@ -2104,97 +2225,9 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 109962362927819430
-    Name: Gate_Desert_Big_0_1
-    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Gate_Desert_Big_0_1.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
     UID: 8484366002427307548
     Name: Monuntain_Desert_01_Big_0_1
     Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Monuntain_Desert_01_Big_0_1.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 13255697117107322585
-    Name: Monuntain_Desert_02_Big_0_1
-    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Monuntain_Desert_02_Big_0_1.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 1210694132816957575
-    Name: Plant_Desert_Small_0_1
-    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Plant_Desert_Small_0_1.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 7382839964237602523
-    Name: Rock_Desert_01_Small_0_1
-    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Rock_Desert_01_Small_0_1.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 5949002986996511334
-    Name: tatami floor
-    Source: Resources/Models/tatami floor.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 13779674563758479505
-    Name: Cushion
-    Source: Resources/Models/Cushion.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 618926925563278836
-    Name: Floor_Cushion
-    Source: Resources/Models/Floor_Cushion.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 5156670162497623977
-    Name: Fruit_Tree
-    Source: Resources/Models/Fruit_Tree.fbx
     Properties:
       Model Transform:
         transform:
@@ -2214,9 +2247,20 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 17862911105458314379
-    Name: Indoor_Lanturn_Hangingfbx
-    Source: Resources/Models/Indoor_Lanturn_Hangingfbx.fbx
+    UID: 5949002986996511334
+    Name: tatami floor
+    Source: Resources/Models/tatami floor.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 618926925563278836
+    Name: Floor_Cushion
+    Source: Resources/Models/Floor_Cushion.fbx
     Properties:
       Model Transform:
         transform:
@@ -2228,28 +2272,6 @@ ASSETS:
     UID: 5838446488854438722
     Name: Japanese_Table
     Source: Resources/Models/Japanese_Table.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 17047777006874206768
-    Name: JanKenPon_Lantern
-    Source: Resources/Models/Maya files/JanKenPon_Lantern.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 17971063540041505471
-    Name: Outdoor_Stone_Lantern
-    Source: Resources/Models/Outdoor_Stone_Lantern.fbx
     Properties:
       Model Transform:
         transform:
@@ -2434,9 +2456,9 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 4864486435085006234
-    Name: Great Sword Idle
-    Source: Resources/Models/Player/animations/throw away/Great Sword Idle.fbx
+    UID: 4710766639830257905
+    Name: Rock_Ninja_Textured
+    Source: Resources/Models/Enemy/Stationary Sentry/Rock_Ninja_Textured.fbx
     Properties:
       Model Transform:
         transform:
@@ -2445,9 +2467,9 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: true
   - Type: MODEL
-    UID: 4710766639830257905
-    Name: Rock_Ninja_Textured
-    Source: Resources/Models/Enemy/Stationary Sentry/Rock_Ninja_Textured.fbx
+    UID: 4864486435085006234
+    Name: Great Sword Idle
+    Source: Resources/Models/Player/animations/throw away/Great Sword Idle.fbx
     Properties:
       Model Transform:
         transform:
