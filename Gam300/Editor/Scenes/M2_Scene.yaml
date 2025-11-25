@@ -1,126 +1,8 @@
 Version: 1.0
 ENTITIES:
-  - InfoComponent:
-      Parent: 0
-      Name: New Entity
-      UID: 4643272453561166236
-    TransformComponent:
-      Transform:
-        Translate: [3.54099989, 1.53299999, 4.75208616]
-        Rotate: [-27.8460007, 5.8670001, 5.76000023]
-        Scale: [1, 1, 1]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.800000012, 0.100000001, 0.150000006]
-        Intensity: 13.71
-        FallOff: 1.16600001
-        CutOff: 0.699000001
-  - InfoComponent:
-      Parent: 0
-      Name: Point Light 2
-      UID: 12998950192944430457
-    TransformComponent:
-      Transform:
-        Translate: [0.0390623212, 2.64437461, 4.1136713]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    PointLightComponent:
-      Light:
-        Radiance: [0.0384467617, 0.50999999, 0.343569398]
-        Intensity: 3.05999994
-        Range: 6.73999977
-  - InfoComponent:
-      Parent: 0
-      Name: Point Light
-      UID: 2319520010754102804
-    TransformComponent:
-      Transform:
-        Translate: [-1.36741543, 1.75979173, 2.74557233]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    PointLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572766125, 0.113033496]
-        Intensity: 3.66000009
-        Range: 4.32999992
-  - InfoComponent:
-      Parent: 0
-      Name: Direction Light 6
-      UID: 13785904741426763834
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, -90]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0, 0.100000001, 0.150000006]
-        Intensity: 1.48000002
-  - InfoComponent:
-      Parent: 0
-      Name: Direction Light 5
-      UID: 7445755767034481236
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 90]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0, 0.100000001, 0.150000006]
-        Intensity: 2
-  - InfoComponent:
-      Parent: 0
-      Name: Direction Light 4
-      UID: 1502796410345445552
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0, 0.100000001, 0.150000006]
-        Intensity: 2
-  - InfoComponent:
-      Parent: 0
-      Name: DIrection Light 3
-      UID: 16267131300823150693
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [90, 0, 0]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0, 0.100000001, 0.150000006]
-        Intensity: 2
-  - InfoComponent:
-      Parent: 0
-      Name: DIrection Light 2
-      UID: 16722011210440242793
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, -90, 0]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0, 0.100000001, 0.150000006]
-        Intensity: 2
-  - InfoComponent:
-      Parent: 0
-      Name: Directional Light 1
-      UID: 14850005176953079689
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 90, 0]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0, 0.100000001, 0.150000006]
-        Intensity: 2.67000008
+  - {}
+  - {}
+  - {}
   - {}
   - {}
   - {}
@@ -1557,7 +1439,7 @@ ENTITIES:
       UID: 10000000000000000002
     TransformComponent:
       Transform:
-        Translate: [0.0559083223, 0, 0.0839233398]
+        Translate: [0, 0, 0]
         Rotate: [0, -90, 0]
         Scale: [16, 0.959999979, 15]
     RigidBodyComponent:
@@ -1595,8 +1477,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [2.28409696, 12.5299387, 4.73579311]
-        Rotate: [-54.6875, -316.6875, -6.68639499e-09]
+        Translate: [-1.84064174, 3.23211932, 6.89542103]
+        Rotate: [-23.0625, -19425.8125, 0]
         Scale: [1, 1, 1]
     CameraComponent:
       Camera:
@@ -1608,14 +1490,53 @@ ENTITIES:
       Current Distance: 2
       Min Distance: 1
       Max Distance: 5
-      Current Yaw: 904
-      Current Pitch: 3
+      Current Yaw: 0
+      Current Pitch: 20
       Mouse Sensitivity: 1
       Scroll Sensitivity: 1
   - {}
-  - {}
-  - {}
-  - {}
+  - InfoComponent:
+      Parent: 0
+      Name: Point Light
+      UID: 5315588240363654174
+    TransformComponent:
+      Transform:
+        Translate: [0, 0.5, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.899999976, 0.699999988]
+        Intensity: 10
+        Range: 0
+  - InfoComponent:
+      Parent: 0
+      Name: Directional Light
+      UID: 16395980114807373968
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, -1, 0]
+        Scale: [1, 1, 1]
+    DirectLightComponent:
+      Light:
+        Radiance: [1, 1, 0.899999976]
+        Intensity: 0.879999995
+  - InfoComponent:
+      Parent: 0
+      Name: Spot Light
+      UID: 12363776012929465708
+    TransformComponent:
+      Transform:
+        Translate: [2, 2, 2]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.699999988, 0.800000012, 1]
+        Intensity: 15
+        FallOff: 1.05592418
+        CutOff: 0.34906584
   - {}
   - {}
   - {}
@@ -1677,8 +1598,8 @@ ENTITIES:
       UID: 16439367912350421013
     TransformComponent:
       Transform:
-        Translate: [2.10225463, 0.694814503, 4.85572958]
-        Rotate: [0, -175.999985, 0]
+        Translate: [-2.29473829, 0.485003054, 5.09957027]
+        Rotate: [0, 0.379795283, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
       RigidBody:
@@ -1691,16 +1612,23 @@ ENTITIES:
         FreezeRotationZ: true
         Type: DYNAMIC
     ModelComponent:
-      ModelID: 9858498430227169258
+      ModelID: 17415887327955155372
       MaterialID: 0
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PlayerMovement
-      ParamsJSON: "{}"
+    AnimatorComponent:
+      Clips:
+        - name: mixamo.com
+          filePath: ""
+      States:
+        []
+      FloatParams:
+        {}
+      BoolParams:
+        {}
+      CurrentStateIndex: 0
   - InfoComponent:
       Parent: 0
       Name: Stairs_Handle_Right

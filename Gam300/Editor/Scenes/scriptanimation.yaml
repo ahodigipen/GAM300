@@ -343,7 +343,7 @@ ENTITIES:
         FreezeRotationZ: true
         Type: DYNAMIC
     ModelComponent:
-      ModelID: 337687598050146510
+      ModelID: 17415887327955155372
       MaterialID: 0
       ModelName: ""
       MaterialName: ""
