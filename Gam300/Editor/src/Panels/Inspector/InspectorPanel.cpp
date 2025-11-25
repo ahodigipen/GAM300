@@ -458,32 +458,87 @@ namespace EditorUI {
 #ifdef _MSC_VER
                             strncpy_s(pathBuf, sizeof(pathBuf), entry.filePaths[v].c_str(), sizeof(pathBuf)-1);
 #else
-                            std::snprintf(pathBuf, sizeof(pathBuf), "%s", entry.filePaths[v].c_str());
+ std::snprintf(pathBuf, sizeof(pathBuf), "%s", entry.filePaths[v].c_str());
 #endif
-                            if (ImGui::InputText("File", pathBuf, sizeof(pathBuf))) {
-                                entry.filePaths[v] = std::string(pathBuf);
-                                // keep legacy single filePath in sync for older systems
-                                if (v ==0) entry.filePath = entry.filePaths[0];
-                            }
-                            ImGui::SameLine();
-                            if (ImGui::SmallButton("Remove")) {
-                                entry.filePaths.erase(entry.filePaths.begin() + v);
-                                ImGui::PopID();
-                                break;
-                            }
-                            ImGui::PopID();
-                        }
+ // Manual edit field
+ if (ImGui::InputText("File", pathBuf, sizeof(pathBuf))) {
+ entry.filePaths[v] = std::string(pathBuf);
+ // keep legacy single filePath in sync for older systems
+ if (v ==0) entry.filePath = entry.filePaths[0];
+ }
 
-                        // Legacy single filePath (shows only if no variants present)
-                        if (entry.filePaths.empty()) {
-                            char legacyBuf[512];
+ ImGui::SameLine();
+
+ // --- Asset picker dropdown for audio assets ---
+ {
+ // Build current label (show filename if available)
+ std::string curLabel = entry.filePaths[v].empty() ? "Select Audio..." : std::filesystem::path(entry.filePaths[v]).filename().string();
+ if (ImGui::BeginCombo("##AudioPicker", curLabel.c_str())) {
+ auto& audioMap = m_App->GetAssetRegistry().GetMap<AudioAsset>();
+ // Allow clearing
+ bool noneSel = entry.filePaths[v].empty();
+ if (ImGui::Selectable("None", noneSel)) {
+ entry.filePaths[v].clear();
+ if (v ==0) entry.filePath.clear();
+ }
+ if (noneSel) ImGui::SetItemDefaultFocus();
+
+ for (auto& [uid, asset] : audioMap) {
+ if (uid == EMPTY_ASSET) continue;
+ std::string name = asset->name;
+ bool isSel = (entry.filePaths[v] == asset->source);
+ if (ImGui::Selectable(name.c_str(), isSel)) {
+ entry.filePaths[v] = asset->source;
+ if (v ==0) entry.filePath = entry.filePaths[0];
+ }
+ if (isSel) ImGui::SetItemDefaultFocus();
+ }
+ ImGui::EndCombo();
+ }
+ }
+
+ ImGui::SameLine();
+ if (ImGui::SmallButton("Remove")) {
+ entry.filePaths.erase(entry.filePaths.begin() + v);
+ ImGui::PopID();
+ break;
+ }
+ ImGui::PopID();
+ }
+
+ // Legacy single filePath (shows only if no variants present)
+ if (entry.filePaths.empty()) {
+ char legacyBuf[512];
 #ifdef _MSC_VER
-                            strncpy_s(legacyBuf, sizeof(legacyBuf), entry.filePath.c_str(), sizeof(legacyBuf)-1);
+ strncpy_s(legacyBuf, sizeof(legacyBuf), entry.filePath.c_str(), sizeof(legacyBuf)-1);
 #else
-                            std::snprintf(legacyBuf, sizeof(legacyBuf), "%s", entry.filePath.c_str());
+ std::snprintf(legacyBuf, sizeof(legacyBuf), "%s", entry.filePath.c_str());
 #endif
-                            if (ImGui::InputText("File Path", legacyBuf, sizeof(legacyBuf))) entry.filePath = std::string(legacyBuf);
-                        }
+ if (ImGui::InputText("File Path", legacyBuf, sizeof(legacyBuf))) entry.filePath = std::string(legacyBuf);
+
+ ImGui::SameLine();
+ // Legacy asset picker
+ {
+ std::string cur = entry.filePath.empty() ? "Select Audio..." : std::filesystem::path(entry.filePath).filename().string();
+ if (ImGui::BeginCombo("##AudioPickerLegacy", cur.c_str())) {
+ auto& audioMap = m_App->GetAssetRegistry().GetMap<AudioAsset>();
+ bool noneSel = entry.filePath.empty();
+ if (ImGui::Selectable("None", noneSel)) {
+ entry.filePath.clear();
+ }
+ if (noneSel) ImGui::SetItemDefaultFocus();
+ for (auto& [uid, asset] : audioMap) {
+ if (uid == EMPTY_ASSET) continue;
+ bool isSel = (entry.filePath == asset->source);
+ if (ImGui::Selectable(asset->name.c_str(), isSel)) {
+ entry.filePath = asset->source;
+ }
+ if (isSel) ImGui::SetItemDefaultFocus();
+ }
+ ImGui::EndCombo();
+ }
+ }
+ }
 
                         // loop and playOnStart
                         ImGui::Checkbox("Loop", &entry.loop);

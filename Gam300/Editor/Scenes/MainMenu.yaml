@@ -180,6 +180,7 @@ ENTITIES:
   - {}
   - {}
   - {}
+  - {}
   - InfoComponent:
       Parent: 0
       Name: MainMenu
@@ -189,6 +190,19 @@ ENTITIES:
         Translate: [0, 0, 0]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
+    SoundComponent:
+      Entries:
+        - name: BGM
+          filePaths:
+            - Resources/Audio/Kairos_Cave-Vuk_Loop.wav
+          loop: true
+          volume: 1
+          playOnStart: true
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
     SpriteComponent:
       textureID: 10451005038005756580
       color: [1, 1, 1, 1]
@@ -242,6 +256,7 @@ ENTITIES:
       textureID: 4271895845596125777
       color: [1, 1, 1, 1]
       uiOverlay: true
+  - {}
   - {}
   - {}
   - {}
