@@ -106,9 +106,9 @@ namespace Boom {
                 const glm::vec3 dirXZ = (dXZ > 0.f) ? (toXZ / dXZ) : glm::vec3(0);
                 ag.velocity = dirXZ * ag.speed;
 #ifdef _DEBUG
-                BOOM_INFO("[NavAgent] Pos: ({:.2f}, {:.2f}, {:.2f}), Goal: ({:.2f}, {:.2f}, {:.2f}), Velocity: ({:.2f}, {:.2f}, {:.2f}), Dist: {:.2f}, Waypoint {}/{}",
+                /*BOOM_INFO("[NavAgent] Pos: ({:.2f}, {:.2f}, {:.2f}), Goal: ({:.2f}, {:.2f}, {:.2f}), Velocity: ({:.2f}, {:.2f}, {:.2f}), Dist: {:.2f}, Waypoint {}/{}",
                     pos.x, pos.y, pos.z, goal.x, goal.y, goal.z,
-                    ag.velocity.x, ag.velocity.y, ag.velocity.z, dXZ, ag.waypoint, ag.path.size());
+                    ag.velocity.x, ag.velocity.y, ag.velocity.z, dXZ, ag.waypoint, ag.path.size());*/
 #endif
             }
         }
