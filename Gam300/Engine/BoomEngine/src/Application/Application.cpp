@@ -177,7 +177,7 @@ namespace Boom
             m_Context->profiler.Start("Total Frame");
             m_Context->profiler.Start("Renderer Start Frame");
             std::apply(glClearColor, CONSTANTS::DEFAULT_BACKGROUND_COLOR);
-            RenderShadowScene();
+            //RenderShadowScene();
             m_Context->renderer->NewFrame();
             m_Context->profiler.End("Renderer Start Frame");
 

@@ -27,6 +27,9 @@ namespace EditorUI {
             m_Ctx = owner->GetContext();
             DEBUG_POINTER(m_Ctx, "AppContext");
         }
+
+
+        
     }
 
     void HierarchyPanel::Render()
@@ -51,9 +54,29 @@ namespace EditorUI {
                 const bool isSelected = (m_App->SelectedEntity() == e);
 
                 ImGui::PushID(static_cast<int>(entt::to_integral(e)));
-                if (ImGui::Selectable(info.name.c_str(), isSelected))
+                if (ImGui::Selectable(info.name.c_str(), isSelected, ImGuiSelectableFlags_AllowDoubleClick))
                 {
                     m_App->SelectedEntity(true) = e;
+                    if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+                        static TransformComponent* camTPtr{nullptr};
+                        auto entView = m_App->GetEntityRegistry().view<CameraComponent, TransformComponent>();
+                        for (auto ent : entView) {
+                            auto camPtr = &entView.get<CameraComponent>(ent);
+                            if (camPtr) {
+                                camTPtr = &entView.get<TransformComponent>(ent);
+                            }
+                        }
+                        Boom::Entity selected{ &m_Ctx->scene, m_App->SelectedEntity() };
+                        
+
+                        Transform3D const& tRef = selected.Get<TransformComponent>().transform;
+                        camTPtr->transform.translate = tRef.translate;
+                        camTPtr->transform.translate += 2.f;
+                        glm::vec3 forward = glm::normalize(camTPtr->transform.translate - tRef.translate);
+                        float yaw = std::atan2(forward.x, forward.z);
+                        float pitch = std::asin(-forward.y);
+                        camTPtr->transform.rotate = { glm::degrees(pitch), glm::degrees(yaw), 0.f };
+                    }
                 }
                 ImGui::PopID();
             }
