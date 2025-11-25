@@ -10,6 +10,11 @@
 #include <thread>
 #include <functional>
 
+
+#pragma warning(push)
+#pragma warning(disable: 4251)
+
+
 namespace Boom {
 
     /**
@@ -84,3 +89,5 @@ namespace Boom {
     };
 
 } // namespace Boom
+
+#pragma warning(pop)
