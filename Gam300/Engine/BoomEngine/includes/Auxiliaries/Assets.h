@@ -1,11 +1,13 @@
 #pragma once
-#include "PxPhysicsAPI.h" 
+#include "PxPhysicsAPI.h"
 #include "Graphics/Models/Model.h"
 #include "Graphics/Textures/Texture.h"
 #include "Graphics/Utilities/Data.h"
-#include "BoomProperties.h" 
+#include "BoomProperties.h"
+#include "AssetLoadContext.h"
 
 namespace Boom {
+
 	using AssetID = uint64_t;
 	const AssetID EMPTY_ASSET =0u;
 
@@ -219,7 +221,10 @@ namespace Boom {
 			return asset;
 		}
 
-		BOOM_INLINE auto AddTexture(AssetID uid, std::string const& path)
+		//file path starts from Textures folder
+		BOOM_INLINE auto AddTexture(
+			AssetID uid,
+			std::string const& path)
 		{
 			auto asset = std::make_shared<TextureAsset>();
 			asset->type = AssetType::TEXTURE;
@@ -228,7 +233,23 @@ namespace Boom {
 			return asset;
 		}
 
-		BOOM_INLINE auto AddModel(AssetID uid, std::string const& path, bool hasJoints = false)
+		// NEW: Add texture from pre-loaded context (two-phase loading)
+		BOOM_INLINE auto AddTextureFromContext(
+			AssetID uid,
+			std::string const& path,
+			const TextureLoadContext& context)
+		{
+			auto asset{ std::make_shared<TextureAsset>() };
+			asset->type = AssetType::TEXTURE;
+			asset->data = std::make_shared<Texture2D>(context);
+			Add(uid, path, asset);
+			return asset;
+		}
+
+		BOOM_INLINE auto AddModel(
+			AssetID uid,
+			std::string const& path,
+			bool hasJoints = false)
 		{
 			auto asset = std::make_shared<ModelAsset>();
 			asset->type = AssetType::MODEL;
@@ -243,8 +264,35 @@ namespace Boom {
 			return asset;
 		}
 
-		BOOM_INLINE auto AddMaterial(AssetID uid, std::string const& path, std::array<AssetID,6> uidMaps = {}) {
-			auto asset = std::make_shared<MaterialAsset>();
+		// NEW: Add model from pre-loaded context (two-phase loading)
+		BOOM_INLINE auto AddModelFromContext(
+			AssetID uid,
+			std::string const& path,
+			const StaticModelLoadContext& context)
+		{
+			auto asset{ std::make_shared<ModelAsset>() };
+			asset->type = AssetType::MODEL;
+			asset->hasJoints = false;
+			asset->data = std::make_shared<StaticModel>(context);
+			Add(uid, path, asset);
+			return asset;
+		}
+
+		// NEW: Add skeletal model from pre-loaded context (two-phase loading)
+		BOOM_INLINE auto AddSkeletalModelFromContext(
+			AssetID uid,
+			std::string const& path,
+			const SkeletalModelLoadContext& context)
+		{
+			auto asset{ std::make_shared<ModelAsset>() };
+			asset->type = AssetType::MODEL;
+			asset->hasJoints = true;
+			asset->data = std::make_shared<SkeletalModel>(context);
+			Add(uid, path, asset);
+			return asset;
+		}
+		BOOM_INLINE auto AddMaterial(AssetID uid, std::string const& path, std::array<AssetID, 6> uidMaps = {}) {
+			auto asset{ std::make_shared<MaterialAsset>() };
 			asset->type = AssetType::MATERIAL;
 			asset->albedoMapID = uidMaps[0];
 			asset->normalMapID = uidMaps[1];
