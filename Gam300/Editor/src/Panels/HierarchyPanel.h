@@ -23,6 +23,10 @@ namespace EditorUI {
         Boom::AppContext* m_Ctx = nullptr;   // cached from m_App->GetContext()
 
         bool* m_ShowHierarchy = nullptr;
+
+        // Delete confirmation
+        bool m_ShowDeletePopup = false;
+        entt::entity m_EntityToDelete = entt::null;
     };
 
 } // namespace EditorUI

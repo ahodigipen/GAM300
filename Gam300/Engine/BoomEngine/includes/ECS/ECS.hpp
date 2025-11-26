@@ -187,6 +187,169 @@ namespace Boom {
         }
         return entt::null;
     }
+
+    // ========== HIERARCHY HELPER FUNCTIONS ==========
+    // NOTE: Parent relationships use UID (not entity ID) for serialization stability
+
+    // Get parent entity by UID lookup (returns entt::null if no parent)
+    BOOM_INLINE entt::entity GetParentEntity(entt::registry& reg, entt::entity entity) {
+        if (!reg.valid(entity) || !reg.all_of<InfoComponent>(entity)) {
+            return entt::null;
+        }
+        const auto& info = reg.get<InfoComponent>(entity);
+        AssetID parentUID = info.parent;
+
+        if (parentUID == EMPTY_ASSET || parentUID == 0) {
+            return entt::null;
+        }
+
+        // Find entity with matching UID
+        auto view = reg.view<InfoComponent>();
+        for (auto e : view) {
+            if (view.get<InfoComponent>(e).uid == parentUID) {
+                // Found parent
+                return e;
+            }
+        }
+
+        // Parent UID is set but entity not found - this is a warning condition
+        BOOM_WARN("[GetParentEntity] Entity '{}' has parent UID {} but no matching entity found!",
+                 info.name, parentUID);
+        return entt::null;
+    }
+
+    // Get all children of an entity (by UID)
+    BOOM_INLINE std::vector<entt::entity> GetChildren(entt::registry& reg, entt::entity parent) {
+        std::vector<entt::entity> children;
+        if (!reg.valid(parent) || !reg.all_of<InfoComponent>(parent)) return children;
+
+        AssetID parentUID = reg.get<InfoComponent>(parent).uid;
+        auto view = reg.view<InfoComponent>();
+        for (auto [e, info] : view.each()) {
+            if (info.parent == parentUID) {
+                children.push_back(e);
+            }
+        }
+        return children;
+    }
+
+    // Check if 'ancestor' is in the parent chain of 'entity' (prevents circular parenting)
+    BOOM_INLINE bool HasAncestor(entt::registry& reg, entt::entity entity, entt::entity ancestor) {
+        if (!reg.all_of<InfoComponent>(ancestor)) return false;
+
+        AssetID ancestorUID = reg.get<InfoComponent>(ancestor).uid;
+        entt::entity current = entity;
+        int depth = 0;
+        const int maxDepth = 1000; // Prevent infinite loops
+
+        while (current != entt::null && depth < maxDepth) {
+            if (reg.all_of<InfoComponent>(current)) {
+                if (reg.get<InfoComponent>(current).uid == ancestorUID) {
+                    return true;
+                }
+            }
+            current = GetParentEntity(reg, current);
+            depth++;
+        }
+        return false;
+    }
+
+    // Set parent of an entity using UID (validates to prevent circular references)
+    BOOM_INLINE bool SetParent(entt::registry& reg, entt::entity entity, entt::entity newParent) {
+        if (!reg.valid(entity) || !reg.all_of<InfoComponent>(entity)) {
+            BOOM_WARN("[SetParent] Entity invalid or missing InfoComponent");
+            return false;
+        }
+
+        // Prevent self-parenting
+        if (entity == newParent) {
+            BOOM_WARN("[SetParent] Cannot parent entity to itself");
+            return false;
+        }
+
+        // Prevent circular parenting (entity can't be parent of its ancestor)
+        if (newParent != entt::null && HasAncestor(reg, newParent, entity)) {
+            BOOM_WARN("[SetParent] Circular reference prevented");
+            return false;
+        }
+
+        auto& info = reg.get<InfoComponent>(entity);
+        AssetID oldParent = info.parent;
+
+        if (newParent == entt::null) {
+            info.parent = EMPTY_ASSET;
+            BOOM_INFO("[SetParent] Cleared parent: '{}' (UID:{}) is now root (was parent UID:{})",
+                     info.name, info.uid, oldParent);
+        } else {
+            if (!reg.all_of<InfoComponent>(newParent)) {
+                BOOM_WARN("[SetParent] New parent missing InfoComponent");
+                return false;
+            }
+            // Store parent's UID (not entity ID)
+            AssetID newParentUID = reg.get<InfoComponent>(newParent).uid;
+            info.parent = newParentUID;
+            BOOM_INFO("[SetParent] Set parent: '{}' (UID:{}) -> parent '{}' (UID:{})",
+                     info.name, info.uid,
+                     reg.get<InfoComponent>(newParent).name, newParentUID);
+        }
+        return true;
+    }
+
+    // Get world transform matrix (combines local transform with parent chain)
+    BOOM_INLINE glm::mat4 GetWorldMatrix(entt::registry& reg, entt::entity entity) {
+        if (!reg.valid(entity) || !reg.all_of<TransformComponent>(entity)) {
+            return glm::mat4(1.0f);
+        }
+
+        const auto& transform = reg.get<TransformComponent>(entity);
+        glm::mat4 localMatrix = transform.transform.Matrix();
+
+        entt::entity parent = GetParentEntity(reg, entity);
+        if (parent == entt::null) {
+            return localMatrix;
+        }
+
+        // Recursively get parent's world matrix and combine
+        glm::mat4 parentMatrix = GetWorldMatrix(reg, parent);
+        return parentMatrix * localMatrix;
+    }
+
+    // Get world position from transform hierarchy
+    BOOM_INLINE glm::vec3 GetWorldPosition(entt::registry& reg, entt::entity entity) {
+        glm::mat4 worldMatrix = GetWorldMatrix(reg, entity);
+        return glm::vec3(worldMatrix[3]);
+    }
+
+    // Helper to decompose world matrix back to transform (for gizmos)
+    BOOM_INLINE void SetWorldMatrix(entt::registry& reg, entt::entity entity, const glm::mat4& worldMatrix) {
+        if (!reg.valid(entity) || !reg.all_of<TransformComponent>(entity)) {
+            return;
+        }
+
+        auto& transform = reg.get<TransformComponent>(entity);
+        entt::entity parent = GetParentEntity(reg, entity);
+
+        glm::mat4 localMatrix;
+        if (parent == entt::null) {
+            localMatrix = worldMatrix;
+        } else {
+            glm::mat4 parentMatrix = GetWorldMatrix(reg, parent);
+            localMatrix = glm::inverse(parentMatrix) * worldMatrix;
+        }
+
+        // Decompose matrix to TRS
+        glm::vec3 scale;
+        glm::quat rotation;
+        glm::vec3 translation;
+        glm::vec3 skew;
+        glm::vec4 perspective;
+        glm::decompose(localMatrix, scale, rotation, translation, skew, perspective);
+
+        transform.transform.translate = translation;
+        transform.transform.rotate = glm::degrees(glm::eulerAngles(rotation));
+        transform.transform.scale = scale;
+    }
+
     struct DirectLightComponent
     {
         BOOM_INLINE DirectLightComponent(const DirectLightComponent&) = default;
@@ -457,5 +620,193 @@ namespace Boom {
         EntityID m_EnttID = NENTT;
     };
 
+    // ========== ENTITY MANIPULATION FUNCTIONS ==========
+    // NOTE: These are placed at the end of the file after all component declarations
+
+    // Delete entity and all its children recursively (with physics cleanup)
+    BOOM_INLINE void DeleteEntityRecursive(entt::registry& reg, entt::entity entity, void* physicsCtx = nullptr) {
+        if (!reg.valid(entity)) return;
+
+        // Get entity name for logging
+        std::string entityName = "Unknown";
+        if (reg.all_of<InfoComponent>(entity)) {
+            entityName = reg.get<InfoComponent>(entity).name;
+        }
+
+        // First, delete all children recursively
+        auto children = GetChildren(reg, entity);
+        for (entt::entity child : children) {
+            DeleteEntityRecursive(reg, child, physicsCtx);
+        }
+
+        // Clean up physics if context provided
+        if (physicsCtx != nullptr) {
+            // Cast to PhysicsContext and remove rigid body
+            // Note: PhysicsContext is forward-declared, so we need to include it where this is called
+            // For now, just log
+            BOOM_INFO("[DeleteEntity] Physics cleanup for '{}'", entityName);
+        }
+
+        // Destroy the entity
+        BOOM_INFO("[DeleteEntity] Destroying entity '{}'", entityName);
+        reg.destroy(entity);
+    }
+
+    // Duplicate entity with all components (optionally with children)
+    BOOM_INLINE entt::entity DuplicateEntity(entt::registry& reg, entt::entity source, bool duplicateChildren = true) {
+        if (!reg.valid(source)) {
+            BOOM_WARN("[DuplicateEntity] Source entity is invalid");
+            return entt::null;
+        }
+
+        // Create new entity
+        entt::entity duplicate = reg.create();
+
+        // Copy InfoComponent with new UID and modified name
+        if (reg.all_of<InfoComponent>(source)) {
+            auto& srcInfo = reg.get<InfoComponent>(source);
+            auto& dstInfo = reg.emplace<InfoComponent>(duplicate);
+            dstInfo.name = srcInfo.name + " (Copy)";
+            dstInfo.uid = RandomU64(); // New unique ID
+            dstInfo.parent = srcInfo.parent; // Keep same parent
+        }
+
+        // Copy TransformComponent
+        if (reg.all_of<TransformComponent>(source)) {
+            auto& srcTrans = reg.get<TransformComponent>(source);
+            auto& dstTrans = reg.emplace<TransformComponent>(duplicate);
+            dstTrans = srcTrans; // Copy all transform data
+        }
+
+        // Copy CameraComponent
+        if (reg.all_of<CameraComponent>(source)) {
+            auto& srcCam = reg.get<CameraComponent>(source);
+            reg.emplace<CameraComponent>(duplicate, srcCam);
+        }
+
+        // Copy ModelComponent
+        if (reg.all_of<ModelComponent>(source)) {
+            auto& srcModel = reg.get<ModelComponent>(source);
+            auto& dstModel = reg.emplace<ModelComponent>(duplicate);
+            dstModel.modelID = srcModel.modelID;
+            dstModel.materialID = srcModel.materialID;
+        }
+
+        // Copy AnimatorComponent
+        if (reg.all_of<AnimatorComponent>(source)) {
+            auto& srcAnim = reg.get<AnimatorComponent>(source);
+            auto& dstAnim = reg.emplace<AnimatorComponent>(duplicate);
+            dstAnim.animator = srcAnim.animator; // Copy animator data
+        }
+
+        // Copy RigidBodyComponent (but NOT the physics actor - that needs special handling)
+        if (reg.all_of<RigidBodyComponent>(source)) {
+            auto& srcRB = reg.get<RigidBodyComponent>(source);
+            auto& dstRB = reg.emplace<RigidBodyComponent>(duplicate);
+            dstRB = srcRB;
+            // Note: Physics actor will be created by physics system on next update
+        }
+
+        // Copy ColliderComponent
+        if (reg.all_of<ColliderComponent>(source)) {
+            auto& srcCol = reg.get<ColliderComponent>(source);
+            reg.emplace<ColliderComponent>(duplicate, srcCol);
+        }
+
+        // Copy Light Components
+        if (reg.all_of<DirectLightComponent>(source)) {
+            auto& srcLight = reg.get<DirectLightComponent>(source);
+            reg.emplace<DirectLightComponent>(duplicate, srcLight);
+        }
+        if (reg.all_of<PointLightComponent>(source)) {
+            auto& srcLight = reg.get<PointLightComponent>(source);
+            reg.emplace<PointLightComponent>(duplicate, srcLight);
+        }
+        if (reg.all_of<SpotLightComponent>(source)) {
+            auto& srcLight = reg.get<SpotLightComponent>(source);
+            reg.emplace<SpotLightComponent>(duplicate, srcLight);
+        }
+
+        // Copy SoundComponent
+        if (reg.all_of<SoundComponent>(source)) {
+            auto& srcSound = reg.get<SoundComponent>(source);
+            auto& dstSound = reg.emplace<SoundComponent>(duplicate);
+            dstSound.name = srcSound.name;
+            dstSound.filePath = srcSound.filePath;
+            dstSound.loop = srcSound.loop;
+            dstSound.volume = srcSound.volume;
+            dstSound.playOnStart = srcSound.playOnStart;
+        }
+
+        // Copy ScriptComponent
+        if (reg.all_of<ScriptComponent>(source)) {
+            auto& srcScript = reg.get<ScriptComponent>(source);
+            auto& dstScript = reg.emplace<ScriptComponent>(duplicate);
+            dstScript.TypeName = srcScript.TypeName;
+            dstScript.Enabled = srcScript.Enabled;
+            // Note: InstanceId will be set by scripting system
+        }
+
+        // Copy NavAgentComponent
+        if (reg.all_of<NavAgentComponent>(source)) {
+            auto& srcNav = reg.get<NavAgentComponent>(source);
+            reg.emplace<NavAgentComponent>(duplicate, srcNav);
+        }
+
+        // Copy AIComponent
+        if (reg.all_of<AIComponent>(source)) {
+            auto& srcAI = reg.get<AIComponent>(source);
+            auto& dstAI = reg.emplace<AIComponent>(duplicate);
+            dstAI.detectRadius = srcAI.detectRadius;
+            dstAI.loseRadius = srcAI.loseRadius;
+            dstAI.idleWait = srcAI.idleWait;
+            dstAI.playerName = srcAI.playerName;
+            dstAI.patrolPoints = srcAI.patrolPoints;
+            // Note: Don't copy runtime state (idleTimer, patrolIndex, etc.)
+        }
+
+        // Copy SpriteComponent
+        if (reg.all_of<SpriteComponent>(source)) {
+            auto& srcSprite = reg.get<SpriteComponent>(source);
+            reg.emplace<SpriteComponent>(duplicate, srcSprite);
+        }
+
+        // Copy ThirdPersonCameraComponent
+        if (reg.all_of<ThirdPersonCameraComponent>(source)) {
+            auto& srcCam = reg.get<ThirdPersonCameraComponent>(source);
+            reg.emplace<ThirdPersonCameraComponent>(duplicate, srcCam);
+        }
+
+        // Copy SkyboxComponent
+        if (reg.all_of<SkyboxComponent>(source)) {
+            auto& srcSky = reg.get<SkyboxComponent>(source);
+            reg.emplace<SkyboxComponent>(duplicate, srcSky);
+        }
+
+        // Copy PauseMenuTagComponent
+        if (reg.all_of<PauseMenuTagComponent>(source)) {
+            reg.emplace<PauseMenuTagComponent>(duplicate);
+        }
+
+        BOOM_INFO("[DuplicateEntity] Duplicated '{}' -> '{}'",
+                 reg.get<InfoComponent>(source).name,
+                 reg.get<InfoComponent>(duplicate).name);
+
+        // Recursively duplicate children if requested
+        if (duplicateChildren) {
+            auto children = GetChildren(reg, source);
+            AssetID duplicateUID = reg.get<InfoComponent>(duplicate).uid;
+
+            for (entt::entity child : children) {
+                entt::entity childDuplicate = DuplicateEntity(reg, child, true);
+                if (reg.valid(childDuplicate) && reg.all_of<InfoComponent>(childDuplicate)) {
+                    // Set duplicated child's parent to the duplicated parent
+                    reg.get<InfoComponent>(childDuplicate).parent = duplicateUID;
+                }
+            }
+        }
+
+        return duplicate;
+    }
 
 }

@@ -154,6 +154,47 @@ namespace EditorUI {
                 info.name = std::string(m_NameBuffer);
             }
             ImGui::PopItemWidth();
+
+            // ===== PARENT FIELD =====
+            ImGui::Spacing();
+            ImGui::TextUnformatted("Parent");
+            ImGui::SameLine();
+            ImGui::PushItemWidth(-1);
+
+            entt::entity currentParent = Boom::GetParentEntity(ctx->scene, m_App->SelectedEntity());
+            std::string parentName = "None";
+            if (currentParent != entt::null && ctx->scene.all_of<Boom::InfoComponent>(currentParent)) {
+                parentName = ctx->scene.get<Boom::InfoComponent>(currentParent).name;
+            }
+
+            ImGui::Button(parentName.c_str(), ImVec2(-1, 0));
+
+            // Drag-drop to set parent
+            if (ImGui::BeginDragDropTarget()) {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_HIERARCHY")) {
+                    entt::entity draggedEntity = *(const entt::entity*)payload->Data;
+                    if (Boom::SetParent(ctx->scene, m_App->SelectedEntity(), draggedEntity)) {
+                        BOOM_INFO("[Inspector] Set parent to '{}'",
+                                 ctx->scene.get<Boom::InfoComponent>(draggedEntity).name);
+                    } else {
+                        BOOM_WARN("[Inspector] Failed to set parent (circular reference prevented)");
+                    }
+                }
+                ImGui::EndDragDropTarget();
+            }
+
+            // Right-click to clear parent
+            if (ImGui::IsItemClicked(ImGuiMouseButton_Right) && currentParent != entt::null) {
+                if (Boom::SetParent(ctx->scene, m_App->SelectedEntity(), entt::null)) {
+                    BOOM_INFO("[Inspector] Cleared parent");
+                }
+            }
+
+            ImGui::PopItemWidth();
+
+            if (ImGui::IsItemHovered()) {
+                ImGui::SetTooltip("Drag an entity from Hierarchy to set parent\nRight-click to clear parent");
+            }
         }
 
         ImGui::PopStyleVar();
