@@ -366,7 +366,8 @@ namespace Boom
                     }
                 }
 
-                glm::mat4 worldMatrix = GetWorldMatrix(entity);
+                // Use the global Boom::GetWorldMatrix from ECS.hpp
+                glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
                 Transform3D worldTransform;
                 DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
 
@@ -425,49 +426,6 @@ namespace Boom
         }
     }
 
-    glm::mat4 Application::GetWorldMatrix(Entity& entity)
-    {
-        // 1. Get this entity's local matrix (e.g., the visual model's transform)
-        glm::mat4 localMatrix(1.0f);
-        if (entity.Has<TransformComponent>()) {
-            localMatrix = entity.Get<TransformComponent>().transform.Matrix();
-        }
-
-        // 2. Get the parent's world matrix (e.g., the physics body's transform)
-        glm::mat4 pMatrix(1.0f);
-        if (entity.Has<InfoComponent>()) {
-            uint64_t parentUID = entity.Get<InfoComponent>().parent;
-
-            if (parentUID != 0) // 0 means root/no parent
-            {
-                entt::entity parentEnttID = entt::null;
-                auto view = m_Context->scene.view<InfoComponent>();
-                for (auto e : view) {
-                    if (view.get<InfoComponent>(e).uid == parentUID) {
-                        parentEnttID = e;
-                        break;
-                    }
-                }
-
-                if (parentEnttID != entt::null) {
-                    Entity parentEntity{ &m_Context->scene, parentEnttID };
-                    pMatrix = GetWorldMatrix(parentEntity); // Recurse
-                }
-            }
-        }
-
-        // 3. Decompose the parent's matrix into T, R, and S
-        glm::vec3 pTranslate, pRotate, pScale;
-        DecomposeMatrix(pMatrix, pTranslate, pRotate, pScale);
-
-
-        // 4. Recompose the parent's matrix *without* its scale
-        glm::mat4 pMatrix_NoScale;
-        pMatrix_NoScale = RecomposeMatrix(pTranslate, pRotate, glm::vec3(1.0f));
-
-        // 5. Return the parent's (T*R) multiplied by the child's (T*R*S)
-        return pMatrix_NoScale * localMatrix;
-    }
 
     void Application::UpdateThirdPersonCameras()
 

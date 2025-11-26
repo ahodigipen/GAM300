@@ -27,6 +27,7 @@ namespace EditorUI {
     class PlaybackControlsPanel;
 	class NavmeshPanel;
     class AnimatorGraphPanel;
+    class CommandHistory;  // Forward-declare CommandHistory
     // FIXED: Now inherits from AppInterface (complete definition included above)
     class Editor : public Boom::AppInterface {
     public:
@@ -56,6 +57,9 @@ namespace EditorUI {
         void RenderSceneDialogs();
         ViewportPanel* GetViewportPanel() const { return m_Viewport.get(); }
         AppInterface* GetAppInterface() const { return m_App; }
+
+        // Undo/Redo system
+        CommandHistory* GetCommandHistory() const { return m_CommandHistory.get(); }
 
     public:
       
@@ -93,6 +97,10 @@ namespace EditorUI {
         std::unique_ptr<PlaybackControlsPanel>  m_Playback;
 		std::unique_ptr<NavmeshPanel>            m_Navmesh;
         std::unique_ptr<AnimatorGraphPanel>     m_AnimatorGraph;
+
+        // Undo/Redo
+        std::unique_ptr<CommandHistory>         m_CommandHistory;
+
     private:
         void HandleGlobalShortcuts();
 
