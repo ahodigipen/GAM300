@@ -178,8 +178,8 @@ namespace EditorUI {
 
             auto& registry = m_Ctx->scene;
 
-            // Keyboard shortcuts
-            if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
+            // Keyboard shortcuts (only when popup is NOT open)
+            if (!m_ShowDeletePopup && ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) {
                 entt::entity selected = m_App->SelectedEntity();
 
                 // Ctrl+D: Duplicate selected entity
@@ -233,16 +233,21 @@ namespace EditorUI {
             // Delete confirmation popup
             if (m_ShowDeletePopup) {
                 ImGui::OpenPopup("Delete Entity?");
-                ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f),
-                                       ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
             }
 
-            if (ImGui::BeginPopupModal("Delete Entity?", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+            // Center the popup before opening
+            ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+            ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+            ImGui::SetNextWindowSize(ImVec2(400, 0), ImGuiCond_Appearing); // Minimum width
+
+            if (ImGui::BeginPopupModal("Delete Entity?", &m_ShowDeletePopup,
+                                       ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse)) {
                 if (registry.valid(m_EntityToDelete) && registry.all_of<Boom::InfoComponent>(m_EntityToDelete)) {
                     const auto& info = registry.get<Boom::InfoComponent>(m_EntityToDelete);
                     auto children = Boom::GetChildren(registry, m_EntityToDelete);
 
-                    ImGui::TextUnformatted("Are you sure you want to delete:");
+                    ImGui::Text("Are you sure you want to delete:");
+                    ImGui::Spacing();
                     ImGui::TextColored(ImVec4(1, 0.8f, 0, 1), "  %s", info.name.c_str());
 
                     if (!children.empty()) {
@@ -264,7 +269,7 @@ namespace EditorUI {
                     ImGui::Separator();
                     ImGui::Spacing();
 
-                    if (ImGui::Button("Yes, Delete", ImVec2(120, 0)) || ImGui::IsKeyPressed(ImGuiKey_Enter, false)) {
+                    if (ImGui::Button("Yes, Delete", ImVec2(120, 0))) {
                         // Delete entity and all children
                         Boom::DeleteEntityRecursive(registry, m_EntityToDelete, nullptr);
 
@@ -280,7 +285,7 @@ namespace EditorUI {
 
                     ImGui::SameLine();
 
-                    if (ImGui::Button("Cancel", ImVec2(120, 0)) || ImGui::IsKeyPressed(ImGuiKey_Escape, false)) {
+                    if (ImGui::Button("Cancel", ImVec2(120, 0))) {
                         m_ShowDeletePopup = false;
                         m_EntityToDelete = entt::null;
                         ImGui::CloseCurrentPopup();
@@ -293,6 +298,11 @@ namespace EditorUI {
                 }
 
                 ImGui::EndPopup();
+            }
+
+            // If popup was closed by clicking X button, reset state
+            if (!m_ShowDeletePopup && m_EntityToDelete != entt::null) {
+                m_EntityToDelete = entt::null;
             }
         }
         ImGui::End();

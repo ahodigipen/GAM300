@@ -254,47 +254,6 @@ namespace Boom {
         return false;
     }
 
-    // Set parent of an entity using UID (validates to prevent circular references)
-    BOOM_INLINE bool SetParent(entt::registry& reg, entt::entity entity, entt::entity newParent) {
-        if (!reg.valid(entity) || !reg.all_of<InfoComponent>(entity)) {
-            BOOM_WARN("[SetParent] Entity invalid or missing InfoComponent");
-            return false;
-        }
-
-        // Prevent self-parenting
-        if (entity == newParent) {
-            BOOM_WARN("[SetParent] Cannot parent entity to itself");
-            return false;
-        }
-
-        // Prevent circular parenting (entity can't be parent of its ancestor)
-        if (newParent != entt::null && HasAncestor(reg, newParent, entity)) {
-            BOOM_WARN("[SetParent] Circular reference prevented");
-            return false;
-        }
-
-        auto& info = reg.get<InfoComponent>(entity);
-        AssetID oldParent = info.parent;
-
-        if (newParent == entt::null) {
-            info.parent = EMPTY_ASSET;
-            BOOM_INFO("[SetParent] Cleared parent: '{}' (UID:{}) is now root (was parent UID:{})",
-                     info.name, info.uid, oldParent);
-        } else {
-            if (!reg.all_of<InfoComponent>(newParent)) {
-                BOOM_WARN("[SetParent] New parent missing InfoComponent");
-                return false;
-            }
-            // Store parent's UID (not entity ID)
-            AssetID newParentUID = reg.get<InfoComponent>(newParent).uid;
-            info.parent = newParentUID;
-            BOOM_INFO("[SetParent] Set parent: '{}' (UID:{}) -> parent '{}' (UID:{})",
-                     info.name, info.uid,
-                     reg.get<InfoComponent>(newParent).name, newParentUID);
-        }
-        return true;
-    }
-
     // Get world transform matrix (combines local transform with parent chain)
     BOOM_INLINE glm::mat4 GetWorldMatrix(entt::registry& reg, entt::entity entity) {
         if (!reg.valid(entity) || !reg.all_of<TransformComponent>(entity)) {
@@ -348,6 +307,64 @@ namespace Boom {
         transform.transform.translate = translation;
         transform.transform.rotate = glm::degrees(glm::eulerAngles(rotation));
         transform.transform.scale = scale;
+    }
+
+    // Set parent of an entity using UID (validates to prevent circular references)
+    // preserveWorldTransform: if true, adjusts local transform to keep same world position (Unity/Unreal behavior)
+    BOOM_INLINE bool SetParent(entt::registry& reg, entt::entity entity, entt::entity newParent, bool preserveWorldTransform = true) {
+        if (!reg.valid(entity) || !reg.all_of<InfoComponent>(entity)) {
+            BOOM_WARN("[SetParent] Entity invalid or missing InfoComponent");
+            return false;
+        }
+
+        // Prevent self-parenting
+        if (entity == newParent) {
+            BOOM_WARN("[SetParent] Cannot parent entity to itself");
+            return false;
+        }
+
+        // Prevent circular parenting (entity can't be parent of its ancestor)
+        if (newParent != entt::null && HasAncestor(reg, newParent, entity)) {
+            BOOM_WARN("[SetParent] Circular reference prevented");
+            return false;
+        }
+
+        auto& info = reg.get<InfoComponent>(entity);
+        AssetID oldParent = info.parent;
+
+        // Preserve world transform if requested and entity has transform component
+        glm::mat4 worldMatrix(1.0f);
+        bool hasTransform = reg.all_of<TransformComponent>(entity);
+        if (preserveWorldTransform && hasTransform) {
+            // Capture current world position before changing parent
+            worldMatrix = GetWorldMatrix(reg, entity);
+        }
+
+        // Update parent relationship
+        if (newParent == entt::null) {
+            info.parent = EMPTY_ASSET;
+            BOOM_INFO("[SetParent] Cleared parent: '{}' (UID:{}) is now root (was parent UID:{})",
+                     info.name, info.uid, oldParent);
+        } else {
+            if (!reg.all_of<InfoComponent>(newParent)) {
+                BOOM_WARN("[SetParent] New parent missing InfoComponent");
+                return false;
+            }
+            // Store parent's UID (not entity ID)
+            AssetID newParentUID = reg.get<InfoComponent>(newParent).uid;
+            info.parent = newParentUID;
+            BOOM_INFO("[SetParent] Set parent: '{}' (UID:{}) -> parent '{}' (UID:{})",
+                     info.name, info.uid,
+                     reg.get<InfoComponent>(newParent).name, newParentUID);
+        }
+
+        // Convert world transform back to new local space
+        if (preserveWorldTransform && hasTransform) {
+            SetWorldMatrix(reg, entity, worldMatrix);
+            BOOM_INFO("[SetParent] Preserved world position for '{}'", info.name);
+        }
+
+        return true;
     }
 
     struct DirectLightComponent
