@@ -39,6 +39,8 @@ namespace EditorUI {
         bool open_local = true;
         bool* p_open = m_ShowHierarchy ? m_ShowHierarchy : &open_local;
 
+        static TransformComponent* camTPtr{ nullptr };
+
         if (ImGui::Begin("Hierarchy", p_open))
         {
             ImGui::TextUnformatted("Scene Hierarchy");
@@ -56,32 +58,46 @@ namespace EditorUI {
                 ImGui::PushID(static_cast<int>(entt::to_integral(e)));
                 if (ImGui::Selectable(info.name.c_str(), isSelected, ImGuiSelectableFlags_AllowDoubleClick))
                 {
+                    //set starting, target position and begin transition boolean
                     m_App->SelectedEntity(true) = e;
                     if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
-                        static TransformComponent* camTPtr{nullptr};
                         auto entView = m_App->GetEntityRegistry().view<CameraComponent, TransformComponent>();
                         for (auto ent : entView) {
                             auto camPtr = &entView.get<CameraComponent>(ent);
                             if (camPtr) {
                                 camTPtr = &entView.get<TransformComponent>(ent);
+                                startingCamPos = camTPtr->transform.translate;
+                                break; //only get first camera
                             }
                         }
-                        Boom::Entity selected{ &m_Ctx->scene, m_App->SelectedEntity() };
-                        
+                        targetPos = Boom::Entity{ &m_Ctx->scene, m_App->SelectedEntity() }.Get<TransformComponent>().transform.translate;
 
-                        Transform3D const& tRef = selected.Get<TransformComponent>().transform;
-                        camTPtr->transform.translate = tRef.translate;
-                        camTPtr->transform.translate += 2.f;
-                        glm::vec3 forward = glm::normalize(camTPtr->transform.translate - tRef.translate);
-                        float yaw = std::atan2(forward.x, forward.z);
-                        float pitch = std::asin(-forward.y);
-                        camTPtr->transform.rotate = { glm::degrees(pitch), glm::degrees(yaw), 0.f };
+                        curTime = 0.f;
+                        isTransitionCam = true;
                     }
                 }
                 ImGui::PopID();
             }
+
         }
         ImGui::End();
+
+        if (isTransitionCam) TransitionCam(camTPtr->transform.translate);
+    }
+
+
+    void HierarchyPanel::TransitionCam(glm::vec3& curCamPos) {
+        //init constants
+        const float transtitionTime{ 0.5f };
+        const float dt{ (float)m_App->GetDeltaTime() };
+
+
+        //call glm::slerp here to transistion camera nicely
+        //make sure that camera can see whole of object depending on its scale.
+
+        if (curCamPos == targetPos) {
+            isTransitionCam = false;
+        }
     }
 
 } // namespace EditorUI

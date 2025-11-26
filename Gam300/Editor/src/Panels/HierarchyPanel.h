@@ -23,6 +23,12 @@ namespace EditorUI {
         Boom::AppContext* m_Ctx = nullptr;   // cached from m_App->GetContext()
 
         bool* m_ShowHierarchy = nullptr;
+
+        //camera
+        bool isTransitionCam{};
+        glm::vec3 startingCamPos{};
+        glm::vec3 targetPos{};
+        void TransitionCam(glm::vec3& curCamPos);
     };
 
 } // namespace EditorUI
