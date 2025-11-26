@@ -35,7 +35,7 @@ namespace EditorUI {
     }
 
     // Helper to render entity tree recursively
-    void RenderEntityNode(entt::registry& registry, entt::entity entity, Boom::AppInterface* app, Boom::AppContext* ctx,
+    void HierarchyPanel::RenderEntityNode(entt::registry& registry, entt::entity entity, Boom::AppInterface* app, Boom::AppContext* ctx,
                           bool& showDeletePopup, entt::entity& entityToDelete)
     {
         const auto& info = registry.get<Boom::InfoComponent>(entity);
@@ -139,19 +139,23 @@ namespace EditorUI {
         }
 
         // Drop target (for reparenting)
+       // Drop target (for reparenting)
         if (ImGui::BeginDragDropTarget()) {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_HIERARCHY")) {
                 entt::entity draggedEntity = *(const entt::entity*)payload->Data;
-                // Set dragged entity's parent to this entity
-                if (Boom::SetParent(registry, draggedEntity, entity)) {
+                // Preserve WORLD transform; local will adjust
+                if (Boom::SetParent(registry, draggedEntity, entity /* preserveWorldTransform = default true */)) {
                     BOOM_INFO("[Hierarchy] Reparented '{}' to '{}'",
-                             registry.get<Boom::InfoComponent>(draggedEntity).name, info.name);
-                } else {
+                        registry.get<Boom::InfoComponent>(draggedEntity).name, info.name);
+                }
+                else {
                     BOOM_WARN("[Hierarchy] Failed to reparent (circular reference prevented)");
                 }
             }
             ImGui::EndDragDropTarget();
         }
+
+
 
         // Render children recursively
         if (hasChildren && nodeOpen) {

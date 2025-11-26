@@ -17,6 +17,9 @@ namespace EditorUI {
         // Optional wiring from Editor
         void SetShowFlag(bool* flag) { m_ShowHierarchy = flag; }
 
+        void RenderEntityNode(entt::registry& registry, entt::entity entity, Boom::AppInterface* app, Boom::AppContext* ctx,
+            bool& showDeletePopup, entt::entity& entityToDelete);
+
     private:
         Editor* m_Owner = nullptr;
         Boom::AppInterface* m_App = nullptr;   // preferred

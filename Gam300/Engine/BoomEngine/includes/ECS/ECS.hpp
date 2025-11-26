@@ -279,6 +279,45 @@ namespace Boom {
         return glm::vec3(worldMatrix[3]);
     }
 
+    // --- Utility: Decompose TRS matrix into translate / euler-deg / scale ---
+    //     without normalizing away scale.
+    BOOM_INLINE void DecomposeTRS(const glm::mat4& m,
+        glm::vec3& outT,
+        glm::vec3& outRDeg,
+        glm::vec3& outS)
+    {
+        // Translation = 4th column
+        outT = glm::vec3(m[3]);
+
+        // Basis vectors (3x3 block columns)
+        glm::vec3 col0 = glm::vec3(m[0]);
+        glm::vec3 col1 = glm::vec3(m[1]);
+        glm::vec3 col2 = glm::vec3(m[2]);
+
+        // Scale = lengths of basis vectors
+        outS.x = glm::length(col0);
+        outS.y = glm::length(col1);
+        outS.z = glm::length(col2);
+
+        // Guard against zero scale
+        glm::vec3 safeS = outS;
+        if (safeS.x == 0.f) safeS.x = 1.f;
+        if (safeS.y == 0.f) safeS.y = 1.f;
+        if (safeS.z == 0.f) safeS.z = 1.f;
+
+        // Remove scale from basis vectors to get rotation-only matrix
+        glm::mat3 rotMat;
+        rotMat[0] = col0 / safeS.x;
+        rotMat[1] = col1 / safeS.y;
+        rotMat[2] = col2 / safeS.z;
+
+        glm::quat q = glm::quat_cast(rotMat);
+        glm::vec3 eulerRad = glm::eulerAngles(q);
+        outRDeg = glm::degrees(eulerRad);
+    }
+
+
+
     // Helper to decompose world matrix back to transform (for gizmos)
     BOOM_INLINE void SetWorldMatrix(entt::registry& reg, entt::entity entity, const glm::mat4& worldMatrix) {
         if (!reg.valid(entity) || !reg.all_of<TransformComponent>(entity)) {
@@ -288,30 +327,34 @@ namespace Boom {
         auto& transform = reg.get<TransformComponent>(entity);
         entt::entity parent = GetParentEntity(reg, entity);
 
+        // Compute local = inverse(parentWorld) * world
         glm::mat4 localMatrix;
         if (parent == entt::null) {
             localMatrix = worldMatrix;
-        } else {
+        }
+        else {
             glm::mat4 parentMatrix = GetWorldMatrix(reg, parent);
             localMatrix = glm::inverse(parentMatrix) * worldMatrix;
         }
 
-        // Decompose matrix to TRS
-        glm::vec3 scale;
-        glm::quat rotation;
-        glm::vec3 translation;
-        glm::vec3 skew;
-        glm::vec4 perspective;
-        glm::decompose(localMatrix, scale, rotation, translation, skew, perspective);
+        glm::vec3 T, RDeg, S;
+        DecomposeTRS(localMatrix, T, RDeg, S);
 
-        transform.transform.translate = translation;
-        transform.transform.rotate = glm::degrees(glm::eulerAngles(rotation));
-        transform.transform.scale = scale;
+        transform.transform.translate = T;
+        transform.transform.rotate = RDeg;
+        transform.transform.scale = S;
     }
 
+
+
+
     // Set parent of an entity using UID (validates to prevent circular references)
-    // preserveWorldTransform: if true, adjusts local transform to keep same world position (Unity/Unreal behavior)
-    BOOM_INLINE bool SetParent(entt::registry& reg, entt::entity entity, entt::entity newParent, bool preserveWorldTransform = true) {
+// preserveWorldTransform: if true, adjusts local transform to keep same world position (Unity/Unreal behavior)
+    BOOM_INLINE bool SetParent(entt::registry& reg,
+        entt::entity entity,
+        entt::entity newParent,
+        bool preserveWorldTransform = true)
+    {
         if (!reg.valid(entity) || !reg.all_of<InfoComponent>(entity)) {
             BOOM_WARN("[SetParent] Entity invalid or missing InfoComponent");
             return false;
@@ -332,40 +375,90 @@ namespace Boom {
         auto& info = reg.get<InfoComponent>(entity);
         AssetID oldParent = info.parent;
 
-        // Preserve world transform if requested and entity has transform component
+        const bool hasTransform = reg.all_of<TransformComponent>(entity);
+
+        // 1) Capture current WORLD matrix and original scale BEFORE changing parent
         glm::mat4 worldMatrix(1.0f);
-        bool hasTransform = reg.all_of<TransformComponent>(entity);
+        glm::vec3 originalLocalScale(1.0f);
+
         if (preserveWorldTransform && hasTransform) {
-            // Capture current world position before changing parent
+            auto& t = reg.get<TransformComponent>(entity);
+            originalLocalScale = t.transform.scale;  // SAVE THIS FIRST!
             worldMatrix = GetWorldMatrix(reg, entity);
+
+            BOOM_INFO("[SetParent] BEFORE - Entity '{}' local: pos({}, {}, {}), scale({}, {}, {})",
+                info.name,
+                t.transform.translate.x, t.transform.translate.y, t.transform.translate.z,
+                t.transform.scale.x, t.transform.scale.y, t.transform.scale.z);
+
+            glm::vec3 worldPos = GetWorldPosition(reg, entity);
+            BOOM_INFO("[SetParent] World position: ({}, {}, {})", worldPos.x, worldPos.y, worldPos.z);
         }
 
-        // Update parent relationship
+        // 2) Update parent relationship (InfoComponent.parent stores UID)
         if (newParent == entt::null) {
             info.parent = EMPTY_ASSET;
             BOOM_INFO("[SetParent] Cleared parent: '{}' (UID:{}) is now root (was parent UID:{})",
-                     info.name, info.uid, oldParent);
-        } else {
+                info.name, info.uid, oldParent);
+        }
+        else {
             if (!reg.all_of<InfoComponent>(newParent)) {
                 BOOM_WARN("[SetParent] New parent missing InfoComponent");
                 return false;
             }
-            // Store parent's UID (not entity ID)
+
             AssetID newParentUID = reg.get<InfoComponent>(newParent).uid;
             info.parent = newParentUID;
+
             BOOM_INFO("[SetParent] Set parent: '{}' (UID:{}) -> parent '{}' (UID:{})",
-                     info.name, info.uid,
-                     reg.get<InfoComponent>(newParent).name, newParentUID);
+                info.name, info.uid,
+                reg.get<InfoComponent>(newParent).name, newParentUID);
         }
 
-        // Convert world transform back to new local space
+        // 3) Recompute LOCAL transform so that WORLD stays the same
         if (preserveWorldTransform && hasTransform) {
-            SetWorldMatrix(reg, entity, worldMatrix);
-            BOOM_INFO("[SetParent] Preserved world position for '{}'", info.name);
+            auto& t = reg.get<TransformComponent>(entity);
+
+            // Extract the ACTUAL current world scale from the world matrix
+            glm::vec3 worldT, worldRDeg, worldScale;
+            DecomposeTRS(worldMatrix, worldT, worldRDeg, worldScale);
+
+            glm::mat4 parentWorld(1.0f);
+            glm::vec3 parentScale(1.0f);
+
+            if (newParent != entt::null && reg.all_of<TransformComponent>(newParent)) {
+                parentWorld = GetWorldMatrix(reg, newParent);
+
+                // Extract parent's world scale
+                glm::vec3 parentT, parentRDeg;
+                DecomposeTRS(parentWorld, parentT, parentRDeg, parentScale);
+            }
+
+            glm::mat4 localMatrix = glm::inverse(parentWorld) * worldMatrix;
+
+            glm::vec3 T, RDeg, S;
+            DecomposeTRS(localMatrix, T, RDeg, S);
+
+            t.transform.translate = T;
+            t.transform.rotate = RDeg;
+
+            // Adjust local scale to compensate for parent's scale
+            // localScale = worldScale / parentScale (component-wise division)
+            t.transform.scale.x = (parentScale.x != 0.0f) ? (worldScale.x / parentScale.x) : worldScale.x;
+            t.transform.scale.y = (parentScale.y != 0.0f) ? (worldScale.y / parentScale.y) : worldScale.y;
+            t.transform.scale.z = (parentScale.z != 0.0f) ? (worldScale.z / parentScale.z) : worldScale.z;
+
+            BOOM_INFO("[SetParent] AFTER - local: pos({}, {}, {}), scale({}, {}, {})",
+                T.x, T.y, T.z,
+                t.transform.scale.x, t.transform.scale.y, t.transform.scale.z);
+            BOOM_INFO("[SetParent] Parent scale: ({}, {}, {}), World scale preserved: ({}, {}, {})",
+                parentScale.x, parentScale.y, parentScale.z,
+                worldScale.x, worldScale.y, worldScale.z);
         }
 
         return true;
     }
+
 
     struct DirectLightComponent
     {
