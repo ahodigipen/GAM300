@@ -306,48 +306,75 @@ namespace EditorUI {
                     ModelAsset& modelAsset = m_App->GetAssetRegistry().Get<ModelAsset>(mc.modelID);
 
                     if (modelAsset.data) {
-                        // 1. Construct the intended path based on the model name
                         std::string saveDir = "Resources/Physics/";
-                        std::string savePath = saveDir + modelAsset.name + ".pxm";
+                        if (!std::filesystem::exists(saveDir)) {
+                            std::filesystem::create_directories(saveDir);
+                        }
 
-                        // 2. Check if this asset already exists in the Registry
-                        auto* existingAsset = m_App->GetAssetRegistry().FindPhysicsMeshByPath(savePath);
+                        // ---------------------------------------------------------
+                        // 1. CONVEX MESH BUTTON (For Dynamic Objects)
+                        // ---------------------------------------------------------
+                        std::string convexPath = saveDir + modelAsset.name + ".pxm";
+                        auto* existingConvex = m_App->GetAssetRegistry().FindPhysicsMeshByPath(convexPath);
+                        bool convexFileExists = std::filesystem::exists(convexPath);
 
-                        // 3. Check if the file already exists on Disk
-                        bool fileExists = std::filesystem::exists(savePath);
-
-                        // 4. Logic: Only allow compilation if NEITHER exists
-                        if (existingAsset || fileExists) {
+                        if (existingConvex || convexFileExists) {
                             ImGui::BeginDisabled();
-                            ImGui::Button("Physics Mesh Already Compiled", ImVec2(-1, 0));
+                            ImGui::Button("Convex Mesh Compiled", ImVec2(-1, 0));
                             ImGui::EndDisabled();
-
                             if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
-                                if (existingAsset)
-                                    ImGui::SetTooltip("Asset already registered (UID: %llu)", existingAsset->uid);
-                                else
-                                    ImGui::SetTooltip("File already exists at: %s", savePath.c_str());
+                                ImGui::SetTooltip("Use for DYNAMIC objects.\nAsset: %s", convexPath.c_str());
                             }
                         }
                         else {
-                            if (ImGui::Button("Compile Mesh Collider from this Model", ImVec2(-1, 0))) {
-                                if (!std::filesystem::exists(saveDir)) {
-                                    std::filesystem::create_directories(saveDir);
-                                }
-
-                                bool success = m_App->GetPhysicsContext().CompileAndSavePhysicsMesh(modelAsset, savePath);
-
+                            if (ImGui::Button("Compile Convex Mesh (Dynamic)", ImVec2(-1, 0))) {
+                                bool success = m_App->GetPhysicsContext().CompileAndSavePhysicsMesh(modelAsset, convexPath);
                                 if (success) {
                                     AssetID newID = RandomU64();
-                                    m_App->GetAssetRegistry().AddPhysicsMesh(newID, savePath)->name = modelAsset.name;
-                                    BOOM_INFO("Successfully cooked and created PhysicsMeshAsset '{}'", modelAsset.name);
+                                    m_App->GetAssetRegistry().AddPhysicsMesh(newID, convexPath)->name = modelAsset.name; // Name: "Stairs"
+                                    BOOM_INFO("Successfully cooked Convex Mesh '{}'", modelAsset.name);
                                     m_App->SaveAssets();
                                 }
                                 else {
-                                    BOOM_ERROR("Failed to cook physics mesh for '{}'. Check model data.", modelAsset.name);
+                                    BOOM_ERROR("Failed to cook convex mesh.");
                                 }
                             }
                         }
+
+                        ImGui::Spacing();
+
+                        // ---------------------------------------------------------
+                        // 2. TRIANGLE MESH BUTTON (For Static/Complex Objects)
+                        // ---------------------------------------------------------
+                        std::string triPath = saveDir + modelAsset.name + "_tri.pxm";
+                        auto* existingTri = m_App->GetAssetRegistry().FindPhysicsMeshByPath(triPath);
+                        bool triFileExists = std::filesystem::exists(triPath);
+
+                        if (existingTri || triFileExists) {
+                            ImGui::BeginDisabled();
+                            ImGui::Button("Triangle Mesh Compiled", ImVec2(-1, 0));
+                            ImGui::EndDisabled();
+                            if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+                                ImGui::SetTooltip("Use for STATIC objects (Exact Geometry).\nAsset: %s", triPath.c_str());
+                            }
+                        }
+                        else {
+                            // Label this clearly so users know it's for static objects
+                            if (ImGui::Button("Compile Exact Mesh (Static Only)", ImVec2(-1, 0))) {
+                                bool success = m_App->GetPhysicsContext().CompileAndSaveTriangleMesh(modelAsset, triPath);
+                                if (success) {
+                                    AssetID newID = RandomU64();
+                                    // Append suffix to name so you can tell them apart in the asset picker
+                                    m_App->GetAssetRegistry().AddPhysicsMesh(newID, triPath)->name = modelAsset.name + " (Tri)";
+                                    BOOM_INFO("Successfully cooked Triangle Mesh '{}'", modelAsset.name);
+                                    m_App->SaveAssets();
+                                }
+                                else {
+                                    BOOM_ERROR("Failed to cook triangle mesh.");
+                                }
+                            }
+                        }
+
                     }
                     else {
                         ImGui::TextDisabled("Model data not yet loaded.");
@@ -515,10 +542,11 @@ namespace EditorUI {
             ImGui::PopID();
 
             if (removed) {
-                // Clean up physics before removing component
-                m_App->GetPhysicsContext().RemoveRigidBody(selected);
+                m_App->GetPhysicsContext().ForceRemoveActor(static_cast<uint32_t>(m_App->SelectedEntity()));
+
+                // ACTUAL FIX: Remove the RIGIDBODY component
                 ctx->scene.remove<Boom::RigidBodyComponent>(m_App->SelectedEntity());
-                return; // Exit EntityUpdate early
+                return;
             }
             ImGui::Spacing();
         }
@@ -907,7 +935,8 @@ namespace EditorUI {
                 case Collider3D::Type::BOX:     currentTypeName = "Box";     break;
                 case Collider3D::Type::SPHERE:  currentTypeName = "Sphere";  break;
                 case Collider3D::Type::CAPSULE: currentTypeName = "Capsule"; break;
-                case Collider3D::Type::MESH:    currentTypeName = "Mesh";    break;
+                case Collider3D::Type::CONVEX_MESH:    currentTypeName = "Convex Mesh";    break;
+				case Collider3D::Type::TRIANGLE_MESH:  currentTypeName = "Triangle Mesh";  break;
 				case Collider3D::Type::CYLINDER:currentTypeName = "Cylinder";break;
 				case Collider3D::Type::TRIANGLE:currentTypeName = "Triangle";break;
                 case Collider3D::Type::PLANE:   currentTypeName = "Plane";   break;
@@ -920,8 +949,7 @@ namespace EditorUI {
 
                 if (ImGui::BeginCombo("##ColliderType", currentTypeName))
                 {
-                    const char* types[] = { "Box", "Sphere", "Capsule", "Mesh", "Plane", "Cylinder", "Triangle"};
-                    for (int i = 0; i < IM_ARRAYSIZE(types); ++i) {
+                    const char* types[] = { "Box", "Sphere", "Capsule", "Convex Mesh", "Triangle Mesh", "Plane", "Cylinder", "Triangle" };                    for (int i = 0; i < IM_ARRAYSIZE(types); ++i) {
                         bool isSelected = (currentType == static_cast<Collider3D::Type>(i));
                         if (ImGui::Selectable(types[i], isSelected)) {
                             m_App->GetPhysicsContext().SetColliderType(selected, static_cast<Collider3D::Type>(i), m_App->GetAssetRegistry());
@@ -931,8 +959,7 @@ namespace EditorUI {
                     ImGui::EndCombo();
                 }
                 // Mesh asset picker (only for MESH type)
-                if (currentType == Collider3D::Type::MESH)
-                {
+                if (currentType == Collider3D::Type::CONVEX_MESH || currentType == Collider3D::Type::TRIANGLE_MESH) {
                     ImGui::Spacing();
                     ImGui::Separator();
 
@@ -1088,12 +1115,13 @@ namespace EditorUI {
             }
             ImGui::PopID();
 
+            // CORRECTED
             if (removed) {
-                // Clean up physics before removing component
-                // Only remove rigid body if the entity has one
-                if (selected.Has<Boom::RigidBodyComponent>()) {
-                    m_App->GetPhysicsContext().RemoveRigidBody(selected);
-                }
+                // 1. Use the new smart cleanup function
+                // This finds the actor attached to this specific collider shape and destroys it
+                m_App->GetPhysicsContext().RemoveColliderActor(selected);
+
+                // 2. Remove the component from ECS
                 ctx->scene.remove<Boom::ColliderComponent>(m_App->SelectedEntity());
                 return;
             }
@@ -1470,14 +1498,9 @@ namespace EditorUI {
 
                         // === BEGIN PHYSICS CLEANUP ===
 
-                        // 1. Get the entity
-                        Boom::Entity entity{ &m_App->GetEntityRegistry(), m_App->SelectedEntity() };
-
-                        // 2. Call your new function
-                        Boom::PhysicsContext* physicsCtx = &m_App->GetPhysicsContext();
-                        if (physicsCtx) {
-                            physicsCtx->RemoveRigidBody(entity);
-                        }
+                        // Use ForceRemoveActor instead of RemoveRigidBody
+                        m_App->GetPhysicsContext().ForceRemoveActor(static_cast<uint32_t>(m_App->SelectedEntity()));
+                        // =======================
 
                         // === END PHYSICS CLEANUP ===
 

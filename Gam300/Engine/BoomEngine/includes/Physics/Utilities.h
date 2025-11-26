@@ -76,10 +76,11 @@ namespace Boom {
             BOX = 0,
             SPHERE,
             CAPSULE,
-            MESH,
+            CONVEX_MESH,   // New: Explicitly for moving objects (or simple static ones)
+            TRIANGLE_MESH, // New: Explicitly for complex static level geometry
             PLANE,
             CYLINDER,
-			TRIANGLE
+            TRIANGLE
         } type = BOX;
 
         bool isTrigger = false; // New: Make this a trigger volume (no collision response)
@@ -99,9 +100,10 @@ namespace Boom {
             member_enum_value<"BOX", Boom::Collider3D::Type::BOX>,
             member_enum_value<"SPHERE", Boom::Collider3D::Type::SPHERE>,
             member_enum_value<"CAPSULE", Boom::Collider3D::Type::CAPSULE>,
-            member_enum_value<"MESH", Boom::Collider3D::Type::MESH>,
+            member_enum_value<"CONVEX_MESH", Boom::Collider3D::Type::CONVEX_MESH>,   // Updated
+            member_enum_value<"TRIANGLE_MESH", Boom::Collider3D::Type::TRIANGLE_MESH>, // Updated
             member_enum_value<"PLANE", Boom::Collider3D::Type::PLANE>,
-            member_enum_value<"CYLINDER", Boom::Collider3D::Type::CYLINDER>,  // NEW
+            member_enum_value<"CYLINDER", Boom::Collider3D::Type::CYLINDER>,
             member_enum_value<"TRIANGLE", Boom::Collider3D::Type::TRIANGLE>
             >
         )
