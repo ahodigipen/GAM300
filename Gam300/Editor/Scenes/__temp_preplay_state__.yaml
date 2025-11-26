@@ -9,6 +9,16 @@ ENTITIES:
   - {}
   - {}
   - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1277,22 +1287,47 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 2.4000001, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [100, 180, 100]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: CAPSULE
+    InfoComponent:
       Parent: 0
       Name: Samurai
       UID: 16439367912350421013
     TransformComponent:
       Transform:
         Translate: [0.803038001, 1.36473, 16.9053497]
-        Rotate: [0, -0, 0]
+        Rotate: [0, 0, 0]
         Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+        FreezeRotationX: true
+        FreezeRotationY: true
+        FreezeRotationZ: true
+        Type: DYNAMIC
     ModelComponent:
-      ModelID: 9858498430227169258
+      ModelID: 4722549275472783507
       MaterialID: 0
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PlayerMovement
+      ParamsJSON: "{}"
   - InfoComponent:
       Parent: 0
       Name: Ninja
@@ -1365,14 +1400,23 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [7.0685277, 17.4227886, -0.698072553]
-        Rotate: [-15.75, 479.375, 0]
+        Translate: [5.73032522, 5.27252293, 15.9375229]
+        Rotate: [-12.4518814, 73.75, 0]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.300000012
         FarPlane: 1000
         FOV: 100
+    ThirdPersonCameraComponent:
+      Offset: [2, 4, 0]
+      Current Distance: 2
+      Min Distance: 1
+      Max Distance: 5
+      Current Yaw: 0
+      Current Pitch: 20
+      Mouse Sensitivity: 1
+      Scroll Sensitivity: 1
   - InfoComponent:
       Parent: 0
       Name: Skybox
@@ -1389,7 +1433,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [1, 1, 100]
         DynamicFriction: 0.5
         StaticFriction: 0.5
         Restitution: 0
@@ -2061,7 +2105,7 @@ ENTITIES:
         Restitution: 0.100000001
         IsTrigger: false
         PhysicsMesh: 13244744886219103757
-        Type: BOX
+        Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
       Name: Fence_Level_2
@@ -2581,7 +2625,7 @@ ENTITIES:
       UID: 13972879706102874778
     TransformComponent:
       Transform:
-        Translate: [3.08931446, 15.7807331, 4.34547329]
+        Translate: [3.71992993, 13.6502399, 4.24085999]
         Rotate: [-90, 0, 0]
         Scale: [1.25, 1.25, 1.25]
     RigidBodyComponent:
@@ -2897,7 +2941,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Left_Wall_Of_Hut_Bottom
       UID: 8618011661999532453
@@ -2906,6 +2961,16 @@ ENTITIES:
         Translate: [-8.1671896, 12.0883799, 48.1404953]
         Rotate: [0, -90, 0]
         Scale: [1.45000005, 1.14999998, 0.224999994]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.45000005, 1.14999998, 0.224999994]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -6456,6 +6521,20 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
   - {}
   - {}
   - {}
