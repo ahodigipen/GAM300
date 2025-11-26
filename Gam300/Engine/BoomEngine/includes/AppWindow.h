@@ -222,6 +222,7 @@ namespace Boom {
 
 		BOOM_INLINE bool PollEvents() {
 			input.beginFrame();
+			glfwMakeContextCurrent(windowPtr.get());
 			glfwPollEvents();
 			dispatcher->PollEvents();
 			glfwSwapBuffers(windowPtr.get());
