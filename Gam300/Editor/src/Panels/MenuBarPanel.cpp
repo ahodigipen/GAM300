@@ -4,6 +4,7 @@
 #include "Context/DebugHelpers.h" // BOOM_INFO / BOOM_ERROR
 #include "Vendors/imgui/imgui.h"
 #include "Vendors/imGuizmo/ImGuizmo.h"
+#include "Commands/UndoRedo.h"    // Undo/Redo system
 
 #include <string>
 #include <cstdio>
@@ -192,16 +193,33 @@ namespace EditorUI {
                     for (int i = 1; nameExists(name); ++i)
                         name = "New Entity (" + std::to_string(i) + ")";
 
-                    // Attach components
-                    go.Attach<InfoComponent>().name = name;
-                    go.Attach<TransformComponent>(); // default transform
+                    // Use command system for undo/redo support
+                    auto* history = m_Owner->GetCommandHistory();
+                    if (history) {
+                        // Execute command and get the created entity UID
+                        auto cmd = std::make_unique<CreateEntityCommand>(&reg, name);
+                        Boom::AssetID createdUID = cmd->GetEntityUID();
 
-        
+                        history->Execute(std::move(cmd));
 
-                    // Select the newly created object
-                    m.selectedEntity = go.ID();
+                        // Select the newly created object by finding it via UID
+                        auto view = reg.view<InfoComponent>();
+                        for (auto e : view) {
+                            const auto& info = view.get<InfoComponent>(e);
+                            if (info.name == name || info.uid == createdUID) {
+                                m.selectedEntity = e;
+                                break;
+                            }
+                        }
 
-                    BOOM_INFO("[Editor] Created {}", name);
+                        BOOM_INFO("[Editor] Created {} (with undo)", name);
+                    } else {
+                        // Fallback: Create without undo
+                        go.Attach<InfoComponent>().name = name;
+                        go.Attach<TransformComponent>(); // default transform
+                        m.selectedEntity = go.ID();
+                        BOOM_INFO("[Editor] Created {}", name);
+                    }
                 }
             }
 
