@@ -178,8 +178,6 @@ namespace Boom
 
         void RenderScene();
 
-        glm::mat4 GetWorldMatrix(Entity& entity);
-
         /**
         * @brief Enters play mode (like Unity's Play button)
         * Saves the current scene state so it can be restored when Stop is called
@@ -550,7 +548,7 @@ namespace Boom
                             joints = identityPalette;
                         }
 
-                        glm::mat4 worldMatrix = GetWorldMatrix(entity);
+                        glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
                         Transform3D worldTransform;
                         DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
 
@@ -600,7 +598,7 @@ namespace Boom
 
                         // Get the FINAL world matrix of the physics body,
                         // no matter how deep it is in the hierarchy.
-                        glm::mat4 worldMatrix = GetWorldMatrix(entity);
+                        glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
 
                         // Decompose the world matrix to get the final T and R
                         glm::vec3 worldTranslate, worldRotate, worldScale;
