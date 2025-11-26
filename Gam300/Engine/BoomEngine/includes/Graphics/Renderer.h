@@ -228,7 +228,10 @@ namespace Boom {
         }
 
         BOOM_INLINE float& DitherThreshold() { return pbrShader->ditherThreshold; }
-
+        BOOM_INLINE float& AmbientStrength()
+        {
+            return pbrShader->ambientStrength;   
+        }
         BOOM_INLINE float AspectRatio() const { return frame->Ratio(); }
 
         // --- Editor-facing toggles for embedded rendering ---
