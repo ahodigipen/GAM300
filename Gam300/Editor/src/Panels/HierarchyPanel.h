@@ -1,6 +1,8 @@
 #pragma once
 #include <entt/entity/entity.hpp>
 #include "Vendors/imgui/imgui.h"
+#include "glm/glm.hpp"
+#include "ECS/ECS.hpp"
 
 namespace Boom { struct AppContext; struct AppInterface; }
 
@@ -26,9 +28,7 @@ namespace EditorUI {
 
         //camera
         bool isTransitionCam{};
-        glm::vec3 startingCamPos{};
-        glm::vec3 targetPos{};
-        void TransitionCam(glm::vec3& curCamPos);
+        float curTime{};
     };
 
 } // namespace EditorUI
