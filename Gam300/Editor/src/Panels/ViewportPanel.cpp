@@ -5,6 +5,7 @@
 #include "Context/DebugHelpers.h"
 #include "Vendors/imgui/imgui.h"
 #include "RayCast.h"
+#include "Commands/UndoRedo.h"
 #include <type_traits>
 #include <cstdint>
 #include <GL/glew.h>
@@ -297,11 +298,68 @@ namespace EditorUI {
         // Check if gizmo wants input
         gizmoWantsInput = ImGuizmo::IsUsing();
 
+        // Undo/Redo: Capture transform at start of gizmo manipulation
+        if (ImGuizmo::IsUsing() && !m_GizmoWasUsing)
+        {
+            // Gizmo just started being used - capture initial transform
+            if (m_Ctx->scene.all_of<Boom::TransformComponent>(selectedEntity)) {
+                m_TransformBeforeGizmo = m_Ctx->scene.get<Boom::TransformComponent>(selectedEntity).transform;
+                BOOM_INFO("[Viewport] Captured initial transform for undo");
+            }
+        }
+
         if (ImGuizmo::IsUsing())
         {
             // Convert manipulated world matrix back to local space
             Boom::SetWorldMatrix(m_Ctx->scene, selectedEntity, matrix);
         }
+
+        // Undo/Redo: Record command when gizmo is released
+        if (!ImGuizmo::IsUsing() && m_GizmoWasUsing)
+        {
+            // Gizmo was just released - create undo command
+            if (m_Ctx->scene.all_of<Boom::TransformComponent>(selectedEntity) && m_Owner)
+            {
+                auto* history = m_Owner->GetCommandHistory();
+                if (history) {
+                    const auto& newTransform = m_Ctx->scene.get<Boom::TransformComponent>(selectedEntity).transform;
+
+                    // Only record if transform actually changed
+                    bool changed = (m_TransformBeforeGizmo.translate != newTransform.translate) ||
+                                  (m_TransformBeforeGizmo.rotate != newTransform.rotate) ||
+                                  (m_TransformBeforeGizmo.scale != newTransform.scale);
+
+                    if (changed) {
+                        std::string opName;
+                        switch (m_GizmoOperation) {
+                            case ImGuizmo::TRANSLATE: opName = "Move"; break;
+                            case ImGuizmo::ROTATE: opName = "Rotate"; break;
+                            case ImGuizmo::SCALE: opName = "Scale"; break;
+                            default: opName = "Transform"; break;
+                        }
+
+                        std::string entityName = "Entity";
+                        if (m_Ctx->scene.all_of<Boom::InfoComponent>(selectedEntity)) {
+                            entityName = m_Ctx->scene.get<Boom::InfoComponent>(selectedEntity).name;
+                        }
+
+                        auto command = std::make_unique<TransformCommand>(
+                            &m_Ctx->scene,
+                            selectedEntity,
+                            m_TransformBeforeGizmo,
+                            newTransform,
+                            opName + " '" + entityName + "'"
+                        );
+
+                        history->Execute(std::move(command));
+                        BOOM_INFO("[Viewport] Recorded transform command for undo");
+                    }
+                }
+            }
+        }
+
+        // Update gizmo state
+        m_GizmoWasUsing = ImGuizmo::IsUsing();
 
     }
 

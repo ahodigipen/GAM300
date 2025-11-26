@@ -366,7 +366,8 @@ namespace Boom
                     }
                 }
 
-                glm::mat4 worldMatrix = GetWorldMatrix(entity);
+                // Use the global Boom::GetWorldMatrix from ECS.hpp
+                glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
                 Transform3D worldTransform;
                 DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
 
@@ -425,42 +426,6 @@ namespace Boom
         }
     }
 
-    glm::mat4 Application::GetWorldMatrix(Entity& entity)
-    {
-        if (!entity.Has<TransformComponent>()) {
-            return glm::mat4(1.0f);
-        }
-
-        const auto& transform = entity.Get<TransformComponent>();
-        glm::mat4 localMatrix = transform.transform.Matrix();
-
-        // Get parent entity
-        entt::entity parentEntity = entt::null;
-        if (entity.Has<InfoComponent>()) {
-            AssetID parentUID = entity.Get<InfoComponent>().parent;
-
-            if (parentUID != EMPTY_ASSET && parentUID != 0) {
-                auto view = m_Context->scene.view<InfoComponent>();
-                for (auto e : view) {
-                    if (view.get<InfoComponent>(e).uid == parentUID) {
-                        parentEntity = e;
-                        break;
-                    }
-                }
-            }
-        }
-
-        // If no parent, return local matrix
-        if (parentEntity == entt::null) {
-            return localMatrix;
-        }
-
-        // Recursively get parent's world matrix and combine WITH SCALE
-        Entity parentEntityWrapper{ &m_Context->scene, parentEntity };
-        glm::mat4 parentMatrix = GetWorldMatrix(parentEntityWrapper);
-
-        return parentMatrix * localMatrix;
-    }
 
     void Application::UpdateThirdPersonCameras()
 

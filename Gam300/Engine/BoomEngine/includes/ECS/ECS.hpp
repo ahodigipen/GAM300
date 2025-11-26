@@ -742,10 +742,13 @@ namespace Boom {
     BOOM_INLINE void DeleteEntityRecursive(entt::registry& reg, entt::entity entity, void* physicsCtx = nullptr) {
         if (!reg.valid(entity)) return;
 
-        // Get entity name for logging
+        // Get entity name and UID for logging and cleanup
         std::string entityName = "Unknown";
+        AssetID deletedUID = 0;
         if (reg.all_of<InfoComponent>(entity)) {
-            entityName = reg.get<InfoComponent>(entity).name;
+            const auto& info = reg.get<InfoComponent>(entity);
+            entityName = info.name;
+            deletedUID = info.uid;
         }
 
         // First, delete all children recursively
@@ -760,6 +763,21 @@ namespace Boom {
             // Note: PhysicsContext is forward-declared, so we need to include it where this is called
             // For now, just log
             BOOM_INFO("[DeleteEntity] Physics cleanup for '{}'", entityName);
+        }
+
+        // Clean up orphaned entities: find any entities that reference this entity as parent
+        // and clear their parent reference (make them root entities)
+        if (deletedUID != 0 && deletedUID != EMPTY_ASSET) {
+            auto view = reg.view<InfoComponent>();
+            for (auto e : view) {
+                if (e == entity) continue; // Skip the entity being deleted
+                auto& childInfo = view.get<InfoComponent>(e);
+                if (childInfo.parent == deletedUID) {
+                    childInfo.parent = EMPTY_ASSET; // Orphan becomes root
+                    BOOM_INFO("[DeleteEntity] Orphaned '{}' (parent '{}' was deleted, now root)",
+                             childInfo.name, entityName);
+                }
+            }
         }
 
         // Destroy the entity

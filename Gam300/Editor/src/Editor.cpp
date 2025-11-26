@@ -21,6 +21,9 @@
 #include "Panels/RayCast.h"
 #include "BoomEngine.h"
 
+// Undo/Redo
+#include "Commands/UndoRedo.h"
+
 // Gizmo
 #include "Vendors/imGuizmo/ImGuizmo.h"
 
@@ -151,6 +154,10 @@ namespace EditorUI {
         m_Playback = std::make_unique<PlaybackControlsPanel>(this, m_App);
 		m_Navmesh = std::make_unique<NavmeshPanel>(this);
         m_AnimatorGraph = std::make_unique<AnimatorGraphPanel>(this);
+
+        // Initialize Undo/Redo system
+        m_CommandHistory = std::make_unique<CommandHistory>(100); // Max 100 undo levels
+
         // Panel-specific init
         if (m_Directory) m_Directory->Init();
     }
@@ -219,6 +226,27 @@ namespace EditorUI {
         bool ctrl = io.KeyCtrl;
         bool shift = io.KeyShift;
         bool alt = io.KeyAlt;
+
+        // ===== Undo/Redo Shortcuts =====
+
+        // Ctrl+Z: Undo
+        if (ctrl && !shift && ImGui::IsKeyPressed(ImGuiKey_Z, false))
+        {
+            if (m_CommandHistory && m_CommandHistory->CanUndo()) {
+                m_CommandHistory->Undo();
+                BOOM_INFO("[Shortcut] Undo (Ctrl+Z)");
+            }
+        }
+
+        // Ctrl+Y or Ctrl+Shift+Z: Redo
+        if ((ctrl && !shift && ImGui::IsKeyPressed(ImGuiKey_Y, false)) ||
+            (ctrl && shift && ImGui::IsKeyPressed(ImGuiKey_Z, false)))
+        {
+            if (m_CommandHistory && m_CommandHistory->CanRedo()) {
+                m_CommandHistory->Redo();
+                BOOM_INFO("[Shortcut] Redo (Ctrl+Y)");
+            }
+        }
 
         // ===== File Menu Shortcuts =====
 

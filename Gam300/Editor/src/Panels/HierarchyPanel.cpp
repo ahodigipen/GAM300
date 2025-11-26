@@ -6,6 +6,7 @@
 #include "Context/Context.h"
 #include "Context/DebugHelpers.h"
 #include "BoomEngine.h"              // InfoComponent (adjust include if needed)
+#include "Commands/UndoRedo.h"       // Undo/Redo system
 
 #include <entt/entt.hpp>
 #include <glm/gtx/euler_angles.hpp> // For eulerAngleYXZ
@@ -216,13 +217,38 @@ namespace EditorUI {
         if (ImGui::BeginDragDropTarget()) {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_HIERARCHY")) {
                 entt::entity draggedEntity = *(const entt::entity*)payload->Data;
-                // Preserve WORLD transform; local will adjust
-                if (Boom::SetParent(registry, draggedEntity, entity /* preserveWorldTransform = default true */)) {
-                    BOOM_INFO("[Hierarchy] Reparented '{}' to '{}'",
-                        registry.get<Boom::InfoComponent>(draggedEntity).name, info.name);
+
+                // Capture state for undo
+                entt::entity oldParent = Boom::GetParentEntity(registry, draggedEntity);
+                Boom::Transform3D oldLocalTransform;
+                if (registry.all_of<Boom::TransformComponent>(draggedEntity)) {
+                    oldLocalTransform = registry.get<Boom::TransformComponent>(draggedEntity).transform;
                 }
-                else {
-                    BOOM_WARN("[Hierarchy] Failed to reparent (circular reference prevented)");
+
+                // Create and execute reparent command
+                auto* history = m_Owner->GetCommandHistory();
+                if (history) {
+                    auto command = std::make_unique<ReparentCommand>(
+                        &registry,
+                        draggedEntity,
+                        oldParent,
+                        entity,
+                        oldLocalTransform
+                    );
+
+                    // The command will call SetParent internally
+                    history->Execute(std::move(command));
+
+                    BOOM_INFO("[Hierarchy] Reparented '{}' to '{}' (with undo)",
+                        registry.get<Boom::InfoComponent>(draggedEntity).name, info.name);
+                } else {
+                    // Fallback if no history (shouldn't happen)
+                    if (Boom::SetParent(registry, draggedEntity, entity)) {
+                        BOOM_INFO("[Hierarchy] Reparented '{}' to '{}'",
+                            registry.get<Boom::InfoComponent>(draggedEntity).name, info.name);
+                    } else {
+                        BOOM_WARN("[Hierarchy] Failed to reparent (circular reference prevented)");
+                    }
                 }
             }
             ImGui::EndDragDropTarget();
@@ -294,10 +320,34 @@ namespace EditorUI {
             if (ImGui::BeginDragDropTarget()) {
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_HIERARCHY")) {
                     entt::entity draggedEntity = *(const entt::entity*)payload->Data;
-                    // Set dragged entity's parent to null (make it root)
-                    if (Boom::SetParent(registry, draggedEntity, entt::null)) {
-                        BOOM_INFO("[Hierarchy] Unparented '{}'",
+
+                    // Capture state for undo
+                    entt::entity oldParent = Boom::GetParentEntity(registry, draggedEntity);
+                    Boom::Transform3D oldLocalTransform;
+                    if (registry.all_of<Boom::TransformComponent>(draggedEntity)) {
+                        oldLocalTransform = registry.get<Boom::TransformComponent>(draggedEntity).transform;
+                    }
+
+                    // Create and execute reparent command (to null = unparent)
+                    auto* history = m_Owner->GetCommandHistory();
+                    if (history) {
+                        auto command = std::make_unique<ReparentCommand>(
+                            &registry,
+                            draggedEntity,
+                            oldParent,
+                            entt::null,
+                            oldLocalTransform
+                        );
+
+                        history->Execute(std::move(command));
+                        BOOM_INFO("[Hierarchy] Unparented '{}' (with undo)",
                                  registry.get<Boom::InfoComponent>(draggedEntity).name);
+                    } else {
+                        // Fallback
+                        if (Boom::SetParent(registry, draggedEntity, entt::null)) {
+                            BOOM_INFO("[Hierarchy] Unparented '{}'",
+                                     registry.get<Boom::InfoComponent>(draggedEntity).name);
+                        }
                     }
                 }
                 ImGui::EndDragDropTarget();
@@ -355,8 +405,16 @@ namespace EditorUI {
                     ImGui::Spacing();
 
                     if (ImGui::Button("Yes, Delete", ImVec2(120, 0))) {
-                        // Delete entity and all children
-                        Boom::DeleteEntityRecursive(registry, m_EntityToDelete, nullptr);
+                        // Create and execute delete command
+                        auto* history = m_Owner->GetCommandHistory();
+                        if (history) {
+                            auto command = std::make_unique<DeleteEntityCommand>(&registry, m_EntityToDelete);
+                            history->Execute(std::move(command));
+                            BOOM_INFO("[Hierarchy] Deleted entity with undo support");
+                        } else {
+                            // Fallback: Delete entity and all children directly
+                            Boom::DeleteEntityRecursive(registry, m_EntityToDelete, nullptr);
+                        }
 
                         // Clear selection if deleted entity was selected
                         if (m_App->SelectedEntity() == m_EntityToDelete) {
