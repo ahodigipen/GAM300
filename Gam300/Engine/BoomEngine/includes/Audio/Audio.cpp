@@ -144,6 +144,37 @@ BOOM_API void SoundEngine::Update() {
 	}
 }
 
+BOOM_API void SoundEngine::PauseAll(bool pause)
+{
+	std::scoped_lock lock(mMutex);
+
+	// Pause/unpause all channels we track
+	for (auto& [name, ch] : mChannels) {
+		if (ch) ch->setPaused(pause);
+	}
+
+	// Also set pause on master group to be safe
+	if (sMasterGroup) sMasterGroup->setPaused(pause);
+}
+
+BOOM_API void SoundEngine::StopAll()
+{
+	std::scoped_lock lock(mMutex);
+
+	// Stop individual channels
+	for (auto& [name, ch] : mChannels) {
+		if (ch) ch->stop();
+	}
+	mChannels.clear();
+
+	// Stop master group
+	if (sMasterGroup) sMasterGroup->stop();
+
+	// Unload all sounds
+	for (auto& [name, sound] : mSounds) { if (sound) sound->release(); }
+	mSounds.clear();
+}
+
 BOOM_API void SoundEngine::Shutdown() {
     for (auto& [name, ch] : mChannels) { if (ch) ch->stop(); }
     mChannels.clear();
