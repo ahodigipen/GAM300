@@ -112,6 +112,10 @@ namespace Boom
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_SetSoundPosition(string name, ref Vec3 position);
+
+        // Raycasting & Main Menu
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        internal static extern ulong Boom_API_PickGameEntity();
     }
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -354,6 +358,9 @@ namespace Boom
         {
             Native.Boom_API_SetSoundPosition(name, ref position);
         }
+
+        // Raycasting
+        public static ulong PickGameEntity() => Native.Boom_API_PickGameEntity();
 
         // ===== GLFW key codes =====
         public const int KEY_LEFT = 263;

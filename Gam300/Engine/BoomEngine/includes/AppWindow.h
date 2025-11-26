@@ -244,6 +244,11 @@ namespace Boom {
 			camRegionX = x; camRegionY = y; camRegionW = w; camRegionH = h; camInputEnabled = enabled;
 		}
 
+		BOOM_INLINE float GetViewportX() const { return (float)camRegionX; }
+		BOOM_INLINE float GetViewportY() const { return (float)camRegionY; }
+		BOOM_INLINE float GetViewportW() const { return (float)camRegionW; }
+		BOOM_INLINE float GetViewportH() const { return (float)camRegionH; }
+
 		BOOM_INLINE bool IsMouseInCameraRegion(GLFWwindow* win) const {
 			double mx, my; glfwGetCursorPos(win, &mx, &my); // client-area coords
 			return (mx >= camRegionX && mx <= camRegionX + camRegionW &&

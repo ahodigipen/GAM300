@@ -1,5 +1,15 @@
 Version: 1.0
 ENTITIES:
+  - InfoComponent:
+      Parent: 0
+      Name: New Entity
+      UID: 2653467677794645184
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+  - {}
   - {}
   - {}
   - {}
@@ -186,7 +196,7 @@ ENTITIES:
       UID: 15128201680019638056
     TransformComponent:
       Transform:
-        Translate: [0, 0, 0]
+        Translate: [0, -1.1920929e-07, 0]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
     SpriteComponent:
@@ -203,7 +213,18 @@ ENTITIES:
   - {}
   - {}
   - {}
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0.00999999978, 1.08000004]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [0.00999999978, 2.08999991, 1.17999995]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: NewGameButton
       UID: 967306936058533436
@@ -216,7 +237,18 @@ ENTITIES:
       textureID: 18098974966956010645
       color: [1, 1, 1, 1]
       uiOverlay: true
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0.00999999978, 1.05999994]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [0.00999999978, 2, 1.17999995]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: HowToPlayButton
       UID: 5553909434533588079
@@ -229,7 +261,18 @@ ENTITIES:
       textureID: 14452546169200855872
       color: [1, 1, 1, 1]
       uiOverlay: true
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0.00999999978, 1.04999995]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [0.00999999978, 1.88999999, 1.16999996]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: QuitButton
       UID: 15563243650635203085
@@ -244,4 +287,19 @@ ENTITIES:
       uiOverlay: true
   - {}
   - {}
+  - {}
+  - InfoComponent:
+      Parent: 0
+      Name: Camera
+      UID: 12668083928950804851
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [1, -90, 0]
+        Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        NearPlane: 0.300000012
+        FarPlane: 1000
+        FOV: 120
   - {}

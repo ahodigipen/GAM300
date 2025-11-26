@@ -8,7 +8,7 @@ namespace GameScripts
         // --- Scene Management ---
         private const string LEVEL_SCENE_NAME = "level";
         private const string PAUSE_SCENE_NAME = "PauseMenu";
-        private const string MAIN_MENU_SCENE_NAME = "MainMenu";
+        private const string MAIN_MENU_SCENE_NAME = "MainMenu_2";
         private const string HOW_TO_PLAY_SCENE_NAME = "HowToPlay";
         private static string _currentSceneName;
 
@@ -31,6 +31,11 @@ namespace GameScripts
             _q_KeyWasDown = false;
 
             _currentSceneName = API.GetCurrentSceneName();
+
+            if (_currentSceneName == MAIN_MENU_SCENE_NAME)
+            {
+                MainMenu.OnStart(); // Finds the button IDs
+            }
 
             API.Log("[C#] Entry.Start() called for scene: " + _currentSceneName);
         }
@@ -67,6 +72,7 @@ namespace GameScripts
             // --- LOGIC FOR MAIN MENU ---
             if (_currentSceneName == MAIN_MENU_SCENE_NAME)
             {
+                MainMenu.OnUpdate(dt);
                 // Check for 'P' (without Ctrl) to START the Level
                 if (p_KeyDown && !_p_KeyWasDown && !ctrl_KeyDown)
                 {

@@ -1,5 +1,6 @@
-#include "RayCast.h"
-#include "Context/Context.h"
+#include "Core.h"
+#include "Input/RayCast.h"
+#include "Application/Context.h"
 #include "ECS/ECS.hpp"
 #include "Auxiliaries/Assets.h"
 
@@ -7,7 +8,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <algorithm>
 
-namespace EditorUI {
+namespace Boom {
 
     RayCast::RayCast(Boom::AppContext* context)
         : m_Context(context) {
@@ -43,9 +44,14 @@ namespace EditorUI {
         auto& registry = m_Context->scene;
 
         // Iterate through all entities with TransformComponent and ModelComponent (renderable)
-        auto view = registry.view<Boom::TransformComponent, Boom::ModelComponent>();
+        auto view = registry.view<Boom::TransformComponent>();
 
         for (auto entity : view) {
+            bool hasModel = registry.any_of<Boom::ModelComponent>(entity);
+            bool hasCollider = registry.any_of<Boom::ColliderComponent>(entity);
+
+            if (!hasModel && !hasCollider) continue; // Skip empty objects
+
             // Perform ray intersection test
             float hitDistance;
             if (RayIntersectsEntity(entity, rayOrigin, rayDirection, hitDistance)) {
@@ -68,11 +74,11 @@ namespace EditorUI {
 
         if (!m_Context) return false;
 
-        auto& registry = m_Context->scene;
+        /*auto& registry = m_Context->scene;*/
 
-        if (!registry.all_of<Boom::TransformComponent, Boom::ModelComponent>(entity)) {
+        /*if (!registry.all_of<Boom::TransformComponent, Boom::ColliderComponent>(entity)) {
             return false;
-        }
+        }*/
 
         // Get entity's bounding box in world space
         glm::vec3 aabbMin, aabbMax;
@@ -105,14 +111,18 @@ namespace EditorUI {
 
         auto& registry = m_Context->scene;
         const auto& transformComp = registry.get<Boom::TransformComponent>(entity);
-        const auto& modelComp = registry.get<Boom::ModelComponent>(entity);
-
+        const auto* modelComp = registry.try_get<Boom::ModelComponent>(entity);
+		const auto* colliderComp = registry.try_get<Boom::ColliderComponent>(entity);
         // Convert Transform3D to world matrix
         glm::mat4 worldMatrix = TransformToMatrix(transformComp.transform);
 
         // Try to get model-specific bounds from asset registry
         glm::vec3 modelMin, modelMax;
-        if (GetModelBounds(modelComp, modelMin, modelMax)) {
+           
+        // Only use model bounds if the component exists AND we can calculate them
+        bool boundsFound = false;
+
+        if (modelComp && GetModelBounds(*modelComp, modelMin, modelMax)) {
             // Use actual model bounds (same as before)
             std::vector<glm::vec3> corners = {
                 glm::vec3(modelMin.x, modelMin.y, modelMin.z),
@@ -125,25 +135,58 @@ namespace EditorUI {
                 glm::vec3(modelMax.x, modelMax.y, modelMax.z)
             };
 
-            aabbMin = glm::vec3(FLT_MAX);
-            aabbMax = glm::vec3(-FLT_MAX);
+            CalculateAABBFromCorners(corners, worldMatrix, aabbMin, aabbMax);
 
-            for (const auto& corner : corners) {
-                glm::vec3 worldCorner = worldMatrix * glm::vec4(corner, 1.0f);
-                aabbMin = glm::min(aabbMin, worldCorner);
-                aabbMax = glm::max(aabbMax, worldCorner);
-            }
+            boundsFound = true;
         }
-        else {
-            // Fallback: use a larger scale-based AABB that better encompasses typical models
+
+        if (!boundsFound && colliderComp) {
+            // Get the specific offsets/scales from the Collider Component
+            glm::vec3 colPos = colliderComp->Collider.localPosition;
+            glm::vec3 colScale = colliderComp->Collider.localScale;
+
+            // FORCE THICKNESS: If Z scale is near 0, treat it as 1.0 for picking purposes
+            // This makes thin buttons much easier to click
+            if (glm::abs(colScale.z) < 0.001f) colScale.z = 1.0f;
+
+            // If Entity Z scale is also thin, force a minimum world-space thickness
+            float worldZScale = transformComp.transform.scale.z * colScale.z;
+            if (worldZScale < 0.1f) {
+                // artificially thicken the collider for the raycast calculation only
+                colScale.z = 0.5f / transformComp.transform.scale.z;
+            }
+
+            // Standard box is 1x1x1 centered, so half-extent is 0.5
+            glm::vec3 halfSize = 0.5f * colScale;
+
+            glm::vec3 min = colPos - halfSize;
+            glm::vec3 max = colPos + halfSize;
+
+            // Manually transform these 8 corners by the world matrix
+            std::vector<glm::vec3> corners = {
+                glm::vec3(min.x, min.y, min.z),
+                glm::vec3(max.x, min.y, min.z),
+                glm::vec3(min.x, max.y, min.z),
+                glm::vec3(max.x, max.y, min.z),
+                glm::vec3(min.x, min.y, max.z),
+                glm::vec3(max.x, min.y, max.z),
+                glm::vec3(min.x, max.y, max.z),
+                glm::vec3(max.x, max.y, max.z)
+            };
+            CalculateAABBFromCorners(corners, worldMatrix, aabbMin, aabbMax);
+            boundsFound = true;
+        }
+
+        // 2. Fallback for non-models (like Buttons with Colliders)
+        if (!boundsFound) {
             glm::vec3 scale = transformComp.transform.scale;
 
-            // Use a more generous base size - many models are larger than 2x2x2 units
-            float baseSize = 5.0f; // Adjust this based on your typical model sizes
+            // Use 0.5f to create a 1x1x1 unit cube (standard Box Collider size)
+            float baseSize = 0.5f;
+
             glm::vec3 localMin = glm::vec3(-baseSize) * scale;
             glm::vec3 localMax = glm::vec3(baseSize) * scale;
 
-            // Transform AABB corners to world space
             std::vector<glm::vec3> corners = {
                 glm::vec3(localMin.x, localMin.y, localMin.z),
                 glm::vec3(localMax.x, localMin.y, localMin.z),
@@ -155,20 +198,25 @@ namespace EditorUI {
                 glm::vec3(localMax.x, localMax.y, localMax.z)
             };
 
-            aabbMin = glm::vec3(FLT_MAX);
-            aabbMax = glm::vec3(-FLT_MAX);
-
-            for (const auto& corner : corners) {
-                glm::vec3 worldCorner = worldMatrix * glm::vec4(corner, 1.0f);
-                aabbMin = glm::min(aabbMin, worldCorner);
-                aabbMax = glm::max(aabbMax, worldCorner);
-            }
+            CalculateAABBFromCorners(corners, worldMatrix, aabbMin, aabbMax);
         }
 
         // Expand AABB slightly to make selection easier
         const float expandAmount = 0.1f;
         aabbMin -= glm::vec3(expandAmount);
         aabbMax += glm::vec3(expandAmount);
+    }
+    // Helper to reduce code duplication
+    void RayCast::CalculateAABBFromCorners(const std::vector<glm::vec3>& corners, const glm::mat4& worldMatrix, glm::vec3& aabbMin, glm::vec3& aabbMax)
+    {
+        aabbMin = glm::vec3(FLT_MAX);
+        aabbMax = glm::vec3(-FLT_MAX);
+
+        for (const auto& corner : corners) {
+            glm::vec3 worldCorner = worldMatrix * glm::vec4(corner, 1.0f);
+            aabbMin = glm::min(aabbMin, worldCorner);
+            aabbMax = glm::max(aabbMax, worldCorner);
+        }
     }
 
     bool RayCast::GetModelBounds(const Boom::ModelComponent& modelComp, glm::vec3& min, glm::vec3& max) {
@@ -288,4 +336,4 @@ namespace EditorUI {
         return false;
     }
 
-} // namespace EditorUI
+} // namespace BOOM

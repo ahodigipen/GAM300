@@ -33,6 +33,7 @@
 #include "AI/DetourNavSystem.h"
 #include "AI/NavAgent.h"
 #include "AI/AISystem.h"
+#include "Input/RayCast.h"
 
 namespace std {
     template<>
@@ -644,6 +645,75 @@ namespace Boom
         BOOM_INLINE void SetCurrentScenePath(const std::string& path)
         {
             strncpy_s(m_CurrentScenePath, 512, path.c_str(), _TRUNCATE);
+        }
+
+        // Helper to cast a ray specifically from the GAMEPLAY camera
+        BOOM_INLINE uint32_t CastRayFromGameCamera()
+        {
+            double mx, my;
+            glfwGetCursorPos(m_Context->window->Handle().get(), &mx, &my);
+            auto* win = m_Context->window.get();
+
+            // 1. Get Viewport Values
+            float vX = win->GetViewportX();
+            float vY = win->GetViewportY();
+            float vW = win->GetViewportW();
+            float vH = win->GetViewportH();
+
+            // 2. Get Real Window Size
+            float windowW = (float)m_Context->window->getWidth();
+            float windowH = (float)m_Context->window->getHeight();
+
+            // --- THE FIX FOR STANDALONE BUILDS ---
+            // If viewport width/height are invalid (0), it means we are NOT in the editor.
+            // So we default to the full window dimensions.
+            if (vW <= 1.0f || vH <= 1.0f) {
+                vX = 0.0f;
+                vY = 0.0f;
+                vW = windowW;
+                vH = windowH;
+            }
+            // -------------------------------------
+
+            // 3. Calculate Local Coordinates
+            float localX = (float)mx - vX;
+            float localY = (float)my - vY;
+
+            // Safety: Ensure we don't divide by zero if window is minimized
+            if (vW <= 0.0f || vH <= 0.0f) return (uint32_t)entt::null;
+
+            // Check bounds
+            if (localX < 0 || localY < 0 || localX > vW || localY > vH) {
+                return (uint32_t)entt::null;
+            }
+
+            // ... (Camera finding logic is same as before) ...
+            Camera3D* mainCam = nullptr;
+            Transform3D* mainCamTrans = nullptr;
+            EnttView<Entity, CameraComponent>([&](Entity e, CameraComponent& cc) {
+                if (cc.camera.cameraType == Camera3D::CameraType::Main) {
+                    mainCam = &cc.camera;
+                    mainCamTrans = &e.Get<TransformComponent>().transform;
+                }
+                });
+
+            if (!mainCam || !mainCamTrans) return (uint32_t)entt::null;
+
+            // 4. Use the Correct Aspect Ratio (vW / vH)
+            float aspect = vW / vH;
+            glm::mat4 view = mainCam->View(*mainCamTrans);
+            glm::mat4 proj = mainCam->Projection(aspect);
+            glm::vec2 viewportSize = { vW, vH };
+
+            Boom::RayCast raycaster(m_Context);
+            entt::entity hit = raycaster.CastRayFromScreen(
+                localX, localY,
+                view, proj,
+                mainCamTrans->translate,
+                viewportSize
+            );
+
+            return (uint32_t)hit;
         }
 
     private:

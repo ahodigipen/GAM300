@@ -4,7 +4,7 @@
 #include "Context/Context.h"
 #include "Context/DebugHelpers.h"
 #include "Vendors/imgui/imgui.h"
-#include "RayCast.h"
+#include "Input/RayCast.h"
 #include <type_traits>
 #include <cstdint>
 #include <GL/glew.h>
@@ -51,6 +51,8 @@ namespace {
 
 namespace EditorUI {
 
+    ViewportPanel::~ViewportPanel() = default;
+
     ViewportPanel::ViewportPanel(Editor* owner)
         : m_Owner(owner)
         , m_IsFullscreen(false)
@@ -59,7 +61,7 @@ namespace EditorUI {
         m_Ctx = m_App ? owner->GetContext() : nullptr;
 
         if (m_Ctx) {
-            m_RayCast = std::make_unique<RayCast>(m_Ctx);
+            m_RayCast = std::make_unique<Boom::RayCast>(m_Ctx);
         }
     }
 
@@ -319,8 +321,17 @@ namespace EditorUI {
     void ViewportPanel::HandleMouseClick(const ImVec2& mousePos, const ImVec2&)
     {
         if (!m_Ctx || !m_RayCast) return;
+        // 2. Get the main Application instance
+    // We cast m_Ctx->app because it points to the root Application object
+        auto* app = static_cast<Boom::Application*>(m_Ctx->app);
 
-        // Perform ray cast using the current camera data
+        // 3. Check if the game is running
+        // If it is, we RETURN immediately so the Editor doesn't steal the click
+        if (app && app->GetState() == Boom::ApplicationState::RUNNING) {
+            return;
+        }
+
+        // 4. Perform ray cast (Rest of your code continues here...)
         entt::entity hitEntity = m_RayCast->CastRayFromScreen(
             mousePos.x, mousePos.y,
             m_CurrentViewMatrix,
