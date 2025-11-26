@@ -1,6 +1,33 @@
 Version: 1.0
 ENTITIES:
   - {}
+  - {}
+  - InfoComponent:
+      Parent: 0
+      Name: Lamp Light 1
+      UID: 4728347423512424990
+    TransformComponent:
+      Transform:
+        Translate: [7.47942448, 10.6317596, 4.65320253]
+        Rotate: [0, -90, -62.8400002]
+        Scale: [1.00000072, 1.50000036, 1.00000036]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.752429724, 0.838235259, 0.254757792]
+        Intensity: 10
+        FallOff: 2.22600007
+        CutOff: 0.34906584
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
   - InfoComponent:
       Parent: 0
       Name: Pagoda_Sliding_Door
@@ -1581,7 +1608,7 @@ ENTITIES:
       UID: 9430409505368605343
     TransformComponent:
       Transform:
-        Translate: [3.80381989, 4.82417011, 6.85368013]
+        Translate: [1.47298968, 4.46668577, 6.9027524]
         Rotate: [90, -49.0149994, 0]
         Scale: [1.89999998, 1, 1.82500005]
     ModelComponent:
@@ -1597,7 +1624,7 @@ ENTITIES:
       UID: 6391306859347206855
     TransformComponent:
       Transform:
-        Translate: [-3.11974001, 4.45110989, 6.28719997]
+        Translate: [-4.07581949, 4.434237, 6.29452372]
         Rotate: [90, 49.0149994, 0]
         Scale: [1.89999998, 1, 1.82500005]
     ModelComponent:
@@ -1613,7 +1640,7 @@ ENTITIES:
       UID: 16890964774342173810
     TransformComponent:
       Transform:
-        Translate: [0.60591501, 4.46169996, 5.82641983]
+        Translate: [-0.946392298, 4.35180569, 5.84643936]
         Rotate: [90, 0, 0]
         Scale: [2.5, 1, 1.82500005]
     ModelComponent:
@@ -2489,11 +2516,11 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Indoor_Lantern_Left_Floor_1
+      Name: "Light "
       UID: 13119191662111720466
     TransformComponent:
       Transform:
-        Translate: [7.41999006, 10.6149998, 4.38749981]
+        Translate: [7.26813698, 10.506052, 4.59823084]
         Rotate: [-90, 0, 0]
         Scale: [2.5, 2.5, 2.5]
     ModelComponent:
@@ -2526,7 +2553,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [21.8899899, 6.63788986, 3.59040999]
-        Rotate: [0, 0, 0]
+        Rotate: [270, 0, 0]
         Scale: [0.200000003, 1.375, 4.67500019]
     ModelComponent:
       ModelID: 1441742420851203854
@@ -2706,6 +2733,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
+        IsTrigger: false
         PhysicsMesh: 0
         Type: BOX
     InfoComponent:
@@ -2743,6 +2771,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0.5
         Restitution: 0
+        IsTrigger: false
         PhysicsMesh: 0
         Type: BOX
     InfoComponent:
@@ -2751,15 +2780,15 @@ ENTITIES:
       UID: 10000000000000000002
     TransformComponent:
       Transform:
-        Translate: [0, 0, 0]
+        Translate: [0.055172205, -0.254334569, 0.308413059]
         Rotate: [0, 0, 0]
-        Scale: [40, 2.5, 40]
+        Scale: [47.8499985, 2.5, 40]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 0
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [40, 2.5, 40]
+        Previous Scale: [47.8499985, 2.5, 40]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -2789,14 +2818,23 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-15.2554026, 109.217667, 34.4610825]
-        Rotate: [-40.125, -27694.875, 0]
+        Translate: [-2.36059546, 6.04693937, 15.4771576]
+        Rotate: [-6.32688904, 0.75, 0]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.300000012
         FarPlane: 1000
-        FOV: 94
+        FOV: 99
+    ThirdPersonCameraComponent:
+      Offset: [0.00999999978, 4.1500001, 0]
+      Current Distance: 5
+      Min Distance: 1
+      Max Distance: 5
+      Current Yaw: -1064
+      Current Pitch: 15
+      Mouse Sensitivity: 1
+      Scroll Sensitivity: 1
   - {}
   - InfoComponent:
       Parent: 0
@@ -2847,38 +2885,8 @@ ENTITIES:
   - {}
   - {}
   - {}
-  - InfoComponent:
-      Parent: 0
-      Name: Ninja
-      UID: 12784200605494588253
-    TransformComponent:
-      Transform:
-        Translate: [-2.91031003, -2.86350012, -1.67122996]
-        Rotate: [0, -0, 0]
-        Scale: [0.0250000004, 0.0250000004, 0.0250000004]
-    ModelComponent:
-      ModelID: 15771049607565255665
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Samurai
-      UID: 16439367912350421013
-    TransformComponent:
-      Transform:
-        Translate: [0.803038001, 1.36473, 16.9053497]
-        Rotate: [0, -0, 0]
-        Scale: [0.0250000004, 0.0250000004, 0.0250000004]
-    ModelComponent:
-      ModelID: 9858498430227169258
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+  - {}
+  - {}
   - InfoComponent:
       Parent: 0
       Name: Stairs_Handle_Right
@@ -3031,7 +3039,7 @@ ENTITIES:
       UID: 2848513897976485529
     TransformComponent:
       Transform:
-        Translate: [0.00168144004, 5.6427002, 18.7877693]
+        Translate: [-0.0579999983, 5.50299978, 18.7877693]
         Rotate: [0, 0, 0]
         Scale: [0.625, 0.874998987, 0.0250000004]
     ModelComponent:
@@ -3496,4 +3504,213 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+  - {}
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [-0.170000002, 1.32000005, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [100, 200, 100]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: CAPSULE
+    InfoComponent:
+      Parent: 0
+      Name: Samurai
+      UID: 2377197601835279376
+    TransformComponent:
+      Transform:
+        Translate: [-5.71181011, 1.58000052, 10.0096369]
+        Rotate: [0, -74.0000992, 0]
+        Scale: [0.0164999999, 0.0164999999, 0.0164999999]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0164999999, 0.0164999999, 0.0164999999]
+        FreezeRotationX: true
+        FreezeRotationY: true
+        FreezeRotationZ: true
+        Type: DYNAMIC
+    ModelComponent:
+      ModelID: 17415887327955155372
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    AnimatorComponent:
+      Clips:
+        - name: mixamo.com
+          filePath: ""
+        - name: Walking
+          filePath: Resources/Models/Player/animations/Walking.fbx
+        - name: Samurai New Walk
+          filePath: Resources/Samurai New Walk.fbx
+        - name: Fast Run
+          filePath: Resources/Models/Player/animations/Fast Run.fbx
+        - name: Samurai Idle
+          filePath: Resources/Models/Player/animations/Samurai Idle.fbx
+        - name: run
+          filePath: Resources/Models/run.fbx
+      States:
+        - name: Walk
+          clipIndex: 2
+          speed: 1
+          loop: true
+          transitions:
+            - targetStateIndex: 2
+              conditionType: 2
+              parameterName: Speed
+              floatValue: 0.100000001
+              boolValue: true
+              transitionDuration: 0.25
+              hasExitTime: false
+              exitTime: 0.899999976
+            - targetStateIndex: 1
+              conditionType: 1
+              parameterName: Speed
+              floatValue: 5.0999999
+              boolValue: false
+              transitionDuration: 0.25
+              hasExitTime: false
+              exitTime: 0.899999976
+            - targetStateIndex: 1
+              conditionType: 3
+              parameterName: Sprint
+              floatValue: 0
+              boolValue: true
+              transitionDuration: 0.25
+              hasExitTime: false
+              exitTime: 0.899999976
+        - name: Run
+          clipIndex: 5
+          speed: 1
+          loop: true
+          transitions:
+            - targetStateIndex: 0
+              conditionType: 3
+              parameterName: Sprint
+              floatValue: 0
+              boolValue: false
+              transitionDuration: 0.25
+              hasExitTime: false
+              exitTime: 0.899999976
+            - targetStateIndex: 0
+              conditionType: 2
+              parameterName: Speed
+              floatValue: 2.4000001
+              boolValue: false
+              transitionDuration: 0.25
+              hasExitTime: false
+              exitTime: 0.899999976
+            - targetStateIndex: 2
+              conditionType: 2
+              parameterName: Speed
+              floatValue: 0.100000001
+              boolValue: false
+              transitionDuration: 0.25
+              hasExitTime: false
+              exitTime: 0.899999976
+        - name: Idle
+          clipIndex: 4
+          speed: 1
+          loop: true
+          transitions:
+            - targetStateIndex: 0
+              conditionType: 3
+              parameterName: IsMoving
+              floatValue: 0
+              boolValue: true
+              transitionDuration: 0.25
+              hasExitTime: false
+              exitTime: 0.899999976
+            - targetStateIndex: 0
+              conditionType: 1
+              parameterName: Speed
+              floatValue: 0.200000003
+              boolValue: false
+              transitionDuration: 0.25
+              hasExitTime: false
+              exitTime: 0.899999976
+            - targetStateIndex: 1
+              conditionType: 3
+              parameterName: Sprint
+              floatValue: 0
+              boolValue: true
+              transitionDuration: 0.5
+              hasExitTime: false
+              exitTime: 0.899999976
+      FloatParams:
+        Speed: 5.59765032e-17
+      BoolParams:
+        IsMoving: false
+        Sprint: false
+        IsSneaking: false
+      CurrentStateIndex: 2
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PlayerMovement
+      ParamsJSON: "{}"
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - InfoComponent:
+      Parent: 0
+      Name: Lamp Wall Direction Light
+      UID: 4905365268385423906
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [9, 0, -90]
+        Scale: [1, 1, 1]
+    DirectLightComponent:
+      Light:
+        Radiance: [0.166522428, 0.754901946, 0.633764923]
+        Intensity: 0.129999995
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 2
+      UID: 3106835252756117780
+    TransformComponent:
+      Transform:
+        Translate: [-0.571732998, 10.8016672, 4.48044062]
+        Rotate: [0, -90, 0]
+        Scale: [1, 1, 1]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.463368237, 0.725490212, 0.0889080986]
+        Intensity: 10
+        FallOff: 1.50600004
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 3
+      UID: 12637237387574263659
+    TransformComponent:
+      Transform:
+        Translate: [-7.24297285, 10.7255249, 4.4982152]
+        Rotate: [0, -90, 0]
+        Scale: [1, 1, 1]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.872548997, 0.777444184, 0.0641580224]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
   - {}
