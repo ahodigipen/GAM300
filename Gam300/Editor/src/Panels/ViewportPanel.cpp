@@ -243,7 +243,7 @@ namespace EditorUI {
             m_UseSnap ? m_SnapValues : nullptr
         );
 
-        gizmoWantsInput = ImGuizmo::IsOver() || ImGuizmo::IsUsing();
+        gizmoWantsInput = ImGuizmo::IsUsing();
 
         if (ImGuizmo::IsUsing())
         {
@@ -295,7 +295,7 @@ namespace EditorUI {
         );
 
         // Check if gizmo wants input
-        gizmoWantsInput = ImGuizmo::IsOver() || ImGuizmo::IsUsing();
+        gizmoWantsInput = ImGuizmo::IsUsing();
 
         if (ImGuizmo::IsUsing())
         {
