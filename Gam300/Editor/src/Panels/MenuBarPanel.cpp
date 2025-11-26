@@ -158,6 +158,9 @@ namespace EditorUI {
                     }
                     ImGui::EndMenu();
                 }
+                ImGui::SliderFloat("Ambient Strength",
+                    &m.ctx->renderer->AmbientStrength(),
+                    0.0f, 0.5f);
                 bool TEMPORARY_PLACEHOLDER_WIREFRAME_COLLISION{};
                 ImGui::MenuItem("Collision Lines", nullptr, TEMPORARY_PLACEHOLDER_WIREFRAME_COLLISION);
 				ImGui::MenuItem("Bloom", nullptr, &m.ctx->renderer->enabledBloom);
