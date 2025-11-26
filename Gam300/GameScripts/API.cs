@@ -175,7 +175,8 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_SetRotationY(ulong handle, float yawDegrees);
 
-
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern bool LinecastIgnoreBoth(Vec3 from, Vec3 to, ulong ignoreEntity1, ulong ignoreEntity2);
     }
 
     // ========= DELEGATES =========
@@ -495,6 +496,11 @@ namespace Boom
         public static void SetSoundPosition(string name, Vec3 position)
         {
             Native.Boom_API_SetSoundPosition(name, ref position);
+        }
+
+        public static bool LinecastIgnoreBoth(Vec3 from, Vec3 to, ulong ignoreEntity1, ulong ignoreEntity2)
+        {
+            return Native.LinecastIgnoreBoth(from, to, ignoreEntity1, ignoreEntity2);
         }
 
         public static bool Linecast(Vec3 from, Vec3 to, ulong ignoreEntity = 0)

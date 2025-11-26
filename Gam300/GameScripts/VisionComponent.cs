@@ -132,6 +132,39 @@ namespace GameScripts
             return IsTargetInVisionConeAndLOS(enemyPos, enemyRot, targetPos, target);
         }
 
+        private bool HasLineOfSight(Vec3 from, Vec3 to)
+        {
+            if (!_settings.requireLineOfSight) return true;
+            if (!_linecastAvailable) return true;
+
+            try
+            {
+                // Add eye-height offset to avoid ground collision
+                // Note: Native code adds another +0.15f, so total offset is ~1.65f
+                Vec3 fromEye = new Vec3(from.X, from.Y + 1.5f, from.Z);
+                Vec3 toEye = new Vec3(to.X, to.Y + 1.5f, to.Z);
+
+                // Pass Entity (enemy) so native code ignores enemy's collider
+                // Native code should also ignore target's collider
+                bool clear = API.Linecast(fromEye, toEye, Entity);
+                _lastLosReason = clear ? "clear" : "ray blocked before target";
+                if (_settings.debugLOS)
+                    API.Log($"[VisionComponent] LOS {(clear ? "CLEAR" : "BLOCKED")} from ({fromEye.X:F1},{fromEye.Y:F1},{fromEye.Z:F1}) to ({toEye.X:F1},{toEye.Y:F1},{toEye.Z:F1})");
+                return clear;
+            }
+            catch
+            {
+                _linecastAvailable = false;
+                _settings.requireLineOfSight = false;
+                if (!_warnedNoLinecast)
+                {
+                    _warnedNoLinecast = true;
+                    API.Log("[VisionComponent] WARN: Native Linecast missing -> LOS disabled.");
+                }
+                return true;
+            }
+        }
+
         private bool IsTargetInVisionConeAndLOS(Vec3 enemyPos, Vec3 enemyRot, Vec3 targetPos, ulong targetHandle)
         {
             float dx = targetPos.X - enemyPos.X;
@@ -164,7 +197,8 @@ namespace GameScripts
                 return false;
             }
 
-            if (_settings.requireLineOfSight && !HasLineOfSight(enemyPos, targetPos))
+            // Pass target handle to LOS check
+            if (_settings.requireLineOfSight && !HasLineOfSightToTarget(enemyPos, targetPos, targetHandle))
             {
                 if (_settings.debugReasons)
                     API.Log($"[VisionComponent] Reject LOS blocked ({_lastLosReason})");
@@ -174,18 +208,22 @@ namespace GameScripts
             return true;
         }
 
-        private bool HasLineOfSight(Vec3 from, Vec3 to)
+        private bool HasLineOfSightToTarget(Vec3 from, Vec3 to, ulong targetHandle)
         {
             if (!_settings.requireLineOfSight) return true;
             if (!_linecastAvailable) return true;
 
             try
             {
-                // Pass Entity so native code can ignore enemy's own collider
-                bool clear = API.Linecast(from, to, Entity);
+                // Eye-height offset (native adds +0.15f more)
+                Vec3 fromEye = new Vec3(from.X, from.Y + 1.5f, from.Z);
+                Vec3 toEye = new Vec3(to.X, to.Y + 1.5f, to.Z);
+
+                // Use new API that ignores BOTH enemy and target
+                bool clear = API.LinecastIgnoreBoth(fromEye, toEye, Entity, targetHandle);
                 _lastLosReason = clear ? "clear" : "ray blocked before target";
                 if (_settings.debugLOS)
-                    API.Log($"[VisionComponent] LOS {(clear ? "CLEAR" : "BLOCKED")}");
+                    API.Log($"[VisionComponent] LOS {(clear ? "CLEAR" : "BLOCKED")} from ({fromEye.X:F1},{fromEye.Y:F1},{fromEye.Z:F1}) to ({toEye.X:F1},{toEye.Y:F1},{toEye.Z:F1})");
                 return clear;
             }
             catch

@@ -463,14 +463,17 @@ namespace Boom {
         PxRaycastBuffer hit;
         bool blocked = scene->raycast(origin, dir, len, hit, PxHitFlag::eDEFAULT, filter, &preFilter);
 
+        // If nothing was hit, line is clear
         if (!blocked) return true;
 
-        // If hit is very close to target, treat as clear (hitting the target entity itself is OK)
-        const float epsilon = 0.2f;
-        if (hit.block.distance + epsilon >= len)
+        // If we hit something, check if it's beyond the target (we hit the target itself)
+        // Use a smaller epsilon to be more strict
+        const float epsilon = 0.05f;
+        if (hit.block.distance >= len - epsilon)
             return true;
 
-        return false; // Something solid blocked before target
+        // Something blocked the ray before reaching the target
+        return false;
     }
 
     // Add these new functions after the existing ICALL functions
@@ -969,6 +972,76 @@ namespace Boom {
         transform.rotate.y = yawDegrees;
     }
 
+    // Add new overload that ignores two entities
+    static bool ICALL_API_LinecastIgnoreBoth(glm::vec3* from, glm::vec3* to, uint64_t ignoreEntityHandle1, uint64_t ignoreEntityHandle2)
+    {
+        if (!s_Ctx || !from || !to) return true;
+        if (!s_Ctx->physics) return true;
+
+        PxScene* scene = s_Ctx->physics->GetPxScene();
+        if (!scene) return true;
+
+        glm::vec3 delta = *to - *from;
+        float len2 = glm::dot(delta, delta);
+        if (len2 < 1e-6f) return true;
+
+        float len = std::sqrt(len2);
+
+        PxVec3 origin(from->x, from->y + 0.15f, from->z);
+        PxVec3 dir(delta.x / len, delta.y / len, delta.z / len);
+
+        PxQueryFilterData filter;
+        filter.flags = PxQueryFlag::eSTATIC | PxQueryFlag::eDYNAMIC | PxQueryFlag::ePREFILTER;
+
+        entt::entity ignoreEntity1 = static_cast<entt::entity>(static_cast<uint32_t>(ignoreEntityHandle1));
+        entt::entity ignoreEntity2 = static_cast<entt::entity>(static_cast<uint32_t>(ignoreEntityHandle2));
+
+        struct PreFilter : PxQueryFilterCallback {
+            entt::entity entityToIgnore1;
+            entt::entity entityToIgnore2;
+
+            PreFilter(entt::entity ignore1, entt::entity ignore2)
+                : entityToIgnore1(ignore1), entityToIgnore2(ignore2) {
+            }
+
+            PxQueryHitType::Enum preFilter(const PxFilterData&, const PxShape* shape,
+                const PxRigidActor* actor, PxHitFlags&) override
+            {
+                if (shape->getFlags() & PxShapeFlag::eTRIGGER_SHAPE)
+                    return PxQueryHitType::eNONE;
+
+                if (actor && actor->userData)
+                {
+                    EntityID* entityID = static_cast<EntityID*>(actor->userData);
+                    if (entityID && (*entityID == entityToIgnore1 || *entityID == entityToIgnore2))
+                        return PxQueryHitType::eNONE;
+                }
+
+                return PxQueryHitType::eBLOCK;
+            }
+
+            PxQueryHitType::Enum postFilter(const PxFilterData&, const PxQueryHit&) override
+            {
+                return PxQueryHitType::eBLOCK;
+            }
+        } preFilter(ignoreEntity1, ignoreEntity2);
+
+        PxRaycastBuffer hit;
+        bool blocked = scene->raycast(origin, dir, len, hit, PxHitFlag::eDEFAULT, filter, &preFilter);
+
+        // If nothing was hit, line is clear
+        if (!blocked) return true;
+
+        // If we hit something, check if it's beyond the target (we hit the target itself)
+        // Use a smaller epsilon to be more strict
+        const float epsilon = 0.05f;
+        if (hit.block.distance >= len - epsilon)
+            return true;
+
+        // Something blocked the ray before reaching the target
+        return false;
+    }
+
 
     void RegisterScriptInternalCalls(AppContext* ctx)
     {
@@ -1049,5 +1122,7 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_Linecast", (const void*)ICALL_API_Linecast);
 
         mono_add_internal_call("Boom.Native::Boom_API_SetRotationY", (const void*)ICALL_API_SetRotationY);
+    
+        mono_add_internal_call("Boom.Native::LinecastIgnoreBoth", (const void*)ICALL_API_LinecastIgnoreBoth);
     }
 }
