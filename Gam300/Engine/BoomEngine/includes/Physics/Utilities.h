@@ -71,6 +71,9 @@ namespace Boom {
         // collider geometry shape
         PxShape* Shape = nullptr;
 
+		// For when Collider Component is added without RigidBody Component
+        PxRigidActor* actor = nullptr;
+
         // collider shape type
         enum Type {
             BOX = 0,

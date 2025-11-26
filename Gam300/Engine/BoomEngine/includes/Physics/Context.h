@@ -364,7 +364,35 @@ namespace Boom {
             auto& body = entity.Get<RigidBodyComponent>().RigidBody;
             //bool hasCollider = entity.Has<ColliderComponent>();
 
+        // ============================================================
+        // === STEP 1: CLEANUP EXISTING ACTORS (Prevent Duplicates) ===
+        // ============================================================
 
+        // A. Check for an existing "Collider-Only" actor (Orphan)
+        // If we are adding a RigidBody, the old static collider actor must die.
+            if (entity.Has<ColliderComponent>()) {
+                auto& collider = entity.Get<ColliderComponent>().Collider;
+                if (collider.actor) {
+                    if (collider.actor->userData) {
+                        delete static_cast<EntityID*>(collider.actor->userData);
+                    }
+                    m_Scene->removeActor(*collider.actor);
+                    collider.actor->release();
+                    collider.actor = nullptr;
+                }
+            }
+
+            // B. Check for an existing RigidBody actor (Re-initialization)
+            // If we are re-adding the RB, destroy the old one first.
+            if (body.actor) {
+                if (body.actor->userData) {
+                    delete static_cast<EntityID*>(body.actor->userData);
+                }
+                m_Scene->removeActor(*body.actor);
+                body.actor->release();
+                body.actor = nullptr;
+            }
+            // ============================================================
 
             // create rigidbody transformation
             PxTransform pose(ToPxVec3(transform.translate));
@@ -391,13 +419,36 @@ namespace Boom {
 
                 if (collider.type == Collider3D::BOX)
                 {
-                    PxBoxGeometry box(ToPxVec3((transform.scale * collider.localScale) / 2.0f));
+                    glm::vec3 halfExtents = (transform.scale * collider.localScale) / 2.0f;
+
+                    // Validate: ensure minimum dimensions to prevent zero-volume geometries
+                    const float kMinDimension = 0.01f;
+                    halfExtents.x = std::max(halfExtents.x, kMinDimension);
+                    halfExtents.y = std::max(halfExtents.y, kMinDimension);
+                    halfExtents.z = std::max(halfExtents.z, kMinDimension);
+
+                    PxBoxGeometry box(ToPxVec3(halfExtents));
+
+                    if (!box.isValid()) {
+                        BOOM_ERROR("Invalid box geometry for entity. HalfExtents: ({}, {}, {})",
+                            halfExtents.x, halfExtents.y, halfExtents.z);
+                        return;
+                    }
+
                     collider.Shape = m_Physics->createShape(box, *collider.material);
                     collider.Shape->setLocalPose(userLocalPose);
                 }
                 else if (collider.type == Collider3D::SPHERE) {
-                    PxSphereGeometry
-                        sphere((transform.scale.x * collider.localScale.x) / 2.0f);
+                    float radius = (transform.scale.x * collider.localScale.x) / 2.0f;
+                    const float kMinRadius = 0.01f;
+                    radius = std::max(radius, kMinRadius);
+
+                    PxSphereGeometry sphere(radius);
+                    if (!sphere.isValid()) {
+                        BOOM_ERROR("Invalid sphere geometry. Radius: {}", radius);
+                        return;
+                    }
+
                     collider.Shape = m_Physics->createShape(sphere, *collider.material);
                     PxTransform relativePose(PxQuat(0, PxVec3(0, 0, 1)));
                     collider.Shape->setLocalPose(userLocalPose);
@@ -493,12 +544,12 @@ namespace Boom {
                 {
                     // Safety Check: PhysX forbids Triangle Meshes on Dynamic actors
                     // We check if 'body' exists (AddRigidBody) or assume static (AddColliderOnly)
-#ifdef ADD_RIGID_BODY_SCOPE 
+                    #ifdef ADD_RIGID_BODY_SCOPE 
                     if (body.type != RigidBody3D::STATIC) {
                         BOOM_ERROR("Cannot use TRIANGLE_MESH on Dynamic Rigidbody '{}'. Switch to CONVEX.", entity.Get<InfoComponent>().name);
                         return;
                     }
-#endif
+                    #endif
 
                     if (collider.physicsMeshID == EMPTY_ASSET) return;
                     auto& asset = assetRegistry.Get<PhysicsMeshAsset>(collider.physicsMeshID);
@@ -663,6 +714,16 @@ namespace Boom {
 
 
         BOOM_INLINE void AddColliderOnly(Entity& entity, AssetRegistry& assetRegistry) {
+            // ============================================================
+                // === STEP 1: ABORT IF RIGIDBODY EXISTS ===
+                // ============================================================
+                // If this entity has a RigidBody, IT owns the actor. 
+                // We should NOT create a separate static actor here.
+            if (entity.Has<RigidBodyComponent>()) {
+                // Stop. The AddRigidBody function handles actor creation.
+                return;
+            }
+
             if (!entity.Has<ColliderComponent>()) {
                 BOOM_WARN("AddColliderOnly called on entity without ColliderComponent");
                 return;
@@ -670,6 +731,18 @@ namespace Boom {
 
             auto& transform = entity.Get<TransformComponent>().transform;
             auto& collider = entity.Get<ColliderComponent>().Collider;
+
+            // ============================================================
+            // === STEP 2: CLEANUP EXISTING ORPHAN (Re-initialization) ===
+            // ============================================================
+            if (collider.actor) {
+                if (collider.actor->userData) {
+                    delete static_cast<EntityID*>(collider.actor->userData);
+                }
+                m_Scene->removeActor(*collider.actor);
+                collider.actor->release();
+                collider.actor = nullptr;
+            }
 
             // Create transformation
             PxTransform pose(ToPxVec3(transform.translate));
@@ -855,6 +928,9 @@ namespace Boom {
 
             // Add to scene
             m_Scene->addActor(*staticActor);
+
+			// Attach the actor to the collider component
+            collider.actor = staticActor;
 
             // Store actor reference in a RigidBodyComponent if it exists
             if (entity.Has<RigidBodyComponent>()) {
@@ -1244,8 +1320,6 @@ namespace Boom {
                 m_Scene->simulate(dt);
 
                 // block until simulation is complete
-
-
                 m_Scene->fetchResults(true);
             }
         }
@@ -1360,46 +1434,37 @@ namespace Boom {
         }
 
         // Helper to clean up actors for entities that ONLY have a Collider (Triggers)
+        // Helper to clean up actors for entities that ONLY have a Collider (Triggers)
         BOOM_INLINE void RemoveColliderActor(Entity& entity)
         {
             if (!entity.Has<ColliderComponent>()) return;
 
             auto& collider = entity.Get<ColliderComponent>().Collider;
 
-            // 1. Check if we have a valid shape
-            if (collider.Shape)
+            // *** UPDATED: Use the stored actor pointer directly ***
+            PxRigidActor* actor = collider.actor;
+
+            if (actor)
             {
-                // 2. ASK PHYSX: "Who owns this shape?"
-                // This retrieves the 'ghost' actor we lost track of.
-                PxRigidActor* actor = collider.Shape->getActor();
-
-                if (actor)
-                {
-                    // 3. Safety Check: 
-                    // Only destroy the actor if there is NO RigidBodyComponent.
-                    // (If there IS a RigidBodyComponent, that component owns the actor, not us).
-                    if (!entity.Has<RigidBodyComponent>())
-                    {
-                        // Clean up User Data to prevent memory leaks
-                        if (actor->userData) {
-                            EntityID* ownerID = static_cast<EntityID*>(actor->userData);
-                            BOOM_DELETE(ownerID);
-                        }
-
-                        // Remove from scene and release memory
-                        m_Scene->removeActor(*actor);
-                        actor->release();
-
-                        BOOM_INFO("Cleaned up Collider-Only Actor via Shape linkage.");
-                    }
-                    else
-                    {
-                        // If we have a RigidBody, just detach the shape, don't kill the actor.
-                        actor->detachShape(*collider.Shape);
-                    }
+                // Clean up User Data to prevent memory leaks
+                if (actor->userData) {
+                    EntityID* ownerID = static_cast<EntityID*>(actor->userData);
+                    BOOM_DELETE(ownerID);
+                    actor->userData = nullptr;
                 }
 
-                // 4. Release the shape itself
+                // Remove from scene and release memory
+                m_Scene->removeActor(*actor);
+                actor->release();
+
+                BOOM_INFO("Cleaned up Collider-Only Actor.");
+
+                // Clear the pointer
+                collider.actor = nullptr;
+            }
+
+            // Release the shape itself
+            if (collider.Shape) {
                 collider.Shape->release();
                 collider.Shape = nullptr;
             }

@@ -236,18 +236,45 @@ namespace Boom
             {
                 prevMP = curMP;
 
+                // 1. [EXISTING] Sync RigidBody -> Transform
                 EnttView<Entity, TransformComponent, RigidBodyComponent>([this](auto entity, TransformComponent& tc, RigidBodyComponent& rbc) {
-                    // Check if the current scale is different from the stored scale
                     if (tc.transform.scale != rbc.RigidBody.previousScale)
                     {
-                        // If it changed, update the collider shape
                         m_Context->physics->UpdateColliderShape(entity, GetAssetRegistry());
-
-                        // Then, update the stored scale to the new value for the next frame
                         rbc.RigidBody.previousScale = tc.transform.scale;
+                    }
+                    if (!m_IsInPlayMode || rbc.RigidBody.type != RigidBody3D::DYNAMIC)
+                    {
+                        // Ensure actor pointer is valid before updating
+                        if (rbc.RigidBody.actor) {
+                            m_Context->physics->UpdateRigidBodyTransform(entity, tc.transform);
+                        }
+                    }
+                    });
+
+                // 2. [MISSING - ADD THIS] Sync Collider-Only Entities (Triggers/Static)
+                EnttView<Entity, TransformComponent, ColliderComponent>([this](auto entity, TransformComponent& tc, ColliderComponent& cc) {
+                    // Skip if it has a RigidBody (already handled above)
+                    if (entity.template Has<RigidBodyComponent>()) return;
+
+                    // If it has a Shape, find the attached "Ghost" Actor and force it to move
+                    if (cc.Collider.Shape)
+                    {
+                        physx::PxRigidActor* actor = cc.Collider.Shape->getActor();
+                        if (actor)
+                        {
+                            glm::quat rot = glm::quat(glm::radians(tc.transform.rotate));
+                            physx::PxTransform pose(
+                                physx::PxVec3(tc.transform.translate.x, tc.transform.translate.y, tc.transform.translate.z),
+                                physx::PxQuat(rot.x, rot.y, rot.z, rot.w)
+                            );
+                            actor->setGlobalPose(pose);
+                        }
                     }
                     });
             }
+
+
 
             RenderScene();
             //DrawDebugTPC();
