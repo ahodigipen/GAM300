@@ -82,7 +82,7 @@ namespace Boom
 
         // === MODEL COMPONENT ===
 		RegisterPropertyComponent<ModelComponent>("ModelComponent");
-
+		
         // === ANIMATOR COMPONENT ===
         registry.RegisterComponentSerializer(
             "AnimatorComponent",
@@ -481,7 +481,32 @@ namespace Boom
                 sc.InstanceId = 0;
             }
         );
+        registry.RegisterComponentSerializer(
+            "SceneNavmeshComponent",
+            // ----- SERIALIZE -----
+            [](YAML::Emitter& e, EntityRegistry& reg, EntityID ent)
+            {
+                if (!reg.all_of<SceneNavmeshComponent>(ent))
+                    return;
 
+                auto& sn = reg.get<SceneNavmeshComponent>(ent);
+
+                e << YAML::Key << "SceneNavmeshComponent" << YAML::Value << YAML::BeginMap;
+                e << YAML::Key << "NavmeshFile" << YAML::Value << sn.navmeshFile;
+                e << YAML::EndMap;
+            },
+            // ----- DESERIALIZE -----
+            [](const YAML::Node& data, EntityRegistry& reg, EntityID ent, AssetRegistry&)
+            {
+                if (!data || !data.IsMap())
+                    return;
+
+                auto& sn = reg.get_or_emplace<SceneNavmeshComponent>(ent);
+
+                if (auto v = data["NavmeshFile"])
+                    sn.navmeshFile = v.as<std::string>(sn.navmeshFile);
+            }
+        );
 
         // === DIRECT LIGHT COMPONENT ===
 		RegisterPropertyComponent<DirectLightComponent>("DirectLightComponent");

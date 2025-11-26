@@ -386,14 +386,19 @@ namespace Boom {
             "PauseMenuTagComponent", PauseMenuTagComponent
         )
     };
-
+    struct SceneNavmeshComponent {
+        std::string navmeshFile;   // e.g. "Resources/NavData/level1.bin"
+        XPROPERTY_DEF("SceneNavmeshComponent", SceneNavmeshComponent,
+            obj_member<"NavmeshFile", &SceneNavmeshComponent::navmeshFile>)
+    };
+   
     struct Entity
     {
         BOOM_INLINE Entity(EntityRegistry* registry, EntityID entity) :
             m_Registry(registry), m_EnttID(entity)
         {
         }
-
+       
         BOOM_INLINE Entity(EntityRegistry* registry) :
             m_Registry(registry)
         {
@@ -457,5 +462,24 @@ namespace Boom {
         EntityID m_EnttID = NENTT;
     };
 
+    BOOM_INLINE entt::entity GetOrCreateSceneSettings(entt::registry& reg)
+    {
+        auto view = reg.view<SceneNavmeshComponent>();
 
+        for (auto e : view) {
+            return e;                  // first one
+        }
+
+        // Otherwise create + attach component
+        auto e = reg.create();
+        reg.emplace<SceneNavmeshComponent>(e);
+        return e;
+    }
+    BOOM_INLINE entt::entity TryGetSceneSettings(entt::registry& reg)
+    {
+        auto view = reg.view<SceneNavmeshComponent>();
+        if (!view.empty())
+            return *view.begin();
+        return entt::null;
+    }
 }

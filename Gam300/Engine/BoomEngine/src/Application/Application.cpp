@@ -71,7 +71,7 @@ namespace Boom
         }
         // --- END MONO INITIALIZE ---
 
-        InitNavRuntime();
+       // InitNavRuntime();
         //EnsureNinjaSeeksSamurai();
         CameraController camera(
             m_Context->window.get()
@@ -188,7 +188,7 @@ namespace Boom
                     });
                 UpdateKinematicTransforms();
                 RunPhysicsSimulation();
-                InitNavRuntime();
+                //InitNavRuntime();
                 UpdateThirdPersonCameras();
             }
 
