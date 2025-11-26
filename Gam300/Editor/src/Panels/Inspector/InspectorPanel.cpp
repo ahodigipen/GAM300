@@ -1067,11 +1067,11 @@ namespace EditorUI {
                 // Fit to Transform button
                 ImGui::Spacing();
                 if (ImGui::Button("Fit to Transform")) {
-                    auto& transform = selected.Get<TransformComponent>().transform;
-                    auto& col = selected.Get<ColliderComponent>().Collider;
+                    //auto& transform = selected.Get<TransformComponent>().transform;
+                    auto& colli = selected.Get<ColliderComponent>().Collider;
                     
                     // Reset to match transform exactly
-                    col.localScale = glm::vec3(1.0f, 1.0f, 1.0f);
+                    colli.localScale = glm::vec3(1.0f, 1.0f, 1.0f);
                     
                     // Update the physics shape
                     m_App->GetPhysicsContext().UpdateColliderShape(selected, 
@@ -1153,9 +1153,21 @@ namespace EditorUI {
         }
 
         if (selected.Has<SkyboxComponent>()) {
-            auto& sky = selected.Get<SkyboxComponent>();
-            DrawComponentSection("Skybox", &sky, GetSkyboxComponentProperties, true,
-                [&]() { ctx->scene.remove<SkyboxComponent>(m_App->SelectedEntity()); });
+            ImGui::PushID("Skybox");
+            if (ImGui::CollapsingHeader("Skybox", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap)) {
+                if (ComponentSettings<Boom::SkyboxComponent>(ctx)) {
+                    ImGui::PopID();
+                    return; // Component was removed, exit early
+                }
+                auto& sky = selected.Get<SkyboxComponent>();
+
+                ImGui::BeginTable("##maps", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersInnerV);
+                ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Asset", ImGuiTableColumnFlags_WidthStretch);
+                InputAssetWidget<CONSTANTS::DND_PAYLOAD_SKYBOX>("skybox", sky.skyboxID);
+                ImGui::EndTable();
+            }
+            ImGui::PopID();
         }
 
         if (selected.Has<Boom::PauseMenuTagComponent>()) {
