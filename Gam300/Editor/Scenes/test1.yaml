@@ -9,6 +9,18 @@ ENTITIES:
   - {}
   - {}
   - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
   - InfoComponent:
       Parent: 0
       Name: Pagoda_Sliding_Door
@@ -3552,18 +3564,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 13244744886219103757
-        Type: CONVEX_MESH
-    InfoComponent:
+  - InfoComponent:
       Parent: 0
       Name: Left_Wall_Of_Hut_Bottom
       UID: 8618011661999532453
@@ -3572,16 +3573,6 @@ ENTITIES:
         Translate: [-8.1671896, 12.0883799, 48.1404953]
         Rotate: [0, -90, 0]
         Scale: [1.45000005, 1.14999998, 0.224999994]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.45000005, 1.14999998, 0.224999994]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -4408,7 +4399,7 @@ ENTITIES:
         Restitution: 0.100000001
         IsTrigger: false
         PhysicsMesh: 13244744886219103757
-        Type: CONVEX_MESH
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: Fence_Level_2
@@ -5068,7 +5059,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [1, 1, 100]
         DynamicFriction: 0.5
         StaticFriction: 0.5
         Restitution: 0
@@ -5119,14 +5110,23 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [7.95955706, 16.6166439, -18.6118908]
-        Rotate: [-18.1875, 537.125, 0]
+        Translate: [5.94846678, 5.7717452, 15.3346453]
+        Rotate: [-7.63938141, 76.6875, 0]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.300000012
         FarPlane: 1000
         FOV: 100
+    ThirdPersonCameraComponent:
+      Offset: [0.400000006, 2.29999995, 0]
+      Current Distance: 2
+      Min Distance: 1
+      Max Distance: 5
+      Current Yaw: 0
+      Current Pitch: 20
+      Mouse Sensitivity: 1
+      Scroll Sensitivity: 1
   - {}
   - InfoComponent:
       Parent: 0
@@ -5193,22 +5193,47 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 2.4000001, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [100, 180, 100]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: CYLINDER
+    InfoComponent:
       Parent: 0
       Name: Samurai
       UID: 16439367912350421013
     TransformComponent:
       Transform:
         Translate: [0.803038001, 1.36473, 16.9053497]
-        Rotate: [0, -0, 0]
+        Rotate: [0, 0, 0]
         Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: DYNAMIC
     ModelComponent:
-      ModelID: 9858498430227169258
+      ModelID: 4722549275472783507
       MaterialID: 0
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PlayerMovement
+      ParamsJSON: "{}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -6477,6 +6502,14 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
   - {}
   - {}
   - {}
