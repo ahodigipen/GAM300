@@ -8,6 +8,9 @@
 #include "BoomEngine.h"              // InfoComponent (adjust include if needed)
 
 #include <entt/entt.hpp>
+#include <glm/gtx/euler_angles.hpp> // For eulerAngleYXZ
+#include <glm/gtc/constants.hpp>   // For glm::radians
+#include <glm/gtx/compatibility.hpp> // For glm::lerp, glm::smoothstep
 
 namespace {
     glm::vec3 EulerToDirection(glm::vec3 eulerDegrees)
@@ -74,12 +77,23 @@ namespace EditorUI {
             }
         }
 
-        Transform3D const& t{ Boom::Entity{ &m_Ctx->scene, m_App->SelectedEntity() }.Get<TransformComponent>().transform };
-        targetPos = t.translate;
+        // Use WORLD position instead of local transform (fixes parent-child hierarchy)
+        entt::entity selectedEntity = m_App->SelectedEntity();
+        targetPos = Boom::GetWorldPosition(m_Ctx->scene, selectedEntity);
+
+        // Get local transform for scale info (for camera offset calculation)
+        Transform3D const& t{ Boom::Entity{ &m_Ctx->scene, selectedEntity }.Get<TransformComponent>().transform };
 
         //offset camera to encompass whole object in view
         targetPos.y += .25f;
         targetPos -= EulerToDirection(camTPtr->transform.rotate) * glm::max(t.scale.x, t.scale.y, t.scale.z);
+
+        // Log for debugging
+        if (m_Ctx->scene.all_of<Boom::InfoComponent>(selectedEntity)) {
+            const auto& info = m_Ctx->scene.get<Boom::InfoComponent>(selectedEntity);
+            BOOM_INFO("[Hierarchy] Camera transition started for '{}' at world pos ({:.2f}, {:.2f}, {:.2f})",
+                     info.name, targetPos.x, targetPos.y, targetPos.z);
+        }
 
         curTime = 0.f;
         isTransitionCam = true;
@@ -126,10 +140,6 @@ namespace EditorUI {
             flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
         }
 
-	    static TransformComponent* camTPtr{ nullptr };
-        static glm::vec3 startingCamPos{};
-        static glm::vec3 targetPos{};
-
         ImGui::PushID(static_cast<int>(entt::to_integral(entity)));
 
         // Tree node or leaf
@@ -144,7 +154,7 @@ namespace EditorUI {
         if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
             app->SelectedEntity(true) = entity;
 
-            // Double-click to focus camera
+            // Double-click to focus camera (now uses member variables)
             if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
                 StartTransitionCam(m_App, m_Ctx, curTime, isTransitionCam, startingCamPos, targetPos);
             }
@@ -235,7 +245,16 @@ namespace EditorUI {
 
         bool open_local = true;
         bool* p_open = m_ShowHierarchy ? m_ShowHierarchy : &open_local;
-        //if (isTransitionCam) TransitionCam(cur)
+
+        // Update camera transition every frame (even if window is hidden)
+        if (isTransitionCam) {
+            auto camView = m_Ctx->scene.view<CameraComponent, TransformComponent>();
+            if (camView.begin() != camView.end()) {
+                auto camEntity = *camView.begin();
+                auto& camTransform = camView.get<TransformComponent>(camEntity);
+                TransitionCam(camTransform.transform.translate, m_App, curTime, isTransitionCam, startingCamPos, targetPos);
+            }
+        }
 
         if (ImGui::Begin("Hierarchy", p_open))
         {

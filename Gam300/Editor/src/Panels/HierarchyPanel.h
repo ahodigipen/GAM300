@@ -33,9 +33,11 @@ namespace EditorUI {
         bool m_ShowDeletePopup = false;
         entt::entity m_EntityToDelete = entt::null;
 
-        //camera
+        //camera transition
         bool isTransitionCam{};
         float curTime{};
+        glm::vec3 startingCamPos{};
+        glm::vec3 targetPos{};
     };
 
 } // namespace EditorUI
