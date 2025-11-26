@@ -429,4 +429,5 @@ namespace Boom {
 	template<> struct PayloadToType<CONSTANTS::DND_PAYLOAD_TEXTURE> { using Type = TextureAsset; };
 	template<> struct PayloadToType<CONSTANTS::DND_PAYLOAD_MATERIAL> { using Type = MaterialAsset; };
 	template<> struct PayloadToType<CONSTANTS::DND_PAYLOAD_MODEL> { using Type = ModelAsset; };
+	template<> struct PayloadToType<CONSTANTS::DND_PAYLOAD_SKYBOX> { using Type = SkyboxAsset; };
 }

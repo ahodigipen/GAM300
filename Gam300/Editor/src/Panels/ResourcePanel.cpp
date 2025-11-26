@@ -128,6 +128,11 @@ namespace EditorUI {
 						ImGui::Text("Dragging Model: %s", asset->name.c_str());
 						ImGui::EndDragDropSource();
 					}
+					else if (dynamic_cast<SkyboxAsset*>(asset) && ImGui::BeginDragDropSource()) {
+						ImGui::SetDragDropPayload(CONSTANTS::DND_PAYLOAD_SKYBOX.data(), &asset->uid, sizeof(AssetID));
+						ImGui::Text("Dragging Skybox: %s", asset->name.c_str());
+						ImGui::EndDragDropSource();
+					}
 					ImGui::PopID();
 
 					std::filesystem::path aPath{ asset->source };

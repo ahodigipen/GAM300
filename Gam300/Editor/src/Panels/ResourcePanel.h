@@ -26,7 +26,7 @@ namespace EditorUI {
         Boom::AppContext* m_Ctx = nullptr; // cached from Editor
         ImTextureID       m_Icon = {};
 
-        uint64_t selected;
+        uint64_t selected{};
         bool showNamePopup{};
     };
 

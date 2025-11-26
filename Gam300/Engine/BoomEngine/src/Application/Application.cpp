@@ -81,6 +81,7 @@ namespace Boom
         EnttView<Entity, SkyboxComponent>([this](auto, auto& comp) {
             SkyboxAsset& skybox{ m_Context->assets->Get<SkyboxAsset>(comp.skyboxID) };
             m_Context->renderer->InitSkybox(skybox.data, skybox.envMap, skybox.size);
+            return; //should stop after one skybox rendered
             });
 
         m_DebugLinesShader = std::make_unique<Boom::DebugLinesShader>("debug_lines.glsl");
@@ -177,7 +178,7 @@ namespace Boom
             m_Context->profiler.Start("Total Frame");
             m_Context->profiler.Start("Renderer Start Frame");
             std::apply(glClearColor, CONSTANTS::DEFAULT_BACKGROUND_COLOR);
-            RenderShadowScene();
+            //RenderShadowScene();
             m_Context->renderer->NewFrame();
             m_Context->profiler.End("Renderer Start Frame");
 
@@ -303,8 +304,21 @@ namespace Boom
             //skybox ecs (should be drawn at the end)
             EnttView<Entity, SkyboxComponent>([this](auto entity, SkyboxComponent& comp) {
                 Transform3D& transform{ entity.template Get<TransformComponent>().transform };
+                static AssetID prevSkyID{ comp.skyboxID };
+
+                //reinitialize skybox if different
+                if (prevSkyID != comp.skyboxID) {
+                    EnttView<Entity, SkyboxComponent>([this](auto, auto& comp) {
+                        SkyboxAsset& skybox{ m_Context->assets->Get<SkyboxAsset>(comp.skyboxID) };
+                        m_Context->renderer->InitSkybox(skybox.data, skybox.envMap, skybox.size);
+                        return; //should stop after one skybox rendered
+                        });
+                }
+
+                prevSkyID = comp.skyboxID;
                 SkyboxAsset& skybox{ m_Context->assets->Get<SkyboxAsset>(comp.skyboxID) };
                 m_Context->renderer->DrawSkybox(skybox.data, transform);
+                return; //should stop after one skybox rendered
                 });
 
             m_Context->profiler.Start("Renderer End Frame");
