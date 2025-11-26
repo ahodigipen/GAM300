@@ -23,6 +23,8 @@ ENTITIES:
   - {}
   - {}
   - {}
+  - {}
+  - {}
   - InfoComponent:
       Parent: 0
       Name: New Entity
@@ -1589,8 +1591,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [4.53199387, 2.11485052, 5.93025827]
-        Rotate: [-6.125, -295, -6.68639499e-09]
+        Translate: [-3.14049673, 2.27418423, 5.55029249]
+        Rotate: [-0.1875, -424.1875, -6.68639499e-09]
         Scale: [1, 1, 1]
     CameraComponent:
       Camera:
@@ -1822,7 +1824,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 3.12489092e-08
+        Speed: 0
       BoolParams:
         IsMoving: false
         Sprint: false
@@ -2031,6 +2033,21 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
   - {}
   - {}
   - {}
