@@ -140,7 +140,7 @@ namespace Boom {
                 glm::vec4 cb = UnpackPxColor(tris[i].color1);
                 glm::vec4 cc = UnpackPxColor(tris[i].color2);
 
-                outLines.push_back(DebugLine{ a, b, ca, cb });
+                outLines.push_back(DebugLine{ a, b, ca, cb });  
                 outLines.push_back(DebugLine{ b, c, cb, cc });
                 outLines.push_back(DebugLine{ c, a, cc, ca });
             }
@@ -210,26 +210,55 @@ namespace Boom {
                 PxTransform capsuleAxisPose(PxVec3(0.0f), localQ);
                 collider.Shape->setLocalPose(userLocalPose * capsuleAxisPose);
             }
-            else if (collider.type == Collider3D::MESH) {
-                if (collider.physicsMeshID == EMPTY_ASSET) {
-                    BOOM_WARN("Mesh collider has no PhysicsMeshAsset assigned. No shape will be created.");
-                    return;
+            else if (collider.type == Collider3D::CONVEX_MESH)
+            {
+                if (collider.physicsMeshID == EMPTY_ASSET) return;
+                auto& asset = assetRegistry.Get<PhysicsMeshAsset>(collider.physicsMeshID);
+
+                // 1. Load if missing
+                if (!asset.mesh) {
+                    asset.mesh = LoadCookedMesh(asset.cookedMeshPath);
                 }
 
-                auto& physicsMeshAsset = assetRegistry.Get<PhysicsMeshAsset>(collider.physicsMeshID);
-
-                if (!physicsMeshAsset.mesh) {
-                    physicsMeshAsset.mesh = LoadCookedMesh(physicsMeshAsset.cookedMeshPath);
-                }
-
-                if (physicsMeshAsset.mesh) {
-                    PxConvexMeshGeometry convexGeom(physicsMeshAsset.mesh, PxMeshScale(ToPxVec3(transform.scale * collider.localScale)));
+                // 2. Create Shape
+                if (asset.mesh) {
+                    PxConvexMeshGeometry convexGeom(asset.mesh, PxMeshScale(ToPxVec3(transform.scale * collider.localScale)));
                     collider.Shape = m_Physics->createShape(convexGeom, *collider.material);
                     collider.Shape->setLocalPose(userLocalPose);
                 }
                 else {
-                    BOOM_ERROR("Failed to load or create mesh shape for asset ID {}", collider.physicsMeshID);
+                    BOOM_ERROR("Failed to load CONVEX mesh for asset: {}", asset.name);
+                }
+            }
+
+            // Case 2: TRIANGLE MESH (For Terrain, Stairs, Level Geometry)
+            else if (collider.type == Collider3D::TRIANGLE_MESH)
+            {
+                // Safety Check: PhysX forbids Triangle Meshes on Dynamic actors
+                // We check if 'body' exists (AddRigidBody) or assume static (AddColliderOnly)
+#ifdef ADD_RIGID_BODY_SCOPE 
+                if (body.type != RigidBody3D::STATIC) {
+                    BOOM_ERROR("Cannot use TRIANGLE_MESH on Dynamic Rigidbody '{}'. Switch to CONVEX.", entity.Get<InfoComponent>().name);
                     return;
+                }
+#endif
+
+                if (collider.physicsMeshID == EMPTY_ASSET) return;
+                auto& asset = assetRegistry.Get<PhysicsMeshAsset>(collider.physicsMeshID);
+
+                // 1. Load if missing
+                if (!asset.triangleMesh) {
+                    asset.triangleMesh = LoadCookedTriangleMesh(asset.cookedMeshPath);
+                }
+
+                // 2. Create Shape
+                if (asset.triangleMesh) {
+                    PxTriangleMeshGeometry triGeom(asset.triangleMesh, PxMeshScale(ToPxVec3(transform.scale * collider.localScale)));
+                    collider.Shape = m_Physics->createShape(triGeom, *collider.material);
+                    collider.Shape->setLocalPose(userLocalPose);
+                }
+                else {
+                    BOOM_ERROR("Failed to load TRIANGLE mesh for asset: {}. Did you cook it as 'Exact'?", asset.name);
                 }
             }
             else if (collider.type == Collider3D::PLANE) {
@@ -335,7 +364,35 @@ namespace Boom {
             auto& body = entity.Get<RigidBodyComponent>().RigidBody;
             //bool hasCollider = entity.Has<ColliderComponent>();
 
+        // ============================================================
+        // === STEP 1: CLEANUP EXISTING ACTORS (Prevent Duplicates) ===
+        // ============================================================
 
+        // A. Check for an existing "Collider-Only" actor (Orphan)
+        // If we are adding a RigidBody, the old static collider actor must die.
+            if (entity.Has<ColliderComponent>()) {
+                auto& collider = entity.Get<ColliderComponent>().Collider;
+                if (collider.actor) {
+                    if (collider.actor->userData) {
+                        delete static_cast<EntityID*>(collider.actor->userData);
+                    }
+                    m_Scene->removeActor(*collider.actor);
+                    collider.actor->release();
+                    collider.actor = nullptr;
+                }
+            }
+
+            // B. Check for an existing RigidBody actor (Re-initialization)
+            // If we are re-adding the RB, destroy the old one first.
+            if (body.actor) {
+                if (body.actor->userData) {
+                    delete static_cast<EntityID*>(body.actor->userData);
+                }
+                m_Scene->removeActor(*body.actor);
+                body.actor->release();
+                body.actor = nullptr;
+            }
+            // ============================================================
 
             // create rigidbody transformation
             PxTransform pose(ToPxVec3(transform.translate));
@@ -362,13 +419,36 @@ namespace Boom {
 
                 if (collider.type == Collider3D::BOX)
                 {
-                    PxBoxGeometry box(ToPxVec3((transform.scale * collider.localScale) / 2.0f));
+                    glm::vec3 halfExtents = (transform.scale * collider.localScale) / 2.0f;
+
+                    // Validate: ensure minimum dimensions to prevent zero-volume geometries
+                    const float kMinDimension = 0.01f;
+                    halfExtents.x = std::max(halfExtents.x, kMinDimension);
+                    halfExtents.y = std::max(halfExtents.y, kMinDimension);
+                    halfExtents.z = std::max(halfExtents.z, kMinDimension);
+
+                    PxBoxGeometry box(ToPxVec3(halfExtents));
+
+                    if (!box.isValid()) {
+                        BOOM_ERROR("Invalid box geometry for entity. HalfExtents: ({}, {}, {})",
+                            halfExtents.x, halfExtents.y, halfExtents.z);
+                        return;
+                    }
+
                     collider.Shape = m_Physics->createShape(box, *collider.material);
                     collider.Shape->setLocalPose(userLocalPose);
                 }
                 else if (collider.type == Collider3D::SPHERE) {
-                    PxSphereGeometry
-                        sphere((transform.scale.x * collider.localScale.x) / 2.0f);
+                    float radius = (transform.scale.x * collider.localScale.x) / 2.0f;
+                    const float kMinRadius = 0.01f;
+                    radius = std::max(radius, kMinRadius);
+
+                    PxSphereGeometry sphere(radius);
+                    if (!sphere.isValid()) {
+                        BOOM_ERROR("Invalid sphere geometry. Radius: {}", radius);
+                        return;
+                    }
+
                     collider.Shape = m_Physics->createShape(sphere, *collider.material);
                     PxTransform relativePose(PxQuat(0, PxVec3(0, 0, 1)));
                     collider.Shape->setLocalPose(userLocalPose);
@@ -438,32 +518,55 @@ namespace Boom {
                     collider.Shape->setLocalPose(userLocalPose * capsuleAxisPose);
                 }
 
-                else if (collider.type == Collider3D::MESH) {
-                    if (collider.physicsMeshID == EMPTY_ASSET) {
-                        BOOM_WARN("Mesh collider has no PhysicsMeshAsset assigned.");
-                        return;
+                else if (collider.type == Collider3D::CONVEX_MESH)
+                {
+                    if (collider.physicsMeshID == EMPTY_ASSET) return;
+                    auto& asset = assetRegistry.Get<PhysicsMeshAsset>(collider.physicsMeshID);
+
+                    // 1. Load if missing
+                    if (!asset.mesh) {
+                        asset.mesh = LoadCookedMesh(asset.cookedMeshPath);
                     }
 
-                    // Get the asset from the registry
-                    auto& physicsMeshAsset = assetRegistry.Get<PhysicsMeshAsset>(collider.physicsMeshID);
-
-                    // If the mesh isn't loaded yet, load it from the cooked file
-                    if (!physicsMeshAsset.mesh) {
-                        physicsMeshAsset.mesh = LoadCookedMesh(physicsMeshAsset.cookedMeshPath);
-                    }
-
-                    if (physicsMeshAsset.mesh) {
-                        PxConvexMeshGeometry convexGeom(physicsMeshAsset.mesh);
-
-                        // Apply the entity's scale to the geometry
-                        convexGeom.scale.scale = ToPxVec3(transform.scale * collider.localScale);
-
+                    // 2. Create Shape
+                    if (asset.mesh) {
+                        PxConvexMeshGeometry convexGeom(asset.mesh, PxMeshScale(ToPxVec3(transform.scale * collider.localScale)));
                         collider.Shape = m_Physics->createShape(convexGeom, *collider.material);
                         collider.Shape->setLocalPose(userLocalPose);
                     }
                     else {
-                        BOOM_ERROR("Failed to load or create mesh shape for asset ID {}", collider.physicsMeshID);
+                        BOOM_ERROR("Failed to load CONVEX mesh for asset: {}", asset.name);
+                    }
+                }
+
+                // Case 2: TRIANGLE MESH (For Terrain, Stairs, Level Geometry)
+                else if (collider.type == Collider3D::TRIANGLE_MESH)
+                {
+                    // Safety Check: PhysX forbids Triangle Meshes on Dynamic actors
+                    // We check if 'body' exists (AddRigidBody) or assume static (AddColliderOnly)
+                    #ifdef ADD_RIGID_BODY_SCOPE 
+                    if (body.type != RigidBody3D::STATIC) {
+                        BOOM_ERROR("Cannot use TRIANGLE_MESH on Dynamic Rigidbody '{}'. Switch to CONVEX.", entity.Get<InfoComponent>().name);
                         return;
+                    }
+                    #endif
+
+                    if (collider.physicsMeshID == EMPTY_ASSET) return;
+                    auto& asset = assetRegistry.Get<PhysicsMeshAsset>(collider.physicsMeshID);
+
+                    // 1. Load if missing
+                    if (!asset.triangleMesh) {
+                        asset.triangleMesh = LoadCookedTriangleMesh(asset.cookedMeshPath);
+                    }
+
+                    // 2. Create Shape
+                    if (asset.triangleMesh) {
+                        PxTriangleMeshGeometry triGeom(asset.triangleMesh, PxMeshScale(ToPxVec3(transform.scale * collider.localScale)));
+                        collider.Shape = m_Physics->createShape(triGeom, *collider.material);
+                        collider.Shape->setLocalPose(userLocalPose);
+                    }
+                    else {
+                        BOOM_ERROR("Failed to load TRIANGLE mesh for asset: {}. Did you cook it as 'Exact'?", asset.name);
                     }
                 }
                 else if (collider.type == Collider3D::PLANE)
@@ -609,8 +712,18 @@ namespace Boom {
             m_Scene->addActor(*body.actor);
         }
 
-        // Add this new method to PhysicsContext
+
         BOOM_INLINE void AddColliderOnly(Entity& entity, AssetRegistry& assetRegistry) {
+            // ============================================================
+                // === STEP 1: ABORT IF RIGIDBODY EXISTS ===
+                // ============================================================
+                // If this entity has a RigidBody, IT owns the actor. 
+                // We should NOT create a separate static actor here.
+            if (entity.Has<RigidBodyComponent>()) {
+                // Stop. The AddRigidBody function handles actor creation.
+                return;
+            }
+
             if (!entity.Has<ColliderComponent>()) {
                 BOOM_WARN("AddColliderOnly called on entity without ColliderComponent");
                 return;
@@ -618,6 +731,18 @@ namespace Boom {
 
             auto& transform = entity.Get<TransformComponent>().transform;
             auto& collider = entity.Get<ColliderComponent>().Collider;
+
+            // ============================================================
+            // === STEP 2: CLEANUP EXISTING ORPHAN (Re-initialization) ===
+            // ============================================================
+            if (collider.actor) {
+                if (collider.actor->userData) {
+                    delete static_cast<EntityID*>(collider.actor->userData);
+                }
+                m_Scene->removeActor(*collider.actor);
+                collider.actor->release();
+                collider.actor = nullptr;
+            }
 
             // Create transformation
             PxTransform pose(ToPxVec3(transform.translate));
@@ -635,7 +760,8 @@ namespace Boom {
 
             PxTransform userLocalPose(ToPxVec3(collider.localPosition), ToPxQuat(collider.localRotation));
 
-            // Create shape based on type (same logic as before)
+            // --- SHAPE CREATION ---
+
             if (collider.type == Collider3D::BOX) {
                 PxBoxGeometry box(ToPxVec3((transform.scale * collider.localScale) / 2.0f));
                 collider.Shape = m_Physics->createShape(box, *collider.material);
@@ -682,22 +808,46 @@ namespace Boom {
                 PxTransform capsuleAxisPose(PxVec3(0.0f), localQ);
                 collider.Shape->setLocalPose(userLocalPose * capsuleAxisPose);
             }
-            else if (collider.type == Collider3D::MESH) {
-                if (collider.physicsMeshID == EMPTY_ASSET) {
-                    BOOM_WARN("Mesh collider has no PhysicsMeshAsset assigned.");
-                    return;
+            // ----------------------------------------------------------
+            // NEW: Explicit CONVEX MESH logic
+            // ----------------------------------------------------------
+            else if (collider.type == Collider3D::CONVEX_MESH)
+            {
+                if (collider.physicsMeshID == EMPTY_ASSET) return;
+                auto& asset = assetRegistry.Get<PhysicsMeshAsset>(collider.physicsMeshID);
+
+                if (!asset.mesh) {
+                    asset.mesh = LoadCookedMesh(asset.cookedMeshPath);
                 }
 
-                auto& physicsMeshAsset = assetRegistry.Get<PhysicsMeshAsset>(collider.physicsMeshID);
-                if (!physicsMeshAsset.mesh) {
-                    physicsMeshAsset.mesh = LoadCookedMesh(physicsMeshAsset.cookedMeshPath);
-                }
-
-                if (physicsMeshAsset.mesh) {
-                    PxConvexMeshGeometry convexGeom(physicsMeshAsset.mesh);
-                    convexGeom.scale.scale = ToPxVec3(transform.scale * collider.localScale);
+                if (asset.mesh) {
+                    PxConvexMeshGeometry convexGeom(asset.mesh, PxMeshScale(ToPxVec3(transform.scale * collider.localScale)));
                     collider.Shape = m_Physics->createShape(convexGeom, *collider.material);
                     collider.Shape->setLocalPose(userLocalPose);
+                }
+                else {
+                    BOOM_ERROR("Failed to load CONVEX mesh for asset: {}", asset.name);
+                }
+            }
+            // ----------------------------------------------------------
+            // NEW: Explicit TRIANGLE MESH logic
+            // ----------------------------------------------------------
+            else if (collider.type == Collider3D::TRIANGLE_MESH)
+            {
+                if (collider.physicsMeshID == EMPTY_ASSET) return;
+                auto& asset = assetRegistry.Get<PhysicsMeshAsset>(collider.physicsMeshID);
+
+                if (!asset.triangleMesh) {
+                    asset.triangleMesh = LoadCookedTriangleMesh(asset.cookedMeshPath);
+                }
+
+                if (asset.triangleMesh) {
+                    PxTriangleMeshGeometry triGeom(asset.triangleMesh, PxMeshScale(ToPxVec3(transform.scale * collider.localScale)));
+                    collider.Shape = m_Physics->createShape(triGeom, *collider.material);
+                    collider.Shape->setLocalPose(userLocalPose);
+                }
+                else {
+                    BOOM_ERROR("Failed to load TRIANGLE mesh for asset: {}. Check cooking format.", asset.name);
                 }
             }
             else if (collider.type == Collider3D::PLANE) {
@@ -717,37 +867,21 @@ namespace Boom {
                 collider.Shape->setLocalPose(userLocalPose * PxTransform(PxVec3(0.0f), planeRot));
             }
             else if (collider.type == Collider3D::CYLINDER) {
-                // 1. Get absolute scale
                 const glm::vec3 s = glm::abs(transform.scale * collider.localScale);
-
-                // 2. Create Unit Cylinder (Radius 1, HalfHeight 1)
                 PxConvexMesh* cylinderMesh = CreateCylinderMesh(1.0f, 1.0f);
 
                 if (cylinderMesh) {
                     PxConvexMeshGeometry convexGeom(cylinderMesh);
-
-                    // 3. Map Scale consistently:
-                    //    - Y is always Height
-                    //    - Max(X, Z) is Radius
-                    //    - Multiply by 0.5f so standard scale 1.0 = size 1.0 (Diameter)
                     float radius = 0.5f * std::max(s.x, s.z);
                     float height = 0.5f * s.y;
 
                     convexGeom.scale = PxMeshScale(PxVec3(radius, height, radius));
                     collider.Shape = m_Physics->createShape(convexGeom, *collider.material);
-
-                    // 4. No dynamic rotation based on scale. 
-                    //    Use userLocalPose directly (handles manual offsets).
                     collider.Shape->setLocalPose(userLocalPose);
-                }
-                else {
-                    BOOM_ERROR("Failed to create cylinder mesh");
-                    return;
                 }
             }
             else if (collider.type == Collider3D::TRIANGLE) {
                 const glm::vec3 s = glm::abs(transform.scale * collider.localScale);
-
                 PxConvexMesh* triangleMesh = CreateTriangleMesh(s);
                 if (triangleMesh) {
                     PxConvexMeshGeometry convexGeom(triangleMesh);
@@ -756,10 +890,12 @@ namespace Boom {
                 }
             }
 
+            // --- ACTOR CREATION ---
+
             if (collider.Shape) {
                 collider.Shape->setFlag(PxShapeFlag::eVISUALIZATION, true);
 
-                // NEW: Configure trigger vs collision behavior
+                // Configure trigger vs collision behavior
                 if (collider.isTrigger) {
                     collider.Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
                     collider.Shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
@@ -793,7 +929,10 @@ namespace Boom {
             // Add to scene
             m_Scene->addActor(*staticActor);
 
-            // Store actor reference in a RigidBodyComponent if it exists, or create a minimal one
+			// Attach the actor to the collider component
+            collider.actor = staticActor;
+
+            // Store actor reference in a RigidBodyComponent if it exists
             if (entity.Has<RigidBodyComponent>()) {
                 entity.Get<RigidBodyComponent>().RigidBody.actor = staticActor;
                 entity.Get<RigidBodyComponent>().RigidBody.type = RigidBody3D::STATIC;
@@ -982,6 +1121,110 @@ namespace Boom {
             }
         }
 
+        void UpdateRigidBodyTransform(Entity entity, const Transform3D& transform)
+        {
+            if (!entity.Has<Boom::RigidBodyComponent>())
+                return;
+
+            auto& rc = entity.Get<Boom::RigidBodyComponent>();
+
+            if (!rc.RigidBody.actor)
+                return;
+
+            // Convert GLM transform to PhysX pose
+            PxTransform pose;
+            pose.p = PxVec3(transform.translate.x, transform.translate.y, transform.translate.z);
+
+            // Convert euler angles to quaternion
+            glm::quat quat = glm::quat(glm::radians(transform.rotate));
+            pose.q = PxQuat(quat.x, quat.y, quat.z, quat.w);
+
+            // Update the actor's global pose
+            rc.RigidBody.actor->setGlobalPose(pose);
+
+            // If dynamic, wake it up
+            if (rc.RigidBody.type == RigidBody3D::Type::DYNAMIC)
+            {
+                static_cast<PxRigidDynamic*>(rc.RigidBody.actor)->wakeUp();
+            }
+        }
+
+        BOOM_INLINE bool CompileAndSaveTriangleMesh(ModelAsset& modelAsset, const std::string& savePath)
+        {
+            if (!modelAsset.data) return false;
+
+            // Ensure we have the mesh data
+            auto staticModel = std::dynamic_pointer_cast<StaticModel>(modelAsset.data);
+            if (!staticModel) {
+                BOOM_ERROR("Only StaticModels are supported.");
+                return false;
+            }
+
+            auto physicsMeshData = staticModel->GetMeshData();
+            if (physicsMeshData.empty()) return false;
+            auto& meshData = physicsMeshData[0];
+
+            // 1. Setup Vertices
+            std::vector<PxVec3> vertices;
+            vertices.reserve(meshData.vtx.size());
+            for (const auto& vertex : meshData.vtx) {
+                vertices.push_back(ToPxVec3(vertex.pos));
+            }
+
+            // 2. Configure Description
+            PxTriangleMeshDesc meshDesc;
+            meshDesc.points.data = vertices.data();
+            meshDesc.points.stride = sizeof(PxVec3);
+            meshDesc.points.count = static_cast<PxU32>(vertices.size());
+
+            // Assuming your indices are 32-bit (uint32_t)
+            meshDesc.triangles.data = meshData.idx.data();
+            meshDesc.triangles.stride = 3 * sizeof(uint32_t);
+            meshDesc.triangles.count = static_cast<PxU32>(meshData.idx.size() / 3);
+
+            // 3. Cook
+            PxCookingParams params(m_Physics->getTolerancesScale());
+            PxCooking* cooking = PxCreateCooking(PX_PHYSICS_VERSION, *m_Foundation, params);
+
+            PxDefaultMemoryOutputStream buf;
+            // CRITICAL: We use cookTriangleMesh here, NOT cookConvexMesh
+            bool status = cooking->cookTriangleMesh(meshDesc, buf);
+            cooking->release();
+
+            if (!status) {
+                BOOM_ERROR("Failed to cook triangle mesh.");
+                return false;
+            }
+
+            // 4. Save
+            std::ofstream outFile(savePath, std::ios::binary);
+            if (!outFile) return false;
+            outFile.write(reinterpret_cast<const char*>(buf.getData()), buf.getSize());
+            outFile.close();
+
+            return true;
+        }
+
+        BOOM_INLINE physx::PxTriangleMesh* LoadCookedTriangleMesh(const std::string& path)
+        {
+            std::ifstream file(path, std::ios::binary | std::ios::ate);
+            if (!file.is_open()) return nullptr;
+
+            std::streamsize size = file.tellg();
+            file.seekg(0, std::ios::beg);
+
+            char* buffer = new char[size];
+            if (!file.read(buffer, size)) { delete[] buffer; return nullptr; }
+
+            PxDefaultMemoryInputData input(reinterpret_cast<PxU8*>(buffer), static_cast<PxU32>(size));
+
+            // CRITICAL: createTriangleMesh instead of createConvexMesh
+            physx::PxTriangleMesh* mesh = m_Physics->createTriangleMesh(input);
+
+            delete[] buffer;
+            return mesh;
+        }
+
         BOOM_INLINE physx::PxConvexMesh* LoadCookedMesh(const std::string& path)
         {
             std::ifstream file(path, std::ios::binary | std::ios::ate);
@@ -1077,8 +1320,6 @@ namespace Boom {
                 m_Scene->simulate(dt);
 
                 // block until simulation is complete
-
-
                 m_Scene->fetchResults(true);
             }
         }
@@ -1094,47 +1335,145 @@ namespace Boom {
 //
         BOOM_INLINE void RemoveRigidBody(Entity& entity)
         {
-            // 1. Make sure the entity has a body to remove
-            if (!entity.Has<RigidBodyComponent>()) {
-                return;
-            }
+            PxRigidActor* actor = nullptr;
 
-            auto& rb = entity.Get<RigidBodyComponent>();
-            auto* actor = rb.RigidBody.actor;
+            // 1. Try to get actor from RigidBodyComponent
+            if (entity.Has<RigidBodyComponent>()) {
+                auto& rb = entity.Get<RigidBodyComponent>();
+                actor = rb.RigidBody.actor;
+                rb.RigidBody.actor = nullptr; // Clear the reference
+            }
+            // 2. If no RigidBody but has Collider, the actor might be stored elsewhere
+            // For collider-only entities created via AddColliderOnly, we need to find it differently
+            else if (entity.Has<ColliderComponent>()) {
+                // The AddColliderOnly function doesn't store the actor anywhere accessible
+                // We need to search the PhysX scene for it
+                auto& collider = entity.Get<ColliderComponent>();
+
+                // If we have a shape, we can get the actor from it
+                if (collider.Collider.Shape) {
+                    actor = collider.Collider.Shape->getActor();
+                }
+            }
 
             if (!actor) {
                 return; // Nothing to remove
             }
 
-            // 2. Clean up Collider Pointers (if they exist)
+            // 3. Clean up Collider pointers (if they exist)
             if (entity.Has<ColliderComponent>())
             {
                 auto& collider = entity.Get<ColliderComponent>().Collider;
+
                 if (collider.material) {
                     collider.material->release();
                     collider.material = nullptr;
                 }
+
                 if (collider.Shape) {
-                    // The shape is auto-detached by removeActor,
-                    // but we must release its memory.
                     collider.Shape->release();
                     collider.Shape = nullptr;
                 }
             }
 
-            // 3. Clean up User Data
+            // 4. Clean up user data
             if (actor->userData) {
                 EntityID* owner = static_cast<EntityID*>(actor->userData);
-                BOOM_DELETE(owner);
+                delete owner;
                 actor->userData = nullptr;
             }
 
-            // 4. Remove Actor from Scene (The missing step!)
+            // 5. Remove actor from scene (THIS IS THE KEY STEP!)
             m_Scene->removeActor(*actor);
 
-            // 5. Release Actor Memory
+            // 6. Release actor memory
             actor->release();
-            rb.RigidBody.actor = nullptr;
+        }
+
+        BOOM_INLINE void ForceRemoveActor(uint32_t entityID)
+        {
+            if (!m_Scene) return;
+
+            // 1. Get all actors
+            PxU32 nbActors = m_Scene->getNbActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC);
+            std::vector<PxActor*> actors(nbActors);
+            m_Scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, actors.data(), nbActors);
+
+            BOOM_INFO("[Physics] ForceRemoveActor checking {} actors for EntityID: {}", nbActors, entityID);
+
+            int removedCount = 0;
+            for (PxActor* actor : actors)
+            {
+                if (actor->userData)
+                {
+                    // Cast userData back to EntityID*
+                    EntityID* ownerID = static_cast<EntityID*>(actor->userData);
+
+                    // DEBUG: Log every actor's ID to see what's in the scene
+                    // BOOM_INFO(" - Found Actor with OwnerID: {}", *ownerID); 
+
+                    if (*ownerID == static_cast<EntityID>(entityID))
+                    {
+                        BOOM_INFO("[Physics] MATCH FOUND! Removing actor for EntityID: {}", entityID);
+                        m_Scene->removeActor(*actor);
+                        actor->release();
+                        BOOM_DELETE(ownerID);
+                        removedCount++;
+                        // Continue in case duplicates exist
+                    }
+                }
+                else
+                {
+                    // BOOM_WARN("[Physics] Found actor with NULL userData");
+                }
+            }
+
+            if (removedCount == 0) {
+                BOOM_WARN("[Physics] Failed to find any actor for EntityID: {}", entityID);
+            }
+        }
+
+        // Helper to clean up actors for entities that ONLY have a Collider (Triggers)
+        // Helper to clean up actors for entities that ONLY have a Collider (Triggers)
+        BOOM_INLINE void RemoveColliderActor(Entity& entity)
+        {
+            if (!entity.Has<ColliderComponent>()) return;
+
+            auto& collider = entity.Get<ColliderComponent>().Collider;
+
+            // *** UPDATED: Use the stored actor pointer directly ***
+            PxRigidActor* actor = collider.actor;
+
+            if (actor)
+            {
+                // Clean up User Data to prevent memory leaks
+                if (actor->userData) {
+                    EntityID* ownerID = static_cast<EntityID*>(actor->userData);
+                    BOOM_DELETE(ownerID);
+                    actor->userData = nullptr;
+                }
+
+                // Remove from scene and release memory
+                m_Scene->removeActor(*actor);
+                actor->release();
+
+                BOOM_INFO("Cleaned up Collider-Only Actor.");
+
+                // Clear the pointer
+                collider.actor = nullptr;
+            }
+
+            // Release the shape itself
+            if (collider.Shape) {
+                collider.Shape->release();
+                collider.Shape = nullptr;
+            }
+
+            // Cleanup Material
+            if (collider.material) {
+                collider.material->release();
+                collider.material = nullptr;
+            }
         }
 
     private:

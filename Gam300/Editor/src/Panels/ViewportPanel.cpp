@@ -262,8 +262,16 @@ namespace EditorUI {
                 ltrans.transform.scale = scale;
                 break;
             }
+
+            // **NEW: Sync with RigidBody if present**
+            Boom::Entity entity{ &m_Ctx->scene, selectedEntity };
+            if (entity.Has<Boom::RigidBodyComponent>())
+            {
+                m_Owner->GetPhysicsContext().UpdateRigidBodyTransform(entity, ltrans.transform);
+            }
         }
     }
+
     void ViewportPanel::DrawGuizmo3D(
         ImVec2 const& itemMin, ImVec2 const& rectSz,
         glm::mat4 const& view, glm::mat4 const& proj,
@@ -356,11 +364,17 @@ namespace EditorUI {
                     }
                 }
             }
-        }
 
         // Update gizmo state
         m_GizmoWasUsing = ImGuizmo::IsUsing();
 
+            // **NEW: Sync with RigidBody if present**
+            Boom::Entity entity{ &m_Ctx->scene, selectedEntity };
+            if (entity.Has<Boom::RigidBodyComponent>())
+            {
+                m_Owner->GetPhysicsContext().UpdateRigidBodyTransform(entity, ltrans.transform);
+            }
+        }
     }
 
     void ViewportPanel::HandleMouseClick(const ImVec2& mousePos, const ImVec2&)

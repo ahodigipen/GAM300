@@ -1160,7 +1160,7 @@ namespace Boom
         static void AppendCylinderWire(float radius, float halfHeight, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color);
 
         void AppendConvexMeshWire(const physx::PxConvexMeshGeometry& geom, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color);
-
+        void AppendTriangleMeshWire(const physx::PxTriangleMeshGeometry& geom, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color);
         static void AppendTriangleWire(const glm::vec3& scale, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color);
 
         BOOM_INLINE static float DistancePointSegment(const glm::vec3& p, const glm::vec3& a, const glm::vec3& b)

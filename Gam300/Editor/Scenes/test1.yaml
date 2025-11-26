@@ -13,7 +13,23 @@ ENTITIES:
   - {}
   - {}
   - {}
-  - InfoComponent:
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 9561371257336025290
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Slope_To_Floor_4
       UID: 16971308981666661812
@@ -22,6 +38,16 @@ ENTITIES:
         Translate: [-5.74949598, 27.2761364, -68.4480591]
         Rotate: [-90, -180, 0]
         Scale: [0.800000012, 1.28999996, 0.569999993]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.800000012, 1.28999996, 0.569999993]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 12907306951145530752
       MaterialID: 0
@@ -29,7 +55,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 9561371257336025290
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Slope_To_Floor_4
       UID: 7414217602248962368
@@ -38,6 +75,16 @@ ENTITIES:
         Translate: [3.82375813, 27.2757206, -68.4524078]
         Rotate: [-90, -180, 0]
         Scale: [0.800000012, 1.28999996, 0.569999993]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.800000012, 1.28999996, 0.569999993]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 12907306951145530752
       MaterialID: 0
@@ -45,7 +92,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1.10000002, 1.08000004, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 12807707659119185110
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Stairs_To_Level_4
       UID: 18171915684282977524
@@ -54,6 +112,16 @@ ENTITIES:
         Translate: [0.112765431, 28.8956814, -68.2000122]
         Rotate: [0, 90, 0]
         Scale: [1, 0.319999993, 2.06999993]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1, 0.319999993, 2.06999993]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 17773246069672836568
       MaterialID: 0
@@ -61,7 +129,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Ground_To_Level_4
       UID: 2785878939097235308
@@ -70,6 +149,16 @@ ENTITIES:
         Translate: [-1.17319596, 23.5724277, -55.4904709]
         Rotate: [0, 0, 0]
         Scale: [0.379999995, 1, 1.60000002]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.379999995, 1, 1.60000002]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -77,7 +166,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Wall_To_Level_4
       UID: 4088013001839752820
@@ -86,6 +186,16 @@ ENTITIES:
         Translate: [-7.21007729, 45.8062286, -56.1780586]
         Rotate: [0, 0, 0]
         Scale: [0.0399999991, 4.26000023, 1.70000005]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0399999991, 4.26000023, 1.70000005]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -93,7 +203,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: Slanted_Wall_Floor_2
       UID: 16581412378949571375
@@ -102,6 +223,16 @@ ENTITIES:
         Translate: [-8.84556675, 46.8441925, -21.3619003]
         Rotate: [-90, 90, 0]
         Scale: [1, 1.62, 0.899999976]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1, 1.62, 0.899999976]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 18413156755282979635
       MaterialID: 0
@@ -109,7 +240,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Wall_To_Level_4
       UID: 5874223206021024749
@@ -118,6 +260,16 @@ ENTITIES:
         Translate: [5.13815689, 45.8059998, -42.5093346]
         Rotate: [0, 0, 0]
         Scale: [0.0399999991, 4.26000023, 4.46999979]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0399999991, 4.26000023, 4.46999979]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -125,7 +277,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Roof2_Floor_4
       UID: 6513624723293006926
@@ -134,6 +297,16 @@ ENTITIES:
         Translate: [-10.8613825, 31.4991512, -31.3504295]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1.70000005]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1, 1, 1.70000005]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -141,7 +314,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Roof_Floor_4
       UID: 9902595753491289907
@@ -150,6 +334,16 @@ ENTITIES:
         Translate: [-11.4286013, 27.2315941, -43.8359489]
         Rotate: [0, 0, 0]
         Scale: [1.10000002, 0.25, 0.75999999]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.10000002, 0.25, 0.75999999]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -173,7 +367,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 0.00999999978, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 16135378917386993712
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Seperator_Floor_4
       UID: 3747498441944261189
@@ -182,6 +387,16 @@ ENTITIES:
         Translate: [-31.674778, 30.8602104, -39.3083458]
         Rotate: [90, 0, 0]
         Scale: [1.29999995, 1, 1]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.29999995, 1, 1]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 5963078964798272625
       MaterialID: 0
@@ -189,7 +404,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Base_Floor_4
       UID: 8976218786569724792
@@ -198,6 +424,16 @@ ENTITIES:
         Translate: [-36.6510201, 26.444046, -43.8982277]
         Rotate: [0, 0, 0]
         Scale: [0.600000024, 0.409999996, 0.769999981]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.600000024, 0.409999996, 0.769999981]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -205,7 +441,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 3709588994413660334
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Wall_Roof
       UID: 2093357672136707024
@@ -214,6 +461,16 @@ ENTITIES:
         Translate: [-44.9865952, 33.0432968, -25.8696747]
         Rotate: [-90, -180, 0]
         Scale: [1, 1.39999998, 1.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1, 1.39999998, 1.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1146382376439045905
       MaterialID: 0
@@ -221,7 +478,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 1336452752375064697
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Floor_With_Roof
       UID: 12818118575085889591
@@ -230,6 +498,16 @@ ENTITIES:
         Translate: [-37.2073898, 37.1134758, -35.4818497]
         Rotate: [-90, -180, 0]
         Scale: [1.89999998, 1.32000005, 1]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.89999998, 1.32000005, 1]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 11325662916488734020
       MaterialID: 0
@@ -237,7 +515,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 0.00999999978, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 16135378917386993712
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Slide_Door_Floor_3
       UID: 3510448602803946821
@@ -246,6 +535,16 @@ ENTITIES:
         Translate: [-30.4379082, 27.7840004, -22.5690002]
         Rotate: [90, 0, 90]
         Scale: [1, 1, 1]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1, 1, 1]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 5963078964798272625
       MaterialID: 0
@@ -253,7 +552,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 0.00999999978, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 16135378917386993712
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Slide_Door_Floor_3
       UID: 16826855015415748122
@@ -262,6 +572,16 @@ ENTITIES:
         Translate: [-42.6663055, 27.7043896, -22.5687847]
         Rotate: [90, 0, 90]
         Scale: [1, 1, 1]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1, 1, 1]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 5963078964798272625
       MaterialID: 0
@@ -269,7 +589,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 2665223197068733968
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Diider_Floor_3
       UID: 6730938418377857404
@@ -278,6 +609,16 @@ ENTITIES:
         Translate: [-36.9224434, 31.5197773, -22.791029]
         Rotate: [-90, 0, 0]
         Scale: [1.79999995, 1, 1.98000002]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.79999995, 1, 1.98000002]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 6158523069679221176
       MaterialID: 0
@@ -285,7 +626,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Prism_Floor_3
       UID: 16800634043632137629
@@ -294,6 +646,16 @@ ENTITIES:
         Translate: [-59.498291, 25.5212288, -20.5396595]
         Rotate: [0, 0, 0]
         Scale: [0.150000006, 0.159999996, 0.140000001]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.150000006, 0.159999996, 0.140000001]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -301,7 +663,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 5710357086850101923
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Statue_Floor_3
       UID: 3718808117625100366
@@ -310,6 +683,16 @@ ENTITIES:
         Translate: [-64.5262833, 27.1949787, -0.0265043974]
         Rotate: [90, 90, 0]
         Scale: [4.2750001, 2.5, 1.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [4.2750001, 2.5, 1.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
       MaterialID: 0
@@ -385,7 +768,18 @@ ENTITIES:
       MaterialSource: ""
   - {}
   - {}
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Left_Wall_Roof
       UID: 2388035415323208407
@@ -394,6 +788,16 @@ ENTITIES:
         Translate: [-52.3387909, 31.8470898, 21.5338707]
         Rotate: [0, 0, 0]
         Scale: [0.975000024, 4.5999999, 0.275000006]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.975000024, 4.5999999, 0.275000006]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -401,7 +805,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 1439622600589773450
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Left_Roof
       UID: 12983457038218441394
@@ -410,6 +825,16 @@ ENTITIES:
         Translate: [-48.9172478, 49.4913101, 18.4868393]
         Rotate: [-90, 90, 0]
         Scale: [1.79999995, 1.84000003, 1.85000002]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.79999995, 1.84000003, 1.85000002]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 9472503155396993014
       MaterialID: 0
@@ -417,7 +842,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 2792724369257227031
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Midle_Roof
       UID: 2606417020944668337
@@ -426,6 +862,16 @@ ENTITIES:
         Translate: [-62.2766991, 50.9559097, 1.15821767]
         Rotate: [-90, -180, 0]
         Scale: [2.5999999, 1.245, 1.88]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5999999, 1.245, 1.88]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 17534273664186647434
       MaterialID: 0
@@ -443,8 +889,8 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
-        PhysicsMesh: 6729413007522777642
-        Type: BOX
+        PhysicsMesh: 5710357086850101923
+        Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
       Name: Stone_Statue_2_Floor_2
@@ -701,7 +1147,7 @@ ENTITIES:
         Restitution: 0.100000001
         IsTrigger: false
         PhysicsMesh: 12807707659119185110
-        Type: BOX
+        Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
       Name: Stairs_Left
@@ -738,7 +1184,7 @@ ENTITIES:
         Restitution: 0.100000001
         IsTrigger: false
         PhysicsMesh: 12807707659119185110
-        Type: BOX
+        Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
       Name: Stairs_Right
@@ -840,22 +1286,47 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 2.4000001, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [100, 180, 100]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: CAPSULE
+    InfoComponent:
       Parent: 0
       Name: Samurai
       UID: 16439367912350421013
     TransformComponent:
       Transform:
         Translate: [0.803038001, 1.36473, 16.9053497]
-        Rotate: [0, -0, 0]
+        Rotate: [0, 0, 0]
         Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+        FreezeRotationX: true
+        FreezeRotationY: true
+        FreezeRotationZ: true
+        Type: DYNAMIC
     ModelComponent:
-      ModelID: 9858498430227169258
+      ModelID: 4722549275472783507
       MaterialID: 0
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PlayerMovement
+      ParamsJSON: "{}"
   - InfoComponent:
       Parent: 0
       Name: Ninja
@@ -928,14 +1399,23 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [4.13064528, 17.2375698, -10.2409716]
-        Rotate: [-15.1875, -27132.5625, 0]
+        Translate: [5.73032522, 5.27252293, 15.9375229]
+        Rotate: [-12.4518814, 73.75, 0]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.300000012
         FarPlane: 1000
-        FOV: 96
+        FOV: 100
+    ThirdPersonCameraComponent:
+      Offset: [2, 4, 0]
+      Current Distance: 2
+      Min Distance: 1
+      Max Distance: 5
+      Current Yaw: 0
+      Current Pitch: 20
+      Mouse Sensitivity: 1
+      Scroll Sensitivity: 1
   - InfoComponent:
       Parent: 0
       Name: Skybox
@@ -952,7 +1432,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [1, 1, 100]
         DynamicFriction: 0.5
         StaticFriction: 0.5
         Restitution: 0
@@ -1110,7 +1590,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Prism_Outside_Hut
       UID: 17261417048716064848
@@ -1119,6 +1610,16 @@ ENTITIES:
         Translate: [-14.74018, 14.2288504, 67.3678665]
         Rotate: [0, -90, 0]
         Scale: [0.075000003, 0.174999997, 0.375]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.075000003, 0.174999997, 0.375]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1136,7 +1637,7 @@ ENTITIES:
         Restitution: 0.100000001
         IsTrigger: false
         PhysicsMesh: 16135378917386993712
-        Type: BOX
+        Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
       Name: Sliding_Door_1
@@ -1201,7 +1702,18 @@ ENTITIES:
       ModelSource: ""
       MaterialSource: ""
   - {}
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [0.589999974, 0.600000024, 2.38000011]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 14214629347157244268
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: Standing_Lantern_Outside_Hut
       UID: 6757287925914476890
@@ -1210,6 +1722,16 @@ ENTITIES:
         Translate: [24.15732, 13.5084696, 25.6966896]
         Rotate: [-90, 0, 0]
         Scale: [2.5, 2.5, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2.5, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 17971063540041505471
       MaterialID: 0
@@ -1582,7 +2104,7 @@ ENTITIES:
         Restitution: 0.100000001
         IsTrigger: false
         PhysicsMesh: 13244744886219103757
-        Type: BOX
+        Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
       Name: Fence_Level_2
@@ -1609,7 +2131,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 2159505294651867228
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Wall_Slanted
       UID: 17789316079778263479
@@ -1618,6 +2151,16 @@ ENTITIES:
         Translate: [-25.7503872, 5.62664747, 1.69924796]
         Rotate: [-90, -180, 0]
         Scale: [1, 1.42999995, 1.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1, 1.42999995, 1.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 17073269421140634080
       MaterialID: 0
@@ -1625,7 +2168,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Walls_Right_Floor_2
       UID: 9853635101962824744
@@ -1634,6 +2188,16 @@ ENTITIES:
         Translate: [26.0632496, 12.1000004, 2.75174999]
         Rotate: [0, -90, 0]
         Scale: [1.57500005, 2.5, 0.224999994]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.57500005, 2.5, 0.224999994]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -1641,7 +2205,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 4356505632757386652
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Lion_Statue_Left
       UID: 9981075119489624857
@@ -1650,6 +2225,16 @@ ENTITIES:
         Translate: [-17.3267307, 15.0158005, -13.9871597]
         Rotate: [0, -270, 0]
         Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 6829728261434427183
       MaterialID: 0
@@ -1703,8 +2288,8 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
-        PhysicsMesh: 6729413007522777642
-        Type: BOX
+        PhysicsMesh: 5710357086850101923
+        Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
       Name: Statue_Left
@@ -1768,7 +2353,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [0.600000024, 0.600000024, 2.29999995]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: Outdoor_Lantern_Floor_2_Left
       UID: 2870292450877532431
@@ -1777,6 +2373,16 @@ ENTITIES:
         Translate: [-12.6430702, 13.6307497, -11.10783]
         Rotate: [-90, 0, 0]
         Scale: [2.5, 2.5, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2.5, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 17971063540041505471
       MaterialID: 0
@@ -1784,7 +2390,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [0.600000024, 0.600000024, 2.29999995]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: Outdoor_Lantern_Floor_2_Right
       UID: 2218775839040934482
@@ -1793,6 +2410,16 @@ ENTITIES:
         Translate: [-6.81232977, 13.5549898, -13.9300003]
         Rotate: [-90, 0, 0]
         Scale: [2.5, 2.5, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2.5, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 17971063540041505471
       MaterialID: 0
@@ -1832,7 +2459,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 5710357086850101923
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Satue_For_Wall_Slope
       UID: 17696174002566031047
@@ -1841,6 +2479,16 @@ ENTITIES:
         Translate: [-0.827917933, 18.6603336, 9.66232586]
         Rotate: [90, 0, 0]
         Scale: [3.799999, 3.0999999, 1.12499905]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [3.799999, 3.0999999, 1.12499905]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
       MaterialID: 0
@@ -1848,7 +2496,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 5710357086850101923
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Wall_Floor_2_Left
       UID: 6831113887765089259
@@ -1857,6 +2516,16 @@ ENTITIES:
         Translate: [-12.3898497, 18.0312691, -1.34182]
         Rotate: [90, 90, 0]
         Scale: [11.25, 2.5, 1.875]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [11.25, 2.5, 1.875]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
       MaterialID: 0
@@ -1864,7 +2533,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 4356505632757386652
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Lion_Statue_Middle_Right_Floor_2
       UID: 12279501084326585378
@@ -1964,7 +2644,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 4356505632757386652
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Lion_Statue_Middle_Left_Floor_2
       UID: 963547750710080490
@@ -1973,6 +2664,16 @@ ENTITIES:
         Translate: [-2.51615, 14.7536297, -6.00606012]
         Rotate: [0, -90, 0]
         Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 6829728261434427183
       MaterialID: 0
@@ -1980,7 +2681,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13583425803943598177
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Fruit_Tree_Outside_Hut
       UID: 2443250646068502005
@@ -1989,6 +2701,16 @@ ENTITIES:
         Translate: [19.4503727, 13.6223888, 22.6484566]
         Rotate: [-90, -172.182007, 0]
         Scale: [1.25, 1.25, 1.25]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.25, 1.25, 1.25]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 5156670162497623977
       MaterialID: 0
@@ -1996,7 +2718,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 5710357086850101923
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Statue_Before_Hut_Left
       UID: 16900605180980820779
@@ -2005,6 +2738,16 @@ ENTITIES:
         Translate: [-9.64566612, 15.8624897, 23.0938225]
         Rotate: [-90, 90, 0]
         Scale: [2.1500001, 2, 1.39999998]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.1500001, 2, 1.39999998]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
       MaterialID: 0
@@ -2012,7 +2755,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Wall_Middle_Floor_2
       UID: 6365037268832649934
@@ -2021,6 +2775,16 @@ ENTITIES:
         Translate: [18.0107307, 12.1000004, 28.0049896]
         Rotate: [0, 0, 0]
         Scale: [0.600000024, 2.5, 0.224999994]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.600000024, 2.5, 0.224999994]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -2028,7 +2792,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Hut_Base
       UID: 2136373434774079840
@@ -2037,6 +2812,16 @@ ENTITIES:
         Translate: [-0.153001994, 15.5079336, 48.3323936]
         Rotate: [0, 0, 0]
         Scale: [0.474999994, 0.449999988, 4.25]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.474999994, 0.449999988, 4.25]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -2044,7 +2829,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 7134129580656216935
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Hut_Roof
       UID: 16133961965073669139
@@ -2053,6 +2849,16 @@ ENTITIES:
         Translate: [0.238012001, 32.0342598, 47.7282219]
         Rotate: [-90, 0, 0]
         Scale: [1, 1.25, 1]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1, 1.25, 1]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 8039408713556627694
       MaterialID: 0
@@ -2060,7 +2866,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Right_Wall_Of_Hut
       UID: 468644347822796871
@@ -2069,6 +2886,16 @@ ENTITIES:
         Translate: [8.16724968, 15.4367504, 48.1555481]
         Rotate: [0, -90, 0]
         Scale: [1.45000005, 2.32500005, 0.224999994]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.45000005, 2.32500005, 0.224999994]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -2076,7 +2903,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Texture_Front_Of_Hut
       UID: 5123991758905279357
@@ -2085,6 +2923,16 @@ ENTITIES:
         Translate: [-0.229046002, 15.1223402, 27.0022526]
         Rotate: [0, 0, 0]
         Scale: [0.474999994, 0.449999988, 0.0250000004]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.474999994, 0.449999988, 0.0250000004]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -2092,7 +2940,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Left_Wall_Of_Hut_Bottom
       UID: 8618011661999532453
@@ -2101,6 +2960,16 @@ ENTITIES:
         Translate: [-8.1671896, 12.0883799, 48.1404953]
         Rotate: [0, -90, 0]
         Scale: [1.45000005, 1.14999998, 0.224999994]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.45000005, 1.14999998, 0.224999994]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -2108,7 +2977,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Front_Pillar_Left_Of_Hut
       UID: 4636965599594259602
@@ -2117,6 +2997,16 @@ ENTITIES:
         Translate: [-8.17185974, 22.17132, 27.5286274]
         Rotate: [0, -90, 0]
         Scale: [0.075000003, 0.949999988, 0.224999994]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.075000003, 0.949999988, 0.224999994]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -2124,7 +3014,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Left_Wall_Of_Hut_Top
       UID: 13337176872369800048
@@ -2133,6 +3034,16 @@ ENTITIES:
         Translate: [-9.16878033, 22.1983395, 40.3395691]
         Rotate: [0, -90, 0]
         Scale: [0.800000012, 0.975000024, 0.0250000004]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.800000012, 0.975000024, 0.0250000004]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -2204,7 +3115,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 0.00999999978, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 16135378917386993712
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Interior_Sliding_Door_Right
       UID: 3543104788695067941
@@ -2213,6 +3135,16 @@ ENTITIES:
         Translate: [2.84153843, 20.5699997, 27.3549995]
         Rotate: [-90, 0, 0]
         Scale: [0.540000021, 2.5, 2.04999995]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.540000021, 2.5, 2.04999995]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 5963078964798272625
       MaterialID: 0
@@ -2220,7 +3152,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 0.00999999978, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 16135378917386993712
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Interior_Sliding_Door_Left
       UID: 2081698451890565235
@@ -2229,6 +3172,16 @@ ENTITIES:
         Translate: [-4.67939854, 20.5696507, 27.355051]
         Rotate: [-90, 0, 0]
         Scale: [0.540000021, 2.5, 2.04999995]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.540000021, 2.5, 2.04999995]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 5963078964798272625
       MaterialID: 0
@@ -2236,7 +3189,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Prism_Inside_Hut
       UID: 13695423098878404332
@@ -2245,6 +3209,16 @@ ENTITIES:
         Translate: [-1.26004028, 18.9050503, 30.827673]
         Rotate: [0, 0, 0]
         Scale: [0.0500000007, 0.230000004, 0.125]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0500000007, 0.230000004, 0.125]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -2252,7 +3226,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1.20000005, 1.20000005, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 8095852268973777608
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Hanging_Lantern_Back_Of_Hut
       UID: 3598504729430996576
@@ -2261,6 +3246,16 @@ ENTITIES:
         Translate: [6.38543987, 22.4728394, 61.2925911]
         Rotate: [-90, -90, 0]
         Scale: [2.5, 2.5, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2.5, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 0
@@ -2300,7 +3295,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 11737700492935567662
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Table_Second_Floor
       UID: 16020692895328883736
@@ -2309,6 +3315,16 @@ ENTITIES:
         Translate: [0.780245006, 17.4244804, 58.7899513]
         Rotate: [-90, 0, 0]
         Scale: [1.875, 1.875, 1.875]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.875, 1.875, 1.875]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 5838446488854438722
       MaterialID: 0
@@ -2316,7 +3332,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 4431181016770564176
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Cushion_1_Second_Floor
       UID: 2249271849963366371
@@ -2325,6 +3352,16 @@ ENTITIES:
         Translate: [-4.52539015, 17.757, 58.1401901]
         Rotate: [-90, 0, 0]
         Scale: [2.5, 2.5, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2.5, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 618926925563278836
       MaterialID: 0
@@ -2332,7 +3369,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 4431181016770564176
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Cushion_2_Second_Floor
       UID: 1861805954047498574
@@ -2341,6 +3389,16 @@ ENTITIES:
         Translate: [0.51077801, 17.757, 54.8099899]
         Rotate: [-90, 0, 0]
         Scale: [2.5, 2.5, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2.5, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 618926925563278836
       MaterialID: 0
@@ -2348,7 +3406,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 4431181016770564176
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Cushion_3_Second_Floor
       UID: 8415643198172161472
@@ -2357,6 +3426,16 @@ ENTITIES:
         Translate: [0.311001986, 17.757, 63.8384285]
         Rotate: [-90, 0, 0]
         Scale: [2.5, 2.5, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2.5, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 618926925563278836
       MaterialID: 0
@@ -2364,7 +3443,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 4431181016770564176
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Cushion_4_Second_Floor
       UID: 3820564189371600480
@@ -2373,6 +3463,16 @@ ENTITIES:
         Translate: [5.46808004, 17.757452, 58.8430405]
         Rotate: [-90, 0, 0]
         Scale: [2.5, 2.5, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2.5, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 618926925563278836
       MaterialID: 0
@@ -2380,7 +3480,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Prism_Inside_Back_Of_Hut
       UID: 6129246695125078299
@@ -2389,6 +3500,16 @@ ENTITIES:
         Translate: [3.43460989, 20.5169201, 65.5469513]
         Rotate: [0, 0, 0]
         Scale: [0.125, 0.25, 0.100000001]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.125, 0.25, 0.100000001]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -2396,7 +3517,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Floor_Of_Level_2_Back
       UID: 5980189267885289823
@@ -2405,6 +3537,16 @@ ENTITIES:
         Translate: [-17.3172607, 3.20444989, 48.5984993]
         Rotate: [0, 0, 0]
         Scale: [0.524999976, 2.07500005, 4.32499981]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.524999976, 2.07500005, 4.32499981]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -2438,7 +3580,7 @@ ENTITIES:
         Restitution: 0.100000001
         IsTrigger: false
         PhysicsMesh: 16135378917386993712
-        Type: BOX
+        Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
       Name: Sliding_Door_3
@@ -2699,7 +3841,7 @@ ENTITIES:
       UID: 8760152593011495485
     TransformComponent:
       Transform:
-        Translate: [0, 6.80673981, -5.18908024]
+        Translate: [0, 5, -5.18908024]
         Rotate: [0, 0, 0]
         Scale: [0.0500000007, 1.125, 1.42499995]
     RigidBodyComponent:
@@ -2803,7 +3945,7 @@ ENTITIES:
         Restitution: 0.100000001
         IsTrigger: false
         PhysicsMesh: 13244744886219103757
-        Type: BOX
+        Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
       Name: Seperator_1_Left_1
@@ -2985,7 +4127,18 @@ ENTITIES:
       ModelSource: ""
       MaterialSource: ""
   - {}
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13111799052110481244
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Wall_With_Holr_Floor_2
       UID: 5338734144693160508
@@ -2994,6 +4147,16 @@ ENTITIES:
         Translate: [5.75988007, 13.1754103, 9.7722702]
         Rotate: [0, 180, 0]
         Scale: [1.375, 1.5, 1.25]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.375, 1.5, 1.25]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 3804716946776640042
       MaterialID: 0
@@ -3075,7 +4238,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 4356505632757386652
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Lion_Statue_Floor_2_Middle
       UID: 13492418210642916084
@@ -3084,6 +4258,16 @@ ENTITIES:
         Translate: [-11.6857996, 14.4316397, 2.8759923]
         Rotate: [0, 90, 0]
         Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 6829728261434427183
       MaterialID: 0
@@ -3091,7 +4275,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 4356505632757386652
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Lion_Statue_Floor_2_Middle_2
       UID: 8074056370493249823
@@ -3100,6 +4295,16 @@ ENTITIES:
         Translate: [-2.43833995, 15.4986296, 2.66752005]
         Rotate: [0, 90, 0]
         Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 6829728261434427183
       MaterialID: 0
@@ -3181,7 +4386,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Seperator_Floor_2
       UID: 10281552342571521286
@@ -3190,6 +4406,16 @@ ENTITIES:
         Translate: [-16.9721165, 18.8007908, 27.7949505]
         Rotate: [0, 0, 0]
         Scale: [0.550000012, 1.07500005, 0.174999997]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.550000012, 1.07500005, 0.174999997]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -3197,7 +4423,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 5710357086850101923
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Stone_Statue_Floor_2_Outside_Hut
       UID: 13587679039975028729
@@ -3206,6 +4443,16 @@ ENTITIES:
         Translate: [-11.0900002, 16.6774998, 50.0120239]
         Rotate: [90, 90, 0]
         Scale: [4.2750001, 2.5, 1.85000002]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [4.2750001, 2.5, 1.85000002]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
       MaterialID: 0
@@ -3213,7 +4460,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Floor_2_Conector_Floor_3
       UID: 6577078971723633079
@@ -3222,6 +4480,16 @@ ENTITIES:
         Translate: [-30.0310497, 1.10064602, 61.2063103]
         Rotate: [0, 0, 0]
         Scale: [0.5, 2.5, 1.77499998]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.5, 2.5, 1.77499998]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -3229,7 +4497,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 12807707659119185110
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Stairs_To_Level_3
       UID: 4356941940841291798
@@ -3238,6 +4517,16 @@ ENTITIES:
         Translate: [-30.8573399, 15.4151258, 40.7431717]
         Rotate: [0, 90, 0]
         Scale: [2.5, 1.29999995, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 1.29999995, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 17773246069672836568
       MaterialID: 0
@@ -3245,7 +4534,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Wall_behind_Hut
       UID: 4395201707747078389
@@ -3254,6 +4554,16 @@ ENTITIES:
         Translate: [-23.6012897, 18.7940292, 69.493103]
         Rotate: [0, 0, 0]
         Scale: [0.925000012, 1, 0.125]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.925000012, 1, 0.125]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -3270,6 +4580,16 @@ ENTITIES:
         Translate: [-38.5667992, -0.548253, 43.4999352]
         Rotate: [-90, -180, 0]
         Scale: [1.25, 2.5, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.25, 2.5, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 18413156755282979635
       MaterialID: 0
@@ -3277,7 +4597,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Wall_Middle_Floor_3
       UID: 16181083975962338629
@@ -3286,6 +4617,16 @@ ENTITIES:
         Translate: [-67.8836823, 39.7797928, -0.888950586]
         Rotate: [0, 0, 0]
         Scale: [0.100000001, 2.9849999, 4.69999981]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.100000001, 2.9849999, 4.69999981]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -3313,7 +4654,18 @@ ENTITIES:
       MaterialSource: ""
   - {}
   - {}
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 2061877446978793964
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Stair_Handle_Floor_3
       UID: 23348314003995208
@@ -3322,6 +4674,16 @@ ENTITIES:
         Translate: [-25.5687408, 13.709671, 36.9383659]
         Rotate: [0, 180, 0]
         Scale: [4.34000015, 1.05999994, 2.51999998]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [4.34000015, 1.05999994, 2.51999998]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 14419591904238952119
       MaterialID: 0
@@ -3329,7 +4691,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 14932226064384878625
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Right_Roof
       UID: 11417581474595376843
@@ -3338,6 +4711,16 @@ ENTITIES:
         Translate: [-54.8050461, 50.3858223, -16.024559]
         Rotate: [-90, 0, 0]
         Scale: [2, 2, 2]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2, 2, 2]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 5693942620096192191
       MaterialID: 0
@@ -3345,7 +4728,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Floor_3_Ground
       UID: 12984771949456142781
@@ -3354,6 +4748,16 @@ ENTITIES:
         Translate: [-47.5552635, 19.2154694, 2.4862411]
         Rotate: [0, 0, 0]
         Scale: [1.33000004, 1.10000002, 5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.33000004, 1.10000002, 5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -3361,7 +4765,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Wall_Floor_3
       UID: 13846031918317396066
@@ -3370,6 +4785,16 @@ ENTITIES:
         Translate: [-26.5638962, 23.9131203, -30.921587]
         Rotate: [0, 0, 0]
         Scale: [0.0700000003, 2.54999995, 1.79999995]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0700000003, 2.54999995, 1.79999995]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -3377,7 +4802,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Floor_3_Ground
       UID: 4319432897561837554
@@ -3386,6 +4822,16 @@ ENTITIES:
         Translate: [-36.6882286, 19.7098942, -35.6134834]
         Rotate: [0, 0, 0]
         Scale: [0.600000024, 0.99000001, 2.58999991]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.600000024, 0.99000001, 2.58999991]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -3394,7 +4840,18 @@ ENTITIES:
       ModelSource: ""
       MaterialSource: ""
   - {}
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Floor_4
       UID: 4918625632145337744
@@ -3403,6 +4860,16 @@ ENTITIES:
         Translate: [-1.16658056, 29.2030125, -92.1585541]
         Rotate: [0, 0, 0]
         Scale: [1.20000005, 0.430000007, 3.75]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.20000005, 0.430000007, 3.75]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -3410,7 +4877,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Base_Floor_4
       UID: 2190075676593154955
@@ -3419,6 +4897,16 @@ ENTITIES:
         Translate: [10.8032551, 33.5409164, -69.3112869]
         Rotate: [0, 0, 0]
         Scale: [0.419999987, 1, 0.850000024]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.419999987, 1, 0.850000024]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -3426,7 +4914,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Base_Floor_4
       UID: 11842107837780108053
@@ -3435,6 +4934,16 @@ ENTITIES:
         Translate: [-12.85853, 32.9228363, -69.1061096]
         Rotate: [0, 0, 0]
         Scale: [0.400000006, 1.10000002, 0.889999986]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.400000006, 1.10000002, 0.889999986]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -3442,7 +4951,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Base_Pillar_Floor_4
       UID: 13287787014918558297
@@ -3451,6 +4971,16 @@ ENTITIES:
         Translate: [10.7512808, 52.951889, -69.2815323]
         Rotate: [0, 0, 0]
         Scale: [0.419999987, 2.8499999, 0.850000024]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.419999987, 2.8499999, 0.850000024]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -3458,7 +4988,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Base_Pillar_Floor_4
       UID: 7718348480325726076
@@ -3467,6 +5008,16 @@ ENTITIES:
         Translate: [-12.8123875, 52.7081757, -69.1482925]
         Rotate: [0, 0, 0]
         Scale: [0.400000006, 2.8499999, 0.889999986]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.400000006, 2.8499999, 0.889999986]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -3474,7 +5025,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Base_Floor_4
       UID: 2570408052666540741
@@ -3483,6 +5045,16 @@ ENTITIES:
         Translate: [-23.0928097, 32.9230003, -90.8538818]
         Rotate: [0, 90, 0]
         Scale: [1.33000004, 1.03999996, 0.899999976]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.33000004, 1.03999996, 0.899999976]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -3490,7 +5062,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Base_Floor_4
       UID: 6848394130365334558
@@ -3499,6 +5082,16 @@ ENTITIES:
         Translate: [21.8044872, 32.9230003, -90.8539963]
         Rotate: [0, 90, 0]
         Scale: [1.33000004, 1.03999996, 0.899999976]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.33000004, 1.03999996, 0.899999976]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -3506,7 +5099,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Base_Pillar_Floor_4
       UID: 1729221631931156963
@@ -3515,6 +5119,16 @@ ENTITIES:
         Translate: [21.8040009, 52.7220001, -90.8539963]
         Rotate: [0, 90, 0]
         Scale: [1.33000004, 2.9000001, 0.899999976]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.33000004, 2.9000001, 0.899999976]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -3522,7 +5136,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Base_Pillar_Floor_4
       UID: 17871542461698769179
@@ -3531,6 +5156,16 @@ ENTITIES:
         Translate: [-23.0930004, 52.7220001, -90.8459091]
         Rotate: [0, 90, 0]
         Scale: [1.33000004, 2.9000001, 0.899999976]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.33000004, 2.9000001, 0.899999976]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -3538,7 +5173,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Base_Floor_4
       UID: 17970313403515076686
@@ -3547,6 +5193,16 @@ ENTITIES:
         Translate: [-1.20458198, 32.9230003, -115.667686]
         Rotate: [0, 0, 0]
         Scale: [1.79999995, 1.03999996, 0.899999976]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.79999995, 1.03999996, 0.899999976]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -3554,7 +5210,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Base_Pillar_Floor_4
       UID: 13688581090606078187
@@ -3563,6 +5230,16 @@ ENTITIES:
         Translate: [-1.20500004, 52.7220001, -115.667999]
         Rotate: [0, 0, 0]
         Scale: [1.79999995, 2.9000001, 0.899999976]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.79999995, 2.9000001, 0.899999976]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -3570,7 +5247,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 11807856327719446838
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Floating_Platform
       UID: 7686139830452718370
@@ -3579,6 +5267,16 @@ ENTITIES:
         Translate: [-9.07210922, 41.6555748, -89.5403824]
         Rotate: [-52.1570015, 0, 0]
         Scale: [3, 3, 3]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [3, 3, 3]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 17511859142013007442
       MaterialID: 0
@@ -3586,7 +5284,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 11807856327719446838
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Floating_Platform
       UID: 11729297249889730486
@@ -3595,6 +5304,16 @@ ENTITIES:
         Translate: [-3.8817277, 48.7154236, -98.5415649]
         Rotate: [-83.8909988, 0, 0]
         Scale: [4, 4, 4]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [4, 4, 4]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 17511859142013007442
       MaterialID: 0
@@ -3602,7 +5321,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 11807856327719446838
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Floating_Platform
       UID: 17354752070664653093
@@ -3611,6 +5341,16 @@ ENTITIES:
         Translate: [2.12977314, 56.1651993, -93.8769531]
         Rotate: [-79.4929962, 0, 0]
         Scale: [8, 8, 8]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [8, 8, 8]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 17511859142013007442
       MaterialID: 0
@@ -3618,7 +5358,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 15621530879397167257
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Platform_Floor_5
       UID: 7871732944255032664
@@ -3627,6 +5378,16 @@ ENTITIES:
         Translate: [-0.521252096, 66.5829697, -92.2309723]
         Rotate: [90, 0, 0]
         Scale: [2.5, 2.5, 1]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2.5, 1]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 10044660999367352520
       MaterialID: 0
@@ -3634,7 +5395,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 1541321499593983523
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Roof_Prism
       UID: 1493003963993392887
@@ -3643,6 +5415,16 @@ ENTITIES:
         Translate: [-0.201146603, 69.2807007, -93.6500397]
         Rotate: [-90, 0, 0]
         Scale: [1.5, 1.5, 1]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.5, 1.5, 1]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 15766282597083030722
       MaterialID: 0
@@ -3650,7 +5432,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Floor_4_Level_2_Pillars
       UID: 6846558112192725432
@@ -3659,6 +5452,16 @@ ENTITIES:
         Translate: [-16.0169621, 73.2748413, -91.9531631]
         Rotate: [90, 90, 0]
         Scale: [1.24000001, 0.5, 1.35000002]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.24000001, 0.5, 1.35000002]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -3666,7 +5469,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Floor_4_Level_2_Pillars
       UID: 7785019101967178938
@@ -3675,6 +5489,16 @@ ENTITIES:
         Translate: [14.7936926, 73.2750015, -91.9530029]
         Rotate: [90, 90, 0]
         Scale: [1.24000001, 0.5, 1.35000002]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.24000001, 0.5, 1.35000002]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 0
@@ -3730,7 +5554,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 4356505632757386652
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Lion_Statue_Outside_Hut
       UID: 10462113249038074581
@@ -3739,6 +5574,16 @@ ENTITIES:
         Translate: [-5.49445248, 16.2046795, 13.7674837]
         Rotate: [0, -90, 0]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 6829728261434427183
       MaterialID: 0
@@ -3762,7 +5607,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 5710357086850101923
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Statue_Hut_Middle
       UID: 17883503365622246332
@@ -3771,6 +5627,16 @@ ENTITIES:
         Translate: [-1.24477649, 19.7120228, 32.6378098]
         Rotate: [90, 0, 0]
         Scale: [1, 1, 1]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1, 1, 1]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
       MaterialID: 0
@@ -3778,7 +5644,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 5710357086850101923
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Statue_Hut_Left
       UID: 1199819138481433329
@@ -3787,6 +5664,16 @@ ENTITIES:
         Translate: [0.61352855, 19.7119999, 32.3973389]
         Rotate: [90, 45, 0]
         Scale: [1, 1, 1]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1, 1, 1]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
       MaterialID: 0
@@ -3794,7 +5681,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 5710357086850101923
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Statue_Hut_Right
       UID: 10357583061383156520
@@ -3803,6 +5701,16 @@ ENTITIES:
         Translate: [-3.01346159, 19.7119999, 32.6380005]
         Rotate: [90, -45, 0]
         Scale: [1, 1, 1]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1, 1, 1]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
       MaterialID: 0
@@ -3874,7 +5782,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1.20000005, 1.20000005, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 8095852268973777608
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3
       UID: 11077699063001817715
@@ -3883,6 +5802,16 @@ ENTITIES:
         Translate: [-27.9700241, 28.4772587, 4.60886812]
         Rotate: [-90, -90, 0]
         Scale: [2, 2, 2]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2, 2, 2]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 0
@@ -3890,7 +5819,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 5710357086850101923
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Stone_Statue_Level_3
       UID: 9590274819649667893
@@ -3899,6 +5839,16 @@ ENTITIES:
         Translate: [-28.2738647, 27.1949997, -0.0270000007]
         Rotate: [90, 90, 0]
         Scale: [4.2750001, 2.5, 1.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [4.2750001, 2.5, 1.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
       MaterialID: 0
@@ -3906,7 +5856,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 5710357086850101923
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Stone_Statue_Level_3
       UID: 275969553929978137
@@ -3915,6 +5876,16 @@ ENTITIES:
         Translate: [-28.2740002, 27.1949997, -4.91556978]
         Rotate: [90, 90, 0]
         Scale: [4.2750001, 2.5, 1.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [4.2750001, 2.5, 1.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
       MaterialID: 0
@@ -3922,7 +5893,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1.20000005, 1.20000005, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 8095852268973777608
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3
       UID: 12975091722426689741
@@ -3931,6 +5913,16 @@ ENTITIES:
         Translate: [-27.9699993, 30.8564072, -4.6309967]
         Rotate: [-90, -90, 0]
         Scale: [2, 2, 2]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2, 2, 2]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 0
@@ -4242,7 +6234,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13583425803943598177
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Pagoda_Tree
       UID: 7315362603184300195
@@ -4251,6 +6254,16 @@ ENTITIES:
         Translate: [17.4115829, 58.9146423, -101.037125]
         Rotate: [0, -90, 0]
         Scale: [1.25, 1.25, 1.25]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.25, 1.25, 1.25]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 5156670162497623977
       MaterialID: 0
@@ -4258,7 +6271,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13583425803943598177
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Pagoda_Tree
       UID: 11904896227911583788
@@ -4267,6 +6291,16 @@ ENTITIES:
         Translate: [-18.6848431, 56.2561417, -82.548996]
         Rotate: [0, 90, 0]
         Scale: [1.5, 1.5, 1.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.5, 1.5, 1.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 5156670162497623977
       MaterialID: 0
@@ -4274,7 +6308,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 16135378917386993712
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Pagoda_Sliding_Door
       UID: 10890283744556511936
@@ -4283,6 +6328,16 @@ ENTITIES:
         Translate: [5.88403034, 70.5062943, -79.1026077]
         Rotate: [-90, 0, 0]
         Scale: [2, 2, 2]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2, 2, 2]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 5963078964798272625
       MaterialID: 0
@@ -4290,7 +6345,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 16135378917386993712
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Pagoda_Sliding_Door
       UID: 7370925412447993334
@@ -4299,6 +6365,16 @@ ENTITIES:
         Translate: [-6.70585823, 70.5059967, -79.1029968]
         Rotate: [90, 0, 0]
         Scale: [2, 2, 2]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2, 2, 2]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 5963078964798272625
       MaterialID: 0
@@ -4338,7 +6414,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 16135378917386993712
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Pagoda_Sliding_Door
       UID: 15625970133127521591
@@ -4347,6 +6434,16 @@ ENTITIES:
         Translate: [-6.83072519, 70.5059967, -104.269653]
         Rotate: [90, 0, 0]
         Scale: [2, 2, 2]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2, 2, 2]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 5963078964798272625
       MaterialID: 0
@@ -4354,7 +6451,18 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 16135378917386993712
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Pagoda_Sliding_Door
       UID: 16387207638960670320
@@ -4363,6 +6471,16 @@ ENTITIES:
         Translate: [5.72519016, 70.5059967, -104.269997]
         Rotate: [90, 0, 0]
         Scale: [2, 2, 2]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2, 2, 2]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 5963078964798272625
       MaterialID: 0
@@ -4402,6 +6520,15 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
   - {}
   - {}
   - {}

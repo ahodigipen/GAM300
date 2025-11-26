@@ -72,19 +72,32 @@ namespace Boom {
 	{
 		BOOM_INLINE PhysicsMeshAsset() { type = AssetType::PHYSICS_MESH; }
 
-		// This will hold the live PhysX mesh object after loading
+		// For DYNAMIC actors (convex approximation)
 		physx::PxConvexMesh* mesh = nullptr;
+
+		// For STATIC actors (exact geometry) - NEW MEMBER
+		physx::PxTriangleMesh* triangleMesh = nullptr;
 
 		// The path to the compiled .pxm file on disk
 		std::string cookedMeshPath;
 
-		// Destructor to release the PhysX resource and prevent memory leaks
+		// Destructor to release the PhysX resources and prevent memory leaks
 		BOOM_INLINE virtual ~PhysicsMeshAsset() {
 			if (mesh) {
 				mesh->release();
 				mesh = nullptr;
 			}
+			// Release the triangle mesh if it exists
+			if (triangleMesh) {
+				triangleMesh->release();
+				triangleMesh = nullptr;
+			}
 		}
+
+		XPROPERTY_DEF(
+			"PhysicsMeshAsset", PhysicsMeshAsset,
+			obj_member<"CookedMeshPath", &PhysicsMeshAsset::cookedMeshPath>
+		)
 	};
 
 	struct TextureAsset : Asset {
