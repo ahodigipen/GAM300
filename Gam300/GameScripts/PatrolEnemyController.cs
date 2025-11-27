@@ -4,26 +4,30 @@ using Boom;
 namespace GameScripts
 {
     /// <summary>
-    /// Enemy controller that patrols between waypoints without rotating.
-    /// Vision is always forward-facing in the entity's initial forward direction.
+    /// Enemy controller for NavMesh-patrolled enemies.
+    /// Automatically rotates enemy to face movement direction.
+    /// Vision follows the rotation for stealth gameplay.
     /// </summary>
     public class PatrolEnemyController
     {
         public ulong Entity;
 
-        // Patrol parameters
-        private Vec3[] _waypoints;
-        private int _currentWaypointIndex = 0;
-        private float _patrolSpeed = 2f;
-        private float _waypointReachedDistance = 0.5f;
+        // Rotation parameters
+        private float _rotationSpeed = 360f; // Degrees per second (fast rotation)
+        private float _currentYaw = 0f;
+        private float _minMovementForRotation = 0.1f; // Minimum speed to trigger rotation
 
-        // Vision system (always forward-facing)
+        // Vision system (follows rotation)
         private VisionComponent _vision;
-        private float _initialForwardYaw = 0f; // Store initial forward direction
 
-        // Movement state
-        private bool _isPatrolling = true;
+        // Alert state
+        private bool _isAlert = false;
         private Vec3 _alertPosition;
+        private Vec3 _lastPosition;
+
+        // Debug logging
+        private float _debugLogTimer = 0f;
+        private float _debugLogInterval = 1f; // Log every 1 second
 
         public void OnStart(string jsonParams)
         {
@@ -35,9 +39,10 @@ namespace GameScripts
                 return;
             }
 
-            // Store initial forward direction (Y rotation)
-            _initialForwardYaw = API.GetRotation(Entity).Y;
-            API.Log($"[PatrolEnemyController] Initial forward direction: {_initialForwardYaw} degrees");
+            // Store initial rotation and position
+            _currentYaw = API.GetRotation(Entity).Y;
+            _lastPosition = API.GetPosition(Entity);
+            API.Log($"[PatrolEnemyController] Initial rotation: {_currentYaw} degrees");
 
             // Initialize vision system
             _vision = new VisionComponent { Entity = Entity };
@@ -46,172 +51,169 @@ namespace GameScripts
             _vision.OnTargetUpdated += OnPlayerTracking;
             _vision.OnStart(jsonParams);
 
-            // Set up default patrol waypoints (relative to starting position)
-            Vec3 startPos = API.GetPosition(Entity);
-            _waypoints = new Vec3[]
-            {
-                startPos,
-                new Vec3(startPos.X, startPos.Y, startPos.Z + 5f),
-                new Vec3(startPos.X, startPos.Y, startPos.Z + 10f),
-                new Vec3(startPos.X, startPos.Y, startPos.Z + 5f)
-            };
-
             _vision.EnableDebugReasons(true);
             _vision.EnableDebugLOS(true);
 
-            API.Log("[PatrolEnemyController] Initialized with forward-facing vision");
+            API.Log("[PatrolEnemyController] Initialized - Will rotate toward movement direction");
         }
 
         public void OnUpdate(float dt)
         {
             if (!API.HasTransform(Entity)) return;
 
-            // Update vision system
+            // Debug logging
+            _debugLogTimer += dt;
+            if (_debugLogTimer >= _debugLogInterval)
+            {
+                _debugLogTimer = 0f;
+                Vec3 actualRot = API.GetRotation(Entity);
+                API.Log($"[PatrolEnemyController] Target Yaw: {_currentYaw:F1}°, Actual Y Rotation: {actualRot.Y:F1}°");
+            }
+
+            // Rotate toward movement direction (unless alert and tracking player)
+            if (!_isAlert)
+            {
+                RotateTowardMovementDirection(dt);
+            }
+
+            // Update vision system AFTER rotation
             _vision?.OnUpdate(dt);
-
-            // Keep enemy locked to initial forward direction (no rotation)
-            EnforceForwardDirection();
-
-            // Handle patrol behavior (only when not alert)
-            if (_isPatrolling && _vision?.GetState() != VisionComponent.VisionState.Alert)
-            {
-                UpdatePatrol(dt);
-            }
-            else if (_vision?.GetState() == VisionComponent.VisionState.Alert)
-            {
-                // Stop movement when alert
-                API.SetLinearVelocity(Entity, new Vec3(0f, API.GetLinearVelocity(Entity).Y, 0f));
-            }
         }
 
         /// <summary>
-        /// Enforces that the enemy always faces the initial forward direction
+        /// Calculates movement direction from position change and rotates enemy to face it
         /// </summary>
-        private void EnforceForwardDirection()
+        private void RotateTowardMovementDirection(float dt)
         {
-            Vec3 currentRot = API.GetRotation(Entity);
-
-            // Only update if rotation has changed
-            if (Math.Abs(currentRot.Y - _initialForwardYaw) > 0.01f)
-            {
-                currentRot.Y = _initialForwardYaw;
-                API.SetRotation(Entity, currentRot);
-            }
-        }
-
-        /// <summary>
-        /// Updates patrol behavior moving between waypoints
-        /// </summary>
-        private void UpdatePatrol(float dt)
-        {
-            if (_waypoints == null || _waypoints.Length == 0) return;
-
             Vec3 currentPos = API.GetPosition(Entity);
-            Vec3 targetWaypoint = _waypoints[_currentWaypointIndex];
 
-            // Calculate direction to waypoint (only X and Z for ground movement)
-            Vec3 direction = new Vec3(
-                targetWaypoint.X - currentPos.X,
+            // Calculate movement direction from position delta
+            Vec3 movementDelta = new Vec3(
+                currentPos.X - _lastPosition.X,
                 0f,
-                targetWaypoint.Z - currentPos.Z
+                currentPos.Z - _lastPosition.Z
             );
 
-            float distanceToWaypoint = (float)Math.Sqrt(
-                direction.X * direction.X + direction.Z * direction.Z
-            );
+            float movementSpeed = (float)Math.Sqrt(
+                movementDelta.X * movementDelta.X +
+                movementDelta.Z * movementDelta.Z
+            ) / dt;
 
-            // Check if reached waypoint
-            if (distanceToWaypoint < _waypointReachedDistance)
+            // Only rotate if moving fast enough (avoid jitter when stationary)
+            if (movementSpeed > _minMovementForRotation)
             {
-                // Move to next waypoint
-                _currentWaypointIndex = (_currentWaypointIndex + 1) % _waypoints.Length;
-                API.Log($"[PatrolEnemyController] Reached waypoint, moving to index {_currentWaypointIndex}");
-                return;
+                // Calculate target yaw from movement direction
+                float targetYaw = (float)(Math.Atan2(movementDelta.X, movementDelta.Z) * 180.0 / Math.PI);
+
+                // Smoothly rotate toward target
+                float angleDifference = targetYaw - _currentYaw;
+
+                // Normalize angle difference to [-180, 180]
+                while (angleDifference > 180f) angleDifference -= 360f;
+                while (angleDifference < -180f) angleDifference += 360f;
+
+                // Apply rotation
+                float rotationStep = _rotationSpeed * dt;
+                if (Math.Abs(angleDifference) < rotationStep)
+                {
+                    _currentYaw = targetYaw;
+                }
+                else
+                {
+                    _currentYaw += Math.Sign(angleDifference) * rotationStep;
+                }
+
+                // Normalize yaw
+                while (_currentYaw >= 360f) _currentYaw -= 360f;
+                while (_currentYaw < 0f) _currentYaw += 360f;
+
+                // Use API.SetRotationY for rigid body rotation
+                API.SetRotationY(Entity, _currentYaw);
+
+                // VERIFY: Read back the rotation to confirm it was set
+                Vec3 verifyRot = API.GetRotation(Entity);
+                if (Math.Abs(verifyRot.Y - _currentYaw) > 1f)
+                {
+                    API.Log($"[PatrolEnemyController] WARNING: Rotation mismatch! Set {_currentYaw:F1}°, Got {verifyRot.Y:F1}°");
+                }
             }
 
-            // Normalize direction and apply patrol speed
-            if (distanceToWaypoint > 0f)
-            {
-                direction.X = (direction.X / distanceToWaypoint) * _patrolSpeed;
-                direction.Z = (direction.Z / distanceToWaypoint) * _patrolSpeed;
-            }
-
-            // Apply movement velocity (preserve Y velocity for physics)
-            Vec3 velocity = API.GetLinearVelocity(Entity);
-            velocity.X = direction.X;
-            velocity.Z = direction.Z;
-            API.SetLinearVelocity(Entity, velocity);
+            // Store position for next frame
+            _lastPosition = currentPos;
         }
 
         // === VISION EVENT HANDLERS ===
         private void OnPlayerDetected(ulong target, Vec3 position)
         {
             API.Log(">>> PATROL ENEMY ALERTED! PLAYER DETECTED! <<<");
-            _isPatrolling = false;
+            _isAlert = true;
             _alertPosition = position;
 
-            // Play alert sound at enemy position
+            // Instantly rotate to face player
+            Vec3 currentPos = API.GetPosition(Entity);
+            Vec3 directionToPlayer = new Vec3(
+                position.X - currentPos.X,
+                0f,
+                position.Z - currentPos.Z
+            );
+
+            float distToPlayer = (float)Math.Sqrt(
+                directionToPlayer.X * directionToPlayer.X +
+                directionToPlayer.Z * directionToPlayer.Z
+            );
+
+            if (distToPlayer > 0f)
+            {
+                float lookAtYaw = (float)(Math.Atan2(directionToPlayer.X, directionToPlayer.Z) * 180.0 / Math.PI);
+                _currentYaw = lookAtYaw;
+
+                API.SetRotationY(Entity, _currentYaw);
+                API.Log($"[PatrolEnemyController] Rotated to face player at {_currentYaw:F1}°");
+            }
+
+            // Play alert sound
             Vec3 enemyPos = API.GetPosition(Entity);
             API.PlaySoundAt("enemy_alert", "Resources/Audio/playerPunch_1.wav", enemyPos, false);
             API.SetSoundVolume("enemy_alert", 0.8f);
-
-            // TODO: Implement alert behavior (damage player, trigger game over, etc.)
         }
 
         private void OnPlayerLost(ulong target, Vec3 lastKnownPosition)
         {
             API.Log("[PatrolEnemyController] Lost sight of player, resuming patrol...");
-            _isPatrolling = true;
-            // TODO: Could add search behavior before resuming patrol
+            _isAlert = false;
         }
 
         private void OnPlayerTracking(ulong target, Vec3 position)
         {
-            // Player is still visible - maintain alert state
             _alertPosition = position;
-        }
 
-        // === PUBLIC CONFIGURATION METHODS ===
+            // Keep facing player while tracking
+            Vec3 currentPos = API.GetPosition(Entity);
+            Vec3 directionToPlayer = new Vec3(
+                position.X - currentPos.X,
+                0f,
+                position.Z - currentPos.Z
+            );
 
-        /// <summary>
-        /// Set custom patrol waypoints
-        /// </summary>
-        public void SetWaypoints(Vec3[] waypoints)
-        {
-            if (waypoints != null && waypoints.Length > 0)
+            float distToPlayer = (float)Math.Sqrt(
+                directionToPlayer.X * directionToPlayer.X +
+                directionToPlayer.Z * directionToPlayer.Z
+            );
+
+            if (distToPlayer > 0f)
             {
-                _waypoints = waypoints;
-                _currentWaypointIndex = 0;
-                API.Log($"[PatrolEnemyController] Set {waypoints.Length} patrol waypoints");
+                float lookAtYaw = (float)(Math.Atan2(directionToPlayer.X, directionToPlayer.Z) * 180.0 / Math.PI);
+                _currentYaw = lookAtYaw;
+
+                API.SetRotationY(Entity, _currentYaw);
             }
         }
 
-        /// <summary>
-        /// Set patrol movement speed
-        /// </summary>
-        public void SetPatrolSpeed(float speed)
-        {
-            _patrolSpeed = speed;
-            API.Log($"[PatrolEnemyController] Patrol speed set to: {_patrolSpeed}");
-        }
+        // === PUBLIC CONFIGURATION ===
 
-        /// <summary>
-        /// Set waypoint reached threshold distance
-        /// </summary>
-        public void SetWaypointReachedDistance(float distance)
+        public void SetRotationSpeed(float degreesPerSecond)
         {
-            _waypointReachedDistance = distance;
-            API.Log($"[PatrolEnemyController] Waypoint reached distance set to: {_waypointReachedDistance}");
-        }
-
-        /// <summary>
-        /// Override the forward direction (in degrees)
-        /// </summary>
-        public void SetForwardDirection(float yawDegrees)
-        {
-            _initialForwardYaw = yawDegrees;
-            EnforceForwardDirection();
-            API.Log($"[PatrolEnemyController] Forward direction set to: {_initialForwardYaw} degrees");
+            _rotationSpeed = degreesPerSecond;
         }
 
         public void OnDestroy()
