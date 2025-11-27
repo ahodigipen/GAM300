@@ -15,6 +15,7 @@ ENTITIES:
   - {}
   - {}
   - {}
+  - {}
   - SceneNavmeshComponent:
       NavmeshFile: Resources/NavData/solo_navmesh.bin
   - ColliderComponent:
@@ -88,8 +89,8 @@ ENTITIES:
       UID: 3917888099789825510
     TransformComponent:
       Transform:
-        Translate: [-8.34779167, 13.698, 2.93555045]
-        Rotate: [-5.00895567e-06, 61.8486824, -5.00895567e-06]
+        Translate: [-8.4933939, 13.0369396, -4.66455841]
+        Rotate: [180, -0.00817391556, 180]
         Scale: [0.021306999, 0.021306999, 0.021306999]
     RigidBodyComponent:
       RigidBody:
@@ -120,7 +121,7 @@ ENTITIES:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-8.49468231, 13.781168, 7.5530653]
+      Target: [-8.49468231, 13.781168, -13.4866009]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -136,7 +137,7 @@ ENTITIES:
       PatrolPoints:
         - [-8.49468231, 13.781168, 7.5530653]
         - [-8.49468231, 13.781168, -13.4866009]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -201,7 +202,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-20.6439075, 15.0094395, 22.1033554]
-        Rotate: [180, 339.501709, 180]
+        Rotate: [180, 292.107117, 180]
         Scale: [0.0144999893, 0.0145000005, 0.0144999893]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -221,7 +222,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [18.4757099, 14.2961264, -7.06025791]
-        Rotate: [5.00895612e-06, 339.501709, 5.00895612e-06]
+        Rotate: [5.00895612e-06, 292.107117, 5.00895612e-06]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -241,7 +242,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [9.27553558, 2.17216253, -14.2555885]
-        Rotate: [5.00895612e-06, 208.209229, 5.00895612e-06]
+        Rotate: [5.00895612e-06, 160.814575, 5.00895612e-06]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -261,7 +262,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 2.17216253, -14.2555885]
-        Rotate: [0, 159.501694, 0]
+        Rotate: [0, 112.107056, 0]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -2815,7 +2816,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-8.46483231, 3.6608882, -2.31307006]
-        Rotate: [0, 89.980217, 0]
+        Rotate: [-179.998993, 89.8519592, -179.998993]
         Scale: [0.0479999967, 0.0480000004, 0.0479999967]
     RigidBodyComponent:
       RigidBody:
@@ -5491,8 +5492,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-4.18954706, 7.59376001, 18.9207115]
-        Rotate: [-11.1875153, -6.81248474, 1.07309553e-07]
+        Translate: [-8.65019417, 8.36984348, 0.203849822]
+        Rotate: [-49.9375, -4.62493896, 4.63753111e-07]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -5502,11 +5503,11 @@ ENTITIES:
     ThirdPersonCameraComponent:
       Target UID: 2377197601835279376
       Offset: [0.00999999978, 4.1500001, 0]
-      Current Distance: 1
+      Current Distance: 4
       Min Distance: 1
       Max Distance: 5
-      Current Yaw: -1626
-      Current Pitch: 25
+      Current Yaw: -2317
+      Current Pitch: 26
       Mouse Sensitivity: 1
       Scroll Sensitivity: 1
   - {}
@@ -6847,8 +6848,8 @@ ENTITIES:
       UID: 2377197601835279376
     TransformComponent:
       Transform:
-        Translate: [-6.71424913, 1.24566555, 7.3583436]
-        Rotate: [0, -6.00007963, 0]
+        Translate: [-9.39179039, 1.24566567, 6.65281105]
+        Rotate: [0, 23.0000648, 0]
         Scale: [0.0164999999, 0.0164999999, 0.0164999999]
     RigidBodyComponent:
       RigidBody:
@@ -7246,4 +7247,22 @@ ENTITIES:
   - {}
   - {}
   - {}
+  - {}
+  - {}
+  - InfoComponent:
+      Parent: 13685181942599758823
+      Name: VisionConeFake
+      UID: 9232137645831539091
+    TransformComponent:
+      Transform:
+        Translate: [-144.236359, -60.2911072, 506.599121]
+        Rotate: [-90.0074158, 75.1308136, 6.65416655e-06]
+        Scale: [136.157349, 68.9649124, 68.9648361]
+    ModelComponent:
+      ModelID: 7796158376131028701
+      MaterialID: 17406031643650126959
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - {}
