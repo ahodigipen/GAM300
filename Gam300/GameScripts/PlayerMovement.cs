@@ -158,8 +158,9 @@ namespace GameScripts
             // Check if the player is allowed to move (RMB held disables movement)
             bool allowMove = !API.IsMouseDown(API.MOUSE_RIGHT);
 
-            // Check if the player is "grounded" via collision flag
-            bool isGrounded = API.IsColliding(Entity);
+            // ===== FIX: PROPER GROUND DETECTION =====
+            // Use raycast downward to check if player is on ground (not wall)
+            bool isGrounded = IsPlayerGrounded();
 
             // Calculate horizontal movement input
             float inputX = 0f, inputZ = 0f;
@@ -179,7 +180,6 @@ namespace GameScripts
             bool sneakKey = API.IsKeyDown(API.KEY_LEFT_CONTROL);
 
             // Determine current movement speed based on input modifiers
-            // Priority: Sneak > Sprint > Walk (sneak overrides sprint if both are pressed)
             float currentSpeed = _walkSpeed;
             if (sneakKey)
             {
@@ -195,29 +195,25 @@ namespace GameScripts
             {
                 // Get camera's yaw angle in degrees
                 float cameraYawDegrees = API.GetThirdPersonCameraYaw();
-
-                // Convert to radians for math calculations
                 float cameraYawRadians = cameraYawDegrees * (float)Math.PI / 180f;
 
                 // Calculate camera's forward and right vectors
-                // Forward direction: where the camera is looking (negative Z in camera space becomes world space direction)
                 Vec3 cameraForward = new Vec3(
                     (float)Math.Sin(cameraYawRadians),
                     0f,
                     (float)Math.Cos(cameraYawRadians)
                 );
 
-                // Right direction: 90 degrees to the right of forward
                 Vec3 cameraRight = new Vec3(
                     (float)Math.Cos(cameraYawRadians),
                     0f,
                     -(float)Math.Sin(cameraYawRadians)
                 );
 
-                // Calculate world-space movement direction based on camera orientation
+                // Calculate world-space movement direction
                 Vec3 moveDirection = new Vec3(
                     cameraRight.X * inputX + cameraForward.X * inputZ,
-                    0f, // Keep Y at 0 for ground movement
+                    0f,
                     cameraRight.Z * inputX + cameraForward.Z * inputZ
                 );
 
@@ -228,13 +224,11 @@ namespace GameScripts
                     vel.X = (moveDirection.X / len) * currentSpeed;
                     vel.Z = (moveDirection.Z / len) * currentSpeed;
 
-                    // NEW: Calculate rotation with model forward offset correction
+                    // Calculate rotation
                     float targetYaw = (float)(Math.Atan2(moveDirection.X, moveDirection.Z) * 180.0 / Math.PI);
-
-                    // Apply the offset to correct for model's wrong forward direction
                     targetYaw += _modelForwardOffset;
 
-                    // Normalize angle to [-180, 180] range
+                    // Normalize angle
                     while (targetYaw > 180f) targetYaw -= 360f;
                     while (targetYaw < -180f) targetYaw += 360f;
 
@@ -248,17 +242,17 @@ namespace GameScripts
                 vel.Z = 0f;
             }
 
-            // =============== JUMPING LOGIC WITH PROPER STATE TRACKING =================
+            // =============== JUMPING LOGIC =================
 
             bool spacePressed = API.IsKeyDown(API.KEY_SPACE);
 
             // Reset jump state when we land
-            if (isGrounded && _hasJumped)
+            if (isGrounded && _hasJumped && vel.Y <= 0.1f)
             {
                 _hasJumped = false;
             }
 
-            // Jump only on space key press (not hold) and when grounded
+            // Jump only on space key press and when grounded
             if (allowMove && isGrounded && spacePressed && !_wasSpacePressed && !_hasJumped)
             {
                 vel.Y = _jumpSpeed;
@@ -270,7 +264,7 @@ namespace GameScripts
                     API.AnimatorSetTrigger(Entity, "Jump");
                 }
 
-                // Play jump sound only once
+                // Play jump sound
                 Vec3 playerPos = API.GetPosition(Entity);
                 API.PlaySoundAt("jump_sound", "Resources/Audio/playerPunch_1.wav", playerPos, false);
                 API.SetSoundVolume("jump_sound", 0.9f);
@@ -278,29 +272,46 @@ namespace GameScripts
                 API.Log("[PlayerMovement] Jump executed!");
             }
 
-            // Update space key state for next frame
             _wasSpacePressed = spacePressed;
-
-            // NOTE: We do NOT apply gravity here.
-            // PhysX already applies gravity every simulation step.
 
             API.SetLinearVelocity(Entity, vel);
 
             // =============== UPDATE ANIMATOR =================
             if (_hasAnimator)
             {
-                // Calculate horizontal speed for animation
                 float speedXZ = (float)Math.Sqrt(vel.X * vel.X + vel.Z * vel.Z);
-
-                // Smooth the speed value for cleaner animation transitions
                 _smoothedSpeed += (speedXZ - _smoothedSpeed) * Math.Min(1.0, SPEED_DAMP * dt);
 
-                // Update animator parameters
                 API.AnimatorSetFloat(Entity, "Speed", (float)_smoothedSpeed);
                 API.AnimatorSetBool(Entity, "IsMoving", _smoothedSpeed > MOVE_EPS || hasInput);
                 API.AnimatorSetBool(Entity, "Sprint", sprintKey && hasInput);
                 API.AnimatorSetBool(Entity, "IsSneaking", sneakKey && hasInput);
             }
+        }
+
+        /// <summary>
+        /// Check if the player is on the ground using a downward raycast.
+        /// This prevents wall-climbing by only detecting surfaces below the player.
+        /// </summary>
+        private bool IsPlayerGrounded()
+        {
+            // Get player position
+            Vec3 playerPos = API.GetPosition(Entity);
+
+            // Raycast parameters (adjust based on your capsule height)
+            float rayLength = 0.6f;      // Distance to check below player
+            float rayOffsetY = 0.1f;     // Start slightly above feet to avoid self-collision
+
+            // Cast ray downward from player position
+            Vec3 rayStart = new Vec3(playerPos.X, playerPos.Y + rayOffsetY, playerPos.Z);
+            Vec3 rayEnd = new Vec3(playerPos.X, playerPos.Y - rayLength, playerPos.Z);
+
+            // FIX: Invert the result! 
+            // Linecast returns TRUE if the path is CLEAR.
+            // We want to return TRUE if we HIT something (path is NOT clear).
+            bool hitGround = !API.Linecast(rayStart, rayEnd, Entity);
+
+            return hitGround;
         }
 
         /// <summary>

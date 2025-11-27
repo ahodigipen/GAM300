@@ -162,9 +162,17 @@ namespace EditorUI {
                 ImGui::SliderFloat("Ambient Strength",
                     &m.ctx->renderer->AmbientStrength(),
                     0.0f, 0.5f);
-                bool TEMPORARY_PLACEHOLDER_WIREFRAME_COLLISION{};
-                ImGui::MenuItem("Collision Lines", nullptr, TEMPORARY_PLACEHOLDER_WIREFRAME_COLLISION);
-				ImGui::MenuItem("Bloom", nullptr, &m.ctx->renderer->enabledBloom);
+                if (m.ctx->physics && m_Owner && m_Owner->GetApp()) {
+                    // Get current state from Application
+                    bool physDebugViz = m_Owner->GetApp()->m_PhysDebugViz;
+
+                    if (ImGui::MenuItem("Collision Lines", "F9", &physDebugViz)) {
+                        // Toggle when clicked
+                        m.ctx->physics->EnableDebugVisualization(physDebugViz, 1.0f);
+                        m_Owner->GetApp()->m_PhysDebugViz = physDebugViz;
+                        BOOM_INFO("[Options] Physics Debug Visualization (Collision Lines): {}", physDebugViz ? "ON" : "OFF");
+                    }
+                }				ImGui::MenuItem("Bloom", nullptr, &m.ctx->renderer->enabledBloom);
             }
             ImGui::EndMenu();
         }
