@@ -1,28 +1,5 @@
 Version: 1.0
 ENTITIES:
-  - InfoComponent:
-      Parent: 0
-      Name: New Entity
-      UID: 168446922372981440
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    SoundComponent:
-      Entries:
-        - name: MAINMENU
-          filePaths:
-            - Resources/Audio/Kairos_Cave-Vuk_Loop.wav
-          loop: true
-          volume: 1
-          playOnStart: true
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-  - {}
   - {}
   - {}
   - InfoComponent:
