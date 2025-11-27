@@ -23,6 +23,7 @@
     <ClCompile Include="includes\AI\DetourBuildAPI.cpp" />
     <ClCompile Include="src\Application\Application.cpp" />
     <ClCompile Include="src\Core.cpp" />
+    <ClCompile Include="src\RayCast.cpp" />
     <ClCompile Include="src\Auxiliaries\DataSerializerAsync.cpp" />
     <ClCompile Include="src\Auxiliaries\AsyncAssetLoader.cpp" />
     <ClCompile Include="src\Models\ModelLoader.cpp" />
@@ -95,6 +96,7 @@
     <ClInclude Include="includes\AI\BehaviourTreeActions.h" />
     <ClInclude Include="includes\AI\AISystem.h" />
     <ClInclude Include="includes\Graphics\Shaders\LoadingShader.h" />
+    <ClInclude Include="includes\Input\RayCast.h" />
     <ClInclude Include="includes\Auxiliaries\AssetLoadContext.h" />
     <ClInclude Include="includes\Auxiliaries\AsyncAssetLoader.h" />
   </ItemGroup>

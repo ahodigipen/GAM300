@@ -10,16 +10,17 @@
 namespace Boom {
     struct AppContext;
     struct AppInterface;
+    class RayCast;
 }
 
 namespace EditorUI {
     class Editor;
-    class RayCast; // Forward declaration
+    //class RayCast; // Forward declaration
 
     class ViewportPanel {
     public:
         explicit ViewportPanel(Editor* owner);
-        ~ViewportPanel() = default;
+        ~ViewportPanel();
 
         void Render();
         void OnShow();
@@ -58,7 +59,7 @@ namespace EditorUI {
         ImVec2       m_Viewport{ 0.0f, 0.0f };
 
         // Ray casting members
-        std::unique_ptr<RayCast> m_RayCast;
+        std::unique_ptr<Boom::RayCast> m_RayCast;
         glm::mat4 m_CurrentViewMatrix{ 1.0f };
         glm::mat4 m_CurrentProjectionMatrix{ 1.0f };
         glm::vec2 m_CurrentViewportSize{ 0.0f };

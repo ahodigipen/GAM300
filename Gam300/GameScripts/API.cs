@@ -169,6 +169,9 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_SetSoundPosition(string name, ref Vec3 position);
 
+        // Raycasting & Main Menu
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        internal static extern ulong Boom_API_PickGameEntity();
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Boom_API_Linecast(ref Vec3 from, ref Vec3 to, ulong ignoreEntity);
 
@@ -503,6 +506,10 @@ namespace Boom
             return Native.LinecastIgnoreBoth(from, to, ignoreEntity1, ignoreEntity2);
         }
 
+        // Raycasting
+        public static ulong PickGameEntity() => Native.Boom_API_PickGameEntity();
+
+        
         public static bool Linecast(Vec3 from, Vec3 to, ulong ignoreEntity = 0)
         {
             return Native.Boom_API_Linecast(ref from, ref to, ignoreEntity);
