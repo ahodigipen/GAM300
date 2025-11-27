@@ -146,16 +146,20 @@ namespace Boom
                 if (m_Nav) {
                     m_NavAgents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime), *m_Nav);
                 }
+                
             }
-            float dt = static_cast<float>(m_Context->DeltaTime);
             m_Context->scriptingSystem->UpdateFileWatcher();
-            m_Context->scriptingSystem->CallUpdate(dt);
+            
+            if (m_IsInPlayMode) {
+                float dt = static_cast<float>(m_Context->DeltaTime);
+                m_Context->scriptingSystem->CallUpdate(dt);
 
-            auto& registry = m_Context->scene;
-            auto scriptView = registry.view<Boom::ScriptComponent>();
-            for (auto entity : scriptView) {
-                auto& sc = scriptView.get<Boom::ScriptComponent>(entity);
-                m_Context->scriptingSystem->TickEntity(entity, sc, dt);
+                auto& registry = m_Context->scene;
+                auto scriptView = registry.view<Boom::ScriptComponent>();
+                for (auto entity : scriptView) {
+                    auto& sc = scriptView.get<Boom::ScriptComponent>(entity);
+                    m_Context->scriptingSystem->TickEntity(entity, sc, dt);
+                }
             }
 
             //compute camera position to colliders
