@@ -1,5 +1,16 @@
 Version: 1.0
 ENTITIES:
+  - InfoComponent:
+      Parent: 0
+      Name: ResumeButton
+      UID: 5150782179609686309
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+  - {}
+  - {}
   - {}
   - {}
   - {}
@@ -7,7 +18,7 @@ ENTITIES:
   - {}
   - InfoComponent:
       Parent: 0
-      Name: ButtonQuit
+      Name: Quit Button GUI
       UID: 8828448039952393107
     TransformComponent:
       Transform:
@@ -22,7 +33,7 @@ ENTITIES:
       {}
   - InfoComponent:
       Parent: 0
-      Name: ButtonReturnMain
+      Name: Return Button GUI
       UID: 3604609492683265047
     TransformComponent:
       Transform:
@@ -37,7 +48,7 @@ ENTITIES:
       {}
   - InfoComponent:
       Parent: 0
-      Name: ButtonRestart
+      Name: Restart Button GUI
       UID: 4723468649465391231
     TransformComponent:
       Transform:
@@ -52,7 +63,7 @@ ENTITIES:
       {}
   - InfoComponent:
       Parent: 0
-      Name: ButtonResume
+      Name: Resume Button GUI
       UID: 14919722611869620216
     TransformComponent:
       Transform:
@@ -67,7 +78,7 @@ ENTITIES:
       {}
   - InfoComponent:
       Parent: 0
-      Name: PauseScroll
+      Name: Pause Scroll GUI
       UID: 17129325104309199473
     TransformComponent:
       Transform:
@@ -80,6 +91,191 @@ ENTITIES:
       uiOverlay: true
     PauseMenuTagComponent:
       {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
   - {}
   - {}
   - {}

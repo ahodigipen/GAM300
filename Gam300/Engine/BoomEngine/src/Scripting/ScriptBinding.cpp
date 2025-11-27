@@ -903,6 +903,24 @@ namespace Boom {
             mono_free(nameStr);
         }
     }
+
+    // main menu
+    static uint64_t ICALL_API_PickGameEntity() {
+        if (!s_Ctx || !s_Ctx->app) return 0;
+
+        auto* app = static_cast<Application*>(s_Ctx->app);
+
+        // Get the raw result (which might be entt::null / 4294967295)
+        entt::entity hit = static_cast<entt::entity>(app->CastRayFromGameCamera());
+
+        // FIX: Convert entt::null to 0 so C# logic works
+        if (hit == entt::null) {
+            return 0;
+        }
+
+        return static_cast<uint64_t>(static_cast<uint32_t>(hit));
+    }
+
     // Add this function to clean up all trigger callbacks when Mono domain is unloaded
     void ClearAllTriggerCallbacks() {
         // Free all GC handles before clearing
@@ -1118,6 +1136,9 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_PauseSound", (const void*)ICALL_API_PauseSound);
         mono_add_internal_call("Boom.Native::Boom_API_PreloadSound", (const void*)ICALL_API_PreloadSound);
         mono_add_internal_call("Boom.Native::Boom_API_SetSoundPosition", (const void*)ICALL_API_SetSoundPosition);
+        
+		//Raycasting internal call
+        mono_add_internal_call("Boom.Native::Boom_API_PickGameEntity", (const void*)ICALL_API_PickGameEntity);
 
         mono_add_internal_call("Boom.Native::Boom_API_Linecast", (const void*)ICALL_API_Linecast);
 

@@ -224,7 +224,6 @@ if exist "$(glew_BIN_DIRS)" xcopy /y /i "$(glew_BIN_DIRS)\*.dll" "$(TargetDir)"<
     <ClCompile Include="src\Panels\PlaybackControlsPanel.cpp" />
     <ClCompile Include="src\Panels\PrefabBrowserPanel.cpp" />
     <ClCompile Include="src\Panels\PropertiesImgui.cpp" />
-    <ClCompile Include="src\Panels\RayCast.cpp" />
     <ClCompile Include="src\Panels\ResourcePanel.cpp" />
     <ClCompile Include="src\Panels\ViewportPanel.cpp" />
     <ClCompile Include="src\Recast\RecastBaker.cpp" />
@@ -270,7 +269,6 @@ if exist "$(glew_BIN_DIRS)" xcopy /y /i "$(glew_BIN_DIRS)\*.dll" "$(TargetDir)"<
     <ClInclude Include="src\Panels\PlaybackControlsPanel.h" />
     <ClInclude Include="src\Panels\PrefabBrowserPanel.h" />
     <ClInclude Include="src\Panels\PropertiesImgui.h" />
-    <ClInclude Include="src\Panels\RayCast.h" />
     <ClInclude Include="src\Panels\ResourcePanel.h" />
     <ClInclude Include="src\Panels\ViewportPanel.h" />
     <ClInclude Include="src\Recast\RecastBaker.h" />

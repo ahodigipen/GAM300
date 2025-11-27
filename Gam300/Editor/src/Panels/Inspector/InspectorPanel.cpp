@@ -7,6 +7,7 @@
 #include "Context/DebugHelpers.h"
 #include "Panels/PropertiesImgui.h"
 #include"Physics/Context.h"
+#include <GLFW/glfw3.h>
 //#include "BoomProperties.h"
 using namespace EditorUI;
 
@@ -451,6 +452,211 @@ namespace EditorUI {
 
         if (selected.Has<Boom::AnimatorComponent>()) {
             AnimatorComponentUI(selected);
+        }
+
+        // --- Sound Component UI ---
+        if (selected.Has<Boom::SoundComponent>()) {
+            ImGui::PushID("Sound");
+            auto& sc = selected.Get<Boom::SoundComponent>();
+
+            bool compRemoved = false;
+            bool isOpen = ImGui::CollapsingHeader("Sound", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap);
+
+            // settings popup
+            const ImVec2 shMin = ImGui::GetItemRectMin();
+            const ImVec2 shMax = ImGui::GetItemRectMax();
+            const float shLineH = ImGui::GetFrameHeight();
+            const float shY = shMin.y + (shMax.y - shMin.y - shLineH) *0.5f;
+            ImGui::SetCursorScreenPos(ImVec2(shMax.x - shLineH, shY));
+            if (ImGui::Button("...", ImVec2(shLineH, shLineH))) ImGui::OpenPopup("SoundSettings");
+            if (ImGui::BeginPopup("SoundSettings")) {
+                if (ImGui::MenuItem("Remove Component")) compRemoved = true;
+                ImGui::EndPopup();
+            }
+
+            ImGui::SetCursorScreenPos(ImVec2(shMin.x, shMax.y + ImGui::GetStyle().ItemSpacing.y));
+
+            if (isOpen) {
+                ImGui::Indent(12.0f);
+                ImGui::Spacing();
+
+                ImGui::Text("Entries: %zu", sc.entries.size());
+                ImGui::SameLine();
+                if (ImGui::Button("+ Add Entry")) {
+                    Boom::SoundComponent::Entry e{};
+                    e.name = "NewSound";
+                    sc.entries.push_back(std::move(e));
+                }
+
+                ImGui::Spacing();
+
+                for (size_t i =0; i < sc.entries.size(); ++i) {
+                    auto& entry = sc.entries[i];
+                    ImGui::PushID(static_cast<int>(i));
+
+                    // header for entry
+                    bool openEntry = ImGui::TreeNodeEx((void*)(intptr_t)i, ImGuiTreeNodeFlags_DefaultOpen, "%s", entry.name.c_str());
+                    ImGui::SameLine();
+                    if (ImGui::SmallButton("Remove")) {
+                        sc.entries.erase(sc.entries.begin() + i);
+                        ImGui::PopID();
+                        break; // indices changed; break out to avoid iterator invalidation
+                    }
+
+                    if (openEntry) {
+                        // Name
+                        char nameBuf[128];
+#ifdef _MSC_VER
+                        strncpy_s(nameBuf, sizeof(nameBuf), entry.name.c_str(), sizeof(nameBuf)-1);
+#else
+                        std::snprintf(nameBuf, sizeof(nameBuf), "%s", entry.name.c_str());
+#endif
+                        if (ImGui::InputText("Name", nameBuf, sizeof(nameBuf))) entry.name = std::string(nameBuf);
+
+                        // Variant files list (filePaths)
+                        ImGui::Text("Variants");
+                        ImGui::SameLine();
+                        if (ImGui::SmallButton("+ Add Variant")) {
+                            entry.filePaths.push_back(entry.filePath.empty() ? std::string("") : entry.filePath);
+                        }
+
+                        for (size_t v =0; v < entry.filePaths.size(); ++v) {
+                            ImGui::PushID(static_cast<int>(v));
+                            char pathBuf[512];
+#ifdef _MSC_VER
+                            strncpy_s(pathBuf, sizeof(pathBuf), entry.filePaths[v].c_str(), sizeof(pathBuf)-1);
+#else
+ std::snprintf(pathBuf, sizeof(pathBuf), "%s", entry.filePaths[v].c_str());
+#endif
+ // Manual edit field
+ if (ImGui::InputText("File", pathBuf, sizeof(pathBuf))) {
+ entry.filePaths[v] = std::string(pathBuf);
+ // keep legacy single filePath in sync for older systems
+ if (v ==0) entry.filePath = entry.filePaths[0];
+ }
+
+ ImGui::SameLine();
+
+ // --- Asset picker dropdown for audio assets ---
+ {
+ // Build current label (show filename if available)
+ std::string curLabel = entry.filePaths[v].empty() ? "Select Audio..." : std::filesystem::path(entry.filePaths[v]).filename().string();
+ if (ImGui::BeginCombo("##AudioPicker", curLabel.c_str())) {
+ auto& audioMap = m_App->GetAssetRegistry().GetMap<AudioAsset>();
+ // Allow clearing
+ bool noneSel = entry.filePaths[v].empty();
+ if (ImGui::Selectable("None", noneSel)) {
+ entry.filePaths[v].clear();
+ if (v ==0) entry.filePath.clear();
+ }
+ if (noneSel) ImGui::SetItemDefaultFocus();
+
+ for (auto& [uid, asset] : audioMap) {
+ if (uid == EMPTY_ASSET) continue;
+ std::string name = asset->name;
+ bool isSel = (entry.filePaths[v] == asset->source);
+ if (ImGui::Selectable(name.c_str(), isSel)) {
+ entry.filePaths[v] = asset->source;
+ if (v ==0) entry.filePath = entry.filePaths[0];
+ }
+ if (isSel) ImGui::SetItemDefaultFocus();
+ }
+ ImGui::EndCombo();
+ }
+ }
+
+ ImGui::SameLine();
+ if (ImGui::SmallButton("Remove")) {
+ entry.filePaths.erase(entry.filePaths.begin() + v);
+ ImGui::PopID();
+ break;
+ }
+ ImGui::PopID();
+ }
+
+ // Legacy single filePath (shows only if no variants present)
+ if (entry.filePaths.empty()) {
+ char legacyBuf[512];
+#ifdef _MSC_VER
+ strncpy_s(legacyBuf, sizeof(legacyBuf), entry.filePath.c_str(), sizeof(legacyBuf)-1);
+#else
+ std::snprintf(legacyBuf, sizeof(legacyBuf), "%s", entry.filePath.c_str());
+#endif
+ if (ImGui::InputText("File Path", legacyBuf, sizeof(legacyBuf))) entry.filePath = std::string(legacyBuf);
+
+ ImGui::SameLine();
+ // Legacy asset picker
+ {
+ std::string cur = entry.filePath.empty() ? "Select Audio..." : std::filesystem::path(entry.filePath).filename().string();
+ if (ImGui::BeginCombo("##AudioPickerLegacy", cur.c_str())) {
+ auto& audioMap = m_App->GetAssetRegistry().GetMap<AudioAsset>();
+ bool noneSel = entry.filePath.empty();
+ if (ImGui::Selectable("None", noneSel)) {
+ entry.filePath.clear();
+ }
+ if (noneSel) ImGui::SetItemDefaultFocus();
+ for (auto& [uid, asset] : audioMap) {
+ if (uid == EMPTY_ASSET) continue;
+ bool isSel = (entry.filePath == asset->source);
+ if (ImGui::Selectable(asset->name.c_str(), isSel)) {
+ entry.filePath = asset->source;
+ }
+ if (isSel) ImGui::SetItemDefaultFocus();
+ }
+ ImGui::EndCombo();
+ }
+ }
+ }
+
+                        // loop and playOnStart
+                        ImGui::Checkbox("Loop", &entry.loop);
+                        ImGui::SameLine();
+                        ImGui::Checkbox("Play On Start", &entry.playOnStart);
+
+                        // Volume
+                        ImGui::SliderFloat("Volume", &entry.volume,0.0f,1.0f);
+
+                        ImGui::Separator();
+                        ImGui::Text("Triggers");
+
+                        // triggerKey
+                        ImGui::InputInt("Trigger Key (GLFW)", &entry.triggerKey);
+                        ImGui::TextDisabled("Use GLFW key codes (e.g. %d = Space)", GLFW_KEY_SPACE);
+
+                        // Play on move
+                        ImGui::Checkbox("Play On Move", &entry.playOnMove);
+                        if (entry.playOnMove) {
+                            ImGui::InputFloat("Move Threshold (m/s)", &entry.moveThreshold);
+                        }
+
+                        // Repeat interval
+                        ImGui::InputFloat("Repeat Interval (s)", &entry.repeatInterval);
+
+                        // Animation trigger name
+                        char animBuf[128];
+#ifdef _MSC_VER
+                        strncpy_s(animBuf, sizeof(animBuf), entry.animTrigger.c_str(), sizeof(animBuf)-1);
+#else
+                        std::snprintf(animBuf, sizeof(animBuf), "%s", entry.animTrigger.c_str());
+#endif
+                        if (ImGui::InputText("Anim Trigger", animBuf, sizeof(animBuf))) {
+                            entry.animTrigger = std::string(animBuf);
+                        }
+
+                        ImGui::TreePop();
+                    }
+
+                    ImGui::PopID();
+                }
+
+                ImGui::Unindent(12.0f);
+            }
+
+            ImGui::PopID();
+
+            if (compRemoved) {
+                ctx->scene.remove<Boom::SoundComponent>(m_App->SelectedEntity());
+            }
         }
 
         if (selected.Has<Boom::RigidBodyComponent>()) {

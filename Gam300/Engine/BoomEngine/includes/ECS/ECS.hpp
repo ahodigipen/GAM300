@@ -3,175 +3,175 @@
 #include <nlohmann/json.hpp>
 #include "Graphics/Utilities/Data.h"
 #include "Auxiliaries/Assets.h"
-#include "Physics/Utilities.h"  
+#include "Physics/Utilities.h" 
 #include "BoomProperties.h"
 #include "AI/BehaviourTree.h"
 
 
 namespace Boom {
-    using EntityRegistry = entt::registry;
-    using EntityID = entt::entity;
-    constexpr EntityID NENTT = entt::null;
+ using EntityRegistry = entt::registry;
+ using EntityID = entt::entity;
+ constexpr EntityID NENTT = entt::null;
 
-    //for now include only important components instead of all
-    //new includes need to add into enum and string_view and within ComponentSelector() in InspectorPanel.cpp
-    enum class ComponentID : size_t {
-        INFO, TRANSFORM, CAMERA, RIGIDBODY, COLLIDER,
-        MODEL, ANIMATOR, DIRECT_LIGHT, POINT_LIGHT, SPOT_LIGHT,
-        SOUND, SCRIPT,
-        THIRD_PERSON_CAMERA,
-        NAV_AGENT_COMPONENT,
-        AI_COMPONENT,
-        SPRITE,
-        PAUSE_MENU_TAG,
-        COUNT
-    };
-    constexpr std::string_view COMPONENT_NAMES[]{
-        "Info",                 //0
-        "Transform",            //1
-        "Camera",               //2
-        "Rigidbody",            //3
-        "Collider",             //4
-        "Model",                //5
-        "Animator",             //6
-        "Direct Light",         //7
-        "Point Light",          //8
-        "Spot Light",           //9
-        "Sound",                //10
-        "Script",               //11
-        "Third Person Camera" , //12
-        "Nav Agent Component",  //13
-        "AI Component",         //14
-        "Sprite",               //15
-        "Pause Menu Tag"        //16
-    };
+ //for now include only important components instead of all
+ //new includes need to add into enum and string_view and within ComponentSelector() in InspectorPanel.cpp
+ enum class ComponentID : size_t {
+ INFO, TRANSFORM, CAMERA, RIGIDBODY, COLLIDER,
+ MODEL, ANIMATOR, DIRECT_LIGHT, POINT_LIGHT, SPOT_LIGHT,
+ SOUND, SCRIPT,
+ THIRD_PERSON_CAMERA,
+ NAV_AGENT_COMPONENT,
+ AI_COMPONENT,
+ SPRITE,
+ PAUSE_MENU_TAG,
+ COUNT
+ };
+ constexpr std::string_view COMPONENT_NAMES[]{
+ "Info",                 //0
+ "Transform",            //1
+ "Camera",               //2
+ "Rigidbody",            //3
+ "Collider",             //4
+ "Model",                //5
+ "Animator",             //6
+ "Direct Light",         //7
+ "Point Light",          //8
+ "Spot Light",           //9
+ "Sound",                //10
+ "Script",               //11
+ "Third Person Camera" , //12
+ "Nav Agent Component",  //13
+ "AI Component",         //14
+ "Sprite",               //15
+ "Pause Menu Tag"        //16
+ };
 
-    // transform component
-    struct TransformComponent
-    {
-        BOOM_INLINE TransformComponent(const TransformComponent&) = default;
-        BOOM_INLINE TransformComponent() = default;
-        Transform3D transform;
+ // transform component
+ struct TransformComponent
+ {
+ BOOM_INLINE TransformComponent(const TransformComponent&) = default;
+ BOOM_INLINE TransformComponent() = default;
+ Transform3D transform;
 
-        XPROPERTY_DEF
-        ("TransformComponent", TransformComponent
-            , obj_member<"Transform", &TransformComponent::transform>
-        )
-    };
+ XPROPERTY_DEF
+ ("TransformComponent", TransformComponent
+ , obj_member<"Transform", &TransformComponent::transform>
+ )
+ };
 
-    // camera component
-    struct CameraComponent
-    {
-        BOOM_INLINE CameraComponent(const CameraComponent&) = default;
-        BOOM_INLINE CameraComponent() = default;
-        Camera3D camera;
+ // camera component
+ struct CameraComponent
+ {
+ BOOM_INLINE CameraComponent(const CameraComponent&) = default;
+ BOOM_INLINE CameraComponent() = default;
+ Camera3D camera;
 
-        // CameraComponent
-        XPROPERTY_DEF(
-            "CameraComponent", CameraComponent,
-            obj_member<"Camera", &CameraComponent::camera>
-        )
-    };
+ // CameraComponent
+ XPROPERTY_DEF(
+ "CameraComponent", CameraComponent,
+ obj_member<"Camera", &CameraComponent::camera>
+ )
+ };
 
-    struct EnttComponent {
-        BOOM_INLINE EnttComponent(const EnttComponent&) = default;
-        BOOM_INLINE EnttComponent() = default;
-        std::string name = "Entity";
+ struct EnttComponent {
+ BOOM_INLINE EnttComponent(const EnttComponent&) = default;
+ BOOM_INLINE EnttComponent() = default;
+ std::string name = "Entity";
 
-        // EnttComponent
-        XPROPERTY_DEF(
-            "EnttComponent", EnttComponent,
-            obj_member<"name", &EnttComponent::name>
-        )
-    };
+ // EnttComponent
+ XPROPERTY_DEF(
+ "EnttComponent", EnttComponent,
+ obj_member<"name", &EnttComponent::name>
+ )
+ };
 
-    struct MeshComponent
-    {
-        BOOM_INLINE MeshComponent(const MeshComponent&) = default;
-        BOOM_INLINE MeshComponent() = default;
-        Mesh3D mesh;
+ struct MeshComponent
+ {
+ BOOM_INLINE MeshComponent(const MeshComponent&) = default;
+ BOOM_INLINE MeshComponent() = default;
+ Mesh3D mesh;
 
-        // MeshComponent
-        //XPROPERTY_DEF(
-        //    "MeshComponent", MeshComponent,
-        //    obj_member<"mesh", &MeshComponent::mesh>
-        //)
-    };
+ // MeshComponent
+ //XPROPERTY_DEF(
+ //    "MeshComponent", MeshComponent,
+ //    obj_member<"mesh", &MeshComponent::mesh>
+ //)
+ };
 
-    struct RigidBodyComponent
-    {
-        BOOM_INLINE RigidBodyComponent(const RigidBodyComponent&) = default;
-        BOOM_INLINE RigidBodyComponent() = default;
-        RigidBody3D RigidBody;
+ struct RigidBodyComponent
+ {
+ BOOM_INLINE RigidBodyComponent(const RigidBodyComponent&) = default;
+ BOOM_INLINE RigidBodyComponent() = default;
+ RigidBody3D RigidBody;
 
-        // RigidBodyComponent
-        XPROPERTY_DEF(
-            "RigidBodyComponent", RigidBodyComponent,
-            obj_member<"RigidBody", &RigidBodyComponent::RigidBody>
-        )
-    };
+ // RigidBodyComponent
+ XPROPERTY_DEF(
+ "RigidBodyComponent", RigidBodyComponent,
+ obj_member<"RigidBody", &RigidBodyComponent::RigidBody>
+ )
+ };
 
-    struct ColliderComponent
-    {
-        BOOM_INLINE ColliderComponent(const ColliderComponent&) = default;
-        BOOM_INLINE ColliderComponent() = default;
-        Collider3D Collider;
+ struct ColliderComponent
+ {
+ BOOM_INLINE ColliderComponent(const ColliderComponent&) = default;
+ BOOM_INLINE ColliderComponent() = default;
+ Collider3D Collider;
 
-        // ColliderComponent
-        XPROPERTY_DEF(
-            "ColliderComponent", ColliderComponent,
-            obj_member<"Collider", &ColliderComponent::Collider>
-        )
-    };
+ // ColliderComponent
+ XPROPERTY_DEF(
+ "ColliderComponent", ColliderComponent,
+ obj_member<"Collider", &ColliderComponent::Collider>
+ )
+ };
 
-    ////Model Component
-    struct ModelComponent {
+ ////Model Component
+ struct ModelComponent {
 
-        //using AssetID = uint64_t;
+ //using AssetID = uint64_t;
 
-        AssetID modelID{ EMPTY_ASSET };
-        AssetID materialID{ EMPTY_ASSET };
-        std::string modelName;
-        std::string materialName;
-        std::string modelSource;
-        std::string materialSource;
+ AssetID modelID{ EMPTY_ASSET };
+ AssetID materialID{ EMPTY_ASSET };
+ std::string modelName;
+ std::string materialName;
+ std::string modelSource;
+ std::string materialSource;
 
-        XPROPERTY_DEF(
-            "ModelComponent", ModelComponent,
-            obj_member<"ModelID", &ModelComponent::modelID>,
-            obj_member<"MaterialID", &ModelComponent::materialID>,
-            obj_member<"ModelName", &ModelComponent::modelName>,
-            obj_member<"MaterialName", &ModelComponent::materialName>,
-            obj_member<"ModelSource", &ModelComponent::modelSource>,
-            obj_member<"MaterialSource", &ModelComponent::materialSource>
-        )
+ XPROPERTY_DEF(
+ "ModelComponent", ModelComponent,
+ obj_member<"ModelID", &ModelComponent::modelID>,
+ obj_member<"MaterialID", &ModelComponent::materialID>,
+ obj_member<"ModelName", &ModelComponent::modelName>,
+ obj_member<"MaterialName", &ModelComponent::materialName>,
+ obj_member<"ModelSource", &ModelComponent::modelSource>,
+ obj_member<"MaterialSource", &ModelComponent::materialSource>
+ )
 
-    };
+ };
 
-    //Animator Component
-    struct AnimatorComponent
-    {
-        BOOM_INLINE AnimatorComponent(const AnimatorComponent&) = default;
-        BOOM_INLINE AnimatorComponent() = default;
-        Animator3D animator;
-        //std::vector<std::string> additionalAnimFiles;
-    };
+ //Animator Component
+ struct AnimatorComponent
+ {
+ BOOM_INLINE AnimatorComponent(const AnimatorComponent&) = default;
+ BOOM_INLINE AnimatorComponent() = default;
+ Animator3D animator;
+ //std::vector<std::string> additionalAnimFiles;
+ };
 
-    struct SkyboxComponent {
-        AssetID skyboxID{ EMPTY_ASSET };
+ struct SkyboxComponent {
+ AssetID skyboxID{ EMPTY_ASSET };
 
-        XPROPERTY_DEF(
-            "SkyboxComponent", SkyboxComponent,
-            obj_member<"SkyboxID", &SkyboxComponent::skyboxID>
-        )
-    };
+ XPROPERTY_DEF(
+ "SkyboxComponent", SkyboxComponent,
+ obj_member<"SkyboxID", &SkyboxComponent::skyboxID>
+ )
+ };
 
-    //helpful for encapsulating information about an entity
-    //can be used for entity hierarchies (linked-list)
-    struct InfoComponent {
-        AssetID parent{ EMPTY_ASSET };
-        std::string name{ "Entity" };
-        AssetID uid{ RandomU64() };
+ //helpful for encapsulating information about an entity
+ //can be used for entity hierarchies (linked-list)
+ struct InfoComponent {
+ AssetID parent{ EMPTY_ASSET };
+ std::string name{ "Entity" };
+ AssetID uid{ RandomU64() };
 
         XPROPERTY_DEF(
             "InfoComponent", InfoComponent,
@@ -466,194 +466,257 @@ namespace Boom {
         BOOM_INLINE DirectLightComponent() = default;
         DirectionalLight light;
 
-        XPROPERTY_DEF(
-            "DirectLightComponent", DirectLightComponent,
-            obj_member<"Light", &DirectLightComponent::light>
-        )
-    };
+ XPROPERTY_DEF(
+ "DirectLightComponent", DirectLightComponent,
+ obj_member<"Light", &DirectLightComponent::light>
+ )
+ };
 
-    struct PointLightComponent
-    {
-        BOOM_INLINE PointLightComponent(const PointLightComponent&) = default;
-        BOOM_INLINE PointLightComponent() = default;
-        PointLight light;
+ struct PointLightComponent
+ {
+ BOOM_INLINE PointLightComponent(const PointLightComponent&) = default;
+ BOOM_INLINE PointLightComponent() = default;
+ PointLight light;
 
-        XPROPERTY_DEF(
-            "PointLightComponent", PointLightComponent,
-            obj_member<"Light", &PointLightComponent::light>
-        )
-    };
+ XPROPERTY_DEF(
+ "PointLightComponent", PointLightComponent,
+ obj_member<"Light", &PointLightComponent::light>
+ )
+ };
 
-    struct SpotLightComponent
-    {
-        BOOM_INLINE SpotLightComponent(const SpotLightComponent&) = default;
-        BOOM_INLINE SpotLightComponent() = default;
-        SpotLight light;
+ struct SpotLightComponent
+ {
+ BOOM_INLINE SpotLightComponent(const SpotLightComponent&) = default;
+ BOOM_INLINE SpotLightComponent() = default;
+ SpotLight light;
 
-        XPROPERTY_DEF(
-            "SpotLightComponent", SpotLightComponent,
-            obj_member<"Light", &SpotLightComponent::light>
-        )
-    };
+ XPROPERTY_DEF(
+ "SpotLightComponent", SpotLightComponent,
+ obj_member<"Light", &SpotLightComponent::light>
+ )
+ };
 
-    //Chris I have no idea how your sound component works
-    struct SoundComponent
-    {
-        std::string name;      // logical name ("bgm", "jump", etc.)
-        std::string filePath;  // actual sound file path
-        bool loop = false;
-        float volume = 1.0f;
-        bool playOnStart = false;
+ // Chris I have no idea how your sound component works
+ struct SoundComponent
+ {
+ struct Entry {
+ std::string name;      // logical name ("bgm", "jump", etc.)
+ // Backwards-compatible single file path
+ std::string filePath;  // actual sound file path (legacy)
+ // New: allow multiple alternate files for randomization
+ std::vector<std::string> filePaths;
+ bool loop = false;
+ float volume = 1.0f;
+ bool playOnStart = false;
 
-        // --- ADD THIS CODE INSIDE THE STRUCT ---
-        void serialize(nlohmann::json& j) const {
-            j["name"] = name;
-            j["filePath"] = filePath;
-            j["loop"] = loop;
-            j["volume"] = volume;
-            j["playOnStart"] = playOnStart;
+ // New trigger options
+ int triggerKey = -1; // GLFW key code to trigger this sound (-1 = none)
+ bool playOnMove = false; // play while moving (uses rigidbody velocity)
+ float moveThreshold = 0.1f; // minimum speed to consider "moving"
+ float repeatInterval = 0.5f; // minimum seconds between automatic retriggers
+
+ // Animation trigger name (e.g. "Footstep")
+ std::string animTrigger;
+
+ void serialize(nlohmann::json& j) const {
+    j["name"] = name;
+ // If filePaths present, write as array; otherwise write legacy filePath
+    if (!filePaths.empty()) {
+    j["filePaths"] = filePaths;
+    }
+    else {
+        j["filePath"] = filePath;
+     }
+        j["loop"] = loop;
+        j["volume"] = volume;
+        j["playOnStart"] = playOnStart;
+        j["triggerKey"] = triggerKey;
+        j["playOnMove"] = playOnMove;
+        j["moveThreshold"] = moveThreshold;
+        j["repeatInterval"] = repeatInterval;
+        if (!animTrigger.empty()) j["animTrigger"] = animTrigger;
+ }
+ void deserialize(const nlohmann::json& j) {
+        if (j.contains("name")) j.at("name").get_to(name);
+ // Prefer filePaths if present
+        if (j.contains("filePaths") && j.at("filePaths").is_array()) {
+        filePaths.clear();
+        for (const auto& fp : j.at("filePaths")) {
+            filePaths.push_back(fp.get<std::string>());
         }
-        void deserialize(const nlohmann::json& j) {
-            if (j.contains("name")) j.at("name").get_to(name);
-            if (j.contains("filePath")) j.at("filePath").get_to(filePath);
-            if (j.contains("loop")) j.at("loop").get_to(loop);
-            if (j.contains("volume")) j.at("volume").get_to(volume);
-            if (j.contains("playOnStart")) j.at("playOnStart").get_to(playOnStart);
+ // keep filePath for legacy access (first element)
+        filePath = filePaths.empty() ? std::string() : filePaths.front();
         }
-    };
+        else if (j.contains("filePath")) {
+            j.at("filePath").get_to(filePath);
+            filePaths.clear();
+        if (!filePath.empty()) filePaths.push_back(filePath);
+            }
+ if (j.contains("loop")) j.at("loop").get_to(loop);
+ if (j.contains("volume")) j.at("volume").get_to(volume);
+ if (j.contains("playOnStart")) j.at("playOnStart").get_to(playOnStart);
+ if (j.contains("triggerKey")) j.at("triggerKey").get_to(triggerKey);
+ if (j.contains("playOnMove")) j.at("playOnMove").get_to(playOnMove);
+ if (j.contains("moveThreshold")) j.at("moveThreshold").get_to(moveThreshold);
+ if (j.contains("repeatInterval")) j.at("repeatInterval").get_to(repeatInterval);
+ if (j.contains("animTrigger")) j.at("animTrigger").get_to(animTrigger);
+    }
+ };
 
-    struct ScriptComponent
-    {
-        // Managed type name in C# (e.g., "PhysicsDropDemo" or "MyGame.PlayerController")
-        std::string TypeName;
+ std::vector<Entry> entries; // timo was here
 
-        // Runtime handle returned by script_create_instance(...).
-        // Do NOT serialize this; it’s valid only while the game is running.
-        uint64_t InstanceId = 0;
+ void serialize(nlohmann::json& j) const {
+        j = nlohmann::json::array();
+        for (const auto& e : entries) {
+        nlohmann::json ej;
+        e.serialize(ej);
+        j.push_back(ej);
+    }
+ }
+ void deserialize(const nlohmann::json& j) {
+    entries.clear();
+    if (j.is_array()) {
+         for (const auto& ej : j) {
+            Entry e;
+            e.deserialize(ej);
+            entries.push_back(std::move(e));
+            }
+    }
+    }
+ };
 
-        // Allow toggling without removing the component
-        bool Enabled = true;
+ struct ScriptComponent
+ {
+ // Managed type name in C# (e.g., "PhysicsDropDemo" or "MyGame.PlayerController")
+ std::string TypeName;
 
-        nlohmann::json Params = nlohmann::json::object();
+ // Runtime handle returned by script_create_instance(...).
+ // Do NOT serialize this; it’s valid only while the game is running.
+ uint64_t InstanceId = 0;
 
-        // ---- Serialization (save only authoring data) ----
-        void serialize(nlohmann::json& j) const {
-            j["TypeName"] = TypeName;
-            j["Enabled"] = Enabled;
-            if (!Params.is_null() && !Params.empty())
-                j["Params"] = Params;
+ // Allow toggling without removing the component
+ bool Enabled = true;
 
-            // NOTE: InstanceId is intentionally NOT serialized (runtime only)
-        }
+ nlohmann::json Params = nlohmann::json::object();
 
-        void deserialize(const nlohmann::json& j) {
-            if (j.contains("TypeName")) j.at("TypeName").get_to(TypeName);
-            if (j.contains("Enabled"))  j.at("Enabled").get_to(Enabled);
-            if (j.contains("Params"))   j.at("Params").get_to(Params);
+ // ---- Serialization (save only authoring data) ----
+ void serialize(nlohmann::json& j) const {
+ j["TypeName"] = TypeName;
+ j["Enabled"] = Enabled;
+ if (!Params.is_null() && !Params.empty())
+ j["Params"] = Params;
 
-            // Ensure runtime handle starts cleared when loading a scene
-            InstanceId = 0;
-        }
-    };
+ // NOTE: InstanceId is intentionally NOT serialized (runtime only)
+ }
 
-    struct ThirdPersonCameraComponent {
-        AssetID targetUID = 0;       // The UID of the target entity
-        glm::vec3 offset = glm::vec3(0.0f, 2.0f, 0.0f);
-        float currentDistance = 2.0f;
-        float minDistance = 1.0f;
-        float maxDistance = 5.0f;
-        float currentYaw = 0.0f;
-        float currentPitch = 20.0f;
-        float mouseSensitivity = 1.0f;
-        float scrollSensitivity = 1.0f;
+ void deserialize(const nlohmann::json& j) {
+ if (j.contains("TypeName")) j.at("TypeName").get_to(TypeName);
+ if (j.contains("Enabled"))  j.at("Enabled").get_to(Enabled);
+ if (j.contains("Params"))   j.at("Params").get_to(Params);
 
-        // Add this back in
-        XPROPERTY_DEF(
-            "ThirdPersonCameraComponent", ThirdPersonCameraComponent,
+ // Ensure runtime handle starts cleared when loading a scene
+ InstanceId = 0;
+ }
+ };
 
-            obj_member<"Offset", &ThirdPersonCameraComponent::offset>,
-            obj_member<"Current Distance", &ThirdPersonCameraComponent::currentDistance>,
-            obj_member<"Min Distance", &ThirdPersonCameraComponent::minDistance>,
-            obj_member<"Max Distance", &ThirdPersonCameraComponent::maxDistance>,
-            obj_member<"Current Yaw", &ThirdPersonCameraComponent::currentYaw>,
-            obj_member<"Current Pitch", &ThirdPersonCameraComponent::currentPitch>,
-            obj_member<"Mouse Sensitivity", &ThirdPersonCameraComponent::mouseSensitivity>,
-            obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
-        )
-    };
-    struct NavAgentComponent {
-        glm::vec3 target{ 0.f };
-        std::vector<glm::vec3> path; // straight path
-        int   waypoint = 0;
-        float speed = 2.5f;  // m/s
-        float arrive = 0.15f; // meters
-        glm::vec3 velocity = glm::vec3(0.f);
-        bool  active = true;
-        bool  dirty = false; // set true when target changes
-        std::string followName;
-        entt::entity follow = entt::null; //this is player entity to follow
-        float repathCooldown = 0.25f;     // seconds between path rebuilds
-        float retargetDist = 0.5f;      // re-path if player moved this far
-        float repathTimer = 0.f;       // internal timer
-        XPROPERTY_DEF
-        ("NavAgentComponent", NavAgentComponent
-            , obj_member<"Target", &NavAgentComponent::target>
-            , obj_member<"Speed", &NavAgentComponent::speed>
-            , obj_member<"Velocity", &NavAgentComponent::velocity>
-            , obj_member<"ArriveRadius", &NavAgentComponent::arrive>
-            , obj_member<"Active", &NavAgentComponent::active>
-            , obj_member<"RepathCooldown", &NavAgentComponent::repathCooldown>
-            , obj_member<"RetargetDistance", &NavAgentComponent::retargetDist>
-        )
-    };
-    struct AIComponent {
-        enum class AIMode : int { Auto = 0, Idle = 1, Patrol = 2, Seek = 3 };
-        AIMode mode = AIMode::Auto;   // exposed in Inspector
-        AIMode lastMode = AIMode::Auto;
-        float detectRadius = 8.0f;    // start seeking when within this distance
-        float loseRadius = 12.0f;   // stop seeking when beyond this distance
-        float idleWait = 1.0f;    // wait at patrol points
-        float idleTimer = 0.0f;
-        std::string playerName = "Samurai";   // find by name instead of PlayerTag
-        entt::entity player = entt::null;     // cached after first successful lookup
-        // Patrol
-        std::vector<glm::vec3> patrolPoints;
-        int patrolIndex = 0;
+ struct ThirdPersonCameraComponent {
+ AssetID targetUID = 0;       // The UID of the target entity
+ glm::vec3 offset = glm::vec3(0.0f, 2.0f, 0.0f);
+ float currentDistance = 2.0f;
+ float minDistance = 1.0f;
+ float maxDistance = 5.0f;
+ float currentYaw = 0.0f;
+ float currentPitch = 20.0f;
+ float mouseSensitivity = 1.0f;
+ float scrollSensitivity = 1.0f;
+
+ // Add this back in
+ XPROPERTY_DEF(
+ "ThirdPersonCameraComponent", ThirdPersonCameraComponent,
+
+ obj_member<"Offset", &ThirdPersonCameraComponent::offset>,
+ obj_member<"Current Distance", &ThirdPersonCameraComponent::currentDistance>,
+ obj_member<"Min Distance", &ThirdPersonCameraComponent::minDistance>,
+ obj_member<"Max Distance", &ThirdPersonCameraComponent::maxDistance>,
+ obj_member<"Current Yaw", &ThirdPersonCameraComponent::currentYaw>,
+ obj_member<"Current Pitch", &ThirdPersonCameraComponent::currentPitch>,
+ obj_member<"Mouse Sensitivity", &ThirdPersonCameraComponent::mouseSensitivity>,
+ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
+ )
+ };
+ struct NavAgentComponent {
+ glm::vec3 target{ 0.f };
+ std::vector<glm::vec3> path; // straight path
+ int   waypoint = 0;
+ float speed = 2.5f;  // m/s
+ float arrive = 0.15f; // meters
+ glm::vec3 velocity = glm::vec3(0.f);
+ bool  active = true;
+ bool  dirty = false; // set true when target changes
+ std::string followName;
+ entt::entity follow = entt::null; //this is player entity to follow
+ float repathCooldown = 0.25f;     // seconds between path rebuilds
+ float retargetDist = 0.5f;      // re-path if player moved this far
+ float repathTimer = 0.f;       // internal timer
+ XPROPERTY_DEF
+ ("NavAgentComponent", NavAgentComponent
+ , obj_member<"Target", &NavAgentComponent::target>
+ , obj_member<"Speed", &NavAgentComponent::speed>
+ , obj_member<"Velocity", &NavAgentComponent::velocity>
+ , obj_member<"ArriveRadius", &NavAgentComponent::arrive>
+ , obj_member<"Active", &NavAgentComponent::active>
+ , obj_member<"RepathCooldown", &NavAgentComponent::repathCooldown>
+ , obj_member<"RetargetDistance", &NavAgentComponent::retargetDist>
+ )
+ };
+ struct AIComponent {
+ enum class AIMode : int { Auto = 0, Idle = 1, Patrol = 2, Seek = 3 };
+ AIMode mode = AIMode::Auto;   // exposed in Inspector
+ AIMode lastMode = AIMode::Auto;
+ float detectRadius = 8.0f;    // start seeking when within this distance
+ float loseRadius = 12.0f;   // stop seeking when beyond this distance
+ float idleWait = 1.0f;    // wait at patrol points
+ float idleTimer = 0.0f;
+ std::string playerName = "Samurai";   // find by name instead of PlayerTag
+ entt::entity player = entt::null;     // cached after first successful lookup
+ // Patrol
+ std::vector<glm::vec3> patrolPoints;
+ int patrolIndex = 0;
 
 
-        // BT root
-        BTNodePtr root;
+ // BT root
+ BTNodePtr root;
 
-        XPROPERTY_DEF
-        ("AIComponent", AIComponent
-            , obj_member<"DetectRadius", &AIComponent::detectRadius>
-            , obj_member<"LoseRadius", &AIComponent::loseRadius>
-            , obj_member<"IdleWait", &AIComponent::idleWait>
-            , obj_member<"IdleTimer", &AIComponent::idleTimer>    // include if you want to see the live timer
-            , obj_member<"PlayerName", &AIComponent::playerName>
+ XPROPERTY_DEF
+ ("AIComponent", AIComponent
+ , obj_member<"DetectRadius", &AIComponent::detectRadius>
+ , obj_member<"LoseRadius", &AIComponent::loseRadius>
+ , obj_member<"IdleWait", &AIComponent::idleWait>
+ , obj_member<"IdleTimer", &AIComponent::idleTimer>    // include if you want to see the live timer
+ , obj_member<"PlayerName", &AIComponent::playerName>
 
-            , obj_member<"PatrolIndex", &AIComponent::patrolIndex>
-        )
-    };
+ , obj_member<"PatrolIndex", &AIComponent::patrolIndex>
+ )
+ };
 
-    struct SpriteComponent {
-        AssetID textureID{ EMPTY_ASSET };
-        glm::vec4 color{ 1.0f };
-        bool uiOverlay{ true };
+ struct SpriteComponent {
+ AssetID textureID{ EMPTY_ASSET };
+ glm::vec4 color{ 1.0f };
+ bool uiOverlay{ true };
 
-        XPROPERTY_DEF(
-            "SpriteComponent", SpriteComponent,
-            obj_member<"textureID", &SpriteComponent::textureID>,
-            obj_member<"color", &SpriteComponent::color>,
-            obj_member<"uiOverlay", &SpriteComponent::uiOverlay>
-        )
-    };
+ XPROPERTY_DEF(
+ "SpriteComponent", SpriteComponent,
+ obj_member<"textureID", &SpriteComponent::textureID>,
+ obj_member<"color", &SpriteComponent::color>,
+ obj_member<"uiOverlay", &SpriteComponent::uiOverlay>
+ )
+ };
 
-    struct PauseMenuTagComponent {
-        BOOM_INLINE PauseMenuTagComponent(const PauseMenuTagComponent&) = default;
-        BOOM_INLINE PauseMenuTagComponent() = default;
+ struct PauseMenuTagComponent {
+ BOOM_INLINE PauseMenuTagComponent(const PauseMenuTagComponent&) = default;
+ BOOM_INLINE PauseMenuTagComponent() = default;
 
-        bool isTag = true;
+ bool isTag = true;
 
         XPROPERTY_DEF(
             "PauseMenuTagComponent", PauseMenuTagComponent
@@ -678,62 +741,62 @@ namespace Boom {
             m_EnttID = m_Registry->create();
         }
 
-        BOOM_INLINE virtual ~Entity() = default;
-        BOOM_INLINE Entity() = default;
+ BOOM_INLINE virtual ~Entity() = default;
+ BOOM_INLINE Entity() = default;
 
-        BOOM_INLINE operator EntityID ()
-        {
-            return m_EnttID;
-        }
+ BOOM_INLINE operator EntityID ()
+ {
+ return m_EnttID;
+ }
 
-        BOOM_INLINE operator bool()
-        {
-            return m_Registry != nullptr &&
-                m_Registry->valid(m_EnttID);
-        }
+ BOOM_INLINE operator bool()
+ {
+ return m_Registry != nullptr &&
+ m_Registry->valid(m_EnttID);
+ }
 
-        BOOM_INLINE EntityID ID()
-        {
-            return m_EnttID;
-        }
+ BOOM_INLINE EntityID ID()
+ {
+ return m_EnttID;
+ }
 
-        template<typename T, typename... Args>
-        BOOM_INLINE T& Attach(Args&&... args)
-        {
-            return m_Registry->get_or_emplace<T>(m_EnttID, std::forward<Args>(args)...);
-        }
+ template<typename T, typename... Args>
+ BOOM_INLINE T& Attach(Args&&... args)
+ {
+ return m_Registry->get_or_emplace<T>(m_EnttID, std::forward<Args>(args)...);
+ }
 
-        template<typename T>
-        BOOM_INLINE void Detach()
-        {
-            m_Registry->remove<T>(m_EnttID);
-        }
+ template<typename T>
+ BOOM_INLINE void Detach()
+ {
+ m_Registry->remove<T>(m_EnttID);
+ }
 
-        BOOM_INLINE void Destroy()
-        {
-            if (m_Registry)
-            {
-                m_Registry->destroy(m_EnttID);
-            }
-        }
+ BOOM_INLINE void Destroy()
+ {
+ if (m_Registry)
+ {
+ m_Registry->destroy(m_EnttID);
+ }
+ }
 
-        template<typename T>
-        BOOM_INLINE bool Has() const
-        {
-            return m_Registry != nullptr &&
-                m_Registry->all_of<T>(m_EnttID);
-        }
+ template<typename T>
+ BOOM_INLINE bool Has() const
+ {
+ return m_Registry != nullptr &&
+ m_Registry->all_of<T>(m_EnttID);
+ }
 
-        template<typename T>
-        BOOM_INLINE T& Get()
-        {
-            return m_Registry->get<T>(m_EnttID);
-        }
+ template<typename T>
+ BOOM_INLINE T& Get()
+ {
+ return m_Registry->get<T>(m_EnttID);
+ }
 
-    protected:
-        EntityRegistry* m_Registry = nullptr;
-        EntityID m_EnttID = NENTT;
-    };
+ protected:
+ EntityRegistry* m_Registry = nullptr;
+ EntityID m_EnttID = NENTT;
+ };
 
     // ========== ENTITY MANIPULATION FUNCTIONS ==========
     // NOTE: These are placed at the end of the file after all component declarations
@@ -864,11 +927,7 @@ namespace Boom {
         if (reg.all_of<SoundComponent>(source)) {
             auto& srcSound = reg.get<SoundComponent>(source);
             auto& dstSound = reg.emplace<SoundComponent>(duplicate);
-            dstSound.name = srcSound.name;
-            dstSound.filePath = srcSound.filePath;
-            dstSound.loop = srcSound.loop;
-            dstSound.volume = srcSound.volume;
-            dstSound.playOnStart = srcSound.playOnStart;
+            dstSound.entries = srcSound.entries;
         }
 
         // Copy ScriptComponent

@@ -2,12 +2,12 @@
 
 #include <glm/glm.hpp>
 #include <entt/entt.hpp>
-#include "Context/Context.h"
+#include "Application/Context.h"
 #include "ECS/ECS.hpp"
 
-namespace EditorUI {
+namespace Boom {
 
-    class RayCast {
+    class BOOM_API RayCast {
     public:
         RayCast(Boom::AppContext* context);
 
@@ -50,7 +50,8 @@ namespace EditorUI {
             const glm::vec3& aabbMin,
             const glm::vec3& aabbMax,
             float& t);
-
+        // Add this private helper
+        void CalculateAABBFromCorners(const std::vector<glm::vec3>& corners, const glm::mat4& worldMatrix, glm::vec3& aabbMin, glm::vec3& aabbMax);
         // Convert Transform3D to world matrix
         glm::mat4 TransformToMatrix(const Boom::Transform3D& transform);
 

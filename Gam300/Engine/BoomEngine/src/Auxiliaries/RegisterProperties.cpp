@@ -42,4 +42,5 @@ XPROPERTY_REG(MaterialAsset)
 XPROPERTY_REG(TextureAsset)
 XPROPERTY_REG(ModelAsset)
 XPROPERTY_REG(SkyboxAsset)
+XPROPERTY_REG(AudioAsset)
 

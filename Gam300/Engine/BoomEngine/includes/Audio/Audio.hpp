@@ -30,6 +30,9 @@ public:
     BOOM_API void  SetLooping(const std::string& name, bool loop);
     BOOM_API void  StopAllExcept(const std::string& keepName);
 
+    BOOM_API void  PauseAll(bool pause);
+    BOOM_API void  StopAll();
+
     BOOM_API bool  PreloadSound(const std::string& name, const std::string& filePath, bool stream = false, bool loop = false);
     BOOM_API void  UnloadSound(const std::string& name);
 

@@ -1,5 +1,6 @@
 #include "Core.h"
 #include "Application/Application.h"
+#include "Audio/SoundSystem.hpp" // <-- added for per-entity sound updates
 
 namespace Boom
 {
@@ -179,6 +180,9 @@ namespace Boom
                 RunPhysicsSimulation();
                 //InitNavRuntime();
                 UpdateThirdPersonCameras();
+
+                // Update per-entity sound system (trigger/key/anim/movement based)
+                SoundSystem::Update(m_Context->scene, static_cast<float>(m_Context->DeltaTime));
             }
 
 

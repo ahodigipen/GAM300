@@ -222,6 +222,7 @@ namespace Boom {
 
 		BOOM_INLINE bool PollEvents() {
 			input.beginFrame();
+			glfwMakeContextCurrent(windowPtr.get());
 			glfwPollEvents();
 			dispatcher->PollEvents();
 			glfwSwapBuffers(windowPtr.get());
@@ -243,6 +244,11 @@ namespace Boom {
 		BOOM_INLINE void SetCameraInputRegion(double x, double y, double w, double h, bool enabled) {
 			camRegionX = x; camRegionY = y; camRegionW = w; camRegionH = h; camInputEnabled = enabled;
 		}
+
+		BOOM_INLINE float GetViewportX() const { return (float)camRegionX; }
+		BOOM_INLINE float GetViewportY() const { return (float)camRegionY; }
+		BOOM_INLINE float GetViewportW() const { return (float)camRegionW; }
+		BOOM_INLINE float GetViewportH() const { return (float)camRegionH; }
 
 		BOOM_INLINE bool IsMouseInCameraRegion(GLFWwindow* win) const {
 			double mx, my; glfwGetCursorPos(win, &mx, &my); // client-area coords
