@@ -1060,6 +1060,56 @@ namespace Boom {
         return false;
     }
 
+    static void ICALL_API_TeleportRigidBody(uint64_t handle, glm::vec3* pos) {
+        if (!pos || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+
+        if (e == entt::null || !s_Ctx->scene.valid(e)) {
+            BOOM_WARN("[ScriptBinding] TeleportRigidBody: Invalid entity");
+            return;
+        }
+
+        if (!s_Ctx->scene.any_of<TransformComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] TeleportRigidBody: Entity has no TransformComponent");
+            return;
+        }
+
+        // Update transform component
+        auto& transform = s_Ctx->scene.get<TransformComponent>(e).transform;
+        transform.translate = *pos;
+
+        // If entity has rigid body, update PhysX actor position
+        if (s_Ctx->scene.any_of<RigidBodyComponent>(e)) {
+            auto& rb = s_Ctx->scene.get<RigidBodyComponent>(e).RigidBody;
+
+            if (rb.actor) {
+                // Get current pose to preserve rotation
+                PxTransform currentPose = rb.actor->getGlobalPose();
+
+                // Create new pose with updated position
+                PxTransform newPose(PxVec3(pos->x, pos->y, pos->z), currentPose.q);
+
+                // Set the global pose
+                if (PxRigidDynamic* dyn = rb.actor->is<PxRigidDynamic>()) {
+                    // Clear velocities to prevent momentum carry-over
+                    dyn->setLinearVelocity(PxVec3(0.0f, 0.0f, 0.0f));
+                    dyn->setAngularVelocity(PxVec3(0.0f, 0.0f, 0.0f));
+
+                    // Teleport the actor
+                    dyn->setGlobalPose(newPose);
+
+                    // Wake the actor up in case it was sleeping
+                    dyn->wakeUp();
+
+                    BOOM_INFO("[ScriptBinding] Teleported rigid body to ({}, {}, {})", pos->x, pos->y, pos->z);
+                }
+                else {
+                    // Static or kinematic body
+                    rb.actor->setGlobalPose(newPose);
+                }
+            }
+        }
+    }
 
     void RegisterScriptInternalCalls(AppContext* ctx)
     {
@@ -1145,5 +1195,7 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetRotationY", (const void*)ICALL_API_SetRotationY);
     
         mono_add_internal_call("Boom.Native::LinecastIgnoreBoth", (const void*)ICALL_API_LinecastIgnoreBoth);
+
+        mono_add_internal_call("Boom.Native::Boom_API_TeleportRigidBody", (void*)ICALL_API_TeleportRigidBody);
     }
 }

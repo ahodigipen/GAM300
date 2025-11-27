@@ -180,6 +180,9 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern bool LinecastIgnoreBoth(Vec3 from, Vec3 to, ulong ignoreEntity1, ulong ignoreEntity2);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_TeleportRigidBody(ulong handle, ref Vec3 pos);
     }
 
     // ========= DELEGATES =========
@@ -518,6 +521,16 @@ namespace Boom
         public static void SetRotationY(ulong h, float yawDegrees)
         {
             Native.Boom_API_SetRotationY(h, yawDegrees);
+        }
+
+        public static void TeleportRigidBody(ulong h, Vec3 p)
+        {
+            if (!Native.Boom_API_HasTransform(h))
+            {
+                Log($"[WARNING] Entity {h} does not have TransformComponent! Cannot teleport.");
+                return;
+            }
+            Native.Boom_API_TeleportRigidBody(h, ref p);
         }
 
         // ===== GLFW key codes =====

@@ -21,8 +21,17 @@ namespace GameScripts
         private float _sprintSpeed = 5f;
         private float _sneakSpeed = 1.5f;
         private float _jumpSpeed = 5f;
+
+        // Health system
         private int _health = 5;
         private int _maxHealth = 5;
+        private Vec3 _spawnPoint;
+        private bool _isRespawning = false;
+        private float _respawnDelay = 1.0f;
+        private float _respawnTimer = 0f;
+        private bool _isInvulnerable = false;
+        private float _invulnerabilityDuration = 2.0f;
+        private float _invulnerabilityTimer = 0f;
 
         // Footstep system
         private FootstepComponent _footstepComponent;
@@ -57,6 +66,9 @@ namespace GameScripts
             // Store player entity reference for static callbacks
             s_playerEntity = Entity;
 
+            // Register with PlayerManager for enemy interactions
+            PlayerManager.RegisterPlayer(this);
+
             // Validate entity has required components
             if (!API.HasTransform(Entity))
             {
@@ -69,6 +81,14 @@ namespace GameScripts
                 API.Log("[PlayerMovement] ERROR: Entity missing ScriptComponent!");
                 return;
             }
+
+            // Initialize spawn point as starting position
+            _spawnPoint = API.GetPosition(Entity);
+            API.Log($"[PlayerMovement] Spawn point set to: ({_spawnPoint.X:F2}, {_spawnPoint.Y:F2}, {_spawnPoint.Z:F2})");
+
+            // Initialize health
+            _health = _maxHealth;
+            API.Log($"[PlayerMovement] Health initialized: {_health}/{_maxHealth} HP");
 
             // Initialize footstep component
             _footstepComponent = new FootstepComponent();
@@ -99,7 +119,121 @@ namespace GameScripts
             API.Log($"  Jump Speed: {_jumpSpeed}");
             API.Log($"[PlayerMovement] Model forward offset: {_modelForwardOffset} degrees");
 
-            
+
+        }
+
+        /// <summary>
+        /// Handle getting caught by an enemy
+        /// </summary>
+        public void OnCaughtByEnemy(ulong enemyEntity)
+        {
+            // Check if player is invulnerable (just respawned)
+            if (_isInvulnerable)
+            {
+                API.Log("[PlayerMovement] Player is invulnerable, ignoring detection");
+                return;
+            }
+
+            // Check if already respawning
+            if (_isRespawning)
+            {
+                API.Log("[PlayerMovement] Already respawning, ignoring detection");
+                return;
+            }
+
+            API.Log($"[PlayerMovement] CAUGHT BY ENEMY (ID: {enemyEntity})! Current HP: {_health}");
+
+            // Lose 1 HP
+            _health--;
+            API.Log($"[PlayerMovement] HP reduced to: {_health}/{_maxHealth}");
+
+            // Play damage sound
+            Vec3 playerPos = API.GetPosition(Entity);
+            API.PlaySoundAt("player_damage", "Resources/Audio/playerPunch_1.wav", playerPos, false);
+            API.SetSoundVolume("player_damage", 1.0f);
+
+            // Check if dead
+            if (_health <= 0)
+            {
+                API.Log("[PlayerMovement] HP reached 0! Restarting level...");
+                RestartLevel();
+            }
+            else
+            {
+                API.Log($"[PlayerMovement] Respawning at checkpoint... {_health} HP remaining");
+                StartRespawn();
+            }
+        }
+
+        /// <summary>
+        /// Start the respawn process
+        /// </summary>
+        private void StartRespawn()
+        {
+            _isRespawning = true;
+            _respawnTimer = 0f;
+
+            // Stop player movement
+            API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
+
+            API.Log("[PlayerMovement] Respawn initiated...");
+        }
+
+        /// <summary>
+        /// Restart the entire level
+        /// </summary>
+        private void RestartLevel()
+        {
+            API.Log("[PlayerMovement] === GAME OVER - RESTARTING LEVEL ===");
+
+            // Play death sound
+            Vec3 playerPos = API.GetPosition(Entity);
+            API.PlaySoundAt("player_death", "Resources/Audio/playerPunch_1.wav", playerPos, false);
+            API.SetSoundVolume("player_death", 1.0f);
+
+            // Reload the current scene after a brief delay
+            string currentScene = API.GetCurrentSceneName();
+            API.Log($"[PlayerMovement] Reloading scene: {currentScene}");
+
+            // Note: You might want to add a delay here using a coroutine or timer
+            // For now, reloading immediately
+            API.LoadScene(currentScene);
+        }
+
+        /// <summary>
+        /// Respawn the player at the checkpoint
+        /// </summary>
+        private void RespawnAtCheckpoint()
+        {
+            API.Log($"[PlayerMovement] Respawning at checkpoint: ({_spawnPoint.X:F2}, {_spawnPoint.Y:F2}, {_spawnPoint.Z:F2})");
+
+            // Use TeleportRigidBody instead of SetPosition to properly update PhysX
+            API.TeleportRigidBody(Entity, _spawnPoint);
+
+            // Velocities are already cleared by TeleportRigidBody, but let's be explicit
+            API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
+
+            // Enable invulnerability
+            _isInvulnerable = true;
+            _invulnerabilityTimer = 0f;
+
+            // Reset respawn state
+            _isRespawning = false;
+
+            API.Log($"[PlayerMovement] Respawn complete! Invulnerable for {_invulnerabilityDuration} seconds");
+        }
+
+        /// <summary>
+        /// Update checkpoint position (can be called from trigger zones)
+        /// </summary>
+        public void UpdateCheckpoint(Vec3 newCheckpoint)
+        {
+            _spawnPoint = newCheckpoint;
+            API.Log($"[PlayerMovement] Checkpoint updated to: ({_spawnPoint.X:F2}, {_spawnPoint.Y:F2}, {_spawnPoint.Z:F2})");
+
+            // Play checkpoint sound
+            API.PlaySoundAt("checkpoint_save", "Resources/Audio/playerPunch_1.wav", newCheckpoint, false);
+            API.SetSoundVolume("checkpoint_save", 0.8f);
         }
 
         private void RegisterTriggerCallbacksOnAllTriggers()
@@ -154,6 +288,28 @@ namespace GameScripts
 
             // Update footstep component
             _footstepComponent?.OnUpdate(dt);
+
+            // Handle respawn timer
+            if (_isRespawning)
+            {
+                _respawnTimer += dt;
+                if (_respawnTimer >= _respawnDelay)
+                {
+                    RespawnAtCheckpoint();
+                }
+                return; // Don't allow movement while respawning
+            }
+
+            // Handle invulnerability timer
+            if (_isInvulnerable)
+            {
+                _invulnerabilityTimer += dt;
+                if (_invulnerabilityTimer >= _invulnerabilityDuration)
+                {
+                    _isInvulnerable = false;
+                    API.Log("[PlayerMovement] Invulnerability expired");
+                }
+            }
 
             // =============== CAMERA-RELATIVE PHYSX MOVEMENT =================
 
@@ -454,6 +610,9 @@ namespace GameScripts
         {
             API.Log($"[PlayerMovement] OnDestroy() - Entity: {Entity}");
 
+            // Unregister from PlayerManager
+            PlayerManager.UnregisterPlayer();
+
             // Clear static reference
             if (s_playerEntity == Entity)
             {
@@ -501,6 +660,22 @@ namespace GameScripts
             _sprintSpeed = sprintSpeed;
             _sneakSpeed = sneakSpeed;
             API.Log($"[PlayerMovement] Speeds updated - Walk: {_walkSpeed}, Sprint: {_sprintSpeed}, Sneak: {_sneakSpeed}");
+        }
+
+        /// <summary>
+        /// Get current health
+        /// </summary>
+        public int GetHealth()
+        {
+            return _health;
+        }
+
+        /// <summary>
+        /// Get player entity ID (for enemy detection callbacks)
+        /// </summary>
+        public static ulong GetPlayerEntity()
+        {
+            return s_playerEntity;
         }
     }
 }
