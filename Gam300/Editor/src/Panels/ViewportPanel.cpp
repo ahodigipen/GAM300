@@ -367,9 +367,6 @@ namespace EditorUI {
                 }
             }
 
-        // Update gizmo state
-        m_GizmoWasUsing = ImGuizmo::IsUsing();
-
             // **NEW: Sync with RigidBody if present**
             Boom::Entity entity{ &m_Ctx->scene, selectedEntity };
             if (entity.Has<Boom::RigidBodyComponent>())
@@ -377,6 +374,9 @@ namespace EditorUI {
                 m_Owner->GetPhysicsContext().UpdateRigidBodyTransform(entity, ltrans.transform);
             }
         }
+
+        // Update gizmo state (must be outside all blocks to update every frame)
+        m_GizmoWasUsing = ImGuizmo::IsUsing();
     }
 
     void ViewportPanel::HandleMouseClick(const ImVec2& mousePos, const ImVec2&)
