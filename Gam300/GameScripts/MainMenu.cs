@@ -6,7 +6,7 @@ namespace GameScripts
     public class MainMenu
     {
         private const int MOUSE_LEFT = 0;
-
+        private const string LEVEL_SCENE_NAME = "M2_Redesign_scaled";
         // Store the unique IDs of our buttons
         private ulong _startButtonID;
         private ulong _quitButtonID;
@@ -47,7 +47,7 @@ namespace GameScripts
                     if (hitID == _startButtonID)
                     {
                         API.Log(">> Start Button Clicked! Starting Game...");
-                        API.LoadScene("M2_Scene");
+                        API.LoadScene(LEVEL_SCENE_NAME);
                     }
                     else if (hitID == _quitButtonID)
                     {

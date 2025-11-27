@@ -74,40 +74,15 @@ namespace Boom {
 
         if (!m_Context) return false;
 
-        auto& registry = m_Context->scene;
+        /*auto& registry = m_Context->scene;*/
 
-        if (!registry.all_of<Boom::TransformComponent, Boom::ColliderComponent>(entity)) {
+        /*if (!registry.all_of<Boom::TransformComponent, Boom::ColliderComponent>(entity)) {
             return false;
-        }
+        }*/
 
         // Get entity's bounding box in world space
-        //calculate min aabb based on component type(2d/3d)
         glm::vec3 aabbMin, aabbMax;
-        aabbMin = glm::vec3(FLT_MAX);
-        aabbMax = glm::vec3(-FLT_MAX);
-
-        if (registry.all_of<Boom::TransformComponent, Boom::SpriteComponent>(entity)) {
-            const auto& spriteComp = registry.get<Boom::SpriteComponent>(entity);
-            const auto& transformComp = registry.get<Boom::TransformComponent>(entity);
-            if (spriteComp.uiOverlay) return false; //raycast should only work in 3D mode
-            glm::mat4 tMat{ transformComp.transform.Matrix() };
-            std::array<glm::vec3, 4> corners{
-                glm::vec3{-1.f, -1.f, 0.f},
-                {1.f, -1.f, 0.f},
-                {1.f, 1.f, 0.f},
-                {-1.f, 1.f, 0.f}
-            };
-            for (glm::vec3 const& v : corners) {
-                glm::vec3 tVec{ tMat * glm::vec4{v, 1.f} };
-
-                aabbMin = glm::min(aabbMin, tVec);
-                aabbMax = glm::max(aabbMax, tVec);
-            }
-        }
-        else if (registry.all_of<Boom::TransformComponent, Boom::ModelComponent>(entity)) {
-            GetEntityAABB(entity, aabbMin, aabbMax);
-        }
-        else return false;
+        GetEntityAABB(entity, aabbMin, aabbMax);
 
         // Perform AABB intersection test and get actual hit distance
         return RayAABBIntersection(rayOrigin, rayDirection, aabbMin, aabbMax, hitDistance);
