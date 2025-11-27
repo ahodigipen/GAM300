@@ -45,6 +45,7 @@
     <Compile Include="API.cs" />
     <Compile Include="CharacterAnimation.cs" />
     <Compile Include="EnemyAI.cs" />
+    <Compile Include="PatrolEnemyController.cs" />
     <Compile Include="PlayerFootsteps.cs" />
     <Compile Include="VisionComponent.cs" />
     <Compile Include="Entry.cs" />

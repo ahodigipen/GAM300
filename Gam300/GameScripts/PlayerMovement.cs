@@ -1,6 +1,7 @@
 ﻿using Boom;
 
 using System;
+using System.Runtime.CompilerServices;
 
 /// <summary>
 /// Handles player movement using PhysX linear velocity control.
@@ -50,6 +51,7 @@ namespace GameScripts
         /// </summary>
         public void OnStart(string jsonParams)
         {
+
             API.Log($"[PlayerMovement] OnStart() - Entity: {Entity}");
 
             // Store player entity reference for static callbacks
@@ -96,6 +98,8 @@ namespace GameScripts
             API.Log($"  Walk Speed: {_walkSpeed}, Sprint Speed: {_sprintSpeed}, Sneak Speed: {_sneakSpeed}");
             API.Log($"  Jump Speed: {_jumpSpeed}");
             API.Log($"[PlayerMovement] Model forward offset: {_modelForwardOffset} degrees");
+
+            
         }
 
         private void RegisterTriggerCallbacksOnAllTriggers()
