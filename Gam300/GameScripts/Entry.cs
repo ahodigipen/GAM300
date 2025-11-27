@@ -32,11 +32,6 @@ namespace GameScripts
 
             _currentSceneName = API.GetCurrentSceneName();
 
-            if (_currentSceneName == MAIN_MENU_SCENE_NAME)
-            {
-                MainMenu.OnStart(); // Finds the button IDs
-            }
-
             API.Log("[C#] Entry.Start() called for scene: " + _currentSceneName);
         }
 
@@ -72,7 +67,6 @@ namespace GameScripts
             // --- LOGIC FOR MAIN MENU ---
             if (_currentSceneName == MAIN_MENU_SCENE_NAME)
             {
-                MainMenu.OnUpdate(dt);
                 // Check for 'P' (without Ctrl) to START the Level
                 if (p_KeyDown && !_p_KeyWasDown && !ctrl_KeyDown)
                 {

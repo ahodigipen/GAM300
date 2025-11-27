@@ -2,6 +2,7 @@ Version: 1.0
 ENTITIES:
   - {}
   - {}
+  - {}
   - InfoComponent:
       Parent: 0
       Name: Home Screen GUI
@@ -354,5 +355,10 @@ ENTITIES:
         Translate: [0, 0, 0]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.MainMenu
+      ParamsJSON: "{}"
+  - {}
   - {}
   - {}

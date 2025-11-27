@@ -8,10 +8,10 @@ namespace GameScripts
         private const int MOUSE_LEFT = 0;
 
         // Store the unique IDs of our buttons
-        private static ulong _startButtonID;
-        private static ulong _quitButtonID;
+        private ulong _startButtonID;
+        private ulong _quitButtonID;
 
-        public static void OnStart()
+        public void OnStart(string jsonParams)
         {
             API.Log("MainMenu OnStart Running...");
             // 1. Find the entities by name once at startup
@@ -26,7 +26,7 @@ namespace GameScripts
             if (_startButtonID == 0) API.Log("Warning: StartButton not found!");
         }
 
-        public static void OnUpdate(float dt)
+        public void OnUpdate(float dt)
         {
             // 2. Check for Click
             if (API.IsMouseDown(MOUSE_LEFT))
