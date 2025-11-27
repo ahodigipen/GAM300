@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Boom;
 
 namespace GameScripts
@@ -77,6 +78,8 @@ namespace GameScripts
         {
             API.Log(">>> ENEMY ALERTED! STOPPING PATROL! <<<");
             // TODO: Start chase behavior, play alert sound, etc.
+            //Need to remove 1 HP from the player. And when player loses a HP point it goes back to the
+            //starting position and if player hp < 0 we resets the level
         }
 
         private void OnPlayerLost(ulong target, Vec3 lastKnownPosition)

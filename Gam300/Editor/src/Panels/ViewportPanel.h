@@ -5,9 +5,12 @@
 #include "Vendors/imGuizmo/ImGuizmo.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/glm.hpp>
+#include "Graphics/Utilities/Data.h"  // For Boom::Transform3D
 
-namespace Boom { struct AppContext; }
-namespace Boom { struct AppInterface; }
+namespace Boom {
+    struct AppContext;
+    struct AppInterface;
+}
 
 namespace EditorUI {
     class Editor;
@@ -66,6 +69,10 @@ namespace EditorUI {
         int m_GizmoMode = ImGuizmo::WORLD;
         bool m_UseSnap = false;
         float m_SnapValues[3] = { 1.0f, 15.0f, 0.5f };
+
+        // Undo/Redo for gizmo operations
+        bool m_GizmoWasUsing = false;
+        Boom::Transform3D m_TransformBeforeGizmo;
     };
 
 } // namespace EditorUI

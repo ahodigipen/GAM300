@@ -16,8 +16,12 @@ namespace GameScripts
         public ulong Entity;
 
         // Movement parameters (configurable)
-        private float _speed = 5f;
-        private float _jumpSpeed = 8f;
+        private float _walkSpeed = 3f;
+        private float _sprintSpeed = 5f;
+        private float _sneakSpeed = 1.5f;
+        private float _jumpSpeed = 5f;
+        private int _health = 5;
+        private int _maxHealth = 5;
 
         // Footstep system
         private FootstepComponent _footstepComponent;
@@ -33,7 +37,13 @@ namespace GameScripts
         //private float _rotationSpeed = 10f; // degrees per frame to turn
 
         // NEW: Model forward direction offset (adjust if model faces wrong way)
-        private float _modelForwardOffset = 180f; // 180° if model faces backwards, 0° if correct
+        private float _modelForwardOffset = 0; // 180° if model faces backwards, 0° if correct
+
+        // Animation system
+        private const float MOVE_EPS = 0.10f;  // animator "moving" threshold
+        private const float SPEED_DAMP = 10f;    // smoothing for animator Speed
+        private double _smoothedSpeed = 0.0;
+        private bool _hasAnimator = false;
 
         /// <summary>
         /// Called once when the script is first created.
@@ -63,11 +73,28 @@ namespace GameScripts
             _footstepComponent.Entity = Entity;
             _footstepComponent.OnStart("");
 
+            // Initialize animator if present
+            if (API.HasAnimator(Entity))
+            {
+                _hasAnimator = true;
+                API.AnimatorSetFloat(Entity, "Speed", 0f);
+                API.AnimatorSetBool(Entity, "IsMoving", false);
+                API.AnimatorSetBool(Entity, "Sprint", false);
+                API.AnimatorSetBool(Entity, "IsSneaking", false);
+                API.Log("[PlayerMovement] Animator initialized");
+            }
+            else
+            {
+                API.Log("[PlayerMovement] No AnimatorComponent found - animations disabled");
+            }
+
             // RE-ENABLE trigger callbacks (simple version)
             API.Log("[PlayerMovement] Registering trigger callbacks...");
             RegisterTriggerCallbacksOnAllTriggers();
 
-            API.Log($"[PlayerMovement] Using camera-relative PhysX movement: speed={_speed}, jumpSpeed={_jumpSpeed}");
+            API.Log($"[PlayerMovement] Using camera-relative PhysX movement:");
+            API.Log($"  Walk Speed: {_walkSpeed}, Sprint Speed: {_sprintSpeed}, Sneak Speed: {_sneakSpeed}");
+            API.Log($"  Jump Speed: {_jumpSpeed}");
             API.Log($"[PlayerMovement] Model forward offset: {_modelForwardOffset} degrees");
         }
 
@@ -144,8 +171,27 @@ namespace GameScripts
                 if (API.IsKeyDown(API.KEY_S)) inputZ -= 1f; // Backward
             }
 
+            // Track movement state for animations
+            bool hasInput = (inputX != 0f || inputZ != 0f);
+
+            // Check for sprint/sneak input - these now affect actual speed!
+            bool sprintKey = API.IsKeyDown(API.KEY_LEFT_SHIFT);
+            bool sneakKey = API.IsKeyDown(API.KEY_LEFT_CONTROL);
+
+            // Determine current movement speed based on input modifiers
+            // Priority: Sneak > Sprint > Walk (sneak overrides sprint if both are pressed)
+            float currentSpeed = _walkSpeed;
+            if (sneakKey)
+            {
+                currentSpeed = _sneakSpeed;
+            }
+            else if (sprintKey)
+            {
+                currentSpeed = _sprintSpeed;
+            }
+
             // Apply camera-relative movement
-            if (inputX != 0f || inputZ != 0f)
+            if (hasInput)
             {
                 // Get camera's yaw angle in degrees
                 float cameraYawDegrees = API.GetThirdPersonCameraYaw();
@@ -179,8 +225,8 @@ namespace GameScripts
                 float len = (float)Math.Sqrt(moveDirection.X * moveDirection.X + moveDirection.Z * moveDirection.Z);
                 if (len > 0f)
                 {
-                    vel.X = (moveDirection.X / len) * _speed;
-                    vel.Z = (moveDirection.Z / len) * _speed;
+                    vel.X = (moveDirection.X / len) * currentSpeed;
+                    vel.Z = (moveDirection.Z / len) * currentSpeed;
 
                     // NEW: Calculate rotation with model forward offset correction
                     float targetYaw = (float)(Math.Atan2(moveDirection.X, moveDirection.Z) * 180.0 / Math.PI);
@@ -218,6 +264,12 @@ namespace GameScripts
                 vel.Y = _jumpSpeed;
                 _hasJumped = true;
 
+                // Trigger jump animation
+                if (_hasAnimator)
+                {
+                    API.AnimatorSetTrigger(Entity, "Jump");
+                }
+
                 // Play jump sound only once
                 Vec3 playerPos = API.GetPosition(Entity);
                 API.PlaySoundAt("jump_sound", "Resources/Audio/playerPunch_1.wav", playerPos, false);
@@ -233,6 +285,22 @@ namespace GameScripts
             // PhysX already applies gravity every simulation step.
 
             API.SetLinearVelocity(Entity, vel);
+
+            // =============== UPDATE ANIMATOR =================
+            if (_hasAnimator)
+            {
+                // Calculate horizontal speed for animation
+                float speedXZ = (float)Math.Sqrt(vel.X * vel.X + vel.Z * vel.Z);
+
+                // Smooth the speed value for cleaner animation transitions
+                _smoothedSpeed += (speedXZ - _smoothedSpeed) * Math.Min(1.0, SPEED_DAMP * dt);
+
+                // Update animator parameters
+                API.AnimatorSetFloat(Entity, "Speed", (float)_smoothedSpeed);
+                API.AnimatorSetBool(Entity, "IsMoving", _smoothedSpeed > MOVE_EPS || hasInput);
+                API.AnimatorSetBool(Entity, "Sprint", sprintKey && hasInput);
+                API.AnimatorSetBool(Entity, "IsSneaking", sneakKey && hasInput);
+            }
         }
 
         /// <summary>
@@ -407,6 +475,17 @@ namespace GameScripts
         {
             _modelForwardOffset = degrees;
             API.Log($"[PlayerMovement] Model forward offset set to: {_modelForwardOffset} degrees");
+        }
+
+        /// <summary>
+        /// Configure movement speeds
+        /// </summary>
+        public void SetMovementSpeeds(float walkSpeed, float sprintSpeed, float sneakSpeed)
+        {
+            _walkSpeed = walkSpeed;
+            _sprintSpeed = sprintSpeed;
+            _sneakSpeed = sneakSpeed;
+            API.Log($"[PlayerMovement] Speeds updated - Walk: {_walkSpeed}, Sprint: {_sprintSpeed}, Sneak: {_sneakSpeed}");
         }
     }
 }

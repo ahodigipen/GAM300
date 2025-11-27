@@ -72,7 +72,7 @@ namespace Boom
         }
         // --- END MONO INITIALIZE ---
 
-        InitNavRuntime();
+       // InitNavRuntime();
         //EnsureNinjaSeeksSamurai();
         CameraController camera(
             m_Context->window.get()
@@ -82,6 +82,7 @@ namespace Boom
         EnttView<Entity, SkyboxComponent>([this](auto, auto& comp) {
             SkyboxAsset& skybox{ m_Context->assets->Get<SkyboxAsset>(comp.skyboxID) };
             m_Context->renderer->InitSkybox(skybox.data, skybox.envMap, skybox.size);
+            return; //should stop after one skybox rendered
             });
 
         m_DebugLinesShader = std::make_unique<Boom::DebugLinesShader>("debug_lines.glsl");
@@ -178,7 +179,7 @@ namespace Boom
             m_Context->profiler.Start("Total Frame");
             m_Context->profiler.Start("Renderer Start Frame");
             std::apply(glClearColor, CONSTANTS::DEFAULT_BACKGROUND_COLOR);
-            RenderShadowScene();
+            //RenderShadowScene();
             m_Context->renderer->NewFrame();
             m_Context->profiler.End("Renderer Start Frame");
 
@@ -189,7 +190,7 @@ namespace Boom
                     });
                 UpdateKinematicTransforms();
                 RunPhysicsSimulation();
-                InitNavRuntime();
+                //InitNavRuntime();
                 UpdateThirdPersonCameras();
 
                 // Update per-entity sound system (trigger/key/anim/movement based)
@@ -239,18 +240,45 @@ namespace Boom
             {
                 prevMP = curMP;
 
+                // 1. [EXISTING] Sync RigidBody -> Transform
                 EnttView<Entity, TransformComponent, RigidBodyComponent>([this](auto entity, TransformComponent& tc, RigidBodyComponent& rbc) {
-                    // Check if the current scale is different from the stored scale
                     if (tc.transform.scale != rbc.RigidBody.previousScale)
                     {
-                        // If it changed, update the collider shape
                         m_Context->physics->UpdateColliderShape(entity, GetAssetRegistry());
-
-                        // Then, update the stored scale to the new value for the next frame
                         rbc.RigidBody.previousScale = tc.transform.scale;
+                    }
+                    if (!m_IsInPlayMode || rbc.RigidBody.type != RigidBody3D::DYNAMIC)
+                    {
+                        // Ensure actor pointer is valid before updating
+                        if (rbc.RigidBody.actor) {
+                            m_Context->physics->UpdateRigidBodyTransform(entity, tc.transform);
+                        }
+                    }
+                    });
+
+                // 2. [MISSING - ADD THIS] Sync Collider-Only Entities (Triggers/Static)
+                EnttView<Entity, TransformComponent, ColliderComponent>([this](auto entity, TransformComponent& tc, ColliderComponent& cc) {
+                    // Skip if it has a RigidBody (already handled above)
+                    if (entity.template Has<RigidBodyComponent>()) return;
+
+                    // If it has a Shape, find the attached "Ghost" Actor and force it to move
+                    if (cc.Collider.Shape)
+                    {
+                        physx::PxRigidActor* actor = cc.Collider.Shape->getActor();
+                        if (actor)
+                        {
+                            glm::quat rot = glm::quat(glm::radians(tc.transform.rotate));
+                            physx::PxTransform pose(
+                                physx::PxVec3(tc.transform.translate.x, tc.transform.translate.y, tc.transform.translate.z),
+                                physx::PxQuat(rot.x, rot.y, rot.z, rot.w)
+                            );
+                            actor->setGlobalPose(pose);
+                        }
                     }
                     });
             }
+
+
 
             RenderScene();
             //DrawDebugTPC();
@@ -307,8 +335,21 @@ namespace Boom
             //skybox ecs (should be drawn at the end)
             EnttView<Entity, SkyboxComponent>([this](auto entity, SkyboxComponent& comp) {
                 Transform3D& transform{ entity.template Get<TransformComponent>().transform };
+                static AssetID prevSkyID{ comp.skyboxID };
+
+                //reinitialize skybox if different
+                if (prevSkyID != comp.skyboxID) {
+                    EnttView<Entity, SkyboxComponent>([this](auto, auto& comp) {
+                        SkyboxAsset& skybox{ m_Context->assets->Get<SkyboxAsset>(comp.skyboxID) };
+                        m_Context->renderer->InitSkybox(skybox.data, skybox.envMap, skybox.size);
+                        return; //should stop after one skybox rendered
+                        });
+                }
+
+                prevSkyID = comp.skyboxID;
                 SkyboxAsset& skybox{ m_Context->assets->Get<SkyboxAsset>(comp.skyboxID) };
                 m_Context->renderer->DrawSkybox(skybox.data, transform);
+                return; //should stop after one skybox rendered
                 });
 
             m_Context->profiler.Start("Renderer End Frame");
@@ -356,7 +397,8 @@ namespace Boom
                     }
                 }
 
-                glm::mat4 worldMatrix = GetWorldMatrix(entity);
+                // Use the global Boom::GetWorldMatrix from ECS.hpp
+                glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
                 Transform3D worldTransform;
                 DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
 
@@ -415,49 +457,6 @@ namespace Boom
         }
     }
 
-    glm::mat4 Application::GetWorldMatrix(Entity& entity)
-    {
-        // 1. Get this entity's local matrix (e.g., the visual model's transform)
-        glm::mat4 localMatrix(1.0f);
-        if (entity.Has<TransformComponent>()) {
-            localMatrix = entity.Get<TransformComponent>().transform.Matrix();
-        }
-
-        // 2. Get the parent's world matrix (e.g., the physics body's transform)
-        glm::mat4 pMatrix(1.0f);
-        if (entity.Has<InfoComponent>()) {
-            uint64_t parentUID = entity.Get<InfoComponent>().parent;
-
-            if (parentUID != 0) // 0 means root/no parent
-            {
-                entt::entity parentEnttID = entt::null;
-                auto view = m_Context->scene.view<InfoComponent>();
-                for (auto e : view) {
-                    if (view.get<InfoComponent>(e).uid == parentUID) {
-                        parentEnttID = e;
-                        break;
-                    }
-                }
-
-                if (parentEnttID != entt::null) {
-                    Entity parentEntity{ &m_Context->scene, parentEnttID };
-                    pMatrix = GetWorldMatrix(parentEntity); // Recurse
-                }
-            }
-        }
-
-        // 3. Decompose the parent's matrix into T, R, and S
-        glm::vec3 pTranslate, pRotate, pScale;
-        DecomposeMatrix(pMatrix, pTranslate, pRotate, pScale);
-
-
-        // 4. Recompose the parent's matrix *without* its scale
-        glm::mat4 pMatrix_NoScale;
-        pMatrix_NoScale = RecomposeMatrix(pTranslate, pRotate, glm::vec3(1.0f));
-
-        // 5. Return the parent's (T*R) multiplied by the child's (T*R*S)
-        return pMatrix_NoScale * localMatrix;
-    }
 
     void Application::UpdateThirdPersonCameras()
 
@@ -747,6 +746,54 @@ void Application::AppendConvexMeshWire(const physx::PxConvexMeshGeometry& geom, 
         }
     }
 
+    void Application::AppendTriangleMeshWire(const physx::PxTriangleMeshGeometry& geom, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color)
+    {
+        const physx::PxTriangleMesh* mesh = geom.triangleMesh;
+        if (!mesh) return;
+
+        const physx::PxU32 nbTris = mesh->getNbTriangles();
+        const physx::PxVec3* verts = mesh->getVertices();
+        const void* triIndices = mesh->getTriangles();
+
+        // Check if indices are 16-bit or 32-bit
+        const bool is16Bit = mesh->getTriangleMeshFlags() & physx::PxTriangleMeshFlag::e16_BIT_INDICES;
+
+        for (physx::PxU32 i = 0; i < nbTris; ++i)
+        {
+            physx::PxU32 i0, i1, i2;
+
+            if (is16Bit) {
+                const physx::PxU16* idx = (const physx::PxU16*)triIndices;
+                i0 = idx[i * 3 + 0];
+                i1 = idx[i * 3 + 1];
+                i2 = idx[i * 3 + 2];
+            }
+            else {
+                const physx::PxU32* idx = (const physx::PxU32*)triIndices;
+                i0 = idx[i * 3 + 0];
+                i1 = idx[i * 3 + 1];
+                i2 = idx[i * 3 + 2];
+            }
+
+            // Apply Scaling and World Transform
+            // geom.scale handles the mesh scaling (including the entity scale passed during creation)
+            physx::PxVec3 v0 = world.transform(geom.scale.transform(verts[i0]));
+            physx::PxVec3 v1 = world.transform(geom.scale.transform(verts[i1]));
+            physx::PxVec3 v2 = world.transform(geom.scale.transform(verts[i2]));
+
+            // Push lines (v0-v1, v1-v2, v2-v0)
+            // Note: Assuming ToGLMVec3 is available as used in your AppendConvexMeshWire
+            // If not, use: glm::vec3(v0.x, v0.y, v0.z)
+            glm::vec3 g0 = glm::vec3(v0.x, v0.y, v0.z);
+            glm::vec3 g1 = glm::vec3(v1.x, v1.y, v1.z);
+            glm::vec3 g2 = glm::vec3(v2.x, v2.y, v2.z);
+
+            AppendLine(out, g0, g1, color, color);
+            AppendLine(out, g1, g2, color, color);
+            AppendLine(out, g2, g0, color, color);
+        }
+    }
+
     void Application::AppendTriangleWire(const glm::vec3& scale, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color)
 {
     const glm::mat4 M = PxToGlm(world);
@@ -829,6 +876,9 @@ void Application::AppendConvexMeshWire(const physx::PxConvexMeshGeometry& geom, 
                     break;
                 case physx::PxGeometryType::eCAPSULE:
                     AppendCapsuleWire(gh.capsule().radius, gh.capsule().halfHeight, world, verts, color);
+                    break;
+                case physx::PxGeometryType::eTRIANGLEMESH:
+                    AppendTriangleMeshWire(gh.triangleMesh(), world, verts, color);
                     break;
                 case physx::PxGeometryType::eCONVEXMESH:
                 {
@@ -980,23 +1030,32 @@ void Application::AppendConvexMeshWire(const physx::PxConvexMeshGeometry& geom, 
                 AppendTriangleWire(s, world, verts, color);
                 break;
             }
-            case Collider3D::Type::MESH:
+            case Collider3D::Type::CONVEX_MESH:
             {
-                // 1. Check if the mesh asset exists
                 if (col.Collider.physicsMeshID == EMPTY_ASSET) break;
                 auto& asset = m_Context->assets->Get<PhysicsMeshAsset>(col.Collider.physicsMeshID);
-                if (!asset.mesh) break;
 
-                // 2. Construct geometry manually since we don't have a PxShape
-                physx::PxConvexMeshGeometry geom;
-                geom.convexMesh = asset.mesh;
+                if (asset.mesh) {
+                    physx::PxConvexMeshGeometry geom;
+                    geom.convexMesh = asset.mesh;
+                    glm::vec3 totalScale = transform.scale * col.Collider.localScale;
+                    geom.scale = physx::PxMeshScale(ToPxVec3(totalScale));
+                    AppendConvexMeshWire(geom, world, verts, color);
+                }
+                break;
+            }
+            case Collider3D::Type::TRIANGLE_MESH:
+            {
+                if (col.Collider.physicsMeshID == EMPTY_ASSET) break;
+                auto& asset = m_Context->assets->Get<PhysicsMeshAsset>(col.Collider.physicsMeshID);
 
-                // 3. Calculate Scale (Transform Scale * Collider Local Scale)
-                glm::vec3 totalScale = transform.scale * col.Collider.localScale;
-                geom.scale = physx::PxMeshScale(ToPxVec3(totalScale));
-
-                // 4. Draw
-                AppendConvexMeshWire(geom, world, verts, color);
+                if (asset.triangleMesh) {
+                    physx::PxTriangleMeshGeometry geom;
+                    geom.triangleMesh = asset.triangleMesh;
+                    glm::vec3 totalScale = transform.scale * col.Collider.localScale;
+                    geom.scale = physx::PxMeshScale(ToPxVec3(totalScale));
+                    AppendTriangleMeshWire(geom, world, verts, color);
+                }
                 break;
             }
             default:

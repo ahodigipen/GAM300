@@ -29,7 +29,10 @@ namespace Boom {
                 }
 
                 // Resolve followName to entity
-                if (ag.follow == entt::null && !ag.followName.empty()) {
+                const bool hasAI = reg.all_of<AIComponent>(e);
+
+                // Resolve followName to entity (editor/manual agents only)
+                if (!hasAI && ag.follow == entt::null && !ag.followName.empty()) {
                     auto infoView = reg.view<InfoComponent>();
                     for (auto fe : infoView) {
                         const auto& info = infoView.get<InfoComponent>(fe);
@@ -72,7 +75,10 @@ namespace Boom {
                 }
 
                 if (ag.dirty) {
-                    requestPath(reg, e, nav);
+                    ag.dirty = false;  
+                    ag.waypoint = 0;       
+                    ag.path.clear();      
+                    requestPath(reg, e, nav); 
                 #ifdef _DEBUG
                     BOOM_INFO("[NavAgent] Path has {} waypoints", ag.path.size());
                 #endif

@@ -26,7 +26,7 @@ namespace GameScripts
             public float verticalMaxDifference = 2.5f;
             public string[] targetNames = { "Samurai", "Player" };
             public bool requireLineOfSight = true;
-            public bool debugLog = true;
+            public bool debugLog = false;
             public bool debugReasons = false;
             public bool debugLOS = false;
         }
@@ -40,13 +40,8 @@ namespace GameScripts
         private float _alertTimer;
         private Vec3 _lastKnownTargetPosition;
 
-
-        private string _lastLosReason = "";
-
         public void OnStart(string jsonParams)
         {
-            if (_settings.debugLog)
-                API.Log($"[VisionComponent] Start on {Entity}");
             ValidateEntity();
         }
 
@@ -80,11 +75,7 @@ namespace GameScripts
                     break;
                 case VisionState.Searching:
                     if (_alertTimer >= _settings.alertDuration)
-                    {
                         _currentState = VisionState.Idle;
-                        if (_settings.debugLog)
-                            API.Log("[VisionComponent] Search expired -> Idle");
-                    }
                     else
                         CheckForTargets();
                     break;
@@ -123,11 +114,7 @@ namespace GameScripts
 
             float verticalDiff = Math.Abs(targetPos.Y - enemyPos.Y);
             if (verticalDiff > _settings.verticalMaxDifference)
-            {
-                if (_settings.debugReasons)
-                    API.Log($"[VisionComponent] Reject vertical diff {verticalDiff:F2} > {_settings.verticalMaxDifference:F2}");
                 return false;
-            }
 
             return IsTargetInVisionConeAndLOS(enemyPos, enemyRot, targetPos, target);
         }
@@ -141,10 +128,7 @@ namespace GameScripts
 
             float maxRange = (_currentState == VisionState.Alert) ? _settings.loseTargetRange : _settings.detectionRange;
             if (dist > maxRange)
-            {
-                if (_settings.debugReasons) API.Log($"[VisionComponent] Reject dist {dist:F2} > {maxRange:F2}");
                 return false;
-            }
 
             float tx = dx / dist;
             float tz = dz / dist;
@@ -158,34 +142,25 @@ namespace GameScripts
             float cosHalf = (float)Math.Cos(halfAngleRad);
 
             if (dot < cosHalf)
-            {
-                if (_settings.debugReasons)
-                    API.Log($"[VisionComponent] Reject angle cos={dot:F3} < {cosHalf:F3} (yaw={enemyRot.Y:F1})");
                 return false;
-            }
 
-            if (_settings.requireLineOfSight && !HasLineOfSight(enemyPos, targetPos))
-            {
-                if (_settings.debugReasons)
-                    API.Log($"[VisionComponent] Reject LOS blocked ({_lastLosReason})");
+            if (_settings.requireLineOfSight && !HasLineOfSightToTarget(enemyPos, targetPos, targetHandle))
                 return false;
-            }
 
             return true;
         }
 
-        private bool HasLineOfSight(Vec3 from, Vec3 to)
+        private bool HasLineOfSightToTarget(Vec3 from, Vec3 to, ulong targetHandle)
         {
             if (!_settings.requireLineOfSight) return true;
             if (!_linecastAvailable) return true;
 
             try
             {
-                // Pass Entity so native code can ignore enemy's own collider
-                bool clear = API.Linecast(from, to, Entity);
-                _lastLosReason = clear ? "clear" : "ray blocked before target";
-                if (_settings.debugLOS)
-                    API.Log($"[VisionComponent] LOS {(clear ? "CLEAR" : "BLOCKED")}");
+                Vec3 fromEye = new Vec3(from.X, from.Y + 1.5f, from.Z);
+                Vec3 toEye = new Vec3(to.X, to.Y + 1.5f, to.Z);
+
+                bool clear = API.LinecastIgnoreBoth(fromEye, toEye, Entity, targetHandle);
                 return clear;
             }
             catch
@@ -208,8 +183,6 @@ namespace GameScripts
             _lastKnownTargetPosition = API.GetPosition(target);
             _alertTimer = 0f;
             _currentState = VisionState.Alert;
-            if (_settings.debugLog)
-                API.Log($"[VisionComponent] >>> TARGET DETECTED ({target}) <<<");
             OnTargetDetected?.Invoke(target, _lastKnownTargetPosition);
         }
 
@@ -217,23 +190,12 @@ namespace GameScripts
         {
             var targetPos = API.GetPosition(_currentTarget);
             _lastKnownTargetPosition = targetPos;
-
-            if (_settings.debugLog)
-            {
-                var enemyPos = API.GetPosition(Entity);
-                float d = (float)Math.Sqrt(
-                    (targetPos.X - enemyPos.X) * (targetPos.X - enemyPos.X) +
-                    (targetPos.Z - enemyPos.Z) * (targetPos.Z - enemyPos.Z));
-                API.Log($"[VisionComponent] Tracking target {_currentTarget} dist={d:F1}");
-            }
-
             OnTargetUpdated?.Invoke(_currentTarget, targetPos);
         }
 
         private void LoseTarget()
         {
             if (_currentTarget == 0) return;
-            if (_settings.debugLog) API.Log("[VisionComponent] Target lost -> Searching");
             OnTargetLost?.Invoke(_currentTarget, _lastKnownTargetPosition);
             _currentTarget = 0;
             _currentState = VisionState.Searching;
@@ -242,12 +204,7 @@ namespace GameScripts
 
         private bool ValidateEntity()
         {
-            if (!API.HasTransform(Entity))
-            {
-                if (_settings.debugLog) API.Log("[VisionComponent] ERROR: Missing TransformComponent");
-                return false;
-            }
-            return true;
+            return API.HasTransform(Entity);
         }
 
         public VisionState GetState() => _currentState;
@@ -265,8 +222,6 @@ namespace GameScripts
 
         public void OnDestroy()
         {
-            if (_settings.debugLog)
-                API.Log($"[VisionComponent] Destroyed ({Entity})");
         }
     }
 }

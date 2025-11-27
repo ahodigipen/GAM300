@@ -4,6 +4,7 @@
 #include "Context/DebugHelpers.h" // BOOM_INFO / BOOM_ERROR
 #include "Vendors/imgui/imgui.h"
 #include "Vendors/imGuizmo/ImGuizmo.h"
+#include "Commands/UndoRedo.h"    // Undo/Redo system
 
 #include <string>
 #include <cstdio>
@@ -158,6 +159,9 @@ namespace EditorUI {
                     }
                     ImGui::EndMenu();
                 }
+                ImGui::SliderFloat("Ambient Strength",
+                    &m.ctx->renderer->AmbientStrength(),
+                    0.0f, 0.5f);
                 bool TEMPORARY_PLACEHOLDER_WIREFRAME_COLLISION{};
                 ImGui::MenuItem("Collision Lines", nullptr, TEMPORARY_PLACEHOLDER_WIREFRAME_COLLISION);
 				ImGui::MenuItem("Bloom", nullptr, &m.ctx->renderer->enabledBloom);
@@ -192,21 +196,73 @@ namespace EditorUI {
                     for (int i = 1; nameExists(name); ++i)
                         name = "New Entity (" + std::to_string(i) + ")";
 
-                    // Attach components
-                    go.Attach<InfoComponent>().name = name;
-                    go.Attach<TransformComponent>(); // default transform
+                    // Use command system for undo/redo support
+                    auto* history = m_Owner->GetCommandHistory();
+                    if (history) {
+                        // Execute command and get the created entity UID
+                        auto cmd = std::make_unique<CreateEntityCommand>(&reg, name);
+                        Boom::AssetID createdUID = cmd->GetEntityUID();
 
-        
+                        history->Execute(std::move(cmd));
 
-                    // Select the newly created object
-                    m.selectedEntity = go.ID();
+                        // Select the newly created object by finding it via UID
+                        auto view = reg.view<InfoComponent>();
+                        for (auto e : view) {
+                            const auto& info = view.get<InfoComponent>(e);
+                            if (info.name == name || info.uid == createdUID) {
+                                m.selectedEntity = e;
+                                break;
+                            }
+                        }
 
-                    BOOM_INFO("[Editor] Created {}", name);
+                        BOOM_INFO("[Editor] Created {} (with undo)", name);
+                    } else {
+                        // Fallback: Create without undo
+                        go.Attach<InfoComponent>().name = name;
+                        go.Attach<TransformComponent>(); // default transform
+                        m.selectedEntity = go.ID();
+                        BOOM_INFO("[Editor] Created {}", name);
+                    }
                 }
             }
 
             if (ImGui::MenuItem("Create From Prefab...")) {
                 if (m.showPrefabBrowser) *m.showPrefabBrowser = true;
+            }
+
+            ImGui::Separator();
+
+            // TEST: Create parent-child hierarchy for testing
+            if (ImGui::MenuItem("TEST: Create Parent-Child Hierarchy")) {
+                if (m.ctx) {
+                    auto& reg = m.ctx->scene;
+
+                    // Create parent
+                    Entity parent{ &reg };
+                    parent.Attach<InfoComponent>().name = "TEST_Parent";
+                    auto& parentTransform = parent.Attach<TransformComponent>();
+                    parentTransform.transform.translate = glm::vec3(0, 0, 0);
+                    parentTransform.transform.scale = glm::vec3(1, 1, 1);
+
+                    // Create child
+                    Entity child{ &reg };
+                    auto& childInfo = child.Attach<InfoComponent>();
+                    childInfo.name = "TEST_Child";
+                    auto& childTransform = child.Attach<TransformComponent>();
+                    childTransform.transform.translate = glm::vec3(2, 0, 0); // 2 units to the right of parent (local space)
+                    childTransform.transform.scale = glm::vec3(1, 1, 1);
+
+                    // Set parent relationship
+                    AssetID parentUID = parent.Get<InfoComponent>().uid;
+                    childInfo.parent = parentUID;
+
+                    BOOM_INFO("[MenuBar] Created test hierarchy: Parent (UID:{}) with Child (UID:{}, parent:{})",
+                             parentUID, childInfo.uid, childInfo.parent);
+                    BOOM_INFO("[MenuBar] Parent at world (0,0,0), Child at local (2,0,0) -> should appear at world (2,0,0)");
+                    BOOM_INFO("[MenuBar] When you move Parent, Child should follow!");
+
+                    m.selectedEntity = child.ID();
+                }
             }
 
             ImGui::Separator();

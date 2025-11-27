@@ -1,12 +1,16 @@
 ﻿// Boom/API.cs - FIXED VERSION
+using Boom;
 using System;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Boom
 {
+
+    
+
     // Internal calls implemented in C++ and registered with Mono
     internal static class Native
     {
@@ -81,6 +85,9 @@ namespace Boom
         internal extern static void Boom_API_AnimatorSetFloat(ulong h, string name, float v);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_AnimatorSetFloat(ulong h, string name, double v);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_AnimatorSetBool(ulong h, string name, bool v);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -123,6 +130,20 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern bool Boom_API_IsPauseMenuLoaded();
+
+        //AI STUFF
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static int Boom_API_AI_GetPatrolPointCount(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_AI_GetPatrolPoint(ulong handle, int index, out Vec3 pos);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static int Boom_API_AI_GetMode(ulong handle);
+
+        //Animator Stuff
+
+
         // ========= SOUND / AUDIO INTERNAL CALLS =========
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_PlaySound(string name, string filePath, bool loop);
@@ -154,7 +175,8 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_SetRotationY(ulong handle, float yawDegrees);
 
-
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern bool LinecastIgnoreBoth(Vec3 from, Vec3 to, ulong ignoreEntity1, ulong ignoreEntity2);
     }
 
     // ========= DELEGATES =========
@@ -226,6 +248,28 @@ namespace Boom
         // ===== Entity queries =====
         public static ulong FindEntity(string name) => Native.Boom_API_FindEntity(name);
 
+        //AI Helpers
+        public enum AIMode
+        {
+            Auto = 0,
+            Idle = 1,
+            Patrol = 2,
+            Seek = 3
+        }
+        public static int GetAIPatrolPointCount(ulong h)
+    => Native.Boom_API_AI_GetPatrolPointCount(h);
+
+        public static Vec3 GetAIPatrolPoint(ulong h, int index)
+        {
+            Native.Boom_API_AI_GetPatrolPoint(h, index, out var p);
+            return p;
+        }
+
+        public static AIMode GetAIMode(ulong h)
+        {
+            int mode = Native.Boom_API_AI_GetMode(h);
+            return (AIMode)mode;
+        }
         // ===== Transform with validation =====
         public static Vec3 GetPosition(ulong h)
         {
@@ -356,6 +400,17 @@ namespace Boom
             DrawDebugVisionCone(entityHandle, range, halfAngle, new Vec4(0f, 1f, 0f, 0.3f));
         }
 
+        public static bool IsGrounded(ulong entity, float probeDistance = 0.25f)
+        {
+            // cast a short ray straight down from the entity
+            var p = GetPosition(entity);
+            var from = new Vec3(p.X, p.Y + 0.05f, p.Z);
+            var to = new Vec3(p.X, p.Y - probeDistance, p.Z);
+
+            // true if we hit anything (ignore self)
+            return Linecast(from, to, entity);
+        }
+
         // ===== Camera =====
         public static float GetThirdPersonCameraYaw() => Native.Boom_API_GetThirdPersonCameraYaw();
 
@@ -371,6 +426,7 @@ namespace Boom
 
         // ===== Animator =====
         public static void AnimatorSetFloat(ulong h, string n, float v) => Native.Boom_API_AnimatorSetFloat(h, n, v);
+        public static void AnimatorSetFloat(ulong h, string n, double v) => Native.Boom_API_AnimatorSetFloat(h, n, v);
         public static void AnimatorSetBool(ulong h, string n, bool v) => Native.Boom_API_AnimatorSetBool(h, n, v);
         public static void AnimatorSetTrigger(ulong h, string n) => Native.Boom_API_AnimatorSetTrigger(h, n);
         public static void AnimatorPlay(ulong h, string state) => Native.Boom_API_AnimatorPlay(h, state);
@@ -442,6 +498,11 @@ namespace Boom
             Native.Boom_API_SetSoundPosition(name, ref position);
         }
 
+        public static bool LinecastIgnoreBoth(Vec3 from, Vec3 to, ulong ignoreEntity1, ulong ignoreEntity2)
+        {
+            return Native.LinecastIgnoreBoth(from, to, ignoreEntity1, ignoreEntity2);
+        }
+
         public static bool Linecast(Vec3 from, Vec3 to, ulong ignoreEntity = 0)
         {
             return Native.Boom_API_Linecast(ref from, ref to, ignoreEntity);
@@ -469,6 +530,7 @@ namespace Boom
         public const int KEY_M = 77;
         public const int KEY_Q = 81;
         public const int KEY_LEFT_CONTROL = 341;
+        public const int KEY_LEFT_SHIFT = 340;
 
         public const int MOUSE_LEFT = 0;
         public const int MOUSE_RIGHT = 1;
@@ -528,5 +590,7 @@ namespace GameScripts
 
             return hasOnStart || hasOnUpdate || hasOnDestroy;
         }
+
+        
     }
 }

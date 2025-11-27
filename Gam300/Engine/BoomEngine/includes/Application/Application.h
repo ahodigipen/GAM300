@@ -178,18 +178,16 @@ namespace Boom
 
  void RenderScene();
 
- glm::mat4 GetWorldMatrix(Entity& entity);
-
- /**
- * @brief Enters play mode (like Unity's Play button)
- * Saves the current scene state so it can be restored when Stop is called
- */
- BOOM_INLINE void Play()
- {
- if (m_IsInPlayMode) {
- BOOM_WARN("[Application] Already in play mode");
- return;
- }
+        /**
+        * @brief Enters play mode (like Unity's Play button)
+        * Saves the current scene state so it can be restored when Stop is called
+        */
+        BOOM_INLINE void Play()
+        {
+            if (m_IsInPlayMode) {
+                BOOM_WARN("[Application] Already in play mode");
+                return;
+            }
 
  m_PrePlayScene_OriginalPath = m_CurrentScenePath;
 
@@ -412,12 +410,55 @@ namespace Boom
  serializer.Serialize(m_Context->scene, sceneFilePath);
  //serializer.Serialize(*m_Context->assets, assetsFilePath);
 
- // Update current scene tracking
- strncpy_s(m_CurrentScenePath, sizeof(m_CurrentScenePath), sceneFilePath.c_str(), _TRUNCATE);
+            BOOM_INFO("[Scene] Successfully saved scene '{}' and assets", sceneName);
+            return true;
+}
+      
+  BOOM_INLINE void ApplySceneNavmeshFromScene()
+        {
+            if (!m_Context)
+                return;
 
- BOOM_INFO("[Scene] Successfully saved scene '{}' and assets", sceneName);
- return true;
- }
+            auto& reg = m_Context->scene;
+
+            // Find the settings entity
+            entt::entity settings = Boom::TryGetSceneSettings(reg);
+            if (settings == entt::null)
+            {
+                BOOM_INFO("[Nav] No SceneNavmeshComponent in this scene; skipping navmesh load");
+                m_NavInitialized = false;
+                return;
+            }
+
+            auto& sn = reg.get<SceneNavmeshComponent>(settings);
+
+            if (sn.navmeshFile.empty())
+            {
+                BOOM_INFO("[Nav] SceneNavmeshComponent.navmeshFile is empty; skipping navmesh load");
+                m_NavInitialized = false;
+                return;
+            }
+
+            // Ensure nav system exists
+            if (!m_Nav)
+                m_Nav = std::make_unique<DetourNavSystem>();
+
+            const std::string& path = sn.navmeshFile;
+            bool ok = m_Nav->reloadFromFile(path.c_str());
+            if (ok)
+            {
+                BOOM_INFO("[Nav] Scene navmesh loaded from '{}'", path);
+                m_NavInitialized = true;
+            }
+            else
+            {
+                BOOM_ERROR("[Nav] Failed to load scene navmesh from '{}'", path);
+                m_NavInitialized = false;
+            }
+        }
+
+
+ 
 
  /**
  * @brief Loads a scene from files, replacing the current scene
@@ -437,20 +478,17 @@ namespace Boom
  // Clean up current scene
  CleanupCurrentScene();
 
- // Then load scene
- BOOM_INFO("[Scene] Loading scene data...");
- serializer.Deserialize(m_Context->scene, *m_Context->assets, sceneFilePath);
-
- // Update tracking
- strncpy_s(m_CurrentScenePath, sizeof(m_CurrentScenePath), sceneFilePath.c_str(), _TRUNCATE);
- m_SceneLoaded = true;
-
- // Reinitialize systems that need it
- ReinitializeSceneSystems();
-
- BOOM_INFO("[Scene] Successfully loaded scene '{}'", sceneName);
- return true;
- }
+            // Update tracking
+            strncpy_s(m_CurrentScenePath, sizeof(m_CurrentScenePath), sceneFilePath.c_str(), _TRUNCATE);
+            m_SceneLoaded = true;
+            
+            // Reinitialize systems that need it
+            ReinitializeSceneSystems();
+            m_NavInitialized = false;
+            ApplySceneNavmeshFromScene();
+            BOOM_INFO("[Scene] Successfully loaded scene '{}'", sceneName);
+            return true;
+        }
 
 
  BOOM_INLINE bool LoadSceneAdditive(const std::string& sceneName, const std::string& scenePath = "Scenes/")
@@ -555,9 +593,9 @@ namespace Boom
  joints = identityPalette;
  }
 
- glm::mat4 worldMatrix = GetWorldMatrix(entity);
- Transform3D worldTransform;
- DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
+                        glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+                        Transform3D worldTransform;
+                        DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
 
  m_Context->renderer->DrawShadow(model->data, worldTransform, joints);
  });
@@ -603,9 +641,9 @@ namespace Boom
  auto* actor = rb.RigidBody.actor;
  if (!actor) return;
 
- // Get the FINAL world matrix of the physics body,
- // no matter how deep it is in the hierarchy.
- glm::mat4 worldMatrix = GetWorldMatrix(entity);
+                        // Get the FINAL world matrix of the physics body,
+                        // no matter how deep it is in the hierarchy.
+                        glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
 
  // Decompose the world matrix to get the final T and R
  glm::vec3 worldTranslate, worldRotate, worldScale;
@@ -628,7 +666,18 @@ namespace Boom
  });
  }
 
- BOOM_INLINE DetourNavSystem* GetNavSystem() override { return m_Nav.get(); }
+        BOOM_INLINE DetourNavSystem* GetNavSystem() override
+        {
+            // Lazily allocate the nav system so Editor panels can always use it
+            if (!m_Nav)
+            {
+                m_Nav = std::make_unique<DetourNavSystem>();
+                m_NavInitialized = false;
+                BOOM_INFO("[Nav] GetNavSystem(): created DetourNavSystem");
+            }
+            return m_Nav.get();
+        }
+
 
  BOOM_INLINE const DetourNavSystem* GetNavSystem() const override { return m_Nav.get(); }
 
@@ -818,10 +867,15 @@ namespace Boom
  //* m_Context->assets = AssetRegistry();
 
 
- // RESTORE PREFABS after registry reset
- for (auto& [uid, asset] : savedPrefabs) {
- m_Context->assets->GetMap<PrefabAsset>()[uid] = std::static_pointer_cast<PrefabAsset>(asset);
- }
+            // RESTORE PREFABS after registry reset
+            for (auto& [uid, asset] : savedPrefabs) {
+                m_Context->assets->GetMap<PrefabAsset>()[uid] = std::static_pointer_cast<PrefabAsset>(asset);
+            }
+            if (m_Nav) {
+                BOOM_INFO("[Nav] Releasing navmesh for previous scene");
+                m_Nav.reset();
+                m_NavInitialized = false;
+            }
 #if defined(_DEBUG)
  BOOM_INFO("[Scene] Restored {} prefabs", savedPrefabs.size());
 #endif
@@ -1106,9 +1160,9 @@ namespace Boom
 
  static void AppendCylinderWire(float radius, float halfHeight, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color);
 
- void AppendConvexMeshWire(const physx::PxConvexMeshGeometry& geom, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color);
-
- static void AppendTriangleWire(const glm::vec3& scale, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color);
+        void AppendConvexMeshWire(const physx::PxConvexMeshGeometry& geom, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color);
+        void AppendTriangleMeshWire(const physx::PxTriangleMeshGeometry& geom, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color);
+        static void AppendTriangleWire(const glm::vec3& scale, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color);
 
  BOOM_INLINE static float DistancePointSegment(const glm::vec3& p, const glm::vec3& a, const glm::vec3& b)
  {
