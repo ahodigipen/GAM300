@@ -248,6 +248,7 @@ if exist "$(glew_BIN_DIRS)" xcopy /y /i "$(glew_BIN_DIRS)\*.dll" "$(TargetDir)"<
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="src\Commands\UndoRedo.h" />
     <ClInclude Include="src\Context\Context.h" />
     <ClInclude Include="src\Context\DebugHelpers.h" />
     <ClInclude Include="src\Context\Events.h" />

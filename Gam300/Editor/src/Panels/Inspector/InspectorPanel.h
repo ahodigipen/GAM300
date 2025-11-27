@@ -42,6 +42,7 @@ namespace EditorUI {
         void InputAssetWidget(char const* label, uint64_t& data);
 
 		void AnimatorComponentUI(Boom::Entity& selected);
+		void SoundComponentUI(Boom::Entity& selected);
 
     private:
         Editor* m_Owner = nullptr;

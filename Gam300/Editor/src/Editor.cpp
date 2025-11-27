@@ -342,6 +342,26 @@ namespace EditorUI {
             }
         }
 
+        // ===== Visualization Shortcuts =====
+
+        // F9: Toggle Physics Debug Visualization
+        if (!ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGuiKey_F9, false))
+        {
+            if (m_Context && m_Context->physics) {
+                // Toggle the state by reading from Application
+                bool currentState = m_App->m_PhysDebugViz;
+                bool newState = !currentState;
+
+                // Apply to physics system
+                m_Context->physics->EnableDebugVisualization(newState, 1.0f);
+
+                // Update the Application's state
+                m_App->m_PhysDebugViz = newState;
+
+                BOOM_INFO("[Shortcut] Physics Debug Visualization (F9): {}", newState ? "ON" : "OFF");
+            }
+        }
+
         // Note: Ctrl+Shift+S for Stop is handled above in the Save Section
         // to avoid conflicts with "Save As" when not playing
     }

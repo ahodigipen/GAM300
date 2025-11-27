@@ -26,6 +26,7 @@
     <ClCompile Include="src\RayCast.cpp" />
     <ClCompile Include="src\Auxiliaries\DataSerializerAsync.cpp" />
     <ClCompile Include="src\Auxiliaries\AsyncAssetLoader.cpp" />
+    <ClCompile Include="src\Models\ModelLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\Application\Application.h" />

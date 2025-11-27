@@ -245,7 +245,8 @@ namespace EditorUI {
             if (!canLoad) ImGui::BeginDisabled();
 
             if (ImGui::Button("Load Navmesh", ImVec2(-1, 28))) {
-                const std::string full = (std::filesystem::path(s_BinDir) / s_BinFiles[s_Selected]).string();
+                const std::string full =
+                    (std::filesystem::path(s_BinDir) / s_BinFiles[s_Selected]).string();
                 bool ok = false;
 
                 if (m_App) {
@@ -253,9 +254,21 @@ namespace EditorUI {
                         ok = nav->reloadFromFile(full);
                 }
 
-                if (ok) BOOM_INFO("[Nav] Loaded: {}", full);
-                else    BOOM_ERROR("[Nav] Failed to load: {}", full);
+                if (ok) {
+                    BOOM_INFO("[Nav] Loaded: {}", full);
+
+                    if (m_Ctx) {
+                        auto& reg = m_Ctx->scene;
+                        entt::entity settings = Boom::GetOrCreateSceneSettings(reg);
+                        auto& sn = reg.get<Boom::SceneNavmeshComponent>(settings);
+                        sn.navmeshFile = full;
+                    }
+                }
+                else {
+                    BOOM_ERROR("[Nav] Failed to load: {}", full);
+                }
             }
+
 
             if (!canLoad) ImGui::EndDisabled();
         }

@@ -1,6 +1,7 @@
 ﻿using Boom;
 
 using System;
+using System.Runtime.CompilerServices;
 
 /// <summary>
 /// Handles player movement using PhysX linear velocity control.
@@ -10,14 +11,44 @@ using System;
 /// </summary>
 namespace GameScripts
 {
+
+    public static class HUD
+    {
+        // 0..1
+        public static float HealthRatio = 1f;
+
+        public static void SetHealth(int hp, int max)
+        {
+            if (max <= 0) { HealthRatio = 0f; return; }
+            float r = (float)hp / (float)max;
+            if (r < 0f) r = 0f;
+            if (r > 1f) r = 1f;
+            HealthRatio = r;
+        }
+    }
+
+
     public class PlayerMovement
     {
         // This field is automatically set by the scripting system
         public ulong Entity;
 
         // Movement parameters (configurable)
-        private float _speed = 5f;
-        private float _jumpSpeed = 8f;
+        private float _walkSpeed = 3f;
+        private float _sprintSpeed = 5f;
+        private float _sneakSpeed = 1.5f;
+        private float _jumpSpeed = 5f;
+
+        // Health system
+        private int _health = 5;
+        private int _maxHealth = 5;
+        private Vec3 _spawnPoint;
+        private bool _isRespawning = false;
+        private float _respawnDelay = 1.0f;
+        private float _respawnTimer = 0f;
+        private bool _isInvulnerable = false;
+        private float _invulnerabilityDuration = 2.0f;
+        private float _invulnerabilityTimer = 0f;
 
         // Footstep system
         private FootstepComponent _footstepComponent;
@@ -33,17 +64,27 @@ namespace GameScripts
         //private float _rotationSpeed = 10f; // degrees per frame to turn
 
         // NEW: Model forward direction offset (adjust if model faces wrong way)
-        private float _modelForwardOffset = 180f; // 180° if model faces backwards, 0° if correct
+        private float _modelForwardOffset = 0; // 180° if model faces backwards, 0° if correct
+
+        // Animation system
+        private const float MOVE_EPS = 0.10f;  // animator "moving" threshold
+        private const float SPEED_DAMP = 10f;    // smoothing for animator Speed
+        private double _smoothedSpeed = 0.0;
+        private bool _hasAnimator = false;
 
         /// <summary>
         /// Called once when the script is first created.
         /// </summary>
         public void OnStart(string jsonParams)
         {
+
             API.Log($"[PlayerMovement] OnStart() - Entity: {Entity}");
 
             // Store player entity reference for static callbacks
             s_playerEntity = Entity;
+
+            // Register with PlayerManager for enemy interactions
+            PlayerManager.RegisterPlayer(this);
 
             // Validate entity has required components
             if (!API.HasTransform(Entity))
@@ -58,17 +99,164 @@ namespace GameScripts
                 return;
             }
 
+            // Initialize spawn point as starting position
+            _spawnPoint = API.GetPosition(Entity);
+            API.Log($"[PlayerMovement] Spawn point set to: ({_spawnPoint.X:F2}, {_spawnPoint.Y:F2}, {_spawnPoint.Z:F2})");
+
+            // Initialize health
+            _health = _maxHealth;
+            API.Log($"[PlayerMovement] Health initialized: {_health}/{_maxHealth} HP");
+
             // Initialize footstep component
             _footstepComponent = new FootstepComponent();
             _footstepComponent.Entity = Entity;
             _footstepComponent.OnStart("");
 
+            // Initialize animator if present
+            if (API.HasAnimator(Entity))
+            {
+                _hasAnimator = true;
+                API.AnimatorSetFloat(Entity, "Speed", 0f);
+                API.AnimatorSetBool(Entity, "IsMoving", false);
+                API.AnimatorSetBool(Entity, "Sprint", false);
+                API.AnimatorSetBool(Entity, "IsSneaking", false);
+                API.Log("[PlayerMovement] Animator initialized");
+            }
+            else
+            {
+                API.Log("[PlayerMovement] No AnimatorComponent found - animations disabled");
+            }
+
             // RE-ENABLE trigger callbacks (simple version)
             API.Log("[PlayerMovement] Registering trigger callbacks...");
             RegisterTriggerCallbacksOnAllTriggers();
 
-            API.Log($"[PlayerMovement] Using camera-relative PhysX movement: speed={_speed}, jumpSpeed={_jumpSpeed}");
+            API.Log($"[PlayerMovement] Using camera-relative PhysX movement:");
+            API.Log($"  Walk Speed: {_walkSpeed}, Sprint Speed: {_sprintSpeed}, Sneak Speed: {_sneakSpeed}");
+            API.Log($"  Jump Speed: {_jumpSpeed}");
             API.Log($"[PlayerMovement] Model forward offset: {_modelForwardOffset} degrees");
+
+            _health = _maxHealth;
+            HUD.SetHealth(_health, _maxHealth);
+
+        }
+
+        /// <summary>
+        /// Handle getting caught by an enemy
+        /// </summary>
+        public void OnCaughtByEnemy(ulong enemyEntity)
+        {
+            // Check if player is invulnerable (just respawned)
+            if (_isInvulnerable)
+            {
+                API.Log("[PlayerMovement] Player is invulnerable, ignoring detection");
+                return;
+            }
+
+            // Check if already respawning
+            if (_isRespawning)
+            {
+                API.Log("[PlayerMovement] Already respawning, ignoring detection");
+                return;
+            }
+
+            API.Log($"[PlayerMovement] CAUGHT BY ENEMY (ID: {enemyEntity})! Current HP: {_health}");
+
+            // Lose 1 HP
+            _health--;
+            HUD.SetHealth(_health, _maxHealth);
+            API.Log($"[PlayerMovement] HP reduced to: {_health}/{_maxHealth}");
+
+            // Play damage sound
+            Vec3 playerPos = API.GetPosition(Entity);
+            API.PlaySoundAt("player_damage", "Resources/Audio/playerPunch_1.wav", playerPos, false);
+            API.SetSoundVolume("player_damage", 1.0f);
+
+            // Check if dead
+            if (_health <= 0)
+            {
+                API.Log("[PlayerMovement] HP reached 0! Restarting level...");
+                RestartLevel();
+            }
+            else
+            {
+                API.Log($"[PlayerMovement] Respawning at checkpoint... {_health} HP remaining");
+                StartRespawn();
+            }
+        }
+
+        /// <summary>
+        /// Start the respawn process
+        /// </summary>
+        private void StartRespawn()
+        {
+            _isRespawning = true;
+            _respawnTimer = 0f;
+
+            // Stop player movement
+            API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
+
+            API.Log("[PlayerMovement] Respawn initiated...");
+        }
+
+        /// <summary>
+        /// Restart the entire level
+        /// </summary>
+        private void RestartLevel()
+        {
+            API.Log("[PlayerMovement] === GAME OVER - RESTARTING LEVEL ===");
+
+            // Play death sound
+            Vec3 playerPos = API.GetPosition(Entity);
+            API.PlaySoundAt("player_death", "Resources/Audio/playerPunch_1.wav", playerPos, false);
+            API.SetSoundVolume("player_death", 1.0f);
+
+            // Reload the current scene after a brief delay
+            string currentScene = API.GetCurrentSceneName();
+            API.Log($"[PlayerMovement] Reloading scene: {currentScene}");
+
+            // Note: You might want to add a delay here using a coroutine or timer
+            // For now, reloading immediately
+            API.LoadScene(currentScene);
+        }
+
+        /// <summary>
+        /// Respawn the player at the checkpoint
+        /// </summary>
+        private void RespawnAtCheckpoint()
+        {
+            API.Log($"[PlayerMovement] Respawning at checkpoint: ({_spawnPoint.X:F2}, {_spawnPoint.Y:F2}, {_spawnPoint.Z:F2})");
+
+            // Use TeleportRigidBody instead of SetPosition to properly update PhysX
+            API.TeleportRigidBody(Entity, _spawnPoint);
+
+            // Velocities are already cleared by TeleportRigidBody, but let's be explicit
+            API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
+
+            // Enable invulnerability
+            _isInvulnerable = true;
+            _invulnerabilityTimer = 0f;
+
+            HUD.SetHealth(_health, _maxHealth);
+
+            // Reset respawn state
+            _isRespawning = false;
+
+
+            API.Log($"[PlayerMovement] Respawn complete! Invulnerable for {_invulnerabilityDuration} seconds");
+        }
+
+        /// <summary>
+        /// Update checkpoint position (can be called from trigger zones)
+        /// </summary>
+        public void UpdateCheckpoint(Vec3 newCheckpoint)
+        {
+            _spawnPoint = newCheckpoint;
+            API.Log($"[PlayerMovement] Checkpoint updated to: ({_spawnPoint.X:F2}, {_spawnPoint.Y:F2}, {_spawnPoint.Z:F2})");
+
+            // Play checkpoint sound
+            API.PlaySoundAt("checkpoint_save", "Resources/Audio/playerPunch_1.wav", newCheckpoint, false);
+            API.SetSoundVolume("checkpoint_save", 0.8f);
         }
 
         private void RegisterTriggerCallbacksOnAllTriggers()
@@ -124,6 +312,28 @@ namespace GameScripts
             // Update footstep component
             _footstepComponent?.OnUpdate(dt);
 
+            // Handle respawn timer
+            if (_isRespawning)
+            {
+                _respawnTimer += dt;
+                if (_respawnTimer >= _respawnDelay)
+                {
+                    RespawnAtCheckpoint();
+                }
+                return; // Don't allow movement while respawning
+            }
+
+            // Handle invulnerability timer
+            if (_isInvulnerable)
+            {
+                _invulnerabilityTimer += dt;
+                if (_invulnerabilityTimer >= _invulnerabilityDuration)
+                {
+                    _isInvulnerable = false;
+                    API.Log("[PlayerMovement] Invulnerability expired");
+                }
+            }
+
             // =============== CAMERA-RELATIVE PHYSX MOVEMENT =================
 
             var vel = API.GetLinearVelocity(Entity);
@@ -131,8 +341,9 @@ namespace GameScripts
             // Check if the player is allowed to move (RMB held disables movement)
             bool allowMove = !API.IsMouseDown(API.MOUSE_RIGHT);
 
-            // Check if the player is "grounded" via collision flag
-            bool isGrounded = API.IsColliding(Entity);
+            // ===== FIX: PROPER GROUND DETECTION =====
+            // Use raycast downward to check if player is on ground (not wall)
+            bool isGrounded = IsPlayerGrounded();
 
             // Calculate horizontal movement input
             float inputX = 0f, inputZ = 0f;
@@ -144,34 +355,48 @@ namespace GameScripts
                 if (API.IsKeyDown(API.KEY_S)) inputZ -= 1f; // Backward
             }
 
+            // Track movement state for animations
+            bool hasInput = (inputX != 0f || inputZ != 0f);
+
+            // Check for sprint/sneak input - these now affect actual speed!
+            bool sprintKey = API.IsKeyDown(API.KEY_LEFT_SHIFT);
+            bool sneakKey = API.IsKeyDown(API.KEY_LEFT_CONTROL);
+
+            // Determine current movement speed based on input modifiers
+            float currentSpeed = _walkSpeed;
+            if (sneakKey)
+            {
+                currentSpeed = _sneakSpeed;
+            }
+            else if (sprintKey)
+            {
+                currentSpeed = _sprintSpeed;
+            }
+
             // Apply camera-relative movement
-            if (inputX != 0f || inputZ != 0f)
+            if (hasInput)
             {
                 // Get camera's yaw angle in degrees
                 float cameraYawDegrees = API.GetThirdPersonCameraYaw();
-
-                // Convert to radians for math calculations
                 float cameraYawRadians = cameraYawDegrees * (float)Math.PI / 180f;
 
                 // Calculate camera's forward and right vectors
-                // Forward direction: where the camera is looking (negative Z in camera space becomes world space direction)
                 Vec3 cameraForward = new Vec3(
                     (float)Math.Sin(cameraYawRadians),
                     0f,
                     (float)Math.Cos(cameraYawRadians)
                 );
 
-                // Right direction: 90 degrees to the right of forward
                 Vec3 cameraRight = new Vec3(
                     (float)Math.Cos(cameraYawRadians),
                     0f,
                     -(float)Math.Sin(cameraYawRadians)
                 );
 
-                // Calculate world-space movement direction based on camera orientation
+                // Calculate world-space movement direction
                 Vec3 moveDirection = new Vec3(
                     cameraRight.X * inputX + cameraForward.X * inputZ,
-                    0f, // Keep Y at 0 for ground movement
+                    0f,
                     cameraRight.Z * inputX + cameraForward.Z * inputZ
                 );
 
@@ -179,16 +404,14 @@ namespace GameScripts
                 float len = (float)Math.Sqrt(moveDirection.X * moveDirection.X + moveDirection.Z * moveDirection.Z);
                 if (len > 0f)
                 {
-                    vel.X = (moveDirection.X / len) * _speed;
-                    vel.Z = (moveDirection.Z / len) * _speed;
+                    vel.X = (moveDirection.X / len) * currentSpeed;
+                    vel.Z = (moveDirection.Z / len) * currentSpeed;
 
-                    // NEW: Calculate rotation with model forward offset correction
+                    // Calculate rotation
                     float targetYaw = (float)(Math.Atan2(moveDirection.X, moveDirection.Z) * 180.0 / Math.PI);
-
-                    // Apply the offset to correct for model's wrong forward direction
                     targetYaw += _modelForwardOffset;
 
-                    // Normalize angle to [-180, 180] range
+                    // Normalize angle
                     while (targetYaw > 180f) targetYaw -= 360f;
                     while (targetYaw < -180f) targetYaw += 360f;
 
@@ -202,23 +425,29 @@ namespace GameScripts
                 vel.Z = 0f;
             }
 
-            // =============== JUMPING LOGIC WITH PROPER STATE TRACKING =================
+            // =============== JUMPING LOGIC =================
 
             bool spacePressed = API.IsKeyDown(API.KEY_SPACE);
 
             // Reset jump state when we land
-            if (isGrounded && _hasJumped)
+            if (isGrounded && _hasJumped && vel.Y <= 0.1f)
             {
                 _hasJumped = false;
             }
 
-            // Jump only on space key press (not hold) and when grounded
+            // Jump only on space key press and when grounded
             if (allowMove && isGrounded && spacePressed && !_wasSpacePressed && !_hasJumped)
             {
                 vel.Y = _jumpSpeed;
                 _hasJumped = true;
 
-                // Play jump sound only once
+                // Trigger jump animation
+                if (_hasAnimator)
+                {
+                    API.AnimatorSetTrigger(Entity, "Jump");
+                }
+
+                // Play jump sound
                 Vec3 playerPos = API.GetPosition(Entity);
                 API.PlaySoundAt("jump_sound", "Resources/Audio/playerPunch_1.wav", playerPos, false);
                 API.SetSoundVolume("jump_sound", 0.9f);
@@ -226,13 +455,46 @@ namespace GameScripts
                 API.Log("[PlayerMovement] Jump executed!");
             }
 
-            // Update space key state for next frame
             _wasSpacePressed = spacePressed;
 
-            // NOTE: We do NOT apply gravity here.
-            // PhysX already applies gravity every simulation step.
-
             API.SetLinearVelocity(Entity, vel);
+
+            // =============== UPDATE ANIMATOR =================
+            if (_hasAnimator)
+            {
+                float speedXZ = (float)Math.Sqrt(vel.X * vel.X + vel.Z * vel.Z);
+                _smoothedSpeed += (speedXZ - _smoothedSpeed) * Math.Min(1.0, SPEED_DAMP * dt);
+
+                API.AnimatorSetFloat(Entity, "Speed", (float)_smoothedSpeed);
+                API.AnimatorSetBool(Entity, "IsMoving", _smoothedSpeed > MOVE_EPS || hasInput);
+                API.AnimatorSetBool(Entity, "Sprint", sprintKey && hasInput);
+                API.AnimatorSetBool(Entity, "IsSneaking", sneakKey && hasInput);
+            }
+        }
+
+        /// <summary>
+        /// Check if the player is on the ground using a downward raycast.
+        /// This prevents wall-climbing by only detecting surfaces below the player.
+        /// </summary>
+        private bool IsPlayerGrounded()
+        {
+            // Get player position
+            Vec3 playerPos = API.GetPosition(Entity);
+
+            // Raycast parameters (adjust based on your capsule height)
+            float rayLength = 0.6f;      // Distance to check below player
+            float rayOffsetY = 0.1f;     // Start slightly above feet to avoid self-collision
+
+            // Cast ray downward from player position
+            Vec3 rayStart = new Vec3(playerPos.X, playerPos.Y + rayOffsetY, playerPos.Z);
+            Vec3 rayEnd = new Vec3(playerPos.X, playerPos.Y - rayLength, playerPos.Z);
+
+            // FIX: Invert the result! 
+            // Linecast returns TRUE if the path is CLEAR.
+            // We want to return TRUE if we HIT something (path is NOT clear).
+            bool hitGround = !API.Linecast(rayStart, rayEnd, Entity);
+
+            return hitGround;
         }
 
         /// <summary>
@@ -371,6 +633,9 @@ namespace GameScripts
         {
             API.Log($"[PlayerMovement] OnDestroy() - Entity: {Entity}");
 
+            // Unregister from PlayerManager
+            PlayerManager.UnregisterPlayer();
+
             // Clear static reference
             if (s_playerEntity == Entity)
             {
@@ -407,6 +672,33 @@ namespace GameScripts
         {
             _modelForwardOffset = degrees;
             API.Log($"[PlayerMovement] Model forward offset set to: {_modelForwardOffset} degrees");
+        }
+
+        /// <summary>
+        /// Configure movement speeds
+        /// </summary>
+        public void SetMovementSpeeds(float walkSpeed, float sprintSpeed, float sneakSpeed)
+        {
+            _walkSpeed = walkSpeed;
+            _sprintSpeed = sprintSpeed;
+            _sneakSpeed = sneakSpeed;
+            API.Log($"[PlayerMovement] Speeds updated - Walk: {_walkSpeed}, Sprint: {_sprintSpeed}, Sneak: {_sneakSpeed}");
+        }
+
+        /// <summary>
+        /// Get current health
+        /// </summary>
+        public int GetHealth()
+        {
+            return _health;
+        }
+
+        /// <summary>
+        /// Get player entity ID (for enemy detection callbacks)
+        /// </summary>
+        public static ulong GetPlayerEntity()
+        {
+            return s_playerEntity;
         }
     }
 }

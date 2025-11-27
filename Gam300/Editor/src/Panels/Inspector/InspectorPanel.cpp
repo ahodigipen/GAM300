@@ -7,6 +7,7 @@
 #include "Context/DebugHelpers.h"
 #include "Panels/PropertiesImgui.h"
 #include"Physics/Context.h"
+#include <GLFW/glfw3.h>
 //#include "BoomProperties.h"
 using namespace EditorUI;
 
@@ -347,48 +348,75 @@ namespace EditorUI {
                     ModelAsset& modelAsset = m_App->GetAssetRegistry().Get<ModelAsset>(mc.modelID);
 
                     if (modelAsset.data) {
-                        // 1. Construct the intended path based on the model name
                         std::string saveDir = "Resources/Physics/";
-                        std::string savePath = saveDir + modelAsset.name + ".pxm";
+                        if (!std::filesystem::exists(saveDir)) {
+                            std::filesystem::create_directories(saveDir);
+                        }
 
-                        // 2. Check if this asset already exists in the Registry
-                        auto* existingAsset = m_App->GetAssetRegistry().FindPhysicsMeshByPath(savePath);
+                        // ---------------------------------------------------------
+                        // 1. CONVEX MESH BUTTON (For Dynamic Objects)
+                        // ---------------------------------------------------------
+                        std::string convexPath = saveDir + modelAsset.name + ".pxm";
+                        auto* existingConvex = m_App->GetAssetRegistry().FindPhysicsMeshByPath(convexPath);
+                        bool convexFileExists = std::filesystem::exists(convexPath);
 
-                        // 3. Check if the file already exists on Disk
-                        bool fileExists = std::filesystem::exists(savePath);
-
-                        // 4. Logic: Only allow compilation if NEITHER exists
-                        if (existingAsset || fileExists) {
+                        if (existingConvex || convexFileExists) {
                             ImGui::BeginDisabled();
-                            ImGui::Button("Physics Mesh Already Compiled", ImVec2(-1, 0));
+                            ImGui::Button("Convex Mesh Compiled", ImVec2(-1, 0));
                             ImGui::EndDisabled();
-
                             if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
-                                if (existingAsset)
-                                    ImGui::SetTooltip("Asset already registered (UID: %llu)", existingAsset->uid);
-                                else
-                                    ImGui::SetTooltip("File already exists at: %s", savePath.c_str());
+                                ImGui::SetTooltip("Use for DYNAMIC objects.\nAsset: %s", convexPath.c_str());
                             }
                         }
                         else {
-                            if (ImGui::Button("Compile Mesh Collider from this Model", ImVec2(-1, 0))) {
-                                if (!std::filesystem::exists(saveDir)) {
-                                    std::filesystem::create_directories(saveDir);
-                                }
-
-                                bool success = m_App->GetPhysicsContext().CompileAndSavePhysicsMesh(modelAsset, savePath);
-
+                            if (ImGui::Button("Compile Convex Mesh (Dynamic)", ImVec2(-1, 0))) {
+                                bool success = m_App->GetPhysicsContext().CompileAndSavePhysicsMesh(modelAsset, convexPath);
                                 if (success) {
                                     AssetID newID = RandomU64();
-                                    m_App->GetAssetRegistry().AddPhysicsMesh(newID, savePath)->name = modelAsset.name;
-                                    BOOM_INFO("Successfully cooked and created PhysicsMeshAsset '{}'", modelAsset.name);
+                                    m_App->GetAssetRegistry().AddPhysicsMesh(newID, convexPath)->name = modelAsset.name; // Name: "Stairs"
+                                    BOOM_INFO("Successfully cooked Convex Mesh '{}'", modelAsset.name);
                                     m_App->SaveAssets();
                                 }
                                 else {
-                                    BOOM_ERROR("Failed to cook physics mesh for '{}'. Check model data.", modelAsset.name);
+                                    BOOM_ERROR("Failed to cook convex mesh.");
                                 }
                             }
                         }
+
+                        ImGui::Spacing();
+
+                        // ---------------------------------------------------------
+                        // 2. TRIANGLE MESH BUTTON (For Static/Complex Objects)
+                        // ---------------------------------------------------------
+                        std::string triPath = saveDir + modelAsset.name + "_tri.pxm";
+                        auto* existingTri = m_App->GetAssetRegistry().FindPhysicsMeshByPath(triPath);
+                        bool triFileExists = std::filesystem::exists(triPath);
+
+                        if (existingTri || triFileExists) {
+                            ImGui::BeginDisabled();
+                            ImGui::Button("Triangle Mesh Compiled", ImVec2(-1, 0));
+                            ImGui::EndDisabled();
+                            if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+                                ImGui::SetTooltip("Use for STATIC objects (Exact Geometry).\nAsset: %s", triPath.c_str());
+                            }
+                        }
+                        else {
+                            // Label this clearly so users know it's for static objects
+                            if (ImGui::Button("Compile Exact Mesh (Static Only)", ImVec2(-1, 0))) {
+                                bool success = m_App->GetPhysicsContext().CompileAndSaveTriangleMesh(modelAsset, triPath);
+                                if (success) {
+                                    AssetID newID = RandomU64();
+                                    // Append suffix to name so you can tell them apart in the asset picker
+                                    m_App->GetAssetRegistry().AddPhysicsMesh(newID, triPath)->name = modelAsset.name + " (Tri)";
+                                    BOOM_INFO("Successfully cooked Triangle Mesh '{}'", modelAsset.name);
+                                    m_App->SaveAssets();
+                                }
+                                else {
+                                    BOOM_ERROR("Failed to cook triangle mesh.");
+                                }
+                            }
+                        }
+
                     }
                     else {
                         ImGui::TextDisabled("Model data not yet loaded.");
@@ -424,6 +452,211 @@ namespace EditorUI {
 
         if (selected.Has<Boom::AnimatorComponent>()) {
             AnimatorComponentUI(selected);
+        }
+
+        // --- Sound Component UI ---
+        if (selected.Has<Boom::SoundComponent>()) {
+            ImGui::PushID("Sound");
+            auto& sc = selected.Get<Boom::SoundComponent>();
+
+            bool compRemoved = false;
+            bool isOpen = ImGui::CollapsingHeader("Sound", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap);
+
+            // settings popup
+            const ImVec2 shMin = ImGui::GetItemRectMin();
+            const ImVec2 shMax = ImGui::GetItemRectMax();
+            const float shLineH = ImGui::GetFrameHeight();
+            const float shY = shMin.y + (shMax.y - shMin.y - shLineH) *0.5f;
+            ImGui::SetCursorScreenPos(ImVec2(shMax.x - shLineH, shY));
+            if (ImGui::Button("...", ImVec2(shLineH, shLineH))) ImGui::OpenPopup("SoundSettings");
+            if (ImGui::BeginPopup("SoundSettings")) {
+                if (ImGui::MenuItem("Remove Component")) compRemoved = true;
+                ImGui::EndPopup();
+            }
+
+            ImGui::SetCursorScreenPos(ImVec2(shMin.x, shMax.y + ImGui::GetStyle().ItemSpacing.y));
+
+            if (isOpen) {
+                ImGui::Indent(12.0f);
+                ImGui::Spacing();
+
+                ImGui::Text("Entries: %zu", sc.entries.size());
+                ImGui::SameLine();
+                if (ImGui::Button("+ Add Entry")) {
+                    Boom::SoundComponent::Entry e{};
+                    e.name = "NewSound";
+                    sc.entries.push_back(std::move(e));
+                }
+
+                ImGui::Spacing();
+
+                for (size_t i =0; i < sc.entries.size(); ++i) {
+                    auto& entry = sc.entries[i];
+                    ImGui::PushID(static_cast<int>(i));
+
+                    // header for entry
+                    bool openEntry = ImGui::TreeNodeEx((void*)(intptr_t)i, ImGuiTreeNodeFlags_DefaultOpen, "%s", entry.name.c_str());
+                    ImGui::SameLine();
+                    if (ImGui::SmallButton("Remove")) {
+                        sc.entries.erase(sc.entries.begin() + i);
+                        ImGui::PopID();
+                        break; // indices changed; break out to avoid iterator invalidation
+                    }
+
+                    if (openEntry) {
+                        // Name
+                        char nameBuf[128];
+#ifdef _MSC_VER
+                        strncpy_s(nameBuf, sizeof(nameBuf), entry.name.c_str(), sizeof(nameBuf)-1);
+#else
+                        std::snprintf(nameBuf, sizeof(nameBuf), "%s", entry.name.c_str());
+#endif
+                        if (ImGui::InputText("Name", nameBuf, sizeof(nameBuf))) entry.name = std::string(nameBuf);
+
+                        // Variant files list (filePaths)
+                        ImGui::Text("Variants");
+                        ImGui::SameLine();
+                        if (ImGui::SmallButton("+ Add Variant")) {
+                            entry.filePaths.push_back(entry.filePath.empty() ? std::string("") : entry.filePath);
+                        }
+
+                        for (size_t v =0; v < entry.filePaths.size(); ++v) {
+                            ImGui::PushID(static_cast<int>(v));
+                            char pathBuf[512];
+#ifdef _MSC_VER
+                            strncpy_s(pathBuf, sizeof(pathBuf), entry.filePaths[v].c_str(), sizeof(pathBuf)-1);
+#else
+ std::snprintf(pathBuf, sizeof(pathBuf), "%s", entry.filePaths[v].c_str());
+#endif
+ // Manual edit field
+ if (ImGui::InputText("File", pathBuf, sizeof(pathBuf))) {
+ entry.filePaths[v] = std::string(pathBuf);
+ // keep legacy single filePath in sync for older systems
+ if (v ==0) entry.filePath = entry.filePaths[0];
+ }
+
+ ImGui::SameLine();
+
+ // --- Asset picker dropdown for audio assets ---
+ {
+ // Build current label (show filename if available)
+ std::string curLabel = entry.filePaths[v].empty() ? "Select Audio..." : std::filesystem::path(entry.filePaths[v]).filename().string();
+ if (ImGui::BeginCombo("##AudioPicker", curLabel.c_str())) {
+ auto& audioMap = m_App->GetAssetRegistry().GetMap<AudioAsset>();
+ // Allow clearing
+ bool noneSel = entry.filePaths[v].empty();
+ if (ImGui::Selectable("None", noneSel)) {
+ entry.filePaths[v].clear();
+ if (v ==0) entry.filePath.clear();
+ }
+ if (noneSel) ImGui::SetItemDefaultFocus();
+
+ for (auto& [uid, asset] : audioMap) {
+ if (uid == EMPTY_ASSET) continue;
+ std::string name = asset->name;
+ bool isSel = (entry.filePaths[v] == asset->source);
+ if (ImGui::Selectable(name.c_str(), isSel)) {
+ entry.filePaths[v] = asset->source;
+ if (v ==0) entry.filePath = entry.filePaths[0];
+ }
+ if (isSel) ImGui::SetItemDefaultFocus();
+ }
+ ImGui::EndCombo();
+ }
+ }
+
+ ImGui::SameLine();
+ if (ImGui::SmallButton("Remove")) {
+ entry.filePaths.erase(entry.filePaths.begin() + v);
+ ImGui::PopID();
+ break;
+ }
+ ImGui::PopID();
+ }
+
+ // Legacy single filePath (shows only if no variants present)
+ if (entry.filePaths.empty()) {
+ char legacyBuf[512];
+#ifdef _MSC_VER
+ strncpy_s(legacyBuf, sizeof(legacyBuf), entry.filePath.c_str(), sizeof(legacyBuf)-1);
+#else
+ std::snprintf(legacyBuf, sizeof(legacyBuf), "%s", entry.filePath.c_str());
+#endif
+ if (ImGui::InputText("File Path", legacyBuf, sizeof(legacyBuf))) entry.filePath = std::string(legacyBuf);
+
+ ImGui::SameLine();
+ // Legacy asset picker
+ {
+ std::string cur = entry.filePath.empty() ? "Select Audio..." : std::filesystem::path(entry.filePath).filename().string();
+ if (ImGui::BeginCombo("##AudioPickerLegacy", cur.c_str())) {
+ auto& audioMap = m_App->GetAssetRegistry().GetMap<AudioAsset>();
+ bool noneSel = entry.filePath.empty();
+ if (ImGui::Selectable("None", noneSel)) {
+ entry.filePath.clear();
+ }
+ if (noneSel) ImGui::SetItemDefaultFocus();
+ for (auto& [uid, asset] : audioMap) {
+ if (uid == EMPTY_ASSET) continue;
+ bool isSel = (entry.filePath == asset->source);
+ if (ImGui::Selectable(asset->name.c_str(), isSel)) {
+ entry.filePath = asset->source;
+ }
+ if (isSel) ImGui::SetItemDefaultFocus();
+ }
+ ImGui::EndCombo();
+ }
+ }
+ }
+
+                        // loop and playOnStart
+                        ImGui::Checkbox("Loop", &entry.loop);
+                        ImGui::SameLine();
+                        ImGui::Checkbox("Play On Start", &entry.playOnStart);
+
+                        // Volume
+                        ImGui::SliderFloat("Volume", &entry.volume,0.0f,1.0f);
+
+                        ImGui::Separator();
+                        ImGui::Text("Triggers");
+
+                        // triggerKey
+                        ImGui::InputInt("Trigger Key (GLFW)", &entry.triggerKey);
+                        ImGui::TextDisabled("Use GLFW key codes (e.g. %d = Space)", GLFW_KEY_SPACE);
+
+                        // Play on move
+                        ImGui::Checkbox("Play On Move", &entry.playOnMove);
+                        if (entry.playOnMove) {
+                            ImGui::InputFloat("Move Threshold (m/s)", &entry.moveThreshold);
+                        }
+
+                        // Repeat interval
+                        ImGui::InputFloat("Repeat Interval (s)", &entry.repeatInterval);
+
+                        // Animation trigger name
+                        char animBuf[128];
+#ifdef _MSC_VER
+                        strncpy_s(animBuf, sizeof(animBuf), entry.animTrigger.c_str(), sizeof(animBuf)-1);
+#else
+                        std::snprintf(animBuf, sizeof(animBuf), "%s", entry.animTrigger.c_str());
+#endif
+                        if (ImGui::InputText("Anim Trigger", animBuf, sizeof(animBuf))) {
+                            entry.animTrigger = std::string(animBuf);
+                        }
+
+                        ImGui::TreePop();
+                    }
+
+                    ImGui::PopID();
+                }
+
+                ImGui::Unindent(12.0f);
+            }
+
+            ImGui::PopID();
+
+            if (compRemoved) {
+                ctx->scene.remove<Boom::SoundComponent>(m_App->SelectedEntity());
+            }
         }
 
         if (selected.Has<Boom::RigidBodyComponent>()) {
@@ -556,10 +789,11 @@ namespace EditorUI {
             ImGui::PopID();
 
             if (removed) {
-                // Clean up physics before removing component
-                m_App->GetPhysicsContext().RemoveRigidBody(selected);
+                m_App->GetPhysicsContext().ForceRemoveActor(static_cast<uint32_t>(m_App->SelectedEntity()));
+
+                // ACTUAL FIX: Remove the RIGIDBODY component
                 ctx->scene.remove<Boom::RigidBodyComponent>(m_App->SelectedEntity());
-                return; // Exit EntityUpdate early
+                return;
             }
             ImGui::Spacing();
         }
@@ -948,7 +1182,8 @@ namespace EditorUI {
                 case Collider3D::Type::BOX:     currentTypeName = "Box";     break;
                 case Collider3D::Type::SPHERE:  currentTypeName = "Sphere";  break;
                 case Collider3D::Type::CAPSULE: currentTypeName = "Capsule"; break;
-                case Collider3D::Type::MESH:    currentTypeName = "Mesh";    break;
+                case Collider3D::Type::CONVEX_MESH:    currentTypeName = "Convex Mesh";    break;
+				case Collider3D::Type::TRIANGLE_MESH:  currentTypeName = "Triangle Mesh";  break;
 				case Collider3D::Type::CYLINDER:currentTypeName = "Cylinder";break;
 				case Collider3D::Type::TRIANGLE:currentTypeName = "Triangle";break;
                 case Collider3D::Type::PLANE:   currentTypeName = "Plane";   break;
@@ -961,8 +1196,7 @@ namespace EditorUI {
 
                 if (ImGui::BeginCombo("##ColliderType", currentTypeName))
                 {
-                    const char* types[] = { "Box", "Sphere", "Capsule", "Mesh", "Plane", "Cylinder", "Triangle"};
-                    for (int i = 0; i < IM_ARRAYSIZE(types); ++i) {
+                    const char* types[] = { "Box", "Sphere", "Capsule", "Convex Mesh", "Triangle Mesh", "Plane", "Cylinder", "Triangle" };                    for (int i = 0; i < IM_ARRAYSIZE(types); ++i) {
                         bool isSelected = (currentType == static_cast<Collider3D::Type>(i));
                         if (ImGui::Selectable(types[i], isSelected)) {
                             m_App->GetPhysicsContext().SetColliderType(selected, static_cast<Collider3D::Type>(i), m_App->GetAssetRegistry());
@@ -972,8 +1206,7 @@ namespace EditorUI {
                     ImGui::EndCombo();
                 }
                 // Mesh asset picker (only for MESH type)
-                if (currentType == Collider3D::Type::MESH)
-                {
+                if (currentType == Collider3D::Type::CONVEX_MESH || currentType == Collider3D::Type::TRIANGLE_MESH) {
                     ImGui::Spacing();
                     ImGui::Separator();
 
@@ -1129,12 +1362,13 @@ namespace EditorUI {
             }
             ImGui::PopID();
 
+            // CORRECTED
             if (removed) {
-                // Clean up physics before removing component
-                // Only remove rigid body if the entity has one
-                if (selected.Has<Boom::RigidBodyComponent>()) {
-                    m_App->GetPhysicsContext().RemoveRigidBody(selected);
-                }
+                // 1. Use the new smart cleanup function
+                // This finds the actor attached to this specific collider shape and destroys it
+                m_App->GetPhysicsContext().RemoveColliderActor(selected);
+
+                // 2. Remove the component from ECS
                 ctx->scene.remove<Boom::ColliderComponent>(m_App->SelectedEntity());
                 return;
             }
@@ -1515,6 +1749,35 @@ namespace EditorUI {
                 Boom::Entity selectedEntity{ &m_App->GetEntityRegistry(), m_App->SelectedEntity() };
                 info.name = selectedEntity.Get<Boom::InfoComponent>().name;
                 info.id = selectedEntity.Get<Boom::InfoComponent>().uid;
+                ImGui::Text("Are you sure you want to delete:\n%s?", info.name.c_str());
+                ImGui::Separator();
+                if (ImGui::Button("Yes", ImVec2(120, 0)) || ImGui::IsKeyPressed(ImGuiKey_Enter, false)) {
+                    if (m_App->SelectedEntity() != entt::null) {
+
+                        // === BEGIN PHYSICS CLEANUP ===
+
+                        // Use ForceRemoveActor instead of RemoveRigidBody
+                        m_App->GetPhysicsContext().ForceRemoveActor(static_cast<uint32_t>(m_App->SelectedEntity()));
+                        // =======================
+
+                        // === END PHYSICS CLEANUP ===
+
+                        m_App->GetEntityRegistry().destroy(m_App->SelectedEntity());
+                        m_App->ResetAllSelected();
+                    }
+                    else if (m_App->SelectedAsset().id != 0u) {
+                        m_App->DeleteAsset(info.id, info.type);
+                        m_App->ResetAllSelected();
+                    }
+                    showDeletePopup = false;
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("No", ImVec2(120, 0)) || ImGui::IsKeyPressed(ImGuiKey_Escape)) {
+                    showDeletePopup = false;
+                    ImGui::CloseCurrentPopup();
+                }
+                
             }
             else if (m_App->SelectedAsset().id != 0u)
             {

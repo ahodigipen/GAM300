@@ -82,7 +82,7 @@ namespace Boom
 
         // === MODEL COMPONENT ===
 		RegisterPropertyComponent<ModelComponent>("ModelComponent");
-
+		
         // === ANIMATOR COMPONENT ===
         registry.RegisterComponentSerializer(
             "AnimatorComponent",
@@ -481,7 +481,32 @@ namespace Boom
                 sc.InstanceId = 0;
             }
         );
+        registry.RegisterComponentSerializer(
+            "SceneNavmeshComponent",
+            // ----- SERIALIZE -----
+            [](YAML::Emitter& e, EntityRegistry& reg, EntityID ent)
+            {
+                if (!reg.all_of<SceneNavmeshComponent>(ent))
+                    return;
 
+                auto& sn = reg.get<SceneNavmeshComponent>(ent);
+
+                e << YAML::Key << "SceneNavmeshComponent" << YAML::Value << YAML::BeginMap;
+                e << YAML::Key << "NavmeshFile" << YAML::Value << sn.navmeshFile;
+                e << YAML::EndMap;
+            },
+            // ----- DESERIALIZE -----
+            [](const YAML::Node& data, EntityRegistry& reg, EntityID ent, AssetRegistry&)
+            {
+                if (!data || !data.IsMap())
+                    return;
+
+                auto& sn = reg.get_or_emplace<SceneNavmeshComponent>(ent);
+
+                if (auto v = data["NavmeshFile"])
+                    sn.navmeshFile = v.as<std::string>(sn.navmeshFile);
+            }
+        );
 
         // === DIRECT LIGHT COMPONENT ===
 		RegisterPropertyComponent<DirectLightComponent>("DirectLightComponent");
@@ -505,8 +530,71 @@ namespace Boom
         // === PAUSE MEN TAG COMPONENT ===
         RegisterPropertyComponent<PauseMenuTagComponent>("PauseMenuTagComponent");
 
-        
-       
+        // === SOUND COMPONENT ===
+        registry.RegisterComponentSerializer(
+            "SoundComponent",
+            // Serialize
+            [](YAML::Emitter& e, EntityRegistry& reg, EntityID ent) {
+                if (!reg.all_of<SoundComponent>(ent)) return;
+                auto& sc = reg.get<SoundComponent>(ent);
+                e << YAML::Key << "SoundComponent" << YAML::Value << YAML::BeginMap;
+                e << YAML::Key << "Entries" << YAML::Value << YAML::BeginSeq;
+                for (const auto& entry : sc.entries) {
+                    e << YAML::BeginMap;
+                    e << YAML::Key << "name" << YAML::Value << entry.name;
+                    if (!entry.filePaths.empty()) {
+                        e << YAML::Key << "filePaths" << YAML::Value << YAML::BeginSeq;
+                        for (const auto& fp : entry.filePaths) e << fp;
+                        e << YAML::EndSeq;
+                    }
+                    else {
+                        e << YAML::Key << "filePath" << YAML::Value << entry.filePath;
+                    }
+                    e << YAML::Key << "loop" << YAML::Value << entry.loop;
+                    e << YAML::Key << "volume" << YAML::Value << entry.volume;
+                    e << YAML::Key << "playOnStart" << YAML::Value << entry.playOnStart;
+                    e << YAML::Key << "triggerKey" << YAML::Value << entry.triggerKey;
+                    e << YAML::Key << "playOnMove" << YAML::Value << entry.playOnMove;
+                    e << YAML::Key << "moveThreshold" << YAML::Value << entry.moveThreshold;
+                    e << YAML::Key << "repeatInterval" << YAML::Value << entry.repeatInterval;
+                    e << YAML::Key << "animTrigger" << YAML::Value << entry.animTrigger;
+                    e << YAML::EndMap;
+                }
+                e << YAML::EndSeq;
+                e << YAML::EndMap;
+            },
+            // Deserialize
+            [](const YAML::Node& node, EntityRegistry& reg, EntityID ent, AssetRegistry& assets) {
+                if (!node || !node.IsMap()) return;
+                auto& sc = reg.get_or_emplace<SoundComponent>(ent);
+                sc.entries.clear();
+                if (auto entries = node["Entries"]; entries && entries.IsSequence()) {
+                    for (const auto& en : entries) {
+                        SoundComponent::Entry entry{};
+                        if (en["name"]) entry.name = en["name"].as<std::string>(entry.name);
+                        if (en["filePaths"] && en["filePaths"].IsSequence()) {
+                            entry.filePaths.clear();
+                            for (const auto& fp : en["filePaths"]) entry.filePaths.push_back(fp.as<std::string>());
+                            entry.filePath = entry.filePaths.empty() ? std::string() : entry.filePaths.front();
+                        }
+                        else if (en["filePath"]) {
+                            entry.filePath = en["filePath"].as<std::string>(entry.filePath);
+                            entry.filePaths.clear();
+                            if (!entry.filePath.empty()) entry.filePaths.push_back(entry.filePath);
+                        }
+                        if (en["loop"]) entry.loop = en["loop"].as<bool>(entry.loop);
+                        if (en["volume"]) entry.volume = en["volume"].as<float>(entry.volume);
+                        if (en["playOnStart"]) entry.playOnStart = en["playOnStart"].as<bool>(entry.playOnStart);
+                        if (en["triggerKey"]) entry.triggerKey = en["triggerKey"].as<int>(entry.triggerKey);
+                        if (en["playOnMove"]) entry.playOnMove = en["playOnMove"].as<bool>(entry.playOnMove);
+                        if (en["moveThreshold"]) entry.moveThreshold = en["moveThreshold"].as<float>(entry.moveThreshold);
+                        if (en["repeatInterval"]) entry.repeatInterval = en["repeatInterval"].as<float>(entry.repeatInterval);
+                        if (en["animTrigger"]) entry.animTrigger = en["animTrigger"].as<std::string>(entry.animTrigger);
+                        sc.entries.push_back(std::move(entry));
+                    }
+                }
+            }
+        );
 
         BOOM_INFO("[ComponentSerializers] All component serializers registered");
        

@@ -29,7 +29,10 @@ namespace Boom {
                 }
 
                 // Resolve followName to entity
-                if (ag.follow == entt::null && !ag.followName.empty()) {
+                const bool hasAI = reg.all_of<AIComponent>(e);
+
+                // Resolve followName to entity (editor/manual agents only)
+                if (!hasAI && ag.follow == entt::null && !ag.followName.empty()) {
                     auto infoView = reg.view<InfoComponent>();
                     for (auto fe : infoView) {
                         const auto& info = infoView.get<InfoComponent>(fe);
@@ -72,7 +75,10 @@ namespace Boom {
                 }
 
                 if (ag.dirty) {
-                    requestPath(reg, e, nav);
+                    ag.dirty = false;  
+                    ag.waypoint = 0;       
+                    ag.path.clear();      
+                    requestPath(reg, e, nav); 
                 #ifdef _DEBUG
                     BOOM_INFO("[NavAgent] Path has {} waypoints", ag.path.size());
                 #endif
@@ -106,9 +112,9 @@ namespace Boom {
                 const glm::vec3 dirXZ = (dXZ > 0.f) ? (toXZ / dXZ) : glm::vec3(0);
                 ag.velocity = dirXZ * ag.speed;
 #ifdef _DEBUG
-                BOOM_INFO("[NavAgent] Pos: ({:.2f}, {:.2f}, {:.2f}), Goal: ({:.2f}, {:.2f}, {:.2f}), Velocity: ({:.2f}, {:.2f}, {:.2f}), Dist: {:.2f}, Waypoint {}/{}",
-                    pos.x, pos.y, pos.z, goal.x, goal.y, goal.z,
-                    ag.velocity.x, ag.velocity.y, ag.velocity.z, dXZ, ag.waypoint, ag.path.size());
+                //BOOM_INFO("[NavAgent] Pos: ({:.2f}, {:.2f}, {:.2f}), Goal: ({:.2f}, {:.2f}, {:.2f}), Velocity: ({:.2f}, {:.2f}, {:.2f}), Dist: {:.2f}, Waypoint {}/{}",
+                 //   pos.x, pos.y, pos.z, goal.x, goal.y, goal.z,
+                 //   ag.velocity.x, ag.velocity.y, ag.velocity.z, dXZ, ag.waypoint, ag.path.size());
 #endif
             }
         }

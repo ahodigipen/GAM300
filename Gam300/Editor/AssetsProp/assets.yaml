@@ -35,6 +35,40 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
   - Type: MATERIAL
+    UID: 12207453972742617529
+    Name: Wall Test
+    Source: Wall Test
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 255836083165499956
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 16257091296667891899
+    Name: Paper Wall Texture
+    Source: Paper Wall Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 3258529618581877054
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
     UID: 5966106834849932234
     Name: Color
     Source: Color
@@ -68,10 +102,137 @@ ASSETS:
       MetallicMapID: 0
       OcclusionMapID: 0
       EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 9126702018428758169
+    Name: Lamp Texture
+    Source: Lamp Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 18036222300221331622
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 9170069941051798259
+    Name: Lion Texture
+    Source: Lion Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 8781181629247619230
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 5692762562094318330
+    Name: Floor Texture
+    Source: Floor Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [0.99000001, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 2779217692485608494
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 6133974277031033463
+    Name: Tree Texture
+    Source: Tree Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 5444082718129606842
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 13160241162385617845
+    Name: Samurai Texture
+    Source: Samurai Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 11307617190584154139
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 8235375233612734933
+    Name: Wall Texture 1
+    Source: Wall Texture 1
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 0
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 6977112513598097705
+    Name: SkyBox
+    Source: SkyBox
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 0
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: PHYSICS_MESH
+    UID: 8633576229273901496
+    Name: Wall_With_Hole (Tri)
+    Source: Resources/Physics/Wall_With_Hole_tri.pxm
   - Type: PHYSICS_MESH
     UID: 16135378917386993712
     Name: Sliding_Door
     Source: Resources/Physics/Sliding_Door.pxm
+  - Type: PHYSICS_MESH
+    UID: 2159505294651867228
+    Name: Wall_Slanted (Tri)
+    Source: Resources/Physics/Wall_Slanted_tri.pxm
   - Type: PHYSICS_MESH
     UID: 2061877446978793964
     Name: Stairs_Handle
@@ -85,25 +246,17 @@ ASSETS:
     Name: Cube.FBX
     Source: Resources/Physics/Cube.FBX.pxm
   - Type: PHYSICS_MESH
+    UID: 1505489307262132017
+    Name: Outdoor_Stone_Lantern
+    Source: Resources/Physics/Outdoor_Stone_Lantern.pxm
+  - Type: PHYSICS_MESH
     UID: 3201291568342370610
     Name: GAM300_Ninja
     Source: Resources/Physics/GAM300_Ninja.pxm
   - Type: PHYSICS_MESH
-    UID: 13626919571269201074
-    Name: Fruit_Tree
-    Source: Resources/Physics/Fruit_Tree.pxm
-  - Type: PHYSICS_MESH
     UID: 10282509391466741466
     Name: Sliding_Door
     Source: Resources/Physics/Sliding_Door.pxm
-  - Type: PHYSICS_MESH
-    UID: 4462591176276306201
-    Name: Stairs
-    Source: Resources/Physics/Stairs.pxm
-  - Type: PHYSICS_MESH
-    UID: 675814903367683746
-    Name: Lion_Statue2
-    Source: Resources/Physics/Lion_Statue2.pxm
   - Type: PHYSICS_MESH
     UID: 4431181016770564176
     Name: Floor_Cushion
@@ -125,6 +278,10 @@ ASSETS:
     Name: Stairs_Handle
     Source: Resources/Physics/Stairs_Handle.pxm
   - Type: PHYSICS_MESH
+    UID: 11807856327719446838
+    Name: Floating_Platform (Tri)
+    Source: Resources/Physics/Floating_Platform_tri.pxm
+  - Type: PHYSICS_MESH
     UID: 53427998423929220
     Name: Hut_Roof
     Source: Resources/Physics/Hut_Roof.pxm
@@ -137,13 +294,117 @@ ASSETS:
     Name: Japanese_Table
     Source: Resources/Physics/Japanese_Table.pxm
   - Type: PHYSICS_MESH
-    UID: 6729413007522777642
-    Name: Statue
-    Source: Resources/Physics/Statue.pxm
-  - Type: PHYSICS_MESH
     UID: 330654023275890549
     Name: Indoor_Lanturn_Hangingfbx
     Source: Resources/Physics/Indoor_Lanturn_Hangingfbx.pxm
+  - Type: PHYSICS_MESH
+    UID: 12807707659119185110
+    Name: Stairs
+    Source: Resources/Physics/Stairs.pxm
+  - Type: PHYSICS_MESH
+    UID: 14637979139196947137
+    Name: Lion_Statue2
+    Source: Resources/Physics/Lion_Statue2.pxm
+  - Type: PHYSICS_MESH
+    UID: 17610087342113084162
+    Name: Fruit_Tree
+    Source: Resources/Physics/Fruit_Tree.pxm
+  - Type: PHYSICS_MESH
+    UID: 9561371257336025290
+    Name: Smooth_Slopefbx (Tri)
+    Source: Resources/Physics/Smooth_Slopefbx_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 1469225857040615382
+    Name: Slopefbx (Tri)
+    Source: Resources/Physics/Slopefbx_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 799933234689450045
+    Name: WallTest (Tri)
+    Source: Resources/Physics/WallTest_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 13583425803943598177
+    Name: Fruit_Tree (Tri)
+    Source: Resources/Physics/Fruit_Tree_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 7982763225733669098
+    Name: Statue (Tri)
+    Source: Resources/Physics/Statue_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 5710357086850101923
+    Name: Statue
+    Source: Resources/Physics/Statue.pxm
+  - Type: PHYSICS_MESH
+    UID: 8414543246722833224
+    Name: Stairs (Tri)
+    Source: Resources/Physics/Stairs_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 8095852268973777608
+    Name: Indoor_Lanturn_Hangingfbx (Tri)
+    Source: Resources/Physics/Indoor_Lanturn_Hangingfbx_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 4356505632757386652
+    Name: Lion_Statue2 (Tri)
+    Source: Resources/Physics/Lion_Statue2_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 11737700492935567662
+    Name: Japanese_Table (Tri)
+    Source: Resources/Physics/Japanese_Table_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 2792724369257227031
+    Name: Middle_Rooffbx (Tri)
+    Source: Resources/Physics/Middle_Rooffbx_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 13111799052110481244
+    Name: Wall_With_Hole
+    Source: Resources/Physics/Wall_With_Hole.pxm
+  - Type: PHYSICS_MESH
+    UID: 14214629347157244268
+    Name: Outdoor_Stone_Lantern (Tri)
+    Source: Resources/Physics/Outdoor_Stone_Lantern_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 7134129580656216935
+    Name: Hut_Roof (Tri)
+    Source: Resources/Physics/Hut_Roof_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 2665223197068733968
+    Name: Door_Divider (Tri)
+    Source: Resources/Physics/Door_Divider_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 12990599201806458661
+    Name: Stairs_Wallfbx (Tri)
+    Source: Resources/Physics/Stairs_Wallfbx_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 7103059716832083419
+    Name: Stairs_Wallfbx
+    Source: Resources/Physics/Stairs_Wallfbx.pxm
+  - Type: PHYSICS_MESH
+    UID: 1439622600589773450
+    Name: Left_Roof (Tri)
+    Source: Resources/Physics/Left_Roof_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 3709588994413660334
+    Name: Wall_Roof (Tri)
+    Source: Resources/Physics/Wall_Roof_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 1336452752375064697
+    Name: Floor_With_Roof (Tri)
+    Source: Resources/Physics/Floor_With_Roof_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 14932226064384878625
+    Name: Right_Wallfbx (Tri)
+    Source: Resources/Physics/Right_Wallfbx_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 15621530879397167257
+    Name: Platform_Floor_5 (Tri)
+    Source: Resources/Physics/Platform_Floor_5_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 1541321499593983523
+    Name: Roof_Prism (Tri)
+    Source: Resources/Physics/Roof_Prism_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 8640865451825922005
+    Name: Stairs_Handle (Tri)
+    Source: Resources/Physics/Stairs_Handle_tri.pxm
   - Type: PREFAB
     UID: 5076640578672151242
     Name: Dance
@@ -215,6 +476,13 @@ ASSETS:
         AnimatorComponent:
           Sequence: 0
           Time: 870.897278
+
+  - Type: PREFAB
+    UID: 17959731737648018740
+    Name: Dancing Model
+    Source: Resources/Prefabs/Dancing Model.prefab
+    Properties:
+      SerializedData: |
 
   - Type: TEXTURE
     UID: 10451005038005756580
@@ -1581,12 +1849,6 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: SKYBOX
-    UID: 4245843529762785392
-    Name: NightSkyHDRI003_8K_HDR
-    Source: Resources/Textures/Skybox/NightSkyHDRI003_8K_HDR.hdr
-    Properties:
-      Size: 2048
-  - Type: SKYBOX
     UID: 4988646848101492445
     Name: Sky
     Source: Resources/Textures/Skybox/Sky.hdr
@@ -1784,18 +2046,18 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
-      HasJoints: true
+      HasJoints: false
   - Type: MODEL
-    UID: 7477699483648389514
-    Name: Desert_Plant_04_Small_0_1
-    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Desert_Plant_04_Small_0_1.fbx
+    UID: 4878958897926110889
+    Name: Walking
+    Source: Resources/Models/Player/animations/Walking.fbx
     Properties:
       Model Transform:
         transform:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
-      HasJoints: false
+      HasJoints: true
   - Type: MODEL
     UID: 8468216516841351967
     Name: Indoor_Lantern_Hanging
@@ -1829,6 +2091,17 @@ ASSETS:
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
       HasJoints: false
+  - Type: MODEL
+    UID: 16389144334925707743
+    Name: Samurai New Walk (1)
+    Source: Resources/Samurai New Walk (1).fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
   - Type: MODEL
     UID: 9575248516356405634
     Name: Floating_Island_Bioma2
@@ -1995,6 +2268,17 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
+    UID: 8865878773599391030
+    Name: Samurai Idle (1)
+    Source: Resources/Samurai Idle (1).fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
+  - Type: MODEL
     UID: 5963078964798272625
     Name: Sliding_Door
     Source: Resources/Models/Sliding_Door.fbx
@@ -2160,6 +2444,17 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
+    UID: 11887263885573851025
+    Name: Samurai New Walk
+    Source: Resources/Samurai New Walk.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
+  - Type: MODEL
     UID: 5156670162497623977
     Name: Fruit_Tree
     Source: Resources/Models/Fruit_Tree.fbx
@@ -2171,9 +2466,9 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 2038469021834599090
-    Name: Desert_Ribs_Small_0_1
-    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Desert_Ribs_Small_0_1.fbx
+    UID: 13779674563758479505
+    Name: Cushion
+    Source: Resources/Models/Cushion.fbx
     Properties:
       Model Transform:
         transform:
@@ -2479,6 +2774,17 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: true
   - Type: MODEL
+    UID: 500508657196660592
+    Name: Samurai Idle (1)
+    Source: Resources/Models/Samurai Idle (1).fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
+  - Type: MODEL
     UID: 9260176050107668565
     Name: Pedastal_textured
     Source: Resources/Models/Enemy/Stationary Sentry/Pedastal_textured.fbx
@@ -2633,6 +2939,17 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: true
   - Type: MODEL
+    UID: 7796158376131028701
+    Name: visionconesmall
+    Source: Resources/Models/Player/visionconesmall.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
     UID: 18235586360693495649
     Name: Great Sword Walk
     Source: Resources/Models/Player/animations/throw away/Great Sword Walk.fbx
@@ -2776,6 +3093,17 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
+    UID: 7481725949084297238
+    Name: visioncone
+    Source: Resources/Models/Player/visioncone.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
     UID: 12907306951145530752
     Name: Smooth_Slopefbx
     Source: Resources/Models/Smooth_Slopefbx.fbx
@@ -2790,17 +3118,6 @@ ASSETS:
     UID: 8725206585673966442
     Name: Stairs_Walls
     Source: Resources/Models/Stairs_Walls.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 12600730890549785123
-    Name: Terrain
-    Source: Resources/Models/Terrain.fbx
     Properties:
       Model Transform:
         transform:
@@ -2841,3 +3158,355 @@ ASSETS:
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
       HasJoints: false
+  - Type: MODEL
+    UID: 7908732753073902064
+    Name: RockSentry
+    Source: Resources/Models/Enemy/RockSentry.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 4951778228521458548
+    Name: Rock_Ninja_Textured
+    Source: Resources/Models/Rock_Ninja_Textured.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
+  - Type: MODEL
+    UID: 17415887327955155372
+    Name: Samurai
+    Source: Resources/Models/Samurai.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
+  - Type: MODEL
+    UID: 15598249040401841997
+    Name: Scissors Idle
+    Source: Resources/Models/Scissors Idle.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
+  - Type: MODEL
+    UID: 17897440577455058236
+    Name: Samurai Idle
+    Source: Resources/Samurai Idle.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
+  - Type: MODEL
+    UID: 2000159671626928300
+    Name: Samurai_Player_4_toTexture (1)
+    Source: Resources/Samurai_Player_4_toTexture (1).fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 10100570185923880378
+    Name: Samurai_Player_4_toTexture
+    Source: Resources/Samurai_Player_4_toTexture.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 180048974928296078
+    Name: Scissor Ninja Idle
+    Source: Resources/Models/Scissor Ninja Idle.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
+  - Type: MODEL
+    UID: 13424550679758465822
+    Name: Rock_Ninja_Textured
+    Source: Resources/Rock_Ninja_Textured.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
+  - Type: MODEL
+    UID: 5102588233319485504
+    Name: Scissor Ninja Idle
+    Source: Resources/Scissor Ninja Idle.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
+  - Type: MODEL
+    UID: 12600730890549785123
+    Name: Terrain
+    Source: Resources/Models/Terrain.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 2088400025698853957
+    Name: Scissor Ninja Idle (2)
+    Source: Resources/Scissor Ninja Idle (2).fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: AUDIO
+    UID: 5064117765438422255
+    Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_5
+    Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_5.wav
+  - Type: AUDIO
+    UID: 12267195745784827679
+    Name: Kairos_Cave-Vuk_Loop
+    Source: Resources/Audio/Kairos_Cave-Vuk_Loop.wav
+  - Type: AUDIO
+    UID: 1512395405601140110
+    Name: playerWalk_05
+    Source: Resources/Audio/playerWalk_05.wav
+  - Type: AUDIO
+    UID: 4631183016260115183
+    Name: playerRun_04
+    Source: Resources/Audio/playerRun_04.wav
+  - Type: AUDIO
+    UID: 16740961915277050147
+    Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_1
+    Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_1.wav
+  - Type: AUDIO
+    UID: 17895200579608756026
+    Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_2
+    Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_2.wav
+  - Type: AUDIO
+    UID: 7389825723535328104
+    Name: playerAttack_2
+    Source: Resources/Audio/playerAttack_2.wav
+  - Type: AUDIO
+    UID: 16391738320421363821
+    Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_3
+    Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_3.wav
+  - Type: AUDIO
+    UID: 7418220252929015681
+    Name: Footsteps-Stealth-Sneaking-Wood-Socks_8
+    Source: Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_8.wav
+  - Type: AUDIO
+    UID: 2194325517801054000
+    Name: 10Suns_WalkAbout_BGM1_Loop
+    Source: Resources/Audio/10Suns_WalkAbout_BGM1_Loop.wav
+  - Type: AUDIO
+    UID: 4309462336413165516
+    Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_4
+    Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_4.wav
+  - Type: AUDIO
+    UID: 15958803571243056749
+    Name: playerRun_02
+    Source: Resources/Audio/playerRun_02.wav
+  - Type: AUDIO
+    UID: 13077478249973297030
+    Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_6
+    Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_6.wav
+  - Type: AUDIO
+    UID: 7973227476693740649
+    Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_7
+    Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_7.wav
+  - Type: AUDIO
+    UID: 11333566408096603704
+    Name: playerWalk_03
+    Source: Resources/Audio/playerWalk_03.wav
+  - Type: AUDIO
+    UID: 8672755277680878936
+    Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_8
+    Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_8.wav
+  - Type: AUDIO
+    UID: 10537137308875949976
+    Name: enemyHurt_2
+    Source: Resources/Audio/enemyHurt_2.wav
+  - Type: AUDIO
+    UID: 12727926029481188102
+    Name: 02.Night_Forest_Field_Stars_Loop
+    Source: Resources/Audio/02.Night_Forest_Field_Stars_Loop.wav
+  - Type: AUDIO
+    UID: 8074793992686764900
+    Name: 05.Fog-Desert_Loop
+    Source: Resources/Audio/05.Fog-Desert_Loop.wav
+  - Type: AUDIO
+    UID: 17317263426716856294
+    Name: 20.Room-Tone_SFX_Ambience_Loop
+    Source: Resources/Audio/20.Room-Tone_SFX_Ambience_Loop.wav
+  - Type: AUDIO
+    UID: 5987073343064884782
+    Name: buttonHover
+    Source: Resources/Audio/buttonHover.wav
+  - Type: AUDIO
+    UID: 7275537931168225468
+    Name: Footsteps-Stealth-Sneaking-Wood-Socks_3
+    Source: Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_3.wav
+  - Type: AUDIO
+    UID: 7372553444461998506
+    Name: buttonPressed
+    Source: Resources/Audio/buttonPressed.wav
+  - Type: AUDIO
+    UID: 5888642589876066344
+    Name: playerHurt_1
+    Source: Resources/Audio/playerHurt_1.wav
+  - Type: AUDIO
+    UID: 15703267302175957142
+    Name: enemyAtk_1
+    Source: Resources/Audio/enemyAtk_1.wav
+  - Type: AUDIO
+    UID: 1557409197895366975
+    Name: enemyAtk_2
+    Source: Resources/Audio/enemyAtk_2.wav
+  - Type: AUDIO
+    UID: 13231283646619960476
+    Name: enemyAtk_3
+    Source: Resources/Audio/enemyAtk_3.wav
+  - Type: AUDIO
+    UID: 16419036880515767606
+    Name: Footsteps-Stealth-Sneaking-Wood-Socks_1
+    Source: Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_1.wav
+  - Type: AUDIO
+    UID: 11913777506126812821
+    Name: enemyHurt_1
+    Source: Resources/Audio/enemyHurt_1.wav
+  - Type: AUDIO
+    UID: 2080935950322568031
+    Name: Footsteps-Stealth-Sneaking-Wood-Socks_2
+    Source: Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_2.wav
+  - Type: AUDIO
+    UID: 7276058885559794205
+    Name: Footsteps-Stealth-Sneaking-Wood-Socks_4
+    Source: Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_4.wav
+  - Type: AUDIO
+    UID: 14912018764492901802
+    Name: Footsteps-Stealth-Sneaking-Wood-Socks_5
+    Source: Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_5.wav
+  - Type: AUDIO
+    UID: 13757780100161195923
+    Name: Footsteps-Stealth-Sneaking-Wood-Socks_6
+    Source: Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_6.wav
+  - Type: AUDIO
+    UID: 15658658186560412188
+    Name: Sheathe
+    Source: Resources/Audio/Sheathe.wav
+  - Type: AUDIO
+    UID: 15261242359348588128
+    Name: Footsteps-Stealth-Sneaking-Wood-Socks_7
+    Source: Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_7.wav
+  - Type: AUDIO
+    UID: 962560488053106255
+    Name: freeze
+    Source: Resources/Audio/freeze.wav
+  - Type: AUDIO
+    UID: 5857866727950034211
+    Name: HouseOfLanternsBGM1Mstr
+    Source: Resources/Audio/HouseOfLanternsBGM1Mstr.wav
+  - Type: AUDIO
+    UID: 545094823311612520
+    Name: outdoorAmbience
+    Source: Resources/Audio/outdoorAmbience.wav
+  - Type: AUDIO
+    UID: 15029563346532604645
+    Name: playerAttack_1
+    Source: Resources/Audio/playerAttack_1.wav
+  - Type: AUDIO
+    UID: 13283778458063452581
+    Name: playerHurt_2
+    Source: Resources/Audio/playerHurt_2.wav
+  - Type: AUDIO
+    UID: 12744037939485381771
+    Name: playerPunch_1
+    Source: Resources/Audio/playerPunch_1.wav
+  - Type: AUDIO
+    UID: 10831851872083716194
+    Name: playerPunch_2
+    Source: Resources/Audio/playerPunch_2.wav
+  - Type: AUDIO
+    UID: 17462265830430448954
+    Name: playerRun_03
+    Source: Resources/Audio/playerRun_03.wav
+  - Type: AUDIO
+    UID: 3065010712173088277
+    Name: playerPunch_3
+    Source: Resources/Audio/playerPunch_3.wav
+  - Type: AUDIO
+    UID: 5628124252299819376
+    Name: playerRun_01
+    Source: Resources/Audio/playerRun_01.wav
+  - Type: AUDIO
+    UID: 3876527587234858444
+    Name: playerRun_05
+    Source: Resources/Audio/playerRun_05.wav
+  - Type: AUDIO
+    UID: 7254744251562406754
+    Name: the voices
+    Source: Resources/Audio/the voices.wav
+  - Type: AUDIO
+    UID: 7540292727515433577
+    Name: playerRun_06
+    Source: Resources/Audio/playerRun_06.wav
+  - Type: AUDIO
+    UID: 1593459110826043138
+    Name: playerWalk_01
+    Source: Resources/Audio/playerWalk_01.wav
+  - Type: AUDIO
+    UID: 3505363703250886699
+    Name: playerWalk_02
+    Source: Resources/Audio/playerWalk_02.wav
+  - Type: AUDIO
+    UID: 13000570178548683569
+    Name: playerWalk_04
+    Source: Resources/Audio/playerWalk_04.wav
+  - Type: AUDIO
+    UID: 13937765315506416748
+    Name: poison
+    Source: Resources/Audio/poison.wav
+  - Type: AUDIO
+    UID: 6325053307148408947
+    Name: poisonCast
+    Source: Resources/Audio/poisonCast.wav
+  - Type: AUDIO
+    UID: 17537976810560703968
+    Name: unfreeze
+    Source: Resources/Audio/unfreeze.wav
+  - Type: AUDIO
+    UID: 3974660092659929545
+    Name: Unsheathe
+    Source: Resources/Audio/Unsheathe.wav

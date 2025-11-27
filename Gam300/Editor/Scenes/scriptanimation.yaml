@@ -3,6 +3,315 @@ ENTITIES:
   - {}
   - {}
   - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - InfoComponent:
+      Parent: 0
+      Name: Spot Light
+      UID: 12363776012929465708
+    TransformComponent:
+      Transform:
+        Translate: [2, 2, 2]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.699999988, 0.800000012, 1]
+        Intensity: 15
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Directional Light
+      UID: 16395980114807373968
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [6, 0, 0]
+        Scale: [1, 1, 1]
+    DirectLightComponent:
+      Light:
+        Radiance: [1, 1, 0.899999976]
+        Intensity: 3
+  - InfoComponent:
+      Parent: 0
+      Name: Point Light
+      UID: 5315588240363654174
+    TransformComponent:
+      Transform:
+        Translate: [0, 0.5, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.899999976, 0.699999988]
+        Intensity: 10
+        Range: 0
+  - {}
+  - InfoComponent:
+      Parent: 0
+      Name: Camera
+      UID: 9201024860084647067
+    TransformComponent:
+      Transform:
+        Translate: [5.30447483, 0.549028814, 8.12193871]
+        Rotate: [-17.9999924, 10.0000839, 0]
+        Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        NearPlane: 0.300000012
+        FarPlane: 1000
+        FOV: 91
+    ThirdPersonCameraComponent:
+      Offset: [0, 2, 0]
+      Current Distance: 2
+      Min Distance: 1
+      Max Distance: 5
+      Current Yaw: -1217
+      Current Pitch: -54
+      Mouse Sensitivity: 1
+      Scroll Sensitivity: 1
+  - InfoComponent:
+      Parent: 0
+      Name: Skybox
+      UID: 3009173759421305309
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    SkyboxComponent:
+      SkyboxID: 10427935764841817814
+  - {}
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0.5
+        Restitution: 0
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: Ground
+      UID: 10000000000000000002
+    TransformComponent:
+      Transform:
+        Translate: [0, -1.29999995, 0]
+        Rotate: [0, 0, 0]
+        Scale: [20, 0.200000003, 20]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 0
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [20, 0.200000003, 20]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 11573253777835523025
+      ModelName: Cube
+      MaterialName: ""
+      ModelSource: Resources/Models/Cube.fbx
+      MaterialSource: Marble
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -20,8 +329,8 @@ ENTITIES:
       UID: 17033057198746013049
     TransformComponent:
       Transform:
-        Translate: [4.66605234, -1.19499993, 6.39898014]
-        Rotate: [0, 76.9028625, 0]
+        Translate: [3.12875652, -1.19499993, 2.30647349]
+        Rotate: [180, 47.000042, 180]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
       RigidBody:
@@ -30,11 +339,11 @@ ENTITIES:
         InitialVelocity: [0, 0, 0]
         Previous Scale: [0.00999999978, 0.00999999978, 0.00999999978]
         FreezeRotationX: true
-        FreezeRotationY: false
+        FreezeRotationY: true
         FreezeRotationZ: true
         Type: DYNAMIC
     ModelComponent:
-      ModelID: 337687598050146510
+      ModelID: 17415887327955155372
       MaterialID: 0
       ModelName: ""
       MaterialName: ""
@@ -84,7 +393,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
         - name: State 2
-          clipIndex: 0
+          clipIndex: 3
           speed: 1
           loop: true
           transitions:
@@ -104,320 +413,24 @@ ENTITIES:
               transitionDuration: 0.150000006
               hasExitTime: false
               exitTime: 0.899999976
+        - name: New State
+          clipIndex: 0
+          speed: 1
+          loop: true
+          transitions:
+            []
       FloatParams:
-        Speed: 0
         DirectionZ: 0
+        Speed: 0
         DirectionX: 0
       BoolParams:
+        IsGrounded: false
         IsMoving: false
-        IsGrounded: true
       CurrentStateIndex: 1
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.PlayerMovement
+      TypeName: GameScripts.MovementAnimator
       ParamsJSON: "{}"
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0.5
-        Restitution: 0
-        IsTrigger: false
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Ground
-      UID: 10000000000000000002
-    TransformComponent:
-      Transform:
-        Translate: [0, -1.29999995, 0]
-        Rotate: [0, 0, 0]
-        Scale: [20, 0.200000003, 20]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 0
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [20, 0.200000003, 20]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 7633162898494281895
-      MaterialID: 11573253777835523025
-      ModelName: Cube
-      MaterialName: ""
-      ModelSource: Resources/Models/Cube.fbx
-      MaterialSource: Marble
-  - {}
-  - InfoComponent:
-      Parent: 0
-      Name: Skybox
-      UID: 3009173759421305309
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    SkyboxComponent:
-      SkyboxID: 10427935764841817814
-  - InfoComponent:
-      Parent: 0
-      Name: Camera
-      UID: 9201024860084647067
-    TransformComponent:
-      Transform:
-        Translate: [5.4677906, -0.813033819, 7.25873661]
-        Rotate: [54.0000076, 43.0000839, 0]
-        Scale: [1, 1, 1]
-    CameraComponent:
-      Camera:
-        NearPlane: 0.300000012
-        FarPlane: 1000
-        FOV: 91
-    ThirdPersonCameraComponent:
-      Offset: [0, 2, 0]
-      Current Distance: 2
-      Min Distance: 1
-      Max Distance: 5
-      Current Yaw: -1217
-      Current Pitch: -54
-      Mouse Sensitivity: 1
-      Scroll Sensitivity: 1
-  - {}
-  - InfoComponent:
-      Parent: 0
-      Name: Point Light
-      UID: 5315588240363654174
-    TransformComponent:
-      Transform:
-        Translate: [0, 0.5, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    PointLightComponent:
-      Light:
-        Radiance: [1, 0.899999976, 0.699999988]
-        Intensity: 10
-        Range: 0
-  - InfoComponent:
-      Parent: 0
-      Name: Directional Light
-      UID: 16395980114807373968
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [6, 0, 0]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [1, 1, 0.899999976]
-        Intensity: 3
-  - InfoComponent:
-      Parent: 0
-      Name: Spot Light
-      UID: 12363776012929465708
-    TransformComponent:
-      Transform:
-        Translate: [2, 2, 2]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.699999988, 0.800000012, 1]
-        Intensity: 15
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
-  - {}
   - {}
   - {}
   - {}

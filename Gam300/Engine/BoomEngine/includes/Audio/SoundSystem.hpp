@@ -5,6 +5,7 @@
 #include "ECS/ECS.hpp"
 #include <unordered_map>
 #include <glm/vec3.hpp>
+#include <vector>
 
 class SoundSystem {
 public:
@@ -13,6 +14,8 @@ public:
  static void Shutdown();
 
 private:
- inline static std::unordered_map<uint64_t, std::string> s_activeInstances;
+ inline static std::unordered_map<uint64_t, std::vector<std::string>> s_activeInstances;
  inline static std::unordered_map<uint64_t, glm::vec3> s_lastPos;
+ // per-entity -> per-instance last play timestamp (seconds)
+ inline static std::unordered_map<uint64_t, std::unordered_map<std::string, double>> s_lastTriggerTime;
 };
