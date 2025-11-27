@@ -1777,7 +1777,7 @@ namespace EditorUI {
                     showDeletePopup = false;
                     ImGui::CloseCurrentPopup();
                 }
-                ImGui::EndPopup();
+                
             }
             else if (m_App->SelectedAsset().id != 0u)
             {

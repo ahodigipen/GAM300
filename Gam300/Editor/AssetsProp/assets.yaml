@@ -18,6 +18,40 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
   - Type: MATERIAL
+    UID: 16257091296667891899
+    Name: Paper Wall Texture
+    Source: Paper Wall Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 3258529618581877054
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 12207453972742617529
+    Name: Wall Test
+    Source: Wall Test
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 255836083165499956
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
     UID: 2930779482462285987
     Name: Gradient
     Source: Gradient
@@ -52,6 +86,23 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
   - Type: MATERIAL
+    UID: 9126702018428758169
+    Name: Lamp Texture
+    Source: Lamp Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 18036222300221331622
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
     UID: 8803557448742180096
     Name: light
     Source: light
@@ -62,6 +113,108 @@ ASSETS:
         roughness: 0
         metallic: 0
         occlusion: 0
+      AlbedoMapID: 0
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 9170069941051798259
+    Name: Lion Texture
+    Source: Lion Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 8781181629247619230
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 5692762562094318330
+    Name: Floor Texture
+    Source: Floor Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [0.99000001, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 2779217692485608494
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 6133974277031033463
+    Name: Tree Texture
+    Source: Tree Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 5444082718129606842
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 13160241162385617845
+    Name: Samurai Texture
+    Source: Samurai Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 11307617190584154139
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 8235375233612734933
+    Name: Wall Texture 1
+    Source: Wall Texture 1
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 0
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 6977112513598097705
+    Name: SkyBox
+    Source: SkyBox
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
       AlbedoMapID: 0
       NormalMapID: 0
       RoughnessMapID: 0
@@ -323,6 +476,13 @@ ASSETS:
         AnimatorComponent:
           Sequence: 0
           Time: 832.96283
+
+  - Type: PREFAB
+    UID: 17959731737648018740
+    Name: Dancing Model
+    Source: Resources/Prefabs/Dancing Model.prefab
+    Properties:
+      SerializedData: |
 
   - Type: TEXTURE
     UID: 4036289525977957957
@@ -1688,6 +1848,39 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
+  - Type: TEXTURE
+    UID: 5683024394054684229
+    Name: Cold Night
+    Source: Resources/Cold Night.dds
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 13208390656960053979
+    Name: Cold Night (1)
+    Source: Resources/Cold Night (1).dds
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 34366814267986228
+    Name: Cold Night (2)
+    Source: Resources/Cold Night (2).DDS
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
   - Type: SKYBOX
     UID: 10427935764841817814
     Name: sky.DDS
@@ -3054,6 +3247,17 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
+    UID: 180048974928296078
+    Name: Scissor Ninja Idle
+    Source: Resources/Models/Scissor Ninja Idle.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
+  - Type: MODEL
     UID: 12600730890549785123
     Name: Terrain
     Source: Resources/Models/Terrain.fbx
@@ -3064,3 +3268,256 @@ ASSETS:
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
       HasJoints: false
+  - Type: MODEL
+    UID: 13424550679758465822
+    Name: Rock_Ninja_Textured
+    Source: Resources/Rock_Ninja_Textured.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
+  - Type: MODEL
+    UID: 2088400025698853957
+    Name: Scissor Ninja Idle (2)
+    Source: Resources/Scissor Ninja Idle (2).fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 5102588233319485504
+    Name: Scissor Ninja Idle
+    Source: Resources/Scissor Ninja Idle.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
+  - Type: AUDIO
+    UID: 12267195745784827679
+    Name: Kairos_Cave-Vuk_Loop
+    Source: Resources/Audio/Kairos_Cave-Vuk_Loop.wav
+  - Type: AUDIO
+    UID: 5064117765438422255
+    Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_5
+    Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_5.wav
+  - Type: AUDIO
+    UID: 1512395405601140110
+    Name: playerWalk_05
+    Source: Resources/Audio/playerWalk_05.wav
+  - Type: AUDIO
+    UID: 4631183016260115183
+    Name: playerRun_04
+    Source: Resources/Audio/playerRun_04.wav
+  - Type: AUDIO
+    UID: 16740961915277050147
+    Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_1
+    Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_1.wav
+  - Type: AUDIO
+    UID: 17895200579608756026
+    Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_2
+    Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_2.wav
+  - Type: AUDIO
+    UID: 16391738320421363821
+    Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_3
+    Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_3.wav
+  - Type: AUDIO
+    UID: 7389825723535328104
+    Name: playerAttack_2
+    Source: Resources/Audio/playerAttack_2.wav
+  - Type: AUDIO
+    UID: 4309462336413165516
+    Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_4
+    Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_4.wav
+  - Type: AUDIO
+    UID: 2194325517801054000
+    Name: 10Suns_WalkAbout_BGM1_Loop
+    Source: Resources/Audio/10Suns_WalkAbout_BGM1_Loop.wav
+  - Type: AUDIO
+    UID: 7418220252929015681
+    Name: Footsteps-Stealth-Sneaking-Wood-Socks_8
+    Source: Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_8.wav
+  - Type: AUDIO
+    UID: 13077478249973297030
+    Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_6
+    Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_6.wav
+  - Type: AUDIO
+    UID: 15958803571243056749
+    Name: playerRun_02
+    Source: Resources/Audio/playerRun_02.wav
+  - Type: AUDIO
+    UID: 7973227476693740649
+    Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_7
+    Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_7.wav
+  - Type: AUDIO
+    UID: 8672755277680878936
+    Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_8
+    Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_8.wav
+  - Type: AUDIO
+    UID: 11333566408096603704
+    Name: playerWalk_03
+    Source: Resources/Audio/playerWalk_03.wav
+  - Type: AUDIO
+    UID: 12727926029481188102
+    Name: 02.Night_Forest_Field_Stars_Loop
+    Source: Resources/Audio/02.Night_Forest_Field_Stars_Loop.wav
+  - Type: AUDIO
+    UID: 10537137308875949976
+    Name: enemyHurt_2
+    Source: Resources/Audio/enemyHurt_2.wav
+  - Type: AUDIO
+    UID: 8074793992686764900
+    Name: 05.Fog-Desert_Loop
+    Source: Resources/Audio/05.Fog-Desert_Loop.wav
+  - Type: AUDIO
+    UID: 17317263426716856294
+    Name: 20.Room-Tone_SFX_Ambience_Loop
+    Source: Resources/Audio/20.Room-Tone_SFX_Ambience_Loop.wav
+  - Type: AUDIO
+    UID: 5987073343064884782
+    Name: buttonHover
+    Source: Resources/Audio/buttonHover.wav
+  - Type: AUDIO
+    UID: 7372553444461998506
+    Name: buttonPressed
+    Source: Resources/Audio/buttonPressed.wav
+  - Type: AUDIO
+    UID: 7275537931168225468
+    Name: Footsteps-Stealth-Sneaking-Wood-Socks_3
+    Source: Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_3.wav
+  - Type: AUDIO
+    UID: 15703267302175957142
+    Name: enemyAtk_1
+    Source: Resources/Audio/enemyAtk_1.wav
+  - Type: AUDIO
+    UID: 5888642589876066344
+    Name: playerHurt_1
+    Source: Resources/Audio/playerHurt_1.wav
+  - Type: AUDIO
+    UID: 1557409197895366975
+    Name: enemyAtk_2
+    Source: Resources/Audio/enemyAtk_2.wav
+  - Type: AUDIO
+    UID: 13231283646619960476
+    Name: enemyAtk_3
+    Source: Resources/Audio/enemyAtk_3.wav
+  - Type: AUDIO
+    UID: 11913777506126812821
+    Name: enemyHurt_1
+    Source: Resources/Audio/enemyHurt_1.wav
+  - Type: AUDIO
+    UID: 16419036880515767606
+    Name: Footsteps-Stealth-Sneaking-Wood-Socks_1
+    Source: Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_1.wav
+  - Type: AUDIO
+    UID: 2080935950322568031
+    Name: Footsteps-Stealth-Sneaking-Wood-Socks_2
+    Source: Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_2.wav
+  - Type: AUDIO
+    UID: 7276058885559794205
+    Name: Footsteps-Stealth-Sneaking-Wood-Socks_4
+    Source: Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_4.wav
+  - Type: AUDIO
+    UID: 14912018764492901802
+    Name: Footsteps-Stealth-Sneaking-Wood-Socks_5
+    Source: Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_5.wav
+  - Type: AUDIO
+    UID: 13757780100161195923
+    Name: Footsteps-Stealth-Sneaking-Wood-Socks_6
+    Source: Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_6.wav
+  - Type: AUDIO
+    UID: 15261242359348588128
+    Name: Footsteps-Stealth-Sneaking-Wood-Socks_7
+    Source: Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_7.wav
+  - Type: AUDIO
+    UID: 15658658186560412188
+    Name: Sheathe
+    Source: Resources/Audio/Sheathe.wav
+  - Type: AUDIO
+    UID: 962560488053106255
+    Name: freeze
+    Source: Resources/Audio/freeze.wav
+  - Type: AUDIO
+    UID: 5857866727950034211
+    Name: HouseOfLanternsBGM1Mstr
+    Source: Resources/Audio/HouseOfLanternsBGM1Mstr.wav
+  - Type: AUDIO
+    UID: 545094823311612520
+    Name: outdoorAmbience
+    Source: Resources/Audio/outdoorAmbience.wav
+  - Type: AUDIO
+    UID: 15029563346532604645
+    Name: playerAttack_1
+    Source: Resources/Audio/playerAttack_1.wav
+  - Type: AUDIO
+    UID: 13283778458063452581
+    Name: playerHurt_2
+    Source: Resources/Audio/playerHurt_2.wav
+  - Type: AUDIO
+    UID: 12744037939485381771
+    Name: playerPunch_1
+    Source: Resources/Audio/playerPunch_1.wav
+  - Type: AUDIO
+    UID: 10831851872083716194
+    Name: playerPunch_2
+    Source: Resources/Audio/playerPunch_2.wav
+  - Type: AUDIO
+    UID: 3065010712173088277
+    Name: playerPunch_3
+    Source: Resources/Audio/playerPunch_3.wav
+  - Type: AUDIO
+    UID: 17462265830430448954
+    Name: playerRun_03
+    Source: Resources/Audio/playerRun_03.wav
+  - Type: AUDIO
+    UID: 5628124252299819376
+    Name: playerRun_01
+    Source: Resources/Audio/playerRun_01.wav
+  - Type: AUDIO
+    UID: 3876527587234858444
+    Name: playerRun_05
+    Source: Resources/Audio/playerRun_05.wav
+  - Type: AUDIO
+    UID: 7540292727515433577
+    Name: playerRun_06
+    Source: Resources/Audio/playerRun_06.wav
+  - Type: AUDIO
+    UID: 7254744251562406754
+    Name: the voices
+    Source: Resources/Audio/the voices.wav
+  - Type: AUDIO
+    UID: 1593459110826043138
+    Name: playerWalk_01
+    Source: Resources/Audio/playerWalk_01.wav
+  - Type: AUDIO
+    UID: 3505363703250886699
+    Name: playerWalk_02
+    Source: Resources/Audio/playerWalk_02.wav
+  - Type: AUDIO
+    UID: 13000570178548683569
+    Name: playerWalk_04
+    Source: Resources/Audio/playerWalk_04.wav
+  - Type: AUDIO
+    UID: 13937765315506416748
+    Name: poison
+    Source: Resources/Audio/poison.wav
+  - Type: AUDIO
+    UID: 6325053307148408947
+    Name: poisonCast
+    Source: Resources/Audio/poisonCast.wav
+  - Type: AUDIO
+    UID: 17537976810560703968
+    Name: unfreeze
+    Source: Resources/Audio/unfreeze.wav
+  - Type: AUDIO
+    UID: 3974660092659929545
+    Name: Unsheathe
+    Source: Resources/Audio/Unsheathe.wav
