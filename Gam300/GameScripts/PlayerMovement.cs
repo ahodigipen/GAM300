@@ -11,6 +11,23 @@ using System.Runtime.CompilerServices;
 /// </summary>
 namespace GameScripts
 {
+
+    public static class HUD
+    {
+        // 0..1
+        public static float HealthRatio = 1f;
+
+        public static void SetHealth(int hp, int max)
+        {
+            if (max <= 0) { HealthRatio = 0f; return; }
+            float r = (float)hp / (float)max;
+            if (r < 0f) r = 0f;
+            if (r > 1f) r = 1f;
+            HealthRatio = r;
+        }
+    }
+
+
     public class PlayerMovement
     {
         // This field is automatically set by the scripting system
@@ -119,6 +136,8 @@ namespace GameScripts
             API.Log($"  Jump Speed: {_jumpSpeed}");
             API.Log($"[PlayerMovement] Model forward offset: {_modelForwardOffset} degrees");
 
+            _health = _maxHealth;
+            HUD.SetHealth(_health, _maxHealth);
 
         }
 
@@ -145,6 +164,7 @@ namespace GameScripts
 
             // Lose 1 HP
             _health--;
+            HUD.SetHealth(_health, _maxHealth);
             API.Log($"[PlayerMovement] HP reduced to: {_health}/{_maxHealth}");
 
             // Play damage sound
@@ -217,8 +237,11 @@ namespace GameScripts
             _isInvulnerable = true;
             _invulnerabilityTimer = 0f;
 
+            HUD.SetHealth(_health, _maxHealth);
+
             // Reset respawn state
             _isRespawning = false;
+
 
             API.Log($"[PlayerMovement] Respawn complete! Invulnerable for {_invulnerabilityDuration} seconds");
         }
