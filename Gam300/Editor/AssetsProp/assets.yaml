@@ -2046,18 +2046,18 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
-      HasJoints: true
+      HasJoints: false
   - Type: MODEL
-    UID: 7477699483648389514
-    Name: Desert_Plant_04_Small_0_1
-    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Desert_Plant_04_Small_0_1.fbx
+    UID: 4878958897926110889
+    Name: Walking
+    Source: Resources/Models/Player/animations/Walking.fbx
     Properties:
       Model Transform:
         transform:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
-      HasJoints: false
+      HasJoints: true
   - Type: MODEL
     UID: 8468216516841351967
     Name: Indoor_Lantern_Hanging
@@ -2466,9 +2466,9 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 2038469021834599090
-    Name: Desert_Ribs_Small_0_1
-    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Desert_Ribs_Small_0_1.fbx
+    UID: 13779674563758479505
+    Name: Cushion
+    Source: Resources/Models/Cushion.fbx
     Properties:
       Model Transform:
         transform:
