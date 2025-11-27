@@ -109,18 +109,6 @@ namespace Boom
             if (activeCam) camera.attachCamera(activeCam);
             glfwMakeContextCurrent(engineWindow.get());
 
-            // NEW: runtime toggle with F9
-            {
-                static bool prevF9 = false;
-                bool f9Pressed = glfwGetKey(engineWindow.get(), GLFW_KEY_F9) == GLFW_PRESS;
-                if (f9Pressed && !prevF9)
-                {
-                    m_PhysDebugViz = !m_PhysDebugViz;
-                    m_Context->physics->EnableDebugVisualization(m_PhysDebugViz, 1.0f);
-                    BOOM_INFO("[PhysX] Debug visualization: {}", m_PhysDebugViz ? "ON" : "OFF");
-                }
-                prevF9 = f9Pressed;
-            }
 
             //   F11 for testing change of rigid body type
             {
@@ -152,7 +140,7 @@ namespace Boom
             // Always update delta time, but adjust for pause state
             ComputeFrameDeltaTime();
             if (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) {
-               // InvokeStatic1Float("GameScripts", "Entry", "Update", static_cast<float>(m_Context->DeltaTime));
+                // InvokeStatic1Float("GameScripts", "Entry", "Update", static_cast<float>(m_Context->DeltaTime));
                 m_AIagents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime));
                 if (m_Nav) {
                     m_NavAgents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime), *m_Nav);
@@ -161,7 +149,7 @@ namespace Boom
             float dt = static_cast<float>(m_Context->DeltaTime);
             m_Context->scriptingSystem->UpdateFileWatcher();
             m_Context->scriptingSystem->CallUpdate(dt);
-            
+
             auto& registry = m_Context->scene;
             auto scriptView = registry.view<Boom::ScriptComponent>();
             for (auto entity : scriptView) {
@@ -702,7 +690,7 @@ namespace Boom
         }
     }
 
-void Application::AppendConvexMeshWire(const physx::PxConvexMeshGeometry& geom, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color)
+    void Application::AppendConvexMeshWire(const physx::PxConvexMeshGeometry& geom, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color)
     {
         const physx::PxConvexMesh* mesh = geom.convexMesh;
         if (!mesh) return;
@@ -791,48 +779,48 @@ void Application::AppendConvexMeshWire(const physx::PxConvexMeshGeometry& geom, 
     }
 
     void Application::AppendTriangleWire(const glm::vec3& scale, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color)
-{
-    const glm::mat4 M = PxToGlm(world);
-    const float height = scale.y * 0.5f;
-    const float sizeX = scale.x;
-    const float sizeZ = scale.z;
-    
-    // Define triangle vertices (top face)
-    const glm::vec3 topVerts[3] = {
-        glm::vec3(0.0f, height, sizeZ * 0.5f),           // Front vertex
-        glm::vec3(-sizeX * 0.5f, height, -sizeZ * 0.5f), // Back-left
-        glm::vec3(sizeX * 0.5f, height, -sizeZ * 0.5f)   // Back-right
-    };
-    
-    // Define triangle vertices (bottom face)
-    const glm::vec3 botVerts[3] = {
-        glm::vec3(0.0f, -height, sizeZ * 0.5f),
-        glm::vec3(-sizeX * 0.5f, -height, -sizeZ * 0.5f),
-        glm::vec3(sizeX * 0.5f, -height, -sizeZ * 0.5f)
-    };
-    
-    // Transform vertices to world space
-    auto Transform = [&](const glm::vec3& v) {
-        return glm::vec3(M * glm::vec4(v, 1.0f));
-    };
-    
-    // Draw top triangle edges
-    for (int i = 0; i < 3; ++i) {
-        int next = (i + 1) % 3;
-        AppendLine(out, Transform(topVerts[i]), Transform(topVerts[next]), color, color);
+    {
+        const glm::mat4 M = PxToGlm(world);
+        const float height = scale.y * 0.5f;
+        const float sizeX = scale.x;
+        const float sizeZ = scale.z;
+
+        // Define triangle vertices (top face)
+        const glm::vec3 topVerts[3] = {
+            glm::vec3(0.0f, height, sizeZ * 0.5f),           // Front vertex
+            glm::vec3(-sizeX * 0.5f, height, -sizeZ * 0.5f), // Back-left
+            glm::vec3(sizeX * 0.5f, height, -sizeZ * 0.5f)   // Back-right
+        };
+
+        // Define triangle vertices (bottom face)
+        const glm::vec3 botVerts[3] = {
+            glm::vec3(0.0f, -height, sizeZ * 0.5f),
+            glm::vec3(-sizeX * 0.5f, -height, -sizeZ * 0.5f),
+            glm::vec3(sizeX * 0.5f, -height, -sizeZ * 0.5f)
+        };
+
+        // Transform vertices to world space
+        auto Transform = [&](const glm::vec3& v) {
+            return glm::vec3(M * glm::vec4(v, 1.0f));
+            };
+
+        // Draw top triangle edges
+        for (int i = 0; i < 3; ++i) {
+            int next = (i + 1) % 3;
+            AppendLine(out, Transform(topVerts[i]), Transform(topVerts[next]), color, color);
+        }
+
+        // Draw bottom triangle edges
+        for (int i = 0; i < 3; ++i) {
+            int next = (i + 1) % 3;
+            AppendLine(out, Transform(botVerts[i]), Transform(botVerts[next]), color, color);
+        }
+
+        // Draw vertical edges connecting top and bottom
+        for (int i = 0; i < 3; ++i) {
+            AppendLine(out, Transform(topVerts[i]), Transform(botVerts[i]), color, color);
+        }
     }
-    
-    // Draw bottom triangle edges
-    for (int i = 0; i < 3; ++i) {
-        int next = (i + 1) % 3;
-        AppendLine(out, Transform(botVerts[i]), Transform(botVerts[next]), color, color);
-    }
-    
-    // Draw vertical edges connecting top and bottom
-    for (int i = 0; i < 3; ++i) {
-        AppendLine(out, Transform(topVerts[i]), Transform(botVerts[i]), color, color);
-    }
-}
 
     void Application::DrawRigidBodiesDebugOnly(const glm::mat4& view, const glm::mat4& proj)
     {
