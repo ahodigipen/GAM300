@@ -29,6 +29,12 @@ namespace GameScripts
         // Static reference to player entity for trigger callbacks
         private static ulong s_playerEntity = 0;
 
+        // NEW: Rotation smoothing
+        //private float _rotationSpeed = 10f; // degrees per frame to turn
+
+        // NEW: Model forward direction offset (adjust if model faces wrong way)
+        private float _modelForwardOffset = 180f; // 180° if model faces backwards, 0° if correct
+
         /// <summary>
         /// Called once when the script is first created.
         /// </summary>
@@ -62,6 +68,7 @@ namespace GameScripts
             RegisterTriggerCallbacksOnAllTriggers();
 
             API.Log($"[PlayerMovement] Using camera-relative PhysX movement: speed={_speed}, jumpSpeed={_jumpSpeed}");
+            API.Log($"[PlayerMovement] Model forward offset: {_modelForwardOffset} degrees");
         }
 
         private void RegisterTriggerCallbacksOnAllTriggers()
@@ -174,6 +181,18 @@ namespace GameScripts
                 {
                     vel.X = (moveDirection.X / len) * _speed;
                     vel.Z = (moveDirection.Z / len) * _speed;
+
+                    // NEW: Calculate rotation with model forward offset correction
+                    float targetYaw = (float)(Math.Atan2(moveDirection.X, moveDirection.Z) * 180.0 / Math.PI);
+
+                    // Apply the offset to correct for model's wrong forward direction
+                    targetYaw += _modelForwardOffset;
+
+                    // Normalize angle to [-180, 180] range
+                    while (targetYaw > 180f) targetYaw -= 360f;
+                    while (targetYaw < -180f) targetYaw += 360f;
+
+                    API.SetRotationY(Entity, targetYaw);
                 }
             }
             else
@@ -241,44 +260,44 @@ namespace GameScripts
                     triggerPos = API.GetPosition(triggerEntity);
                 }
 
-            // Try to identify trigger by name lookup
-            // Note: This approach searches for known trigger names
-            bool soundPlayed = false;
+                // Try to identify trigger by name lookup
+                // Note: This approach searches for known trigger names
+                bool soundPlayed = false;
 
-            // Try common trigger names
-            ulong checkpoint = API.FindEntity("Checkpoint");
-            ulong damageZone = API.FindEntity("DamageZone");
-            ulong powerup = API.FindEntity("PowerUp");
-            ulong door = API.FindEntity("DoorTrigger");
+                // Try common trigger names
+                ulong checkpoint = API.FindEntity("Checkpoint");
+                ulong damageZone = API.FindEntity("DamageZone");
+                ulong powerup = API.FindEntity("PowerUp");
+                ulong door = API.FindEntity("DoorTrigger");
 
-            if (triggerEntity == checkpoint && checkpoint != 0)
-            {
-                API.Log(">>> CHECKPOINT REACHED! <<<");
-                API.PlaySoundAt("checkpoint", "Resources/Audio/playerPunch_1.wav", triggerPos, false);
-                API.SetSoundVolume("checkpoint", 0.95f);
-                soundPlayed = true;
-            }
-            else if (triggerEntity == damageZone && damageZone != 0)
-            {
-                API.Log(">>> PLAYER TAKING DAMAGE! <<<");
-                API.PlaySoundAt("damage", "Resources/Audio/playerPunch_1.wav", triggerPos, false);
-                API.SetSoundVolume("damage", 0.8f);
-                soundPlayed = true;
-            }
-            else if (triggerEntity == powerup && powerup != 0)
-            {
-                API.Log(">>> POWER-UP COLLECTED! <<<");
-                API.PlaySoundAt("powerup", "Resources/Audio/playerPunch_1.wav", triggerPos, false);
-                API.SetSoundVolume("powerup", 0.9f);
-                soundPlayed = true;
-            }
-            else if (triggerEntity == door && door != 0)
-            {
-                API.Log(">>> DOOR ACTIVATED! <<<");
-                API.PlaySoundAt("door_open", "Resources/Audio/playerPunch_1.wav", triggerPos, false);
-                API.SetSoundVolume("door_open", 0.85f);
-                soundPlayed = true;
-            }
+                if (triggerEntity == checkpoint && checkpoint != 0)
+                {
+                    API.Log(">>> CHECKPOINT REACHED! <<<");
+                    API.PlaySoundAt("checkpoint", "Resources/Audio/playerPunch_1.wav", triggerPos, false);
+                    API.SetSoundVolume("checkpoint", 0.95f);
+                    soundPlayed = true;
+                }
+                else if (triggerEntity == damageZone && damageZone != 0)
+                {
+                    API.Log(">>> PLAYER TAKING DAMAGE! <<<");
+                    API.PlaySoundAt("damage", "Resources/Audio/playerPunch_1.wav", triggerPos, false);
+                    API.SetSoundVolume("damage", 0.8f);
+                    soundPlayed = true;
+                }
+                else if (triggerEntity == powerup && powerup != 0)
+                {
+                    API.Log(">>> POWER-UP COLLECTED! <<<");
+                    API.PlaySoundAt("powerup", "Resources/Audio/playerPunch_1.wav", triggerPos, false);
+                    API.SetSoundVolume("powerup", 0.9f);
+                    soundPlayed = true;
+                }
+                else if (triggerEntity == door && door != 0)
+                {
+                    API.Log(">>> DOOR ACTIVATED! <<<");
+                    API.PlaySoundAt("door_open", "Resources/Audio/playerPunch_1.wav", triggerPos, false);
+                    API.SetSoundVolume("door_open", 0.85f);
+                    soundPlayed = true;
+                }
 
                 // If no specific trigger was found, play a generic trigger sound
                 if (!soundPlayed)
@@ -378,6 +397,16 @@ namespace GameScripts
         public void SetFootstepInterval(float interval)
         {
             _footstepComponent?.SetFootstepInterval(interval);
+        }
+
+        /// <summary>
+        /// Set the model forward direction offset if your model faces the wrong way
+        /// Common values: 0° (correct), 180° (backwards), 90° (right), -90° (left)
+        /// </summary>
+        public void SetModelForwardOffset(float degrees)
+        {
+            _modelForwardOffset = degrees;
+            API.Log($"[PlayerMovement] Model forward offset set to: {_modelForwardOffset} degrees");
         }
     }
 }

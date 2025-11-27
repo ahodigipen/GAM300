@@ -81,6 +81,7 @@ namespace Boom
         EnttView<Entity, SkyboxComponent>([this](auto, auto& comp) {
             SkyboxAsset& skybox{ m_Context->assets->Get<SkyboxAsset>(comp.skyboxID) };
             m_Context->renderer->InitSkybox(skybox.data, skybox.envMap, skybox.size);
+            return; //should stop after one skybox rendered
             });
 
         m_DebugLinesShader = std::make_unique<Boom::DebugLinesShader>("debug_lines.glsl");
@@ -177,7 +178,7 @@ namespace Boom
             m_Context->profiler.Start("Total Frame");
             m_Context->profiler.Start("Renderer Start Frame");
             std::apply(glClearColor, CONSTANTS::DEFAULT_BACKGROUND_COLOR);
-            RenderShadowScene();
+            //RenderShadowScene();
             m_Context->renderer->NewFrame();
             m_Context->profiler.End("Renderer Start Frame");
 
@@ -303,8 +304,21 @@ namespace Boom
             //skybox ecs (should be drawn at the end)
             EnttView<Entity, SkyboxComponent>([this](auto entity, SkyboxComponent& comp) {
                 Transform3D& transform{ entity.template Get<TransformComponent>().transform };
+                static AssetID prevSkyID{ comp.skyboxID };
+
+                //reinitialize skybox if different
+                if (prevSkyID != comp.skyboxID) {
+                    EnttView<Entity, SkyboxComponent>([this](auto, auto& comp) {
+                        SkyboxAsset& skybox{ m_Context->assets->Get<SkyboxAsset>(comp.skyboxID) };
+                        m_Context->renderer->InitSkybox(skybox.data, skybox.envMap, skybox.size);
+                        return; //should stop after one skybox rendered
+                        });
+                }
+
+                prevSkyID = comp.skyboxID;
                 SkyboxAsset& skybox{ m_Context->assets->Get<SkyboxAsset>(comp.skyboxID) };
                 m_Context->renderer->DrawSkybox(skybox.data, transform);
+                return; //should stop after one skybox rendered
                 });
 
             m_Context->profiler.Start("Renderer End Frame");
@@ -333,7 +347,9 @@ namespace Boom
             if (entity.Has<ModelComponent>()) {
                 ModelComponent& comp{ entity.Get<ModelComponent>() };
                 if (comp.modelID == EMPTY_ASSET) return;
-                ModelAsset& model{ m_Context->assets->Get<ModelAsset>(comp.modelID) };
+                ModelAsset* mdlPtr{ m_Context->assets->TryGet<ModelAsset>(comp.modelID) };
+                if (!mdlPtr) return;
+                ModelAsset& model{ *mdlPtr };
                 if (entity.Has<AnimatorComponent>()) {
                     auto& an = entity.Get<AnimatorComponent>();
                     // Only update animations in play mode when RUNNING
@@ -350,7 +366,8 @@ namespace Boom
                     }
                 }
 
-                glm::mat4 worldMatrix = GetWorldMatrix(entity);
+                // Use the global Boom::GetWorldMatrix from ECS.hpp
+                glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
                 Transform3D worldTransform;
                 DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
 
@@ -403,54 +420,12 @@ namespace Boom
 
         //render gui overlays at the end
         for (auto const& gui : guiList) {
-            TextureAsset& texture{ m_Context->assets->Get<TextureAsset>(gui.first.textureID) };
-            m_Context->renderer->DrawQuad(texture.data, gui.second, gui.first.color);
+            TextureAsset* texture{ m_Context->assets->TryGet<TextureAsset>(gui.first.textureID) };
+            if (texture)
+                m_Context->renderer->DrawQuad(texture->data, gui.second, gui.first.color);
         }
     }
 
-    glm::mat4 Application::GetWorldMatrix(Entity& entity)
-    {
-        // 1. Get this entity's local matrix (e.g., the visual model's transform)
-        glm::mat4 localMatrix(1.0f);
-        if (entity.Has<TransformComponent>()) {
-            localMatrix = entity.Get<TransformComponent>().transform.Matrix();
-        }
-
-        // 2. Get the parent's world matrix (e.g., the physics body's transform)
-        glm::mat4 pMatrix(1.0f);
-        if (entity.Has<InfoComponent>()) {
-            uint64_t parentUID = entity.Get<InfoComponent>().parent;
-
-            if (parentUID != 0) // 0 means root/no parent
-            {
-                entt::entity parentEnttID = entt::null;
-                auto view = m_Context->scene.view<InfoComponent>();
-                for (auto e : view) {
-                    if (view.get<InfoComponent>(e).uid == parentUID) {
-                        parentEnttID = e;
-                        break;
-                    }
-                }
-
-                if (parentEnttID != entt::null) {
-                    Entity parentEntity{ &m_Context->scene, parentEnttID };
-                    pMatrix = GetWorldMatrix(parentEntity); // Recurse
-                }
-            }
-        }
-
-        // 3. Decompose the parent's matrix into T, R, and S
-        glm::vec3 pTranslate, pRotate, pScale;
-        DecomposeMatrix(pMatrix, pTranslate, pRotate, pScale);
-
-
-        // 4. Recompose the parent's matrix *without* its scale
-        glm::mat4 pMatrix_NoScale;
-        pMatrix_NoScale = RecomposeMatrix(pTranslate, pRotate, glm::vec3(1.0f));
-
-        // 5. Return the parent's (T*R) multiplied by the child's (T*R*S)
-        return pMatrix_NoScale * localMatrix;
-    }
 
     void Application::UpdateThirdPersonCameras()
 
@@ -661,6 +636,129 @@ namespace Boom
         }
     }
 
+    void Application::AppendCylinderWire(float radius, float halfHeight, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color)
+    {
+        const glm::mat4 M = PxToGlm(world);
+        const int segments = 16;
+
+        // Create direction array for circle generation (cached for performance)
+        static std::vector<glm::vec2> dir;
+        if (dir.empty()) {
+            dir.resize(segments);
+            for (int i = 0; i < segments; ++i) {
+                const float a = (float)i / (float)segments * glm::two_pi<float>();
+                dir[i] = glm::vec2(cosf(a), sinf(a));
+            }
+        }
+
+        // Draw top circle (Y = +halfHeight)
+        for (int i = 0; i < segments; ++i) {
+            int next = (i + 1) % segments;
+            glm::vec3 p0 = glm::vec3(M * glm::vec4(dir[i].x * radius, halfHeight, dir[i].y * radius, 1.0f));
+            glm::vec3 p1 = glm::vec3(M * glm::vec4(dir[next].x * radius, halfHeight, dir[next].y * radius, 1.0f));
+            AppendLine(out, p0, p1, color, color);
+        }
+
+        // Draw bottom circle (Y = -halfHeight)
+        for (int i = 0; i < segments; ++i) {
+            int next = (i + 1) % segments;
+            glm::vec3 p0 = glm::vec3(M * glm::vec4(dir[i].x * radius, -halfHeight, dir[i].y * radius, 1.0f));
+            glm::vec3 p1 = glm::vec3(M * glm::vec4(dir[next].x * radius, -halfHeight, dir[next].y * radius, 1.0f));
+            AppendLine(out, p0, p1, color, color);
+        }
+
+        // Draw vertical rails connecting top and bottom circles (every 4th segment for clarity)
+        for (int i = 0; i < segments; i += segments / 4) {
+            glm::vec3 top = glm::vec3(M * glm::vec4(dir[i].x * radius, halfHeight, dir[i].y * radius, 1.0f));
+            glm::vec3 bot = glm::vec3(M * glm::vec4(dir[i].x * radius, -halfHeight, dir[i].y * radius, 1.0f));
+            AppendLine(out, top, bot, color, color);
+        }
+    }
+
+void Application::AppendConvexMeshWire(const physx::PxConvexMeshGeometry& geom, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color)
+    {
+        const physx::PxConvexMesh* mesh = geom.convexMesh;
+        if (!mesh) return;
+
+        // A Convex Mesh is made of polygons. We iterate through them to draw edges.
+        const physx::PxU32 nbPolys = mesh->getNbPolygons();
+        const physx::PxVec3* verts = mesh->getVertices();
+        const physx::PxU8* indices = mesh->getIndexBuffer();
+
+        for (physx::PxU32 i = 0; i < nbPolys; ++i)
+        {
+            physx::PxHullPolygon poly;
+            mesh->getPolygonData(i, poly);
+
+            for (physx::PxU32 j = 0; j < poly.mNbVerts; ++j)
+            {
+                // 1. Get the indices for the current edge (vertex j to j+1)
+                physx::PxU32 idx1 = indices[poly.mIndexBase + j];
+                physx::PxU32 idx2 = indices[poly.mIndexBase + (j + 1) % poly.mNbVerts];
+
+                // 2. Retrieve raw vertices
+                physx::PxVec3 v1 = verts[idx1];
+                physx::PxVec3 v2 = verts[idx2];
+
+                // 3. Apply the Mesh Scale (Important! Physics meshes can be scaled independently)
+                v1 = geom.scale.transform(v1);
+                v2 = geom.scale.transform(v2);
+
+                // 4. Apply the World Transform (Actor position/rotation)
+                v1 = world.transform(v1);
+                v2 = world.transform(v2);
+
+                // 5. Add to line buffer
+                out.push_back({ ToGLMVec3(v1), color });
+                out.push_back({ ToGLMVec3(v2), color });
+            }
+        }
+    }
+
+    void Application::AppendTriangleWire(const glm::vec3& scale, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color)
+{
+    const glm::mat4 M = PxToGlm(world);
+    const float height = scale.y * 0.5f;
+    const float sizeX = scale.x;
+    const float sizeZ = scale.z;
+    
+    // Define triangle vertices (top face)
+    const glm::vec3 topVerts[3] = {
+        glm::vec3(0.0f, height, sizeZ * 0.5f),           // Front vertex
+        glm::vec3(-sizeX * 0.5f, height, -sizeZ * 0.5f), // Back-left
+        glm::vec3(sizeX * 0.5f, height, -sizeZ * 0.5f)   // Back-right
+    };
+    
+    // Define triangle vertices (bottom face)
+    const glm::vec3 botVerts[3] = {
+        glm::vec3(0.0f, -height, sizeZ * 0.5f),
+        glm::vec3(-sizeX * 0.5f, -height, -sizeZ * 0.5f),
+        glm::vec3(sizeX * 0.5f, -height, -sizeZ * 0.5f)
+    };
+    
+    // Transform vertices to world space
+    auto Transform = [&](const glm::vec3& v) {
+        return glm::vec3(M * glm::vec4(v, 1.0f));
+    };
+    
+    // Draw top triangle edges
+    for (int i = 0; i < 3; ++i) {
+        int next = (i + 1) % 3;
+        AppendLine(out, Transform(topVerts[i]), Transform(topVerts[next]), color, color);
+    }
+    
+    // Draw bottom triangle edges
+    for (int i = 0; i < 3; ++i) {
+        int next = (i + 1) % 3;
+        AppendLine(out, Transform(botVerts[i]), Transform(botVerts[next]), color, color);
+    }
+    
+    // Draw vertical edges connecting top and bottom
+    for (int i = 0; i < 3; ++i) {
+        AppendLine(out, Transform(topVerts[i]), Transform(botVerts[i]), color, color);
+    }
+}
+
     void Application::DrawRigidBodiesDebugOnly(const glm::mat4& view, const glm::mat4& proj)
     {
         if (!m_DebugLinesShader) return;
@@ -700,6 +798,41 @@ namespace Boom
                 case physx::PxGeometryType::eCAPSULE:
                     AppendCapsuleWire(gh.capsule().radius, gh.capsule().halfHeight, world, verts, color);
                     break;
+                case physx::PxGeometryType::eCONVEXMESH:
+                {
+                    if (entity.template Has<ColliderComponent>()) {
+                        auto& col = entity.template Get<ColliderComponent>();
+                        auto& transform = entity.template Get<TransformComponent>().transform;
+
+                        if (col.Collider.type == Collider3D::Type::CYLINDER) {
+                            const glm::vec3 s = glm::abs(transform.scale * col.Collider.localScale);
+
+                            // Standard Y-Up logic matching Physics
+                            float radius = 0.5f * std::max(s.x, s.z);
+
+                            // --- FIX: Rename 'height' to 'halfHeight' ---
+                            float halfHeight = 0.5f * s.y;
+
+                            // Safety clamps
+                            const float kMin = 0.01f;
+                            if (radius <= 0.0f) radius = kMin;
+                            if (halfHeight <= 0.0f) halfHeight = kMin;
+
+                            // Pass 'world' directly.
+                            AppendCylinderWire(radius, halfHeight, world, verts, color);
+                        }
+                        else if (col.Collider.type == Collider3D::Type::TRIANGLE) {
+                            const glm::vec3 s = glm::abs(transform.scale * col.Collider.localScale);
+                            AppendTriangleWire(s, world, verts, color);
+                        }
+                        else {
+                            // === NEW: Handle standard Mesh Colliders ===
+                            // If it's not a Cylinder or Triangle, it's a generic Convex Mesh.
+                            AppendConvexMeshWire(gh.convexMesh(), world, verts, color);
+                        }
+                    }
+                    break;
+                }
                 default:
                     break;
                 }
@@ -789,6 +922,49 @@ namespace Boom
 
                 physx::PxTransform capsuleWorld = world * physx::PxTransform(physx::PxVec3(0.0f), localQ);
                 AppendCapsuleWire(radius, halfHeight, capsuleWorld, verts, color);
+                break;
+            }
+            case Collider3D::Type::CYLINDER:
+            {
+                const glm::vec3 s = glm::abs(transform.scale * col.Collider.localScale);
+
+                // Standard Y-Up logic
+                float radius = 0.5f * std::max(s.x, s.z);
+                float halfHeight = 0.5f * s.y;
+
+                const float kMin = 0.01f;
+                if (radius <= 0.0f) radius = kMin;
+                if (halfHeight <= 0.0f) halfHeight = kMin;
+
+                // Remove the rotation logic here as well
+                physx::PxTransform cylinderWorld = world;
+                AppendCylinderWire(radius, halfHeight, cylinderWorld, verts, color);
+                break;
+            }
+
+            case Collider3D::Type::TRIANGLE:
+            {
+                const glm::vec3 s = glm::abs(transform.scale * col.Collider.localScale);
+                AppendTriangleWire(s, world, verts, color);
+                break;
+            }
+            case Collider3D::Type::MESH:
+            {
+                // 1. Check if the mesh asset exists
+                if (col.Collider.physicsMeshID == EMPTY_ASSET) break;
+                auto& asset = m_Context->assets->Get<PhysicsMeshAsset>(col.Collider.physicsMeshID);
+                if (!asset.mesh) break;
+
+                // 2. Construct geometry manually since we don't have a PxShape
+                physx::PxConvexMeshGeometry geom;
+                geom.convexMesh = asset.mesh;
+
+                // 3. Calculate Scale (Transform Scale * Collider Local Scale)
+                glm::vec3 totalScale = transform.scale * col.Collider.localScale;
+                geom.scale = physx::PxMeshScale(ToPxVec3(totalScale));
+
+                // 4. Draw
+                AppendConvexMeshWire(geom, world, verts, color);
                 break;
             }
             default:

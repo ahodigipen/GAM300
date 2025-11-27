@@ -39,7 +39,7 @@ namespace Boom {
 			, isDebugModeLoc{ GetUniformVar("isDebugMode") }
 			, ditherThresholdLoc{ GetUniformVar("ditherThreshold") }
 			, showNormalTextureLoc{ GetUniformVar("showNormalTexture") }
-
+			, ambientStrengthLoc{ GetUniformVar("ambientStrength") }
 			, u_LightSpace{ GetUniformVar("u_lightSpace") }
 			, u_DepthMap{ GetUniformVar("u_depthMap") }
 		{
@@ -176,7 +176,7 @@ namespace Boom {
 			SetUniform(isDebugModeLoc, false);
 			SetUniform(ditherThresholdLoc, showDither ? ditherThreshold : 0.f);
 			SetUniform(showNormalTextureLoc, showNormal);
-
+			SetUniform(ambientStrengthLoc, ambientStrength);
 			//world transformation * model transformation
 			SetUniform(modelMatLoc, transform.Matrix() * model->modelTransform.Matrix());
 			
@@ -194,7 +194,7 @@ namespace Boom {
 			SetUniform(showNormalTextureLoc, showNormal);
 			SetUniform(modelMatLoc, transform.Matrix() * model->modelTransform.Matrix());
 			SetUniform(albedoLoc, albedo);
-
+			SetUniform(ambientStrengthLoc, ambientStrength);
 			SetUniform(jointsLoc, model->HasJoint());
 			model->Draw(GL_LINES);
 		}
@@ -211,6 +211,7 @@ namespace Boom {
 
 		bool showDither{};
 		float ditherThreshold{ 0.1f };
+		float ambientStrength{ 0.1f };
 	private:
 		int32_t noSpotLightLoc;
 		int32_t noDirLightLoc;
@@ -247,5 +248,7 @@ namespace Boom {
 
 		int32_t u_LightSpace = 0;
 		int32_t u_DepthMap = 0;
+
+		int32_t ambientStrengthLoc;
 	};
 }

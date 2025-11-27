@@ -173,7 +173,7 @@ const int bayer64[64] = int[64](0,  32,  8,  40, 2, 34, 10, 42,
                                 );
 
 uniform float ditherThreshold;
-
+uniform float ambientStrength;
 void main() {
     if (isDebugMode) {
         //                                       green                strength
@@ -200,15 +200,26 @@ void main() {
 
     //fresnel reflectivity
     vec3 f0 = mix(vec3(0.04), albedo, metallic);
-
+         
+    vec3 ambient = ambientStrength * albedo;
     //lights
     vec3 color = ComputePointLights(N, V, f0, albedo, roughness, metallic) + 
                 ComputeDirLights(N, V, f0, albedo, roughness, metallic) + 
                 ComputeSpotLights(N, V, f0, albedo, roughness, metallic);
     
     //shadows, occ and em
-    color = (color * occlusion) + emissive;
-    color *= 1.0 - ComputeShadow();
+//    color = (color * occlusion) + emissive;
+//    color *= 1.0 - ComputeShadow();
+// float shadow = ComputeShadow();
+//
+//    // direct light
+    color = color * (1.0 - ComputeShadow()) * occlusion;
+
+    // ambient: only AO, not shadowed
+    color += ambient * occlusion;
+
+  
+    color += emissive;
 
     if (dot(color,BLOOM_THRESHOLD)>1.0) {
         out_brightness=vec4(color,1.0);

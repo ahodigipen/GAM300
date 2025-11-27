@@ -154,6 +154,47 @@ namespace EditorUI {
                 info.name = std::string(m_NameBuffer);
             }
             ImGui::PopItemWidth();
+
+            // ===== PARENT FIELD =====
+            ImGui::Spacing();
+            ImGui::TextUnformatted("Parent");
+            ImGui::SameLine();
+            ImGui::PushItemWidth(-1);
+
+            entt::entity currentParent = Boom::GetParentEntity(ctx->scene, m_App->SelectedEntity());
+            std::string parentName = "None";
+            if (currentParent != entt::null && ctx->scene.all_of<Boom::InfoComponent>(currentParent)) {
+                parentName = ctx->scene.get<Boom::InfoComponent>(currentParent).name;
+            }
+
+            ImGui::Button(parentName.c_str(), ImVec2(-1, 0));
+
+            // Drag-drop to set parent
+            if (ImGui::BeginDragDropTarget()) {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_HIERARCHY")) {
+                    entt::entity draggedEntity = *(const entt::entity*)payload->Data;
+                    if (Boom::SetParent(ctx->scene, m_App->SelectedEntity(), draggedEntity)) {
+                        BOOM_INFO("[Inspector] Set parent to '{}'",
+                                 ctx->scene.get<Boom::InfoComponent>(draggedEntity).name);
+                    } else {
+                        BOOM_WARN("[Inspector] Failed to set parent (circular reference prevented)");
+                    }
+                }
+                ImGui::EndDragDropTarget();
+            }
+
+            // Right-click to clear parent
+            if (ImGui::IsItemClicked(ImGuiMouseButton_Right) && currentParent != entt::null) {
+                if (Boom::SetParent(ctx->scene, m_App->SelectedEntity(), entt::null)) {
+                    BOOM_INFO("[Inspector] Cleared parent");
+                }
+            }
+
+            ImGui::PopItemWidth();
+
+            if (ImGui::IsItemHovered()) {
+                ImGui::SetTooltip("Drag an entity from Hierarchy to set parent\nRight-click to clear parent");
+            }
         }
 
         ImGui::PopStyleVar();
@@ -301,29 +342,51 @@ namespace EditorUI {
                 ImGui::Spacing();
                 ImGui::SeparatorText("Physics");
 
-                // --- UI for cooking the mesh collider (unchanged UX) ---
+                // --- UI for cooking the mesh collider ---
                 if (mc.modelID != EMPTY_ASSET) {
                     ModelAsset& modelAsset = m_App->GetAssetRegistry().Get<ModelAsset>(mc.modelID);
 
                     if (modelAsset.data) {
-                        if (ImGui::Button("Compile Mesh Collider from this Model", ImVec2(-1, 0))) {
-                            std::string saveDir = "Resources/Physics/";
-                            if (!std::filesystem::exists(saveDir)) {
-                                std::filesystem::create_directories(saveDir);
-                            }
+                        // 1. Construct the intended path based on the model name
+                        std::string saveDir = "Resources/Physics/";
+                        std::string savePath = saveDir + modelAsset.name + ".pxm";
 
-                            // Use model name for the .pxm file
-                            std::string savePath = saveDir + modelAsset.name + ".pxm";
-                            bool success = m_App->GetPhysicsContext().CompileAndSavePhysicsMesh(modelAsset, savePath);
+                        // 2. Check if this asset already exists in the Registry
+                        auto* existingAsset = m_App->GetAssetRegistry().FindPhysicsMeshByPath(savePath);
 
-                            if (success) {
-                                AssetID newID = RandomU64();
-                                m_App->GetAssetRegistry().AddPhysicsMesh(newID, savePath)->name = modelAsset.name;
-                                BOOM_INFO("Successfully cooked and created PhysicsMeshAsset '{}'", modelAsset.name);
-                                m_App->SaveAssets();
+                        // 3. Check if the file already exists on Disk
+                        bool fileExists = std::filesystem::exists(savePath);
+
+                        // 4. Logic: Only allow compilation if NEITHER exists
+                        if (existingAsset || fileExists) {
+                            ImGui::BeginDisabled();
+                            ImGui::Button("Physics Mesh Already Compiled", ImVec2(-1, 0));
+                            ImGui::EndDisabled();
+
+                            if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+                                if (existingAsset)
+                                    ImGui::SetTooltip("Asset already registered (UID: %llu)", existingAsset->uid);
+                                else
+                                    ImGui::SetTooltip("File already exists at: %s", savePath.c_str());
                             }
-                            else {
-                                BOOM_ERROR("Failed to cook physics mesh for '{}'. Check model data.", modelAsset.name);
+                        }
+                        else {
+                            if (ImGui::Button("Compile Mesh Collider from this Model", ImVec2(-1, 0))) {
+                                if (!std::filesystem::exists(saveDir)) {
+                                    std::filesystem::create_directories(saveDir);
+                                }
+
+                                bool success = m_App->GetPhysicsContext().CompileAndSavePhysicsMesh(modelAsset, savePath);
+
+                                if (success) {
+                                    AssetID newID = RandomU64();
+                                    m_App->GetAssetRegistry().AddPhysicsMesh(newID, savePath)->name = modelAsset.name;
+                                    BOOM_INFO("Successfully cooked and created PhysicsMeshAsset '{}'", modelAsset.name);
+                                    m_App->SaveAssets();
+                                }
+                                else {
+                                    BOOM_ERROR("Failed to cook physics mesh for '{}'. Check model data.", modelAsset.name);
+                                }
                             }
                         }
                     }
@@ -886,6 +949,8 @@ namespace EditorUI {
                 case Collider3D::Type::SPHERE:  currentTypeName = "Sphere";  break;
                 case Collider3D::Type::CAPSULE: currentTypeName = "Capsule"; break;
                 case Collider3D::Type::MESH:    currentTypeName = "Mesh";    break;
+				case Collider3D::Type::CYLINDER:currentTypeName = "Cylinder";break;
+				case Collider3D::Type::TRIANGLE:currentTypeName = "Triangle";break;
                 case Collider3D::Type::PLANE:   currentTypeName = "Plane";   break;
                 }
 
@@ -896,7 +961,7 @@ namespace EditorUI {
 
                 if (ImGui::BeginCombo("##ColliderType", currentTypeName))
                 {
-                    const char* types[] = { "Box", "Sphere", "Capsule", "Mesh", "Plane" };
+                    const char* types[] = { "Box", "Sphere", "Capsule", "Mesh", "Plane", "Cylinder", "Triangle"};
                     for (int i = 0; i < IM_ARRAYSIZE(types); ++i) {
                         bool isSelected = (currentType == static_cast<Collider3D::Type>(i));
                         if (ImGui::Selectable(types[i], isSelected)) {
@@ -906,7 +971,6 @@ namespace EditorUI {
                     }
                     ImGui::EndCombo();
                 }
-
                 // Mesh asset picker (only for MESH type)
                 if (currentType == Collider3D::Type::MESH)
                 {
@@ -934,9 +998,25 @@ namespace EditorUI {
                         }
                         if (isNoneSelected) ImGui::SetItemDefaultFocus();
 
+                        // --- FIX START: Create a set to track displayed names ---
+                        std::unordered_set<std::string> displayedNames;
+
                         for (auto& [uid, asset] : map)
                         {
                             if (uid == EMPTY_ASSET) continue;
+
+                            // 1. Check if we have already displayed a mesh with this name
+                            if (displayedNames.find(asset->name) != displayedNames.end()) {
+                                continue; // Skip duplicates
+                            }
+
+                            // 2. Mark this name as displayed
+                            displayedNames.insert(asset->name);
+
+                            // 3. PushID ensures ImGui differentiates items even if names were identical 
+                            // (though the set check above prevents that, this is good safety)
+                            ImGui::PushID(static_cast<int>(uid));
+
                             bool isSelected = (col.Collider.physicsMeshID == uid);
                             if (ImGui::Selectable(asset->name.c_str(), isSelected))
                             {
@@ -944,7 +1024,11 @@ namespace EditorUI {
                                 m_App->GetPhysicsContext().UpdateColliderShape(selected, m_App->GetAssetRegistry());
                             }
                             if (isSelected) ImGui::SetItemDefaultFocus();
+
+                            ImGui::PopID();
                         }
+                        // --- FIX END ---
+
                         ImGui::EndCombo();
                     }
                     ImGui::Separator();
@@ -1021,6 +1105,25 @@ namespace EditorUI {
                     m_App->GetPhysicsContext().UpdatePhysicsMaterial(selected);
                 }
 
+                // Fit to Transform button
+                ImGui::Spacing();
+                if (ImGui::Button("Fit to Transform")) {
+                    //auto& transform = selected.Get<TransformComponent>().transform;
+                    auto& colli = selected.Get<ColliderComponent>().Collider;
+                    
+                    // Reset to match transform exactly
+                    colli.localScale = glm::vec3(1.0f, 1.0f, 1.0f);
+                    
+                    // Update the physics shape
+                    m_App->GetPhysicsContext().UpdateColliderShape(selected, 
+                                                                     m_App->GetAssetRegistry());
+                }
+                ImGui::SameLine();
+                ImGui::TextDisabled("(?)");
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Reset collider to match the entity's transform scale");
+                }
+
                 ImGui::Spacing();
                 ImGui::Unindent(12.0f);
             }
@@ -1040,8 +1143,19 @@ namespace EditorUI {
 
         if (selected.Has<DirectLightComponent>()) {
             auto& dl = selected.Get<DirectLightComponent>();
-            DrawComponentSection("Directional Light", &dl, GetDirectLightComponentProperties, true,
-                [&]() { ctx->scene.remove<DirectLightComponent>(m_App->SelectedEntity()); });
+            DrawComponentSection(
+                "Point Light",
+                &dl,
+                [&](void* p) -> const xproperty::type::object*
+                {
+                    auto* comp = static_cast<DirectLightComponent*>(p);
+                    ImGui::ColorEdit3("Irradiance", &comp->light.radiance[0]);
+
+                    return GetDirectLightComponentProperties(p);
+                },
+                true,
+                [&]() { ctx->scene.remove<DirectLightComponent>(m_App->SelectedEntity()); }
+            );
         }
 
         if (selected.Has<PointLightComponent>()) {
@@ -1064,14 +1178,37 @@ namespace EditorUI {
 
         if (selected.Has<SpotLightComponent>()) {
             auto& sl = selected.Get<SpotLightComponent>();
-            DrawComponentSection("Spot Light", &sl, GetSpotLightComponentProperties, true,
-                [&]() { ctx->scene.remove<SpotLightComponent>(m_App->SelectedEntity()); });
+            DrawComponentSection(
+                "Point Light",
+                &sl,
+                [&](void* p) -> const xproperty::type::object*
+                {
+                    auto* comp = static_cast<SpotLightComponent*>(p);
+                    ImGui::ColorEdit3("Irradiance", &comp->light.radiance[0]);
+
+                    return GetSpotLightComponentProperties(p);
+                },
+                true,
+                [&]() { ctx->scene.remove<SpotLightComponent>(m_App->SelectedEntity()); }
+            );
         }
 
         if (selected.Has<SkyboxComponent>()) {
-            auto& sky = selected.Get<SkyboxComponent>();
-            DrawComponentSection("Skybox", &sky, GetSkyboxComponentProperties, true,
-                [&]() { ctx->scene.remove<SkyboxComponent>(m_App->SelectedEntity()); });
+            ImGui::PushID("Skybox");
+            if (ImGui::CollapsingHeader("Skybox", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap)) {
+                if (ComponentSettings<Boom::SkyboxComponent>(ctx)) {
+                    ImGui::PopID();
+                    return; // Component was removed, exit early
+                }
+                auto& sky = selected.Get<SkyboxComponent>();
+
+                ImGui::BeginTable("##maps", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersInnerV);
+                ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn("Asset", ImGuiTableColumnFlags_WidthStretch);
+                InputAssetWidget<CONSTANTS::DND_PAYLOAD_SKYBOX>("skybox", sky.skyboxID);
+                ImGui::EndTable();
+            }
+            ImGui::PopID();
         }
 
         if (selected.Has<Boom::PauseMenuTagComponent>()) {
@@ -1085,7 +1222,7 @@ namespace EditorUI {
             ImGui::PushID("Script");
             auto& sc = selected.Get<Boom::ScriptComponent>();
 
-            // Collapsing header + settings ("..." to remove), matching your style
+            // Collapsing header + settings ("..." to remove)
             bool isOpen = ImGui::CollapsingHeader("Script",
                 ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap);
 
@@ -1112,60 +1249,73 @@ namespace EditorUI {
             if (isOpen) {
                 ImGui::Indent(12.0f);
 
-                // Track changes to trigger recreation
-                static std::string lastTypeName;
-                static bool lastEnabled = false;
-                static entt::entity lastEntity = entt::null;
+                // ===== Context / scripting system pointer =====
+                auto* appCtx = m_Owner ? m_Owner->GetContext() : nullptr;
 
+                // Get raw pointer from unique_ptr (or nullptr if missing)
+                auto* scripting = (appCtx && appCtx->scriptingSystem)
+                    ? appCtx->scriptingSystem.get()
+                    : nullptr;
                 entt::entity currentEntity = m_App->SelectedEntity();
 
-                // Reset tracking when switching entities
-                if (currentEntity != lastEntity) {
-                    lastTypeName = sc.TypeName;
-                    lastEnabled = sc.Enabled;
-                    lastEntity = currentEntity;
-                }
+                // Track if we need to recreate the instance this frame
+                bool enabledChanged = false;
+                bool typeNameChanged = false;
 
                 // ----- Enabled toggle -----
-                bool enabledChanged = false;
                 if (ImGui::Checkbox("Enabled", &sc.Enabled)) {
-                    if (sc.Enabled != lastEnabled) {
-                        enabledChanged = true;
-                        lastEnabled = sc.Enabled;
-                    }
+                    enabledChanged = true;
                 }
 
-                // ----- Type name (namespace.Type) -----
+                // ----- Type name DROPDOWN -----
                 ImGui::AlignTextToFramePadding();
                 ImGui::Text("Type");
                 ImGui::SameLine(150);
                 ImGui::SetNextItemWidth(-1);
 
-                static char typeBuf[256];
-#ifdef _MSC_VER
-                strncpy_s(typeBuf, sizeof(typeBuf), sc.TypeName.c_str(), sizeof(typeBuf) - 1);
-#else
-                std::snprintf(typeBuf, sizeof(typeBuf), "%s", sc.TypeName.c_str());
-#endif
-
-                bool typeNameChanged = false;
-                if (ImGui::InputText("##ScriptTypeName", typeBuf, sizeof(typeBuf),
-                    ImGuiInputTextFlags_EnterReturnsTrue))
-                {
-                    sc.TypeName = typeBuf;
-                    if (sc.TypeName != lastTypeName) {
-                        typeNameChanged = true;
-                        lastTypeName = sc.TypeName;
-                    }
+                std::vector<std::string> availableTypes;
+                if (scripting && scripting->IsAlive()) {
+                    availableTypes = scripting->GetAvailableScriptTypes();
                 }
 
-                // Auto-recreate if TypeName changed (on Enter) or Enabled toggled
-                if ((typeNameChanged || enabledChanged) && m_Owner && m_Owner->GetContext()) {
-                    auto* appCtx = m_Owner->GetContext();
-                    if (appCtx->scriptingSystem) {
-                        appCtx->scriptingSystem->RecreateForEntity(currentEntity, sc);
-                        BOOM_INFO("[Inspector] Auto-reloaded script due to changes");
+                // Current selection or "None"
+                const char* currentPreview = sc.TypeName.empty()
+                    ? "None"
+                    : sc.TypeName.c_str();
+
+                // If scripting system isn't ready, we still show the combo but empty
+                if (ImGui::BeginCombo("##ScriptTypeDropdown", currentPreview)) {
+                    // "None" option
+                    bool isNoneSelected = sc.TypeName.empty();
+                    if (ImGui::Selectable("None", isNoneSelected)) {
+                        if (!sc.TypeName.empty()) {
+                            sc.TypeName.clear();
+                            typeNameChanged = true;
+                        }
                     }
+                    if (isNoneSelected)
+                        ImGui::SetItemDefaultFocus();
+
+                    // All available script types
+                    for (const auto& typeName : availableTypes) {
+                        bool isSelected = (sc.TypeName == typeName);
+                        if (ImGui::Selectable(typeName.c_str(), isSelected)) {
+                            if (sc.TypeName != typeName) {
+                                sc.TypeName = typeName;
+                                typeNameChanged = true;
+                            }
+                        }
+                        if (isSelected)
+                            ImGui::SetItemDefaultFocus();
+                    }
+
+                    ImGui::EndCombo();
+                }
+
+                // Auto-recreate instance if TypeName or Enabled changed
+                if ((typeNameChanged || enabledChanged) && scripting) {
+                    scripting->RecreateForEntity(currentEntity, sc);
+                    BOOM_INFO("[Inspector] Auto-reloaded script due to changes");
                 }
 
                 // ----- Params (JSON) -----
@@ -1174,7 +1324,6 @@ namespace EditorUI {
                 ImGui::SameLine(150);
                 ImGui::SetNextItemWidth(-1);
 
-                // persistent buffer per-selected entity
                 static char paramsBuf[2048];
                 static entt::entity lastJsonEntity = entt::null;
 
@@ -1210,7 +1359,6 @@ namespace EditorUI {
                 ImGui::TextDisabled("Runtime Info");
                 ImGui::Text("Instance ID: %llu", (unsigned long long)sc.InstanceId);
 
-                // Show if script is actually running
                 if (sc.InstanceId != 0 && sc.Enabled) {
                     ImGui::TextColored(ImVec4(0, 1, 0, 1), "Active");
                 }
@@ -1227,22 +1375,16 @@ namespace EditorUI {
                 ImGui::Spacing();
 
                 if (ImGui::Button("Reload This Script", ImVec2(-1, 0))) {
-                    if (m_Owner && m_Owner->GetContext()) {
-                        auto* appCtx = m_Owner->GetContext();
-                        if (appCtx->scriptingSystem) {
-                            appCtx->scriptingSystem->RecreateForEntity(currentEntity, sc);
-                            BOOM_INFO("[Inspector] Manually reloaded script instance");
-                        }
+                    if (scripting) {
+                        scripting->RecreateForEntity(currentEntity, sc);
+                        BOOM_INFO("[Inspector] Manually reloaded script instance");
                     }
                 }
 
                 if (ImGui::Button("Hot Reload All Scripts (DLL)", ImVec2(-1, 0))) {
-                    if (m_Owner && m_Owner->GetContext()) {
-                        auto* appCtx = m_Owner->GetContext();
-                        if (appCtx->scriptingSystem) {
-                            appCtx->scriptingSystem->ReloadScripts();
-                            BOOM_INFO("[Inspector] Hot reloaded all scripts from DLL!");
-                        }
+                    if (scripting) {
+                        scripting->ReloadScripts();
+                        BOOM_INFO("[Inspector] Hot reloaded all scripts from DLL!");
                     }
                 }
 
@@ -1253,15 +1395,19 @@ namespace EditorUI {
 
             if (removed) {
                 // Destroy the script instance before removing component
-                if (m_Owner && m_Owner->GetContext()) {
-                    auto* appCtx = m_Owner->GetContext();
-                    if (appCtx->scriptingSystem) {
-                        appCtx->scriptingSystem->DestroyForEntity(m_App->SelectedEntity(), sc);
-                    }
+                auto* appCtx = m_Owner ? m_Owner->GetContext() : nullptr;
+
+                // Get raw pointer from unique_ptr (or nullptr if missing)
+                auto* scripting = (appCtx && appCtx->scriptingSystem)
+                    ? appCtx->scriptingSystem.get()
+                    : nullptr;
+                if (scripting) {
+                    scripting->DestroyForEntity(m_App->SelectedEntity(), sc);
                 }
                 ctx->scene.remove<Boom::ScriptComponent>(m_App->SelectedEntity());
                 return;
             }
+
             ImGui::Spacing();
         }
 
@@ -1270,7 +1416,6 @@ namespace EditorUI {
         if (ImGui::Button("Add Component", ImVec2(-1, 30))) {
             ImGui::OpenPopup("AddComponentPopup");
         }
-        // (AddComponentPopup contents go here)
         ComponentSelector(selected);
     }
 
@@ -1336,66 +1481,85 @@ namespace EditorUI {
             });
     }
 
-    void InspectorPanel::DeleteUpdate() {
-        if ((m_App->SelectedEntity() != entt::null ||
-            m_App->SelectedAsset().id != 0u) &&
-            ImGui::IsKeyPressed(ImGuiKey_Delete, false))
+    void InspectorPanel::DeleteUpdate()
+    {
+        // 1. Only care if something is actually selected
+        const bool hasSelection =
+            (m_App->SelectedEntity() != entt::null) ||
+            (m_App->SelectedAsset().id != 0u);
+
+        if (!hasSelection)
+            return;
+
+        // 2. When Delete is pressed this frame, open the popup
+        if (ImGui::IsKeyPressed(ImGuiKey_Delete, false))
         {
-            showDeletePopup = true;
-        }
-        if (showDeletePopup) {
             ImGui::OpenPopup("Confirm Delete");
-            ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+        }
 
-            if (ImGui::BeginPopupModal("Confirm Delete", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-                AppInterface::AssetInfo info{};
+        // 3. Center the popup when it *appears*
+        ImGuiIO& io = ImGui::GetIO();
+        ImGui::SetNextWindowPos(
+            ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f),
+            ImGuiCond_Appearing,
+            ImVec2(0.5f, 0.5f)
+        );
 
-                if (m_App->SelectedEntity() != entt::null) {
-                    Boom::Entity selectedEntity{ &m_App->GetEntityRegistry(), m_App->SelectedEntity() };
-                    info.name = selectedEntity.Get<Boom::InfoComponent>().name;
-                    info.id = selectedEntity.Get<Boom::InfoComponent>().uid;
-                }
-                else if (m_App->SelectedAsset().id != 0u) {
-                    info = m_App->SelectedAsset();
-                }
+        // 4. Draw the popup if it's open
+        if (ImGui::BeginPopupModal("Confirm Delete", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            AppInterface::AssetInfo info{};
 
-                ImGui::Text("Are you sure you want to delete:\n%s?", info.name.c_str());
-                ImGui::Separator();
-                if (ImGui::Button("Yes", ImVec2(120, 0)) || ImGui::IsKeyPressed(ImGuiKey_Enter, false)) {
-                    if (m_App->SelectedEntity() != entt::null) {
-
-                        // === BEGIN PHYSICS CLEANUP ===
-
-                        // 1. Get the entity
-                        Boom::Entity entity{ &m_App->GetEntityRegistry(), m_App->SelectedEntity() };
-
-                        // 2. Call your new function
-                        Boom::PhysicsContext* physicsCtx = &m_App->GetPhysicsContext();
-                        if (physicsCtx) {
-                            physicsCtx->RemoveRigidBody(entity);
-                        }
-
-                        // === END PHYSICS CLEANUP ===
-
-                        m_App->GetEntityRegistry().destroy(m_App->SelectedEntity());
-                        m_App->ResetAllSelected();
-                    }
-                    else if (m_App->SelectedAsset().id != 0u) {
-                        m_App->DeleteAsset(info.id, info.type);
-                        m_App->ResetAllSelected();
-                    }
-                    showDeletePopup = false;
-                    ImGui::CloseCurrentPopup();
-                }
-                ImGui::SameLine();
-                if (ImGui::Button("No", ImVec2(120, 0)) || ImGui::IsKeyPressed(ImGuiKey_Escape)) {
-                    showDeletePopup = false;
-                    ImGui::CloseCurrentPopup();
-                }
-                ImGui::EndPopup();
+            if (m_App->SelectedEntity() != entt::null)
+            {
+                Boom::Entity selectedEntity{ &m_App->GetEntityRegistry(), m_App->SelectedEntity() };
+                info.name = selectedEntity.Get<Boom::InfoComponent>().name;
+                info.id = selectedEntity.Get<Boom::InfoComponent>().uid;
             }
+            else if (m_App->SelectedAsset().id != 0u)
+            {
+                info = m_App->SelectedAsset();
+            }
+
+            ImGui::Text("Are you sure you want to delete:\n%s?", info.name.c_str());
+            ImGui::Separator();
+
+            // Yes / Enter
+            if (ImGui::Button("Yes", ImVec2(120, 0)) || ImGui::IsKeyPressed(ImGuiKey_Enter, false))
+            {
+                if (m_App->SelectedEntity() != entt::null)
+                {
+                    // === PHYSICS CLEANUP ===
+                    Boom::Entity entity{ &m_App->GetEntityRegistry(), m_App->SelectedEntity() };
+                    if (auto* physicsCtx = &m_App->GetPhysicsContext())
+                    {
+                        physicsCtx->RemoveRigidBody(entity);
+                    }
+
+                    m_App->GetEntityRegistry().destroy(m_App->SelectedEntity());
+                    m_App->ResetAllSelected();
+                }
+                else if (m_App->SelectedAsset().id != 0u)
+                {
+                    m_App->DeleteAsset(info.id, info.type);
+                    m_App->ResetAllSelected();
+                }
+
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::SameLine();
+
+            // No / Escape
+            if (ImGui::Button("No", ImVec2(120, 0)) || ImGui::IsKeyPressed(ImGuiKey_Escape))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
         }
     }
+
 
     // === Animator-specific UpdateComponent specialization ===
     template<>

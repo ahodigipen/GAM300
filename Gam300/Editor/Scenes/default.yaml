@@ -200,7 +200,7 @@ ENTITIES:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.850000024, 2.36999989, 0.5]
+        Previous Scale: [0.0, 0, 0]
         Type: STATIC
   - InfoComponent:
       Parent: 0

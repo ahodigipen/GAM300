@@ -1,11 +1,13 @@
 #pragma once
-#include "PxPhysicsAPI.h" 
+#include "PxPhysicsAPI.h"
 #include "Graphics/Models/Model.h"
 #include "Graphics/Textures/Texture.h"
 #include "Graphics/Utilities/Data.h"
 #include "BoomProperties.h"
+#include "AssetLoadContext.h"
 
 namespace Boom {
+
 	using AssetID = uint64_t;
 	const AssetID EMPTY_ASSET = 0u;
 
@@ -228,6 +230,7 @@ namespace Boom {
 			Add(uid, path, asset);
 			return asset;
 		}
+
 		//file path starts from Textures folder
 		BOOM_INLINE auto AddTexture(
 			AssetID uid,
@@ -239,6 +242,20 @@ namespace Boom {
 			Add(uid, path, asset);
 			return asset;
 		}
+
+		// NEW: Add texture from pre-loaded context (two-phase loading)
+		BOOM_INLINE auto AddTextureFromContext(
+			AssetID uid,
+			std::string const& path,
+			const TextureLoadContext& context)
+		{
+			auto asset{ std::make_shared<TextureAsset>() };
+			asset->type = AssetType::TEXTURE;
+			asset->data = std::make_shared<Texture2D>(context);
+			Add(uid, path, asset);
+			return asset;
+		}
+
 		BOOM_INLINE auto AddModel(
 			AssetID uid,
 			std::string const& path,
@@ -253,6 +270,34 @@ namespace Boom {
 			else {
 				asset->data = std::make_shared<StaticModel>(path);
 			}
+			Add(uid, path, asset);
+			return asset;
+		}
+
+		// NEW: Add model from pre-loaded context (two-phase loading)
+		BOOM_INLINE auto AddModelFromContext(
+			AssetID uid,
+			std::string const& path,
+			const StaticModelLoadContext& context)
+		{
+			auto asset{ std::make_shared<ModelAsset>() };
+			asset->type = AssetType::MODEL;
+			asset->hasJoints = false;
+			asset->data = std::make_shared<StaticModel>(context);
+			Add(uid, path, asset);
+			return asset;
+		}
+
+		// NEW: Add skeletal model from pre-loaded context (two-phase loading)
+		BOOM_INLINE auto AddSkeletalModelFromContext(
+			AssetID uid,
+			std::string const& path,
+			const SkeletalModelLoadContext& context)
+		{
+			auto asset{ std::make_shared<ModelAsset>() };
+			asset->type = AssetType::MODEL;
+			asset->hasJoints = true;
+			asset->data = std::make_shared<SkeletalModel>(context);
 			Add(uid, path, asset);
 			return asset;
 		}
@@ -310,6 +355,25 @@ namespace Boom {
 			return EMPTY_ASSET;
 		}
 
+		BOOM_INLINE PhysicsMeshAsset* FindPhysicsMeshByPath(const std::string& path) {
+			auto& map = GetMap<PhysicsMeshAsset>();
+
+			// Normalize path for comparison (optional but recommended)
+			std::filesystem::path searchPath(path);
+
+			for (auto& [uid, asset] : map) {
+				if (uid == EMPTY_ASSET) continue;
+
+				auto* pm = static_cast<PhysicsMeshAsset*>(asset.get());
+
+				// Compare the stored path with the one we are looking for
+				if (pm && std::filesystem::path(pm->cookedMeshPath) == searchPath) {
+					return pm;
+				}
+			}
+			return nullptr;
+		}
+
 		template <class T>
 		BOOM_INLINE bool Remove(AssetID uid) {
 #pragma warning(suppress: 26498)
@@ -365,4 +429,5 @@ namespace Boom {
 	template<> struct PayloadToType<CONSTANTS::DND_PAYLOAD_TEXTURE> { using Type = TextureAsset; };
 	template<> struct PayloadToType<CONSTANTS::DND_PAYLOAD_MATERIAL> { using Type = MaterialAsset; };
 	template<> struct PayloadToType<CONSTANTS::DND_PAYLOAD_MODEL> { using Type = ModelAsset; };
+	template<> struct PayloadToType<CONSTANTS::DND_PAYLOAD_SKYBOX> { using Type = SkyboxAsset; };
 }

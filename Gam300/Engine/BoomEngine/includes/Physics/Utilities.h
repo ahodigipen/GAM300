@@ -21,7 +21,7 @@ namespace Boom {
             DYNAMIC = 0,
             STATIC,
             KINEMATIC,
-        } type;
+        } type = STATIC;
 
         bool isColliding = false;
         bool freezeRotationX = false;
@@ -77,8 +77,10 @@ namespace Boom {
             SPHERE,
             CAPSULE,
             MESH,
-            PLANE
-        } type;
+            PLANE,
+            CYLINDER,
+			TRIANGLE
+        } type = BOX;
 
         bool isTrigger = false; // New: Make this a trigger volume (no collision response)
 
@@ -98,7 +100,9 @@ namespace Boom {
             member_enum_value<"SPHERE", Boom::Collider3D::Type::SPHERE>,
             member_enum_value<"CAPSULE", Boom::Collider3D::Type::CAPSULE>,
             member_enum_value<"MESH", Boom::Collider3D::Type::MESH>,
-            member_enum_value<"PLANE", Boom::Collider3D::Type::PLANE>
+            member_enum_value<"PLANE", Boom::Collider3D::Type::PLANE>,
+            member_enum_value<"CYLINDER", Boom::Collider3D::Type::CYLINDER>,  // NEW
+            member_enum_value<"TRIANGLE", Boom::Collider3D::Type::TRIANGLE>
             >
         )
     };

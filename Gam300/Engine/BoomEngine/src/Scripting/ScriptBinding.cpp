@@ -10,6 +10,7 @@
 #include "Auxiliaries/Assets.h"
 #include <glm/vec3.hpp>
 #include <GLFW/glfw3.h>
+#include "../includes/Graphics/Models/Animator.h"
 
 #include "AppWindow.h"
 #include "Input/InputHandler.h"
@@ -259,6 +260,30 @@ namespace Boom {
         return rb.isColliding;
     }
 
+    // Addition of Animator
+    static Animator* GetAnimator(entt::entity e) {
+        if (!s_Ctx || e == entt::null || !s_Ctx->scene.valid(e)) return nullptr;
+        if (!s_Ctx->scene.any_of<AnimatorComponent>(e)) return nullptr;
+        return s_Ctx->scene.get<AnimatorComponent>(e).animator.get();
+    }
+    static void ICALL_API_AnimatorSetFloat(uint64_t h, MonoString* name, float v) {
+        auto* anim = GetAnimator((entt::entity)(uint32_t)h); if (!anim) return;
+        char* n = mono_string_to_utf8(name); if (!n) return; anim->SetFloat(n, v); mono_free(n);
+    }
+    static void ICALL_API_AnimatorSetBool(uint64_t h, MonoString* name, bool v) {
+        auto* anim = GetAnimator((entt::entity)(uint32_t)h); if (!anim) return;
+        char* n = mono_string_to_utf8(name); if (!n) return; anim->SetBool(n, v); mono_free(n);
+    }
+    static void ICALL_API_AnimatorSetTrigger(uint64_t h, MonoString* name) {
+        auto* anim = GetAnimator((entt::entity)(uint32_t)h); if (!anim) return;
+        char* n = mono_string_to_utf8(name); if (!n) return; anim->SetTrigger(n); mono_free(n);
+    }
+    static void ICALL_API_AnimatorPlay(uint64_t h, MonoString* stateName) {
+        auto* anim = GetAnimator((entt::entity)(uint32_t)h); if (!anim) return;
+        char* n = mono_string_to_utf8(stateName); if (!n) return; anim->PlayClip(n); mono_free(n);
+    }
+
+
     static void ICALL_API_LoadScene(MonoString* sceneName) {
         if (!sceneName || !s_Ctx || !s_Ctx->app) return;
         char* s = mono_string_to_utf8(sceneName);
@@ -343,6 +368,76 @@ namespace Boom {
         return 0.0f; // No third-person camera found
     }
 
+    // Add near other ICALL functions (after ICALL_API_SetSoundPosition)
+
+    // Physics line-of-sight raycast
+    static bool ICALL_API_Linecast(glm::vec3* from, glm::vec3* to, uint64_t ignoreEntityHandle)
+    {
+        if (!s_Ctx || !from || !to) return true;
+        if (!s_Ctx->physics) return true;
+
+        PxScene* scene = s_Ctx->physics->GetPxScene();
+        if (!scene) return true;
+
+        glm::vec3 delta = *to - *from;
+        float len2 = glm::dot(delta, delta);
+        if (len2 < 1e-6f) return true;
+
+        float len = std::sqrt(len2);
+
+        // Start ray slightly above ground and from entity origin
+        PxVec3 origin(from->x, from->y + 0.15f, from->z);
+        PxVec3 dir(delta.x / len, delta.y / len, delta.z / len);
+
+        PxQueryFilterData filter;
+        filter.flags = PxQueryFlag::eSTATIC | PxQueryFlag::eDYNAMIC | PxQueryFlag::ePREFILTER;
+
+        // Convert C# entity handle to entt::entity
+        entt::entity ignoreEntity = static_cast<entt::entity>(static_cast<uint32_t>(ignoreEntityHandle));
+
+        // Pre-filter to skip triggers AND the entity doing the looking
+        struct PreFilter : PxQueryFilterCallback {
+            entt::entity entityToIgnore;
+
+            PreFilter(entt::entity ignore) : entityToIgnore(ignore) {}
+
+            PxQueryHitType::Enum preFilter(const PxFilterData&, const PxShape* shape,
+                const PxRigidActor* actor, PxHitFlags&) override
+            {
+                // Skip triggers
+                if (shape->getFlags() & PxShapeFlag::eTRIGGER_SHAPE)
+                    return PxQueryHitType::eNONE;
+
+                // Skip the entity doing the raycast (the enemy itself)
+                if (actor && actor->userData)
+                {
+                    EntityID* entityID = static_cast<EntityID*>(actor->userData);
+                    if (entityID && *entityID == entityToIgnore)
+                        return PxQueryHitType::eNONE;
+                }
+
+                return PxQueryHitType::eBLOCK;
+            }
+
+            PxQueryHitType::Enum postFilter(const PxFilterData&, const PxQueryHit&) override
+            {
+                return PxQueryHitType::eBLOCK;
+            }
+        } preFilter(ignoreEntity);
+
+        PxRaycastBuffer hit;
+        bool blocked = scene->raycast(origin, dir, len, hit, PxHitFlag::eDEFAULT, filter, &preFilter);
+
+        if (!blocked) return true;
+
+        // If hit is very close to target, treat as clear (hitting the target entity itself is OK)
+        const float epsilon = 0.2f;
+        if (hit.block.distance + epsilon >= len)
+            return true;
+
+        return false; // Something solid blocked before target
+    }
+
     // Add these new functions after the existing ICALL functions
 
     static bool ICALL_API_HasCollider(uint64_t handle) {
@@ -410,6 +505,13 @@ namespace Boom {
             mono_gchandle_free(exitIt->second);
             s_TriggerExitCallbackHandles.erase(exitIt);
         }
+    }
+
+    static bool ICALL_API_HasAnimator(uint64_t handle) {
+        if (!s_Ctx) return false;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return false;
+        return s_Ctx->scene.any_of<AnimatorComponent>(e);
     }
 
     // Function to call trigger callbacks (called from Application.h)
@@ -523,6 +625,74 @@ namespace Boom {
         else {
             BOOM_INFO("[ScriptBinding] No trigger exit callback registered for entity {}", triggerEntity);
         }
+    }
+
+    struct ScriptTransform {
+        float posX, posY, posZ;
+        float rotX, rotY, rotZ;
+        float scaleX, scaleY, scaleZ;
+    };
+
+    static ScriptTransform* ICALL_API_GetTransform(uint64_t handle, ScriptTransform* outTransform) {
+        if (!s_Ctx || !outTransform) return nullptr;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+
+        if (e == entt::null || !s_Ctx->scene.valid(e)) {
+            BOOM_WARN("[ScriptBinding] GetTransform: Invalid entity");
+            return nullptr;
+        }
+
+        if (!s_Ctx->scene.any_of<TransformComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] GetTransform: Entity {} has no TransformComponent",
+                static_cast<uint32_t>(e));
+            return nullptr;
+        }
+
+        auto& t = s_Ctx->scene.get<TransformComponent>(e).transform;
+
+        outTransform->posX = t.translate.x;
+        outTransform->posY = t.translate.y;
+        outTransform->posZ = t.translate.z;
+
+        outTransform->rotX = t.rotate.x;
+        outTransform->rotY = t.rotate.y;
+        outTransform->rotZ = t.rotate.z;
+
+        outTransform->scaleX = t.scale.x;
+        outTransform->scaleY = t.scale.y;
+        outTransform->scaleZ = t.scale.z;
+
+        return outTransform;
+    }
+
+    static void ICALL_API_SetTransform(uint64_t handle, ScriptTransform* transform) {
+        if (!s_Ctx || !transform) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+
+        if (e == entt::null || !s_Ctx->scene.valid(e)) {
+            BOOM_WARN("[ScriptBinding] SetTransform: Invalid entity");
+            return;
+        }
+
+        if (!s_Ctx->scene.any_of<TransformComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetTransform: Entity {} has no TransformComponent",
+                static_cast<uint32_t>(e));
+            return;
+        }
+
+        auto& t = s_Ctx->scene.get<TransformComponent>(e).transform;
+
+        t.translate.x = transform->posX;
+        t.translate.y = transform->posY;
+        t.translate.z = transform->posZ;
+
+        t.rotate.x = transform->rotX;
+        t.rotate.y = transform->rotY;
+        t.rotate.z = transform->rotZ;
+
+        t.scale.x = transform->scaleX;
+        t.scale.y = transform->scaleY;
+        t.scale.z = transform->scaleZ;
     }
 
     // NEW GCHANDLE-BASED VERSIONS:
@@ -728,6 +898,61 @@ namespace Boom {
         BOOM_INFO("[ScriptBinding] Cleared all trigger callbacks and freed GC handles (domain unload)");
     }
 
+    static void ICALL_API_SetRotationY(uint64_t handle, float yawDegrees)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+
+        if (e == entt::null || !s_Ctx->scene.valid(e)) {
+            BOOM_WARN("[ScriptBinding] SetRotationY: Invalid entity");
+            return;
+        }
+
+        if (!s_Ctx->scene.any_of<TransformComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetRotationY: Entity has no TransformComponent");
+            return;
+        }
+
+        if (!s_Ctx->scene.any_of<RigidBodyComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetRotationY: Entity has no RigidBodyComponent");
+            return;
+        }
+
+        auto& rb = s_Ctx->scene.get<RigidBodyComponent>(e).RigidBody;
+        if (!rb.actor) return;
+
+        // Get the current PhysX transform
+        PxTransform currentPose = rb.actor->getGlobalPose();
+
+        // Convert yaw to quaternion (only Y-axis rotation)
+        float yawRadians = glm::radians(yawDegrees);
+        PxQuat newRotation = PxQuat(yawRadians, PxVec3(0, 1, 0));
+
+        // Update the pose with new rotation, keeping position
+        PxTransform newPose(currentPose.p, newRotation);
+
+        // For dynamic bodies, use kinematic target or direct pose update
+        if (PxRigidDynamic* dyn = rb.actor->is<PxRigidDynamic>()) {
+            if (dyn->getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC) {
+                dyn->setKinematicTarget(newPose);
+            }
+            else {
+                // For dynamic bodies, directly set the pose
+                // This is safe because X/Z rotation is locked
+                dyn->setGlobalPose(newPose);
+            }
+        }
+        else {
+            // For static bodies
+            rb.actor->setGlobalPose(newPose);
+        }
+
+        // Also update the transform component for rendering
+        auto& transform = s_Ctx->scene.get<TransformComponent>(e).transform;
+        transform.rotate.y = yawDegrees;
+    }
+
+
     void RegisterScriptInternalCalls(AppContext* ctx)
     {
         s_Ctx = ctx;
@@ -766,6 +991,12 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_IsColliding",
             (const void*)ICALL_API_IsColliding);
 
+
+        // Animator function
+        mono_add_internal_call("Boom.Native::Boom_API_AnimatorSetFloat", (const void*)ICALL_API_AnimatorSetFloat);
+        mono_add_internal_call("Boom.Native::Boom_API_AnimatorSetBool", (const void*)ICALL_API_AnimatorSetBool);
+        mono_add_internal_call("Boom.Native::Boom_API_AnimatorSetTrigger", (const void*)ICALL_API_AnimatorSetTrigger);
+        mono_add_internal_call("Boom.Native::Boom_API_AnimatorPlay", (const void*)ICALL_API_AnimatorPlay);
         mono_add_internal_call("Boom.Native::Boom_API_GetThirdPersonCameraYaw", (const void*)ICALL_API_GetThirdPersonCameraYaw);
 
         mono_add_internal_call("Boom.Native::Boom_API_HasCollider", (const void*)ICALL_API_HasCollider);
@@ -774,6 +1005,12 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_RegisterTriggerEnterCallback", (const void*)ICALL_API_RegisterTriggerEnterCallback);
         mono_add_internal_call("Boom.Native::Boom_API_RegisterTriggerExitCallback", (const void*)ICALL_API_RegisterTriggerExitCallback);
         mono_add_internal_call("Boom.Native::Boom_API_UnregisterTriggerCallbacks", (const void*)ICALL_API_UnregisterTriggerCallbacks);
+        mono_add_internal_call("Boom.Native::Boom_API_HasAnimator",
+            (const void*)ICALL_API_HasAnimator);
+        mono_add_internal_call("Boom.Native::Boom_API_GetTransform",
+            (const void*)ICALL_API_GetTransform);
+        mono_add_internal_call("Boom.Native::Boom_API_SetTransform",
+            (const void*)ICALL_API_SetTransform);
 
         // Sound/Audio internal calls
         mono_add_internal_call("Boom.Native::Boom_API_PlaySound", (const void*)ICALL_API_PlaySound);
@@ -787,5 +1024,9 @@ namespace Boom {
         
 		//Raycasting internal call
         mono_add_internal_call("Boom.Native::Boom_API_PickGameEntity", (const void*)ICALL_API_PickGameEntity);
+
+        mono_add_internal_call("Boom.Native::Boom_API_Linecast", (const void*)ICALL_API_Linecast);
+
+        mono_add_internal_call("Boom.Native::Boom_API_SetRotationY", (const void*)ICALL_API_SetRotationY);
     }
 }
