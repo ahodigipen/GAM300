@@ -59,6 +59,9 @@ void SoundSystem::Update(Boom::EntityRegistry& registry, float dt)
 
 				SoundEngine::Instance().PreloadSound(instanceName, chosen, false, entry.loop);
 				SoundEngine::Instance().PlaySoundAt(instanceName, chosen, tf.transform.translate, entry.loop);
+				// Apply configured volume
+				SoundEngine::Instance().SetVolume(instanceName, entry.volume);
+
 				instances.push_back(instanceName);
 				s_lastPos[uid] = tf.transform.translate;
 				lastTimes[instanceName] = now;
@@ -101,6 +104,8 @@ void SoundSystem::Update(Boom::EntityRegistry& registry, float dt)
 					std::string playName = instanceName + "_play_" + std::to_string((uint64_t)now);
 					SoundEngine::Instance().PreloadSound(playName, chosen, false, false);
 					SoundEngine::Instance().PlaySoundAt(playName, chosen, tf.transform.translate, false);
+					// Apply configured volume for this transient instance
+					SoundEngine::Instance().SetVolume(playName, entry.volume);
 					// track this playing temporary instance so it can be cleaned up later
 					instances.push_back(playName);
 					lastTimes[playName] = now;
@@ -116,6 +121,9 @@ void SoundSystem::Update(Boom::EntityRegistry& registry, float dt)
 					glm::vec3 pos = tf.transform.translate;
 					SoundEngine::Instance().SetSoundPosition(n, pos);
 					s_lastPos[uid] = pos;
+
+					// Also ensure volume follows component value (allow realtime changes from inspector)
+					SoundEngine::Instance().SetVolume(n, entry.volume);
 
 					// If filePath cleared, stop and unload this instance
 					// Note: we treat legacy filePath empty as no-op
