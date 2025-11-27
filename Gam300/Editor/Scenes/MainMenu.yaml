@@ -1,6 +1,40 @@
 Version: 1.0
 ENTITIES:
   - {}
+  - InfoComponent:
+      Parent: 0
+      Name: How To Play Button GUI
+      UID: 15527910618955340530
+    TransformComponent:
+      Transform:
+        Translate: [0.579999983, -0.27692318, -0.850000024]
+        Rotate: [0, 0, 0]
+        Scale: [0.300000012, 0.119999997, 1]
+    SpriteComponent:
+      textureID: 14452546169200855872
+      color: [1, 1, 1, 1]
+      uiOverlay: true
+  - InfoComponent:
+      Parent: 0
+      Name: HowToPlayButton
+      UID: 3094049495513227475
+    TransformComponent:
+      Transform:
+        Translate: [0.824999988, -0.0147019774, -0.699999988]
+        Rotate: [0, -0, 0]
+        Scale: [0.819999993, 0.150000006, 0.00999999978]
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 11573253777835523025
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
   - {}
   - {}
   - InfoComponent:
@@ -22,11 +56,11 @@ ENTITIES:
       UID: 12542027639629009498
     TransformComponent:
       Transform:
-        Translate: [0.5, 0.0799999982, -0.850000024]
+        Translate: [0.579999983, 0, -0.850000024]
         Rotate: [0, 0, 0]
-        Scale: [0.180000007, 0.180000007, 1]
+        Scale: [0.300000012, 0.119999997, 1]
     SpriteComponent:
-      textureID: 12678405704945466943
+      textureID: 18098974966956010645
       color: [1, 1, 1, 1]
       uiOverlay: true
   - InfoComponent:
@@ -35,9 +69,9 @@ ENTITIES:
       UID: 16323354693460438905
     TransformComponent:
       Transform:
-        Translate: [0.5, -0.319999993, -0.730000019]
+        Translate: [0.579999983, -0.560000002, -0.730000019]
         Rotate: [0, 0, 0]
-        Scale: [0.180000007, 0.180000007, 1]
+        Scale: [0.300000012, 0.119999997, 1]
     SpriteComponent:
       textureID: 4271895845596125777
       color: [1, 1, 1, 1]
@@ -140,9 +174,9 @@ ENTITIES:
       UID: 17230173662249906557
     TransformComponent:
       Transform:
-        Translate: [1.49000001, 0.300000012, -1.5]
+        Translate: [0.819999993, 0.175999999, -0.699999988]
         Rotate: [0, 0, 0]
-        Scale: [1.04999995, 0.5, 0.0900000036]
+        Scale: [0.839999974, 0.159999996, 0.00999999978]
     ModelComponent:
       ModelID: 7633162898494281895
       MaterialID: 11573253777835523025
@@ -156,12 +190,12 @@ ENTITIES:
       UID: 18241753347743023302
     TransformComponent:
       Transform:
-        Translate: [1.5, -0.300000012, -1.5]
-        Rotate: [0, 0, 0]
-        Scale: [1.04999995, 0.5, 0.0599999987]
+        Translate: [0.824999988, -0.217632413, -0.699999988]
+        Rotate: [0, -0, 0]
+        Scale: [0.819999993, 0.150000006, 0.00999999978]
     ModelComponent:
       ModelID: 7633162898494281895
-      MaterialID: 0
+      MaterialID: 11573253777835523025
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -359,6 +393,10 @@ ENTITIES:
       Enabled: true
       TypeName: GameScripts.MainMenu
       ParamsJSON: "{}"
+  - {}
+  - {}
+  - {}
+  - {}
   - {}
   - {}
   - {}

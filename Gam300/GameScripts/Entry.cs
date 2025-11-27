@@ -11,6 +11,7 @@ namespace GameScripts
         private const string MAIN_MENU_SCENE_NAME = "MainMenu";
         private const string HOW_TO_PLAY_SCENE_NAME = "HowToPlay";
         private static string _currentSceneName;
+        public static bool IsGamePaused = false;
 
         // Key state trackers
         private static bool _h_KeyWasDown = false;
@@ -29,6 +30,7 @@ namespace GameScripts
             _y_KeyWasDown = false;
             _m_KeyWasDown = false;
             _q_KeyWasDown = false;
+            IsGamePaused = false;
 
             _currentSceneName = API.GetCurrentSceneName();
 
@@ -42,11 +44,21 @@ namespace GameScripts
             if (state == API.APP_STATE_RUNNING)
             {
                 // --- STATE: RUNNING ---
-                UpdateGame(dt);
+
+                if (IsGamePaused)
+                {
+                    if (API.IsPauseMenuLoaded())
+                    {
+                        UpdatePauseMenu();
+                    }
+                }
+                else
+                {
+                    UpdateGame(dt);
+                }
             }
             else if (state == API.APP_STATE_PAUSED)
             {
-                // --- STATE: PAUSED ---
                 if (API.IsPauseMenuLoaded())
                 {
                     UpdatePauseMenu();
@@ -88,8 +100,12 @@ namespace GameScripts
                 // Check for 'Q' (without Ctrl) to QUIT
                 if (q_KeyDown && !_q_KeyWasDown && !ctrl_KeyDown)
                 {
-                    API.Log("Quitting application from main menu.");
-                    API.QuitGame(); // This will close the application
+                    //API.Log("Quitting application from main menu.");
+                    //API.QuitGame(); // This will close the application
+                    API.Log("Quitting scene (temporary)...");
+                    IsGamePaused = false;
+                    API.LoadScene(_currentSceneName);
+
                     _q_KeyWasDown = q_KeyDown; // Set tracker
                     return; // Exit after action
                 }
@@ -130,7 +146,8 @@ namespace GameScripts
             if (p_KeyDown && !_p_KeyWasDown && !ctrl_KeyDown)
             {
                 API.Log("Pausing game (P key)...");
-                API.TogglePause();
+                IsGamePaused = true;
+                // API.TogglePause();
                 API.LoadSceneAdditive(PAUSE_SCENE_NAME);
                 _p_KeyWasDown = p_KeyDown;
                 return;
@@ -152,7 +169,8 @@ namespace GameScripts
 
                 // --- NEW RESUME LOGIC ---
                 API.UnloadPauseMenu(); // 1. Destroy the menu objects
-                API.TogglePause();     // 2. Un-freeze the game
+                IsGamePaused = false;
+                // API.TogglePause();
 
                 _r_KeyWasDown = r_KeyDown;
                 return;
@@ -164,8 +182,8 @@ namespace GameScripts
             if (m_KeyDown && !_m_KeyWasDown)
             {
                 API.Log("Returning to Main Menu...");
-
-                API.TogglePause(); // 1. Un-pause the engine first...
+                IsGamePaused = false;
+                // API.TogglePause();
                 API.LoadScene(MAIN_MENU_SCENE_NAME); // 2. ...THEN load the new scene (this will clear everything)
 
                 _m_KeyWasDown = m_KeyDown;
@@ -178,10 +196,8 @@ namespace GameScripts
             if (y_KeyDown && !_y_KeyWasDown)
             {
                 API.Log("Restarting scene...");
-
-                // 1. Un-pause the engine state
-                API.TogglePause();
-
+                IsGamePaused = false;
+                // API.TogglePause();
                 // 2. Reload the current game scene
                 // (This replaces all scenes, including the pause menu)
                 API.LoadScene(_currentSceneName);
@@ -195,8 +211,12 @@ namespace GameScripts
             bool q_KeyDown = API.IsKeyDown(API.KEY_Q);
             if (q_KeyDown && !_q_KeyWasDown)
             {
-                API.Log("Quitting game...");
-                API.QuitGame();
+                //API.Log("Quitting game...");
+                //API.QuitGame();
+                API.Log("Quitting scene (temporary)...");
+                IsGamePaused = false;
+                API.LoadScene(_currentSceneName);
+
                 _q_KeyWasDown = q_KeyDown;
                 return;
             }
