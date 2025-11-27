@@ -519,39 +519,39 @@ namespace Boom {
  std::string animTrigger;
 
  void serialize(nlohmann::json& j) const {
- j["name"] = name;
+    j["name"] = name;
  // If filePaths present, write as array; otherwise write legacy filePath
- if (!filePaths.empty()) {
- j["filePaths"] = filePaths;
- }
- else {
- j["filePath"] = filePath;
- }
- j["loop"] = loop;
- j["volume"] = volume;
- j["playOnStart"] = playOnStart;
- j["triggerKey"] = triggerKey;
- j["playOnMove"] = playOnMove;
- j["moveThreshold"] = moveThreshold;
- j["repeatInterval"] = repeatInterval;
- if (!animTrigger.empty()) j["animTrigger"] = animTrigger;
+    if (!filePaths.empty()) {
+    j["filePaths"] = filePaths;
+    }
+    else {
+        j["filePath"] = filePath;
+     }
+        j["loop"] = loop;
+        j["volume"] = volume;
+        j["playOnStart"] = playOnStart;
+        j["triggerKey"] = triggerKey;
+        j["playOnMove"] = playOnMove;
+        j["moveThreshold"] = moveThreshold;
+        j["repeatInterval"] = repeatInterval;
+        if (!animTrigger.empty()) j["animTrigger"] = animTrigger;
  }
  void deserialize(const nlohmann::json& j) {
- if (j.contains("name")) j.at("name").get_to(name);
+        if (j.contains("name")) j.at("name").get_to(name);
  // Prefer filePaths if present
- if (j.contains("filePaths") && j.at("filePaths").is_array()) {
- filePaths.clear();
- for (const auto& fp : j.at("filePaths")) {
- filePaths.push_back(fp.get<std::string>());
- }
+        if (j.contains("filePaths") && j.at("filePaths").is_array()) {
+        filePaths.clear();
+        for (const auto& fp : j.at("filePaths")) {
+            filePaths.push_back(fp.get<std::string>());
+        }
  // keep filePath for legacy access (first element)
- filePath = filePaths.empty() ? std::string() : filePaths.front();
- }
- else if (j.contains("filePath")) {
- j.at("filePath").get_to(filePath);
- filePaths.clear();
- if (!filePath.empty()) filePaths.push_back(filePath);
- }
+        filePath = filePaths.empty() ? std::string() : filePaths.front();
+        }
+        else if (j.contains("filePath")) {
+            j.at("filePath").get_to(filePath);
+            filePaths.clear();
+        if (!filePath.empty()) filePaths.push_back(filePath);
+            }
  if (j.contains("loop")) j.at("loop").get_to(loop);
  if (j.contains("volume")) j.at("volume").get_to(volume);
  if (j.contains("playOnStart")) j.at("playOnStart").get_to(playOnStart);
@@ -560,29 +560,29 @@ namespace Boom {
  if (j.contains("moveThreshold")) j.at("moveThreshold").get_to(moveThreshold);
  if (j.contains("repeatInterval")) j.at("repeatInterval").get_to(repeatInterval);
  if (j.contains("animTrigger")) j.at("animTrigger").get_to(animTrigger);
- }
+    }
  };
 
  std::vector<Entry> entries; // timo was here
 
  void serialize(nlohmann::json& j) const {
- j = nlohmann::json::array();
- for (const auto& e : entries) {
- nlohmann::json ej;
- e.serialize(ej);
- j.push_back(ej);
- }
+        j = nlohmann::json::array();
+        for (const auto& e : entries) {
+        nlohmann::json ej;
+        e.serialize(ej);
+        j.push_back(ej);
+    }
  }
  void deserialize(const nlohmann::json& j) {
- entries.clear();
- if (j.is_array()) {
- for (const auto& ej : j) {
- Entry e;
- e.deserialize(ej);
- entries.push_back(std::move(e));
- }
- }
- }
+    entries.clear();
+    if (j.is_array()) {
+         for (const auto& ej : j) {
+            Entry e;
+            e.deserialize(ej);
+            entries.push_back(std::move(e));
+            }
+    }
+    }
  };
 
  struct ScriptComponent
@@ -927,11 +927,7 @@ namespace Boom {
         if (reg.all_of<SoundComponent>(source)) {
             auto& srcSound = reg.get<SoundComponent>(source);
             auto& dstSound = reg.emplace<SoundComponent>(duplicate);
-            dstSound.name = srcSound.name;
-            dstSound.filePath = srcSound.filePath;
-            dstSound.loop = srcSound.loop;
-            dstSound.volume = srcSound.volume;
-            dstSound.playOnStart = srcSound.playOnStart;
+            dstSound.entries = srcSound.entries;
         }
 
         // Copy ScriptComponent
