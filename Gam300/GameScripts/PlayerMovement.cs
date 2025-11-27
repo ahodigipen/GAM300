@@ -20,6 +20,8 @@ namespace GameScripts
         private float _sprintSpeed = 5f;
         private float _sneakSpeed = 1.5f;
         private float _jumpSpeed = 5f;
+        private int _health = 5;
+        private int _maxHealth = 5;
 
         // Footstep system
         private FootstepComponent _footstepComponent;
