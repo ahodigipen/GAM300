@@ -74,11 +74,11 @@ namespace Boom {
 
         if (!m_Context) return false;
 
-        /*auto& registry = m_Context->scene;*/
+        auto& registry = m_Context->scene;
 
-        /*if (!registry.all_of<Boom::TransformComponent, Boom::ColliderComponent>(entity)) {
+        if (!registry.all_of<Boom::TransformComponent, Boom::ColliderComponent>(entity)) {
             return false;
-        }*/
+        }
 
         // Get entity's bounding box in world space
         //calculate min aabb based on component type(2d/3d)
