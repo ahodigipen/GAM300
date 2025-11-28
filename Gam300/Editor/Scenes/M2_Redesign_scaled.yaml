@@ -1,5 +1,8 @@
 Version: 1.0
 ENTITIES:
+  - {}
+  - {}
+  - {}
   - InfoComponent:
       Parent: 0
       Name: Wall_Texture_Floor_3_Hut
@@ -331,7 +334,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-6.63332367, 1.24566591, 7.34261322]
-        Rotate: [180, -79.0000839, 180]
+        Rotate: [180, 100.999916, 180]
         Scale: [0.0164999999, 0.0164999999, 0.0164999999]
     RigidBodyComponent:
       RigidBody:
@@ -1760,14 +1763,14 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-5.78673601, 5.7395277, 11.7122316]
-        Rotate: [157.8125, 2694.8125, 180]
+        Translate: [-5.64734173, 5.52419233, 13.6501913]
+        Rotate: [165.625, 2705.375, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.300000012
         FarPlane: 1000
-        FOV: 100
+        FOV: 95
     ThirdPersonCameraComponent:
       Target UID: 2377197601835279376
       Offset: [0.00999999978, 4.1500001, 0]
@@ -6966,7 +6969,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 2.17216253, -14.2555885]
-        Rotate: [0, 57.6851501, 0]
+        Rotate: [0, 220.356857, 0]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -6986,7 +6989,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [9.27553558, 2.17216253, -14.2555885]
-        Rotate: [5.00895612e-06, 74.3823166, 5.00895612e-06]
+        Rotate: [5.00895612e-06, 237.054047, 5.00895612e-06]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -7006,7 +7009,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [18.4757099, 14.2961264, -7.06025791]
-        Rotate: [5.00895612e-06, 205.674744, 5.00895612e-06]
+        Rotate: [5.00895612e-06, 8.34643745, 5.00895612e-06]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -7026,7 +7029,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-20.6439075, 15.0094395, 22.1033554]
-        Rotate: [180, 237.685028, 180]
+        Rotate: [180, 40.356781, 180]
         Scale: [0.0144999893, 0.0145000005, 0.0144999893]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -7481,5 +7484,76 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+  - {}
+  - {}
+  - {}
+  - InfoComponent:
+      Parent: 2888197353573082632
+      Name: Blood1
+      UID: 13818896248684015938
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    SpriteComponent:
+      textureID: 9978758564026709928
+      color: [1, 1, 1, 0]
+      uiOverlay: true
+  - InfoComponent:
+      Parent: 2888197353573082632
+      Name: Blood2
+      UID: 9420786784898466129
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    SpriteComponent:
+      textureID: 14611654011234671873
+      color: [1, 1, 1, 0]
+      uiOverlay: true
+  - InfoComponent:
+      Parent: 2888197353573082632
+      Name: Blood3
+      UID: 3669045143093455409
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    SpriteComponent:
+      textureID: 8078124372590329184
+      color: [1, 1, 1, 0]
+      uiOverlay: true
+  - InfoComponent:
+      Parent: 2888197353573082632
+      Name: Blood4
+      UID: 16885297189431714560
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    SpriteComponent:
+      textureID: 15398575817850185585
+      color: [1, 1, 1, 0]
+      uiOverlay: true
+  - {}
+  - {}
+  - InfoComponent:
+      Parent: 0
+      Name: BloodUI
+      UID: 2888197353573082632
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.BloodOverlayController
+      ParamsJSON: "{}"
+  - {}
   - {}
   - {}
