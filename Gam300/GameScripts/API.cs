@@ -183,6 +183,9 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_TeleportRigidBody(ulong handle, ref Vec3 pos);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetScreenFadeAlpha(float alpha);
     }
 
     // ========= DELEGATES =========
@@ -531,6 +534,11 @@ namespace Boom
                 return;
             }
             Native.Boom_API_TeleportRigidBody(h, ref p);
+        }
+
+        public static void SetScreenFadeAlpha(float alpha)
+        {
+            Native.Boom_API_SetScreenFadeAlpha(alpha);
         }
 
         // ===== GLFW key codes =====

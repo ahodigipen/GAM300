@@ -23,28 +23,25 @@ const float MIN_GAMMA = 0.000001;
 uniform sampler2D map;
 uniform sampler2D u_bloom;
 uniform bool u_enableBloom;
+uniform float u_fadeAlpha; // NEW: Fade to black alpha
 
 void main() 
 { 
-  
   vec3 result = texture(map, uvs).rgb;
-  // sample color from map
-    if (u_enableBloom) {
-        result += texture(u_bloom, uvs).rgb;
-    }
+  
+  if (u_enableBloom) {
+      result += texture(u_bloom, uvs).rgb;
+  }
 
   // gamma correction
   result = pow(result, vec3(GAMMA));
   result = vec3(1.0) - exp(-result * EXPOSURE); 
   result = pow(result, vec3(1.0 / max(GAMMA, MIN_GAMMA)));
 
-  // fragment color
+  // Apply fade to black
+  result = mix(result, vec3(0.0), u_fadeAlpha);
+
   out_fragment = vec4(result, 1.0); 
-/*
-  //depth map
-  float depth = texture(map, uvs).r;
-  out_fragment = vec4(depth, depth, depth, 1.0);
-*/
 }
 
 ==FRAGMENT==

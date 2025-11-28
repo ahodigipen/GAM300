@@ -44,11 +44,19 @@ namespace GameScripts
         private int _maxHealth = 5;
         private Vec3 _spawnPoint;
         private bool _isRespawning = false;
-        private float _respawnDelay = 1.0f;
-        private float _respawnTimer = 0f;
+        private float _respawnDelay = 1.0f; // no longer used (kept for compatibility)
+        private float _respawnTimer = 0f;   // no longer used (kept for compatibility)
         private bool _isInvulnerable = false;
         private float _invulnerabilityDuration = 2.0f;
         private float _invulnerabilityTimer = 0f;
+
+        // Screen fade system (fade-out to black, teleport, then fade-in)
+        private enum FadeState { None, FadingOut, BlackHold, FadingIn }
+        private FadeState _fadeState = FadeState.None;
+        private float _fadeTimer = 0f;
+        private float _fadeOutDuration = 0.5f;   // time to fade to black
+        private float _blackHoldDuration = 0.15f; // time to stay fully black
+        private float _fadeInDuration = 0.75f;   // time to fade back to scene
 
         // Footstep system
         private FootstepComponent _footstepComponent;
@@ -79,6 +87,9 @@ namespace GameScripts
         {
 
             API.Log($"[PlayerMovement] OnStart() - Entity: {Entity}");
+
+            // Ensure we start fully visible
+            API.SetScreenFadeAlpha(0f);
 
             // Store player entity reference for static callbacks
             s_playerEntity = Entity;
@@ -186,7 +197,7 @@ namespace GameScripts
         }
 
         /// <summary>
-        /// Start the respawn process
+        /// Start the respawn process (fade-out -> teleport -> fade-in)
         /// </summary>
         private void StartRespawn()
         {
@@ -196,7 +207,12 @@ namespace GameScripts
             // Stop player movement
             API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
 
-            API.Log("[PlayerMovement] Respawn initiated...");
+            // Begin fade-out sequence
+            _fadeState = FadeState.FadingOut;
+            _fadeTimer = 0f;
+            API.SetScreenFadeAlpha(0f);
+
+            API.Log("[PlayerMovement] Respawn initiated (fade-out)...");
         }
 
         /// <summary>
@@ -215,8 +231,7 @@ namespace GameScripts
             string currentScene = API.GetCurrentSceneName();
             API.Log($"[PlayerMovement] Reloading scene: {currentScene}");
 
-            // Note: You might want to add a delay here using a coroutine or timer
-            // For now, reloading immediately
+            // Note: For a fancier effect, you can also fade to black here before loading.
             API.LoadScene(currentScene);
         }
 
@@ -241,7 +256,6 @@ namespace GameScripts
 
             // Reset respawn state
             _isRespawning = false;
-
 
             API.Log($"[PlayerMovement] Respawn complete! Invulnerable for {_invulnerabilityDuration} seconds");
         }
@@ -301,10 +315,79 @@ namespace GameScripts
         }
 
         /// <summary>
+        /// Per-frame fade controller for respawn sequence
+        /// </summary>
+        private void UpdateFade(float dt)
+        {
+            switch (_fadeState)
+            {
+                case FadeState.None:
+                    return;
+
+                case FadeState.FadingOut:
+                    {
+                        _fadeTimer += dt;
+                        float t = Clamp01(_fadeTimer / Math.Max(0.0001f, _fadeOutDuration));
+                        API.SetScreenFadeAlpha(t);
+
+                        if (_fadeTimer >= _fadeOutDuration)
+                        {
+                            // Fully black now -> teleport immediately
+                            API.SetScreenFadeAlpha(1f);
+                            _fadeState = FadeState.BlackHold;
+                            _fadeTimer = 0f;
+
+                            RespawnAtCheckpoint(); // sets _isRespawning = false and invulnerability, etc.
+                            API.Log("[PlayerMovement] Fade-out complete, teleported to checkpoint.");
+                        }
+                        break;
+                    }
+
+                case FadeState.BlackHold:
+                    {
+                        _fadeTimer += dt;
+                        API.SetScreenFadeAlpha(1f);
+                        if (_fadeTimer >= _blackHoldDuration)
+                        {
+                            _fadeState = FadeState.FadingIn;
+                            _fadeTimer = 0f;
+                            API.Log("[PlayerMovement] Holding at black done, starting fade-in...");
+                        }
+                        break;
+                    }
+
+                case FadeState.FadingIn:
+                    {
+                        _fadeTimer += dt;
+                        float t = 1f - Clamp01(_fadeTimer / Math.Max(0.0001f, _fadeInDuration));
+                        API.SetScreenFadeAlpha(t);
+
+                        if (_fadeTimer >= _fadeInDuration)
+                        {
+                            _fadeState = FadeState.None;
+                            API.SetScreenFadeAlpha(0f);
+                            API.Log("[PlayerMovement] Fade-in complete.");
+                        }
+                        break;
+                    }
+            }
+        }
+
+        private static float Clamp01(float v)
+        {
+            if (v < 0f) return 0f;
+            if (v > 1f) return 1f;
+            return v;
+        }
+
+        /// <summary>
         /// Called every frame to update movement using PhysX linear velocity.
         /// </summary>
         public void OnUpdate(float dt)
         {
+            // Always update fade first (so it works both during and after respawn)
+            UpdateFade(dt);
+
             // Safety check
             if (!API.HasTransform(Entity) || !API.HasScript(Entity))
                 return;
@@ -312,15 +395,11 @@ namespace GameScripts
             // Update footstep component
             _footstepComponent?.OnUpdate(dt);
 
-            // Handle respawn timer
+            // Handle respawn: during fade-out/black-hold we block gameplay updates
             if (_isRespawning)
             {
-                _respawnTimer += dt;
-                if (_respawnTimer >= _respawnDelay)
-                {
-                    RespawnAtCheckpoint();
-                }
-                return; // Don't allow movement while respawning
+                // While respawning (before teleport), we don't allow movement
+                return; // Don't allow movement while respawning (fade-out/black)
             }
 
             // Handle invulnerability timer
@@ -651,6 +730,9 @@ namespace GameScripts
                 API.UnregisterTriggerCallbacks(Entity);
                 API.Log("[PlayerMovement] Unregistered trigger callbacks for player");
             }
+
+            // Make sure we leave the screen visible
+            API.SetScreenFadeAlpha(0f);
         }
 
         // Public methods for customization
