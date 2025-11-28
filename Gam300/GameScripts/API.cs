@@ -346,6 +346,7 @@ namespace Boom
             Native.Boom_API_GetTransform(h, out var t);
             t.Scale = s;
             Native.Boom_API_SetTransform(h, ref t);
+        }
         // ===== Rotation axis helpers =====
         public static float GetRotationX(ulong h)
         {
