@@ -228,7 +228,9 @@ namespace EditorUI {
     void ViewportPanel::DrawGuizmo2D(ImVec2 const& itemMin, ImVec2 const& rectSz, bool& gizmoWantsInput) {
         entt::entity selectedEntity = m_App->SelectedEntity();
         auto& ltrans = m_Ctx->scene.get<Boom::TransformComponent>(selectedEntity);
-        glm::mat4 matrix = ltrans.transform.Matrix();
+
+        // Use world matrix for gizmo (handles hierarchy correctly, just like 3D gizmo)
+        glm::mat4 matrix = Boom::GetWorldMatrix(m_Ctx->scene, selectedEntity);
 
         ImGuizmo::SetOrthographic(true);
         glm::mat4 view = glm::mat4(1.0f);
@@ -241,7 +243,7 @@ namespace EditorUI {
             glm::value_ptr(proj),
             (ImGuizmo::OPERATION)m_GizmoOperation,
             ImGuizmo::LOCAL,               // always LOCAL for 2D
-            glm::value_ptr(matrix),   // or worldMatrix if you want parent space
+            glm::value_ptr(matrix),        // Use world matrix
             nullptr,
             m_UseSnap ? m_SnapValues : nullptr
         );
@@ -260,22 +262,10 @@ namespace EditorUI {
 
         if (ImGuizmo::IsUsing())
         {
-            glm::vec3 pos, rot, scale;
-            DecomposeTransform(matrix, pos, rot, scale);
+            // Convert manipulated world matrix back to local space (just like 3D gizmo)
+            Boom::SetWorldMatrix(m_Ctx->scene, selectedEntity, matrix);
 
-            switch (m_GizmoOperation) {
-            case ImGuizmo::TRANSLATE:
-                ltrans.transform.translate = pos;
-                break;
-            case ImGuizmo::ROTATE:
-                ltrans.transform.rotate = rot;
-                break;
-            case ImGuizmo::SCALE:
-                ltrans.transform.scale = scale;
-                break;
-            }
-
-            // **NEW: Sync with RigidBody if present**
+            // **Sync with RigidBody if present**
             Boom::Entity entity{ &m_Ctx->scene, selectedEntity };
             if (entity.Has<Boom::RigidBodyComponent>())
             {

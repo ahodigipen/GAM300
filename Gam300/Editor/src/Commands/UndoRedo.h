@@ -453,6 +453,82 @@ namespace EditorUI {
         std::string m_Description;
     };
 
+    // ==================== DUPLICATE ENTITY COMMAND ====================
+
+    class DuplicateEntityCommand : public ICommand {
+    public:
+        DuplicateEntityCommand(entt::registry* registry, entt::entity sourceEntity)
+            : m_Registry(registry)
+            , m_SourceEntity(sourceEntity)
+            , m_DuplicatedEntity(entt::null)
+        {
+            // Store source UID for stability
+            if (m_Registry && m_Registry->valid(sourceEntity) &&
+                m_Registry->all_of<Boom::InfoComponent>(sourceEntity)) {
+                m_SourceUID = m_Registry->get<Boom::InfoComponent>(sourceEntity).uid;
+            }
+        }
+
+        void Execute() override {
+            if (!m_Registry) return;
+
+            entt::entity source = FindEntityByUID(m_SourceUID);
+            if (source == entt::null) {
+                BOOM_WARN("[Undo] Cannot duplicate: source entity UID {} not found", m_SourceUID);
+                return;
+            }
+
+            // Duplicate the entity (including children)
+            m_DuplicatedEntity = Boom::DuplicateEntity(*m_Registry, source, true);
+
+            if (m_DuplicatedEntity != entt::null && m_Registry->all_of<Boom::InfoComponent>(m_DuplicatedEntity)) {
+                m_DuplicatedUID = m_Registry->get<Boom::InfoComponent>(m_DuplicatedEntity).uid;
+                BOOM_INFO("[Undo] Duplicated entity - new UID: {}", m_DuplicatedUID);
+            }
+        }
+
+        void Undo() override {
+            if (!m_Registry || m_DuplicatedEntity == entt::null) return;
+
+            entt::entity dup = FindEntityByUID(m_DuplicatedUID);
+            if (dup == entt::null) {
+                BOOM_WARN("[Undo] Cannot undo duplicate: duplicated entity UID {} not found", m_DuplicatedUID);
+                return;
+            }
+
+            // Delete the duplicated entity (including its children)
+            BOOM_INFO("[Undo] Deleting duplicated entity UID: {}", m_DuplicatedUID);
+            Boom::DeleteEntityRecursive(*m_Registry, dup, nullptr);
+            m_DuplicatedEntity = entt::null;
+        }
+
+        std::string GetDescription() const override {
+            return "Duplicate Entity";
+        }
+
+        entt::entity GetDuplicatedEntity() const { return m_DuplicatedEntity; }
+        Boom::AssetID GetDuplicatedUID() const { return m_DuplicatedUID; }
+
+    private:
+        entt::entity FindEntityByUID(Boom::AssetID uid) const {
+            if (!m_Registry || uid == 0) return entt::null;
+
+            auto view = m_Registry->view<Boom::InfoComponent>();
+            for (auto e : view) {
+                if (view.get<Boom::InfoComponent>(e).uid == uid) {
+                    return e;
+                }
+            }
+            return entt::null;
+        }
+
+        entt::registry* m_Registry;
+        entt::entity m_SourceEntity;
+        entt::entity m_DuplicatedEntity;
+        Boom::AssetID m_SourceUID = 0;
+        Boom::AssetID m_DuplicatedUID = 0;
+    };
+
     // ==================== REPARENT COMMAND ====================
 
     class ReparentCommand : public ICommand {
