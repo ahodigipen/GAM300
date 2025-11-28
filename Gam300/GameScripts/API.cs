@@ -346,6 +346,42 @@ namespace Boom
             Native.Boom_API_GetTransform(h, out var t);
             t.Scale = s;
             Native.Boom_API_SetTransform(h, ref t);
+        // ===== Rotation axis helpers =====
+        public static float GetRotationX(ulong h)
+        {
+            var r = GetRotation(h);   // uses Native.Boom_API_GetRotation
+            return r.X;
+        }
+
+        public static float GetRotationY(ulong h)
+        {
+            var r = GetRotation(h);
+            return r.Y;
+        }
+
+        public static float GetRotationZ(ulong h)
+        {
+            var r = GetRotation(h);
+            return r.Z;
+        }
+
+        public static void SetRotationX(ulong h, float pitchDegrees)
+        {
+            var r = GetRotation(h);
+            r.X = pitchDegrees;
+            SetRotation(h, r);        // uses Native.Boom_API_SetRotation
+        }
+
+        public static void SetRotationYDeg(ulong h, float yawDegrees)
+        {
+            SetRotationY(h, yawDegrees); // calls Native.Boom_API_SetRotationY
+        }
+
+        public static void SetRotationZ(ulong h, float rollDegrees)
+        {
+            var r = GetRotation(h);
+            r.Z = rollDegrees;
+            SetRotation(h, r);
         }
 
         public static TransformData GetTransform(ulong h)
