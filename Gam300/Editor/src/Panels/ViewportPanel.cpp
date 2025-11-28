@@ -248,6 +248,16 @@ namespace EditorUI {
 
         gizmoWantsInput = ImGuizmo::IsUsing();
 
+        // Undo/Redo: Capture transform at start of gizmo manipulation
+        if (ImGuizmo::IsUsing() && !m_GizmoWasUsing)
+        {
+            // Gizmo just started being used - capture initial transform
+            if (m_Ctx->scene.all_of<Boom::TransformComponent>(selectedEntity)) {
+                m_TransformBeforeGizmo = m_Ctx->scene.get<Boom::TransformComponent>(selectedEntity).transform;
+                BOOM_INFO("[Viewport 2D] Captured initial transform for undo");
+            }
+        }
+
         if (ImGuizmo::IsUsing())
         {
             glm::vec3 pos, rot, scale;
@@ -272,6 +282,53 @@ namespace EditorUI {
                 m_Owner->GetPhysicsContext().UpdateRigidBodyTransform(entity, ltrans.transform);
             }
         }
+
+        // Undo/Redo: Record command when gizmo is released
+        if (!ImGuizmo::IsUsing() && m_GizmoWasUsing)
+        {
+            // Gizmo was just released - create undo command
+            if (m_Ctx->scene.all_of<Boom::TransformComponent>(selectedEntity) && m_Owner)
+            {
+                auto* history = m_Owner->GetCommandHistory();
+                if (history) {
+                    const auto& newTransform = m_Ctx->scene.get<Boom::TransformComponent>(selectedEntity).transform;
+
+                    // Only record if transform actually changed
+                    bool changed = (m_TransformBeforeGizmo.translate != newTransform.translate) ||
+                                  (m_TransformBeforeGizmo.rotate != newTransform.rotate) ||
+                                  (m_TransformBeforeGizmo.scale != newTransform.scale);
+
+                    if (changed) {
+                        std::string opName;
+                        switch (m_GizmoOperation) {
+                            case ImGuizmo::TRANSLATE: opName = "Move 2D"; break;
+                            case ImGuizmo::ROTATE: opName = "Rotate 2D"; break;
+                            case ImGuizmo::SCALE: opName = "Scale 2D"; break;
+                            default: opName = "Transform 2D"; break;
+                        }
+
+                        std::string entityName = "Entity";
+                        if (m_Ctx->scene.all_of<Boom::InfoComponent>(selectedEntity)) {
+                            entityName = m_Ctx->scene.get<Boom::InfoComponent>(selectedEntity).name;
+                        }
+
+                        auto command = std::make_unique<TransformCommand>(
+                            &m_Ctx->scene,
+                            selectedEntity,
+                            m_TransformBeforeGizmo,
+                            newTransform,
+                            opName + " '" + entityName + "'"
+                        );
+
+                        history->Execute(std::move(command));
+                        BOOM_INFO("[Viewport 2D] Recorded transform command for undo");
+                    }
+                }
+            }
+        }
+
+        // Update gizmo state (must be outside all blocks to update every frame)
+        m_GizmoWasUsing = ImGuizmo::IsUsing();
     }
 
     void ViewportPanel::DrawGuizmo3D(
