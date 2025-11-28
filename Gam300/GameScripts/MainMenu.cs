@@ -6,9 +6,9 @@ namespace GameScripts
     public class MainMenu
     {
         private const int MOUSE_LEFT = 0;
-        private const string LEVEL_SCENE_NAME = "M2_Redesign_scaled";
         // Store the unique IDs of our buttons
-        private ulong _startButtonID;
+        private ulong _newGameButtonID;
+        private ulong _howToPlayButtonID;
         private ulong _quitButtonID;
 
         public void OnStart(string jsonParams)
@@ -16,14 +16,16 @@ namespace GameScripts
             API.Log("MainMenu OnStart Running...");
             // 1. Find the entities by name once at startup
             // (Make sure your entities are named exactly this in the Editor!)
-            _startButtonID = API.FindEntity("StartButton");
+            _newGameButtonID = API.FindEntity("NewGameButton");
+            _howToPlayButtonID = API.FindEntity("HowToPlayButton");
             _quitButtonID = API.FindEntity("QuitButton");
 
             // Add these logs to verify they were actually found
-            API.Log("Start ID: " + _startButtonID);
+            API.Log("Start ID: " + _newGameButtonID);
+            API.Log("How To Play ID: " + _howToPlayButtonID);
             API.Log("Quit ID: " + _quitButtonID);
 
-            if (_startButtonID == 0) API.Log("Warning: StartButton not found!");
+            if (_newGameButtonID == 0) API.Log("Warning: StartButton not found!");
         }
 
         public void OnUpdate(float dt)
@@ -42,12 +44,17 @@ namespace GameScripts
                 if (hitID != 0)
                 {
                     API.Log("Hit ID: " + hitID);
-                    API.Log("Wanted Start ID: " + _startButtonID);
+                    API.Log("Wanted Start ID: " + _newGameButtonID);
 
-                    if (hitID == _startButtonID)
+                    if (hitID == _newGameButtonID)
                     {
                         API.Log(">> Start Button Clicked! Starting Game...");
-                        API.LoadScene(LEVEL_SCENE_NAME);
+                        API.LoadScene(Entry.LEVEL_SCENE_NAME);
+                    }
+                    else if (hitID == _howToPlayButtonID)
+                    {
+                        API.Log(">> Quit Button Clicked! Exiting Game...");
+                        API.LoadScene(Entry.HOW_TO_PLAY_SCENE_NAME);
                     }
                     else if (hitID == _quitButtonID)
                     {

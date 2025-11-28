@@ -6,11 +6,11 @@ namespace GameScripts
     public static class Entry
     {
         // --- Scene Management ---
-        private const string LEVEL_SCENE_NAME = "level";
-        private const string PAUSE_SCENE_NAME = "PauseMenu";
-        private const string MAIN_MENU_SCENE_NAME = "MainMenu";
-        private const string HOW_TO_PLAY_SCENE_NAME = "HowToPlay";
-        private static string _currentSceneName;
+        public const string LEVEL_SCENE_NAME = "M2_Redesign_scaled";
+        public const string PAUSE_SCENE_NAME = "PauseMenu";
+        public const string MAIN_MENU_SCENE_NAME = "MainMenu";
+        public const string HOW_TO_PLAY_SCENE_NAME = "HowToPlay";
+        public static string _currentSceneName;
         public static bool IsGamePaused = false;
 
         // Key state trackers
@@ -20,6 +20,9 @@ namespace GameScripts
         private static bool _y_KeyWasDown = false;
         private static bool _m_KeyWasDown = false;
         private static bool _q_KeyWasDown = false;
+
+        public static PauseMenu s_ActivePauseMenuInstance = null;
+
 
         public static void Start()
         {
@@ -33,6 +36,9 @@ namespace GameScripts
             IsGamePaused = false;
 
             _currentSceneName = API.GetCurrentSceneName();
+
+            API.SetGameLogicPaused(false);
+            s_ActivePauseMenuInstance = null;
 
             API.Log("[C#] Entry.Start() called for scene: " + _currentSceneName);
         }
@@ -49,21 +55,19 @@ namespace GameScripts
                 {
                     if (API.IsPauseMenuLoaded())
                     {
-                        UpdatePauseMenu();
+                        UpdatePauseMenu(dt);
+                        API.SetGameLogicPaused(true);
+
                     }
                 }
                 else
                 {
                     UpdateGame(dt);
+                    API.SetGameLogicPaused(false);
+
                 }
             }
-            else if (state == API.APP_STATE_PAUSED)
-            {
-                if (API.IsPauseMenuLoaded())
-                {
-                    UpdatePauseMenu();
-                }
-            }
+
         }
 
         // This function runs all your game logic
@@ -149,6 +153,10 @@ namespace GameScripts
                 IsGamePaused = true;
                 // API.TogglePause();
                 API.LoadSceneAdditive(PAUSE_SCENE_NAME);
+                API.SetGameLogicPaused(true);
+
+                s_ActivePauseMenuInstance = null;
+
                 _p_KeyWasDown = p_KeyDown;
                 return;
             }
@@ -159,7 +167,7 @@ namespace GameScripts
         }
 
         // This function runs all your pause menu logic
-        private static void UpdatePauseMenu()
+        private static void UpdatePauseMenu(float dt)
         {
             // --- Resume Button (R) ---
             bool r_KeyDown = API.IsKeyDown(API.KEY_R);
@@ -169,6 +177,7 @@ namespace GameScripts
 
                 // --- NEW RESUME LOGIC ---
                 API.UnloadPauseMenu(); // 1. Destroy the menu objects
+                API.SetGameLogicPaused(false);
                 IsGamePaused = false;
                 // API.TogglePause();
 
@@ -185,7 +194,6 @@ namespace GameScripts
                 IsGamePaused = false;
                 // API.TogglePause();
                 API.LoadScene(MAIN_MENU_SCENE_NAME); // 2. ...THEN load the new scene (this will clear everything)
-
                 _m_KeyWasDown = m_KeyDown;
                 return;
             }
@@ -197,6 +205,7 @@ namespace GameScripts
             {
                 API.Log("Restarting scene...");
                 IsGamePaused = false;
+                API.SetGameLogicPaused(false);
                 // API.TogglePause();
                 // 2. Reload the current game scene
                 // (This replaces all scenes, including the pause menu)
@@ -221,6 +230,23 @@ namespace GameScripts
                 return;
             }
             _q_KeyWasDown = q_KeyDown;
+
+            if (s_ActivePauseMenuInstance != null)
+            {
+                s_ActivePauseMenuInstance.OnUpdate(dt);
+            }
+        }
+
+        public static void ResumeGame()
+        {
+            API.Log("Resuming game (Button click)...");
+
+
+            API.UnloadPauseMenu(); // 1. Destroy the menu objects
+            IsGamePaused = false;
+            API.SetGameLogicPaused(false);
+
+            s_ActivePauseMenuInstance = null;
         }
     }
 }

@@ -48,6 +48,7 @@
     <Compile Include="EnemyAI.cs" />
     <Compile Include="PatrolEnemyController.cs" />
     <Compile Include="MainMenu.cs" />
+    <Compile Include="PauseMenu.cs" />
     <Compile Include="PlayerFootsteps.cs" />
     <Compile Include="VisionComponent.cs" />
     <Compile Include="Entry.cs" />

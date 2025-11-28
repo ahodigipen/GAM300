@@ -103,6 +103,7 @@ namespace Boom
 
  // Application state management
         ApplicationState m_AppState = ApplicationState::STOPPED;  // Start in edit mode (like Unity)
+        bool m_IsGameLogicPaused = false;
         double m_PausedTime = 0.0;  // Track time spent paused
         double m_LastPauseTime = 0.0;  // When the last pause started
         bool m_ShouldExit = false;  // Flag for graceful shutdown
@@ -311,6 +312,7 @@ namespace Boom
  });
 
  // Reset time tracking
+            m_IsGameLogicPaused = false;
             m_PausedTime = 0.0;
             m_LastPauseTime = 0.0;
 
@@ -356,6 +358,9 @@ namespace Boom
  * @brief Gets the current application state
  */
  BOOM_INLINE ApplicationState GetState() const { return m_AppState; }
+
+ // Set application state to pause
+ BOOM_INLINE void SetGameLogicPaused(bool paused) { m_IsGameLogicPaused = paused; }
 
  /**
  * @brief Checks if the application is currently in play mode
@@ -496,27 +501,49 @@ namespace Boom
 
  BOOM_INLINE bool LoadSceneAdditive(const std::string& sceneName, const std::string& scenePath = "Scenes/")
  {
- DataSerializer serializer;
- const std::string sceneFilePath = scenePath + sceneName + ".yaml";
- BOOM_INFO("[Scene] Additively loading scene '{}'", sceneName, sceneFilePath);
+     // --- FIX: Disable hot reload temporarily ---
+     bool wasHotReloadEnabled = m_Context->scriptingSystem->IsAutoHotReloadEnabled();
+     if (wasHotReloadEnabled) {
+         m_Context->scriptingSystem->EnableAutoHotReload(false);
+         BOOM_INFO("[Scene] Disabled auto hot-reload during additive load.");
+     }
 
- // Deserialize new entities and components into the EXISTING scene
- serializer.Deserialize(m_Context->scene, *m_Context->assets, sceneFilePath);
+     DataSerializer serializer;
+     const std::string sceneFilePath = scenePath + sceneName + ".yaml";
+     BOOM_INFO("[Scene] Additively loading scene '{}'", sceneName, sceneFilePath);
 
- // Reinitialize systems, but ONLY for the newly loaded objects.
- BOOM_INFO("[Scene] Initializing physics for additive objects...");
- auto view = m_Context->scene.view<PauseMenuTagComponent, RigidBodyComponent>();
- for (auto e : view) {
- // Check if it's already been added
- auto& rb = view.get<RigidBodyComponent>(e);
- if (!rb.RigidBody.actor) {
- Boom::Entity entity{ &m_Context->scene, e };
- m_Context->physics->AddRigidBody(entity, *m_Context->assets);
- }
- }
+     serializer.Deserialize(m_Context->scene, *m_Context->assets, sceneFilePath);
 
- BOOM_INFO("[Scene] Successfully added scene '{}'", sceneName);
- return true;
+     BOOM_INFO("[Scene] Initializing physics for additive objects...");
+     auto view = m_Context->scene.view<PauseMenuTagComponent, RigidBodyComponent>();
+     for (auto e : view) {
+         auto& rb = view.get<RigidBodyComponent>(e);
+         if (!rb.RigidBody.actor) {
+             Boom::Entity entity{ &m_Context->scene, e };
+             m_Context->physics->AddRigidBody(entity, *m_Context->assets);
+         }
+     }
+
+     BOOM_INFO("[Scene] Initializing C# scripts for additive objects...");
+     if (m_Context->scriptingSystem)
+     {
+         auto scriptView = m_Context->scene.view<PauseMenuTagComponent, ScriptComponent>();
+         for (auto e : scriptView)
+         {
+             auto& sc = scriptView.get<ScriptComponent>(e);
+             m_Context->scriptingSystem->RecreateForEntity(e, sc);
+         }
+     }
+
+     BOOM_INFO("[Scene] Successfully added scene '{}'", sceneName);
+
+     // --- FIX: Re-enable hot reload ---
+     if (wasHotReloadEnabled) {
+         m_Context->scriptingSystem->EnableAutoHotReload(true);
+         BOOM_INFO("[Scene] Re-enabled auto hot-reload.");
+     }
+
+     return true;
  }
 
  template<typename TagComponent>

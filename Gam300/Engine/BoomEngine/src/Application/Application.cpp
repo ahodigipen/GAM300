@@ -138,29 +138,11 @@ namespace Boom
             }
 
 
-            // Always update delta time, but adjust for pause state
             ComputeFrameDeltaTime();
-            if (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) {
-                // InvokeStatic1Float("GameScripts", "Entry", "Update", static_cast<float>(m_Context->DeltaTime));
-                m_AIagents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime));
-                if (m_Nav) {
-                    m_NavAgents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime), *m_Nav);
-                }
-                
-            }
+            // Always run file watcher
             m_Context->scriptingSystem->UpdateFileWatcher();
-            
-            if (m_IsInPlayMode) {
-                float dt = static_cast<float>(m_Context->DeltaTime);
-                m_Context->scriptingSystem->CallUpdate(dt);
 
-                auto& registry = m_Context->scene;
-                auto scriptView = registry.view<Boom::ScriptComponent>();
-                for (auto entity : scriptView) {
-                    auto& sc = scriptView.get<Boom::ScriptComponent>(entity);
-                    m_Context->scriptingSystem->TickEntity(entity, sc, dt);
-                }
-            }
+            // Always run Entry.cs. This will set our new m_IsGameLogicPaused flag.
 
             //compute camera position to colliders
             //if (m_AppState == ApplicationState::RUNNING)
@@ -175,20 +157,41 @@ namespace Boom
             m_Context->renderer->NewFrame();
             m_Context->profiler.End("Renderer Start Frame");
 
-            // Only update physics/gameplay when in play mode
-            if (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) {
-                EnttView<Entity, RigidBodyComponent>([](auto, RigidBodyComponent& rb) {
-                    rb.RigidBody.isColliding = false;
-                    });
-                UpdateKinematicTransforms();
-                RunPhysicsSimulation();
-                //InitNavRuntime();
-                UpdateThirdPersonCameras();
+            if (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING)
+            {
+                float dt = static_cast<float>(m_Context->DeltaTime);
+                m_Context->scriptingSystem->CallUpdate(dt);
 
-                // Update per-entity sound system (trigger/key/anim/movement based)
-                SoundSystem::Update(m_Context->scene, static_cast<float>(m_Context->DeltaTime));
+                // Individual Scripts Logic (TickEntity)
+                auto& registry = m_Context->scene;
+                auto scriptView = registry.view<Boom::ScriptComponent>();
+                for (auto entity : scriptView) {
+                    auto& sc = scriptView.get<Boom::ScriptComponent>(entity);
+                    bool isPauseMenuObject = registry.any_of<PauseMenuTagComponent>(entity);
+                    if (!m_IsGameLogicPaused || isPauseMenuObject)
+                    {
+                        m_Context->scriptingSystem->TickEntity(entity, sc, dt);
+                    }
+                }
+
+                // --- RUN ALL GAME LOGIC ---
+                if (!m_IsGameLogicPaused) {
+                    // AI Logic
+                    m_AIagents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime));
+                    if (m_Nav) {
+                        m_NavAgents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime), *m_Nav);
+                    }
+
+                    // Physics Logic
+                    EnttView<Entity, RigidBodyComponent>([](auto, RigidBodyComponent& rb) {
+                        rb.RigidBody.isColliding = false;
+                        });
+                    UpdateKinematicTransforms();
+                    RunPhysicsSimulation();
+                    UpdateThirdPersonCameras();
+                    SoundSystem::Update(m_Context->scene, static_cast<float>(m_Context->DeltaTime));
+                }
             }
-
 
             LightsUpdate();
 

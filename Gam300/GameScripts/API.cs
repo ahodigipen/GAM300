@@ -180,6 +180,9 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern bool LinecastIgnoreBoth(Vec3 from, Vec3 to, ulong ignoreEntity1, ulong ignoreEntity2);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetGameLogicPaused(bool paused);
     }
 
     // ========= DELEGATES =========
@@ -314,6 +317,31 @@ namespace Boom
                 return;
             }
             Native.Boom_API_SetRotation(h, ref r);
+        }
+
+        public static Vec3 GetScale(ulong h)
+        {
+            if (!Native.Boom_API_HasTransform(h))
+            {
+                Log($"[WARNING] Entity {h} does not have TransformComponent!");
+                return new Vec3(1, 1, 1);
+            }
+            // Get the full transform and return only the scale part
+            Native.Boom_API_GetTransform(h, out var t);
+            return t.Scale;
+        }
+
+        public static void SetScale(ulong h, Vec3 s)
+        {
+            if (!Native.Boom_API_HasTransform(h))
+            {
+                Log($"[WARNING] Entity {h} does not have TransformComponent! Cannot set scale.");
+                return;
+            }
+
+            Native.Boom_API_GetTransform(h, out var t);
+            t.Scale = s;
+            Native.Boom_API_SetTransform(h, ref t);
         }
 
         public static TransformData GetTransform(ulong h)
@@ -519,6 +547,8 @@ namespace Boom
         {
             Native.Boom_API_SetRotationY(h, yawDegrees);
         }
+
+        public static void SetGameLogicPaused(bool paused) => Native.Boom_API_SetGameLogicPaused(paused);
 
         // ===== GLFW key codes =====
         public const int KEY_LEFT = 263;

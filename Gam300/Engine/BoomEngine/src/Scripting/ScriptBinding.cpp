@@ -338,6 +338,12 @@ namespace Boom {
         }
     }
 
+    static void ICALL_API_SetGameLogicPaused(bool isPaused) {
+        if (s_Ctx && s_Ctx->app) {
+            s_Ctx->app->SetGameLogicPaused(isPaused);
+        }
+    }
+
     static int ICALL_API_GetApplicationState() {
         if (!s_Ctx || !s_Ctx->app) return (int)ApplicationState::STOPPED;
         return (int)s_Ctx->app->GetState();
@@ -1145,5 +1151,7 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetRotationY", (const void*)ICALL_API_SetRotationY);
     
         mono_add_internal_call("Boom.Native::LinecastIgnoreBoth", (const void*)ICALL_API_LinecastIgnoreBoth);
+
+        mono_add_internal_call("Boom.Native::Boom_API_SetGameLogicPaused", (const void*)ICALL_API_SetGameLogicPaused);
     }
 }
