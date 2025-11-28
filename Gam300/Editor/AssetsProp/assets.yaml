@@ -2298,6 +2298,17 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
+    UID: 13476211349726698154
+    Name: Stand To Roll (1)
+    Source: Resources/Stand To Roll (1).fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
+  - Type: MODEL
     UID: 11479122689655157238
     Name: Hanging Idle
     Source: Resources/Models/Player/animations/throw away/Hanging Idle.fbx
@@ -2913,6 +2924,17 @@ ASSETS:
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
       HasJoints: false
+  - Type: MODEL
+    UID: 266716137393134784
+    Name: Stand To Roll
+    Source: Resources/Stand To Roll.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
   - Type: MODEL
     UID: 3890036720565027074
     Name: Wall
@@ -3574,6 +3596,28 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
+    UID: 10375281322457629410
+    Name: Scissors Walk
+    Source: Resources/Models/Scissors Walk.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
+  - Type: MODEL
+    UID: 17103110655317518176
+    Name: Rock_Ninja
+    Source: Resources/Models/Enemy/Rock_Ninja.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
+  - Type: MODEL
     UID: 2088400025698853957
     Name: Scissor Ninja Idle (2)
     Source: Resources/Scissor Ninja Idle (2).fbx
@@ -3584,6 +3628,39 @@ ASSETS:
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
       HasJoints: false
+  - Type: MODEL
+    UID: 7095786456408826199
+    Name: Walking in place ninja (1)
+    Source: Resources/Walking in place ninja (1).fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
+  - Type: MODEL
+    UID: 7474465525244815593
+    Name: Walking in place ninja
+    Source: Resources/Walking in place ninja.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
+  - Type: MODEL
+    UID: 9292382977354757558
+    Name: Walking S Ninja
+    Source: Resources/Walking S Ninja.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: true
   - Type: AUDIO
     UID: 5064117765438422255
     Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_5
