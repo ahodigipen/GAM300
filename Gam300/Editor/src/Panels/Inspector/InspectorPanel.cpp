@@ -7,6 +7,7 @@
 #include "Context/DebugHelpers.h"
 #include "Panels/PropertiesImgui.h"
 #include"Physics/Context.h"
+#include "Commands/UndoRedo.h"  // for ComponentPropertyCommand
 #include <GLFW/glfw3.h>
 //#include "BoomProperties.h"
 using namespace EditorUI;
@@ -206,10 +207,71 @@ namespace EditorUI {
             auto& tc = selected.Get<Boom::TransformComponent>();
             if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
                 //modified as dragging speed should vary between variables
+
+                // Track when any transform drag starts
                 ImGui::DragFloat3("Translate", &tc.transform.translate[0], 0.01f);
+                if (ImGui::IsItemActivated()) {
+                    m_TransformBeforeEdit = tc.transform;
+                    m_IsTransformBeingEdited = true;
+                }
+                if (ImGui::IsItemDeactivatedAfterEdit()) {
+                    auto* history = m_Owner->GetCommandHistory();
+                    if (history) {
+                        auto command = std::make_unique<TransformCommand>(
+                            &ctx->scene,
+                            m_App->SelectedEntity(),
+                            m_TransformBeforeEdit,
+                            tc.transform,
+                            "Change Position"
+                        );
+                        history->Execute(std::move(command));
+                        BOOM_INFO("[Undo] Created command: Change Position");
+                    }
+                    m_IsTransformBeingEdited = false;
+                }
+
                 ImGui::DragFloat3("Rotation", &tc.transform.rotate[0], .3142f);
+                if (ImGui::IsItemActivated()) {
+                    m_TransformBeforeEdit = tc.transform;
+                    m_IsTransformBeingEdited = true;
+                }
+                if (ImGui::IsItemDeactivatedAfterEdit()) {
+                    auto* history = m_Owner->GetCommandHistory();
+                    if (history) {
+                        auto command = std::make_unique<TransformCommand>(
+                            &ctx->scene,
+                            m_App->SelectedEntity(),
+                            m_TransformBeforeEdit,
+                            tc.transform,
+                            "Change Rotation"
+                        );
+                        history->Execute(std::move(command));
+                        BOOM_INFO("[Undo] Created command: Change Rotation");
+                    }
+                    m_IsTransformBeingEdited = false;
+                }
+
                 ImGui::DragFloat3("Scale", &tc.transform.scale[0], 0.01f);
                 tc.transform.scale = glm::max(glm::vec3(0.01f), tc.transform.scale); //limit scale to positive
+                if (ImGui::IsItemActivated()) {
+                    m_TransformBeforeEdit = tc.transform;
+                    m_IsTransformBeingEdited = true;
+                }
+                if (ImGui::IsItemDeactivatedAfterEdit()) {
+                    auto* history = m_Owner->GetCommandHistory();
+                    if (history) {
+                        auto command = std::make_unique<TransformCommand>(
+                            &ctx->scene,
+                            m_App->SelectedEntity(),
+                            m_TransformBeforeEdit,
+                            tc.transform,
+                            "Change Scale"
+                        );
+                        history->Execute(std::move(command));
+                        BOOM_INFO("[Undo] Created command: Change Scale");
+                    }
+                    m_IsTransformBeingEdited = false;
+                }
             }
         }
 
@@ -439,13 +501,84 @@ namespace EditorUI {
 
                 auto& q = selected.Get<Boom::SpriteComponent>();
 
-                ImGui::Checkbox("GUI", &q.uiOverlay);
+                // Track sprite edits for undo/redo
+                // Capture state before any changes this frame
+                Boom::SpriteComponent spriteBeforeFrame = q;
+
+                // GUI Overlay Checkbox
+                bool oldUiOverlay = q.uiOverlay;
+                if (ImGui::Checkbox("GUI", &q.uiOverlay)) {
+                    // Checkbox was toggled - create undo command immediately
+                    auto* history = m_Owner->GetCommandHistory();
+                    if (history) {
+                        Boom::SpriteComponent before = spriteBeforeFrame;
+                        before.uiOverlay = oldUiOverlay;
+                        auto command = std::make_unique<ComponentPropertyCommand<Boom::SpriteComponent>>(
+                            &ctx->scene,
+                            m_App->SelectedEntity(),
+                            before,
+                            q,
+                            "Toggle Sprite GUI Overlay"
+                        );
+                        history->Execute(std::move(command));
+                        BOOM_INFO("[Undo] Created command: Toggle Sprite GUI Overlay");
+                    } else {
+                        BOOM_WARN("[Undo] CommandHistory is null!");
+                    }
+                }
+
+                // Texture Widget
+                Boom::AssetID oldTextureID = q.textureID;
                 ImGui::BeginTable("##maps", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersInnerV);
                 ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed);
                 ImGui::TableSetupColumn("Asset", ImGuiTableColumnFlags_WidthStretch);
                 InputAssetWidget<CONSTANTS::DND_PAYLOAD_TEXTURE>("texture", q.textureID);
                 ImGui::EndTable();
-                ImGui::ColorEdit4("color", &q.color[0]);
+
+                // Check if texture changed (via drag-drop or other means)
+                if (oldTextureID != q.textureID) {
+                    auto* history = m_Owner->GetCommandHistory();
+                    if (history) {
+                        Boom::SpriteComponent before = spriteBeforeFrame;
+                        before.textureID = oldTextureID;
+                        auto command = std::make_unique<ComponentPropertyCommand<Boom::SpriteComponent>>(
+                            &ctx->scene,
+                            m_App->SelectedEntity(),
+                            before,
+                            q,
+                            "Change Sprite Texture"
+                        );
+                        history->Execute(std::move(command));
+                        BOOM_INFO("[Undo] Created command: Change Sprite Texture");
+                    }
+                }
+
+                // Color Picker - track when editing finishes
+                glm::vec4 oldColor = q.color;
+                if (ImGui::ColorEdit3("color", &q.color[0])) {
+                    // Color is being edited
+                    if (!m_IsSpriteBeingEdited) {
+                        m_SpriteBeforeEdit = spriteBeforeFrame;
+                        m_IsSpriteBeingEdited = true;
+                    }
+                }
+
+                // When color picker is closed/deactivated, create undo command
+                if (m_IsSpriteBeingEdited && !ImGui::IsItemActive() && ImGui::IsItemEdited()) {
+                    auto* history = m_Owner->GetCommandHistory();
+                    if (history) {
+                        auto command = std::make_unique<ComponentPropertyCommand<Boom::SpriteComponent>>(
+                            &ctx->scene,
+                            m_App->SelectedEntity(),
+                            m_SpriteBeforeEdit,
+                            q,
+                            "Change Sprite Color"
+                        );
+                        history->Execute(std::move(command));
+                        BOOM_INFO("[Undo] Created command: Change Sprite Color");
+                    }
+                    m_IsSpriteBeingEdited = false;
+                }
             }
             ImGui::PopID();
         }

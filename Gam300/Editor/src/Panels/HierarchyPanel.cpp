@@ -167,8 +167,29 @@ namespace EditorUI {
 
             if (currentParent != entt::null) {
                 if (ImGui::MenuItem("Unparent (Clear Parent)")) {
-                    if (Boom::SetParent(registry, entity, entt::null)) {
-                        BOOM_INFO("[Hierarchy] Unparented '{}'", info.name);
+                    // Capture state for undo
+                    Boom::Transform3D oldLocalTransform;
+                    if (registry.all_of<Boom::TransformComponent>(entity)) {
+                        oldLocalTransform = registry.get<Boom::TransformComponent>(entity).transform;
+                    }
+
+                    // Create and execute unparent command
+                    auto* history = m_Owner->GetCommandHistory();
+                    if (history) {
+                        auto command = std::make_unique<ReparentCommand>(
+                            &registry,
+                            entity,
+                            currentParent,
+                            entt::null,
+                            oldLocalTransform
+                        );
+                        history->Execute(std::move(command));
+                        BOOM_INFO("[Hierarchy] Unparented '{}' (with undo)", info.name);
+                    } else {
+                        // Fallback
+                        if (Boom::SetParent(registry, entity, entt::null)) {
+                            BOOM_INFO("[Hierarchy] Unparented '{}'", info.name);
+                        }
                     }
                 }
                 ImGui::Separator();
@@ -181,11 +202,25 @@ namespace EditorUI {
             }
 
             if (ImGui::MenuItem("Duplicate")) {
-                entt::entity duplicated = Boom::DuplicateEntity(registry, entity, true);
-                if (duplicated != entt::null) {
-                    app->SelectedEntity(true) = duplicated;
-                    BOOM_INFO("[Hierarchy] Duplicated '{}' (including {} children)",
+                // Create and execute duplicate command
+                auto* history = m_Owner->GetCommandHistory();
+                if (history) {
+                    auto command = std::make_unique<DuplicateEntityCommand>(&registry, entity);
+                    history->Execute(std::move(command));
+
+                    BOOM_INFO("[Hierarchy] Duplicated '{}' (with undo, including {} children)",
                              info.name, Boom::GetChildren(registry, entity).size());
+
+                    // Note: The duplicated entity is created but not automatically selected
+                    // User can click it in the hierarchy to select it
+                } else {
+                    // Fallback
+                    entt::entity duplicated = Boom::DuplicateEntity(registry, entity, true);
+                    if (duplicated != entt::null) {
+                        app->SelectedEntity(true) = duplicated;
+                        BOOM_INFO("[Hierarchy] Duplicated '{}' (including {} children)",
+                                 info.name, Boom::GetChildren(registry, entity).size());
+                    }
                 }
             }
 
@@ -296,12 +331,25 @@ namespace EditorUI {
                 // Ctrl+D: Duplicate selected entity
                 if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_D, false)) {
                     if (selected != entt::null && registry.valid(selected)) {
-                        entt::entity duplicated = Boom::DuplicateEntity(registry, selected, true);
-                        if (duplicated != entt::null) {
-                            m_App->SelectedEntity(true) = duplicated;
+                        // Create and execute duplicate command
+                        auto* history = m_Owner->GetCommandHistory();
+                        if (history) {
+                            auto command = std::make_unique<DuplicateEntityCommand>(&registry, selected);
+                            history->Execute(std::move(command));
+
                             if (registry.all_of<Boom::InfoComponent>(selected)) {
-                                BOOM_INFO("[Hierarchy] Duplicated '{}' with Ctrl+D",
+                                BOOM_INFO("[Hierarchy] Duplicated '{}' with Ctrl+D (with undo)",
                                          registry.get<Boom::InfoComponent>(selected).name);
+                            }
+                        } else {
+                            // Fallback
+                            entt::entity duplicated = Boom::DuplicateEntity(registry, selected, true);
+                            if (duplicated != entt::null) {
+                                m_App->SelectedEntity(true) = duplicated;
+                                if (registry.all_of<Boom::InfoComponent>(selected)) {
+                                    BOOM_INFO("[Hierarchy] Duplicated '{}' with Ctrl+D",
+                                             registry.get<Boom::InfoComponent>(selected).name);
+                                }
                             }
                         }
                     }

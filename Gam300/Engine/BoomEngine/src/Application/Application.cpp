@@ -428,7 +428,21 @@ namespace Boom
                     TextureAsset& texture{ m_Context->assets->Get<TextureAsset>(comp.textureID) };
                     m_Context->renderer->DrawQuad(texture.data, t.transform, comp.color);
                 }
-                else guiList.push_back({ comp, t.transform });
+                else {
+                    // Calculate world transform for GUI sprites (respects parent hierarchy)
+                    glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+                    Transform3D worldTransform;
+                    DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
+
+                    // Convert to Transform2D for GUI rendering
+                    Transform2D guiTransform{
+                        worldTransform.translate,      // Full 3D position (Z used for sorting)
+                        worldTransform.rotate.z,        // Only Z rotation for 2D
+                        glm::vec2(worldTransform.scale.x, worldTransform.scale.y)  // 2D scale
+                    };
+
+                    guiList.push_back({ comp, guiTransform });
+                }
             }
             });
 

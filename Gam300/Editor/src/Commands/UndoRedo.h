@@ -14,6 +14,7 @@ namespace Boom {
     struct ModelComponent;
     struct CameraComponent;
     struct Camera3D;
+    struct SpriteComponent;
     using AssetID = uint64_t;
 }
 
@@ -208,6 +209,11 @@ namespace EditorUI {
         bool hasCamera = false;
         Boom::Camera3D camera;
 
+        bool hasSprite = false;
+        Boom::AssetID spriteTextureID = 0;
+        glm::vec4 spriteColor = glm::vec4(1.0f);
+        bool spriteUIOverlay = true;
+
         // Add more component snapshots as needed
         std::vector<EntitySnapshot> children;
     };
@@ -276,6 +282,15 @@ namespace EditorUI {
                 snapshot.camera = m_Registry->get<Boom::CameraComponent>(entity).camera;
             }
 
+            // Capture SpriteComponent
+            if (m_Registry->all_of<Boom::SpriteComponent>(entity)) {
+                snapshot.hasSprite = true;
+                const auto& sprite = m_Registry->get<Boom::SpriteComponent>(entity);
+                snapshot.spriteTextureID = sprite.textureID;
+                snapshot.spriteColor = sprite.color;
+                snapshot.spriteUIOverlay = sprite.uiOverlay;
+            }
+
             // Capture children recursively
             auto children = Boom::GetChildren(*m_Registry, entity);
             for (entt::entity child : children) {
@@ -318,6 +333,14 @@ namespace EditorUI {
                 camera.camera = snapshot.camera;
             }
 
+            // Restore SpriteComponent
+            if (snapshot.hasSprite) {
+                auto& sprite = m_Registry->emplace<Boom::SpriteComponent>(entity);
+                sprite.textureID = snapshot.spriteTextureID;
+                sprite.color = snapshot.spriteColor;
+                sprite.uiOverlay = snapshot.spriteUIOverlay;
+            }
+
             // Restore children recursively
             for (const auto& childSnapshot : snapshot.children) {
                 RestoreEntityState(childSnapshot, entity);
@@ -342,6 +365,168 @@ namespace EditorUI {
         entt::registry* m_Registry;
         entt::entity m_Entity;
         EntitySnapshot m_Snapshot;
+    };
+
+    // ==================== COMPONENT PROPERTY COMMAND ====================
+
+    template<typename TComponent>
+    class ComponentPropertyCommand : public ICommand {
+    public:
+        ComponentPropertyCommand(entt::registry* registry,
+                                entt::entity entity,
+                                const TComponent& oldValue,
+                                const TComponent& newValue,
+                                const std::string& description = "Component Property Change")
+            : m_Registry(registry)
+            , m_Entity(entity)
+            , m_OldValue(oldValue)
+            , m_NewValue(newValue)
+            , m_Description(description)
+        {
+            // Store UID for stability
+            if (m_Registry && m_Registry->valid(m_Entity) &&
+                m_Registry->all_of<Boom::InfoComponent>(m_Entity)) {
+                m_EntityUID = m_Registry->get<Boom::InfoComponent>(m_Entity).uid;
+            }
+        }
+
+        void Execute() override {
+            entt::entity entity = FindEntityByUID();
+            if (entity == entt::null) {
+                BOOM_WARN("[ComponentPropertyCommand] Execute failed: entity UID {} not found", m_EntityUID);
+                return;
+            }
+
+            if (m_Registry->all_of<TComponent>(entity)) {
+                m_Registry->get<TComponent>(entity) = m_NewValue;
+                BOOM_INFO("[ComponentPropertyCommand] Execute: Applied new value to entity UID {}", m_EntityUID);
+            } else {
+                BOOM_WARN("[ComponentPropertyCommand] Execute: entity {} missing component", static_cast<uint32_t>(entity));
+            }
+        }
+
+        void Undo() override {
+            entt::entity entity = FindEntityByUID();
+            if (entity == entt::null) {
+                BOOM_WARN("[ComponentPropertyCommand] Undo failed: entity UID {} not found", m_EntityUID);
+                return;
+            }
+
+            if (m_Registry->all_of<TComponent>(entity)) {
+                m_Registry->get<TComponent>(entity) = m_OldValue;
+                BOOM_INFO("[ComponentPropertyCommand] Undo: Restored old value to entity UID {}", m_EntityUID);
+            } else {
+                BOOM_WARN("[ComponentPropertyCommand] Undo: entity {} missing component", static_cast<uint32_t>(entity));
+            }
+        }
+
+        std::string GetDescription() const override { return m_Description; }
+
+    private:
+        entt::entity FindEntityByUID() const {
+            if (!m_Registry) return entt::null;
+
+            // Try cached entity first
+            if (m_Registry->valid(m_Entity) &&
+                m_Registry->all_of<Boom::InfoComponent>(m_Entity)) {
+                if (m_Registry->get<Boom::InfoComponent>(m_Entity).uid == m_EntityUID) {
+                    return m_Entity;
+                }
+            }
+
+            // Search by UID
+            auto view = m_Registry->view<Boom::InfoComponent>();
+            for (auto e : view) {
+                if (view.get<Boom::InfoComponent>(e).uid == m_EntityUID) {
+                    return e;
+                }
+            }
+
+            return entt::null;
+        }
+
+        entt::registry* m_Registry;
+        entt::entity m_Entity;
+        Boom::AssetID m_EntityUID = 0;
+        TComponent m_OldValue;
+        TComponent m_NewValue;
+        std::string m_Description;
+    };
+
+    // ==================== DUPLICATE ENTITY COMMAND ====================
+
+    class DuplicateEntityCommand : public ICommand {
+    public:
+        DuplicateEntityCommand(entt::registry* registry, entt::entity sourceEntity)
+            : m_Registry(registry)
+            , m_SourceEntity(sourceEntity)
+            , m_DuplicatedEntity(entt::null)
+        {
+            // Store source UID for stability
+            if (m_Registry && m_Registry->valid(sourceEntity) &&
+                m_Registry->all_of<Boom::InfoComponent>(sourceEntity)) {
+                m_SourceUID = m_Registry->get<Boom::InfoComponent>(sourceEntity).uid;
+            }
+        }
+
+        void Execute() override {
+            if (!m_Registry) return;
+
+            entt::entity source = FindEntityByUID(m_SourceUID);
+            if (source == entt::null) {
+                BOOM_WARN("[Undo] Cannot duplicate: source entity UID {} not found", m_SourceUID);
+                return;
+            }
+
+            // Duplicate the entity (including children)
+            m_DuplicatedEntity = Boom::DuplicateEntity(*m_Registry, source, true);
+
+            if (m_DuplicatedEntity != entt::null && m_Registry->all_of<Boom::InfoComponent>(m_DuplicatedEntity)) {
+                m_DuplicatedUID = m_Registry->get<Boom::InfoComponent>(m_DuplicatedEntity).uid;
+                BOOM_INFO("[Undo] Duplicated entity - new UID: {}", m_DuplicatedUID);
+            }
+        }
+
+        void Undo() override {
+            if (!m_Registry || m_DuplicatedEntity == entt::null) return;
+
+            entt::entity dup = FindEntityByUID(m_DuplicatedUID);
+            if (dup == entt::null) {
+                BOOM_WARN("[Undo] Cannot undo duplicate: duplicated entity UID {} not found", m_DuplicatedUID);
+                return;
+            }
+
+            // Delete the duplicated entity (including its children)
+            BOOM_INFO("[Undo] Deleting duplicated entity UID: {}", m_DuplicatedUID);
+            Boom::DeleteEntityRecursive(*m_Registry, dup, nullptr);
+            m_DuplicatedEntity = entt::null;
+        }
+
+        std::string GetDescription() const override {
+            return "Duplicate Entity";
+        }
+
+        entt::entity GetDuplicatedEntity() const { return m_DuplicatedEntity; }
+        Boom::AssetID GetDuplicatedUID() const { return m_DuplicatedUID; }
+
+    private:
+        entt::entity FindEntityByUID(Boom::AssetID uid) const {
+            if (!m_Registry || uid == 0) return entt::null;
+
+            auto view = m_Registry->view<Boom::InfoComponent>();
+            for (auto e : view) {
+                if (view.get<Boom::InfoComponent>(e).uid == uid) {
+                    return e;
+                }
+            }
+            return entt::null;
+        }
+
+        entt::registry* m_Registry;
+        entt::entity m_SourceEntity;
+        entt::entity m_DuplicatedEntity;
+        Boom::AssetID m_SourceUID = 0;
+        Boom::AssetID m_DuplicatedUID = 0;
     };
 
     // ==================== REPARENT COMMAND ====================

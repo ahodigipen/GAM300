@@ -1111,6 +1111,15 @@ namespace Boom {
         }
     }
 
+    // Global fade alpha (0 = transparent, 1 = black)
+    float g_ScreenFadeAlpha = 0.0f;
+
+    // C# -> C++ internal call (sets global fade)
+    static void ICALL_API_SetScreenFadeAlpha(float alpha)
+    {
+        g_ScreenFadeAlpha = glm::clamp(alpha, 0.0f, 1.0f);
+    }
+
     void RegisterScriptInternalCalls(AppContext* ctx)
     {
         s_Ctx = ctx;
@@ -1197,5 +1206,7 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::LinecastIgnoreBoth", (const void*)ICALL_API_LinecastIgnoreBoth);
 
         mono_add_internal_call("Boom.Native::Boom_API_TeleportRigidBody", (void*)ICALL_API_TeleportRigidBody);
+
+        mono_add_internal_call("Boom.Native::Boom_API_SetScreenFadeAlpha", (const void*)ICALL_API_SetScreenFadeAlpha);
     }
 }

@@ -103,6 +103,23 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
   - Type: MATERIAL
+    UID: 295392599374634747
+    Name: Cushion Texture
+    Source: Cushion Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 17585253655913077343
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
     UID: 9126702018428758169
     Name: Lamp Texture
     Source: Lamp Texture
@@ -114,6 +131,23 @@ ASSETS:
         metallic: 0.5
         occlusion: 1
       AlbedoMapID: 18036222300221331622
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 7842828173361374155
+    Name: Stone Statue (Thick) Texture
+    Source: Stone Statue (Thick) Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 82665125486564339
       NormalMapID: 0
       RoughnessMapID: 0
       MetallicMapID: 0
@@ -171,6 +205,23 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
   - Type: MATERIAL
+    UID: 6104124486273075758
+    Name: Brick Wall Texture
+    Source: Brick Wall Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 6954761202802887072
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
     UID: 13160241162385617845
     Name: Samurai Texture
     Source: Samurai Texture
@@ -216,6 +267,142 @@ ASSETS:
         metallic: 0.5
         occlusion: 1
       AlbedoMapID: 0
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 8475851512635632909
+    Name: Wooden Wall Texture
+    Source: Wooden Wall Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 5444082718129606842
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 15937630629384441243
+    Name: Zen Wall Texture
+    Source: Zen Wall Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 7155547352514417975
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 15351841083764186454
+    Name: Stone Statue (Thin) Texture
+    Source: Stone Statue (Thin) Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 13175659529161961824
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 14891281585286011240
+    Name: Table Texture
+    Source: Table Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 18193537679852570258
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 10882923977369277709
+    Name: Stone Wall Texture
+    Source: Stone Wall Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 16209169500842126980
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 16051879611138255440
+    Name: Roof Texture
+    Source: Roof Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 15452675258460406062
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 17505835518794492079
+    Name: Brick Rough Texture
+    Source: Brick Rough Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 4932857500842133020
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 16814172849789012347
+    Name: Outdoor Lamp Texture
+    Source: Outdoor Lamp Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 8189347454469401464
       NormalMapID: 0
       RoughnessMapID: 0
       MetallicMapID: 0
@@ -528,6 +715,17 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
+  - Type: TEXTURE
+    UID: 9587372192931143309
+    Name: Outdoor_Stone_Lantern2_midsection_BaseColor
+    Source: Resources/Textures/Props Textures/Outdoor_Stone_Lantern2_midsection_BaseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
   - Type: TEXTURE
     UID: 4067648091469832735
     Name: Ninja_occlusionRoughnessMetallic
@@ -1848,6 +2046,100 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
+  - Type: TEXTURE
+    UID: 13175659529161961824
+    Name: funeral pallet 2
+    Source: Resources/Textures/Props Textures/funeral pallet 2.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 82665125486564339
+    Name: funeral pallet 3
+    Source: Resources/Textures/Props Textures/funeral pallet 3.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 17585253655913077343
+    Name: Japanese-Style Props01
+    Source: Resources/Textures/Props Textures/Japanese-Style Props01.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 18193537679852570258
+    Name: Japanese-Style Props02
+    Source: Resources/Textures/Props Textures/Japanese-Style Props02.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 3295855584758501411
+    Name: Lion_Statue2_openPBR_shader1_BaseColor (1)
+    Source: Resources/Textures/Props Textures/Lion_Statue2_openPBR_shader1_BaseColor (1).png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 7155547352514417975
+    Name: seamless sand zen garden texture
+    Source: Resources/Textures/Wall Textures/seamless sand zen garden texture.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 6954761202802887072
+    Name: T_YFAM_BricksWeathered_d
+    Source: Resources/Textures/Wall Textures/T_YFAM_BricksWeathered_d.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 4932857500842133020
+    Name: T_YFAM_BricksRough_d
+    Source: Resources/Textures/Wall Textures/T_YFAM_BricksRough_d.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: SKYBOX
+    UID: 4245843529762785392
+    Name: NightSkyHDRI003_8K_HDR
+    Source: Resources/Textures/Skybox/NightSkyHDRI003_8K_HDR.hdr
+    Properties:
+      Size: 2048
   - Type: SKYBOX
     UID: 4988646848101492445
     Name: Sky
@@ -2037,9 +2329,9 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 4878958897926110889
-    Name: Walking
-    Source: Resources/Models/Player/animations/Walking.fbx
+    UID: 7477699483648389514
+    Name: Desert_Plant_04_Small_0_1
+    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Desert_Plant_04_Small_0_1.fbx
     Properties:
       Model Transform:
         transform:
@@ -2057,7 +2349,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
-      HasJoints: true
+      HasJoints: false
   - Type: MODEL
     UID: 8468216516841351967
     Name: Indoor_Lantern_Hanging
@@ -2458,17 +2750,6 @@ ASSETS:
     UID: 5156670162497623977
     Name: Fruit_Tree
     Source: Resources/Models/Fruit_Tree.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 13779674563758479505
-    Name: Cushion
-    Source: Resources/Models/Cushion.fbx
     Properties:
       Model Transform:
         transform:
@@ -3268,6 +3549,17 @@ ASSETS:
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
       HasJoints: true
+  - Type: MODEL
+    UID: 2038469021834599090
+    Name: Desert_Ribs_Small_0_1
+    Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Desert_Ribs_Small_0_1.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
   - Type: MODEL
     UID: 12600730890549785123
     Name: Terrain
