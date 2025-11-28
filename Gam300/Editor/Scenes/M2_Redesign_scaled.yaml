@@ -1,5 +1,487 @@
 Version: 1.0
 ENTITIES:
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 43
+      UID: 17798945096470409722
+    TransformComponent:
+      Transform:
+        Translate: [16.4799995, 59.4169998, -108.244003]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 42
+      UID: 6817032390761170715
+    TransformComponent:
+      Transform:
+        Translate: [-0.0199999996, 49.4970016, -110.304001]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 41
+      UID: 7210488533233976126
+    TransformComponent:
+      Transform:
+        Translate: [-5.65999985, 35.007, -61.0839996]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 40
+      UID: 496415249701938417
+    TransformComponent:
+      Transform:
+        Translate: [-5.69000006, 33.9469986, -53.4140015]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 39
+      UID: 15345700552811992908
+    TransformComponent:
+      Transform:
+        Translate: [3.70000005, 38.5569992, -54.1240005]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 38
+      UID: 1152726940522555025
+    TransformComponent:
+      Transform:
+        Translate: [3.70000005, 38.5569992, -46.9640007]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 37
+      UID: 12194674708718532892
+    TransformComponent:
+      Transform:
+        Translate: [-10.9700003, 34.0569992, -46.8740005]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 36
+      UID: 12690335982693118595
+    TransformComponent:
+      Transform:
+        Translate: [-18.8700008, 34.0569992, -46.8740005]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 35
+      UID: 2359042787134622935
+    TransformComponent:
+      Transform:
+        Translate: [-26.1100006, 34.0569992, -46.7540016]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 34
+      UID: 6950083800583295014
+    TransformComponent:
+      Transform:
+        Translate: [-28.4599991, 31.5470009, -27.9139996]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 33
+      UID: 10807713650383549616
+    TransformComponent:
+      Transform:
+        Translate: [-28.3700008, 31.5470009, -34.5940018]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 32
+      UID: 6446685568708249982
+    TransformComponent:
+      Transform:
+        Translate: [-44.6599998, 31.6870003, -34.5239983]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 31
+      UID: 4176041017015991512
+    TransformComponent:
+      Transform:
+        Translate: [-44.6599998, 31.6870003, -27.8640003]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Lantern_Floor_3 4
+      UID: 4839426429376116815
+    TransformComponent:
+      Transform:
+        Translate: [-65.4899979, 33.4420013, -16.4610004]
+        Rotate: [-90, 90, 0]
+        Scale: [2, 2, 2]
+    ModelComponent:
+      ModelID: 17862911105458314379
+      MaterialID: 9126702018428758169
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 30
+      UID: 1524767927724002307
+    TransformComponent:
+      Transform:
+        Translate: [-65.5, 33.6269989, 14.7659998]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 29
+      UID: 15945542251932576431
+    TransformComponent:
+      Transform:
+        Translate: [-65.5, 33.7270012, 7.65600014]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 28
+      UID: 8463486267723592175
+    TransformComponent:
+      Transform:
+        Translate: [-65.4700012, 33.7270012, -16.4239998]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 27
+      UID: 16530625615848943295
+    TransformComponent:
+      Transform:
+        Translate: [-65.7399979, 33.7270012, -6.09399986]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 26
+      UID: 15020782243569902837
+    TransformComponent:
+      Transform:
+        Translate: [-27.9300003, 31.0370007, -4.63399982]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 25
+      UID: 10892244111774723043
+    TransformComponent:
+      Transform:
+        Translate: [-27.9599991, 28.6170006, 4.58599997]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 24
+      UID: 5058029286475433775
+    TransformComponent:
+      Transform:
+        Translate: [-8.35999966, 22.7770004, 50.1860008]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 23
+      UID: 9692417583021519804
+    TransformComponent:
+      Transform:
+        Translate: [5.80999994, 22.5569992, 29.7560005]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 22
+      UID: 36333361852423351
+    TransformComponent:
+      Transform:
+        Translate: [-36.5600014, 33.3769989, 40.0760002]
+        Rotate: [18.2240009, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 12.9799995
+        FallOff: 0.666000009
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 21
+      UID: 10788970591506302
+    TransformComponent:
+      Transform:
+        Translate: [-36.7299995, 27.5769997, 49.3959999]
+        Rotate: [18.2240009, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 12.9799995
+        FallOff: 0.666000009
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 20
+      UID: 9059789126409242687
+    TransformComponent:
+      Transform:
+        Translate: [-9.93999958, 15.6269999, 67.0059967]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 7
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 19
+      UID: 11887966738685230682
+    TransformComponent:
+      Transform:
+        Translate: [-10.1700001, 15.7770004, 53.7960014]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 7
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 18
+      UID: 8964955794038150151
+    TransformComponent:
+      Transform:
+        Translate: [-9.82999992, 15.6070004, 39.4360008]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 7
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 17
+      UID: 11683562074028956539
+    TransformComponent:
+      Transform:
+        Translate: [-24.0900002, 20.2369995, 32.105999]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 16
+      UID: 17028468870716020309
+    TransformComponent:
+      Transform:
+        Translate: [-24.0900002, 20.2369995, 19.566]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 15
+      UID: 3973315274647911303
+    TransformComponent:
+      Transform:
+        Translate: [15.0600004, 21.4069996, 25.316]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 14
+      UID: 16168447355539648440
+    TransformComponent:
+      Transform:
+        Translate: [20.3999996, 21.177, 25.316]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 13
+      UID: 4532714360149301912
+    TransformComponent:
+      Transform:
+        Translate: [23.9899998, 21.177, 20.7859993]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - {}
   - {}
   - InfoComponent:
       Parent: 0
@@ -208,11 +690,11 @@ ENTITIES:
   - {}
   - InfoComponent:
       Parent: 0
-      Name: Light Lamp 5
+      Name: Light Lamp 6
       UID: 4992289060001264530
     TransformComponent:
       Transform:
-        Translate: [-12.3680897, 5.11552048, -14.3495417]
+        Translate: [-12.7180004, 5.11552048, -15.0600004]
         Rotate: [0, -89.980217, 0]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
@@ -227,7 +709,7 @@ ENTITIES:
       UID: 14060339449485077574
     TransformComponent:
       Transform:
-        Translate: [-3.14121819, 8.58491325, -19.2247677]
+        Translate: [-3.26099992, 8.71500015, -19.2849998]
         Rotate: [0, -89.980217, 0]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
@@ -242,7 +724,7 @@ ENTITIES:
       UID: 10535824334705980376
     TransformComponent:
       Transform:
-        Translate: [3.35244632, 8.69711018, -19.0386639]
+        Translate: [3.21199989, 8.71700001, -19.3789997]
         Rotate: [0, -89.980217, 0]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
@@ -532,11 +1014,11 @@ ENTITIES:
   - {}
   - InfoComponent:
       Parent: 0
-      Name: Lamp Light 1
+      Name: Light Lamp 1
       UID: 4728347423512424990
     TransformComponent:
       Transform:
-        Translate: [7.47942448, 10.6317596, 4.65320253]
+        Translate: [7.18900013, 10.4619999, 4.44299984]
         Rotate: [0, -90, -62.8400002]
         Scale: [1.00000072, 1.50000036, 1.00000036]
     SpotLightComponent:
@@ -853,7 +1335,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -864,12 +1346,12 @@ ENTITIES:
       UID: 17238108029389531752
     TransformComponent:
       Transform:
-        Translate: [0.0096411705, 49.3672791, -109.204376]
+        Translate: [0.0096411705, 49.3672791, -110.323997]
         Rotate: [-90, 0, 0]
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3089,12 +3571,12 @@ ENTITIES:
       UID: 8993144560248912592
     TransformComponent:
       Transform:
-        Translate: [18.3160591, 6.04059982, -3.64996004]
+        Translate: [18.3160591, 6.04059982, -2.5]
         Rotate: [-90, -90, 0]
         Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3306,7 +3788,7 @@ ENTITIES:
       UID: 710467865426112306
     TransformComponent:
       Transform:
-        Translate: [-0.909677982, 10.462203, 4.34645557]
+        Translate: [-0.400000006, 10.462203, 4.34645557]
         Rotate: [-89.9999847, 0, 0]
         Scale: [2.5, 2.49997926, 2.49997926]
     ModelComponent:
@@ -4021,7 +4503,7 @@ ENTITIES:
       UID: 15969626093444568412
     TransformComponent:
       Transform:
-        Translate: [5.6897378, 20.7814503, 27.6835995]
+        Translate: [5.86999989, 22.5209999, 29.7439995]
         Rotate: [-90, -90, 0]
         Scale: [2.5, 2.5, 2.5]
     ModelComponent:
@@ -5240,11 +5722,11 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: "Light "
+      Name: Indoor_Hanging_Lantern 1
       UID: 13119191662111720466
     TransformComponent:
       Transform:
-        Translate: [7.26813698, 10.506052, 4.59823084]
+        Translate: [6.81799984, 10.506052, 4.59823084]
         Rotate: [-90, 0, 0]
         Scale: [2.5, 2.5, 2.5]
     ModelComponent:
@@ -5710,8 +6192,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [30.8890476, 93.7295456, 57.9251785]
-        Rotate: [155.3125, 2671.125, 180]
+        Translate: [3.08243155, 34.0450478, -2.77387285]
+        Rotate: [120.5, 4684, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -5731,11 +6213,11 @@ ENTITIES:
   - {}
   - InfoComponent:
       Parent: 0
-      Name: Light Lamp 6
+      Name: Light Lamp 8
       UID: 17507222030431965856
     TransformComponent:
       Transform:
-        Translate: [-14.345932, 5.70591545, -6.24745655]
+        Translate: [-13.5860004, 5.51599979, -5.90700006]
         Rotate: [0, -89.980217, 0]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
@@ -5750,7 +6232,7 @@ ENTITIES:
       UID: 12493384087963679885
     TransformComponent:
       Transform:
-        Translate: [17.8045712, 6.21633482, -3.33716154]
+        Translate: [17.6849995, 6.14599991, -2.5]
         Rotate: [0, -89.980217, 0]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
@@ -7200,7 +7682,7 @@ ENTITIES:
       UID: 3106835252756117780
     TransformComponent:
       Transform:
-        Translate: [-0.881737471, 10.6809559, 4.49459839]
+        Translate: [-0.361999989, 10.6809559, 4.49459839]
         Rotate: [0, -89.980217, 0]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
@@ -7444,4 +7926,65 @@ ENTITIES:
       ParamsJSON: "{}"
   - {}
   - {}
+  - {}
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 9
+      UID: 15465888822392245803
+    TransformComponent:
+      Transform:
+        Translate: [-18.2141724, 5.70800018, -2.28500009]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.113725491]
+        Intensity: 9.93999958
+        FallOff: 1.19599998
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 10
+      UID: 720629100291451429
+    TransformComponent:
+      Transform:
+        Translate: [12.5880003, 5.04699993, -14.6719999]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [8.27450943, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 11
+      UID: 10457751199884690735
+    TransformComponent:
+      Transform:
+        Translate: [-24.1159992, 20.3570004, -6.0539999]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 12
+      UID: 14289988556037673843
+    TransformComponent:
+      Transform:
+        Translate: [23.6000004, 18.9769993, -6.09399986]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
   - {}
