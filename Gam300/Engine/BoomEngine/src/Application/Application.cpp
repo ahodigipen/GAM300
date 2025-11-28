@@ -576,6 +576,37 @@ namespace Boom
                 actor->release();
                 comp.RigidBody.actor = nullptr;
             });
+
+        // *** Also destroy collider-only actors (triggers) ***
+        EnttView<Entity, ColliderComponent>([this, pxScene](auto entity, auto& comp) {
+            // Skip if it has a RigidBodyComponent (already handled above)
+            if (entity.template Has<RigidBodyComponent>()) return;
+
+            auto* actor = comp.Collider.actor;
+            if (!actor) return;
+
+            // Clean up user data
+            if (actor->userData) {
+                EntityID* owner = static_cast<EntityID*>(actor->userData);
+                BOOM_DELETE(owner);
+                actor->userData = nullptr;
+            }
+
+            // Remove and release
+            pxScene->removeActor(*actor);
+            actor->release();
+            comp.Collider.actor = nullptr;
+            });
+
+        // *** FIX: Use a small positive deltaTime instead of 0.0f ***
+        if (pxScene) {
+            // Simulate with very small delta time to flush event queue
+            // PhysX requires deltaTime > 0
+            const float kMinDeltaTime = 0.0001f; // 0.1ms
+            pxScene->simulate(kMinDeltaTime);
+            pxScene->fetchResults(true); // Block until complete
+            BOOM_INFO("[Physics] Flushed physics event queue after destroying actors");
+        }
     }
 
     void Application::RunPhysicsSimulation()
