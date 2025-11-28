@@ -80,7 +80,7 @@ struct Material {
 uniform Material material;
 
 const float PI = 3.14159265358979323846;
-const int MAX_LIGHTS = 10; //this number has to be redefined here due to glsl constrains
+const int MAX_LIGHTS = 32; //this number has to be redefined here due to glsl constrains
 layout (location=0) out vec4 out_fragment;
 layout(location=1) out vec4 out_brightness; //for bloom
 const vec3 BLOOM_THRESHOLD = vec3(0.2126, 0.7152, 0.0722) ;
