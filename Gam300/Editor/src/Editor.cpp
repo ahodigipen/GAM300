@@ -630,9 +630,9 @@ namespace EditorUI {
                         throw std::runtime_error("Runtime.exe not found. Build Runtime project first.");
                     }
 
-                    fs::copy_file(runtimeExe, outputDir / "Game.exe",
+                    fs::copy_file(runtimeExe, outputDir / "Deathless.exe",
                         fs::copy_options::overwrite_existing);
-                    BOOM_INFO("[Export] Copied Runtime.exe -> Game.exe");
+                    BOOM_INFO("[Export] Copied Runtime.exe -> Deathless.exe");
 
                     // Copy ALL DLLs from the build directory (BoomEngine + all dependencies)
                     // This includes PhysX, FMOD, GLFW, Mono, etc.
