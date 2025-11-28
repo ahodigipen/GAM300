@@ -1,5 +1,8 @@
 Version: 1.0
 ENTITIES:
+  - {}
+  - {}
+  - {}
   - InfoComponent:
       Parent: 0
       Name: Wall_Texture_Floor_3_Hut
@@ -1952,7 +1955,7 @@ ENTITIES:
       Camera:
         NearPlane: 0.300000012
         FarPlane: 1000
-        FOV: 100
+        FOV: 95
     ThirdPersonCameraComponent:
       Target UID: 2377197601835279376
       Offset: [0.00999999978, 4.1500001, 0]
@@ -7826,6 +7829,72 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
+  - InfoComponent:
+      Parent: 2888197353573082632
+      Name: Blood1
+      UID: 13818896248684015938
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    SpriteComponent:
+      textureID: 9978758564026709928
+      color: [1, 1, 1, 0]
+      uiOverlay: true
+  - InfoComponent:
+      Parent: 2888197353573082632
+      Name: Blood2
+      UID: 9420786784898466129
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    SpriteComponent:
+      textureID: 14611654011234671873
+      color: [1, 1, 1, 0]
+      uiOverlay: true
+  - InfoComponent:
+      Parent: 2888197353573082632
+      Name: Blood3
+      UID: 3669045143093455409
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    SpriteComponent:
+      textureID: 8078124372590329184
+      color: [1, 1, 1, 0]
+      uiOverlay: true
+  - InfoComponent:
+      Parent: 2888197353573082632
+      Name: Blood4
+      UID: 16885297189431714560
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    SpriteComponent:
+      textureID: 15398575817850185585
+      color: [1, 1, 1, 0]
+      uiOverlay: true
+  - {}
+  - {}
+  - InfoComponent:
+      Parent: 0
+      Name: BloodUI
+      UID: 2888197353573082632
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.BloodOverlayController
       ParamsJSON: "{}"
   - {}
   - {}
