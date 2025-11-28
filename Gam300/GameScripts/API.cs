@@ -183,6 +183,10 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_SetGameLogicPaused(bool paused);
+        internal extern static void Boom_API_TeleportRigidBody(ulong handle, ref Vec3 pos);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetScreenFadeAlpha(float alpha);
     }
 
     // ========= DELEGATES =========
@@ -549,6 +553,20 @@ namespace Boom
         }
 
         public static void SetGameLogicPaused(bool paused) => Native.Boom_API_SetGameLogicPaused(paused);
+        public static void TeleportRigidBody(ulong h, Vec3 p)
+        {
+            if (!Native.Boom_API_HasTransform(h))
+            {
+                Log($"[WARNING] Entity {h} does not have TransformComponent! Cannot teleport.");
+                return;
+            }
+            Native.Boom_API_TeleportRigidBody(h, ref p);
+        }
+
+        public static void SetScreenFadeAlpha(float alpha)
+        {
+            Native.Boom_API_SetScreenFadeAlpha(alpha);
+        }
 
         // ===== GLFW key codes =====
         public const int KEY_LEFT = 263;

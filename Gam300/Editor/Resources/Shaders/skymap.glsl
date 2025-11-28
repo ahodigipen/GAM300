@@ -21,14 +21,18 @@ uniform sampler2D map;
 
 //converts 3D spherical coord to 2D texture coord
 //equirectangular mapping
-vec2 GetSphericalUV(vec3 v) {
-    vec2 uv = vec2(atan(v.z, v.x), asin(v.y));
-    uv *= vec2(0.1591, 0.3183); //scaling
-    uv += 0.5;                  //offset
+vec2 GetSphericalUV(vec3 dir) {
+    float theta = atan(dir.z, dir.x);               
+    float phi   = atan(length(dir.xz), dir.y);        
+
+    vec2 uv;
+    uv.x = theta * 0.15915494309189533577 + 0.5;   
+    uv.y = 1.0 - (phi   * 0.31830988618379067154);        
+
     return uv;
 }
 
 void main() {
-    fragColor = vec4(texture(map, GetSphericalUV(worldPosition)).rgb, 1.0);
+    fragColor = texture(map, GetSphericalUV(worldPosition));
 }
 ==FRAGMENT==

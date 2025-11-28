@@ -19,6 +19,9 @@ namespace GameScripts
         // Vision system
         private VisionComponent _vision;
 
+        // Detection tracking (prevent multiple damage per detection)
+        private bool _hasDealtDamage = false;
+
         public void OnStart(string jsonParams)
         {
             API.Log($"[EnemyController] OnStart() - Entity: {Entity}");
@@ -51,7 +54,7 @@ namespace GameScripts
             if (!API.HasTransform(Entity)) return;
 
             // Update vision system
-            _vision?.OnUpdate(dt);
+            //_vision?.OnUpdate(dt);
 
             // Handle rotation (only when not alert)
             if (_vision?.GetState() != VisionComponent.VisionState.Alert)
@@ -160,13 +163,22 @@ namespace GameScripts
             API.PlaySoundAt("enemy_alert", "Resources/Audio/playerPunch_1.wav", enemyPos, false);
             API.SetSoundVolume("enemy_alert", 0.8f);
 
-            // TODO: Start chase behavior
-            // TODO: Remove 1 HP from player, respawn if HP < 0
+            // Damage player (only once per detection)
+            if (!_hasDealtDamage)
+            {
+                _hasDealtDamage = true;
+                API.Log($"[EnemyController] Dealing damage to player!");
+                PlayerManager.NotifyPlayerCaught(Entity);
+            }
         }
 
         private void OnPlayerLost(ulong target, Vec3 lastKnownPosition)
         {
             API.Log("[EnemyController] Lost sight of player, searching...");
+
+            // Reset damage flag so player can be caught again
+            _hasDealtDamage = false;
+
             // Resume rotation patrol
             _rotationTimer = 0f;
             _isRotating = false;

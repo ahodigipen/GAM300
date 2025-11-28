@@ -1,5 +1,5 @@
-﻿using System;
-using Boom;
+﻿using Boom;
+using System;
 
 namespace GameScripts
 {
@@ -24,6 +24,9 @@ namespace GameScripts
         private bool _isAlert = false;
         private Vec3 _alertPosition;
         private Vec3 _lastPosition;
+
+        // Detection tracking (prevent multiple damage per detection)
+        private bool _hasDealtDamage = false;
 
         // Debug logging
         private float _debugLogTimer = 0f;
@@ -77,7 +80,7 @@ namespace GameScripts
             }
 
             // Update vision system AFTER rotation
-            _vision?.OnUpdate(dt);
+            //_vision?.OnUpdate(dt);
         }
 
         /// <summary>
@@ -175,12 +178,23 @@ namespace GameScripts
             Vec3 enemyPos = API.GetPosition(Entity);
             API.PlaySoundAt("enemy_alert", "Resources/Audio/playerPunch_1.wav", enemyPos, false);
             API.SetSoundVolume("enemy_alert", 0.8f);
+
+            // Damage player (only once per detection)
+            if (!_hasDealtDamage)
+            {
+                _hasDealtDamage = true;
+                API.Log($"[PatrolEnemyController] Dealing damage to player!");
+                PlayerManager.NotifyPlayerCaught(Entity);
+            }
         }
 
         private void OnPlayerLost(ulong target, Vec3 lastKnownPosition)
         {
             API.Log("[PatrolEnemyController] Lost sight of player, resuming patrol...");
             _isAlert = false;
+
+            // Reset damage flag so player can be caught again
+            _hasDealtDamage = false;
         }
 
         private void OnPlayerTracking(ulong target, Vec3 position)
