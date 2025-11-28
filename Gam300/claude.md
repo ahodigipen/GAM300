@@ -9,9 +9,16 @@
 **Files Modified**:
 1. `Engine/BoomEngine/includes/Application/Application.h` - LoadScene() now loads assets
 2. `Engine/BoomEngine/src/Application/Application.cpp` - Added detailed logging
-3. `Editor/src/Editor.cpp` - Export now copies assets.yaml
+3. `Editor/src/Editor.cpp` - Export now copies assets.yaml + Mono runtime folders
+4. `Engine/BoomEngine/src/Scripting/MonoRuntime.cpp` - Auto-detects shipped vs dev mode for Mono paths
 
 **Status**: ✅ **FIXED AND WORKING!** Game exports and runs successfully.
+
+**Latest Fix (Portability)**:
+- MonoRuntime now auto-detects shipped mode (looks for `etc/` and `lib/` next to exe)
+- In shipped mode: uses `exeDir/lib` and `exeDir/etc`
+- In dev mode: uses `repoRoot/mono/lib` and `repoRoot/mono/etc`
+- Export copies Mono runtime folders so game is truly portable
 
 **Git Configuration**: Added `Build/` and `x64/` folders to .gitignore (build artifacts should not be committed)
 

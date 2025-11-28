@@ -699,6 +699,32 @@ namespace EditorUI {
                         BOOM_INFO("[Export] Copied GameScripts.dll");
                     }
 
+                    // Copy Mono runtime folders (CRITICAL for standalone execution!)
+                    // Mono needs etc/ for config and lib/ for base assemblies
+                    const fs::path monoRoot = solutionDir.parent_path() / "mono";
+                    if (fs::exists(monoRoot)) {
+                        // Copy etc/ folder (Mono configuration)
+                        const fs::path monoEtc = monoRoot / "etc";
+                        const fs::path outputEtc = outputDir / "etc";
+                        if (fs::exists(monoEtc)) {
+                            fs::copy(monoEtc, outputEtc,
+                                fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+                            BOOM_INFO("[Export] Copied Mono etc/ folder");
+                        }
+
+                        // Copy lib/ folder (Mono assemblies)
+                        const fs::path monoLib = monoRoot / "lib";
+                        const fs::path outputLib = outputDir / "lib";
+                        if (fs::exists(monoLib)) {
+                            fs::copy(monoLib, outputLib,
+                                fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+                            BOOM_INFO("[Export] Copied Mono lib/ folder");
+                        }
+                    }
+                    else {
+                        BOOM_ERROR("[Export] WARNING: Mono runtime not found at {}", monoRoot.string());
+                    }
+
                     BOOM_INFO("[Export] Export completed successfully to: {}", outputDir.string());
                     ImGui::CloseCurrentPopup();
                 }
