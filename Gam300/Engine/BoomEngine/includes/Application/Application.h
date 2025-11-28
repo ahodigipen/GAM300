@@ -478,7 +478,12 @@ namespace Boom
 
          // Clean up current scene
          CleanupCurrentScene();
-            
+
+         // CRITICAL: Load all assets from assets.yaml BEFORE loading the scene
+         // This ensures textures, models, etc. are available when scene references them
+         BOOM_INFO("[Scene] Loading assets from Resources/assets.yaml");
+         serializer.DeserializeAsync(*m_Context->assets, "Resources/assets.yaml", m_Context->window->Handle().get());
+
          serializer.Deserialize(m_Context->scene, *m_Context->assets, sceneFilePath);
 
         // Update tracking
