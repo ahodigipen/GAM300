@@ -432,16 +432,32 @@ namespace Boom
                     TextureAsset& texture{ m_Context->assets->Get<TextureAsset>(comp.textureID) };
                     m_Context->renderer->DrawQuad(texture.data, t.transform, comp.color);
                 }
-                else guiList.push_back({ comp, t.transform });
+                else {
+                    // Calculate world transform for GUI sprites (respects parent hierarchy)
+                    glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+                    Transform3D worldTransform;
+                    DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
+
+                    // Convert to Transform2D for GUI rendering
+                    Transform2D guiTransform{
+                        worldTransform.translate,      // Full 3D position (Z used for sorting)
+                        worldTransform.rotate.z,        // Only Z rotation for 2D
+                        glm::vec2(worldTransform.scale.x, worldTransform.scale.y)  // 2D scale
+                    };
+
+                    guiList.push_back({ comp, guiTransform });
+                }
             }
             });
 
         //sort guiList based on z-axis from negative to positive(opengl z-axis towards camera)
         std::sort(guiList.begin(), guiList.end(), [](const auto& a, const auto& b) {
-            return a.second.translate.z > b.second.translate.z;  // descending Z order
+            return a.second.translate.z < b.second.translate.z;  // descending Z order
             });
 
         //render gui overlays at the end
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL); //supports partial transparency to not interfere with background gui
         for (auto const& gui : guiList) {
             TextureAsset* texture{ m_Context->assets->TryGet<TextureAsset>(gui.first.textureID) };
             if (texture)

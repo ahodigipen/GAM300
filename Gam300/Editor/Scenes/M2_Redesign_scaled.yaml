@@ -1,6 +1,259 @@
 Version: 1.0
 ENTITIES:
   - {}
+  - InfoComponent:
+      Parent: 0
+      Name: Terrain
+      UID: 16705966753190619249
+    TransformComponent:
+      Transform:
+        Translate: [-317.081085, -12.6315441, 246.0448]
+        Rotate: [179.999969, 5.41333389, 179.999969]
+        Scale: [1.25292325, 1.25292897, 1.25292325]
+    ModelComponent:
+      ModelID: 12600730890549785123
+      MaterialID: 12365255549677402033
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - {}
+  - {}
+  - {}
+  - {}
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [9.27999973, 19.1399994, 4.55999994]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: Key
+      UID: 1377313242926581139
+    TransformComponent:
+      Transform:
+        Translate: [-8.94750309, 2.46474695, 7.14947414]
+        Rotate: [0, -0, 0]
+        Scale: [0.0799999982, 0.140000001, 0.230000004]
+    ModelComponent:
+      ModelID: 600481613562228247
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.KeyPickup
+      ParamsJSON: "{}"
+  - {}
+  - {}
+  - {}
+  - {}
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 12807707659119185110
+        Type: CONVEX_MESH
+    InfoComponent:
+      Parent: 0
+      Name: Stair_Pagoda
+      UID: 3850586383865992763
+    TransformComponent:
+      Transform:
+        Translate: [-1.94043756, 12.5373411, 23.8264389]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.578457892, 0.724129379, 3.43153095]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.578457892, 0.724129379, 3.43153095]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 17773246069672836568
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - {}
+  - {}
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 16135378917386993712
+        Type: CONVEX_MESH
+    InfoComponent:
+      Parent: 0
+      Name: MoveDoor
+      UID: 16163120983566193923
+    TransformComponent:
+      Transform:
+        Translate: [-32.9405746, 27.5871315, -23.1919365]
+        Rotate: [89.9999847, -0, 0]
+        Scale: [1.20635819, 0.999859154, 1.60149622]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.20635819, 0.999859154, 1.60149622]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 5963078964798272625
+      MaterialID: 12207453972742617529
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - {}
+  - {}
+  - {}
+  - {}
+  - InfoComponent:
+      Parent: 0
+      Name: Directional Light 5
+      UID: 10328415102628916040
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, -90, 0]
+        Scale: [1, 1, 1]
+    DirectLightComponent:
+      Light:
+        Radiance: [0, 0.101960786, 0.149019614]
+        Intensity: 2
+  - {}
+  - InfoComponent:
+      Parent: 0
+      Name: Directional Light 4
+      UID: 3565128362037849487
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 90, 0]
+        Scale: [1, 1, 1]
+    DirectLightComponent:
+      Light:
+        Radiance: [0, 0.101960786, 0.149019614]
+        Intensity: 2
+  - {}
+  - InfoComponent:
+      Parent: 0
+      Name: Directional Light 3
+      UID: 6219555142064879949
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [-90, 0, 0]
+        Scale: [1, 1, 1]
+    DirectLightComponent:
+      Light:
+        Radiance: [0, 0.101960786, 0.149019614]
+        Intensity: 2
+  - {}
+  - InfoComponent:
+      Parent: 0
+      Name: Directional Light 2
+      UID: 13973321056421727476
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, -90]
+        Scale: [1, 1, 1]
+    DirectLightComponent:
+      Light:
+        Radiance: [0, 0.101960786, 0.149019614]
+        Intensity: 2
+  - {}
+  - InfoComponent:
+      Parent: 0
+      Name: Directional Light 1
+      UID: 2250221566052664554
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [90, 0, 0]
+        Scale: [1, 1, 1]
+    DirectLightComponent:
+      Light:
+        Radiance: [0, 0.101960786, 0.149019614]
+        Intensity: 2
+  - {}
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 5
+      UID: 4992289060001264530
+    TransformComponent:
+      Transform:
+        Translate: [-12.3680897, 5.11552048, -14.3495417]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 4
+      UID: 14060339449485077574
+    TransformComponent:
+      Transform:
+        Translate: [-3.14121819, 8.58491325, -19.2247677]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - InfoComponent:
+      Parent: 0
+      Name: Light Lamp 5
+      UID: 10535824334705980376
+    TransformComponent:
+      Transform:
+        Translate: [3.35244632, 8.69711018, -19.0386639]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
+      Light:
+        Radiance: [8.27450943, 0.572549045, 0.101960786]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
+  - {}
+  - {}
+  - {}
   - {}
   - {}
   - {}
@@ -30,7 +283,7 @@ ENTITIES:
       UID: 13364049142600462254
     TransformComponent:
       Transform:
-        Translate: [-4.60102892, 15.4633656, 7.5530653]
+        Translate: [-4.60102892, 27.3306122, 7.5530653]
         Rotate: [0, -0, 0]
         Scale: [0.021306999, 0.021306999, 0.021306999]
     RigidBodyComponent:
@@ -84,7 +337,7 @@ ENTITIES:
       UID: 3917888099789825510
     TransformComponent:
       Transform:
-        Translate: [-8.34779167, 13.698, 2.93555045]
+        Translate: [-8.4948988, 31.5346565, 7.55988312]
         Rotate: [-5.00895567e-06, 61.8486824, -5.00895567e-06]
         Scale: [0.021306999, 0.021306999, 0.021306999]
     RigidBodyComponent:
@@ -116,7 +369,7 @@ ENTITIES:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-8.49468231, 13.781168, 7.5530653]
+      Target: [-8.49468231, 13.781168, -13.4866009]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -132,7 +385,7 @@ ENTITIES:
       PatrolPoints:
         - [-8.49468231, 13.781168, 7.5530653]
         - [-8.49468231, 13.781168, -13.4866009]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -178,7 +431,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -197,7 +450,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-20.6439075, 15.0094395, 22.1033554]
-        Rotate: [180, 20.6462402, 180]
+        Rotate: [180, 57.6850281, 180]
         Scale: [0.0144999893, 0.0145000005, 0.0144999893]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -217,7 +470,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [18.4757099, 14.2961264, -7.06025791]
-        Rotate: [5.00895612e-06, 20.6462402, 5.00895612e-06]
+        Rotate: [5.00895612e-06, 57.6850281, 5.00895612e-06]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -237,7 +490,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [9.27553558, 2.17216253, -14.2555885]
-        Rotate: [5.00895612e-06, 249.35376, 5.00895612e-06]
+        Rotate: [5.00895612e-06, 286.392578, 5.00895612e-06]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -257,11 +510,11 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 2.17216253, -14.2555885]
-        Rotate: [0, 200.64624, 0]
+        Rotate: [0, 237.68515, 0]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 7908732753073902064
-      MaterialID: 0
+      MaterialID: 11398338046908807103
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -288,7 +541,7 @@ ENTITIES:
         Scale: [1.00000072, 1.50000036, 1.00000036]
     SpotLightComponent:
       Light:
-        Radiance: [0.752429724, 0.838235259, 0.254757792]
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
         Intensity: 10
         FallOff: 2.22600007
         CutOff: 0.34906584
@@ -314,7 +567,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 5963078964798272625
-      MaterialID: 0
+      MaterialID: 12207453972742617529
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -330,7 +583,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 5963078964798272625
-      MaterialID: 0
+      MaterialID: 12207453972742617529
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -367,7 +620,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 5963078964798272625
-      MaterialID: 0
+      MaterialID: 12207453972742617529
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -404,7 +657,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 5963078964798272625
-      MaterialID: 0
+      MaterialID: 12207453972742617529
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -420,7 +673,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 5963078964798272625
-      MaterialID: 0
+      MaterialID: 12207453972742617529
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -436,7 +689,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 5963078964798272625
-      MaterialID: 0
+      MaterialID: 12207453972742617529
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -473,7 +726,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 5963078964798272625
-      MaterialID: 0
+      MaterialID: 12207453972742617529
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -496,7 +749,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [5.88403034, 70.5062943, -79.1026077]
-        Rotate: [-90, 0, 0]
+        Rotate: [90, 0, 0]
         Scale: [2, 2, 2]
     RigidBodyComponent:
       RigidBody:
@@ -510,7 +763,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 5963078964798272625
-      MaterialID: 0
+      MaterialID: 12207453972742617529
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -547,7 +800,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 5156670162497623977
-      MaterialID: 0
+      MaterialID: 6133974277031033463
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -584,7 +837,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 5156670162497623977
-      MaterialID: 0
+      MaterialID: 6133974277031033463
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -632,7 +885,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17971063540041505471
-      MaterialID: 0
+      MaterialID: 16814172849789012347
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -648,7 +901,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17971063540041505471
-      MaterialID: 0
+      MaterialID: 16814172849789012347
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -664,7 +917,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17971063540041505471
-      MaterialID: 0
+      MaterialID: 16814172849789012347
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -680,7 +933,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17971063540041505471
-      MaterialID: 0
+      MaterialID: 16814172849789012347
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -696,7 +949,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17971063540041505471
-      MaterialID: 0
+      MaterialID: 16814172849789012347
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -712,7 +965,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -728,7 +981,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -744,7 +997,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -760,7 +1013,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -776,7 +1029,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -792,7 +1045,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -808,7 +1061,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -824,7 +1077,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -840,7 +1093,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -856,7 +1109,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -872,7 +1125,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -884,11 +1137,11 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-27.9699993, 33.2314072, -20.1140766]
-        Rotate: [-90, 90, 0]
-        Scale: [2, 2, 2]
+        Rotate: [-90.0001678, -5.96686602, 6.07335278e-05]
+        Scale: [1.99998891, 1.99998891, 1.99999642]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -925,7 +1178,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -948,7 +1201,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-28.2740002, 27.1949997, -4.91556978]
-        Rotate: [90, 90, 0]
+        Rotate: [90, -90, 0]
         Scale: [4.2750001, 2.5, 1.5]
     RigidBodyComponent:
       RigidBody:
@@ -962,7 +1215,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 7842828173361374155
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -985,7 +1238,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-28.2738647, 27.1949997, -0.0270000007]
-        Rotate: [90, 90, 0]
+        Rotate: [90, -90, 0]
         Scale: [4.2750001, 2.5, 1.5]
     RigidBodyComponent:
       RigidBody:
@@ -999,7 +1252,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 7842828173361374155
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1036,7 +1289,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1052,7 +1305,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1068,7 +1321,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1084,7 +1337,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1121,7 +1374,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 7842828173361374155
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1144,7 +1397,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-3.01346159, 19.7119999, 32.6380005]
-        Rotate: [90, -45, 0]
+        Rotate: [90, 45, -180]
         Scale: [1, 1, 1]
     RigidBodyComponent:
       RigidBody:
@@ -1158,7 +1411,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 15351841083764186454
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1181,7 +1434,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [0.61352855, 19.7119999, 32.3973389]
-        Rotate: [90, 45, 0]
+        Rotate: [90, -45, -180]
         Scale: [1, 1, 1]
     RigidBodyComponent:
       RigidBody:
@@ -1195,7 +1448,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 15351841083764186454
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1218,7 +1471,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-1.24477649, 19.7120228, 32.6378098]
-        Rotate: [90, 0, 0]
+        Rotate: [90, 0, -180]
         Scale: [1, 1, 1]
     RigidBodyComponent:
       RigidBody:
@@ -1232,7 +1485,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 15351841083764186454
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1248,7 +1501,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1285,7 +1538,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 6829728261434427183
-      MaterialID: 0
+      MaterialID: 9170069941051798259
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1296,12 +1549,12 @@ ENTITIES:
       UID: 12903353811079709539
     TransformComponent:
       Transform:
-        Translate: [0, 83.7516174, -92.276062]
-        Rotate: [-90, 0, 0]
-        Scale: [1.5, 1.5, 1]
+        Translate: [-2.65608549, 83.7516174, -92.276062]
+        Rotate: [-89.9999847, 0, 0]
+        Scale: [1.5, 1.49994946, 0.999974728]
     ModelComponent:
       ModelID: 14680191799278990915
-      MaterialID: 0
+      MaterialID: 16051879611138255440
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1317,7 +1570,7 @@ ENTITIES:
         Scale: [0.920000017, 0.5, 1.35000002]
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 16257091296667891899
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1333,7 +1586,7 @@ ENTITIES:
         Scale: [0.920000017, 0.5, 1.35000002]
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 16257091296667891899
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1370,7 +1623,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 16257091296667891899
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1407,7 +1660,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 16257091296667891899
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1444,7 +1697,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 15766282597083030722
-      MaterialID: 0
+      MaterialID: 16051879611138255440
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1481,7 +1734,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 10044660999367352520
-      MaterialID: 0
+      MaterialID: 5692762562094318330
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1518,7 +1771,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 17511859142013007442
-      MaterialID: 0
+      MaterialID: 2930779482462285987
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1629,7 +1882,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 10882923977369277709
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1666,7 +1919,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1703,7 +1956,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 10882923977369277709
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1740,7 +1993,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 10882923977369277709
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1777,7 +2030,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1814,7 +2067,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1851,7 +2104,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 10882923977369277709
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1888,7 +2141,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 10882923977369277709
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1925,7 +2178,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1962,7 +2215,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2037,7 +2290,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 5692762562094318330
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2074,7 +2327,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 10882923977369277709
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2111,7 +2364,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 15937630629384441243
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2148,7 +2401,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 5693942620096192191
-      MaterialID: 0
+      MaterialID: 16051879611138255440
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2185,7 +2438,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 14419591904238952119
-      MaterialID: 0
+      MaterialID: 10882923977369277709
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2198,12 +2451,12 @@ ENTITIES:
       UID: 3125007874419280460
     TransformComponent:
       Transform:
-        Translate: [-56.1617126, 39.0058556, -24.1090412]
-        Rotate: [0, 0, 0]
+        Translate: [-56.2917709, 39.0058556, -23.8743973]
+        Rotate: [0, -0, 0]
         Scale: [0.694999993, 3.125, 0.275000006]
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2227,22 +2480,22 @@ ENTITIES:
       UID: 16181083975962338629
     TransformComponent:
       Transform:
-        Translate: [-67.8836823, 39.7797928, -0.888950586]
-        Rotate: [0, 0, 0]
-        Scale: [0.100000001, 2.9849999, 4.69999981]
+        Translate: [-68.1740036, 38.9559746, -0.528297186]
+        Rotate: [89.9999847, -0, 0]
+        Scale: [0.100000001, 4.49939203, 3.04959893]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.100000001, 2.9849999, 4.69999981]
+        Previous Scale: [0.100000001, 4.49939203, 3.04959893]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2279,7 +2532,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 14419591904238952119
-      MaterialID: 0
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2316,7 +2569,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2353,7 +2606,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 17773246069672836568
-      MaterialID: 0
+      MaterialID: 17505835518794492079
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2390,7 +2643,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 15937630629384441243
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2427,7 +2680,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 7842828173361374155
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2487,7 +2740,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [10.06814, 16.1399899, 6.15147018]
-        Rotate: [90, -114.997002, 0]
+        Rotate: [90, 114.997002, -180]
         Scale: [1.5, 0.625, 1.54999995]
     RigidBodyComponent:
       RigidBody:
@@ -2501,7 +2754,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 15351841083764186454
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2538,7 +2791,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 15351841083764186454
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2575,7 +2828,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 6829728261434427183
-      MaterialID: 0
+      MaterialID: 9170069941051798259
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2612,7 +2865,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 6829728261434427183
-      MaterialID: 0
+      MaterialID: 9170069941051798259
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2649,7 +2902,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2686,7 +2939,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 9629871175762625899
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2723,7 +2976,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2740,7 +2993,7 @@ ENTITIES:
         Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2756,7 +3009,7 @@ ENTITIES:
         Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2772,7 +3025,7 @@ ENTITIES:
         Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2788,7 +3041,7 @@ ENTITIES:
         Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2825,7 +3078,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 6829728261434427183
-      MaterialID: 0
+      MaterialID: 9170069941051798259
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2888,7 +3141,7 @@ ENTITIES:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
+        DynamicFriction: 0
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
@@ -2915,7 +3168,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 16257091296667891899
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2952,7 +3205,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 16257091296667891899
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2989,7 +3242,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 16257091296667891899
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3026,7 +3279,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 16257091296667891899
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3169,7 +3422,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 15351841083764186454
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3206,7 +3459,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 15351841083764186454
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3215,8 +3468,8 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
+        LocalScale: [1, 0.00999999978, 1]
+        DynamicFriction: 0
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
@@ -3230,20 +3483,20 @@ ENTITIES:
       Transform:
         Translate: [-0.946392298, 4.33696699, 5.84643936]
         Rotate: [89.9999847, -0, 0]
-        Scale: [2.5, 0.999997139, 1.82499433]
+        Scale: [3, 1, 1.82500005]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [2.5, 0.999997139, 1.82499433]
+        Previous Scale: [3, 1, 1.82500005]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 7842828173361374155
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3265,15 +3518,15 @@ ENTITIES:
       UID: 16125401810609408549
     TransformComponent:
       Transform:
-        Translate: [0, 5, 1.75]
+        Translate: [0.81750232, 5.08929014, 1.91003978]
         Rotate: [89.9999847, -0, 0]
-        Scale: [2.42196774, 2.49999976, 2.49999976]
+        Scale: [2.42196774, 2.49997091, 2.49997091]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [2.42196774, 2.49999976, 2.49999976]
+        Previous Scale: [2.42196774, 2.49997091, 2.49997091]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -3296,7 +3549,7 @@ ENTITIES:
         Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3333,7 +3586,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 15937630629384441243
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3347,7 +3600,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
-        PhysicsMesh: 13244744886219103757
+        PhysicsMesh: 4431181016770564176
         Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
@@ -3369,7 +3622,7 @@ ENTITIES:
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
-      ModelID: 1441742420851203854
+      ModelID: 618926925563278836
       MaterialID: 0
       ModelName: ""
       MaterialName: ""
@@ -3407,7 +3660,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 618926925563278836
-      MaterialID: 0
+      MaterialID: 295392599374634747
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3444,7 +3697,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 618926925563278836
-      MaterialID: 0
+      MaterialID: 295392599374634747
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3481,7 +3734,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 618926925563278836
-      MaterialID: 0
+      MaterialID: 295392599374634747
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3518,7 +3771,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 618926925563278836
-      MaterialID: 0
+      MaterialID: 295392599374634747
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3527,8 +3780,8 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
+        LocalScale: [1, 0.00999999978, 1]
+        DynamicFriction: 0
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
@@ -3555,7 +3808,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 5838446488854438722
-      MaterialID: 0
+      MaterialID: 14891281585286011240
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3571,23 +3824,7 @@ ENTITIES:
         Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Back_Wall_Of_Hut
-      UID: 1153291360730907286
-    TransformComponent:
-      Transform:
-        Translate: [-0.410641015, 19.2469997, 69.4668274]
-        Rotate: [0, 0, 0]
-        Scale: [0.625, 1.5, 0.25]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3596,39 +3833,40 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1.20000005, 1.20000005, 1]
+        LocalScale: [1, 1, 1]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
-        PhysicsMesh: 8095852268973777608
-        Type: TRIANGLE_MESH
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
-      Name: Hanging_Lantern_Back_Of_Hut
-      UID: 3598504729430996576
+      Name: Back_Wall_Of_Hut
+      UID: 1153291360730907286
     TransformComponent:
       Transform:
-        Translate: [6.38543987, 22.4728394, 61.2925911]
-        Rotate: [-90, -90, 0]
-        Scale: [2.5, 2.5, 2.5]
+        Translate: [-0.410641015, 19.2469997, 69.4668274]
+        Rotate: [0, 0, 0]
+        Scale: [0.625, 1.5, 0.25]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [2.5, 2.5, 2.5]
+        Previous Scale: [0.625, 1.5, 0.25]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 0
+      ModelID: 1441742420851203854
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+  - {}
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -3698,7 +3936,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 5963078964798272625
-      MaterialID: 0
+      MaterialID: 12207453972742617529
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3720,38 +3958,59 @@ ENTITIES:
       UID: 3543104788695067941
     TransformComponent:
       Transform:
-        Translate: [2.84153843, 20.5699997, 27.3549995]
-        Rotate: [-90, 0, 0]
-        Scale: [0.540000021, 2.5, 2.04999995]
+        Translate: [4.29210615, 20.5699997, 27.3549995]
+        Rotate: [-89.9999847, 0, 0]
+        Scale: [0.540000021, 2.49994373, 2.04994369]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.540000021, 2.5, 2.04999995]
+        Previous Scale: [0.540000021, 2.49994373, 2.04994369]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
       ModelID: 5963078964798272625
-      MaterialID: 0
+      MaterialID: 12207453972742617529
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 3266239370165642813
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: Door_Divider_For_Hut
       UID: 10698932820107530939
     TransformComponent:
       Transform:
-        Translate: [-0.32179001, 24.4195099, 27.5405025]
-        Rotate: [-90, 0, 0]
-        Scale: [1.39999998, 0.0250000004, 2.1500001]
+        Translate: [0.78483808, 25.4473171, 27.5405025]
+        Rotate: [-89.9999847, 0, 0]
+        Scale: [1.39999998, 0.0249983352, 2.49987292]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.39999998, 0.0249983352, 2.49987292]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 12206031679676868600
-      MaterialID: 0
+      MaterialID: 16257091296667891899
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3767,7 +4026,7 @@ ENTITIES:
         Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3778,12 +4037,12 @@ ENTITIES:
       UID: 13900569791274339863
     TransformComponent:
       Transform:
-        Translate: [-8.9846096, 22.7199402, 34.5294991]
-        Rotate: [-90, -90, 0]
-        Scale: [1.22500002, 2.5, 1.07500005]
+        Translate: [-8.9846096, 19.8081818, 33.4638329]
+        Rotate: [90, -90, 0]
+        Scale: [1.22500074, 2.50000334, 1.07500005]
     ModelComponent:
       ModelID: 5963078964798272625
-      MaterialID: 0
+      MaterialID: 12207453972742617529
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3799,7 +4058,7 @@ ENTITIES:
         Scale: [1.22500002, 2.5, 1.07500005]
     ModelComponent:
       ModelID: 5963078964798272625
-      MaterialID: 0
+      MaterialID: 12207453972742617529
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3809,7 +4068,7 @@ ENTITIES:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
+        DynamicFriction: 0
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
@@ -3821,22 +4080,22 @@ ENTITIES:
       UID: 13337176872369800048
     TransformComponent:
       Transform:
-        Translate: [-9.16878033, 22.1983395, 40.3395691]
-        Rotate: [0, -90, 0]
-        Scale: [0.800000012, 0.975000024, 0.0250000004]
+        Translate: [-9.43455887, 22.1983395, 40.3395691]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.799999833, 0.975000024, 0.0249999948]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.800000012, 0.975000024, 0.0250000004]
+        Previous Scale: [0.799999833, 0.975000024, 0.0249999948]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3846,7 +4105,7 @@ ENTITIES:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
+        DynamicFriction: 0
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
@@ -3858,22 +4117,22 @@ ENTITIES:
       UID: 4636965599594259602
     TransformComponent:
       Transform:
-        Translate: [-8.17185974, 22.17132, 27.5286274]
-        Rotate: [0, -90, 0]
-        Scale: [0.075000003, 0.949999988, 0.224999994]
+        Translate: [-8.17185974, 22.17132, 27.9622288]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.0749999955, 0.949999988, 0.224999979]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.075000003, 0.949999988, 0.224999994]
+        Previous Scale: [0.0749999955, 0.949999988, 0.224999979]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3910,48 +4169,12 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 13244744886219103757
-        Type: CONVEX_MESH
-    InfoComponent:
-      Parent: 0
-      Name: Texture_Front_Of_Hut
-      UID: 5123991758905279357
-    TransformComponent:
-      Transform:
-        Translate: [-0.229046002, 15.1223402, 27.0022526]
-        Rotate: [0, 0, 0]
-        Scale: [0.474999994, 0.449999988, 0.0250000004]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.474999994, 0.449999988, 0.0250000004]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+  - {}
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -3984,7 +4207,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3994,7 +4217,7 @@ ENTITIES:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
+        DynamicFriction: 0
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
@@ -4021,7 +4244,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 8039408713556627694
-      MaterialID: 0
+      MaterialID: 16051879611138255440
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4058,7 +4281,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 5692762562094318330
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4095,7 +4318,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4132,7 +4355,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 7842828173361374155
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4169,7 +4392,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 5156670162497623977
-      MaterialID: 0
+      MaterialID: 6133974277031033463
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4206,7 +4429,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 6829728261434427183
-      MaterialID: 0
+      MaterialID: 9170069941051798259
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4243,7 +4466,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 5156670162497623977
-      MaterialID: 0
+      MaterialID: 6133974277031033463
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4280,7 +4503,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4290,7 +4513,7 @@ ENTITIES:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
+        DynamicFriction: 0
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
@@ -4317,7 +4540,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 6829728261434427183
-      MaterialID: 0
+      MaterialID: 9170069941051798259
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4354,14 +4577,14 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 0, 0]
+        LocalPosition: [0, 0, 1.57000005]
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
         DynamicFriction: 0
@@ -4391,7 +4614,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4407,7 +4630,7 @@ ENTITIES:
         Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4423,7 +4646,7 @@ ENTITIES:
         Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4460,7 +4683,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 17971063540041505471
-      MaterialID: 0
+      MaterialID: 16814172849789012347
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4497,7 +4720,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 17971063540041505471
-      MaterialID: 0
+      MaterialID: 16814172849789012347
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4534,7 +4757,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 15351841083764186454
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4556,22 +4779,22 @@ ENTITIES:
       UID: 9585209574695702259
     TransformComponent:
       Transform:
-        Translate: [-12.6156998, 15.83319, -13.6623602]
-        Rotate: [90, 90, 0]
-        Scale: [2.1500001, 2, 1.39999998]
+        Translate: [-12.494441, 15.83319, -13.6623602]
+        Rotate: [89.9650269, -89.9515457, 0.0349748358]
+        Scale: [2.15000105, 0.99999994, 1.3999939]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [2.1500001, 2, 1.39999998]
+        Previous Scale: [2.15000105, 0.99999994, 1.3999939]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 15351841083764186454
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4608,7 +4831,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 6829728261434427183
-      MaterialID: 0
+      MaterialID: 9170069941051798259
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4645,14 +4868,14 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 6829728261434427183
-      MaterialID: 0
+      MaterialID: 9170069941051798259
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 0, 0]
+        LocalPosition: [0, -0.0799999982, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
         DynamicFriction: 0
@@ -4682,7 +4905,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4719,7 +4942,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 17073269421140634080
-      MaterialID: 0
+      MaterialID: 10882923977369277709
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4756,7 +4979,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4772,7 +4995,7 @@ ENTITIES:
         Scale: [0.625, 0.625, 0.324999988]
     ModelComponent:
       ModelID: 3620272457406166050
-      MaterialID: 0
+      MaterialID: 2026923287495370520
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4788,7 +5011,7 @@ ENTITIES:
         Scale: [0.625, 0.549998999, 0.625]
     ModelComponent:
       ModelID: 3620272457406166050
-      MaterialID: 0
+      MaterialID: 2026923287495370520
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4825,7 +5048,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 16257091296667891899
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4862,7 +5085,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 6829728261434427183
-      MaterialID: 0
+      MaterialID: 9170069941051798259
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4921,22 +5144,22 @@ ENTITIES:
       UID: 15777117760288992777
     TransformComponent:
       Transform:
-        Translate: [-12.6300001, 5.05249023, -14.585]
-        Rotate: [-90, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
+        Translate: [-12.6473351, 5.0162096, -14.7060986]
+        Rotate: [-89.9999847, 0, 0]
+        Scale: [2.5, 2.49998975, 2.49998975]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [2.5, 2.5, 2.5]
+        Previous Scale: [2.5, 2.49998975, 2.49998975]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4973,7 +5196,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5010,7 +5233,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 15937630629384441243
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5063,7 +5286,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 15937630629384441243
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5100,7 +5323,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 12207453972742617529
+      MaterialID: 16257091296667891899
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5111,8 +5334,8 @@ ENTITIES:
       UID: 15313398657113075594
     TransformComponent:
       Transform:
-        Translate: [-0.419506997, 10.7890501, 2.20810008]
-        Rotate: [0, 0, 0]
+        Translate: [1.09874463, 11.2939367, 2.23153758]
+        Rotate: [0, -0, 0]
         Scale: [1.25, 0.425000012, 0.324999988]
     ModelComponent:
       ModelID: 1441742420851203854
@@ -5132,7 +5355,7 @@ ENTITIES:
         Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5169,7 +5392,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 17971063540041505471
-      MaterialID: 0
+      MaterialID: 16814172849789012347
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5193,7 +5416,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [15.0547104, 5.53746986, 1.75]
-        Rotate: [-90, 0, 0]
+        Rotate: [-90, 0, 180]
         Scale: [1.25, 2.5, 2.5]
     RigidBodyComponent:
       RigidBody:
@@ -5230,7 +5453,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-14.8506002, 5, 1.75]
-        Rotate: [-89.9999847, 0, 0]
+        Rotate: [-89.9999847, 0, 180]
         Scale: [1.32306433, 2.49999976, 2.49999976]
     RigidBodyComponent:
       RigidBody:
@@ -5318,7 +5541,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 7842828173361374155
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5334,7 +5557,7 @@ ENTITIES:
         Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5351,7 +5574,7 @@ ENTITIES:
         Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5388,7 +5611,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 618926925563278836
-      MaterialID: 0
+      MaterialID: 295392599374634747
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5411,7 +5634,7 @@ ENTITIES:
       UID: 1992698266524408743
     TransformComponent:
       Transform:
-        Translate: [5, 8.04347324, 5]
+        Translate: [5.01281404, 8.48799229, 4.99975538]
         Rotate: [0, -0, 0]
         Scale: [1.25, 1.25, 1.25]
     RigidBodyComponent:
@@ -5480,58 +5703,62 @@ ENTITIES:
         Rotate: [0, 0, 0]
         Scale: [2.5, 2.5, 2.5]
     SkyboxComponent:
-      SkyboxID: 10427935764841817814
+      SkyboxID: 4245843529762785392
   - InfoComponent:
       Parent: 0
       Name: Camera
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-4.18954706, 7.59376001, 18.9207115]
-        Rotate: [-11.1875153, -6.81248474, 1.07309553e-07]
+        Translate: [30.8890476, 93.7295456, 57.9251785]
+        Rotate: [155.3125, 2671.125, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.300000012
         FarPlane: 1000
-        FOV: 89
+        FOV: 100
     ThirdPersonCameraComponent:
+      Target UID: 2377197601835279376
       Offset: [0.00999999978, 4.1500001, 0]
-      Current Distance: 1
+      Current Distance: 5
       Min Distance: 1
       Max Distance: 5
-      Current Yaw: -1626
-      Current Pitch: 25
+      Current Yaw: -1519
+      Current Pitch: 20
       Mouse Sensitivity: 1
       Scroll Sensitivity: 1
   - {}
   - InfoComponent:
       Parent: 0
-      Name: Point Light
-      UID: 5315588240363654174
+      Name: Light Lamp 6
+      UID: 17507222030431965856
     TransformComponent:
       Transform:
-        Translate: [0, 1.25, 0]
-        Rotate: [0, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    PointLightComponent:
+        Translate: [-14.345932, 5.70591545, -6.24745655]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
       Light:
-        Radiance: [1, 0.899999976, 0.699999988]
-        Intensity: 10
-        Range: 0
+        Radiance: [0.823529422, 0.572549045, 0.113725491]
+        Intensity: 9.93999958
+        FallOff: 1.19599998
+        CutOff: 0.34906584
   - InfoComponent:
       Parent: 0
-      Name: Directional Light
-      UID: 16395980114807373968
+      Name: Light Lamp 7
+      UID: 12493384087963679885
     TransformComponent:
       Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, -1, 0]
-        Scale: [2.5, 2.5, 2.5]
-    DirectLightComponent:
+        Translate: [17.8045712, 6.21633482, -3.33716154]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
+    SpotLightComponent:
       Light:
-        Radiance: [1, 1, 0.899999976]
-        Intensity: 0.879999995
+        Radiance: [0.823529422, 0.572549045, 0.113725491]
+        Intensity: 10
+        FallOff: 1.05592418
+        CutOff: 0.34906584
   - InfoComponent:
       Parent: 0
       Name: Spot Light
@@ -5588,7 +5815,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 14419591904238952119
-      MaterialID: 0
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5626,7 +5853,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 14419591904238952119
-      MaterialID: 0
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5663,7 +5890,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 17773246069672836568
-      MaterialID: 0
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5700,7 +5927,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 17773246069672836568
-      MaterialID: 0
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5723,7 +5950,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [8.69515038, 16.1399899, 1.41270006]
-        Rotate: [90, -27.9640007, 0]
+        Rotate: [90, 27.9640007, -180]
         Scale: [1.5, 0.625, 1.54999995]
     RigidBodyComponent:
       RigidBody:
@@ -5737,7 +5964,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 15351841083764186454
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5774,7 +6001,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 618926925563278836
-      MaterialID: 0
+      MaterialID: 295392599374634747
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5811,7 +6038,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 5838446488854438722
-      MaterialID: 0
+      MaterialID: 14891281585286011240
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5827,7 +6054,7 @@ ENTITIES:
         Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5865,7 +6092,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 16257091296667891899
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5902,7 +6129,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5918,7 +6145,7 @@ ENTITIES:
         Scale: [2.5, 2.5, 2.5]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5942,22 +6169,22 @@ ENTITIES:
       UID: 652544334224876638
     TransformComponent:
       Transform:
-        Translate: [-12.4049501, 15.5949373, -8.32742023]
-        Rotate: [89.9650269, 89.9515457, -0.0349748358]
-        Scale: [2.5, 2.5, 1.24999762]
+        Translate: [-12.5113859, 15.9546919, -8.32742023]
+        Rotate: [45, -89.960434, 45]
+        Scale: [2.1500001, 1, 1.39999998]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [2.5, 2.5, 1.24999762]
+        Previous Scale: [2.1500001, 1, 1.39999998]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 15351841083764186454
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5995,7 +6222,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 17534273664186647434
-      MaterialID: 0
+      MaterialID: 16051879611138255440
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6032,7 +6259,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 9472503155396993014
-      MaterialID: 0
+      MaterialID: 16051879611138255440
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6069,7 +6296,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6105,7 +6332,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6121,7 +6348,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6137,7 +6364,7 @@ ENTITIES:
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 17862911105458314379
-      MaterialID: 0
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6174,7 +6401,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 7842828173361374155
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6229,7 +6456,7 @@ ENTITIES:
         Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
-      Name: Diider_Floor_3
+      Name: OpenDoor
       UID: 6730938418377857404
     TransformComponent:
       Transform:
@@ -6248,7 +6475,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 6158523069679221176
-      MaterialID: 0
+      MaterialID: 16257091296667891899
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6257,7 +6484,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 0.00999999978, 1]
+        LocalScale: [1, 1, 1]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -6270,63 +6497,27 @@ ENTITIES:
       UID: 16826855015415748122
     TransformComponent:
       Transform:
-        Translate: [-42.6663055, 27.7043896, -22.5687847]
-        Rotate: [90, 0, 90]
-        Scale: [1, 1, 1]
+        Translate: [-39.6405754, 27.5871315, -22.5687847]
+        Rotate: [89.9999847, -0, 0]
+        Scale: [1.20635819, 0.999928653, 1.60163522]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
+        Previous Scale: [1.20635819, 0.999928653, 1.60163522]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
       ModelID: 5963078964798272625
-      MaterialID: 0
+      MaterialID: 12207453972742617529
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 0.00999999978, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 16135378917386993712
-        Type: CONVEX_MESH
-    InfoComponent:
-      Parent: 0
-      Name: Slide_Door_Floor_3
-      UID: 3510448602803946821
-    TransformComponent:
-      Transform:
-        Translate: [-30.4379082, 27.7840004, -22.5690002]
-        Rotate: [90, 0, 90]
-        Scale: [1, 1, 1]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1, 1]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 5963078964798272625
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+  - {}
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -6359,7 +6550,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 11325662916488734020
-      MaterialID: 0
+      MaterialID: 16051879611138255440
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6396,7 +6587,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1146382376439045905
-      MaterialID: 0
+      MaterialID: 16051879611138255440
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6433,7 +6624,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 5692762562094318330
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6455,22 +6646,22 @@ ENTITIES:
       UID: 3747498441944261189
     TransformComponent:
       Transform:
-        Translate: [-31.674778, 30.8602104, -39.3083458]
-        Rotate: [90, 0, 0]
-        Scale: [1.29999995, 1, 1]
+        Translate: [-31.7399521, 30.2462902, -39.9961624]
+        Rotate: [89.9999847, -0, 0]
+        Scale: [1.29999995, 0.999964356, 0.999964356]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.29999995, 1, 1]
+        Previous Scale: [1.29999995, 0.999964356, 0.999964356]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
       ModelID: 5963078964798272625
-      MaterialID: 0
+      MaterialID: 12207453972742617529
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6486,7 +6677,7 @@ ENTITIES:
         Scale: [1, 2.1500001, 1]
     ModelComponent:
       ModelID: 18413156755282979635
-      MaterialID: 0
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6523,7 +6714,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 5692762562094318330
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6560,7 +6751,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 10882923977369277709
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6597,7 +6788,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6606,12 +6797,12 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [2.05999994, 20.4799995, 51.6500015]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
-        PhysicsMesh: 13244744886219103757
+        PhysicsMesh: 7103059716832083419
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -6619,22 +6810,22 @@ ENTITIES:
       UID: 16581412378949571375
     TransformComponent:
       Transform:
-        Translate: [-8.84556675, 46.8441925, -21.3619003]
-        Rotate: [-90, 90, 0]
-        Scale: [1, 1.62, 0.899999976]
+        Translate: [-10.1353874, 46.8441925, -21.3619003]
+        Rotate: [-89.7671661, 89.8846512, 0.240885064]
+        Scale: [0.999893129, 1.78999281, 0.899892509]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1.62, 0.899999976]
+        Previous Scale: [0.999893129, 1.78999281, 0.899892509]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
       ModelID: 18413156755282979635
-      MaterialID: 0
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6671,7 +6862,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6708,7 +6899,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 5692762562094318330
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6731,21 +6922,21 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [0.112765431, 28.8956814, -68.2000122]
-        Rotate: [0, 90, 0]
-        Scale: [1, 0.319999993, 2.06999993]
+        Rotate: [0, 89.980217, 0]
+        Scale: [0.99999994, 0.319999993, 2.06999969]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 0.319999993, 2.06999993]
+        Previous Scale: [0.99999994, 0.319999993, 2.06999969]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
       ModelID: 17773246069672836568
-      MaterialID: 0
+      MaterialID: 17505835518794492079
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6782,7 +6973,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 12907306951145530752
-      MaterialID: 0
+      MaterialID: 10882923977369277709
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6819,7 +7010,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 12907306951145530752
-      MaterialID: 0
+      MaterialID: 10882923977369277709
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6842,8 +7033,8 @@ ENTITIES:
       UID: 2377197601835279376
     TransformComponent:
       Transform:
-        Translate: [-6.71424913, 1.24566555, 7.3583436]
-        Rotate: [0, -6.00007963, 0]
+        Translate: [-6.63332367, 1.24566591, 7.34261322]
+        Rotate: [180, 100.999916, 180]
         Scale: [0.0164999999, 0.0164999999, 0.0164999999]
     RigidBodyComponent:
       RigidBody:
@@ -6965,7 +7156,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 6.15045974e-06
+        Speed: 0
       BoolParams:
         IsMoving: false
         Sprint: false
@@ -7009,12 +7200,12 @@ ENTITIES:
       UID: 3106835252756117780
     TransformComponent:
       Transform:
-        Translate: [-0.571732998, 10.8016672, 4.48044062]
-        Rotate: [0, -90, 0]
-        Scale: [1, 1, 1]
+        Translate: [-0.881737471, 10.6809559, 4.49459839]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
-        Radiance: [0.463368237, 0.725490212, 0.0889080986]
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
         Intensity: 10
         FallOff: 1.50600004
         CutOff: 0.34906584
@@ -7029,7 +7220,7 @@ ENTITIES:
         Scale: [1, 1, 1]
     SpotLightComponent:
       Light:
-        Radiance: [0.872548997, 0.777444184, 0.0641580224]
+        Radiance: [0.823529422, 0.572549045, 0.101960786]
         Intensity: 10
         FallOff: 1.05592418
         CutOff: 0.34906584
@@ -7076,7 +7267,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -7113,7 +7304,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 0
+      MaterialID: 7842828173361374155
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -7132,75 +7323,40 @@ ENTITIES:
   - {}
   - {}
   - {}
-  - InfoComponent:
-      Parent: 6153312092683573631
-      Name: Directional Light 1
-      UID: 6880043982274262466
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [180, -0, 0]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 1
   - {}
-  - InfoComponent:
-      Parent: 17985668122187817499
-      Name: Directional Light 2
-      UID: 6153312092683573631
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [-90.0000076, -90, 0]
-        Scale: [1.00000012, 0.99999994, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 1
   - {}
-  - InfoComponent:
-      Parent: 6671568354745588512
-      Name: Directional Light 3
-      UID: 17985668122187817499
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [180, 6.83019016e-06, 180]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 1
   - {}
-  - InfoComponent:
-      Parent: 2244099135848090292
-      Name: Directional Light 4
-      UID: 6671568354745588512
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [-90, -90, 0]
-        Scale: [1, 1.00000012, 0.99999994]
-    DirectLightComponent:
-      Light:
-        Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 1
   - {}
-  - InfoComponent:
-      Parent: 2183066615299545163
-      Name: Directional Light 5
-      UID: 2244099135848090292
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, -0, 180]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 1
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
   - {}
   - InfoComponent:
       Parent: 0
@@ -7217,6 +7373,75 @@ ENTITIES:
         Intensity: 1
   - {}
   - {}
+  - InfoComponent:
+      Parent: 0
+      Name: GUID Health Bar(Back)
+      UID: 5929080536149318279
+    TransformComponent:
+      Transform:
+        Translate: [-0.499000013, 0.879999995, 0]
+        Rotate: [0, 0, 0]
+        Scale: [0.469999999, 0.0799999982, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.HealthBarShrinkRightToLeft
+      ParamsJSON: "{}"
+    SpriteComponent:
+      textureID: 7299876130980789758
+      color: [1, 1, 1, 1]
+      uiOverlay: true
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - InfoComponent:
+      Parent: 13685181942599758823
+      Name: VisionConeFake
+      UID: 9232137645831539091
+    TransformComponent:
+      Transform:
+        Translate: [-144.236359, -60.2911072, 506.599121]
+        Rotate: [-90.0074158, 75.1308136, 6.65416655e-06]
+        Scale: [136.157349, 68.9649124, 68.9648361]
+    ModelComponent:
+      ModelID: 7796158376131028701
+      MaterialID: 17406031643650126959
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [6.38000011, 5.5, 3.99000001]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: DoorZoneTrigger
+      UID: 18225839841380023019
+    TransformComponent:
+      Transform:
+        Translate: [-32.7028389, 27.2770958, -21.2241459]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.DoorTriggerLeft
+      ParamsJSON: "{}"
   - {}
   - {}
   - {}

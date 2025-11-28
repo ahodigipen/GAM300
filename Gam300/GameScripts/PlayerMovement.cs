@@ -11,6 +11,23 @@ using System.Runtime.CompilerServices;
 /// </summary>
 namespace GameScripts
 {
+
+    public static class HUD
+    {
+        // 0..1
+        public static float HealthRatio = 1f;
+
+        public static void SetHealth(int hp, int max)
+        {
+            if (max <= 0) { HealthRatio = 0f; return; }
+            float r = (float)hp / (float)max;
+            if (r < 0f) r = 0f;
+            if (r > 1f) r = 1f;
+            HealthRatio = r;
+        }
+    }
+
+
     public class PlayerMovement
     {
         // This field is automatically set by the scripting system
@@ -18,11 +35,28 @@ namespace GameScripts
 
         // Movement parameters (configurable)
         private float _walkSpeed = 3f;
-        private float _sprintSpeed = 5f;
+        private float _sprintSpeed = 8f;
         private float _sneakSpeed = 1.5f;
         private float _jumpSpeed = 5f;
+
+        // Health system
         private int _health = 5;
         private int _maxHealth = 5;
+        private Vec3 _spawnPoint;
+        private bool _isRespawning = false;
+        private float _respawnDelay = 1.0f; // no longer used (kept for compatibility)
+        private float _respawnTimer = 0f;   // no longer used (kept for compatibility)
+        private bool _isInvulnerable = false;
+        private float _invulnerabilityDuration = 2.0f;
+        private float _invulnerabilityTimer = 0f;
+
+        // Screen fade system (fade-out to black, teleport, then fade-in)
+        private enum FadeState { None, FadingOut, BlackHold, FadingIn }
+        private FadeState _fadeState = FadeState.None;
+        private float _fadeTimer = 0f;
+        private float _fadeOutDuration = 0.5f;   // time to fade to black
+        private float _blackHoldDuration = 0.15f; // time to stay fully black
+        private float _fadeInDuration = 0.75f;   // time to fade back to scene
 
         // Footstep system
         private FootstepComponent _footstepComponent;
@@ -54,8 +88,14 @@ namespace GameScripts
 
             API.Log($"[PlayerMovement] OnStart() - Entity: {Entity}");
 
+            // Ensure we start fully visible
+            API.SetScreenFadeAlpha(0f);
+
             // Store player entity reference for static callbacks
             s_playerEntity = Entity;
+
+            // Register with PlayerManager for enemy interactions
+            PlayerManager.RegisterPlayer(this);
 
             // Validate entity has required components
             if (!API.HasTransform(Entity))
@@ -69,6 +109,14 @@ namespace GameScripts
                 API.Log("[PlayerMovement] ERROR: Entity missing ScriptComponent!");
                 return;
             }
+
+            // Initialize spawn point as starting position
+            _spawnPoint = API.GetPosition(Entity);
+            API.Log($"[PlayerMovement] Spawn point set to: ({_spawnPoint.X:F2}, {_spawnPoint.Y:F2}, {_spawnPoint.Z:F2})");
+
+            // Initialize health
+            _health = _maxHealth;
+            API.Log($"[PlayerMovement] Health initialized: {_health}/{_maxHealth} HP");
 
             // Initialize footstep component
             _footstepComponent = new FootstepComponent();
@@ -99,7 +147,130 @@ namespace GameScripts
             API.Log($"  Jump Speed: {_jumpSpeed}");
             API.Log($"[PlayerMovement] Model forward offset: {_modelForwardOffset} degrees");
 
-            
+            _health = _maxHealth;
+            HUD.SetHealth(_health, _maxHealth);
+
+        }
+
+        /// <summary>
+        /// Handle getting caught by an enemy
+        /// </summary>
+        public void OnCaughtByEnemy(ulong enemyEntity)
+        {
+            // Check if player is invulnerable (just respawned)
+            if (_isInvulnerable)
+            {
+                API.Log("[PlayerMovement] Player is invulnerable, ignoring detection");
+                return;
+            }
+
+            // Check if already respawning
+            if (_isRespawning)
+            {
+                API.Log("[PlayerMovement] Already respawning, ignoring detection");
+                return;
+            }
+
+            API.Log($"[PlayerMovement] CAUGHT BY ENEMY (ID: {enemyEntity})! Current HP: {_health}");
+
+            // Lose 1 HP
+            _health--;
+            HUD.SetHealth(_health, _maxHealth);
+            API.Log($"[PlayerMovement] HP reduced to: {_health}/{_maxHealth}");
+
+            // Play damage sound
+            Vec3 playerPos = API.GetPosition(Entity);
+            API.PlaySoundAt("player_damage", "Resources/Audio/playerPunch_1.wav", playerPos, false);
+            API.SetSoundVolume("player_damage", 1.0f);
+
+            // Check if dead
+            if (_health <= 0)
+            {
+                API.Log("[PlayerMovement] HP reached 0! Restarting level...");
+                RestartLevel();
+            }
+            else
+            {
+                API.Log($"[PlayerMovement] Respawning at checkpoint... {_health} HP remaining");
+                StartRespawn();
+            }
+        }
+
+        /// <summary>
+        /// Start the respawn process (fade-out -> teleport -> fade-in)
+        /// </summary>
+        private void StartRespawn()
+        {
+            _isRespawning = true;
+            _respawnTimer = 0f;
+
+            // Stop player movement
+            API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
+
+            // Begin fade-out sequence
+            _fadeState = FadeState.FadingOut;
+            _fadeTimer = 0f;
+            API.SetScreenFadeAlpha(0f);
+
+            API.Log("[PlayerMovement] Respawn initiated (fade-out)...");
+        }
+
+        /// <summary>
+        /// Restart the entire level
+        /// </summary>
+        private void RestartLevel()
+        {
+            API.Log("[PlayerMovement] === GAME OVER - RESTARTING LEVEL ===");
+
+            // Play death sound
+            Vec3 playerPos = API.GetPosition(Entity);
+            API.PlaySoundAt("player_death", "Resources/Audio/playerPunch_1.wav", playerPos, false);
+            API.SetSoundVolume("player_death", 1.0f);
+
+            // Reload the current scene after a brief delay
+            string currentScene = API.GetCurrentSceneName();
+            API.Log($"[PlayerMovement] Reloading scene: {currentScene}");
+
+            // Note: For a fancier effect, you can also fade to black here before loading.
+            API.LoadScene(currentScene);
+        }
+
+        /// <summary>
+        /// Respawn the player at the checkpoint
+        /// </summary>
+        private void RespawnAtCheckpoint()
+        {
+            API.Log($"[PlayerMovement] Respawning at checkpoint: ({_spawnPoint.X:F2}, {_spawnPoint.Y:F2}, {_spawnPoint.Z:F2})");
+
+            // Use TeleportRigidBody instead of SetPosition to properly update PhysX
+            API.TeleportRigidBody(Entity, _spawnPoint);
+
+            // Velocities are already cleared by TeleportRigidBody, but let's be explicit
+            API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
+
+            // Enable invulnerability
+            _isInvulnerable = true;
+            _invulnerabilityTimer = 0f;
+
+            HUD.SetHealth(_health, _maxHealth);
+
+            // Reset respawn state
+            _isRespawning = false;
+
+            API.Log($"[PlayerMovement] Respawn complete! Invulnerable for {_invulnerabilityDuration} seconds");
+        }
+
+        /// <summary>
+        /// Update checkpoint position (can be called from trigger zones)
+        /// </summary>
+        public void UpdateCheckpoint(Vec3 newCheckpoint)
+        {
+            _spawnPoint = newCheckpoint;
+            API.Log($"[PlayerMovement] Checkpoint updated to: ({_spawnPoint.X:F2}, {_spawnPoint.Y:F2}, {_spawnPoint.Z:F2})");
+
+            // Play checkpoint sound
+            API.PlaySoundAt("checkpoint_save", "Resources/Audio/playerPunch_1.wav", newCheckpoint, false);
+            API.SetSoundVolume("checkpoint_save", 0.8f);
         }
 
         private void RegisterTriggerCallbacksOnAllTriggers()
@@ -144,16 +315,103 @@ namespace GameScripts
         }
 
         /// <summary>
+        /// Per-frame fade controller for respawn sequence
+        /// </summary>
+        private void UpdateFade(float dt)
+        {
+            switch (_fadeState)
+            {
+                case FadeState.None:
+                    return;
+
+                case FadeState.FadingOut:
+                    {
+                        _fadeTimer += dt;
+                        float t = Clamp01(_fadeTimer / Math.Max(0.0001f, _fadeOutDuration));
+                        API.SetScreenFadeAlpha(t);
+
+                        if (_fadeTimer >= _fadeOutDuration)
+                        {
+                            // Fully black now -> teleport immediately
+                            API.SetScreenFadeAlpha(1f);
+                            _fadeState = FadeState.BlackHold;
+                            _fadeTimer = 0f;
+
+                            RespawnAtCheckpoint(); // sets _isRespawning = false and invulnerability, etc.
+                            API.Log("[PlayerMovement] Fade-out complete, teleported to checkpoint.");
+                        }
+                        break;
+                    }
+
+                case FadeState.BlackHold:
+                    {
+                        _fadeTimer += dt;
+                        API.SetScreenFadeAlpha(1f);
+                        if (_fadeTimer >= _blackHoldDuration)
+                        {
+                            _fadeState = FadeState.FadingIn;
+                            _fadeTimer = 0f;
+                            API.Log("[PlayerMovement] Holding at black done, starting fade-in...");
+                        }
+                        break;
+                    }
+
+                case FadeState.FadingIn:
+                    {
+                        _fadeTimer += dt;
+                        float t = 1f - Clamp01(_fadeTimer / Math.Max(0.0001f, _fadeInDuration));
+                        API.SetScreenFadeAlpha(t);
+
+                        if (_fadeTimer >= _fadeInDuration)
+                        {
+                            _fadeState = FadeState.None;
+                            API.SetScreenFadeAlpha(0f);
+                            API.Log("[PlayerMovement] Fade-in complete.");
+                        }
+                        break;
+                    }
+            }
+        }
+
+        private static float Clamp01(float v)
+        {
+            if (v < 0f) return 0f;
+            if (v > 1f) return 1f;
+            return v;
+        }
+
+        /// <summary>
         /// Called every frame to update movement using PhysX linear velocity.
         /// </summary>
         public void OnUpdate(float dt)
         {
+            // Always update fade first (so it works both during and after respawn)
+            UpdateFade(dt);
+
             // Safety check
             if (!API.HasTransform(Entity) || !API.HasScript(Entity))
                 return;
 
             // Update footstep component
             _footstepComponent?.OnUpdate(dt);
+
+            // Handle respawn: during fade-out/black-hold we block gameplay updates
+            if (_isRespawning)
+            {
+                // While respawning (before teleport), we don't allow movement
+                return; // Don't allow movement while respawning (fade-out/black)
+            }
+
+            // Handle invulnerability timer
+            if (_isInvulnerable)
+            {
+                _invulnerabilityTimer += dt;
+                if (_invulnerabilityTimer >= _invulnerabilityDuration)
+                {
+                    _isInvulnerable = false;
+                    API.Log("[PlayerMovement] Invulnerability expired");
+                }
+            }
 
             // =============== CAMERA-RELATIVE PHYSX MOVEMENT =================
 
@@ -277,6 +535,13 @@ namespace GameScripts
             }
 
             _wasSpacePressed = spacePressed;
+
+            // === CLAMP UPWARD VELOCITY ===
+            const float MaxUpwardVelocity = 7.5f;
+            if (vel.Y > MaxUpwardVelocity)
+            {
+                vel.Y = MaxUpwardVelocity;
+            }
 
             API.SetLinearVelocity(Entity, vel);
 
@@ -454,6 +719,9 @@ namespace GameScripts
         {
             API.Log($"[PlayerMovement] OnDestroy() - Entity: {Entity}");
 
+            // Unregister from PlayerManager
+            PlayerManager.UnregisterPlayer();
+
             // Clear static reference
             if (s_playerEntity == Entity)
             {
@@ -469,6 +737,9 @@ namespace GameScripts
                 API.UnregisterTriggerCallbacks(Entity);
                 API.Log("[PlayerMovement] Unregistered trigger callbacks for player");
             }
+
+            // Make sure we leave the screen visible
+            API.SetScreenFadeAlpha(0f);
         }
 
         // Public methods for customization
@@ -501,6 +772,22 @@ namespace GameScripts
             _sprintSpeed = sprintSpeed;
             _sneakSpeed = sneakSpeed;
             API.Log($"[PlayerMovement] Speeds updated - Walk: {_walkSpeed}, Sprint: {_sprintSpeed}, Sneak: {_sneakSpeed}");
+        }
+
+        /// <summary>
+        /// Get current health
+        /// </summary>
+        public int GetHealth()
+        {
+            return _health;
+        }
+
+        /// <summary>
+        /// Get player entity ID (for enemy detection callbacks)
+        /// </summary>
+        public static ulong GetPlayerEntity()
+        {
+            return s_playerEntity;
         }
     }
 }

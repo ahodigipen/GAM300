@@ -8,11 +8,11 @@ namespace Boom {
 		BOOM_INLINE FinalShader(std::string const& filename, int32_t width, int32_t height, glm::vec4 col = glm::vec4{ 1.f })
 			: Shader{ filename }
 			, map{ GetUniformVar("map") }
-			, quad{ CreateQuad2D() }
-			// colLoc{ GetUniformVar("color") }
 			, bloom{ GetUniformVar("u_bloom") }
 			, bloomEnabled{ GetUniformVar("u_enableBloom") }
-			, color{col}
+			, fadeAlpha{ GetUniformVar("u_fadeAlpha") } // NEW
+			, quad{ CreateQuad2D() }
+			, color{ col }
 		{
 			CreateBuffer(width, height);
 		}
@@ -51,6 +51,9 @@ namespace Boom {
 
 			SetUniform(bloomEnabled, enableBloom);
 			SetSceneMap(vmap, vbloom);
+
+			// NEW: apply screen fade
+			SetUniform(fadeAlpha, g_ScreenFadeAlpha);
 
 			//set color map
 			glActiveTexture(GL_TEXTURE0);
@@ -103,7 +106,8 @@ namespace Boom {
 		}
 
 	private:
-		
+		int32_t fadeAlpha; // NEW
+
 		Quad2D quad;
 		int32_t bloom = 0u;
 		int32_t map = 0u;

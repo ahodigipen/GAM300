@@ -68,6 +68,14 @@ namespace EditorUI {
         Boom::Animator::Transition m_TempTransition;
         char           m_TransitionParamNameBuffer[128]{};
 
+        // Sprite component undo tracking
+        bool           m_IsSpriteBeingEdited = false;
+        Boom::SpriteComponent m_SpriteBeforeEdit;
+
+        // Transform component undo tracking
+        bool           m_IsTransformBeingEdited = false;
+        Boom::Transform3D m_TransformBeforeEdit;
+
         template<typename TComponent, typename GetPropsFn>
         void DrawComponentSection(const char* title,
             TComponent* comp,

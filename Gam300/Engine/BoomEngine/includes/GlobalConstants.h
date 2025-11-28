@@ -7,6 +7,7 @@ namespace Boom {
 
 	using EntityId = std::uint32_t;
 	using Vec3 = glm::vec3;
+	extern float g_ScreenFadeAlpha;
 
 	namespace CONSTANTS {
 		int const CHAR_BUFFER_SIZE{ 256 };
