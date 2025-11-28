@@ -220,11 +220,11 @@ namespace GameScripts
             bool q_KeyDown = API.IsKeyDown(API.KEY_Q);
             if (q_KeyDown && !_q_KeyWasDown)
             {
-                //API.Log("Quitting game...");
-                //API.QuitGame();
-                API.Log("Quitting scene (temporary)...");
-                IsGamePaused = false;
-                API.LoadScene(_currentSceneName);
+                API.Log("Quitting game...");
+                API.QuitGame();
+                //API.Log("Quitting scene (temporary)...");
+                //IsGamePaused = false;
+                //API.LoadScene(_currentSceneName);
 
                 _q_KeyWasDown = q_KeyDown;
                 return;
