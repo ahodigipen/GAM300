@@ -536,6 +536,13 @@ namespace GameScripts
 
             _wasSpacePressed = spacePressed;
 
+            // === CLAMP UPWARD VELOCITY ===
+            const float MaxUpwardVelocity = 7.5f;
+            if (vel.Y > MaxUpwardVelocity)
+            {
+                vel.Y = MaxUpwardVelocity;
+            }
+
             API.SetLinearVelocity(Entity, vel);
 
             // =============== UPDATE ANIMATOR =================
