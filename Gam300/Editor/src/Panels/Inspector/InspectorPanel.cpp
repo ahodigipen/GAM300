@@ -445,7 +445,7 @@ namespace EditorUI {
                 ImGui::TableSetupColumn("Asset", ImGuiTableColumnFlags_WidthStretch);
                 InputAssetWidget<CONSTANTS::DND_PAYLOAD_TEXTURE>("texture", q.textureID);
                 ImGui::EndTable();
-                ImGui::ColorEdit3("color", &q.color[0]);
+                ImGui::ColorEdit4("color", &q.color[0]);
             }
             ImGui::PopID();
         }
