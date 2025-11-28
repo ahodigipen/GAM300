@@ -324,6 +324,23 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
   - Type: MATERIAL
+    UID: 7210221651131134645
+    Name: Stone Statue (Thick) Texture
+    Source: Stone Statue (Thick) Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 82665125486564339
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
     UID: 10882923977369277709
     Name: Stone Wall Texture
     Source: Stone Wall Texture
@@ -677,6 +694,17 @@ ASSETS:
     UID: 15056488335627110656
     Name: Pedastal_normal
     Source: Resources/Models/Enemy/Stationary Sentry/Pedastal_normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 10451005038005756580
+    Name: MainMenuMockup
+    Source: Resources/Textures/MainMenu/MainMenuMockup.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2114,39 +2142,6 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
-  - Type: TEXTURE
-    UID: 17872212269469502547
-    Name: MainMenuBackground
-    Source: Resources/Textures/MainMenu/MainMenuBackground.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 9596048226089820256
-    Name: MainMenuLogo
-    Source: Resources/Textures/MainMenu/MainMenuLogo.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 13056076664256934653
-    Name: MainMenuTeamName
-    Source: Resources/Textures/MainMenu/MainMenuTeamName.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
   - Type: SKYBOX
     UID: 4245843529762785392
     Name: NightSkyHDRI003_8K_HDR
