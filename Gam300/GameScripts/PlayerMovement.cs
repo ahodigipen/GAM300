@@ -35,7 +35,7 @@ namespace GameScripts
 
         // Movement parameters (configurable)
         private float _walkSpeed = 3f;
-        private float _sprintSpeed = 5f;
+        private float _sprintSpeed = 8f;
         private float _sneakSpeed = 1.5f;
         private float _jumpSpeed = 5f;
 
