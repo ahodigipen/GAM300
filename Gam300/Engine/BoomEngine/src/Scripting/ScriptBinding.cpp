@@ -332,6 +332,11 @@ namespace Boom {
         s_Ctx->app->UnloadAdditiveScene<PauseMenuTagComponent>();
     }
 
+    static void ICALL_API_ShowPauseMenu() {
+        if (!s_Ctx || !s_Ctx->app) return;
+        s_Ctx->app->ShowAdditiveScene<PauseMenuTagComponent>();
+    }
+
     static void ICALL_API_TogglePause() {
         if (s_Ctx && s_Ctx->app) {
             s_Ctx->app->TogglePause();
@@ -341,6 +346,22 @@ namespace Boom {
     static void ICALL_API_SetGameLogicPaused(bool isPaused) {
         if (s_Ctx && s_Ctx->app) {
             s_Ctx->app->SetGameLogicPaused(isPaused);
+        }
+    }
+
+    static void ICALL_API_EnableFileWatcher(bool enable)
+    {
+        if (!s_Ctx || !s_Ctx->scriptingSystem) return;
+
+        // This function should exist in your ScriptingSystem.
+        // It's the same one used in Application.cpp
+        s_Ctx->scriptingSystem->EnableAutoHotReload(enable);
+
+        if (enable) {
+            BOOM_INFO("[ScriptBinding] Enabled auto hot-reload");
+        }
+        else {
+            BOOM_INFO("[ScriptBinding] Disabled auto hot-reload");
         }
     }
 
@@ -1198,6 +1219,7 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_QuitGame", (const void*)ICALL_API_QuitGame);
         mono_add_internal_call("Boom.Native::Boom_API_LoadSceneAdditive", (const void*)ICALL_API_LoadSceneAdditive);
         mono_add_internal_call("Boom.Native::Boom_API_UnloadPauseMenu", (const void*)ICALL_API_UnloadPauseMenu);
+        mono_add_internal_call("Boom.Native::Boom_API_ShowPauseMenu", (const void*)ICALL_API_ShowPauseMenu);
         mono_add_internal_call("Boom.Native::Boom_API_TogglePause", (const void*)ICALL_API_TogglePause);
         mono_add_internal_call("Boom.Native::Boom_API_GetApplicationState", (const void*)ICALL_API_GetApplicationState);
         mono_add_internal_call("Boom.Native::Boom_API_IsPauseMenuLoaded", (const void*)ICALL_API_IsPauseMenuLoaded);
@@ -1263,6 +1285,8 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::LinecastIgnoreBoth", (const void*)ICALL_API_LinecastIgnoreBoth);
 
         mono_add_internal_call("Boom.Native::Boom_API_SetGameLogicPaused", (const void*)ICALL_API_SetGameLogicPaused);
+        mono_add_internal_call("Boom.Native::Boom_API_EnableFileWatcher", (const void*)ICALL_API_EnableFileWatcher);
+
         mono_add_internal_call("Boom.Native::Boom_API_TeleportRigidBody", (void*)ICALL_API_TeleportRigidBody);
 
         mono_add_internal_call("Boom.Native::Boom_API_SetScreenFadeAlpha", (const void*)ICALL_API_SetScreenFadeAlpha);

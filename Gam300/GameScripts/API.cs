@@ -123,6 +123,9 @@ namespace Boom
         internal static extern void Boom_API_UnloadPauseMenu();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_ShowPauseMenu();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_TogglePause();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -183,6 +186,11 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_SetGameLogicPaused(bool paused);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_EnableFileWatcher(bool enable);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_TeleportRigidBody(ulong handle, ref Vec3 pos);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -512,6 +520,7 @@ namespace Boom
         public static void QuitGame() => Native.Boom_API_QuitGame();
         public static void LoadSceneAdditive(string name) => Native.Boom_API_LoadSceneAdditive(name);
         public static void UnloadPauseMenu() => Native.Boom_API_UnloadPauseMenu();
+        public static void ShowPauseMenu() => Native.Boom_API_ShowPauseMenu();
         public static void TogglePause() => Native.Boom_API_TogglePause();
         public static int GetApplicationState() => Native.Boom_API_GetApplicationState();
         public static bool IsPauseMenuLoaded() => Native.Boom_API_IsPauseMenuLoaded();
@@ -610,6 +619,12 @@ namespace Boom
         }
 
         public static void SetGameLogicPaused(bool paused) => Native.Boom_API_SetGameLogicPaused(paused);
+
+        public static void EnableFileWatcher(bool enable)
+        {
+            Native.Boom_API_EnableFileWatcher(enable);
+        }
+
         public static void TeleportRigidBody(ulong h, Vec3 p)
         {
             if (!Native.Boom_API_HasTransform(h))

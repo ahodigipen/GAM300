@@ -298,6 +298,8 @@ namespace Boom
         std::vector<std::pair<SpriteComponent, Transform2D>> guiList;
         //pbr ecs (always render)
         EnttView<Entity, TransformComponent>([this, &guiList](auto entity, TransformComponent& t) {
+            if (entity.Has<DeactivatedComponent>()) return;
+
             if (entity.Has<ModelComponent>()) {
                 ModelComponent& comp{ entity.Get<ModelComponent>() };
                 if (comp.modelID == EMPTY_ASSET) return;

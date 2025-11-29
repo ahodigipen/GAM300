@@ -1585,6 +1585,13 @@ namespace EditorUI {
                 [&]() { ctx->scene.remove<Boom::PauseMenuTagComponent>(m_App->SelectedEntity()); });
         }
 
+        if (selected.Has<Boom::DeactivatedComponent>()) {
+            static Boom::DeactivatedComponent fakeTagInstance;
+
+            DrawComponentSection("Deactivated Tag", &fakeTagInstance, [](void*) { return nullptr; }, true,
+                [&]() { ctx->scene.remove<Boom::DeactivatedComponent>(m_App->SelectedEntity()); });
+        }
+
         if (selected.Has<Boom::ScriptComponent>()) {
             ImGui::PushID("Script");
             auto& sc = selected.Get<Boom::ScriptComponent>();
@@ -2041,6 +2048,7 @@ namespace EditorUI {
                     UpdateComponent<Boom::ThirdPersonCameraComponent>(Boom::ComponentID::THIRD_PERSON_CAMERA, selected);
 					UpdateComponent<Boom::SpriteComponent>(Boom::ComponentID::SPRITE, selected);
                     UpdateComponent<Boom::PauseMenuTagComponent>(Boom::ComponentID::PAUSE_MENU_TAG, selected);
+                    UpdateComponent<Boom::DeactivatedComponent>(Boom::ComponentID::DEACTIVATED_TAG, selected);
                     ImGui::EndTable();
                 }
             }

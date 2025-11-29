@@ -501,52 +501,100 @@ namespace Boom
   }
 
 
- BOOM_INLINE bool LoadSceneAdditive(const std::string& sceneName, const std::string& scenePath = "Scenes/")
- {
-     // --- FIX: Disable hot reload temporarily ---
-     bool wasHotReloadEnabled = m_Context->scriptingSystem->IsAutoHotReloadEnabled();
-     if (wasHotReloadEnabled) {
-         m_Context->scriptingSystem->EnableAutoHotReload(false);
-         BOOM_INFO("[Scene] Disabled auto hot-reload during additive load.");
-     }
+  BOOM_INLINE bool LoadSceneAdditive(const std::string& sceneName, const std::string& scenePath = "Scenes/")
+  {
+      // --- MODIFIED ---
+      // This function now *only* loads from file if objects aren't already in the scene.
+      // It *always* leaves the objects in a deactivated state.
 
-     DataSerializer serializer;
-     const std::string sceneFilePath = scenePath + sceneName + ".yaml";
-     BOOM_INFO("[Scene] Additively loading scene '{}'", sceneName, sceneFilePath);
+      BOOM_INFO("[Scene] Checking for existing objects for: %s", sceneName.c_str());
+      auto& reg = m_Context->scene;
 
-     serializer.Deserialize(m_Context->scene, *m_Context->assets, sceneFilePath);
+      // 1. Check if objects *already exist* (activated or deactivated)
+      // We assume PauseMenuTagComponent as that's what we're caching
+      auto existingView = reg.view<PauseMenuTagComponent>();
+      if (!existingView.empty())
+      {
+          BOOM_INFO("[Scene] Objects for '%s' already exist in scene. Load unnecessary.", sceneName.c_str());
+          // Ensure they are deactivated, just in case
+          for (auto e : existingView) {
+              if (!reg.all_of<DeactivatedComponent>(e)) {
+                  reg.emplace_or_replace<DeactivatedComponent>(e);
+              }
+          }
+          return true; // Already "loaded"
+      }
 
-     BOOM_INFO("[Scene] Initializing physics for additive objects...");
-     auto view = m_Context->scene.view<PauseMenuTagComponent, RigidBodyComponent>();
-     for (auto e : view) {
-         auto& rb = view.get<RigidBodyComponent>(e);
-         if (!rb.RigidBody.actor) {
-             Boom::Entity entity{ &m_Context->scene, e };
-             m_Context->physics->AddRigidBody(entity, *m_Context->assets);
-         }
-     }
+      // --- If we are here, no objects were found at all. ---
+      // --- Proceed with the ORIGINAL slow load (first time only). ---
 
-     BOOM_INFO("[Scene] Initializing C# scripts for additive objects...");
-     if (m_Context->scriptingSystem)
-     {
-         auto scriptView = m_Context->scene.view<PauseMenuTagComponent, ScriptComponent>();
-         for (auto e : scriptView)
-         {
-             auto& sc = scriptView.get<ScriptComponent>(e);
-             m_Context->scriptingSystem->RecreateForEntity(e, sc);
-         }
-     }
+      BOOM_INFO("[Scene] No existing objects found. Performing full additive load for '%s'", sceneName.c_str());
 
-     BOOM_INFO("[Scene] Successfully added scene '{}'", sceneName);
+      DataSerializer serializer;
+      const std::string sceneFilePath = scenePath + sceneName + ".yaml";
+      BOOM_INFO("[Scene] Additively loading scene '{}'", sceneName, sceneFilePath);
 
-     // --- FIX: Re-enable hot reload ---
-     if (wasHotReloadEnabled) {
-         m_Context->scriptingSystem->EnableAutoHotReload(true);
-         BOOM_INFO("[Scene] Re-enabled auto hot-reload.");
-     }
+      serializer.Deserialize(m_Context->scene, *m_Context->assets, sceneFilePath);
 
-     return true;
- }
+      // --- !!! THIS IS THE FIX !!! ---
+      // After deserializing, we must *DEACTIVATE* all newly loaded objects
+      // so they are hidden by default.
+      BOOM_INFO("[Scene] Deactivating newly deserialized objects...");
+      auto newlyLoadedView = m_Context->scene.view<PauseMenuTagComponent>();
+      int deactivatedCount = 0;
+      for (auto e : newlyLoadedView)
+      {
+          // Add the tag to hide it
+          reg.emplace_or_replace<DeactivatedComponent>(e);
+          deactivatedCount++;
+      }
+      if (deactivatedCount > 0) {
+          BOOM_INFO("[Scene] Added 'DeactivatedComponent' to %d newly loaded objects.", deactivatedCount);
+      }
+      // --- !!! END OF FIX !!! ---
+
+
+      BOOM_INFO("[Scene] Initializing physics for additive objects...");
+      auto view = m_Context->scene.view<PauseMenuTagComponent, RigidBodyComponent>();
+      for (auto e : view) {
+          auto& rb = view.get<RigidBodyComponent>(e);
+          if (!rb.RigidBody.actor) {
+              Boom::Entity entity{ &m_Context->scene, e };
+              m_Context->physics->AddRigidBody(entity, *m_Context->assets);
+          }
+      }
+
+      // --- NEW: Also initialize and deactivate collider-only objects ---
+      auto colliderView = reg.view<PauseMenuTagComponent, ColliderComponent>();
+      for (auto e : colliderView)
+      {
+          if (reg.all_of<RigidBodyComponent>(e)) continue; // Handled above
+
+          auto& col = colliderView.get<ColliderComponent>(e);
+          if (!col.Collider.actor) {
+              Boom::Entity entity{ &m_Context->scene, e };
+              m_Context->physics->AddColliderOnly(entity, *m_Context->assets);
+          }
+          if (col.Collider.actor) {
+              col.Collider.actor->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, true);
+          }
+      }
+
+      BOOM_INFO("[Scene] Initializing C# scripts for additive objects...");
+      if (m_Context->scriptingSystem)
+      {
+          auto scriptView = m_Context->scene.view<PauseMenuTagComponent, ScriptComponent>();
+          for (auto e : scriptView)
+          {
+              auto& sc = scriptView.get<ScriptComponent>(e);
+              m_Context->scriptingSystem->RecreateForEntity(e, sc);
+          }
+      }
+
+      BOOM_INFO("[Scene] Successfully added and deactivated scene '{}'", sceneName);
+
+      return true;
+  }
 
  template<typename TagComponent>
  BOOM_INLINE void UnloadAdditiveScene()
@@ -556,6 +604,8 @@ namespace Boom
  auto view = reg.view<TagComponent>();
 
  for (auto e : view) {
+     reg.emplace_or_replace<DeactivatedComponent>(e);
+
  if (reg.all_of<RigidBodyComponent>(e)) {
  auto& rb = reg.get<RigidBodyComponent>(e);
  if (rb.RigidBody.actor) {
@@ -564,9 +614,44 @@ namespace Boom
  }
  }
  }
- reg.destroy(view.begin(), view.end());
+ //reg.destroy(view.begin(), view.end());
  BOOM_INFO("[Scene] Unload complete.");
  }
+
+ template<typename TagComponent>
+ BOOM_INLINE void ShowAdditiveScene()
+ {
+     BOOM_INFO("[Scene] Reactivating additive scene with tag...");
+     auto& reg = m_Context->scene;
+     int reactivatedCount = 0;
+
+     // Find all entities that are part of the tag AND are deactivated
+     auto reactiveView = reg.view<TagComponent, DeactivatedComponent>();
+     for (auto e : reactiveView)
+     {
+         // Reactivate it! Remove the tag.
+         reg.remove<DeactivatedComponent>(e);
+
+         // Enable physics actor
+
+         if (reg.all_of<ColliderComponent>(e)) {
+             auto& col = reg.get<ColliderComponent>(e);
+             if (col.Collider.actor) {
+                 col.Collider.actor->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, false);
+             }
+         }
+         reactivatedCount++;
+     }
+
+     if (reactivatedCount > 0) {
+         BOOM_INFO("[Scene] Reactivated %d cached objects.", reactivatedCount);
+     }
+     else {
+         BOOM_WARN("[Scene] ShowAdditiveScene called, but no cached objects found to reactivate.");
+     }
+ }
+
+
 
  BOOM_INLINE void LightsUpdate() {
  

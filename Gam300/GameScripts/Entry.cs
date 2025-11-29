@@ -36,11 +36,17 @@ namespace GameScripts
             IsGamePaused = false;
 
             _currentSceneName = API.GetCurrentSceneName();
-
+            API.EnableFileWatcher(true);
             API.SetGameLogicPaused(false);
             s_ActivePauseMenuInstance = null;
 
             API.Log("[C#] Entry.Start() called for scene: " + _currentSceneName);
+
+            if (_currentSceneName == LEVEL_SCENE_NAME)
+            {
+                API.Log("Pre-loading pause menu additively...");
+                API.LoadSceneAdditive(PAUSE_SCENE_NAME);
+            }
         }
 
         public static void Update(float dt)
@@ -49,23 +55,22 @@ namespace GameScripts
 
             if (state == API.APP_STATE_RUNNING)
             {
-                // --- STATE: RUNNING ---
-
+                // 1. Run the correct C# logic block
                 if (IsGamePaused)
                 {
                     if (API.IsPauseMenuLoaded())
                     {
                         UpdatePauseMenu(dt);
-                        API.SetGameLogicPaused(true);
-
                     }
                 }
                 else
                 {
                     UpdateGame(dt);
-                    API.SetGameLogicPaused(false);
-
                 }
+
+                // 2. Set the C++ pause state *after* all logic is done.
+                // This reflects the *final* state for the frame and fixes Bug 1.
+                API.SetGameLogicPaused(IsGamePaused);
             }
 
         }
@@ -80,70 +85,6 @@ namespace GameScripts
             bool q_KeyDown = API.IsKeyDown(API.KEY_Q); // Quit
             bool ctrl_KeyDown = API.IsKeyDown(API.KEY_LEFT_CONTROL);
 
-            // --- LOGIC FOR MAIN MENU ---
-            if (_currentSceneName == MAIN_MENU_SCENE_NAME)
-            {
-                // Check for 'P' (without Ctrl) to START the Level
-                if (p_KeyDown && !_p_KeyWasDown && !ctrl_KeyDown)
-                {
-                    API.Log("Starting game... Loading 'level' scene.");
-                    API.LoadScene(LEVEL_SCENE_NAME);
-                    _p_KeyWasDown = p_KeyDown;
-                    return;
-                }
-
-                // Check for 'H' (without Ctrl) to go to HOW TO PLAY
-                if (h_KeyDown && !_h_KeyWasDown && !ctrl_KeyDown)
-                {
-                    API.Log("Loading 'HowToPlay' scene.");
-                    API.LoadScene(HOW_TO_PLAY_SCENE_NAME);
-                    _h_KeyWasDown = h_KeyDown; // Set tracker
-                    return; // Exit after action
-                }
-
-                // Check for 'Q' (without Ctrl) to QUIT
-                if (q_KeyDown && !_q_KeyWasDown && !ctrl_KeyDown)
-                {
-                    //API.Log("Quitting application from main menu.");
-                    //API.QuitGame(); // This will close the application
-                    API.Log("Quitting scene (temporary)...");
-                    IsGamePaused = false;
-                    API.LoadScene(_currentSceneName);
-
-                    _q_KeyWasDown = q_KeyDown; // Set tracker
-                    return; // Exit after action
-                }
-
-                // Update all menu key trackers if no action was taken
-                _p_KeyWasDown = p_KeyDown;
-                _h_KeyWasDown = h_KeyDown;
-                _r_KeyWasDown = r_KeyDown; // (Doesn't hurt to update this)
-                _q_KeyWasDown = q_KeyDown;
-
-                return; // Exit UpdateGame
-            }
-
-            // --- LOGIC FOR HOW TO PLAY MENU ---
-            else if (_currentSceneName == HOW_TO_PLAY_SCENE_NAME)
-            {
-                // Check for 'R' (without Ctrl) to RETURN TO MAIN MENU
-                if (r_KeyDown && !_r_KeyWasDown && !ctrl_KeyDown)
-                {
-                    API.Log("Returning to Main Menu from HowToPlay.");
-                    API.LoadScene(MAIN_MENU_SCENE_NAME);
-                    _r_KeyWasDown = r_KeyDown; // Set tracker
-                    return; // Exit after action
-                }
-
-                // Update all menu key trackers if no action was taken
-                _p_KeyWasDown = p_KeyDown;
-                _h_KeyWasDown = h_KeyDown;
-                _r_KeyWasDown = r_KeyDown;
-                _q_KeyWasDown = q_KeyDown;
-
-                return; // Exit UpdateGame
-            }
-
             // --- LOGIC FOR IN-GAME ---
 
             // Check for 'P' (without Ctrl) to PAUSE the game
@@ -151,9 +92,13 @@ namespace GameScripts
             {
                 API.Log("Pausing game (P key)...");
                 IsGamePaused = true;
-                // API.TogglePause();
-                API.LoadSceneAdditive(PAUSE_SCENE_NAME);
-                API.SetGameLogicPaused(true);
+                //API.LoadSceneAdditive(PAUSE_SCENE_NAME); // C++ Caching logic runs
+
+                API.ShowPauseMenu();
+                // Disable hot-reload to prevent auto-resume
+                API.EnableFileWatcher(false);
+
+                // API.SetGameLogicPaused(true); // <-- This is now handled in Update()
 
                 s_ActivePauseMenuInstance = null;
 
@@ -175,11 +120,13 @@ namespace GameScripts
             {
                 API.Log("Resuming game...");
 
-                // --- NEW RESUME LOGIC ---
-                API.UnloadPauseMenu(); // 1. Destroy the menu objects
-                API.SetGameLogicPaused(false);
+                API.UnloadPauseMenu(); // C++ Caching logic runs
                 IsGamePaused = false;
-                // API.TogglePause();
+
+                // Re-enable hot-reload
+                API.EnableFileWatcher(true);
+
+                // API.SetGameLogicPaused(false); // <-- Handled in Update()
 
                 _r_KeyWasDown = r_KeyDown;
                 return;
@@ -193,6 +140,7 @@ namespace GameScripts
                 API.Log("Returning to Main Menu...");
                 IsGamePaused = false;
                 // API.TogglePause();
+                API.EnableFileWatcher(true);
                 API.LoadScene(MAIN_MENU_SCENE_NAME); // 2. ...THEN load the new scene (this will clear everything)
                 _m_KeyWasDown = m_KeyDown;
                 return;
@@ -205,10 +153,13 @@ namespace GameScripts
             {
                 API.Log("Restarting scene...");
                 IsGamePaused = false;
-                API.SetGameLogicPaused(false);
-                // API.TogglePause();
-                // 2. Reload the current game scene
-                // (This replaces all scenes, including the pause menu)
+
+                // API.SetGameLogicPaused(false); // <-- Handled in Update()
+
+                // --- NEW (Fixes Bug 2) ---
+                // Re-enable hot-reload
+                API.EnableFileWatcher(true);
+
                 API.LoadScene(_currentSceneName);
 
                 _y_KeyWasDown = y_KeyDown;
@@ -244,8 +195,8 @@ namespace GameScripts
 
             API.UnloadPauseMenu(); // 1. Destroy the menu objects
             IsGamePaused = false;
-            API.SetGameLogicPaused(false);
-
+            //API.SetGameLogicPaused(false);
+            API.EnableFileWatcher(true);
             s_ActivePauseMenuInstance = null;
         }
     }

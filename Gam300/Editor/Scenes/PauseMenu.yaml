@@ -14091,6 +14091,7 @@ ENTITIES:
   - {}
   - {}
   - {}
+  - {}
   - InfoComponent:
       Parent: 0
       Name: Pause Scroll GUI
@@ -14105,6 +14106,8 @@ ENTITIES:
       color: [0.490196049, 0.468569756, 0.468569756, 1]
       uiOverlay: true
     PauseMenuTagComponent:
+      {}
+    DeactivatedComponent:
       {}
   - InfoComponent:
       Parent: 0
@@ -14121,6 +14124,8 @@ ENTITIES:
       uiOverlay: true
     PauseMenuTagComponent:
       {}
+    DeactivatedComponent:
+      {}
   - InfoComponent:
       Parent: 0
       Name: Restart Button GUI
@@ -14135,6 +14140,8 @@ ENTITIES:
       color: [0.470588237, 0.419607848, 0.419607848, 1]
       uiOverlay: true
     PauseMenuTagComponent:
+      {}
+    DeactivatedComponent:
       {}
   - InfoComponent:
       Parent: 0
@@ -14151,6 +14158,8 @@ ENTITIES:
       uiOverlay: true
     PauseMenuTagComponent:
       {}
+    DeactivatedComponent:
+      {}
   - InfoComponent:
       Parent: 0
       Name: Quit Button GUI
@@ -14166,6 +14175,8 @@ ENTITIES:
       uiOverlay: true
     PauseMenuTagComponent:
       {}
+    DeactivatedComponent:
+      {}
   - {}
   - {}
   - {}
@@ -14177,7 +14188,7 @@ ENTITIES:
   - {}
   - InfoComponent:
       Parent: 0
-      Name: Script
+      Name: Pause Menu Script
       UID: 10621914795983983461
     TransformComponent:
       Transform:
@@ -14190,6 +14201,9 @@ ENTITIES:
       ParamsJSON: "{}"
     PauseMenuTagComponent:
       {}
+    DeactivatedComponent:
+      {}
+  - {}
   - {}
   - {}
   - {}
