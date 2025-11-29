@@ -595,9 +595,16 @@ namespace Boom
                  if (spots >= MAX_SPOT_LIGHTS) return;
 
                  GPUSpotLight g{};
+
                  g.position_falloff = glm::vec4(tc.transform.translate, slc.light.fallOff);
-                 g.dir_cutoff = glm::vec4(glm::normalize(tc.transform.rotate), slc.light.cutOff);
+
+                 // world-space spot direction
+                 glm::vec3 forward =
+                     glm::normalize(glm::mat3(tc.transform.Matrix()) * glm::vec3(0.0f, 0.0f, -1.0f));
+
+                 g.dir_cutoff = glm::vec4(forward, slc.light.cutOff);
                  g.radiance_intensity = glm::vec4(slc.light.radiance, slc.light.intensity);
+
                  gpuSpots.push_back(g);
                  ++spots;
              });
