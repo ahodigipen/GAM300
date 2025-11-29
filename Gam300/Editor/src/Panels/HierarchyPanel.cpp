@@ -1,4 +1,5 @@
 #include "Panels/HierarchyPanel.h"
+#pragma warning(disable : 4834) // Disable [[nodiscard]] warnings for logging
 
 // keep header light; pull real types here
 #include "Editor.h"

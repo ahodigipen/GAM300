@@ -801,6 +801,9 @@ namespace Boom
         }
 
     public:
+        // Access to skeleton root
+        BOOM_INLINE const Joint& GetRoot() const { return m_Root; }
+
         // Extract skeleton as lines for debug visualization
         BOOM_INLINE std::vector<BoneLine> GetSkeletonLines() const
         {

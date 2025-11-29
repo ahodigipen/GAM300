@@ -397,6 +397,16 @@ namespace EditorUI {
                     ImGui::SetTooltip("Visualize bone hierarchy as colored lines");
                 }
 
+                ImGui::Checkbox("Show Physics Debug", &ctx->ShowPhysicsDebug);
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Show/hide physics collision debug lines");
+                }
+
+                ImGui::Checkbox("Show Mesh Debug", &ctx->ShowMeshDebug);
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Show/hide mesh edge debug lines (disable for clearer skeleton view)");
+                }
+
                 if (ctx->ShowSkeleton) {
                     ImGui::Indent(12.0f);
 
@@ -406,8 +416,28 @@ namespace EditorUI {
                     }
 
                     ImGui::ColorEdit4("Bone Color", &ctx->BoneColor.x);
+                    ImGui::ColorEdit4("Selected Bone Color", &ctx->SelectedBoneColor.x);
 
                     ImGui::SliderFloat("Line Width", &ctx->BoneLineWidth, 0.5f, 10.0f, "%.1f");
+
+                    ImGui::Spacing();
+                    ImGui::Separator();
+                    ImGui::Spacing();
+
+                    // Bone Selection Info
+                    if (!ctx->SelectedBoneName.empty())
+                    {
+                        ImGui::Text("Selected Bone: %s", ctx->SelectedBoneName.c_str());
+                        if (ImGui::Button("Clear Selection"))
+                        {
+                            ctx->SelectedBoneName.clear();
+                        }
+                    }
+                    else
+                    {
+                        ImGui::TextDisabled("No bone selected");
+                        ImGui::TextDisabled("(Click a bone in Skeleton Tree)");
+                    }
 
                     ImGui::Unindent(12.0f);
                 }

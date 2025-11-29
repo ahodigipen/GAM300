@@ -12,7 +12,7 @@
 #define GLM_DLL
 
 #pragma warning(push)
-#pragma warning(disable : 4101 4244 4267 4365 4458 4100 5054 4189 26819 6262 26495) //library warnings disable
+#pragma warning(disable : 4101 4244 4267 4365 4458 4100 5054 4189 26819 6262 26495 4834) //library warnings disable
 // add headers that you want to pre-compile here
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -118,13 +118,13 @@ BOOM_INLINE constexpr uint32_t TypeID()
 		BOOM_API std::shared_ptr<spdlog::logger>& GetLogger();
 	}
 
-	// Convenience macros — expand to no-ops when logging is disabled:
-	#define BOOM_TRACE(...) Boom::GetLogger()->trace(__VA_ARGS__)
-	#define BOOM_DEBUG(...) Boom::GetLogger()->debug(__VA_ARGS__)
-	#define BOOM_INFO(...)  Boom::GetLogger()->info(__VA_ARGS__)
-	#define BOOM_WARN(...)  Boom::GetLogger()->warn(__VA_ARGS__)
-	#define BOOM_ERROR(...) Boom::GetLogger()->error(__VA_ARGS__)
-	#define BOOM_FATAL(...) Boom::GetLogger()->critical(__VA_ARGS__)
+	// Convenience macros ï¿½ expand to no-ops when logging is disabled:
+	#define BOOM_TRACE(...) do { (void)Boom::GetLogger()->trace(__VA_ARGS__); } while(0)
+	#define BOOM_DEBUG(...) do { (void)Boom::GetLogger()->debug(__VA_ARGS__); } while(0)
+	#define BOOM_INFO(...)  do { (void)Boom::GetLogger()->info(__VA_ARGS__); } while(0)
+	#define BOOM_WARN(...)  do { (void)Boom::GetLogger()->warn(__VA_ARGS__); } while(0)
+	#define BOOM_ERROR(...) do { (void)Boom::GetLogger()->error(__VA_ARGS__); } while(0)
+	#define BOOM_FATAL(...) do { (void)Boom::GetLogger()->critical(__VA_ARGS__); } while(0)
 
 #else
 	#define BOOM_TRACE
