@@ -218,6 +218,8 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_SetSpriteAlpha(ulong handle, float alpha);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetSpriteTexture(ulong handle, string texturePath);
     }
 
     // ========= DELEGATES =========
@@ -687,6 +689,16 @@ namespace Boom
         public static void SetSpriteAlpha(ulong entity, float alpha)
         {
             Native.Boom_API_SetSpriteAlpha(entity, alpha);
+        }
+
+        public static void SetSpriteTexture(ulong entity, string texturePath)
+        {
+            if (!HasSprite(entity))
+            {
+                Log($"[WARNING] Entity {entity} does not have SpriteComponent! Cannot set texture.");
+                return;
+            }
+            Native.Boom_API_SetSpriteTexture(entity, texturePath);
         }
 
         // ===== GLFW key codes =====

@@ -1303,6 +1303,66 @@ namespace Boom {
         }
     }
 
+    static void ICALL_API_SetSpriteTexture(uint64_t handle, MonoString* texturePathMono)
+    {
+        if (!s_Ctx || !s_Ctx->app || !texturePathMono) return;
+
+        // 1. Get the AppInterface (which has the asset system)
+        // This is based on the m_App field in your DirectoryPanel.
+        auto* app = static_cast<Boom::AppInterface*>(s_Ctx->app);
+        if (!app) {
+            BOOM_WARN("[ScriptBinding] SetSpriteTexture: AppInterface is null.");
+            return;
+        }
+
+        // 2. Get the entity and check for SpriteComponent
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) {
+            BOOM_WARN("[ScriptBinding] SetSpriteTexture: Invalid entity handle");
+            return;
+        }
+        if (!s_Ctx->scene.any_of<SpriteComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetSpriteTexture: Entity has no SpriteComponent");
+            return;
+        }
+
+        // 3. Convert path from MonoString to std::filesystem::path
+        char* texturePathUTF8 = mono_string_to_utf8(texturePathMono);
+        std::string texturePathStr(texturePathUTF8);
+        mono_free(texturePathUTF8);
+        std::filesystem::path texturePath(texturePathStr);
+
+        // 4. Get the AssetID (hash) from the path
+        // This matches the logic in DirectoryPanel::RegisterAsset
+        AssetID textureAssetID = app->AssetIDFromPath(texturePath);
+        if (textureAssetID == EMPTY_ASSET) {
+            BOOM_WARN("[ScriptBinding] SetSpriteTexture: Could not generate valid AssetID for path '{}'", texturePathStr);
+            return;
+        }
+
+        // 5. Check if the asset is already in the registry. If not, add it.
+        // This logic is copied from your DirectoryPanel::RegisterAsset
+        auto& registry = app->GetAssetRegistry();
+        if (registry.Get<TextureAsset>(textureAssetID).uid == EMPTY_ASSET)
+        {
+            BOOM_INFO("[ScriptBinding] Texture '{}' not in registry. Adding it now...", texturePathStr);
+
+            // Call AddTexture, just like in your DirectoryPanel
+            registry.AddTexture(textureAssetID, texturePath.generic_string());
+
+            // Check if it was added successfully
+            if (registry.Get<TextureAsset>(textureAssetID).uid == EMPTY_ASSET) {
+                BOOM_WARN("[ScriptBinding] SetSpriteTexture: FAILED to load and add texture at path '{}'", texturePathStr);
+                return;
+            }
+        }
+
+        // 6. Get the component and set its textureID
+        // We assume SpriteComponent.textureID stores the AssetID (the hash)
+        auto& sprite = s_Ctx->scene.get<SpriteComponent>(e);
+        sprite.textureID = textureAssetID;
+    }
+
     // Global fade alpha (0 = transparent, 1 = black)
     float g_ScreenFadeAlpha = 0.0f;
 
@@ -1414,5 +1474,6 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetSpriteColor", (const void*)ICALL_API_SetSpriteColor);
         mono_add_internal_call("Boom.Native::Boom_API_GetSpriteAlpha", (const void*)ICALL_API_GetSpriteAlpha);
         mono_add_internal_call("Boom.Native::Boom_API_SetSpriteAlpha", (const void*)ICALL_API_SetSpriteAlpha);
+        mono_add_internal_call("Boom.Native::Boom_API_SetSpriteTexture", (const void*)ICALL_API_SetSpriteTexture);
     }
 }
