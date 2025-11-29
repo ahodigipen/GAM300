@@ -1511,7 +1511,7 @@ namespace EditorUI {
         if (selected.Has<DirectLightComponent>()) {
             auto& dl = selected.Get<DirectLightComponent>();
             DrawComponentSection(
-                "Point Light",
+                "Direct Light",
                 &dl,
                 [&](void* p) -> const xproperty::type::object*
                 {
@@ -1546,7 +1546,7 @@ namespace EditorUI {
         if (selected.Has<SpotLightComponent>()) {
             auto& sl = selected.Get<SpotLightComponent>();
             DrawComponentSection(
-                "Point Light",
+                "Spot Light",
                 &sl,
                 [&](void* p) -> const xproperty::type::object*
                 {
