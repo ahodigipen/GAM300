@@ -203,9 +203,22 @@ namespace Boom
         while (m_Context->window->PollEvents() && !m_ShouldExit)
         {
             std::shared_ptr<GLFWwindow> engineWindow = m_Context->window->Handle();
-            SoundEngine::Instance().Update();
 
-            // Select main camera
+            // Update FMOD listener from player entity 'Samurai' so 3D attenuation is correct
+            {
+                auto& scene = m_Context->scene;
+                entt::entity samurai = Boom::FindEntityByName(scene, "Samurai");
+                if (samurai != entt::null && scene.all_of<TransformComponent>(samurai)) {
+                    auto& t = scene.get<TransformComponent>(samurai).transform;
+                    glm::vec3 pos = t.translate;
+                    glm::vec3 vel = glm::vec3(0.0f, 0.0f, 0.0f);
+                    glm::quat q = glm::quat(glm::radians(t.rotate));
+                    glm::vec3 forward = q * glm::vec3(0.0f, 0.0f, 1.0f);
+                    glm::vec3 up = q * glm::vec3(0.0f, 1.0f, 0.0f);
+                    SoundEngine::Instance().SetListenerAttributes(pos, vel, forward, up);
+                }
+            }
+
             Camera3D* activeCam = nullptr;
             Transform3D camTransform{};
             EnttView<Entity, CameraComponent>([&](auto en, CameraComponent& comp) {
@@ -288,7 +301,10 @@ namespace Boom
             EnttView<Entity, CameraComponent>([this, &curMP, &prevMP, &dbgView, &dbgProj, &dbgCamPos](auto entity, CameraComponent& comp) {
                 Transform3D& transform{ entity.template Get<TransformComponent>().transform };
 
-                if (!m_IsInPlayMode) {
+                // ONLY apply flycam logic if NOT in play mode
+                if (!m_IsInPlayMode)
+                {
+                    // This is the flycam logic, only run in edit mode
                     transform.rotate.x += m_Context->window->camRot.x;
                     transform.rotate.y += m_Context->window->camRot.y;
                     glm::quat quat{ glm::radians(transform.rotate) };

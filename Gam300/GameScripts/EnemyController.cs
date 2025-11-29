@@ -21,7 +21,7 @@ namespace GameScripts
         private const string TURN_SOUND_PATH3 = "Resources/Audio/StatueTurn_03.wav";
         // Vision system
         private VisionComponent _vision;
-
+        //private static readonly Random _rng = new Random();
         // Detection tracking (prevent multiple damage per detection)
         private bool _hasDealtDamage = false;
 
@@ -115,10 +115,10 @@ namespace GameScripts
                         }
 
                         Vec3 enemyPos = API.GetPosition(Entity);
-                        API.Log($"[EnemyController] Playing turn sound {index} at {enemyPos} ({clipPath})");
+                      
 
                         API.PlaySoundAt(soundId, clipPath, enemyPos, false);
-                        API.SetSoundVolume(soundId, 0.5f);
+                        API.SetSoundVolume(soundId, 1.0f);
                     }
                     catch (Exception ex)
                     {
