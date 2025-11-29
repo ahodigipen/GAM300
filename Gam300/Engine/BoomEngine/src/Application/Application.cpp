@@ -8,30 +8,107 @@ namespace Boom
     void Application::RunContext(bool showFrame)
     {
         BOOM_INFO("[Application] RunContext started");
+
+        std::cout << "[RunContext] Loading scene MainMenu..." << std::endl;
+        std::cout.flush();
+
+        //LoadScene("level");
         LoadScene("MainMenu");
 
-        // --- Mono / scripting bootstrap ---
+        std::cout << "[RunContext] Scene loaded successfully" << std::endl;
+        std::cout.flush();
+
+        // -- LOADING in MONO --
         const std::string exeDir = GetExeDir();
-        std::filesystem::path repoRoot = std::filesystem::path(exeDir).parent_path().parent_path().parent_path();
-#if defined(_DEBUG)
-        const std::string asmDir = (repoRoot / "Gam300" / "GameScripts" / "bin" / "x64" / "Debug").string();
-#else
-        const std::string asmDir = (repoRoot / "Gam300" / "GameScripts" / "bin" / "x64" / "Release").string();
-#endif
-        if (!m_Context->scriptingSystem->Init(asmDir, m_Context)) {
-            BOOM_ERROR("[Scripting] Failed to initialize scripting system!");
+
+        std::cout << "[RunContext] Exe directory: " << exeDir << std::endl;
+        std::cout.flush();
+
+        // Detect if running in shipped/exported mode (Scripts folder next to exe)
+        // vs development mode (complex folder structure)
+        std::filesystem::path scriptsFolder = std::filesystem::path(exeDir) / "Scripts";
+        bool isShippedMode = std::filesystem::exists(scriptsFolder);
+
+        std::cout << "[RunContext] Shipped mode: " << (isShippedMode ? "YES" : "NO") << std::endl;
+        std::cout.flush();
+
+        std::string asmDir;
+        std::string monoBase;
+
+        if (isShippedMode)
+        {
+            // SHIPPED MODE: Everything is relative to exe
+            BOOM_INFO("[Application] Running in SHIPPED mode (exported game)");
+            asmDir = scriptsFolder.string();
+            monoBase = exeDir; // Mono DLLs are next to exe in shipped builds
         }
-        else {
+        else
+        {
+            // DEVELOPMENT MODE: Use repository structure
+            BOOM_INFO("[Application] Running in DEVELOPMENT mode");
+            std::filesystem::path repoRoot = std::filesystem::path(exeDir)
+                .parent_path()  // Debug -> x64
+                .parent_path()  // x64 -> Gam300
+                .parent_path(); // Gam300 -> GAM300
+
+            monoBase = (repoRoot / "mono").string();
+#if defined(_DEBUG)
+            asmDir = (repoRoot / "Gam300" / "GameScripts" / "bin" / "x64" / "Debug").string();
+#else
+            asmDir = (repoRoot / "Gam300" / "GameScripts" / "bin" / "x64" / "Release").string();
+#endif
+        }
+
+        BOOM_INFO("[Application] Script directory: {}", asmDir);
+        std::cout << "[RunContext] Script directory: " << asmDir << std::endl;
+        std::cout.flush();
+
+        std::cout << "[RunContext] Initializing scripting system..." << std::endl;
+        std::cout.flush();
+
+        if (!m_Context->scriptingSystem->Init(asmDir, m_Context))
+        {
+            BOOM_ERROR("[Scripting] Failed to initialize scripting system!");
+            std::cout << "[RunContext] ERROR: Failed to initialize scripting system!" << std::endl;
+            std::cout.flush();
+        }
+        else
+        {
+            std::cout << "[RunContext] Scripting system initialized" << std::endl;
+            std::cout.flush();
+
             std::string dllPath = (std::filesystem::path(asmDir) / "GameScripts.dll").string();
-            if (!m_Context->scriptingSystem->LoadScriptsDll(dllPath)) {
+
+            std::cout << "[RunContext] Loading GameScripts.dll from: " << dllPath << std::endl;
+            std::cout.flush();
+
+            if (!m_Context->scriptingSystem->LoadScriptsDll(dllPath))
+            {
                 BOOM_ERROR("[Scripting] Failed to load GameScripts.dll");
+                std::cout << "[RunContext] ERROR: Failed to load GameScripts.dll" << std::endl;
+                std::cout.flush();
             }
-            else {
+            else
+            {
+                std::cout << "[RunContext] GameScripts.dll loaded successfully" << std::endl;
+                std::cout.flush();
+
+                std::cout << "[RunContext] Enabling auto hot reload..." << std::endl;
+                std::cout.flush();
+
+                // Auto enabling of hot reload
                 m_Context->scriptingSystem->EnableAutoHotReload(true);
+
+                std::cout << "[RunContext] Calling GameScripts Entry:Start()..." << std::endl;
+                std::cout.flush();
+
                 if (!m_Context->scriptingSystem->CallStart())
                     BOOM_ERROR("[Scripting] GameScripts.Entry:Start() failed");
                 else
                     BOOM_INFO("[Scripting] GameScripts entry invoked.");
+
+                std::cout << "[RunContext] Entry:Start() completed, creating script instances..." << std::endl;
+                std::cout.flush();
 
                 int scriptsCreated = 0;
                 auto& registry = m_Context->scene;
@@ -47,22 +124,79 @@ namespace Boom
                 if (scriptsCreated > 0) {
                     BOOM_INFO("[Scripting] Created {} script instances after scene load", scriptsCreated);
                 }
+
+                std::cout << "[RunContext] Script instances created: " << scriptsCreated << std::endl;
+                std::cout.flush();
             }
         }
 
-        // Camera controller
-        CameraController camera(m_Context->window.get());
+        std::cout << "[RunContext] Scripting initialization complete" << std::endl;
+        std::cout.flush();
 
-        // Initialize skybox (once)
-        EnttView<Entity, SkyboxComponent>([this](auto, auto& comp) {
-            SkyboxAsset& skybox{ m_Context->assets->Get<SkyboxAsset>(comp.skyboxID) };
-            m_Context->renderer->InitSkybox(skybox.data, skybox.envMap, skybox.size);
-            return;
+        std::cout << "[RunContext] Creating camera controller..." << std::endl;
+        std::cout.flush();
+
+       // InitNavRuntime();
+        //EnsureNinjaSeeksSamurai();
+        CameraController camera(
+            m_Context->window.get()
+        );
+
+        std::cout << "[RunContext] Camera controller created, initializing skybox..." << std::endl;
+        std::cout.flush();
+
+        ////init skybox
+        try {
+            EnttView<Entity, SkyboxComponent>([this](auto, auto& comp) {
+                std::cout << "[RunContext] Found skybox component with ID: " << comp.skyboxID << std::endl;
+                std::cout.flush();
+
+                SkyboxAsset& skybox{ m_Context->assets->Get<SkyboxAsset>(comp.skyboxID) };
+
+                std::cout << "[RunContext] Skybox asset retrieved" << std::endl;
+                std::cout << "[RunContext]   - Asset name: " << skybox.name << std::endl;
+                std::cout << "[RunContext]   - Asset source: " << skybox.source << std::endl;
+                std::cout << "[RunContext]   - Skybox size: " << skybox.size << std::endl;
+                std::cout << "[RunContext]   - EnvMap texture valid: " << (skybox.envMap ? "YES" : "NO") << std::endl;
+                std::cout.flush();
+
+                if (!skybox.envMap) {
+                    std::cout << "[RunContext] ERROR: Skybox envMap texture is null!" << std::endl;
+                    std::cout.flush();
+                    return;
+                }
+
+                std::cout << "[RunContext] Calling renderer->InitSkybox..." << std::endl;
+                std::cout.flush();
+
+                m_Context->renderer->InitSkybox(skybox.data, skybox.envMap, skybox.size);
+
+                std::cout << "[RunContext] InitSkybox completed successfully" << std::endl;
+                std::cout.flush();
+
+                return; //should stop after one skybox rendered
             });
+        }
+        catch (const std::exception& e) {
+            std::cout << "[RunContext] ERROR: Skybox initialization failed: " << e.what() << std::endl;
+            std::cout.flush();
+            BOOM_ERROR("[Application] Skybox initialization failed: {}", e.what());
+        }
+
+        std::cout << "[RunContext] Skybox initialization complete, creating debug lines shader..." << std::endl;
+        std::cout.flush();
 
         m_DebugLinesShader = std::make_unique<Boom::DebugLinesShader>("debug_lines.glsl");
+
+        std::cout << "[RunContext] Debug lines shader created, enabling physics debug..." << std::endl;
+        std::cout.flush();
+
         m_Context->physics->EnableDebugVisualization(m_PhysDebugViz, 1.0f);
 
+        std::cout << "[RunContext] Physics debug enabled, entering main game loop..." << std::endl;
+        std::cout.flush();
+
+        //temp input for mouse motion
         glm::dvec2 curMP{};
         glm::dvec2 prevMP{};
 
