@@ -433,6 +433,39 @@ namespace Boom
                 m_Nav->DrawDetourNavMesh_Query(*m_DebugLinesShader, dbgView, dbgProj, dbgCamPos, navDrawRadius);
             }
 
+            // Skeleton visualization
+            if (m_Context->ShowSkeleton && m_DebugLinesShader)
+            {
+                std::vector<Boom::LineVert> skeletonVerts;
+                skeletonVerts.reserve(200); // Typical skeleton ~50-100 bones = 100-200 verts
+
+                EnttView<Entity, AnimatorComponent, TransformComponent>([this, &skeletonVerts](auto entity, AnimatorComponent& animComp, TransformComponent& tc) {
+                    if (!animComp.animator) return;
+
+                    // Get skeleton lines in model space
+                    auto boneLines = animComp.animator->GetSkeletonLines();
+
+                    // Transform to world space using entity transform
+                    glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+
+                    for (const auto& bone : boneLines)
+                    {
+                        // Transform bone positions to world space
+                        glm::vec3 worldStart = glm::vec3(worldMatrix * glm::vec4(bone.start, 1.0f));
+                        glm::vec3 worldEnd = glm::vec3(worldMatrix * glm::vec4(bone.end, 1.0f));
+
+                        // Use context bone color
+                        skeletonVerts.push_back({ worldStart, m_Context->BoneColor });
+                        skeletonVerts.push_back({ worldEnd, m_Context->BoneColor });
+                    }
+                });
+
+                if (!skeletonVerts.empty())
+                {
+                    m_DebugLinesShader->Draw(dbgView, dbgProj, skeletonVerts, m_Context->BoneLineWidth);
+                }
+            }
+
             //skybox ecs (should be drawn at the end)
             EnttView<Entity, SkyboxComponent>([this](auto entity, SkyboxComponent& comp) {
                 Transform3D& transform{ entity.template Get<TransformComponent>().transform };
