@@ -34,6 +34,9 @@ BOOM_API bool SoundEngine::Init() {
         return false;
     }
 
+    // doppler scale = 1.0, distance factor = 1.0 (game units per meter), rolloff scale = 1.0
+    mSystem->set3DSettings(1.0f, 1.0f, 1.0f);
+
     result = mSystem->getMasterChannelGroup(&sMasterGroup);
     if (!FMODCheck(result, "getMasterChannelGroup")) return false;
 
@@ -133,13 +136,63 @@ BOOM_API float SoundEngine::GetGroupVolume(const std::string& groupName) const
 BOOM_API void SoundEngine::Update() {
     if (mSystem) mSystem->update();
 
+    // Optional debug: print listener + channel 3D info
+    FMOD_VECTOR listenerPos = {0,0,0};
+    if (mDebug3D && mSystem) {
+        FMOD_VECTOR lpos, lvel, lforward, lup;
+        if (mSystem->get3DListenerAttributes(0, &lpos, &lvel, &lforward, &lup) == FMOD_OK) {
+            listenerPos = lpos;
+            std::cerr << "[SoundEngine] Listener pos(" << lpos.x << "," << lpos.y << "," << lpos.z << ") forward(" << lforward.x << "," << lforward.y << "," << lforward.z << ")\n";
+        } else {
+            std::cerr << "[SoundEngine] Failed to get listener attributes\n";
+        }
+    }
+
     for (auto it = mChannels.begin(); it != mChannels.end(); ) 
     {
         bool isPlaying = false;
-        if (it->second) { it->second->isPlaying(&isPlaying); }
+        FMOD::Channel* ch = it->second;
+        if (ch) { ch->isPlaying(&isPlaying); }
+
+        if (mDebug3D && ch) {
+            FMOD_VECTOR pos = {0}, vel = {0};
+            FMOD_RESULT r = ch->get3DAttributes(&pos, &vel);
+            float vol = 0.0f;
+            ch->getVolume(&vol);
+
+            // Get associated sound min/max if available
+            FMOD::Sound* curSound = nullptr;
+            float minDist = 0.0f, maxDist = 0.0f;
+            if (ch->getCurrentSound(&curSound) == FMOD_OK && curSound) {
+                if (curSound->get3DMinMaxDistance(&minDist, &maxDist) != FMOD_OK) {
+                    minDist = 0.0f; maxDist = 0.0f;
+                }
+            }
+
+            // Compute simple distance
+            float dx = pos.x - listenerPos.x;
+            float dy = pos.y - listenerPos.y;
+            float dz = pos.z - listenerPos.z;
+            float distance = std::sqrt(dx*dx + dy*dy + dz*dz);
+
+            // Estimate attenuation (linear between min/max)
+            float estimated = vol;
+            if (maxDist > minDist && maxDist > 0.0f) {
+                if (distance <= minDist) estimated = 1.0f;
+                else if (distance >= maxDist) estimated = 0.0f;
+                else estimated = 1.0f - ((distance - minDist) / (maxDist - minDist));
+            }
+
+            // Apply manual attenuation to preserve group/master volumes if FMOD rolloff not applied
+            auto baseIt = mChannelBaseVolume.find(it->first);
+            float baseVol = (baseIt != mChannelBaseVolume.end()) ? baseIt->second : 1.0f;
+            float appliedVol = baseVol * estimated;
+            ch->setVolume(appliedVol);
+
+            std::cerr << "[SoundEngine] Channel '" << it->first << "' pos(" << pos.x << "," << pos.y << "," << pos.z << ") dist=" << distance << " min=" << minDist << " max=" << maxDist << " vol=" << vol << " est=" << estimated << " playing=" << isPlaying << "\n";
+        }
 
         if (!isPlaying) { it = mChannels.erase(it); } 
-
         else { ++it; }
 	}
 }
@@ -166,6 +219,7 @@ BOOM_API void SoundEngine::StopAll()
 		if (ch) ch->stop();
 	}
 	mChannels.clear();
+    mChannelBaseVolume.clear();
 
 	// Stop master group
 	if (sMasterGroup) sMasterGroup->stop();
@@ -233,7 +287,9 @@ BOOM_API void SoundEngine::PlaySound(const std::string& name, const std::string&
     }
 
     if (mSounds.find(name) == mSounds.end()) {
-        FMOD_MODE mode = loop ? FMOD_LOOP_NORMAL : FMOD_DEFAULT | FMOD_2D;
+        // Make explicit mode composition so 2D / looping flags are correct
+        FMOD_MODE mode = static_cast<FMOD_MODE>(FMOD_DEFAULT | FMOD_2D);
+        mode = static_cast<FMOD_MODE>(mode | (loop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF));
         FMOD::Sound* sound = nullptr;
 
         FMOD_RESULT result = mSystem->createSound(filePath.c_str(), mode, nullptr, &sound);
@@ -263,6 +319,8 @@ BOOM_API void SoundEngine::PlaySound(const std::string& name, const std::string&
         channel->setVolume(1.0f);
         channel->setPaused(false);
         mChannels[name] = channel;
+        // remember base volume
+        mChannelBaseVolume[name] = 1.0f;
     }
 }
 
@@ -276,7 +334,8 @@ BOOM_API void SoundEngine::PlaySound(const std::string& name, const std::string&
     }
 
     if (mSounds.find(name) == mSounds.end()) {
-        FMOD_MODE mode = loop ? FMOD_LOOP_NORMAL : FMOD_DEFAULT | FMOD_2D;
+        FMOD_MODE mode = static_cast<FMOD_MODE>(FMOD_DEFAULT | FMOD_2D);
+        mode = static_cast<FMOD_MODE>(mode | (loop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF));
         FMOD::Sound* sound = nullptr;
 
         FMOD_RESULT result = mSystem->createSound(filePath.c_str(), mode, nullptr, &sound);
@@ -312,6 +371,8 @@ BOOM_API void SoundEngine::PlaySound(const std::string& name, const std::string&
         channel->setPaused(false);
         std::scoped_lock lock(mMutex);
         mChannels[name] = channel;
+        // remember base volume
+        mChannelBaseVolume[name] = 1.0f;
     }
 }
 
@@ -323,12 +384,17 @@ BOOM_API void SoundEngine::StopSound(const std::string& name) {
         if (it->second) it->second->stop();
         mChannels.erase(it);
     }
+    std::scoped_lock lock(mMutex);
+    mChannelBaseVolume.erase(name);
 }
 
 BOOM_API void SoundEngine::SetVolume(const std::string& name, float volume) {
     auto it = mChannels.find(name);
 
     if (it != mChannels.end() && it->second) { it->second->setVolume(volume); }
+    // remember base volume
+    std::scoped_lock lock(mMutex);
+    mChannelBaseVolume[name] = volume;
 }
 
 BOOM_API bool SoundEngine::IsPlaying(const std::string& name) const {
@@ -426,26 +492,79 @@ BOOM_API void SoundEngine::PlaySoundAt(const std::string& name, const std::strin
 
     std::cout << "[SoundEngine] PlaySoundAt: " << name << " -> " << filePath << " pos(" << position.x << "," << position.y << "," << position.z << ")\n";
 
+    // Use a distinct key for 3D sounds so 2D and 3D variants don't collide.
+    const std::string soundKey = name + "|3D";
+
     // Ensure sound loaded (3D mode)
     {
         std::scoped_lock lock(mMutex);
-        if (mSounds.find(name) == mSounds.end()) {
-            FMOD_MODE mode = static_cast<FMOD_MODE>((loop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF) | FMOD_3D | FMOD_DEFAULT);
+        auto it = mSounds.find(soundKey);
+        bool needCreate = (it == mSounds.end());
+
+        if (!needCreate) {
+            // Verify it's actually a 3D sound
+            FMOD_MODE currentMode = FMOD_DEFAULT;
+            if (it->second) {
+                if (it->second->getMode(&currentMode) == FMOD_OK) {
+                    if (!(currentMode & FMOD_3D)) {
+                        // release and mark for re-create
+                        it->second->release();
+                        mSounds.erase(it);
+                        needCreate = true;
+                    }
+                }
+            }
+        }
+
+        if (needCreate) {
+            // Use linear rolloff so attenuation follows min/max distances predictably
+            FMOD_MODE mode = static_cast<FMOD_MODE>(FMOD_DEFAULT | FMOD_3D | FMOD_3D_LINEARROLLOFF);
+            mode = static_cast<FMOD_MODE>(mode | (loop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF));
             FMOD::Sound* sound = nullptr;
             FMOD_RESULT result = mSystem->createSound(filePath.c_str(), mode, nullptr, &sound);
-            if (result != FMOD_OK) {
+            if (result != FMOD_OK || !sound) {
                 std::cerr << "FMOD failed to load (3D) " << filePath << " error: " << result << std::endl;
                 return;
             }
-            mSounds[name] = sound;
+
+            // Set reasonable 3D min/max distances so FMOD applies attenuation over game-appropriate ranges.
+            sound->set3DMinMaxDistance(1.0f, 100.0f);
+
+            mSounds[soundKey] = sound;
+
+            // Debug: verify mode
+            FMOD_MODE verifyMode = FMOD_DEFAULT;
+            if (sound->getMode(&verifyMode) == FMOD_OK) {
+                if (verifyMode & FMOD_3D) std::cerr << "[SoundEngine] Loaded sound as 3D: " << soundKey << "\n";
+                else std::cerr << "[SoundEngine] WARNING: sound not 3D after create: " << soundKey << "\n";
+            }
         }
     }
 
     FMOD::Channel* channel = nullptr;
-    FMOD_RESULT result = mSystem->playSound(mSounds[name], nullptr, true, &channel); // start paused to set 3D attrs
-    if (result != FMOD_OK) {
+    FMOD_RESULT result = mSystem->playSound(mSounds[soundKey], nullptr, true, &channel); // start paused to set 3D attrs
+    if (result != FMOD_OK || !channel) {
         std::cerr << "FMOD failed to play (3D) " << name << " error: " << result << std::endl;
         return;
+    }
+
+    // Ensure channel mode includes 3D. Some drivers may ignore sound flags; force on channel if needed.
+    {
+        FMOD_MODE chMode = 0;
+        if (channel->getMode(&chMode) == FMOD_OK) {
+            if (!(chMode & FMOD_3D)) {
+                FMOD_MODE newMode = static_cast<FMOD_MODE>(chMode | FMOD_3D);
+                // Also ensure linear rolloff is enabled on the channel so distance attenuation uses the expected curve
+                newMode = static_cast<FMOD_MODE>(newMode | FMOD_3D_LINEARROLLOFF);
+                if (channel->setMode(newMode) != FMOD_OK) {
+                    std::cerr << "[SoundEngine] Warning: failed to set channel 3D mode for " << name << "\n";
+                } else {
+                    std::cerr << "[SoundEngine] Forcing channel to 3D mode for " << name << "\n";
+                }
+            }
+        }
+        // Ensure 3D level enabled
+        channel->set3DLevel(1.0f);
     }
 
     // route to group: fallback heuristic (loop->Music, else SFX) but prefer named groups if present
@@ -461,11 +580,76 @@ BOOM_API void SoundEngine::PlaySoundAt(const std::string& name, const std::strin
     FMOD_VECTOR fpos = { position.x, position.y, position.z };
     FMOD_VECTOR fvel = { 0.0f, 0.0f, 0.0f };
     if (channel) {
-        channel->set3DAttributes(&fpos, &fvel);
+        FMOD_RESULT r = channel->set3DAttributes(&fpos, &fvel);
+        if (r != FMOD_OK) {
+            std::cerr << "[SoundEngine] set3DAttributes failed for " << name << " result=" << r << std::endl;
+        }
+
+        // Debug: check channel mode to ensure it's 3D-capable
+        FMOD_MODE chMode = FMOD_DEFAULT;
+        if (channel->getMode(&chMode) == FMOD_OK) {
+            if (!(chMode & FMOD_3D)) {
+                std::cerr << "[SoundEngine] WARNING: Channel not 3D for " << name << "\n";
+            }
+        }
+
+        // Make attenuation more obvious for testing by tightening max distance
+        // (change back to larger values in production)
+        auto itSound = mSounds.find(soundKey);
+        if (itSound != mSounds.end() && itSound->second) {
+            itSound->second->set3DMinMaxDistance(0.5f, 20.0f);
+        }
+
+        // Also set per-channel min/max to ensure attenuation is applied even if sound defaults are ignored
+        if (channel->set3DMinMaxDistance(0.5f, 20.0f) != FMOD_OK) {
+            std::cerr << "[SoundEngine] Warning: failed to set channel 3D min/max distance for " << name << "\n";
+        }
+
         channel->setVolume(1.0f);
         channel->setPaused(false);
         std::scoped_lock lock(mMutex);
         mChannels[name] = channel;
+
+        // Manual attenuation fallback: if listener isn't being updated elsewhere, apply attenuation based on listener position
+        FMOD_VECTOR listenerPos = {0.0f, 0.0f, 0.0f};
+        FMOD_VECTOR listenerVel = {0.0f, 0.0f, 0.0f};
+        FMOD_VECTOR listenerForward = {0.0f, 0.0f, 1.0f};
+        FMOD_VECTOR listenerUp = {0.0f, 1.0f, 0.0f};
+        if (mSystem) {
+            if (mSystem->get3DListenerAttributes(0, &listenerPos, &listenerVel, &listenerForward, &listenerUp) != FMOD_OK) {
+                // leave at origin
+            }
+        }
+
+        float minDist = 0.5f, maxDist = 20.0f;
+        auto itSound2 = mSounds.find(soundKey);
+        if (itSound2 != mSounds.end() && itSound2->second) {
+            float smin = 0.0f, smax = 0.0f;
+            if (itSound2->second->get3DMinMaxDistance(&smin, &smax) == FMOD_OK) {
+                if (smin > 0.0f) minDist = smin;
+                if (smax > 0.0f) maxDist = smax;
+            }
+        }
+
+        // compute distance
+        float dx = fpos.x - listenerPos.x;
+        float dy = fpos.y - listenerPos.y;
+        float dz = fpos.z - listenerPos.z;
+        float distance = std::sqrt(dx*dx + dy*dy + dz*dz);
+
+        float atten = 1.0f;
+        if (maxDist > minDist && maxDist > 0.0f) {
+            if (distance <= minDist) atten = 1.0f;
+            else if (distance >= maxDist) atten = 0.0f;
+            else atten = 1.0f - ((distance - minDist) / (maxDist - minDist));
+        }
+
+        // Apply attenuation to channel volume (preserve any group/master volume influence)
+        if (channel) {
+            float baseVol = 1.0f;
+            channel->getVolume(&baseVol);
+            channel->setVolume(baseVol * atten);
+        }
     }
 }
 
