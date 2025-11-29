@@ -1090,87 +1090,27 @@ namespace Boom {
         entt::entity entity = static_cast<entt::entity>(static_cast<uint32_t>(handle));
         if (entity == entt::null || !s_Ctx->scene.valid(entity)) return false;
 
-        // --- 1. Get Entity Transform ---
-        // We ONLY need the transform. The ColliderComponent is no longer used.
         const auto* transformComp = s_Ctx->scene.try_get<Boom::TransformComponent>(entity);
-
-        // We *must* have a transform to be clickable
         if (!transformComp) return false;
 
-        // --- 2. Get 8 Local *Unit* Corners (based on Center-Left Pivot) ---
-        // This unit box defines the "shape" of the entity relative to its gizmo.
-        // X: 0.0 (at pivot) to 1.0 (full width)
-        // Y: -0.5 (bottom) to 0.5 (top)
-        // Z: -0.5 (back) to 0.5 (front)
-        glm::vec3 min(-0.5f, -0.5f, -0.5f);
-        glm::vec3 max(0.5f, 0.5f, 0.5f);
-
-
-
-        // The 8 unit corners of our box
-        std::vector<glm::vec3> unitCorners = {
-            glm::vec3(min.x, min.y, min.z), glm::vec3(max.x, min.y, min.z),
-            glm::vec3(min.x, max.y, min.z), glm::vec3(max.x, max.y, min.z),
-            glm::vec3(min.x, min.y, max.z), glm::vec3(max.x, min.y, max.z),
-            glm::vec3(min.x, max.y, max.z), glm::vec3(max.x, max.y, max.z)
-        };
-
-        // --- 3. Get Camera, Matrices, Viewport ---
-        // (This section is unchanged from your original)
-        Camera3D* mainCam = nullptr;
-        Transform3D* mainCamTrans = nullptr;
-        auto view = s_Ctx->scene.view<CameraComponent>();
-        for (auto e : view) {
-            auto& cc = view.get<CameraComponent>(e);
-            if (cc.camera.cameraType == Camera3D::CameraType::Main) {
-                mainCam = &cc.camera;
-                mainCamTrans = &s_Ctx->scene.get<TransformComponent>(e).transform;
-                break;
-            }
-        }
-        if (!mainCam || !mainCamTrans) return false;
-
         auto* win = s_Ctx->window.get();
-        float vX = win->GetViewportX(), vY = win->GetViewportY(), vW = win->GetViewportW(), vH = win->GetViewportH();
-        if (vW <= 1.0f || vH <= 1.0f) { // Standalone build fix
-            vX = 0.0f; vY = 0.0f; vW = (float)win->getWidth(); vH = (float)win->getHeight();
-        }
-        glm::vec4 viewportRect = glm::vec4(vX, vY, vW, vH);
-        glm::mat4 viewMat = mainCam->View(*mainCamTrans);
-        glm::mat4 projMat = mainCam->Projection(vW / vH);
+        float vW = win->GetViewportW();
+        float vH = win->GetViewportH();
 
-        // --- 4. Project all 8 Corners & Find 2D Bounding Box (SIMPLIFIED) ---
+        // convert transform from ndc to screen pos
+        glm::vec2 pos{ transformComp->transform.translate };
+        pos.x = ((pos.x + 1.f) * 0.5f) * vW;
+        pos.y = vH - ((pos.y + 1.f) * 0.5f) * vH;
+        glm::vec2 scale{ transformComp->transform.scale.x * vW,  transformComp->transform.scale.y * vH };
 
-        // The entity's transform matrix is now the *only* matrix we need.
-        // It contains the Position, Rotation, and Scale (which IS the size).
-        glm::mat4 worldMatrix = TransformToMatrix(transformComp->transform);
+        //get corners of box
+        glm::vec2 min{ pos - scale * 0.5f };
+        glm::vec2 max{ pos + scale * 0.5f };
+        glm::vec2 mouse{ mouseX, mouseY };
 
-        glm::vec2 min2D(FLT_MAX), max2D(-FLT_MAX);
-        bool onePointInFront = false;
+        if (mouse.x < min.x || mouse.x > max.x || mouse.y < min.y || mouse.y > max.y) return false;
 
-        // Loop over the UNIT corners
-        for (const auto& unitCorner : unitCorners) {
-            // Transform the unit corner directly to world space
-            glm::vec3 worldCorner = worldMatrix * glm::vec4(unitCorner, 1.0f);
-            glm::vec3 screenPos = glm::project(worldCorner, viewMat, projMat, viewportRect);
-
-            // Ignore points behind the camera (they wrap around)
-            if (screenPos.z > 1.0f || screenPos.z < 0.0f) {
-                continue;
-            }
-
-            onePointInFront = true;
-            min2D.x = glm::min(min2D.x, screenPos.x);
-            min2D.y = glm::min(min2D.y, screenPos.y);
-            max2D.x = glm::max(max2D.x, screenPos.x);
-            max2D.y = glm::max(max2D.y, screenPos.y);
-        }
-
-        // If all 8 points were behind the camera, we're not clicking it
-        if (!onePointInFront) return false;
-
-        return (mouseX > min2D.x && mouseX < max2D.x &&
-            mouseY > min2D.y && mouseY < max2D.y);
+        return true;
     }
 
     // Add this function to clean up all trigger callbacks when Mono domain is unloaded
