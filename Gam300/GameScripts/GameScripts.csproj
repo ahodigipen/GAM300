@@ -47,11 +47,8 @@
     <Compile Include="AttackSquash.cs" />
     <Compile Include="CharacterAnimation.cs" />
     <Compile Include="EnemyAI.cs" />
-<<<<<<< Updated upstream
     <Compile Include="HowToPlayMenu.cs" />
-=======
     <Compile Include="CrouchTriggerText.cs" />
->>>>>>> Stashed changes
     <Compile Include="PatrolEnemyController.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="PauseMenu.cs" />
