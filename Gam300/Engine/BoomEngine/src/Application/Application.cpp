@@ -136,8 +136,8 @@ namespace Boom
         std::cout << "[RunContext] Creating camera controller..." << std::endl;
         std::cout.flush();
 
-       // InitNavRuntime();
-        //EnsureNinjaSeeksSamurai();
+        // InitNavRuntime();
+         //EnsureNinjaSeeksSamurai();
         CameraController camera(
             m_Context->window.get()
         );
@@ -175,7 +175,7 @@ namespace Boom
                 std::cout.flush();
 
                 return; //should stop after one skybox rendered
-            });
+                });
         }
         catch (const std::exception& e) {
             std::cout << "[RunContext] ERROR: Skybox initialization failed: " << e.what() << std::endl;
