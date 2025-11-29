@@ -193,7 +193,7 @@ namespace Boom
         internal static extern void Boom_API_SetRotationY(ulong handle, float yawDegrees);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern bool LinecastIgnoreBoth(Vec3 from, Vec3 to, ulong ignoreEntity1, ulong ignoreEntity2);
+        internal static extern bool Boom_API_LinecastIgnoreBoth(Vec3 from, Vec3 to, ulong ignoreEntity1, ulong ignoreEntity2);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_SetGameLogicPaused(bool paused);
@@ -623,7 +623,7 @@ namespace Boom
 
         public static bool LinecastIgnoreBoth(Vec3 from, Vec3 to, ulong ignoreEntity1, ulong ignoreEntity2)
         {
-            return Native.LinecastIgnoreBoth(from, to, ignoreEntity1, ignoreEntity2);
+            return Native.Boom_API_LinecastIgnoreBoth(from, to, ignoreEntity1, ignoreEntity2);
         }
 
         // Raycasting

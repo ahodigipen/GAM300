@@ -9,11 +9,17 @@ namespace Boom
     {
         BOOM_INFO("[Application] RunContext started");
 
+        m_IsInPlayMode = true;
+        m_AppState = ApplicationState::RUNNING;
+
         std::cout << "[RunContext] Loading scene MainMenu..." << std::endl;
         std::cout.flush();
 
+
+
         //LoadScene("level");
         LoadScene("MainMenu");
+        
 
         std::cout << "[RunContext] Scene loaded successfully" << std::endl;
         std::cout.flush();
@@ -41,6 +47,8 @@ namespace Boom
             BOOM_INFO("[Application] Running in SHIPPED mode (exported game)");
             asmDir = scriptsFolder.string();
             monoBase = exeDir; // Mono DLLs are next to exe in shipped builds
+
+
         }
         else
         {
@@ -51,17 +59,30 @@ namespace Boom
                 .parent_path()  // x64 -> Gam300
                 .parent_path(); // Gam300 -> GAM300
 
+
             monoBase = (repoRoot / "mono").string();
 #if defined(_DEBUG)
             asmDir = (repoRoot / "Gam300" / "GameScripts" / "bin" / "x64" / "Debug").string();
 #else
             asmDir = (repoRoot / "Gam300" / "GameScripts" / "bin" / "x64" / "Release").string();
 #endif
+
+            if (m_Context->scriptingSystem) {
+                m_Context->scriptingSystem->EnableAutoHotReload(true);
+            }
+
+            std::cout << "[RunContext] Script directory: " << asmDir << std::endl;
+            std::cout << "[RunContext] Mono base: " << monoBase << std::endl;
+            std::cout.flush();
         }
 
-        BOOM_INFO("[Application] Script directory: {}", asmDir);
-        std::cout << "[RunContext] Script directory: " << asmDir << std::endl;
-        std::cout.flush();
+
+
+        if (!std::filesystem::exists(asmDir)) {
+            BOOM_ERROR("[Scripting] Script directory does not exist: {}", asmDir);
+            std::cout << "[RunContext] ERROR: Script directory not found!" << std::endl;
+            std::cout.flush();
+        }
 
         std::cout << "[RunContext] Initializing scripting system..." << std::endl;
         std::cout.flush();
@@ -74,6 +95,18 @@ namespace Boom
         }
         else
         {
+
+            if (isShippedMode) {
+                m_Context->scriptingSystem->EnableAutoHotReload(false);
+                BOOM_INFO("[Scripting] Hot-reload DISABLED (shipped mode)");
+            }
+            else {
+                m_Context->scriptingSystem->EnableAutoHotReload(true);
+                BOOM_INFO("[Scripting] Hot-reload ENABLED (development mode)");
+            }
+
+
+            RegisterScriptInternalCalls(m_Context);
             std::cout << "[RunContext] Scripting system initialized" << std::endl;
             std::cout.flush();
 
@@ -93,40 +126,27 @@ namespace Boom
                 std::cout << "[RunContext] GameScripts.dll loaded successfully" << std::endl;
                 std::cout.flush();
 
-                std::cout << "[RunContext] Enabling auto hot reload..." << std::endl;
-                std::cout.flush();
-
-                // Auto enabling of hot reload
-                m_Context->scriptingSystem->EnableAutoHotReload(true);
-
                 std::cout << "[RunContext] Calling GameScripts Entry:Start()..." << std::endl;
                 std::cout.flush();
 
-                if (!m_Context->scriptingSystem->CallStart())
+                if (!m_Context->scriptingSystem->CallStart()) {
                     BOOM_ERROR("[Scripting] GameScripts.Entry:Start() failed");
-                else
-                    BOOM_INFO("[Scripting] GameScripts entry invoked.");
-
-                std::cout << "[RunContext] Entry:Start() completed, creating script instances..." << std::endl;
-                std::cout.flush();
-
-                int scriptsCreated = 0;
-                auto& registry = m_Context->scene;
-                auto scriptView = registry.view<Boom::ScriptComponent>();
-                for (auto entity : scriptView) {
-                    auto& sc = scriptView.get<Boom::ScriptComponent>(entity);
-                    if (m_Context->scriptingSystem->RecreateForEntity(entity, sc)) {
-                        scriptsCreated++;
-                        BOOM_INFO("[Scripting] Created instance for entity {} (type: {})",
-                            static_cast<uint32_t>(entity), sc.TypeName);
+                }
+                else {
+                    int scriptsCreated = 0;
+                    auto& registry = m_Context->scene;
+                    auto scriptView = registry.view<Boom::ScriptComponent>();
+                    for (auto entity : scriptView) {
+                        auto& sc = scriptView.get<Boom::ScriptComponent>(entity);
+                        if (m_Context->scriptingSystem->RecreateForEntity(entity, sc)) {
+                            scriptsCreated++;
+                        }
                     }
+                    BOOM_INFO("[Scripting] Created {} script instances", scriptsCreated);
+                    std::cout << "[RunContext] Script instances created: " << scriptsCreated << std::endl;
+                    std::cout.flush();
                 }
-                if (scriptsCreated > 0) {
-                    BOOM_INFO("[Scripting] Created {} script instances after scene load", scriptsCreated);
-                }
-
-                std::cout << "[RunContext] Script instances created: " << scriptsCreated << std::endl;
-                std::cout.flush();
+                
             }
         }
 

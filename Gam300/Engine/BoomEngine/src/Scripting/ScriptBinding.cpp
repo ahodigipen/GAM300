@@ -1477,7 +1477,7 @@ namespace Boom {
 
         mono_add_internal_call("Boom.Native::Boom_API_SetRotationY", (const void*)ICALL_API_SetRotationY);
     
-        mono_add_internal_call("Boom.Native::LinecastIgnoreBoth", (const void*)ICALL_API_LinecastIgnoreBoth);
+        mono_add_internal_call("Boom.Native::Boom_API_LinecastIgnoreBoth",(const void*)ICALL_API_LinecastIgnoreBoth);
 
         mono_add_internal_call("Boom.Native::Boom_API_SetGameLogicPaused", (const void*)ICALL_API_SetGameLogicPaused);
         mono_add_internal_call("Boom.Native::Boom_API_EnableFileWatcher", (const void*)ICALL_API_EnableFileWatcher);
