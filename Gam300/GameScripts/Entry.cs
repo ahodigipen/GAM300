@@ -50,28 +50,27 @@ namespace GameScripts
 
         public static void Update(float dt)
         {
-            int state = API.GetApplicationState();
-
-            if (state == API.APP_STATE_RUNNING)
+            if (s_RequestedAction == PauseMenuAction.MainMenu ||
+                s_RequestedAction == PauseMenuAction.Restart ||
+                s_RequestedAction == PauseMenuAction.Quit)
             {
-                if (IsGamePaused)
-                {
-                    if (API.IsPauseMenuLoaded())
-                    {
-                        UpdatePauseMenu(dt);
-                    }
-                }
-                else
-                {
-                    UpdateGame(dt);
-                }
-
-                if (s_RequestedAction == PauseMenuAction.None)
-                {
-                    API.SetGameLogicPaused(IsGamePaused);
-                }
+                UpdatePauseMenu(dt);
+                return;
             }
 
+            if (IsGamePaused)
+            {
+                if (API.IsPauseMenuLoaded())
+                {
+                    UpdatePauseMenu(dt);
+                }
+            }
+            else
+            {
+                UpdateGame(dt);
+            }
+
+            API.SetGameLogicPaused(IsGamePaused);
         }
 
         private static void UpdateGame(float dt)
