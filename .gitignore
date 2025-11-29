@@ -23,6 +23,9 @@ Build/
 Gam300/x64/
 x64/
 
+# Claude Code session documentation
+claude.md
+
 Gam300/conanbuild/cmakedeps_macros.cmake
 Gam300/conanbuild/CMakePresets.json
 Gam300/conanbuild/conan_glew.props
@@ -137,4 +140,3 @@ Gam300/Editor/SceneTest.yaml
 
 # --- Allow GameScripts.dll to be tracked ---
 !GAM300/Editor/GameScripts.dll
-Gam300/claude.md
