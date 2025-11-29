@@ -176,6 +176,14 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)] 
         internal static extern ulong Boom_API_PickGameEntity();
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern bool Boom_API_GetMousePosInViewport(out Vec2 outPos);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern bool Boom_API_ProjectWorldToViewport(ref Vec3 worldPos, out Vec2 outViewportPos);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern bool Boom_API_Check2DViewportClick(ulong handle, float mouseX, float mouseY);
+
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Boom_API_Linecast(ref Vec3 from, ref Vec3 to, ulong ignoreEntity);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -217,6 +225,14 @@ namespace Boom
     public delegate void TriggerCallback(ulong triggerEntity, ulong otherEntity);
 
     // ========= DATA STRUCTURES =========
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Vec2
+    {
+        public float X, Y;
+        public Vec2(float x, float y) { X = x; Y = y; }
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct Vec3
     {
@@ -606,8 +622,20 @@ namespace Boom
 
         // Raycasting
         public static ulong PickGameEntity() => Native.Boom_API_PickGameEntity();
+        public static bool GetMousePosInViewport(out Vec2 outPos)
+        {
+            return Native.Boom_API_GetMousePosInViewport(out outPos);
+        }
+        public static bool ProjectWorldToViewport(Vec3 worldPos, out Vec2 outViewportPos)
+        {
+            return Native.Boom_API_ProjectWorldToViewport(ref worldPos, out outViewportPos);
+        }
+        public static bool Check2DViewportClick(ulong entityID, float mouseX, float mouseY)
+        {
+            return Native.Boom_API_Check2DViewportClick(entityID, mouseX, mouseY);
+        }
 
-        
+
         public static bool Linecast(Vec3 from, Vec3 to, ulong ignoreEntity = 0)
         {
             return Native.Boom_API_Linecast(ref from, ref to, ignoreEntity);

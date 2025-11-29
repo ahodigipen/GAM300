@@ -920,6 +920,44 @@ namespace Boom
             return (uint32_t)hit;
         }
 
+        BOOM_INLINE bool GetMousePosInViewport(float& x, float& y)
+        {
+            if (!m_Context || !m_Context->window) return false;
+
+            double mx, my;
+            glfwGetCursorPos(m_Context->window->Handle().get(), &mx, &my);
+            auto* win = m_Context->window.get();
+
+            // 1. Get Viewport Values
+            float vX = win->GetViewportX();
+            float vY = win->GetViewportY();
+            float vW = win->GetViewportW();
+            float vH = win->GetViewportH();
+
+            // 2. Get Real Window Size
+            float windowW = (float)m_Context->window->getWidth();
+            float windowH = (float)m_Context->window->getHeight();
+
+            // --- THE FIX FOR STANDALONE BUILDS ---
+            if (vW <= 1.0f || vH <= 1.0f) {
+                vX = 0.0f; vY = 0.0f; vW = windowW; vH = windowH;
+            }
+            // -------------------------------------
+
+            // 3. Calculate Local Coordinates
+            float localX = (float)mx - vX;
+            float localY = (float)my - vY;
+
+            // 4. Check bounds
+            if (localX < 0 || localY < 0 || localX > vW || localY > vH) {
+                return false; // Mouse is outside the viewport
+            }
+
+            x = localX;
+            y = localY;
+            return true;
+        }
+
     private:
         std::unordered_map<std::string, std::pair<glm::vec3, glm::vec3>> m_SphereInitialStates;
 

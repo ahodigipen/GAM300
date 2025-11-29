@@ -17,6 +17,7 @@
 
 #include "Application/Application.h"
 #include "Audio/Audio.hpp"  // Add this include for sound engine
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace Boom {
 
@@ -999,6 +1000,192 @@ namespace Boom {
         return static_cast<uint64_t>(static_cast<uint32_t>(hit));
     }
 
+    static bool ICALL_API_GetMousePosInViewport(glm::vec2* outPos)
+    {
+        if (!s_Ctx || !s_Ctx->app || !outPos) return false;
+        auto* app = static_cast<Application*>(s_Ctx->app);
+
+        float x, y;
+        if (app->GetMousePosInViewport(x, y)) {
+            outPos->x = x;
+            outPos->y = y;
+            return true;
+        }
+        return false;
+    }
+
+    // Helper
+    static glm::mat4 TransformToMatrix(const Boom::Transform3D& transform) {
+        // Convert Transform3D to world matrix
+        glm::mat4 matrix = glm::mat4(1.0f);
+
+        // Apply translation
+        matrix = glm::translate(matrix, transform.translate);
+
+        // Apply rotation (assuming rotate is in degrees and represents Euler angles)
+        matrix = glm::rotate(matrix, glm::radians(transform.rotate.x), glm::vec3(1.0f, 0.0f, 0.0f));
+        matrix = glm::rotate(matrix, glm::radians(transform.rotate.y), glm::vec3(0.0f, 1.0f, 0.0f));
+        matrix = glm::rotate(matrix, glm::radians(transform.rotate.z), glm::vec3(0.0f, 0.0f, 1.0f));
+
+        // Apply scale
+        matrix = glm::scale(matrix, transform.scale);
+
+        return matrix;
+    }
+
+    // Projects a 3D world point to 2D viewport pixel coordinates
+    static bool ICALL_API_ProjectWorldToViewport(glm::vec3* worldPos, glm::vec2* outViewportPos)
+    {
+        if (!s_Ctx || !worldPos || !outViewportPos) return false;
+
+        // 1. Find the main camera
+        Camera3D* mainCam = nullptr;
+        Transform3D* mainCamTrans = nullptr;
+        auto view = s_Ctx->scene.view<CameraComponent>();
+        for (auto e : view) {
+            auto& cc = view.get<CameraComponent>(e);
+            if (cc.camera.cameraType == Camera3D::CameraType::Main) {
+                mainCam = &cc.camera;
+                mainCamTrans = &s_Ctx->scene.get<TransformComponent>(e).transform;
+                break;
+            }
+        }
+        if (!mainCam || !mainCamTrans) return false;
+
+        // 2. Get viewport dimensions
+        auto* win = s_Ctx->window.get();
+        float vX = win->GetViewportX();
+        float vY = win->GetViewportY();
+        float vW = win->GetViewportW();
+        float vH = win->GetViewportH();
+        if (vW <= 1.0f || vH <= 1.0f) { // Standalone build fix
+            vX = 0.0f; vY = 0.0f;
+            vW = (float)win->getWidth(); vH = (float)win->getHeight();
+        }
+        glm::vec4 viewportRect = glm::vec4(vX, vY, vW, vH);
+
+        // 3. Get View and Projection matrices
+        glm::mat4 viewMat = mainCam->View(*mainCamTrans);
+        glm::mat4 projMat = mainCam->Projection(vW / vH);
+
+        // 4. Project the point
+        glm::vec3 screenPos = glm::project(*worldPos, viewMat, projMat, viewportRect);
+
+        // 5. Return the 2D coordinates
+        // We only care about x and y. Z is depth (0 to 1).
+        outViewportPos->x = screenPos.x;
+        outViewportPos->y = screenPos.y;
+
+        // 6. Check if it's behind the camera
+        if (screenPos.z > 1.0f || screenPos.z < 0.0f) {
+            return false;
+        }
+
+        return true;
+    }
+
+    static bool ICALL_API_Check2DViewportClick(uint64_t handle, float mouseX, float mouseY)
+    {
+        if (!s_Ctx) return false;
+        entt::entity entity = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (entity == entt::null || !s_Ctx->scene.valid(entity)) return false;
+
+        // --- 1. Get Entity Transform ---
+        // We ONLY need the transform. The ColliderComponent is no longer used.
+        const auto* transformComp = s_Ctx->scene.try_get<Boom::TransformComponent>(entity);
+
+        // We *must* have a transform to be clickable
+        if (!transformComp) return false;
+
+        // --- 2. Get 8 Local *Unit* Corners (based on Center-Left Pivot) ---
+        // This unit box defines the "shape" of the entity relative to its gizmo.
+        // X: 0.0 (at pivot) to 1.0 (full width)
+        // Y: -0.5 (bottom) to 0.5 (top)
+        // Z: -0.5 (back) to 0.5 (front)
+        glm::vec3 min(-0.5f, -0.5f, -0.5f);
+        glm::vec3 max(0.5f, 0.5f, 0.5f);
+
+
+
+        // The 8 unit corners of our box
+        std::vector<glm::vec3> unitCorners = {
+            glm::vec3(min.x, min.y, min.z), glm::vec3(max.x, min.y, min.z),
+            glm::vec3(min.x, max.y, min.z), glm::vec3(max.x, max.y, min.z),
+            glm::vec3(min.x, min.y, max.z), glm::vec3(max.x, min.y, max.z),
+            glm::vec3(min.x, max.y, max.z), glm::vec3(max.x, max.y, max.z)
+        };
+
+        // --- 3. Get Camera, Matrices, Viewport ---
+        // (This section is unchanged from your original)
+        Camera3D* mainCam = nullptr;
+        Transform3D* mainCamTrans = nullptr;
+        auto view = s_Ctx->scene.view<CameraComponent>();
+        for (auto e : view) {
+            auto& cc = view.get<CameraComponent>(e);
+            if (cc.camera.cameraType == Camera3D::CameraType::Main) {
+                mainCam = &cc.camera;
+                mainCamTrans = &s_Ctx->scene.get<TransformComponent>(e).transform;
+                break;
+            }
+        }
+        if (!mainCam || !mainCamTrans) return false;
+
+        auto* win = s_Ctx->window.get();
+        float vX = win->GetViewportX(), vY = win->GetViewportY(), vW = win->GetViewportW(), vH = win->GetViewportH();
+        if (vW <= 1.0f || vH <= 1.0f) { // Standalone build fix
+            vX = 0.0f; vY = 0.0f; vW = (float)win->getWidth(); vH = (float)win->getHeight();
+        }
+        glm::vec4 viewportRect = glm::vec4(vX, vY, vW, vH);
+        glm::mat4 viewMat = mainCam->View(*mainCamTrans);
+        glm::mat4 projMat = mainCam->Projection(vW / vH);
+
+        // --- 4. Project all 8 Corners & Find 2D Bounding Box (SIMPLIFIED) ---
+
+        // The entity's transform matrix is now the *only* matrix we need.
+        // It contains the Position, Rotation, and Scale (which IS the size).
+        glm::mat4 worldMatrix = TransformToMatrix(transformComp->transform);
+
+        glm::vec2 min2D(FLT_MAX), max2D(-FLT_MAX);
+        bool onePointInFront = false;
+
+        // Loop over the UNIT corners
+        for (const auto& unitCorner : unitCorners) {
+            // Transform the unit corner directly to world space
+            glm::vec3 worldCorner = worldMatrix * glm::vec4(unitCorner, 1.0f);
+            glm::vec3 screenPos = glm::project(worldCorner, viewMat, projMat, viewportRect);
+
+            // Ignore points behind the camera (they wrap around)
+            if (screenPos.z > 1.0f || screenPos.z < 0.0f) {
+                continue;
+            }
+
+            onePointInFront = true;
+            min2D.x = glm::min(min2D.x, screenPos.x);
+            min2D.y = glm::min(min2D.y, screenPos.y);
+            max2D.x = glm::max(max2D.x, screenPos.x);
+            max2D.y = glm::max(max2D.y, screenPos.y);
+        }
+
+        // If all 8 points were behind the camera, we're not clicking it
+        if (!onePointInFront) return false;
+
+        // --- 5. Debug Print & Final Check ---
+        // (This section is unchanged from your original)
+        std::string entityName = "NewGameButtonTest";
+        if (s_Ctx->scene.any_of<InfoComponent>(entity)) {
+            entityName = s_Ctx->scene.get<InfoComponent>(entity).name;
+        }
+
+        //BOOM_INFO("[C++ Debug] Button '{}' 2D Box: min=({}, {}), max=({}, {})",
+        //    entityName, min2D.x, min2D.y, max2D.x, max2D.y);
+
+        BOOM_INFO("[C++ V3-CENTERED] Button '{}' 2D Box: min=({}, {}), max=({}, {})",
+            entityName, min2D.x, min2D.y, max2D.x, max2D.y);
+
+        return (mouseX > min2D.x && mouseX < max2D.x &&
+            mouseY > min2D.y && mouseY < max2D.y);
+    }
+
     // Add this function to clean up all trigger callbacks when Mono domain is unloaded
     void ClearAllTriggerCallbacks() {
         // Free all GC handles before clearing
@@ -1277,6 +1464,9 @@ namespace Boom {
         
 		//Raycasting internal call
         mono_add_internal_call("Boom.Native::Boom_API_PickGameEntity", (const void*)ICALL_API_PickGameEntity);
+        mono_add_internal_call("Boom.Native::Boom_API_GetMousePosInViewport", (const void*)ICALL_API_GetMousePosInViewport);
+        mono_add_internal_call("Boom.Native::Boom_API_ProjectWorldToViewport", (const void*)ICALL_API_ProjectWorldToViewport);
+        mono_add_internal_call("Boom.Native::Boom_API_Check2DViewportClick", (const void*)ICALL_API_Check2DViewportClick);
 
         mono_add_internal_call("Boom.Native::Boom_API_Linecast", (const void*)ICALL_API_Linecast);
 
