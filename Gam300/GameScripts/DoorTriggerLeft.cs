@@ -158,7 +158,7 @@ namespace GameScripts
             inst._closing = false;
 
             var pos = API.GetPosition(inst._door);
-            API.PlaySoundAt("sfx_door_slide_open", "Resources/Audio/playerPunch_1.wav", pos, false);
+            API.PlaySoundAt("sfx_door_slide_open", "Resources/Audio/unlock.wav", pos, false);
             API.SetSoundVolume("sfx_door_slide_open", 0.85f);
 
             API.Log("[DoorTriggerLeft] Sliding door to the left.");

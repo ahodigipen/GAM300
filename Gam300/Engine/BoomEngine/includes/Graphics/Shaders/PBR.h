@@ -247,7 +247,7 @@ namespace Boom {
 
 		bool showDither{};
 		float ditherThreshold{ 0.1f };
-		float ambientStrength{ 0.1f };
+		float ambientStrength{ 0.04f };
 	private:
 		int32_t noSpotLightLoc;
 		int32_t noDirLightLoc;

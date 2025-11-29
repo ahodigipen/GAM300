@@ -11,7 +11,7 @@ namespace GameScripts
         public ulong Entity;
 
         // Optional: sound to play on pickup
-        private string _pickupSound = "Resources/Audio/playerPunch_1.wav";
+        private string _pickupSound = "Resources/Audio/pickup.wav";
 
         private static readonly Dictionary<ulong, KeyPickup> s_instances = new Dictionary<ulong, KeyPickup>();
         private bool _collected = false;

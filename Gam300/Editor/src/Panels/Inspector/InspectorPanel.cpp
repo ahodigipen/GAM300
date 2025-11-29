@@ -602,15 +602,19 @@ namespace EditorUI {
             auto& sc = selected.Get<Boom::SoundComponent>();
 
             bool compRemoved = false;
-            bool isOpen = ImGui::CollapsingHeader("Sound", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap);
+            bool isOpen = ImGui::CollapsingHeader(
+                "Sound",
+                ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap
+            );
 
             // settings popup
             const ImVec2 shMin = ImGui::GetItemRectMin();
             const ImVec2 shMax = ImGui::GetItemRectMax();
-            const float shLineH = ImGui::GetFrameHeight();
-            const float shY = shMin.y + (shMax.y - shMin.y - shLineH) *0.5f;
+            const float  shLineH = ImGui::GetFrameHeight();
+            const float  shY = shMin.y + (shMax.y - shMin.y - shLineH) * 0.5f;
             ImGui::SetCursorScreenPos(ImVec2(shMax.x - shLineH, shY));
-            if (ImGui::Button("...", ImVec2(shLineH, shLineH))) ImGui::OpenPopup("SoundSettings");
+            if (ImGui::Button("...", ImVec2(shLineH, shLineH)))
+                ImGui::OpenPopup("SoundSettings");
             if (ImGui::BeginPopup("SoundSettings")) {
                 if (ImGui::MenuItem("Remove Component")) compRemoved = true;
                 ImGui::EndPopup();
@@ -632,123 +636,147 @@ namespace EditorUI {
 
                 ImGui::Spacing();
 
-                for (size_t i =0; i < sc.entries.size(); ++i) {
+                for (size_t i = 0; i < sc.entries.size(); ++i) {
                     auto& entry = sc.entries[i];
                     ImGui::PushID(static_cast<int>(i));
 
                     // header for entry
-                    bool openEntry = ImGui::TreeNodeEx((void*)(intptr_t)i, ImGuiTreeNodeFlags_DefaultOpen, "%s", entry.name.c_str());
+                    bool openEntry = ImGui::TreeNodeEx(
+                        (void*)(intptr_t)i,
+                        ImGuiTreeNodeFlags_DefaultOpen,
+                        "%s",
+                        entry.name.c_str()
+                    );
+
                     ImGui::SameLine();
                     if (ImGui::SmallButton("Remove")) {
+                        // 🔹 Make sure to close the tree if it was opened this frame
+                        if (openEntry) {
+                            ImGui::TreePop();
+                        }
+
+                        ImGui::PopID(); // matches PushID for this entry
                         sc.entries.erase(sc.entries.begin() + i);
-                        ImGui::PopID();
-                        break; // indices changed; break out to avoid iterator invalidation
+                        break;          // indices changed; break to avoid invalid access
                     }
 
                     if (openEntry) {
                         // Name
                         char nameBuf[128];
 #ifdef _MSC_VER
-                        strncpy_s(nameBuf, sizeof(nameBuf), entry.name.c_str(), sizeof(nameBuf)-1);
+                        strncpy_s(nameBuf, sizeof(nameBuf), entry.name.c_str(), sizeof(nameBuf) - 1);
 #else
                         std::snprintf(nameBuf, sizeof(nameBuf), "%s", entry.name.c_str());
 #endif
-                        if (ImGui::InputText("Name", nameBuf, sizeof(nameBuf))) entry.name = std::string(nameBuf);
+                        if (ImGui::InputText("Name", nameBuf, sizeof(nameBuf)))
+                            entry.name = std::string(nameBuf);
 
                         // Variant files list (filePaths)
                         ImGui::Text("Variants");
                         ImGui::SameLine();
                         if (ImGui::SmallButton("+ Add Variant")) {
-                            entry.filePaths.push_back(entry.filePath.empty() ? std::string("") : entry.filePath);
+                            entry.filePaths.push_back(entry.filePath.empty()
+                                ? std::string("")
+                                : entry.filePath);
                         }
 
-                        for (size_t v =0; v < entry.filePaths.size(); ++v) {
+                        for (size_t v = 0; v < entry.filePaths.size(); ++v) {
                             ImGui::PushID(static_cast<int>(v));
                             char pathBuf[512];
 #ifdef _MSC_VER
-                            strncpy_s(pathBuf, sizeof(pathBuf), entry.filePaths[v].c_str(), sizeof(pathBuf)-1);
+                            strncpy_s(pathBuf, sizeof(pathBuf), entry.filePaths[v].c_str(), sizeof(pathBuf) - 1);
 #else
- std::snprintf(pathBuf, sizeof(pathBuf), "%s", entry.filePaths[v].c_str());
+                            std::snprintf(pathBuf, sizeof(pathBuf), "%s", entry.filePaths[v].c_str());
 #endif
- // Manual edit field
- if (ImGui::InputText("File", pathBuf, sizeof(pathBuf))) {
- entry.filePaths[v] = std::string(pathBuf);
- // keep legacy single filePath in sync for older systems
- if (v ==0) entry.filePath = entry.filePaths[0];
- }
 
- ImGui::SameLine();
+                            // Manual edit field
+                            if (ImGui::InputText("File", pathBuf, sizeof(pathBuf))) {
+                                entry.filePaths[v] = std::string(pathBuf);
+                                // keep legacy single filePath in sync for older systems
+                                if (v == 0) entry.filePath = entry.filePaths[0];
+                            }
 
- // --- Asset picker dropdown for audio assets ---
- {
- // Build current label (show filename if available)
- std::string curLabel = entry.filePaths[v].empty() ? "Select Audio..." : std::filesystem::path(entry.filePaths[v]).filename().string();
- if (ImGui::BeginCombo("##AudioPicker", curLabel.c_str())) {
- auto& audioMap = m_App->GetAssetRegistry().GetMap<AudioAsset>();
- // Allow clearing
- bool noneSel = entry.filePaths[v].empty();
- if (ImGui::Selectable("None", noneSel)) {
- entry.filePaths[v].clear();
- if (v ==0) entry.filePath.clear();
- }
- if (noneSel) ImGui::SetItemDefaultFocus();
+                            ImGui::SameLine();
 
- for (auto& [uid, asset] : audioMap) {
- if (uid == EMPTY_ASSET) continue;
- std::string name = asset->name;
- bool isSel = (entry.filePaths[v] == asset->source);
- if (ImGui::Selectable(name.c_str(), isSel)) {
- entry.filePaths[v] = asset->source;
- if (v ==0) entry.filePath = entry.filePaths[0];
- }
- if (isSel) ImGui::SetItemDefaultFocus();
- }
- ImGui::EndCombo();
- }
- }
+                            // --- Asset picker dropdown for audio assets ---
+                            {
+                                // Build current label (show filename if available)
+                                std::string curLabel = entry.filePaths[v].empty()
+                                    ? "Select Audio..."
+                                    : std::filesystem::path(entry.filePaths[v]).filename().string();
 
- ImGui::SameLine();
- if (ImGui::SmallButton("Remove")) {
- entry.filePaths.erase(entry.filePaths.begin() + v);
- ImGui::PopID();
- break;
- }
- ImGui::PopID();
- }
+                                if (ImGui::BeginCombo("##AudioPicker", curLabel.c_str())) {
+                                    auto& audioMap = m_App->GetAssetRegistry().GetMap<AudioAsset>();
 
- // Legacy single filePath (shows only if no variants present)
- if (entry.filePaths.empty()) {
- char legacyBuf[512];
+                                    // Allow clearing
+                                    bool noneSel = entry.filePaths[v].empty();
+                                    if (ImGui::Selectable("None", noneSel)) {
+                                        entry.filePaths[v].clear();
+                                        if (v == 0) entry.filePath.clear();
+                                    }
+                                    if (noneSel) ImGui::SetItemDefaultFocus();
+
+                                    for (auto& [uid, asset] : audioMap) {
+                                        if (uid == EMPTY_ASSET) continue;
+                                        std::string name = asset->name;
+                                        bool isSel = (entry.filePaths[v] == asset->source);
+                                        if (ImGui::Selectable(name.c_str(), isSel)) {
+                                            entry.filePaths[v] = asset->source;
+                                            if (v == 0) entry.filePath = entry.filePaths[0];
+                                        }
+                                        if (isSel) ImGui::SetItemDefaultFocus();
+                                    }
+                                    ImGui::EndCombo();
+                                }
+                            }
+
+                            ImGui::SameLine();
+                            if (ImGui::SmallButton("Remove")) {
+                                entry.filePaths.erase(entry.filePaths.begin() + v);
+                                ImGui::PopID(); // this variant ID
+                                break;
+                            }
+                            ImGui::PopID(); // variant ID
+                        }
+
+                        // Legacy single filePath (shows only if no variants present)
+                        if (entry.filePaths.empty()) {
+                            char legacyBuf[512];
 #ifdef _MSC_VER
- strncpy_s(legacyBuf, sizeof(legacyBuf), entry.filePath.c_str(), sizeof(legacyBuf)-1);
+                            strncpy_s(legacyBuf, sizeof(legacyBuf), entry.filePath.c_str(), sizeof(legacyBuf) - 1);
 #else
- std::snprintf(legacyBuf, sizeof(legacyBuf), "%s", entry.filePath.c_str());
+                            std::snprintf(legacyBuf, sizeof(legacyBuf), "%s", entry.filePath.c_str());
 #endif
- if (ImGui::InputText("File Path", legacyBuf, sizeof(legacyBuf))) entry.filePath = std::string(legacyBuf);
+                            if (ImGui::InputText("File Path", legacyBuf, sizeof(legacyBuf)))
+                                entry.filePath = std::string(legacyBuf);
 
- ImGui::SameLine();
- // Legacy asset picker
- {
- std::string cur = entry.filePath.empty() ? "Select Audio..." : std::filesystem::path(entry.filePath).filename().string();
- if (ImGui::BeginCombo("##AudioPickerLegacy", cur.c_str())) {
- auto& audioMap = m_App->GetAssetRegistry().GetMap<AudioAsset>();
- bool noneSel = entry.filePath.empty();
- if (ImGui::Selectable("None", noneSel)) {
- entry.filePath.clear();
- }
- if (noneSel) ImGui::SetItemDefaultFocus();
- for (auto& [uid, asset] : audioMap) {
- if (uid == EMPTY_ASSET) continue;
- bool isSel = (entry.filePath == asset->source);
- if (ImGui::Selectable(asset->name.c_str(), isSel)) {
- entry.filePath = asset->source;
- }
- if (isSel) ImGui::SetItemDefaultFocus();
- }
- ImGui::EndCombo();
- }
- }
- }
+                            ImGui::SameLine();
+                            // Legacy asset picker
+                            {
+                                std::string cur = entry.filePath.empty()
+                                    ? "Select Audio..."
+                                    : std::filesystem::path(entry.filePath).filename().string();
+
+                                if (ImGui::BeginCombo("##AudioPickerLegacy", cur.c_str())) {
+                                    auto& audioMap = m_App->GetAssetRegistry().GetMap<AudioAsset>();
+                                    bool noneSel = entry.filePath.empty();
+                                    if (ImGui::Selectable("None", noneSel)) {
+                                        entry.filePath.clear();
+                                    }
+                                    if (noneSel) ImGui::SetItemDefaultFocus();
+
+                                    for (auto& [uid, asset] : audioMap) {
+                                        if (uid == EMPTY_ASSET) continue;
+                                        bool isSel = (entry.filePath == asset->source);
+                                        if (ImGui::Selectable(asset->name.c_str(), isSel)) {
+                                            entry.filePath = asset->source;
+                                        }
+                                        if (isSel) ImGui::SetItemDefaultFocus();
+                                    }
+                                    ImGui::EndCombo();
+                                }
+                            }
+                        }
 
                         // loop and playOnStart
                         ImGui::Checkbox("Loop", &entry.loop);
@@ -756,7 +784,7 @@ namespace EditorUI {
                         ImGui::Checkbox("Play On Start", &entry.playOnStart);
 
                         // Volume
-                        ImGui::SliderFloat("Volume", &entry.volume,0.0f,1.0f);
+                        ImGui::SliderFloat("Volume", &entry.volume, 0.0f, 1.0f);
 
                         ImGui::Separator();
                         ImGui::Text("Triggers");
@@ -777,7 +805,7 @@ namespace EditorUI {
                         // Animation trigger name
                         char animBuf[128];
 #ifdef _MSC_VER
-                        strncpy_s(animBuf, sizeof(animBuf), entry.animTrigger.c_str(), sizeof(animBuf)-1);
+                        strncpy_s(animBuf, sizeof(animBuf), entry.animTrigger.c_str(), sizeof(animBuf) - 1);
 #else
                         std::snprintf(animBuf, sizeof(animBuf), "%s", entry.animTrigger.c_str());
 #endif
@@ -788,18 +816,19 @@ namespace EditorUI {
                         ImGui::TreePop();
                     }
 
-                    ImGui::PopID();
+                    ImGui::PopID(); // entry ID
                 }
 
                 ImGui::Unindent(12.0f);
             }
 
-            ImGui::PopID();
+            ImGui::PopID(); // "Sound"
 
             if (compRemoved) {
                 ctx->scene.remove<Boom::SoundComponent>(m_App->SelectedEntity());
             }
         }
+
 
         if (selected.Has<Boom::RigidBodyComponent>()) {
             ImGui::PushID("Rigid Body");
