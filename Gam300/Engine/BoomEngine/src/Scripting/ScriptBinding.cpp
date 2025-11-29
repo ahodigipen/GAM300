@@ -1169,19 +1169,6 @@ namespace Boom {
         // If all 8 points were behind the camera, we're not clicking it
         if (!onePointInFront) return false;
 
-        // --- 5. Debug Print & Final Check ---
-        // (This section is unchanged from your original)
-        std::string entityName = "NewGameButtonTest";
-        if (s_Ctx->scene.any_of<InfoComponent>(entity)) {
-            entityName = s_Ctx->scene.get<InfoComponent>(entity).name;
-        }
-
-        //BOOM_INFO("[C++ Debug] Button '{}' 2D Box: min=({}, {}), max=({}, {})",
-        //    entityName, min2D.x, min2D.y, max2D.x, max2D.y);
-
-        BOOM_INFO("[C++ V3-CENTERED] Button '{}' 2D Box: min=({}, {}), max=({}, {})",
-            entityName, min2D.x, min2D.y, max2D.x, max2D.y);
-
         return (mouseX > min2D.x && mouseX < max2D.x &&
             mouseY > min2D.y && mouseY < max2D.y);
     }

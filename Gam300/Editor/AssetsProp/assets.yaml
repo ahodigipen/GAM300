@@ -714,17 +714,6 @@ ASSETS:
       SerializedData: |
 
   - Type: TEXTURE
-    UID: 10451005038005756580
-    Name: MainMenuMockup
-    Source: Resources/Textures/MainMenu/MainMenuMockup.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
     UID: 15056488335627110656
     Name: Pedastal_normal
     Source: Resources/Models/Enemy/Stationary Sentry/Pedastal_normal.png
@@ -2213,6 +2202,72 @@ ASSETS:
     UID: 15398575817850185585
     Name: 5th life
     Source: Resources/Textures/PlayerUI/5th life.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 14130988858541949245
+    Name: HowToPlayScroll
+    Source: Resources/Textures/HowToPlayMenu/HowToPlayScroll.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 6796308930608697527
+    Name: ReturnButton
+    Source: Resources/Textures/HowToPlayMenu/ReturnButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 8068162420720260057
+    Name: ReturnButton_Clicked
+    Source: Resources/Textures/HowToPlayMenu/ReturnButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 17872212269469502547
+    Name: MainMenuBackground
+    Source: Resources/Textures/MainMenu/MainMenuBackground.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 9596048226089820256
+    Name: MainMenuLogo
+    Source: Resources/Textures/MainMenu/MainMenuLogo.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 13056076664256934653
+    Name: MainMenuTeamName
+    Source: Resources/Textures/MainMenu/MainMenuTeamName.png
     Properties:
       Data:
         CompileAsCompressed: true

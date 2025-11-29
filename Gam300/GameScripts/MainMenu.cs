@@ -13,7 +13,7 @@ namespace GameScripts
         public void OnStart(string jsonParams)
         {
             API.Log("MainMenu OnStart Running...");
-            _newGameButtonID = API.FindEntity("NewGameButtonTest");
+            _newGameButtonID = API.FindEntity("NewGameButton");
             _howToPlayButtonID = API.FindEntity("HowToPlayButton");
             _quitButtonID = API.FindEntity("QuitButton");
 
@@ -22,6 +22,8 @@ namespace GameScripts
             API.Log("Quit ID: " + _quitButtonID);
 
             if (_newGameButtonID == 0) API.Log("Warning: NewGameButton not found!");
+            if (_howToPlayButtonID == 0) API.Log("Warning: HowToPlay not found!");
+            if (_quitButtonID == 0) API.Log("Warning: Quit not found!");
         }
 
         public void OnUpdate(float dt)
@@ -34,33 +36,26 @@ namespace GameScripts
                     return; // Mouse is outside the viewport
                 }
 
-                // --- NEW DEBUG LINE ---
                 API.Log($"[Debug] Mouse Click at: X={mousePos.X}, Y={mousePos.Y}");
-                // --- END DEBUG LINE ---
-
-
-                // --- NEW DEBUG LINES for Button Positions ---
-                // We project each button's 3D position to 2D screen space to compare
                 if (_newGameButtonID != 0 && API.ProjectWorldToViewport(API.GetTransform(_newGameButtonID).Position, out Vec2 newGamePos))
                 {
                     API.Log($"[Debug] NewGameButton 2D Pos: X={newGamePos.X}, Y={newGamePos.Y}");
                 }
-                //if (_howToPlayButtonID != 0 && API.ProjectWorldToViewport(API.GetTransform(_howToPlayButtonID).Position, out Vec2 howToPlayPos))
-                //{
-                //    API.Log($"[Debug] HowToPlayButton 2D Pos: X={howToPlayPos.X}, Y={howToPlayPos.Y}");
-                //}
-                //if (_quitButtonID != 0 && API.ProjectWorldToViewport(API.GetTransform(_quitButtonID).Position, out Vec2 quitPos))
-                //{
-                //    API.Log($"[Debug] QuitButton 2D Pos: X={quitPos.X}, Y={quitPos.Y}");
-                //}
-                // --- END DEBUG LINES ---
+                if (_howToPlayButtonID != 0 && API.ProjectWorldToViewport(API.GetTransform(_howToPlayButtonID).Position, out Vec2 howToPlayPos))
+                {
+                    API.Log($"[Debug] HowToPlayButton 2D Pos: X={howToPlayPos.X}, Y={howToPlayPos.Y}");
+                }
+                if (_quitButtonID != 0 && API.ProjectWorldToViewport(API.GetTransform(_quitButtonID).Position, out Vec2 quitPos))
+                {
+                    API.Log($"[Debug] QuitButton 2D Pos: X={quitPos.X}, Y={quitPos.Y}");
+                }
 
 
                 // 2. Check each button using the accurate API call
                 if (API.Check2DViewportClick(_newGameButtonID, mousePos.X, mousePos.Y))
                 {
                     API.Log(">> New Game Button Clicked! Starting Game...");
-                    //API.LoadScene(Entry.LEVEL_SCENE_NAME);
+                    API.LoadScene(Entry.LEVEL_SCENE_NAME);
                 }
                 else if (API.Check2DViewportClick(_howToPlayButtonID, mousePos.X, mousePos.Y))
                 {

@@ -10,7 +10,7 @@ namespace GameScripts
 
         public void OnStart(string jsonParams)
         {
-            API.Log("MainMenu OnStart Running...");
+            API.Log("HowToPlayMenu OnStart Running...");
             _returnButtonID = API.FindEntity("ReturnButton");
 
             API.Log("Return ID: " + _returnButtonID);
@@ -22,31 +22,22 @@ namespace GameScripts
         {
             if (API.IsMouseDown(MOUSE_LEFT))
             {
-                API.Log(">> Mouse Click Detected!");
-
-                ulong hitID = API.PickGameEntity();
-
-                API.Log(">> Raycast returned ID: " + hitID);
-
-                if (hitID != 0)
+                if (!API.GetMousePosInViewport(out Vec2 mousePos))
                 {
-                    API.Log("Hit ID: " + hitID);
-                    API.Log("Wanted Start ID: " + _returnButtonID);
-
-                    if (hitID == _returnButtonID)
-                    {
-                        API.Log(">> Return Button Clicked! Returning to Main Menu...");
-                        API.LoadScene(Entry.MAIN_MENU_SCENE_NAME);
-                    }
-                    else
-                    {
-                        API.Log(">> Clicked on an unrecognized entity.");
-                    }
-                    API.Log(">> HIT VALID ENTITY!");
+                    return; 
                 }
-                else
+
+                API.Log($"[Debug] Mouse Click at: X={mousePos.X}, Y={mousePos.Y}");
+                if (_returnButtonID != 0 && API.ProjectWorldToViewport(API.GetTransform(_returnButtonID).Position, out Vec2 returnPos))
                 {
-                    API.Log(">> Raycast Missed (ID was 0)");
+                    API.Log($"[Debug] ReturnButton 2D Pos: X={returnPos.X}, Y={returnPos.Y}");
+                }
+
+
+                if (API.Check2DViewportClick(_returnButtonID, mousePos.X, mousePos.Y))
+                {
+                    API.Log(">> Return Button Clicked! Returning to Main Menu...");
+                    API.LoadScene(Entry.MAIN_MENU_SCENE_NAME);
                 }
             }
         }

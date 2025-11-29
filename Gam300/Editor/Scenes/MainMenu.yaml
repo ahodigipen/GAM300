@@ -12,6 +12,7 @@ ENTITIES:
   - {}
   - {}
   - {}
+  - {}
   - InfoComponent:
       Parent: 0
       Name: New Entity
@@ -39,7 +40,7 @@ ENTITIES:
   - {}
   - InfoComponent:
       Parent: 0
-      Name: How To Play Button GUI
+      Name: HowToPlayButton
       UID: 15527910618955340530
     TransformComponent:
       Transform:
@@ -50,22 +51,7 @@ ENTITIES:
       textureID: 14452546169200855872
       color: [1, 1, 1, 1]
       uiOverlay: true
-  - InfoComponent:
-      Parent: 0
-      Name: HowToPlayButton
-      UID: 3094049495513227475
-    TransformComponent:
-      Transform:
-        Translate: [0.824999988, -0.0147019774, -0.699999988]
-        Rotate: [0, -0, 0]
-        Scale: [0.819999993, 0.150000006, 0.00999999978]
-    ModelComponent:
-      ModelID: 7633162898494281895
-      MaterialID: 11573253777835523025
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+  - {}
   - {}
   - {}
   - {}
@@ -88,7 +74,7 @@ ENTITIES:
       uiOverlay: true
   - InfoComponent:
       Parent: 0
-      Name: NewGameButtonTest
+      Name: NewGameButton
       UID: 12542027639629009498
     TransformComponent:
       Transform:
@@ -101,7 +87,7 @@ ENTITIES:
       uiOverlay: true
   - InfoComponent:
       Parent: 0
-      Name: Quit Button GUI
+      Name: QuitButton
       UID: 16323354693460438905
     TransformComponent:
       Transform:
@@ -204,38 +190,8 @@ ENTITIES:
   - {}
   - {}
   - {}
-  - InfoComponent:
-      Parent: 0
-      Name: NewGameButton
-      UID: 17230173662249906557
-    TransformComponent:
-      Transform:
-        Translate: [-0.779999971, 0.175999999, -0.617307901]
-        Rotate: [0, -0, 0]
-        Scale: [0.839999974, 0.159999996, 0.00999999978]
-    ModelComponent:
-      ModelID: 7633162898494281895
-      MaterialID: 11573253777835523025
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: QuitButton
-      UID: 18241753347743023302
-    TransformComponent:
-      Transform:
-        Translate: [0.824999988, -0.217632413, -0.699999988]
-        Rotate: [0, -0, 0]
-        Scale: [0.819999993, 0.150000006, 0.00999999978]
-    ModelComponent:
-      ModelID: 7633162898494281895
-      MaterialID: 11573253777835523025
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+  - {}
+  - {}
   - {}
   - {}
   - {}
@@ -559,6 +515,8 @@ ENTITIES:
       textureID: 13056076664256934653
       color: [1, 1, 1, 1]
       uiOverlay: true
+  - {}
+  - {}
   - {}
   - {}
   - {}
