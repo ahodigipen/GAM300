@@ -117,6 +117,9 @@ namespace Boom
         internal static extern void Boom_API_QuitGame();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_ShutdownApplication(); // CORRECT QUIT
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_LoadSceneAdditive(string name);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -536,6 +539,7 @@ namespace Boom
         public static void LoadScene(string name) => Native.Boom_API_LoadScene(name);
         public static string GetCurrentSceneName() => Native.Boom_API_GetCurrentSceneName();
         public static void QuitGame() => Native.Boom_API_QuitGame();
+        public static void ShutdownApplication() => Native.Boom_API_ShutdownApplication(); // CORRECT QUIT 
         public static void LoadSceneAdditive(string name) => Native.Boom_API_LoadSceneAdditive(name);
         public static void UnloadPauseMenu() => Native.Boom_API_UnloadPauseMenu();
         public static void ShowPauseMenu() => Native.Boom_API_ShowPauseMenu();

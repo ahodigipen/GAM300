@@ -103,7 +103,7 @@ namespace GameScripts
             else if (_clickedButtonID == _quitButtonID)
             {
                 API.Log(">> Quit Button Clicked! Exiting Game...");
-                API.QuitGame();
+                API.ShutdownApplication();
             }
         }
     }

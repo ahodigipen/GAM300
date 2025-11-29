@@ -127,7 +127,7 @@ namespace GameScripts
                 case PauseMenuAction.Quit:
                     API.Log("Quitting game (Button Click)...");
                     s_RequestedAction = PauseMenuAction.None;
-                    API.QuitGame();
+                    API.ShutdownApplication();
                     return;
             }
         }
@@ -144,7 +144,6 @@ namespace GameScripts
             API.UnloadPauseMenu();
             IsGamePaused = false;
             API.EnableFileWatcher(true);
-
         }
     }
 }

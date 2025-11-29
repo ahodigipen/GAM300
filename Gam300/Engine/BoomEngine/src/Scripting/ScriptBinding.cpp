@@ -1363,6 +1363,23 @@ namespace Boom {
         sprite.textureID = textureAssetID;
     }
 
+    static void ICALL_API_ShutdownApplication()
+    {
+        if (!s_Ctx || !s_Ctx->window)
+        {
+            BOOM_WARN("[ScriptBinding] ShutdownApplication: No context or window!");
+            return;
+        }
+
+        BOOM_INFO("[ScriptBinding] ShutdownApplication called. Closing main window.");
+
+        // Get the native GLFW window handle
+        GLFWwindow* glfwWindow = s_Ctx->window->Handle().get();
+
+        // Tell GLFW to close the window. The main loop will catch this and exit.
+        glfwSetWindowShouldClose(glfwWindow, GLFW_TRUE);
+    }
+
     // Global fade alpha (0 = transparent, 1 = black)
     float g_ScreenFadeAlpha = 0.0f;
 
@@ -1391,6 +1408,7 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_LoadScene", (const void*)ICALL_API_LoadScene);
         mono_add_internal_call("Boom.Native::Boom_API_GetCurrentSceneName", (const void*)ICALL_API_GetCurrentSceneName);
         mono_add_internal_call("Boom.Native::Boom_API_QuitGame", (const void*)ICALL_API_QuitGame);
+        mono_add_internal_call("Boom.Native::Boom_API_ShutdownApplication", (const void*)ICALL_API_ShutdownApplication); // CORRECT QUIT
         mono_add_internal_call("Boom.Native::Boom_API_LoadSceneAdditive", (const void*)ICALL_API_LoadSceneAdditive);
         mono_add_internal_call("Boom.Native::Boom_API_UnloadPauseMenu", (const void*)ICALL_API_UnloadPauseMenu);
         mono_add_internal_call("Boom.Native::Boom_API_ShowPauseMenu", (const void*)ICALL_API_ShowPauseMenu);
