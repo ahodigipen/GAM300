@@ -175,8 +175,7 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_SetSoundPosition(string name, ref Vec3 position);
 
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void SetListenerFromEntity(ulong entity);
+       
 
 
         // Raycasting & Main Menu
@@ -699,10 +698,10 @@ namespace Boom
             Native.Boom_API_SetSpriteAlpha(entity, alpha);
         }
 
-        public static void SetListenerFromEntity(ulong entity)
-        {
-            Native.SetListenerFromEntity(entity);
-        }
+        //public static void SetListenerFromEntity(ulong entity)
+        //{
+        //    Native.SetListenerFromEntity(entity);
+        //}
 
 
 
