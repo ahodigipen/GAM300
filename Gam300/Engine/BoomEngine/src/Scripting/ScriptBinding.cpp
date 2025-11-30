@@ -17,6 +17,7 @@
 
 #include "Application/Application.h"
 #include "Audio/Audio.hpp"  // Add this include for sound engine
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace Boom {
 
@@ -332,9 +333,36 @@ namespace Boom {
         s_Ctx->app->UnloadAdditiveScene<PauseMenuTagComponent>();
     }
 
+    static void ICALL_API_ShowPauseMenu() {
+        if (!s_Ctx || !s_Ctx->app) return;
+        s_Ctx->app->ShowAdditiveScene<PauseMenuTagComponent>();
+    }
+
     static void ICALL_API_TogglePause() {
         if (s_Ctx && s_Ctx->app) {
             s_Ctx->app->TogglePause();
+        }
+    }
+
+    static void ICALL_API_SetGameLogicPaused(bool isPaused) {
+        if (s_Ctx && s_Ctx->app) {
+            s_Ctx->app->SetGameLogicPaused(isPaused);
+        }
+    }
+
+    static void ICALL_API_EnableFileWatcher(bool enable)
+    {
+        if (!s_Ctx || !s_Ctx->scriptingSystem) return;
+
+        // This function should exist in your ScriptingSystem.
+        // It's the same one used in Application.cpp
+        s_Ctx->scriptingSystem->EnableAutoHotReload(enable);
+
+        if (enable) {
+            BOOM_INFO("[ScriptBinding] Enabled auto hot-reload");
+        }
+        else {
+            BOOM_INFO("[ScriptBinding] Disabled auto hot-reload");
         }
     }
 
@@ -993,6 +1021,102 @@ namespace Boom {
         return static_cast<uint64_t>(static_cast<uint32_t>(hit));
     }
 
+    static bool ICALL_API_GetMousePosInViewport(glm::vec2* outPos)
+    {
+        if (!s_Ctx || !s_Ctx->app || !outPos) return false;
+        auto* app = static_cast<Application*>(s_Ctx->app);
+
+        float x, y;
+        if (app->GetMousePosInViewport(x, y)) {
+            outPos->x = x;
+            outPos->y = y;
+            return true;
+        }
+        return false;
+    }
+
+    // Projects a 3D world point to 2D viewport pixel coordinates
+    static bool ICALL_API_ProjectWorldToViewport(glm::vec3* worldPos, glm::vec2* outViewportPos)
+    {
+        if (!s_Ctx || !worldPos || !outViewportPos) return false;
+
+        // 1. Find the main camera
+        Camera3D* mainCam = nullptr;
+        Transform3D* mainCamTrans = nullptr;
+        auto view = s_Ctx->scene.view<CameraComponent>();
+        for (auto e : view) {
+            auto& cc = view.get<CameraComponent>(e);
+            if (cc.camera.cameraType == Camera3D::CameraType::Main) {
+                mainCam = &cc.camera;
+                mainCamTrans = &s_Ctx->scene.get<TransformComponent>(e).transform;
+                break;
+            }
+        }
+        if (!mainCam || !mainCamTrans) return false;
+
+        // 2. Get viewport dimensions
+        auto* win = s_Ctx->window.get();
+        float vX = win->GetViewportX();
+        float vY = win->GetViewportY();
+        float vW = win->GetViewportW();
+        float vH = win->GetViewportH();
+        if (vW <= 1.0f || vH <= 1.0f) { // Standalone build fix
+            vX = 0.0f; vY = 0.0f;
+            vW = (float)win->getWidth(); vH = (float)win->getHeight();
+        }
+        glm::vec4 viewportRect = glm::vec4(vX, vY, vW, vH);
+
+        // 3. Get View and Projection matrices
+        glm::mat4 viewMat = mainCam->View(*mainCamTrans);
+        glm::mat4 projMat = mainCam->Projection(vW / vH);
+
+        // 4. Project the point
+        glm::vec3 screenPos = glm::project(*worldPos, viewMat, projMat, viewportRect);
+
+        // 5. Return the 2D coordinates
+        // We only care about x and y. Z is depth (0 to 1).
+        outViewportPos->x = screenPos.x;
+        outViewportPos->y = screenPos.y;
+
+        // 6. Check if it's behind the camera
+        if (screenPos.z > 1.0f || screenPos.z < 0.0f) {
+            return false;
+        }
+
+        return true;
+    }
+
+    static bool ICALL_API_Check2DViewportClick(uint64_t handle, float mouseX, float mouseY)
+    {
+        if (!s_Ctx) return false;
+        entt::entity entity = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (entity == entt::null || !s_Ctx->scene.valid(entity)) return false;
+
+        const auto* transformComp = s_Ctx->scene.try_get<Boom::TransformComponent>(entity);
+        if (!transformComp) return false;
+
+        auto* win = s_Ctx->window.get();
+        float vW = win->GetViewportW();
+        float vH = win->GetViewportH();
+
+        // convert transform from ndc to screen pos
+        glm::vec2 pos{ transformComp->transform.translate };
+        pos.x = ((pos.x + 1.f) * 0.5f) * vW;
+        pos.y = vH - ((pos.y + 1.f) * 0.5f) * vH;
+        glm::vec2 scale{ transformComp->transform.scale.x * vW,  transformComp->transform.scale.y * vH };
+
+        //get corners of box
+        glm::vec2 min{ pos - scale * 0.5f };
+        glm::vec2 max{ pos + scale * 0.5f };
+        glm::vec2 mouse{ mouseX, mouseY };
+
+        if (mouse.x < min.x || mouse.x > max.x || mouse.y < min.y || mouse.y > max.y) {
+            return false;
+        }
+
+        return true;
+    }
+
     // Add this function to clean up all trigger callbacks when Mono domain is unloaded
     void ClearAllTriggerCallbacks() {
         // Free all GC handles before clearing
@@ -1183,6 +1307,83 @@ namespace Boom {
         }
     }
 
+    static void ICALL_API_SetSpriteTexture(uint64_t handle, MonoString* texturePathMono)
+    {
+        if (!s_Ctx || !s_Ctx->app || !texturePathMono) return;
+
+        // 1. Get the AppInterface (which has the asset system)
+        // This is based on the m_App field in your DirectoryPanel.
+        auto* app = static_cast<Boom::AppInterface*>(s_Ctx->app);
+        if (!app) {
+            BOOM_WARN("[ScriptBinding] SetSpriteTexture: AppInterface is null.");
+            return;
+        }
+
+        // 2. Get the entity and check for SpriteComponent
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) {
+            BOOM_WARN("[ScriptBinding] SetSpriteTexture: Invalid entity handle");
+            return;
+        }
+        if (!s_Ctx->scene.any_of<SpriteComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetSpriteTexture: Entity has no SpriteComponent");
+            return;
+        }
+
+        // 3. Convert path from MonoString to std::filesystem::path
+        char* texturePathUTF8 = mono_string_to_utf8(texturePathMono);
+        std::string texturePathStr(texturePathUTF8);
+        mono_free(texturePathUTF8);
+        std::filesystem::path texturePath(texturePathStr);
+
+        // 4. Get the AssetID (hash) from the path
+        // This matches the logic in DirectoryPanel::RegisterAsset
+        AssetID textureAssetID = app->AssetIDFromPath(texturePath);
+        if (textureAssetID == EMPTY_ASSET) {
+            BOOM_WARN("[ScriptBinding] SetSpriteTexture: Could not generate valid AssetID for path '{}'", texturePathStr);
+            return;
+        }
+
+        // 5. Check if the asset is already in the registry. If not, add it.
+        // This logic is copied from your DirectoryPanel::RegisterAsset
+        auto& registry = app->GetAssetRegistry();
+        if (registry.Get<TextureAsset>(textureAssetID).uid == EMPTY_ASSET)
+        {
+            BOOM_INFO("[ScriptBinding] Texture '{}' not in registry. Adding it now...", texturePathStr);
+
+            // Call AddTexture, just like in your DirectoryPanel
+            registry.AddTexture(textureAssetID, texturePath.generic_string());
+
+            // Check if it was added successfully
+            if (registry.Get<TextureAsset>(textureAssetID).uid == EMPTY_ASSET) {
+                BOOM_WARN("[ScriptBinding] SetSpriteTexture: FAILED to load and add texture at path '{}'", texturePathStr);
+                return;
+            }
+        }
+
+        // 6. Get the component and set its textureID
+        // We assume SpriteComponent.textureID stores the AssetID (the hash)
+        auto& sprite = s_Ctx->scene.get<SpriteComponent>(e);
+        sprite.textureID = textureAssetID;
+    }
+
+    static void ICALL_API_ShutdownApplication()
+    {
+        if (!s_Ctx || !s_Ctx->window)
+        {
+            BOOM_WARN("[ScriptBinding] ShutdownApplication: No context or window!");
+            return;
+        }
+
+        BOOM_INFO("[ScriptBinding] ShutdownApplication called. Closing main window.");
+
+        // Get the native GLFW window handle
+        GLFWwindow* glfwWindow = s_Ctx->window->Handle().get();
+
+        // Tell GLFW to close the window. The main loop will catch this and exit.
+        glfwSetWindowShouldClose(glfwWindow, GLFW_TRUE);
+    }
+
     // Global fade alpha (0 = transparent, 1 = black)
     float g_ScreenFadeAlpha = 0.0f;
 
@@ -1211,8 +1412,10 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_LoadScene", (const void*)ICALL_API_LoadScene);
         mono_add_internal_call("Boom.Native::Boom_API_GetCurrentSceneName", (const void*)ICALL_API_GetCurrentSceneName);
         mono_add_internal_call("Boom.Native::Boom_API_QuitGame", (const void*)ICALL_API_QuitGame);
+        mono_add_internal_call("Boom.Native::Boom_API_ShutdownApplication", (const void*)ICALL_API_ShutdownApplication); // CORRECT QUIT
         mono_add_internal_call("Boom.Native::Boom_API_LoadSceneAdditive", (const void*)ICALL_API_LoadSceneAdditive);
         mono_add_internal_call("Boom.Native::Boom_API_UnloadPauseMenu", (const void*)ICALL_API_UnloadPauseMenu);
+        mono_add_internal_call("Boom.Native::Boom_API_ShowPauseMenu", (const void*)ICALL_API_ShowPauseMenu);
         mono_add_internal_call("Boom.Native::Boom_API_TogglePause", (const void*)ICALL_API_TogglePause);
         mono_add_internal_call("Boom.Native::Boom_API_GetApplicationState", (const void*)ICALL_API_GetApplicationState);
         mono_add_internal_call("Boom.Native::Boom_API_IsPauseMenuLoaded", (const void*)ICALL_API_IsPauseMenuLoaded);
@@ -1271,12 +1474,18 @@ namespace Boom {
             (const void*)ICALL_API_SetListenerFromEntity);
 		//Raycasting internal call
         mono_add_internal_call("Boom.Native::Boom_API_PickGameEntity", (const void*)ICALL_API_PickGameEntity);
+        mono_add_internal_call("Boom.Native::Boom_API_GetMousePosInViewport", (const void*)ICALL_API_GetMousePosInViewport);
+        mono_add_internal_call("Boom.Native::Boom_API_ProjectWorldToViewport", (const void*)ICALL_API_ProjectWorldToViewport);
+        mono_add_internal_call("Boom.Native::Boom_API_Check2DViewportClick", (const void*)ICALL_API_Check2DViewportClick);
 
         mono_add_internal_call("Boom.Native::Boom_API_Linecast", (const void*)ICALL_API_Linecast);
 
         mono_add_internal_call("Boom.Native::Boom_API_SetRotationY", (const void*)ICALL_API_SetRotationY);
     
-        mono_add_internal_call("Boom.Native::LinecastIgnoreBoth", (const void*)ICALL_API_LinecastIgnoreBoth);
+        mono_add_internal_call("Boom.Native::Boom_API_LinecastIgnoreBoth",(const void*)ICALL_API_LinecastIgnoreBoth);
+
+        mono_add_internal_call("Boom.Native::Boom_API_SetGameLogicPaused", (const void*)ICALL_API_SetGameLogicPaused);
+        mono_add_internal_call("Boom.Native::Boom_API_EnableFileWatcher", (const void*)ICALL_API_EnableFileWatcher);
 
         mono_add_internal_call("Boom.Native::Boom_API_TeleportRigidBody", (void*)ICALL_API_TeleportRigidBody);
 
@@ -1288,5 +1497,6 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetSpriteColor", (const void*)ICALL_API_SetSpriteColor);
         mono_add_internal_call("Boom.Native::Boom_API_GetSpriteAlpha", (const void*)ICALL_API_GetSpriteAlpha);
         mono_add_internal_call("Boom.Native::Boom_API_SetSpriteAlpha", (const void*)ICALL_API_SetSpriteAlpha);
+        mono_add_internal_call("Boom.Native::Boom_API_SetSpriteTexture", (const void*)ICALL_API_SetSpriteTexture);
     }
 }

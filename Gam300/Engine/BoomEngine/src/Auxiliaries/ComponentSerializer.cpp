@@ -530,6 +530,9 @@ namespace Boom
         // === PAUSE MEN TAG COMPONENT ===
         RegisterPropertyComponent<PauseMenuTagComponent>("PauseMenuTagComponent");
 
+        // === DEACTIVATED COMPONENT ===
+        RegisterPropertyComponent<DeactivatedComponent>("DeactivatedComponent");
+
         // === SOUND COMPONENT ===
         registry.RegisterComponentSerializer(
             "SoundComponent",
@@ -565,6 +568,7 @@ namespace Boom
             },
             // Deserialize
             [](const YAML::Node& node, EntityRegistry& reg, EntityID ent, AssetRegistry& assets) {
+                (void)assets; // Unused parameter
                 if (!node || !node.IsMap()) return;
                 auto& sc = reg.get_or_emplace<SoundComponent>(ent);
                 sc.entries.clear();

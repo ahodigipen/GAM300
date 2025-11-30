@@ -1623,11 +1623,18 @@ namespace EditorUI {
                 [&]() { ctx->scene.remove<Boom::PauseMenuTagComponent>(m_App->SelectedEntity()); });
         }
 
+        if (selected.Has<Boom::DeactivatedComponent>()) {
+            static Boom::DeactivatedComponent fakeTagInstance;
+
+            DrawComponentSection("Deactivated Tag", &fakeTagInstance, [](void*) { return nullptr; }, true,
+                [&]() { ctx->scene.remove<Boom::DeactivatedComponent>(m_App->SelectedEntity()); });
+        }
+
         if (selected.Has<Boom::ScriptComponent>()) {
             ImGui::PushID("Script");
             auto& sc = selected.Get<Boom::ScriptComponent>();
 
-            // Collapsing header + settings ("..." to remove)
+            // Collapsing header + settings
             bool isOpen = ImGui::CollapsingHeader("Script",
                 ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap);
 
@@ -1656,12 +1663,24 @@ namespace EditorUI {
 
                 // ===== Context / scripting system pointer =====
                 auto* appCtx = m_Owner ? m_Owner->GetContext() : nullptr;
-
-                // Get raw pointer from unique_ptr (or nullptr if missing)
                 auto* scripting = (appCtx && appCtx->scriptingSystem)
                     ? appCtx->scriptingSystem.get()
                     : nullptr;
                 entt::entity currentEntity = m_App->SelectedEntity();
+
+                // *** FIX: Detect and fix "dead" script instances ***
+                bool needsRecreation = false;
+                if (sc.InstanceId == 0 && sc.Enabled && !sc.TypeName.empty()) {
+                    // Script should be alive but isn't - show warning
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.0f, 1.0f));
+                    ImGui::TextWrapped("WARNING: Script instance is missing (InstanceId=0)");
+                    ImGui::PopStyleColor();
+
+                    if (ImGui::Button("Fix: Recreate Instance", ImVec2(-1, 0))) {
+                        needsRecreation = true;
+                    }
+                    ImGui::Separator();
+                }
 
                 // Track if we need to recreate the instance this frame
                 bool enabledChanged = false;
@@ -1683,12 +1702,10 @@ namespace EditorUI {
                     availableTypes = scripting->GetAvailableScriptTypes();
                 }
 
-                // Current selection or "None"
                 const char* currentPreview = sc.TypeName.empty()
                     ? "None"
                     : sc.TypeName.c_str();
 
-                // If scripting system isn't ready, we still show the combo but empty
                 if (ImGui::BeginCombo("##ScriptTypeDropdown", currentPreview)) {
                     // "None" option
                     bool isNoneSelected = sc.TypeName.empty();
@@ -1717,10 +1734,11 @@ namespace EditorUI {
                     ImGui::EndCombo();
                 }
 
-                // Auto-recreate instance if TypeName or Enabled changed
-                if ((typeNameChanged || enabledChanged) && scripting) {
+                // Auto-recreate instance if TypeName, Enabled changed, or manual fix requested
+                if ((typeNameChanged || enabledChanged || needsRecreation) && scripting) {
                     scripting->RecreateForEntity(currentEntity, sc);
-                    BOOM_INFO("[Inspector] Auto-reloaded script due to changes");
+                    BOOM_INFO("[Inspector] Recreated script instance (Enabled={}, TypeName={})",
+                        sc.Enabled, sc.TypeName);
                 }
 
                 // ----- Params (JSON) -----
@@ -1733,7 +1751,7 @@ namespace EditorUI {
                 static entt::entity lastJsonEntity = entt::null;
 
                 if (currentEntity != lastJsonEntity) {
-                    std::string initial = sc.Params.dump(2); // pretty JSON
+                    std::string initial = sc.Params.dump(2);
 #ifdef _MSC_VER
                     strncpy_s(paramsBuf, sizeof(paramsBuf), initial.c_str(), sizeof(paramsBuf) - 1);
 #else
@@ -1749,7 +1767,6 @@ namespace EditorUI {
                     ImVec2(-1, 120),
                     ImGuiInputTextFlags_AllowTabInput))
                 {
-                    // Try parse back into JSON whenever text changes
                     try {
                         sc.Params = nlohmann::json::parse(paramsBuf);
                     }
@@ -1764,14 +1781,26 @@ namespace EditorUI {
                 ImGui::TextDisabled("Runtime Info");
                 ImGui::Text("Instance ID: %llu", (unsigned long long)sc.InstanceId);
 
+                // Enhanced status display
                 if (sc.InstanceId != 0 && sc.Enabled) {
-                    ImGui::TextColored(ImVec4(0, 1, 0, 1), "Active");
+                    ImGui::TextColored(ImVec4(0, 1, 0, 1), "[OK] Active");
                 }
-                else if (sc.InstanceId == 0 && sc.Enabled) {
-                    ImGui::TextColored(ImVec4(1, 0.5f, 0, 1), "Waiting for creation");
+                else if (sc.InstanceId == 0 && sc.Enabled && !sc.TypeName.empty()) {
+                    // This is the problematic state - should be active but isn't
+                    ImGui::TextColored(ImVec4(1, 0.5f, 0, 1), "[!] Instance Missing");
+                    ImGui::SameLine();
+                    ImGui::TextDisabled("(?)");
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip("Script is enabled but has no instance.\n"
+                            "This happens after exiting play mode.\n"
+                            "Click 'Fix: Recreate Instance' or enter play mode.");
+                    }
+                }
+                else if (sc.InstanceId == 0 && sc.Enabled && sc.TypeName.empty()) {
+                    ImGui::TextColored(ImVec4(1, 0.5f, 0, 1), "[!] No Type Selected");
                 }
                 else {
-                    ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), "Disabled");
+                    ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), "[ ] Disabled");
                 }
 
                 // ----- Reload buttons -----
@@ -1799,10 +1828,7 @@ namespace EditorUI {
             ImGui::PopID();
 
             if (removed) {
-                // Destroy the script instance before removing component
                 auto* appCtx = m_Owner ? m_Owner->GetContext() : nullptr;
-
-                // Get raw pointer from unique_ptr (or nullptr if missing)
                 auto* scripting = (appCtx && appCtx->scriptingSystem)
                     ? appCtx->scriptingSystem.get()
                     : nullptr;
@@ -2079,6 +2105,7 @@ namespace EditorUI {
                     UpdateComponent<Boom::ThirdPersonCameraComponent>(Boom::ComponentID::THIRD_PERSON_CAMERA, selected);
 					UpdateComponent<Boom::SpriteComponent>(Boom::ComponentID::SPRITE, selected);
                     UpdateComponent<Boom::PauseMenuTagComponent>(Boom::ComponentID::PAUSE_MENU_TAG, selected);
+                    UpdateComponent<Boom::DeactivatedComponent>(Boom::ComponentID::DEACTIVATED_TAG, selected);
                     ImGui::EndTable();
                 }
             }

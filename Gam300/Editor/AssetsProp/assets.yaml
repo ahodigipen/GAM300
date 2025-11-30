@@ -25,11 +25,11 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
-      AlbedoMapID: 3258529618581877054
-      NormalMapID: 0
+        roughness: 1
+        metallic: 0
+        occlusion: 0.5
+      AlbedoMapID: 4789105407518014319
+      NormalMapID: 18399105239901256411
       RoughnessMapID: 0
       MetallicMapID: 0
       OcclusionMapID: 0
@@ -42,9 +42,9 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
+        roughness: 1
+        metallic: 0
+        occlusion: 0.660000026
       AlbedoMapID: 255836083165499956
       NormalMapID: 0
       RoughnessMapID: 0
@@ -96,12 +96,12 @@ ASSETS:
         roughness: 0.400000006
         metallic: 0.5
         occlusion: 1
-      AlbedoMapID: 18036222300221331622
-      NormalMapID: 0
+      AlbedoMapID: 2945813282417974352
+      NormalMapID: 7568472483619014978
       RoughnessMapID: 0
       MetallicMapID: 0
       OcclusionMapID: 0
-      EmissiveMapID: 0
+      EmissiveMapID: 1821848361694167965
   - Type: MATERIAL
     UID: 295392599374634747
     Name: Cushion Texture
@@ -110,9 +110,9 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
+        roughness: 0.810000002
+        metallic: 0
+        occlusion: 0.800000012
       AlbedoMapID: 17585253655913077343
       NormalMapID: 0
       RoughnessMapID: 0
@@ -144,12 +144,12 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
+        roughness: 0
+        metallic: 0
+        occlusion: 0.529999971
       AlbedoMapID: 8781181629247619230
-      NormalMapID: 0
-      RoughnessMapID: 0
+      NormalMapID: 15056488335627110656
+      RoughnessMapID: 17384339938560687904
       MetallicMapID: 0
       OcclusionMapID: 0
       EmissiveMapID: 0
@@ -161,9 +161,9 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [0.99000001, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
+        roughness: 1
+        metallic: 0
+        occlusion: 0.860000014
       AlbedoMapID: 2779217692485608494
       NormalMapID: 0
       RoughnessMapID: 0
@@ -178,15 +178,32 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
+        roughness: 0
+        metallic: 0
+        occlusion: 0.699999988
       AlbedoMapID: 5444082718129606842
       NormalMapID: 0
       RoughnessMapID: 0
       MetallicMapID: 0
       OcclusionMapID: 0
       EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 14920165367361296626
+    Name: Enemy2
+    Source: Enemy2
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+      AlbedoMapID: 11307617190584154139
+      NormalMapID: 17384339938560687904
+      RoughnessMapID: 13175597232551743125
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 17639289908748203916
   - Type: MATERIAL
     UID: 6104124486273075758
     Name: Brick Wall Texture
@@ -195,12 +212,12 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
+        roughness: 1
+        metallic: 0
+        occlusion: 0.819999993
       AlbedoMapID: 6954761202802887072
       NormalMapID: 0
-      RoughnessMapID: 0
+      RoughnessMapID: 4932857500842133020
       MetallicMapID: 0
       OcclusionMapID: 0
       EmissiveMapID: 0
@@ -212,8 +229,8 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
+        roughness: 1
+        metallic: 0
         occlusion: 1
       AlbedoMapID: 11307617190584154139
       NormalMapID: 0
@@ -246,9 +263,9 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
+        roughness: 1
+        metallic: 0
+        occlusion: 0.0599999987
       AlbedoMapID: 0
       NormalMapID: 0
       RoughnessMapID: 0
@@ -280,9 +297,9 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
+        roughness: 1
+        metallic: 0
+        occlusion: 0.75999999
       AlbedoMapID: 5444082718129606842
       NormalMapID: 0
       RoughnessMapID: 0
@@ -297,11 +314,11 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
-      AlbedoMapID: 7155547352514417975
-      NormalMapID: 0
+        roughness: 1
+        metallic: 0
+        occlusion: 0.850000024
+      AlbedoMapID: 3489333510165140307
+      NormalMapID: 3489333510165140307
       RoughnessMapID: 0
       MetallicMapID: 0
       OcclusionMapID: 0
@@ -314,9 +331,9 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
+        roughness: 0.330000013
+        metallic: 0
+        occlusion: 0.829999983
       AlbedoMapID: 13175659529161961824
       NormalMapID: 0
       RoughnessMapID: 0
@@ -331,8 +348,8 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
+        roughness: 0
+        metallic: 0.200000003
         occlusion: 1
       AlbedoMapID: 18193537679852570258
       NormalMapID: 0
@@ -348,9 +365,9 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
+        roughness: 0.330000013
+        metallic: 0
+        occlusion: 0.959999979
       AlbedoMapID: 82665125486564339
       NormalMapID: 0
       RoughnessMapID: 0
@@ -365,14 +382,14 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
-      AlbedoMapID: 16209169500842126980
-      NormalMapID: 0
-      RoughnessMapID: 0
+        roughness: 1
+        metallic: 0
+        occlusion: 0.850000024
+      AlbedoMapID: 3670703154944615175
+      NormalMapID: 15050805329289275236
+      RoughnessMapID: 16209169500842126980
       MetallicMapID: 0
-      OcclusionMapID: 0
+      OcclusionMapID: 660614054657113155
       EmissiveMapID: 0
   - Type: MATERIAL
     UID: 16051879611138255440
@@ -382,9 +399,9 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
+        roughness: 1
+        metallic: 0
+        occlusion: 0.689999998
       AlbedoMapID: 15452675258460406062
       NormalMapID: 0
       RoughnessMapID: 0
@@ -399,9 +416,9 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
+        roughness: 1
+        metallic: 0
+        occlusion: 0.879999995
       AlbedoMapID: 4932857500842133020
       NormalMapID: 0
       RoughnessMapID: 0
@@ -442,6 +459,57 @@ ASSETS:
       MetallicMapID: 0
       OcclusionMapID: 0
       EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 7355395803280547314
+    Name: GrassTexture
+    Source: GrassTexture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.00999999978
+        metallic: 0
+        occlusion: 0.589999974
+      AlbedoMapID: 8080306587810410516
+      NormalMapID: 0
+      RoughnessMapID: 3295855584758501411
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 1773827607540986892
+    Name: GOLDKEY
+    Source: GOLDKEY
+    Properties:
+      Data:
+        emissive: [0.0399999991, 0.00999999978, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.540000021
+        metallic: 0.930000007
+        occlusion: 0.949999988
+      AlbedoMapID: 4067648091469832735
+      NormalMapID: 8651887321472737155
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+  - Type: MATERIAL
+    UID: 1781146247448718189
+    Name: Enemy1
+    Source: Enemy1
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 1
+        metallic: 0.0399999991
+        occlusion: 0.709999979
+      AlbedoMapID: 13725429989173629243
+      NormalMapID: 15056488335627110656
+      RoughnessMapID: 0
+      MetallicMapID: 12220421531860267391
+      OcclusionMapID: 0
+      EmissiveMapID: 15684685430910489836
   - Type: PHYSICS_MESH
     UID: 2159505294651867228
     Name: Wall_Slanted (Tri)
@@ -736,17 +804,6 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 10451005038005756580
-    Name: MainMenuMockup
-    Source: Resources/Textures/MainMenu/MainMenuMockup.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
     UID: 2600166467088307522
     Name: Indoor_Lantern_Hanging_2_openPBR_shader1_Roughness
     Source: Resources/Models/Props/1_JAN_Lantern Textures/Indoor_Lantern_Hanging_2_openPBR_shader1_Roughness.png
@@ -893,6 +950,17 @@ ASSETS:
     UID: 7527779657416384175
     Name: Red_Gem_Glow
     Source: Resources/UnityOtherFiles/UI Assets/Red_Gem_Glow.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 10550814798653882356
+    Name: UI_Beginning
+    Source: Resources/Textures/PlayerUI/UI_Beginning.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1242,6 +1310,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 11738458055785486354
+    Name: NewGameButton_Clicked
+    Source: Resources/Textures/MainMenu/NewGameButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 284235029935849495
     Name: Outdoor_Stone_Lantern2_Roof_BaseColor
     Source: Resources/Models/Props/Stone_Lantern_Textures/Outdoor_Stone_Lantern2_Roof_BaseColor.png
@@ -1341,6 +1420,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 11501595314086654412
+    Name: ReturnMenuButton_Clicked
+    Source: Resources/Textures/PauseMenu/ReturnMenuButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 17039813470002885239
     Name: Lantern_Hanging_openPBR_shader1_BaseColor
     Source: Resources/Models/Props/2_KEN_LanternTextures/Lantern_Hanging_openPBR_shader1_BaseColor.png
@@ -1399,6 +1489,17 @@ ASSETS:
     UID: 3559562522405013851
     Name: lantern_colour_2_Normal
     Source: Resources/Models/Props/lantern mat/lantern_colour_2_Normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 9683671951523272381
+    Name: heart_active
+    Source: Resources/Textures/PlayerUI/heart_active.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1990,6 +2091,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 7730071964959495492
+    Name: QuitButton
+    Source: Resources/Textures/PauseMenu/QuitButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 11743504275063107094
     Name: lantern_colour_1_BaseMap
     Source: Resources/Models/Props/lantern mat/lantern_colour_1_BaseMap.png
@@ -2037,6 +2149,17 @@ ASSETS:
     UID: 8189347454469401464
     Name: Outdoor_Stone_Lantern2_Base_BaseColor
     Source: Resources/Models/Props/Stone_Lantern_Textures/Outdoor_Stone_Lantern2_Base_BaseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 327234960441928512
+    Name: UI_Key
+    Source: Resources/Textures/PlayerUI/UI_Key.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2213,6 +2336,193 @@ ASSETS:
     UID: 15398575817850185585
     Name: 5th life
     Source: Resources/Textures/PlayerUI/5th life.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 14130988858541949245
+    Name: HowToPlayScroll
+    Source: Resources/Textures/HowToPlayMenu/HowToPlayScroll.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 6796308930608697527
+    Name: ReturnButton
+    Source: Resources/Textures/HowToPlayMenu/ReturnButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 8068162420720260057
+    Name: ReturnButton_Clicked
+    Source: Resources/Textures/HowToPlayMenu/ReturnButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 17872212269469502547
+    Name: MainMenuBackground
+    Source: Resources/Textures/MainMenu/MainMenuBackground.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 9596048226089820256
+    Name: MainMenuLogo
+    Source: Resources/Textures/MainMenu/MainMenuLogo.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 13056076664256934653
+    Name: MainMenuTeamName
+    Source: Resources/Textures/MainMenu/MainMenuTeamName.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 16990764436776752376
+    Name: ResumeButton
+    Source: Resources/Textures/PauseMenu/ResumeButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 12846627940444493632
+    Name: RestartButton
+    Source: Resources/Textures/PauseMenu/RestartButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 10830320094205736326
+    Name: ReturnMenuButton
+    Source: Resources/Textures/PauseMenu/ReturnMenuButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 15597616636115056766
+    Name: ResumeButton_Clicked
+    Source: Resources/Textures/PauseMenu/ResumeButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 4956013053420677798
+    Name: RestartButton_Clicked
+    Source: Resources/Textures/PauseMenu/RestartButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 10630437351094259867
+    Name: HowToPlayButton_Clicked
+    Source: Resources/Textures/MainMenu/HowToPlayButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 2150971313358040238
+    Name: ReturnButton_Clicked
+    Source: Resources/Textures/HowToPlayMenu/ReturnButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 947084306896258002
+    Name: heart_inactive
+    Source: Resources/Textures/PlayerUI/heart_inactive.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 10672115529321528506
+    Name: UI_End
+    Source: Resources/Textures/PlayerUI/UI_End.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 17547379845183205490
+    Name: UI_Garden
+    Source: Resources/Textures/PlayerUI/UI_Garden.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 13937156857161099910
+    Name: UI_Hold
+    Source: Resources/Textures/PlayerUI/UI_Hold.png
     Properties:
       Data:
         CompileAsCompressed: true

@@ -6,126 +6,104 @@ namespace GameScripts
     public class MainMenu
     {
         private const int MOUSE_LEFT = 0;
-        private const string LEVEL_SCENE_NAME = "M2_Redesign_scaled";
 
-        // Click sound
-        private const string BUTTON_CLICK_SOUND_ID = "ui_button_start";
-        private const string BUTTON_CLICK_SOUND_PATH = "Resources/Audio/buttonPressed.wav";
+        private const string NEWGAME_TEX_CLICKED = "Resources/Textures/MainMenu/NewGameButton_Clicked.png";
+        private const string HOWTOPLAY_TEX_CLICKED = "Resources/Textures/MainMenu/HowToPlayButton_Clicked.png";
+        private const string QUIT_TEX_CLICKED = "Resources/Textures/MainMenu/ExitButton_Clicked.png";
 
-        // Hover sound
-        private const string BUTTON_HOVER_SOUND_ID = "ui_button_hover";
-        private const string BUTTON_HOVER_SOUND_PATH = "Resources/Audio/buttonHover.wav";
-
-        // Store the unique IDs of our buttons
-        private ulong _startButtonID;
+        private ulong _newGameButtonID;
+        private ulong _howToPlayButtonID;
         private ulong _quitButtonID;
 
-        // Hover state to avoid spamming sound every frame
-        private bool _wasHoveringStart = false;
-        private bool _wasHoveringQuit = false;
+        private enum MenuState
+        {
+            Idle,
+            ButtonDelay
+        }
+
+        private MenuState _currentState = MenuState.Idle;
+        private ulong _clickedButtonID = 0;
 
         public void OnStart(string jsonParams)
         {
             API.Log("MainMenu OnStart Running...");
-
-            // Preload sounds
-            API.PreloadSound(BUTTON_CLICK_SOUND_ID, BUTTON_CLICK_SOUND_PATH);
-            API.PreloadSound(BUTTON_HOVER_SOUND_ID, BUTTON_HOVER_SOUND_PATH);
-
-            // Find the entities by name once at startup
-            _startButtonID = API.FindEntity("StartButton");
+            _newGameButtonID = API.FindEntity("NewGameButton");
+            _howToPlayButtonID = API.FindEntity("HowToPlayButton");
             _quitButtonID = API.FindEntity("QuitButton");
 
-            API.Log("Start ID: " + _startButtonID);
-            API.Log("Quit ID: " + _quitButtonID);
-
-            if (_startButtonID == 0) API.Log("Warning: StartButton not found!");
-            if (_quitButtonID == 0) API.Log("Warning: QuitButton not found!");
+            _currentState = MenuState.Idle;
+            _clickedButtonID = 0;
         }
 
         public void OnUpdate(float dt)
         {
-            // Raycast under mouse every frame for hover + click
-            ulong hoverID = API.PickGameEntity();
-            // API.Log(">> Hover Raycast returned ID: " + hoverID); // uncomment if you want spammy debug
-
-            bool isHoveringStart = (hoverID == _startButtonID);
-            bool isHoveringQuit = (hoverID == _quitButtonID);
-
-            // --- HOVER SOUND LOGIC ---
-
-            // Start button hover enter
-            if (isHoveringStart && !_wasHoveringStart)
+            switch (_currentState)
             {
-                API.Log(">> Hovered Start Button - playing hover sound");
-                Vec3 pos = new Vec3(0f, 0f, 0f);
-                if (API.HasTransform(_startButtonID))
-                    pos = API.GetPosition(_startButtonID);
+                case MenuState.Idle:
+                    Update_Idle();
+                    break;
 
-                API.PlaySoundAt(BUTTON_HOVER_SOUND_ID, BUTTON_HOVER_SOUND_PATH, pos, false);
-                API.SetSoundVolume(BUTTON_HOVER_SOUND_ID, 0.5f);
+                case MenuState.ButtonDelay:
+                    Update_ButtonDelay(dt);
+                    break;
             }
+        }
 
-            // Quit button hover enter (use same hover sound)
-            if (isHoveringQuit && !_wasHoveringQuit)
-            {
-                API.Log(">> Hovered Quit Button - playing hover sound");
-                Vec3 pos = new Vec3(0f, 0f, 0f);
-                if (API.HasTransform(_quitButtonID))
-                    pos = API.GetPosition(_quitButtonID);
-
-                API.PlaySoundAt(BUTTON_HOVER_SOUND_ID, BUTTON_HOVER_SOUND_PATH, pos, false);
-                API.SetSoundVolume(BUTTON_HOVER_SOUND_ID, 0.85f);
-            }
-
-            // Update hover state
-            _wasHoveringStart = isHoveringStart;
-            _wasHoveringQuit = isHoveringQuit;
-
-            // --- CLICK LOGIC ---
-
+        private void Update_Idle()
+        {
             if (API.IsMouseDown(MOUSE_LEFT))
             {
-                API.Log(">> Mouse Click Detected!");
-
-                // Reuse hoverID as what we clicked on
-                ulong hitID = hoverID;
-                API.Log(">> Click Raycast returned ID: " + hitID);
-
-                if (hitID != 0)
+                if (!API.GetMousePosInViewport(out Vec2 mousePos))
                 {
-                    API.Log("Hit ID: " + hitID);
-                    API.Log("Wanted Start ID: " + _startButtonID);
-
-                    if (hitID == _startButtonID)
-                    {
-                        API.Log(">> Start Button Clicked! Playing sound + Starting Game...");
-
-                        Vec3 pos = new Vec3(0f, 0f, 0f);
-                        if (API.HasTransform(hitID))
-                            pos = API.GetPosition(hitID);
-
-                        API.PlaySoundAt(BUTTON_CLICK_SOUND_ID, BUTTON_CLICK_SOUND_PATH, pos, false);
-                        API.SetSoundVolume(BUTTON_CLICK_SOUND_ID, 1.0f);
-
-                        API.LoadScene(LEVEL_SCENE_NAME);
-                    }
-                    else if (hitID == _quitButtonID)
-                    {
-                        API.Log(">> Quit Button Clicked! Exiting Game...");
-                        API.QuitGame();
-                    }
-                    else
-                    {
-                        API.Log(">> Clicked on an unrecognized entity.");
-                    }
-
-                    API.Log(">> HIT VALID ENTITY!");
+                    return;
                 }
-                else
-                {
-                    API.Log(">> Raycast Missed (ID was 0)");
-                }
+
+                if (API.Check2DViewportClick(_newGameButtonID, mousePos.X, mousePos.Y))
+                    StartClickDelay(_newGameButtonID);
+                else if (API.Check2DViewportClick(_howToPlayButtonID, mousePos.X, mousePos.Y))
+                    StartClickDelay(_howToPlayButtonID);
+                else if (API.Check2DViewportClick(_quitButtonID, mousePos.X, mousePos.Y))
+                    StartClickDelay(_quitButtonID);
+            }
+        }
+
+        private void Update_ButtonDelay(float dt)
+        {
+            ExecuteClickAction();
+        }
+
+        private void StartClickDelay(ulong buttonID)
+        {
+            _currentState = MenuState.ButtonDelay;
+            _clickedButtonID = buttonID;
+
+            // 3. Set the texture
+            if (buttonID == _newGameButtonID)
+                API.SetSpriteTexture(buttonID, NEWGAME_TEX_CLICKED);
+            else if (buttonID == _howToPlayButtonID)
+                API.SetSpriteTexture(buttonID, HOWTOPLAY_TEX_CLICKED);
+            else if (buttonID == _quitButtonID)
+                API.SetSpriteTexture(buttonID, QUIT_TEX_CLICKED);
+        }
+
+        private void ExecuteClickAction()
+        {
+            _currentState = MenuState.Idle;
+
+            if (_clickedButtonID == _newGameButtonID)
+            {
+                API.Log(">> New Game Button Clicked! Starting Game...");
+                API.LoadScene(Entry.LEVEL_SCENE_NAME);
+            }
+            else if (_clickedButtonID == _howToPlayButtonID)
+            {
+                API.Log(">> How To Play Button Clicked! Loading HowToPlay...");
+                API.LoadScene(Entry.HOW_TO_PLAY_SCENE_NAME);
+            }
+            else if (_clickedButtonID == _quitButtonID)
+            {
+                API.Log(">> Quit Button Clicked! Exiting Game...");
+                API.ShutdownApplication();
             }
         }
     }
