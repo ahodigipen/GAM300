@@ -307,6 +307,8 @@ namespace Boom
                 }
             }
 
+            SoundEngine::Instance().Update();
+
             LightsUpdate();
 
             // Flycam (edit mode only)
