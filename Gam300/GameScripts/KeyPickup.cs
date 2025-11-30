@@ -72,16 +72,12 @@ namespace GameScripts
                 API.SetSoundVolume("sfx_key_pickup", 0.9f);
             }
 
-            // "Destroy" key: unregister callbacks and hide it
+            // "Destroy" key: unregister callbacks and teleport it far below the map
             API.UnregisterTriggerCallbacks(inst.Entity);
 
-            // *** REMOVE THIS LINE - Don't try to modify shared shape ***
-            // API.SetTrigger(inst.Entity, false);
-
-            // Hide: scale to zero (visual off)
-            var t = API.GetTransform(inst.Entity);
-            t.Scale = new Vec3(0f, 0f, 0f);
-            API.SetTransform(inst.Entity, t);
+            // Teleport key to bottom of map (far below Y = -100)
+            var currentPos = API.GetPosition(inst.Entity);
+            API.SetPosition(inst.Entity, new Vec3(currentPos.X, -100f, currentPos.Z));
 
             API.Log("[KeyPickup] Key collected! Total keys: " + PlayerInventory.GetKeyCount());
         }
