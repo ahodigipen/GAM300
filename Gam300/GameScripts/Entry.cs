@@ -6,7 +6,7 @@ namespace GameScripts
 
     public static class Entry
     {
-        public const string LEVEL_SCENE_NAME = "M2_Redesign_scaled";
+        public const string LEVEL_SCENE_NAME = "M3 GAMEPLAY";
         public const string PAUSE_SCENE_NAME = "PauseMenu";
         public const string MAIN_MENU_SCENE_NAME = "MainMenu";
         public const string HOW_TO_PLAY_SCENE_NAME = "HowToPlay";

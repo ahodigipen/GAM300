@@ -58,11 +58,11 @@ namespace GameScripts
 
             _anchorPos = API.GetPosition(Entity);
 
-            /*_vision = new VisionComponent { Entity = Entity };
+            _vision = new VisionComponent { Entity = Entity };
             _vision.OnTargetDetected += OnPlayerDetected;
             _vision.OnTargetLost += OnPlayerLost;
             _vision.OnTargetUpdated += OnPlayerTracking;
-            _vision.OnStart(json);*/
+            _vision.OnStart(json);
 
             _footBase = "foot_" + Entity.ToString();
             _alertName = "alert_" + Entity.ToString();
