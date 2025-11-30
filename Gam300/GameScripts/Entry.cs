@@ -13,6 +13,9 @@ namespace GameScripts
         public static string _currentSceneName;
         public static bool IsGamePaused = false;
 
+        // GLFW key constants
+        public const int KEY_ESCAPE = 256;
+
         public enum PauseMenuAction
         {
             None,
@@ -25,12 +28,14 @@ namespace GameScripts
         public static PauseMenuAction s_RequestedAction = PauseMenuAction.None;
 
         private static bool _p_KeyWasDown = false;
+        private static bool _escape_KeyWasDown = false;
         public static PauseMenu s_ActivePauseMenuInstance = null;
 
 
         public static void Start()
         {
             _p_KeyWasDown = false;
+            _escape_KeyWasDown = false;
             IsGamePaused = false;
             s_RequestedAction = PauseMenuAction.None;
 
@@ -77,15 +82,29 @@ namespace GameScripts
         private static void UpdateGame(float dt)
         {
             bool p_KeyDown = API.IsKeyDown(API.KEY_P);
+            bool escape_KeyDown = API.IsKeyDown(KEY_ESCAPE);
             bool ctrl_KeyDown = API.IsKeyDown(API.KEY_LEFT_CONTROL);
 
+            // Handle Escape key to pause
+            if (escape_KeyDown && !_escape_KeyWasDown)
+            {
+                API.Log("Pausing game (Escape key)...");
+                IsGamePaused = true;
+                API.ShowPauseMenu();
+                API.EnableFileWatcher(false);
+
+                _escape_KeyWasDown = escape_KeyDown;
+                return;
+            }
+            _escape_KeyWasDown = escape_KeyDown;
+
+            // Handle P key to pause (legacy support)
             if (p_KeyDown && !_p_KeyWasDown && !ctrl_KeyDown)
             {
                 API.Log("Pausing game (P key)...");
                 IsGamePaused = true;
                 API.ShowPauseMenu();
                 API.EnableFileWatcher(false);
-
 
                 _p_KeyWasDown = p_KeyDown;
                 return;
@@ -96,6 +115,18 @@ namespace GameScripts
 
         private static void UpdatePauseMenu(float dt)
         {
+            bool escape_KeyDown = API.IsKeyDown(KEY_ESCAPE);
+
+            // Handle Escape key to resume
+            if (escape_KeyDown && !_escape_KeyWasDown)
+            {
+                API.Log("Resuming game (Escape key)...");
+                s_RequestedAction = PauseMenuAction.Resume;
+                _escape_KeyWasDown = escape_KeyDown;
+                return;
+            }
+            _escape_KeyWasDown = escape_KeyDown;
+
             if (s_ActivePauseMenuInstance != null)
             {
                 s_ActivePauseMenuInstance.OnUpdate(dt);

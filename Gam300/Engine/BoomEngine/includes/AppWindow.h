@@ -190,10 +190,10 @@ namespace Boom {
 			auto* self = GetUserData(win);
 			if (!self) return;
 
-			if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-				glfwSetWindowShouldClose(win, GLFW_TRUE);
-				return;
-			}
+			//if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+				//glfwSetWindowShouldClose(win, GLFW_TRUE);
+				//return;
+			//}
 
 			self->input.onKey(key, sc, action, mods);
 
