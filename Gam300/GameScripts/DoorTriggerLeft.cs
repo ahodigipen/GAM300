@@ -67,7 +67,7 @@ namespace GameScripts
                 // Forward = (sin(yaw), cos(yaw)); Left (CCW) = (-cos(yaw), sin(yaw))
                 float fx = (float)Math.Sin(yawRad);
                 float fz = (float)Math.Cos(yawRad);
-                _leftDir = new Vec3(-fz, 0f, fx); // unit left vector in XZ
+                _leftDir = new Vec3(fz, 0f, -fx); // unit left vector in XZ
 
                 // Target position = base + left * distance
                 _targetPos = new Vec3(
