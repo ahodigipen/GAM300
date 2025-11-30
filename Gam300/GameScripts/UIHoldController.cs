@@ -52,7 +52,7 @@ namespace GameScripts
             if (_shouldShow && _enablePulse && _currentAlpha > 0.5f)
             {
                 _pulseTimer += dt * _pulseSpeed;
-                float pulse = _pulseMin + (_pulseMax - _pulseMin) * 
+                float pulse = _pulseMin + (_pulseMax - _pulseMin) *
                               (0.5f + 0.5f * (float)Math.Sin(_pulseTimer));
                 targetAlpha *= pulse;
             }

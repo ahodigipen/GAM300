@@ -5,7 +5,7 @@ namespace GameScripts
 {
     /// <summary>
     /// Controls the key pickup UI sprite with smooth fade in/out effects
-    /// Shows when player picks up a key, then fades away
+    /// Shows when player picks up a key and remains visible until the key is used
     /// </summary>
     public class UIKeyController
     {
@@ -16,12 +16,13 @@ namespace GameScripts
 
         // Animation state
         private bool _isShowing = false;
-        private float _displayDuration = 2.5f;  // How long to show the key before fading
         private float _fadeInSpeed = 3.0f;      // Speed of fade in
         private float _fadeOutSpeed = 2.0f;     // Speed of fade out
         private float _currentAlpha = 0.0f;
         private float _targetAlpha = 0.0f;
-        private float _displayTimer = 0.0f;
+
+        // Track key count
+        private int _lastKeyCount = 0;
 
         // State machine
         private enum State { Hidden, FadingIn, Displaying, FadingOut }
@@ -40,11 +41,35 @@ namespace GameScripts
             {
                 //API.LogWarning($"[UIKey] Failed to find sprite: {_keySpriteName}");
             }
+
+            _lastKeyCount = PlayerInventory.GetKeyCount();
         }
 
         public void OnUpdate(float dt)
         {
             if (_keySprite == 0 || !API.HasSprite(_keySprite)) return;
+
+            // Check if key count has changed
+            int currentKeyCount = PlayerInventory.GetKeyCount();
+
+            // If we picked up a key, fade it in
+            if (currentKeyCount > _lastKeyCount)
+            {
+                if (_currentState == State.Hidden || _currentState == State.FadingOut)
+                {
+                    _currentState = State.FadingIn;
+                    _currentAlpha = 0.0f;
+                    API.Log("[UIKey] Key picked up - showing UI");
+                }
+                _lastKeyCount = currentKeyCount;
+            }
+            // If a key was used, fade it out
+            else if (currentKeyCount < _lastKeyCount)
+            {
+                _currentState = State.FadingOut;
+                API.Log("[UIKey] Key used - hiding UI");
+                _lastKeyCount = currentKeyCount;
+            }
 
             switch (_currentState)
             {
@@ -60,15 +85,14 @@ namespace GameScripts
                     {
                         _currentAlpha = 1.0f;
                         _currentState = State.Displaying;
-                        _displayTimer = 0.0f;
                     }
                     break;
 
                 case State.Displaying:
-                    _displayTimer += dt;
-                    if (_displayTimer >= _displayDuration)
+                    // Stay visible while player has keys
+                    if (currentKeyCount > 0)
                     {
-                        _currentState = State.FadingOut;
+                        API.SetSpriteAlpha(_keySprite, 1.0f);
                     }
                     break;
 

@@ -62,6 +62,7 @@ namespace GameScripts
 
             inst._collected = true;
             PlayerInventory.AddKey(1);
+            UIManager.ShowKeyPickup();
 
             // Play pickup SFX at key's position
             if (API.HasTransform(inst.Entity))

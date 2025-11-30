@@ -24,7 +24,6 @@ namespace GameScripts
         private float _walkSpeed = 3f;
         private float _sprintSpeed = 8f;
         private float _sneakSpeed = 1.5f;
-        private float _jumpSpeed = 5f;
 
         private int _health = 5;
         private int _maxHealth = 5;
@@ -44,9 +43,6 @@ namespace GameScripts
         private float _fadeInDuration = 0.75f;
 
         private FootstepComponent _footstepComponent;
-
-        private bool _wasSpacePressed = false;
-        private bool _hasJumped = false;
 
         private static ulong s_playerEntity = 0;
         private static PlayerMovement s_instance = null;
@@ -69,7 +65,6 @@ namespace GameScripts
         private Vec3 _rollDir = new Vec3(0, 0, 0);
 
         // ==== Crouch / Stealth Fields ====
-        // Using existing key constant (Q) since KEY_C does not exist in API.
         private const int CROUCH_KEY = API.KEY_Q;
         private bool _inCrouchZone = false;
         private bool _isCrouching = false;
@@ -109,7 +104,6 @@ namespace GameScripts
                 API.AnimatorSetBool(Entity, "Sprint", false);
                 API.AnimatorSetBool(Entity, "IsSneaking", false);
                 API.AnimatorSetBool(Entity, "IsRolling", false);
-                // Always set (engine should ignore unknown params gracefully)
                 API.AnimatorSetBool(Entity, "IsCrouching", false);
             }
 
@@ -197,7 +191,6 @@ namespace GameScripts
                     bool isTrigger = API.IsTrigger(crouchZone);
                     API.Log($"[PlayerMovement] CrouchTriggerZone IsTrigger: {isTrigger}");
 
-                    // Try registering anyway, even if IsTrigger returns false
                     API.RegisterTriggerEnterCallback(crouchZone, OnTriggerEnter);
                     API.RegisterTriggerExitCallback(crouchZone, OnTriggerExit);
                     API.Log("[PlayerMovement] Registered callbacks for CrouchTriggerZone (forced)");
@@ -269,11 +262,6 @@ namespace GameScripts
             if (_inCrouchZone)
             {
                 bool crouchDown = API.IsKeyDown(CROUCH_KEY);
-                // Add debugging
-                if (crouchDown != _isCrouching)
-                {
-                    API.Log($"[PlayerMovement] Crouch state changing: crouchDown={crouchDown}, _isCrouching={_isCrouching}");
-                }
 
                 if (crouchDown && !_isCrouching)
                 {
@@ -361,16 +349,6 @@ namespace GameScripts
                 vel.X = 0f;
                 vel.Z = 0f;
             }
-
-            bool spaceDown = API.IsKeyDown(API.KEY_SPACE);
-            if (isGrounded && _hasJumped && vel.Y <= 0.1f) _hasJumped = false;
-            if (allowMove && isGrounded && spaceDown && !_wasSpacePressed && !_hasJumped)
-            {
-                vel.Y = _jumpSpeed;
-                _hasJumped = true;
-                if (_hasAnimator) API.AnimatorSetTrigger(Entity, "Jump");
-            }
-            _wasSpacePressed = spaceDown;
 
             bool ctrlDown = API.IsKeyDown(API.KEY_LEFT_CONTROL);
             Vec3 desiredMoveDir = new Vec3(0, 0, 0);
