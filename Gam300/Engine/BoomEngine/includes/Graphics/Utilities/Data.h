@@ -119,7 +119,7 @@ namespace Boom {
 			enum CameraType {
 			Main,
 			Sub
-		}cameraType;
+		}cameraType{};
 	};
 
 	struct PbrMaterial {
@@ -175,9 +175,9 @@ namespace Boom {
 
 		}
 
-		glm::vec3 radiance;
-		float intensity;
-		float range;
+		glm::vec3 radiance{};
+		float intensity{};
+		float range{};
 		// ===== PointLight =====
 		XPROPERTY_DEF(
 			"PointLight", PointLight,
