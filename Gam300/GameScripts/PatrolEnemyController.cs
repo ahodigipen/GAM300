@@ -88,12 +88,12 @@ namespace GameScripts
                 API.AnimatorSetFloat(Entity, "Speed", (float)_smoothedSpeed);
             }
 
-            if (LOCK_IN_PLACE)
-            {
-                API.SetLinearVelocity(Entity, new Vec3(0f, v.Y, 0f));
-                var p = API.GetPosition(Entity);
-                API.SetPosition(Entity, new Vec3(_anchorPos.X, p.Y, _anchorPos.Z));
-            }
+            //if (LOCK_IN_PLACE)
+            //{
+            //    API.SetLinearVelocity(Entity, new Vec3(0f, v.Y, 0f));
+            //    var p = API.GetPosition(Entity);
+            //    API.SetPosition(Entity, new Vec3(_anchorPos.X, p.Y, _anchorPos.Z));
+            //}
 
             // ======= DISCRETE FOOTSTEPS =======
             bool grounded = API.IsColliding(Entity);              // your RB “grounded” flag
