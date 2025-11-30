@@ -15,11 +15,11 @@ namespace GameScripts
         private ulong _keySprite = 0;
 
         // Animation state
-        private bool _isShowing = false;
+        //private bool _isShowing = false;
         private float _fadeInSpeed = 3.0f;      // Speed of fade in
         private float _fadeOutSpeed = 2.0f;     // Speed of fade out
         private float _currentAlpha = 0.0f;
-        private float _targetAlpha = 0.0f;
+        //private float _targetAlpha = 0.0f;
 
         // Track key count
         private int _lastKeyCount = 0;

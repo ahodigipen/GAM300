@@ -1027,8 +1027,9 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
     BOOM_INLINE entt::entity GetOrCreateSceneSettings(entt::registry& reg)
     {
         auto view = reg.view<SceneNavmeshComponent>();
-        for (auto e : view) {
-            return e;                  // first one
+        if (!view.empty())
+        {
+            return *view.begin();
         }
 
         // Otherwise create + attach component
