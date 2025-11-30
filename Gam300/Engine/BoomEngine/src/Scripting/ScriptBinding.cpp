@@ -1097,6 +1097,13 @@ namespace Boom {
         float vW = win->GetViewportW();
         float vH = win->GetViewportH();
 
+        // CRITICAL FIX: In standalone builds (no editor), viewport dimensions are 0
+        // Use full window dimensions instead (same fix as GetMousePosInViewport)
+        if (vW <= 1.0f || vH <= 1.0f) {
+            vW = static_cast<float>(win->getWidth());
+            vH = static_cast<float>(win->getHeight());
+        }
+
         // convert transform from ndc to screen pos
         glm::vec2 pos{ transformComp->transform.translate };
         pos.x = ((pos.x + 1.f) * 0.5f) * vW;
