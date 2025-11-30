@@ -12,7 +12,7 @@
 #define GLM_DLL
 
 #pragma warning(push)
-#pragma warning(disable : 4101 4244 4267 4365 4458 4100 5054 4189 26819 6262 26495) //library warnings disable
+#pragma warning(disable : 4101 4244 4267 4365 4458 4100 5054 4189 26819 6262 26495 4834) //library warnings disable + nodiscard
 // add headers that you want to pre-compile here
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -47,6 +47,8 @@
 #include <foundation/PxMath.h>
 #pragma warning(pop)
 
+// Disable [[nodiscard]] warnings for the rest of the project
+#pragma warning(disable : 4834)
 
 // include spdlog
 //#define FMT_HEADER_ONLY
@@ -119,13 +121,12 @@ BOOM_INLINE constexpr uint32_t TypeID()
 	}
 
 	// Convenience macros � expand to no-ops when logging is disabled:
-	// Cast to void to suppress [[nodiscard]] warnings (C4834)
-	#define BOOM_TRACE(...) (void)Boom::GetLogger()->trace(__VA_ARGS__)
-	#define BOOM_DEBUG(...) (void)Boom::GetLogger()->debug(__VA_ARGS__)
-	#define BOOM_INFO(...)  (void)Boom::GetLogger()->info(__VA_ARGS__)
-	#define BOOM_WARN(...)  (void)Boom::GetLogger()->warn(__VA_ARGS__)
-	#define BOOM_ERROR(...) (void)Boom::GetLogger()->error(__VA_ARGS__)
-	#define BOOM_FATAL(...) (void)Boom::GetLogger()->critical(__VA_ARGS__)
+	#define BOOM_TRACE(...) Boom::GetLogger()->trace(__VA_ARGS__)
+	#define BOOM_DEBUG(...) Boom::GetLogger()->debug(__VA_ARGS__)
+	#define BOOM_INFO(...)  Boom::GetLogger()->info(__VA_ARGS__)
+	#define BOOM_WARN(...)  Boom::GetLogger()->warn(__VA_ARGS__)
+	#define BOOM_ERROR(...) Boom::GetLogger()->error(__VA_ARGS__)
+	#define BOOM_FATAL(...) Boom::GetLogger()->critical(__VA_ARGS__)
 
 #else
 	#define BOOM_TRACE
