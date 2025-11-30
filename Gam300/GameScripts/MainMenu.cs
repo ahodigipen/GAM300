@@ -18,11 +18,17 @@ namespace GameScripts
         private enum MenuState
         {
             Idle,
-            ButtonDelay
+            ButtonDelay,
+            FadingOut
         }
 
         private MenuState _currentState = MenuState.Idle;
         private ulong _clickedButtonID = 0;
+
+        // Fade transition state
+        private float _fadeTimer = 0f;
+        private float _fadeDuration = 1.0f;
+        private string _sceneToLoad = "";
 
         public void OnStart(string jsonParams)
         {
@@ -33,6 +39,10 @@ namespace GameScripts
 
             _currentState = MenuState.Idle;
             _clickedButtonID = 0;
+
+            // Fade in from black when menu loads
+            API.SetScreenFadeAlpha(1f);
+            StartFadeIn();
         }
 
         public void OnUpdate(float dt)
@@ -41,10 +51,15 @@ namespace GameScripts
             {
                 case MenuState.Idle:
                     Update_Idle();
+                    UpdateFadeIn(dt);
                     break;
 
                 case MenuState.ButtonDelay:
                     Update_ButtonDelay(dt);
+                    break;
+
+                case MenuState.FadingOut:
+                    UpdateFadeOut(dt);
                     break;
             }
         }
@@ -77,7 +92,7 @@ namespace GameScripts
             _currentState = MenuState.ButtonDelay;
             _clickedButtonID = buttonID;
 
-            // 3. Set the texture
+            // Set the texture
             if (buttonID == _newGameButtonID)
                 API.SetSpriteTexture(buttonID, NEWGAME_TEX_CLICKED);
             else if (buttonID == _howToPlayButtonID)
@@ -88,23 +103,70 @@ namespace GameScripts
 
         private void ExecuteClickAction()
         {
-            _currentState = MenuState.Idle;
-
             if (_clickedButtonID == _newGameButtonID)
             {
-                API.Log(">> New Game Button Clicked! Starting Game...");
-                API.LoadScene(Entry.LEVEL_SCENE_NAME);
+                API.Log(">> New Game Button Clicked! Fading to game scene...");
+                _sceneToLoad = Entry.LEVEL_SCENE_NAME;
+                _currentState = MenuState.FadingOut;
+                _fadeTimer = 0f;
             }
             else if (_clickedButtonID == _howToPlayButtonID)
             {
                 API.Log(">> How To Play Button Clicked! Loading HowToPlay...");
-                API.LoadScene(Entry.HOW_TO_PLAY_SCENE_NAME);
+                _currentState = MenuState.Idle;
+                API.LoadScene("HowToPlay");
             }
             else if (_clickedButtonID == _quitButtonID)
             {
-                API.Log(">> Quit Button Clicked! Exiting Game...");
+                API.Log(">> Quit Button Clicked! Shutting down...");
                 API.ShutdownApplication();
             }
+            else
+            {
+                _currentState = MenuState.Idle;
+            }
+
+            _clickedButtonID = 0;
         }
+
+        // Fade in from black (called when menu loads)
+        private bool _isFadingIn = false;
+        private void StartFadeIn()
+        {
+            _isFadingIn = true;
+            _fadeTimer = 0f;
+        }
+
+        private void UpdateFadeIn(float dt)
+        {
+            if (!_isFadingIn) return;
+
+            _fadeTimer += dt;
+            float alpha = 1f - Clamp01(_fadeTimer / _fadeDuration);
+            API.SetScreenFadeAlpha(alpha);
+
+            if (_fadeTimer >= _fadeDuration)
+            {
+                API.SetScreenFadeAlpha(0f);
+                _isFadingIn = false;
+            }
+        }
+
+        // Fade out to black before loading scene
+        private void UpdateFadeOut(float dt)
+        {
+            _fadeTimer += dt;
+            float alpha = Clamp01(_fadeTimer / _fadeDuration);
+            API.SetScreenFadeAlpha(alpha);
+
+            if (_fadeTimer >= _fadeDuration)
+            {
+                API.SetScreenFadeAlpha(1f);
+                API.Log($"[MainMenu] Loading scene: {_sceneToLoad}");
+                API.LoadScene(_sceneToLoad);
+            }
+        }
+
+        private static float Clamp01(float v) => v < 0f ? 0f : (v > 1f ? 1f : v);
     }
 }

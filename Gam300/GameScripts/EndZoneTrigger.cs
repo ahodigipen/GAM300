@@ -1,4 +1,5 @@
-﻿using Boom;
+﻿using System.Collections.Generic;
+using Boom;
 
 namespace GameScripts
 {
@@ -10,72 +11,72 @@ namespace GameScripts
     {
         public ulong Entity;
 
-        private ulong _playerID = 0;
         private bool _hasTriggered = false;
-        private float _triggerDelay = 0.5f;  // Small delay to prevent multiple triggers
-        private float _triggerTimer = 0f;
+
+        // Static instance tracking like DoorTriggerLeft
+        private static readonly Dictionary<ulong, EndZoneTrigger> s_instances = new Dictionary<ulong, EndZoneTrigger>();
 
         public void OnStart(string jsonParams)
         {
-            // Find the player entity once during startup
-            _playerID = API.FindEntity("Samurai");
+            // Register this instance
+            s_instances[Entity] = this;
 
-            if (_playerID == 0)
+            // Ensure trigger is configured
+            if (!API.HasCollider(Entity))
             {
-                API.Log("[EndZoneTrigger] WARNING: Could not find Player entity!");
+                API.Log("[EndZoneTrigger] WARNING: Trigger entity has no collider!");
             }
-            else
-            {
-                API.Log("[EndZoneTrigger] Initialized and found player");
-            }
-
-            // Ensure this entity is configured as a trigger
-            if (API.HasCollider(Entity) && !API.IsTrigger(Entity))
+            else if (!API.IsTrigger(Entity))
             {
                 API.SetTrigger(Entity, true);
             }
+
+            // Register static callbacks
+            API.RegisterTriggerEnterCallback(Entity, OnTriggerEnterCallback);
+            API.RegisterTriggerExitCallback(Entity, OnTriggerExitCallback);
+            API.Log("[EndZoneTrigger] Registered trigger callbacks.");
         }
 
         public void OnUpdate(float dt)
         {
-            if (_hasTriggered)
-            {
-                _triggerTimer += dt;
-                if (_triggerTimer >= _triggerDelay)
-                {
-                    // Load the main menu scene
-                    API.Log("[EndZoneTrigger] Loading MainMenu...");
-                    API.LoadScene("MainMenu");
-                    _hasTriggered = false;  // Reset for potential scene reload
-                    _triggerTimer = 0f;
-                }
-                return;
-            }
+            // No update logic needed - scene loads immediately on trigger
         }
 
-        public void OnTriggerEnter(ulong otherEntityID)
+        public void OnDestroy()
         {
-            // Check if the entity that entered is the player
-            if (otherEntityID == _playerID && _playerID != 0)
-            {
-                API.Log("[EndZoneTrigger] Player entered end zone!");
-                _hasTriggered = true;
-                _triggerTimer = 0f;
-            }
+            if (s_instances.ContainsKey(Entity)) s_instances.Remove(Entity);
+            API.UnregisterTriggerCallbacks(Entity);
         }
 
-        public void OnTriggerStay(ulong otherEntityID)
+        // Static callback for trigger enter
+        private static void OnTriggerEnterCallback(ulong triggerEntity, ulong otherEntity)
         {
-            // Optional: Handle continuous trigger stay
+            EndZoneTrigger inst;
+            if (!s_instances.TryGetValue(triggerEntity, out inst)) return;
+
+            // Only player triggers this
+            if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
+
+            // Prevent multiple triggers
+            if (inst._hasTriggered) return;
+
+            API.Log("[EndZoneTrigger] Player entered end zone! Loading MainMenu...");
+            inst._hasTriggered = true;
+
+            // Load the main menu scene immediately
+            API.LoadScene("MainMenu");
         }
 
-        public void OnTriggerExit(ulong otherEntityID)
+        // Static callback for trigger exit
+        private static void OnTriggerExitCallback(ulong triggerEntity, ulong otherEntity)
         {
-            // Optional: Reset if player leaves
-            if (otherEntityID == _playerID && !_hasTriggered)
-            {
-                API.Log("[EndZoneTrigger] Player left end zone");
-            }
+            EndZoneTrigger inst;
+            if (!s_instances.TryGetValue(triggerEntity, out inst)) return;
+
+            // Only react to player exiting
+            if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
+
+            API.Log("[EndZoneTrigger] Player left end zone");
         }
     }
 }
