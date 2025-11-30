@@ -1108,8 +1108,15 @@ namespace Boom {
         glm::vec2 max{ pos + scale * 0.5f };
         glm::vec2 mouse{ mouseX, mouseY };
 
-        if (mouse.x < min.x || mouse.x > max.x || mouse.y < min.y || mouse.y > max.y) return false;
+        std::cout << "min: " << min.x << " " << min.y << std::endl;
+        std::cout << "max: " << max.x << " " << max.y << std::endl;
+        std::cout << "mouse: " << mouse.x << " " << mouse.y << std::endl;
+        if (mouse.x < min.x || mouse.x > max.x || mouse.y < min.y || mouse.y > max.y) {
+            std::cout << (mouse.x < min.x) << '|' << (mouse.x > max.x) << '|' << (mouse.y < min.y) << '|' << (mouse.y > max.y) << std::endl;
+            return false;
+        }
 
+        std::cout << "ingo!" << std::endl;
         return true;
     }
 
