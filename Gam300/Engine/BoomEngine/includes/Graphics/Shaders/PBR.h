@@ -5,9 +5,9 @@
 
 namespace Boom {
 	//UBO
-	inline constexpr int MAX_POINT_LIGHTS = 128;
-	inline constexpr int MAX_DIR_LIGHTS = 16;
-	inline constexpr int MAX_SPOT_LIGHTS = 32;
+	inline constexpr int MAX_POINT_LIGHTS = 32;
+	inline constexpr int MAX_DIR_LIGHTS = 32;
+	inline constexpr int MAX_SPOT_LIGHTS = 128;
 	struct GPUPointLight {
 		glm::vec4 position_range;       // xyz = position, w = range
 		glm::vec4 radiance_intensity;   // rgb = radiance, w = intensity
