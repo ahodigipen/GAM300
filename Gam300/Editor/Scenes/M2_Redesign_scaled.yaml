@@ -918,7 +918,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 2.48514581
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -7951,7 +7951,7 @@ ENTITIES:
       UID: 2377197601835279376
     TransformComponent:
       Transform:
-        Translate: [-2.81790709, 2.53064513, 9.78945255]
+        Translate: [-2.81790566, 1.83418, 9.78945255]
         Rotate: [0, 11.9999285, 0]
         Scale: [0.0164999999, 0.0164999999, 0.0164999999]
     RigidBodyComponent:
@@ -8508,7 +8508,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 2.47622681
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -24232,6 +24232,14 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
+  - {}
   - {}
   - {}
   - {}
