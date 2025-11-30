@@ -118,13 +118,14 @@ BOOM_INLINE constexpr uint32_t TypeID()
 		BOOM_API std::shared_ptr<spdlog::logger>& GetLogger();
 	}
 
-	// Convenience macros — expand to no-ops when logging is disabled:
-	#define BOOM_TRACE(...) Boom::GetLogger()->trace(__VA_ARGS__)
-	#define BOOM_DEBUG(...) Boom::GetLogger()->debug(__VA_ARGS__)
-	#define BOOM_INFO(...)  Boom::GetLogger()->info(__VA_ARGS__)
-	#define BOOM_WARN(...)  Boom::GetLogger()->warn(__VA_ARGS__)
-	#define BOOM_ERROR(...) Boom::GetLogger()->error(__VA_ARGS__)
-	#define BOOM_FATAL(...) Boom::GetLogger()->critical(__VA_ARGS__)
+	// Convenience macros ï¿½ expand to no-ops when logging is disabled:
+	// Cast to void to suppress [[nodiscard]] warnings (C4834)
+	#define BOOM_TRACE(...) (void)Boom::GetLogger()->trace(__VA_ARGS__)
+	#define BOOM_DEBUG(...) (void)Boom::GetLogger()->debug(__VA_ARGS__)
+	#define BOOM_INFO(...)  (void)Boom::GetLogger()->info(__VA_ARGS__)
+	#define BOOM_WARN(...)  (void)Boom::GetLogger()->warn(__VA_ARGS__)
+	#define BOOM_ERROR(...) (void)Boom::GetLogger()->error(__VA_ARGS__)
+	#define BOOM_FATAL(...) (void)Boom::GetLogger()->critical(__VA_ARGS__)
 
 #else
 	#define BOOM_TRACE

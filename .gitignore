@@ -24,7 +24,9 @@ Gam300/x64/
 x64/
 
 # Claude Code session documentation
+.claude/
 claude.md
+CLAUDE.md
 
 Gam300/conanbuild/cmakedeps_macros.cmake
 Gam300/conanbuild/CMakePresets.json
