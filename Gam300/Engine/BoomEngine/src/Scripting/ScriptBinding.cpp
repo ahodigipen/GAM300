@@ -374,6 +374,27 @@ namespace Boom {
 
         *outPos = ai.patrolPoints[static_cast<size_t>(index)];
     }
+   
+    static void ICALL_API_SetListenerFromEntity(uint64_t entityID)
+    {
+        if (!s_Ctx) return;
+
+        auto& scene = s_Ctx->scene;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(entityID));
+        if (!scene.valid(e) || !scene.all_of<TransformComponent>(e))
+            return;
+
+        auto& t = scene.get<TransformComponent>(e).transform;
+
+        glm::vec3 pos = t.translate;
+        glm::vec3 vel = glm::vec3(0.0f);
+        glm::quat q = glm::quat(glm::radians(t.rotate));
+        glm::vec3 forward = q * glm::vec3(0.0f, 0.0f, 1.0f);
+        glm::vec3 up = q * glm::vec3(0.0f, 1.0f, 0.0f);
+
+        SoundEngine::Instance().SetListenerAttributes(pos, vel, forward, up);
+    }
+
 
     static int ICALL_API_AI_GetMode(uint64_t entityHandle)
     {
@@ -1246,7 +1267,8 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_PauseSound", (const void*)ICALL_API_PauseSound);
         mono_add_internal_call("Boom.Native::Boom_API_PreloadSound", (const void*)ICALL_API_PreloadSound);
         mono_add_internal_call("Boom.Native::Boom_API_SetSoundPosition", (const void*)ICALL_API_SetSoundPosition);
-        
+        mono_add_internal_call("Boom.Native::Boom_API_SetListenerFromEntity",
+            (const void*)ICALL_API_SetListenerFromEntity);
 		//Raycasting internal call
         mono_add_internal_call("Boom.Native::Boom_API_PickGameEntity", (const void*)ICALL_API_PickGameEntity);
 

@@ -68,12 +68,12 @@ namespace Boom
             Vec3 currentPosition = API.GetPosition(Entity);
             Vec3 movement = new Vec3(
                 currentPosition.X - _lastPosition.X,
-                0f, // Ignore Y movement for footsteps
+                currentPosition.Y -  _lastPosition.Y, // Ignore Y movement for footsteps
                 currentPosition.Z - _lastPosition.Z
             );
 
             // Calculate horizontal movement speed
-            float moveDistance = (float)Math.Sqrt(movement.X * movement.X + movement.Z * movement.Z);
+            float moveDistance = (float)Math.Sqrt(movement.X * movement.X + movement.Y*movement.Y+movement.Z * movement.Z);
             float speed = moveDistance / dt;
 
             // Determine if we're moving fast enough to make footsteps

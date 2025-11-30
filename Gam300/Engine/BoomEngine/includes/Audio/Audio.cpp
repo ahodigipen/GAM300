@@ -528,7 +528,7 @@ BOOM_API void SoundEngine::PlaySoundAt(const std::string& name, const std::strin
             }
 
             // Set reasonable 3D min/max distances so FMOD applies attenuation over game-appropriate ranges.
-            sound->set3DMinMaxDistance(1.0f, 100.0f);
+            sound->set3DMinMaxDistance(0.5f, 20.f);
 
             mSounds[soundKey] = sound;
 
@@ -632,24 +632,24 @@ BOOM_API void SoundEngine::PlaySoundAt(const std::string& name, const std::strin
         }
 
         // compute distance
-        float dx = fpos.x - listenerPos.x;
-        float dy = fpos.y - listenerPos.y;
-        float dz = fpos.z - listenerPos.z;
-        float distance = std::sqrt(dx*dx + dy*dy + dz*dz);
+        //float dx = fpos.x - listenerPos.x;
+        //float dy = fpos.y - listenerPos.y;
+        //float dz = fpos.z - listenerPos.z;
+        //float distance = std::sqrt(dx*dx + dy*dy + dz*dz);
 
-        float atten = 1.0f;
-        if (maxDist > minDist && maxDist > 0.0f) {
-            if (distance <= minDist) atten = 1.0f;
-            else if (distance >= maxDist) atten = 0.0f;
-            else atten = 1.0f - ((distance - minDist) / (maxDist - minDist));
-        }
+        //float atten = 1.0f;
+        //if (maxDist > minDist && maxDist > 0.0f) {
+        //    if (distance <= minDist) atten = 1.0f;
+        //    else if (distance >= maxDist) atten = 0.0f;
+        //    else atten = 1.0f - ((distance - minDist) / (maxDist - minDist));
+        //}
 
-        // Apply attenuation to channel volume (preserve any group/master volume influence)
-        if (channel) {
-            float baseVol = 1.0f;
-            channel->getVolume(&baseVol);
-            channel->setVolume(baseVol * atten);
-        }
+        //// Apply attenuation to channel volume (preserve any group/master volume influence)
+        //if (channel) {
+        //    float baseVol = 1.0f;
+        //    channel->getVolume(&baseVol);
+        //    channel->setVolume(baseVol * atten);
+        //}
     }
 }
 

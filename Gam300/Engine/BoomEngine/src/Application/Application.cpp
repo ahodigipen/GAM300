@@ -205,7 +205,7 @@ namespace Boom
             std::shared_ptr<GLFWwindow> engineWindow = m_Context->window->Handle();
 
             // Update FMOD listener from player entity 'Samurai' so 3D attenuation is correct
-            {
+           /* {
                 auto& scene = m_Context->scene;
                 entt::entity samurai = Boom::FindEntityByName(scene, "Samurai");
                 if (samurai != entt::null && scene.all_of<TransformComponent>(samurai)) {
@@ -217,7 +217,7 @@ namespace Boom
                     glm::vec3 up = q * glm::vec3(0.0f, 1.0f, 0.0f);
                     SoundEngine::Instance().SetListenerAttributes(pos, vel, forward, up);
                 }
-            }
+            }*/
 
             Camera3D* activeCam = nullptr;
             Transform3D camTransform{};

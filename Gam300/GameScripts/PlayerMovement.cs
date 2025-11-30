@@ -255,6 +255,7 @@ namespace GameScripts
         {
             UpdateFade(dt);
             if (!API.HasTransform(Entity) || !API.HasScript(Entity)) return;
+            API.SetListenerFromEntity(Entity);
             _footstepComponent?.OnUpdate(dt);
             if (_isRespawning) return;
 
@@ -446,6 +447,7 @@ namespace GameScripts
                 API.AnimatorSetBool(Entity, "Sprint", sprintKey && hasInput);
                 API.AnimatorSetBool(Entity, "IsSneaking", sneakKey && hasInput);
             }
+            
         }
 
         private bool IsPlayerGrounded()
