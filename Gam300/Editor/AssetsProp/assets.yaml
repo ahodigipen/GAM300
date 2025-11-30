@@ -25,9 +25,9 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
+        roughness: 1
+        metallic: 0
+        occlusion: 0.5
       AlbedoMapID: 4789105407518014319
       NormalMapID: 18399105239901256411
       RoughnessMapID: 0
@@ -96,12 +96,12 @@ ASSETS:
         roughness: 0.400000006
         metallic: 0.5
         occlusion: 1
-      AlbedoMapID: 18036222300221331622
-      NormalMapID: 0
+      AlbedoMapID: 2945813282417974352
+      NormalMapID: 7568472483619014978
       RoughnessMapID: 0
       MetallicMapID: 0
       OcclusionMapID: 0
-      EmissiveMapID: 0
+      EmissiveMapID: 1821848361694167965
   - Type: MATERIAL
     UID: 295392599374634747
     Name: Cushion Texture
@@ -144,12 +144,12 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 1
+        roughness: 0
         metallic: 0
-        occlusion: 0.870000005
+        occlusion: 0.529999971
       AlbedoMapID: 8781181629247619230
-      NormalMapID: 0
-      RoughnessMapID: 0
+      NormalMapID: 15056488335627110656
+      RoughnessMapID: 17384339938560687904
       MetallicMapID: 0
       OcclusionMapID: 0
       EmissiveMapID: 0
@@ -331,9 +331,9 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
+        roughness: 0.330000013
+        metallic: 0
+        occlusion: 0.829999983
       AlbedoMapID: 13175659529161961824
       NormalMapID: 0
       RoughnessMapID: 0
@@ -348,9 +348,9 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 1
-        metallic: 0
-        occlusion: 0.879999995
+        roughness: 0
+        metallic: 0.200000003
+        occlusion: 1
       AlbedoMapID: 18193537679852570258
       NormalMapID: 0
       RoughnessMapID: 0
@@ -365,9 +365,9 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
+        roughness: 0.330000013
+        metallic: 0
+        occlusion: 0.959999979
       AlbedoMapID: 82665125486564339
       NormalMapID: 0
       RoughnessMapID: 0
