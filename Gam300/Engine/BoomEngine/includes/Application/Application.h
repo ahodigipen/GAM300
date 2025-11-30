@@ -109,7 +109,7 @@ namespace Boom
 		bool m_ShouldExit = false;  // Flag for graceful shutdown
 		float m_TestRot = 0.0f;
 
-		bool m_PhysDebugViz = true;
+		bool m_PhysDebugViz = false;
 
 		// --- Mono State ---
 		MonoDomain* m_MonoRootDomain = nullptr;
