@@ -24,6 +24,7 @@ namespace Boom {
  AI_COMPONENT,
  SPRITE,
  PAUSE_MENU_TAG,
+ DEACTIVATED_TAG,
  COUNT
  };
  constexpr std::string_view COMPONENT_NAMES[]{
@@ -43,7 +44,8 @@ namespace Boom {
  "Nav Agent Component",  //13
  "AI Component",         //14
  "Sprite",               //15
- "Pause Menu Tag"        //16
+ "Pause Menu Tag",       //16
+ "Deactived Tag"         //17
  };
 
  // transform component
@@ -725,10 +727,22 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
             "PauseMenuTagComponent", PauseMenuTagComponent
         )
     };
+
     struct SceneNavmeshComponent {
         std::string navmeshFile;   // e.g. "Resources/NavData/level1.bin"
         XPROPERTY_DEF("SceneNavmeshComponent", SceneNavmeshComponent,
             obj_member<"NavmeshFile", &SceneNavmeshComponent::navmeshFile>)
+    };
+
+    struct DeactivatedComponent {
+        BOOM_INLINE DeactivatedComponent(const DeactivatedComponent&) = default;
+        BOOM_INLINE DeactivatedComponent() = default;
+
+        bool isTag = true;
+
+        XPROPERTY_DEF(
+            "DeactivatedComponent", DeactivatedComponent
+        )
     };
    
     struct Entity
@@ -981,6 +995,11 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
         // Copy PauseMenuTagComponent
         if (reg.all_of<PauseMenuTagComponent>(source)) {
             reg.emplace<PauseMenuTagComponent>(duplicate);
+        }
+
+        // Copy DeactivatedComponent
+        if (reg.all_of<DeactivatedComponent>(source)) {
+            reg.emplace<DeactivatedComponent>(duplicate);
         }
 
         BOOM_INFO("[DuplicateEntity] Duplicated '{}' -> '{}'",

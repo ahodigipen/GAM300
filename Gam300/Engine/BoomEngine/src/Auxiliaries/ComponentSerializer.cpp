@@ -530,6 +530,9 @@ namespace Boom
         // === PAUSE MEN TAG COMPONENT ===
         RegisterPropertyComponent<PauseMenuTagComponent>("PauseMenuTagComponent");
 
+        // === DEACTIVATED COMPONENT ===
+        RegisterPropertyComponent<DeactivatedComponent>("DeactivatedComponent");
+
         // === SOUND COMPONENT ===
         registry.RegisterComponentSerializer(
             "SoundComponent",
