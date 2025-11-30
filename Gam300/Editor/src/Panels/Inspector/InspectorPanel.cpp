@@ -1644,7 +1644,7 @@ namespace EditorUI {
                 if (sc.InstanceId == 0 && sc.Enabled && !sc.TypeName.empty()) {
                     // Script should be alive but isn't - show warning
                     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.0f, 1.0f));
-                    ImGui::TextWrapped("⚠ Script instance is missing (InstanceId=0)");
+                    ImGui::TextWrapped("WARNING: Script instance is missing (InstanceId=0)");
                     ImGui::PopStyleColor();
 
                     if (ImGui::Button("Fix: Recreate Instance", ImVec2(-1, 0))) {
@@ -1754,11 +1754,11 @@ namespace EditorUI {
 
                 // Enhanced status display
                 if (sc.InstanceId != 0 && sc.Enabled) {
-                    ImGui::TextColored(ImVec4(0, 1, 0, 1), "✓ Active");
+                    ImGui::TextColored(ImVec4(0, 1, 0, 1), "[OK] Active");
                 }
                 else if (sc.InstanceId == 0 && sc.Enabled && !sc.TypeName.empty()) {
                     // This is the problematic state - should be active but isn't
-                    ImGui::TextColored(ImVec4(1, 0.5f, 0, 1), "⚠ Instance Missing");
+                    ImGui::TextColored(ImVec4(1, 0.5f, 0, 1), "[!] Instance Missing");
                     ImGui::SameLine();
                     ImGui::TextDisabled("(?)");
                     if (ImGui::IsItemHovered()) {
@@ -1768,10 +1768,10 @@ namespace EditorUI {
                     }
                 }
                 else if (sc.InstanceId == 0 && sc.Enabled && sc.TypeName.empty()) {
-                    ImGui::TextColored(ImVec4(1, 0.5f, 0, 1), "⚠ No Type Selected");
+                    ImGui::TextColored(ImVec4(1, 0.5f, 0, 1), "[!] No Type Selected");
                 }
                 else {
-                    ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), "○ Disabled");
+                    ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1), "[ ] Disabled");
                 }
 
                 // ----- Reload buttons -----

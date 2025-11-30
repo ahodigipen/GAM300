@@ -50,6 +50,9 @@ namespace GameScripts
 
         public static void Update(float dt)
         {
+            // CRITICAL FIX: Always update game logic pause state FIRST (before any early returns)
+            API.SetGameLogicPaused(IsGamePaused);
+
             if (s_RequestedAction == PauseMenuAction.MainMenu ||
                 s_RequestedAction == PauseMenuAction.Restart ||
                 s_RequestedAction == PauseMenuAction.Quit)
@@ -69,8 +72,6 @@ namespace GameScripts
             {
                 UpdateGame(dt);
             }
-
-            API.SetGameLogicPaused(IsGamePaused);
         }
 
         private static void UpdateGame(float dt)

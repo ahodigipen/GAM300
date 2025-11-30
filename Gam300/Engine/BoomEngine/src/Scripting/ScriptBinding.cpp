@@ -1014,25 +1014,6 @@ namespace Boom {
         return false;
     }
 
-    // Helper
-    static glm::mat4 TransformToMatrix(const Boom::Transform3D& transform) {
-        // Convert Transform3D to world matrix
-        glm::mat4 matrix = glm::mat4(1.0f);
-
-        // Apply translation
-        matrix = glm::translate(matrix, transform.translate);
-
-        // Apply rotation (assuming rotate is in degrees and represents Euler angles)
-        matrix = glm::rotate(matrix, glm::radians(transform.rotate.x), glm::vec3(1.0f, 0.0f, 0.0f));
-        matrix = glm::rotate(matrix, glm::radians(transform.rotate.y), glm::vec3(0.0f, 1.0f, 0.0f));
-        matrix = glm::rotate(matrix, glm::radians(transform.rotate.z), glm::vec3(0.0f, 0.0f, 1.0f));
-
-        // Apply scale
-        matrix = glm::scale(matrix, transform.scale);
-
-        return matrix;
-    }
-
     // Projects a 3D world point to 2D viewport pixel coordinates
     static bool ICALL_API_ProjectWorldToViewport(glm::vec3* worldPos, glm::vec2* outViewportPos)
     {
@@ -1096,6 +1077,13 @@ namespace Boom {
         auto* win = s_Ctx->window.get();
         float vW = win->GetViewportW();
         float vH = win->GetViewportH();
+
+        // CRITICAL FIX: In standalone builds (no editor), viewport dimensions are 0
+        // Use full window dimensions instead (same fix as GetMousePosInViewport)
+        if (vW <= 1.0f || vH <= 1.0f) {
+            vW = static_cast<float>(win->getWidth());
+            vH = static_cast<float>(win->getHeight());
+        }
 
         // convert transform from ndc to screen pos
         glm::vec2 pos{ transformComp->transform.translate };
