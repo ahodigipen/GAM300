@@ -557,7 +557,7 @@ namespace Boom
 			// This function now *only* loads from file if objects aren't already in the scene.
 			// It *always* leaves the objects in a deactivated state.
 
-			BOOM_INFO("[Scene] Checking for existing objects for: %s", sceneName.c_str());
+			BOOM_INFO("[Scene] Checking for existing objects for: {}", sceneName.c_str());
 			auto& reg = m_Context->scene;
 
 			// 1. Check if objects *already exist* (activated or deactivated)
@@ -565,7 +565,7 @@ namespace Boom
 			auto existingView = reg.view<PauseMenuTagComponent>();
 			if (!existingView.empty())
 			{
-				BOOM_INFO("[Scene] Objects for '%s' already exist in scene. Load unnecessary.", sceneName.c_str());
+				BOOM_INFO("[Scene] Objects for '{}' already exist in scene. Load unnecessary.", sceneName.c_str());
 				// Ensure they are deactivated, just in case
 				for (auto e : existingView) {
 					if (!reg.all_of<DeactivatedComponent>(e)) {
@@ -578,7 +578,7 @@ namespace Boom
 			// --- If we are here, no objects were found at all. ---
 			// --- Proceed with the ORIGINAL slow load (first time only). ---
 
-			BOOM_INFO("[Scene] No existing objects found. Performing full additive load for '%s'", sceneName.c_str());
+			BOOM_INFO("[Scene] No existing objects found. Performing full additive load for '{}'", sceneName.c_str());
 
 			DataSerializer serializer;
 			const std::string sceneFilePath = scenePath + sceneName + ".yaml";
