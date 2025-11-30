@@ -10,7 +10,7 @@ namespace GameScripts
         // ===== World convention (pick ONE and keep it everywhere) =====
         // If your models face -Z when "forward", leave this true.
         // If your models face +Z when "forward", set to false.
-        private const bool WORLD_FORWARD_IS_NEG_Z = true;
+        private const bool WORLD_FORWARD_IS_NEG_Z = false;
 
         // ===== Options =====
         private const bool LOCK_IN_PLACE = false;
