@@ -803,7 +803,7 @@ namespace Boom
 				});
 		}
 
-
+		void SnapEntity(Entity entity, const glm::vec3& direction, float maxDistance = 100.0f);
 		/**
 		* @brief Creates a new empty scene
 		* @param sceneName Optional name for the new scene
