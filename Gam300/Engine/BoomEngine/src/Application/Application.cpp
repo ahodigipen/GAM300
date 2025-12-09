@@ -309,6 +309,24 @@ namespace Boom
 
             SoundEngine::Instance().Update();
 
+            // Update 3D audio listener to follow the third-person camera
+            EnttView<Entity, ThirdPersonCameraComponent, TransformComponent>([this](auto entity, ThirdPersonCameraComponent& tpCam, TransformComponent& transform) {
+                Transform3D& camTransform = transform.transform;
+
+                // Calculate forward and up vectors from camera rotation
+                glm::quat quat = glm::quat(glm::radians(camTransform.rotate));
+                glm::vec3 forward = quat * glm::vec3(0.0f, 0.0f, -1.0f);
+                glm::vec3 up = quat * glm::vec3(0.0f, 1.0f, 0.0f);
+                glm::vec3 velocity = glm::vec3(0.0f); // Could calculate from delta position if needed
+
+                SoundEngine::Instance().SetListenerAttributes(
+                    camTransform.translate,
+                    velocity,
+                    forward,
+                    up
+                );
+            });
+
             LightsUpdate();
 
             // Flycam (edit mode only)

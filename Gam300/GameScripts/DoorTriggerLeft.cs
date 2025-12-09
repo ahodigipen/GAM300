@@ -143,6 +143,7 @@ namespace GameScripts
                         var pos = API.GetPosition(_door);
                         API.PlaySoundAt("sfx_door_slide_open_3d", "Resources/Audio/unlock.wav", pos, false);
                         API.SetSoundVolume("sfx_door_slide_open_3d", 1.0f);
+                        API.Set3DMinMaxDistance("sfx_door_slide_open_3d", 1.5f, 35.0f);  // Door sounds heard from good distance
                         API.Log("[DoorTriggerLeft] Shift+K: played 3D positional door SFX.");
                     }
                     else

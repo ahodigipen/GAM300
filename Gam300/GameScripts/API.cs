@@ -162,6 +162,9 @@ namespace Boom
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_SetSoundVolume(string name, float volume);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_Set3DMinMaxDistance(string name, float minDist, float maxDist);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern bool Boom_API_IsSoundPlaying(string name);
@@ -587,6 +590,17 @@ namespace Boom
         public static void SetSoundVolume(string name, float volume)
         {
             Native.Boom_API_SetSoundVolume(name, volume);
+        }
+
+        /// <summary>
+        /// Set 3D audio min/max distance for spatial audio attenuation.
+        /// </summary>
+        /// <param name="name">Sound instance name</param>
+        /// <param name="minDist">Distance at which sound is at full volume (world units)</param>
+        /// <param name="maxDist">Distance at which sound becomes silent (world units)</param>
+        public static void Set3DMinMaxDistance(string name, float minDist, float maxDist)
+        {
+            Native.Boom_API_Set3DMinMaxDistance(name, minDist, maxDist);
         }
         
         /// <summary>

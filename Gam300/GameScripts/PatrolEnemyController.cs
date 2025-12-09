@@ -37,7 +37,7 @@ namespace GameScripts
         private const float STEP_LENGTH_M = 0.7f;  // meters per step at normal walk (tune!)
         private const float MIN_INTERVAL_S = 0.5f; // clamp so it never gets machine-gun fast
         private const float MAX_INTERVAL_S = 2.0f;  // clamp for slow shuffles
-        private const float VOL_BASE = 0.8f; // base volume
+        private const float VOL_BASE = 1.0f; // base volume
         private const float VOL_JITTER = 0.07f; // ± random variance
 
         private float _stepTimer = 0f;
@@ -124,6 +124,12 @@ namespace GameScripts
                     float vol = Clamp01(VOL_BASE + jitter);
                     API.SetSoundVolume(chName, vol);
 
+                    // Set 3D distance: full volume when close, silent through floors
+                    // Floor height difference = 12 units (Y: 1.0 → 13.0)
+                    // Min 6.0 = full volume within 6 units (hear patrolling enemies clearly on same floor)
+                    // Max 11.0 = silent beyond 11 units (enemies 12 units above/below are SILENT)
+                    API.Set3DMinMaxDistance(chName, 6.0f, 11.0f);
+
                     // restart timer
                     _stepTimer += interval;
                 }
@@ -182,6 +188,8 @@ namespace GameScripts
 
             API.PlaySoundAt(_alertName, SFX_ALERT_PATH, self, loop: false);
             API.SetSoundVolume(_alertName, 0.5f);
+            // Set 3D distance for alert sound - should be heard from medium distance
+            API.Set3DMinMaxDistance(_alertName, 1.0f, 25.0f);
 
             if (!_hasDealtDamage) { _hasDealtDamage = true; PlayerManager.NotifyPlayerCaught(Entity); }
         }

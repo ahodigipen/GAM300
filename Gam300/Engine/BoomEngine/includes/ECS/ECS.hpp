@@ -520,6 +520,10 @@ namespace Boom {
  // Animation trigger name (e.g. "Footstep")
  std::string animTrigger;
 
+ // 3D Audio settings
+ float minDistance = 1.0f;   // Distance at which sound is at full volume
+ float maxDistance = 50.0f;  // Distance at which sound is silent
+
  void serialize(nlohmann::json& j) const {
     j["name"] = name;
  // If filePaths present, write as array; otherwise write legacy filePath
@@ -537,6 +541,8 @@ namespace Boom {
         j["moveThreshold"] = moveThreshold;
         j["repeatInterval"] = repeatInterval;
         if (!animTrigger.empty()) j["animTrigger"] = animTrigger;
+        j["minDistance"] = minDistance;
+        j["maxDistance"] = maxDistance;
  }
  void deserialize(const nlohmann::json& j) {
         if (j.contains("name")) j.at("name").get_to(name);
@@ -562,6 +568,8 @@ namespace Boom {
  if (j.contains("moveThreshold")) j.at("moveThreshold").get_to(moveThreshold);
  if (j.contains("repeatInterval")) j.at("repeatInterval").get_to(repeatInterval);
  if (j.contains("animTrigger")) j.at("animTrigger").get_to(animTrigger);
+ if (j.contains("minDistance")) j.at("minDistance").get_to(minDistance);
+ if (j.contains("maxDistance")) j.at("maxDistance").get_to(maxDistance);
     }
  };
 

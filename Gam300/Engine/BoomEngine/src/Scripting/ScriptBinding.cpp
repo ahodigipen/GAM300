@@ -959,17 +959,28 @@ namespace Boom {
     
     static void ICALL_API_PreloadSound(MonoString* name, MonoString* filePath, bool loop) {
         if (!name || !filePath) return;
-        
+
         char* nameStr = mono_string_to_utf8(name);
         char* pathStr = mono_string_to_utf8(filePath);
-        
+
         if (nameStr && pathStr) {
             auto& soundEngine = SoundEngine::Instance();
             soundEngine.PreloadSound(std::string(nameStr), std::string(pathStr), false, loop);
         }
-        
+
         if (nameStr) mono_free(nameStr);
         if (pathStr) mono_free(pathStr);
+    }
+
+    static void ICALL_API_Set3DMinMaxDistance(MonoString* name, float minDist, float maxDist) {
+        if (!name) return;
+
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& soundEngine = SoundEngine::Instance();
+            soundEngine.Set3DMinMaxDistance(std::string(nameStr), minDist, maxDist);
+            mono_free(nameStr);
+        }
     }
     
     static void ICALL_API_SetSoundPosition(MonoString* name, glm::vec3* position) {
@@ -1449,6 +1460,7 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_PauseSound", (const void*)ICALL_API_PauseSound);
         mono_add_internal_call("Boom.Native::Boom_API_PreloadSound", (const void*)ICALL_API_PreloadSound);
         mono_add_internal_call("Boom.Native::Boom_API_SetSoundPosition", (const void*)ICALL_API_SetSoundPosition);
+        mono_add_internal_call("Boom.Native::Boom_API_Set3DMinMaxDistance", (const void*)ICALL_API_Set3DMinMaxDistance);
         
 		//Raycasting internal call
         mono_add_internal_call("Boom.Native::Boom_API_PickGameEntity", (const void*)ICALL_API_PickGameEntity);

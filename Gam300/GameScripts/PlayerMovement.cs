@@ -120,6 +120,7 @@ namespace GameScripts
 
             Vec3 playerPos = API.GetPosition(Entity);
             API.PlaySoundAt("player_damage", "Resources/Audio/playerPunch_1.wav", playerPos, false);
+            API.Set3DMinMaxDistance("player_damage", 1.0f, 20.0f);  // Damage sound heard from medium distance
             API.SetSoundVolume("player_damage", 1.0f);
 
             if (_health <= 0)
@@ -142,6 +143,7 @@ namespace GameScripts
         {
             Vec3 playerPos = API.GetPosition(Entity);
             API.PlaySoundAt("player_death", "Resources/Audio/playerPunch_1.wav", playerPos, false);
+            API.Set3DMinMaxDistance("player_death", 2.0f, 30.0f);  // Death sound heard from further away
             API.SetSoundVolume("player_death", 1.0f);
             API.LoadScene(API.GetCurrentSceneName());
         }
@@ -160,6 +162,7 @@ namespace GameScripts
         {
             _spawnPoint = newCheckpoint;
             API.PlaySoundAt("checkpoint_save", "Resources/Audio/playerPunch_1.wav", newCheckpoint, false);
+            API.Set3DMinMaxDistance("checkpoint_save", 1.0f, 15.0f);  // Checkpoint sound
             API.SetSoundVolume("checkpoint_save", 0.8f);
         }
 

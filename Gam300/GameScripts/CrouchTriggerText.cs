@@ -70,6 +70,7 @@ namespace GameScripts
                 var p = API.GetPosition(inst.Entity);
                 API.PlaySoundAt("sfx_crouch_zone_enter", inst._enterSound, p, false);
                 API.SetSoundVolume("sfx_crouch_zone_enter", 0.5f);
+                API.Set3DMinMaxDistance("sfx_crouch_zone_enter", 1.0f, 12.0f);  // Zone trigger sound
             }
 
             API.Log("[CrouchTriggerZone] Player entered crouch zone - showing UI prompt");

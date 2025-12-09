@@ -49,8 +49,15 @@ public:
     // Set listener attributes (call from camera update)
     BOOM_API void  SetListenerAttributes(const glm::vec3& pos, const glm::vec3& vel, const glm::vec3& forward, const glm::vec3& up);
 
+    // Set 3D audio parameters for a sound
+    BOOM_API void  Set3DMinMaxDistance(const std::string& name, float minDist, float maxDist);
+
+    // Get listener position (for debugging)
+    BOOM_API glm::vec3 GetListenerPosition() const;
+
     // Enable runtime 3D debug logging (prints listener + channel positions and audibility)
     BOOM_API void  SetDebug3D(bool enabled) { mDebug3D = enabled; }
+    BOOM_API bool  GetDebug3D() const { return mDebug3D; }
 
 private:
     FMOD::System* mSystem = nullptr;
@@ -63,6 +70,11 @@ private:
 
     std::unordered_map<std::string, int> mSoundRefCount;
     mutable std::mutex mMutex;
+
+    // Listener state for debugging
+    glm::vec3 mLastListenerPos = glm::vec3(0.0f);
+    glm::vec3 mLastListenerForward = glm::vec3(0.0f, 0.0f, -1.0f);
+    glm::vec3 mLastListenerUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
     // Debugging
     bool mDebug3D = false;

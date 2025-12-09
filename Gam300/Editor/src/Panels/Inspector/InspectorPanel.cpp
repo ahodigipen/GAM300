@@ -785,6 +785,47 @@ namespace EditorUI {
                             entry.animTrigger = std::string(animBuf);
                         }
 
+                        ImGui::Separator();
+                        ImGui::Text("3D Audio Settings");
+
+                        // Min/Max Distance sliders with tooltips
+                        ImGui::SliderFloat("Min Distance", &entry.minDistance, 0.1f, 100.0f, "%.1f");
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("Distance at which sound is at full volume (in world units)");
+                        }
+
+                        ImGui::SliderFloat("Max Distance", &entry.maxDistance, 1.0f, 200.0f, "%.1f");
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("Distance at which sound becomes silent (in world units)");
+                        }
+
+                        // Validation: ensure min < max
+                        if (entry.minDistance >= entry.maxDistance) {
+                            entry.minDistance = entry.maxDistance - 0.1f;
+                        }
+
+                        // Quick presets
+                        ImGui::Text("Quick Presets:");
+                        if (ImGui::SmallButton("Footsteps")) {
+                            entry.minDistance = 0.5f;
+                            entry.maxDistance = 10.0f;
+                        }
+                        ImGui::SameLine();
+                        if (ImGui::SmallButton("Dialogue")) {
+                            entry.minDistance = 1.0f;
+                            entry.maxDistance = 30.0f;
+                        }
+                        ImGui::SameLine();
+                        if (ImGui::SmallButton("Environment")) {
+                            entry.minDistance = 2.0f;
+                            entry.maxDistance = 100.0f;
+                        }
+                        ImGui::SameLine();
+                        if (ImGui::SmallButton("Ambient")) {
+                            entry.minDistance = 5.0f;
+                            entry.maxDistance = 200.0f;
+                        }
+
                         ImGui::TreePop();
                     }
 

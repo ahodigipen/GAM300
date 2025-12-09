@@ -119,6 +119,8 @@ namespace GameScripts
 
                         API.PlaySoundAt(soundId, clipPath, enemyPos, false);
                         API.SetSoundVolume(soundId, 0.5f);
+                        // Set 3D audio distance - enemy sounds shouldn't travel through floors
+                        API.Set3DMinMaxDistance(soundId, 1.0f, 25.0f);
                     }
                     catch (Exception ex)
                     {
@@ -198,6 +200,8 @@ namespace GameScripts
             // Play alert sound
             API.PlaySoundAt("enemy_alert", "Resources/Audio/playerPunch_1.wav", enemyPos, false);
             API.SetSoundVolume("enemy_alert", 0.8f);
+            // Set 3D audio distance - alert should be heard from medium distance
+            API.Set3DMinMaxDistance("enemy_alert", 1.0f, 25.0f);
 
             // Damage player (only once per detection)
             if (!_hasDealtDamage)
