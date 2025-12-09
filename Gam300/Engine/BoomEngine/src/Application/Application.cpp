@@ -241,24 +241,6 @@ namespace Boom
             if (activeCam) camera.attachCamera(activeCam);
             glfwMakeContextCurrent(engineWindow.get());
 
-            // F11 toggle rigid body type (test)
-            {
-                static bool prevF11 = false;
-                bool f11Pressed = glfwGetKey(engineWindow.get(), GLFW_KEY_F11) == GLFW_PRESS;
-                if (f11Pressed && !prevF11)
-                {
-                    EnttView<Entity, InfoComponent, RigidBodyComponent>([this](auto entity, InfoComponent& info, RigidBodyComponent& rb) {
-                        if (info.name == "Sphere") {
-                            RigidBody3D::Type currentType = rb.RigidBody.type;
-                            RigidBody3D::Type newType = (currentType == RigidBody3D::DYNAMIC) ? RigidBody3D::STATIC : RigidBody3D::DYNAMIC;
-                            m_Context->physics->SetRigidBodyType(entity, newType);
-                            BOOM_INFO("[Test F11] Toggled Sphere rigid body to: {}", (newType == RigidBody3D::DYNAMIC) ? "DYNAMIC" : "STATIC");
-                        }
-                        });
-                }
-                prevF11 = f11Pressed;
-            }
-
 
             ComputeFrameDeltaTime();
             // Always run file watcher
@@ -630,78 +612,58 @@ namespace Boom
 
 
     //Physics stuff
-
     void Application::DestroyPhysicsActors()
     {
-        // Get the scene from the physics context *once* outside the loop
         auto* pxScene = m_Context->physics->GetPxScene();
-        if (!pxScene) {
-            BOOM_ERROR("DestroyPhysicsActors failed: No PxScene available.");
-            return;
-        }
+        if (!pxScene) return;
 
-        // Iterate over all entities with a RigidBodyComponent
+        // 1. RigidBodies
         EnttView<Entity, RigidBodyComponent>([this, pxScene](auto entity, auto& comp)
             {
                 auto* actor = comp.RigidBody.actor;
-                if (!actor) return; // Skip if no actor
+                if (!actor) return;
 
-                // 1. Clean up Collider Pointers (if they exist)
-                if (entity.template Has<ColliderComponent>())
-                {
+                // Cleanup Collider Pointers
+                if (entity.template Has<ColliderComponent>()) {
                     auto& collider = entity.template Get<ColliderComponent>().Collider;
-                    if (collider.material) {
-                        collider.material->release();
-                        collider.material = nullptr;
-                    }
-                    if (collider.Shape) {
-                        collider.Shape->release();
-                        collider.Shape = nullptr;
-                    }
+                    if (collider.material) { collider.material->release(); collider.material = nullptr; }
+
+                    // The shape is released by the actor, so we just null the pointer
+                    collider.Shape = nullptr;
                 }
 
-                // 2. Destroy actor user data
                 if (actor->userData) {
-                    EntityID* owner = static_cast<EntityID*>(actor->userData);
-                    BOOM_DELETE(owner);
+                    delete static_cast<EntityID*>(actor->userData);
                     actor->userData = nullptr;
                 }
 
-                // 3. (THE FIX) Remove from scene, THEN release memory
                 pxScene->removeActor(*actor);
                 actor->release();
                 comp.RigidBody.actor = nullptr;
             });
 
-        // *** Also destroy collider-only actors (triggers) ***
+        // 2. Collider-Only (Triggers/Static) -- THIS WAS THE CAUSE OF THE CRASH
         EnttView<Entity, ColliderComponent>([this, pxScene](auto entity, auto& comp) {
-            // Skip if it has a RigidBodyComponent (already handled above)
             if (entity.template Has<RigidBodyComponent>()) return;
 
             auto* actor = comp.Collider.actor;
             if (!actor) return;
 
-            // Clean up user data
             if (actor->userData) {
-                EntityID* owner = static_cast<EntityID*>(actor->userData);
-                BOOM_DELETE(owner);
+                delete static_cast<EntityID*>(actor->userData);
                 actor->userData = nullptr;
             }
 
-            // Remove and release
             pxScene->removeActor(*actor);
-            actor->release();
+            actor->release(); // <--- This destroys the attached Shape!
+
             comp.Collider.actor = nullptr;
+            comp.Collider.Shape = nullptr; // <--- CRITICAL FIX: Mark shape as dead
             });
 
-        // *** FIX: Use a small positive deltaTime instead of 0.0f ***
         if (pxScene) {
-            // Simulate with very small delta time to flush event queue
-            // PhysX requires deltaTime > 0
-            const float kMinDeltaTime = 0.0001f; // 0.1ms
-            pxScene->simulate(kMinDeltaTime);
-            pxScene->fetchResults(true); // Block until complete
-            BOOM_INFO("[Physics] Flushed physics event queue after destroying actors");
+            pxScene->simulate(0.0001f);
+            pxScene->fetchResults(true);
         }
     }
 
@@ -1197,6 +1159,3 @@ namespace Boom
         if (!verts.empty())
             m_DebugLinesShader->Draw(view, proj, verts, 10.5f);
     }
-
-
-}
