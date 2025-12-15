@@ -82,6 +82,7 @@ namespace EditorUI {
         bool m_ShowSkeleton = true;
         bool m_ShowGrid = true;
         bool m_ShowFloor = true;
+        bool m_ShowWireframe = false;
         float m_ModelScale = 1.0f;  // Preview scale adjustment
 
         // Selected bone (for rigging later)

@@ -5,6 +5,7 @@
 #include "Graphics/Models/Model.h"
 #include "Graphics/Models/Animator.h"
 #include "Graphics/Shaders/DebugLines.h"
+#include "Graphics/Shaders/PBR.h"
 #include "Graphics/Utilities/Data.h"
 #include "Auxiliaries/Assets.h"
 #include "Vendors/imgui/imgui.h"
@@ -12,6 +13,8 @@
 #include <GL/glew.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/euler_angles.hpp>
 #include <cmath>
 
 using namespace EditorUI;
@@ -152,6 +155,8 @@ void ModelPreviewPanel::RenderToolbar()
     ImGui::SameLine();
     ImGui::Checkbox("Show Grid", &m_ShowGrid);
     ImGui::SameLine();
+    ImGui::Checkbox("Wireframe", &m_ShowWireframe);
+    ImGui::SameLine();
     if (ImGui::Button("Reset Camera"))
     {
         ResetCamera();
@@ -162,25 +167,33 @@ void ModelPreviewPanel::RenderToolbar()
     {
         ImGui::Text("Preview Scale:");
         ImGui::SameLine();
-        ImGui::SetNextItemWidth(150);
-        if (ImGui::SliderFloat("##ModelScale", &m_ModelScale, 0.01f, 10.0f, "%.2f"))
+        ImGui::SetNextItemWidth(200);
+
+        // Use logarithmic slider for better control at small values
+        if (ImGui::SliderFloat("##ModelScale", &m_ModelScale, 0.001f, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic))
         {
             // Scale changed - optionally re-frame
         }
+
         ImGui::SameLine();
-        if (ImGui::Button("Reset Scale"))
+        if (ImGui::Button("Reset to 1.0"))
         {
             m_ModelScale = 1.0f;
         }
+        ImGui::SameLine();
+        if (ImGui::Button("Set to 0.01"))
+        {
+            m_ModelScale = 0.01f;
+        }
 
-        // Show actual model transform scale
+        // Show actual model transform scale and camera info
         if (m_Model)
         {
-            ImGui::SameLine();
-            ImGui::TextDisabled("| Asset Scale: (%.2f, %.2f, %.2f)",
+            ImGui::Text("Asset Scale: (%.2f, %.2f, %.2f) | Camera Distance: %.2f",
                 m_Model->modelTransform.scale.x,
                 m_Model->modelTransform.scale.y,
-                m_Model->modelTransform.scale.z);
+                m_Model->modelTransform.scale.z,
+                m_CameraDistance);
         }
     }
 
@@ -222,11 +235,39 @@ void ModelPreviewPanel::RenderViewport()
     glClearColor(0.2f, 0.2f, 0.25f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+
+    // Set up simple lighting for preview
+    if (m_HasModel)
+    {
+        // Add a simple directional light
+        std::vector<Boom::GPUDirLight> dirLights(1);
+        dirLights[0].dir_intensity = glm::vec4(glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)), 1.0f);
+        dirLights[0].radiance = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+        m_Ctx->renderer->UploadDirLights(dirLights, 1);
+
+        // Set ambient light
+        m_Ctx->renderer->AmbientStrength() = 0.3f;
+    }
+
+    // Set wireframe mode if requested
+    if (m_ShowWireframe)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
 
     // Render scene
     if (m_ShowGrid) RenderGrid();
     if (m_HasModel) RenderModel();
     if (m_HasModel && m_ShowSkeleton) RenderSkeleton();
+
+    // Reset polygon mode
+    if (m_ShowWireframe)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -299,15 +340,58 @@ void ModelPreviewPanel::RenderModel()
 {
     if (!m_Ctx || !m_Ctx->renderer || !m_Model) return;
 
-    // Set up camera (creates frustum matrix internally)
+    // IMPORTANT: Set aspect ratio for our viewport (not the game window)
+    float aspect = m_ViewportSize.x / m_ViewportSize.y;
+    m_Ctx->renderer->SetAspectOverride(aspect);
+
+    // Set up camera using the public API
+    // Based on the commented-out code in Camera3D::View(), the transform.rotate
+    // should produce: forward = rotQuat * vec3(0,0,-1) pointing at target
+
     Boom::Camera3D camera{};
     camera.FOV = 45.0f;
-    camera.nearPlane = 0.1f;
-    camera.farPlane = 100.0f;
+    camera.nearPlane = 0.01f;
+    camera.farPlane = 1000.0f;
+
+    // Compute the direction from camera to target
+    glm::vec3 direction = glm::normalize(m_CameraTarget - m_CameraPosition);
+
+    // Directly compute euler angles from the direction vector
+    // Camera's local -Z should point at target, so we need rotation that maps (0,0,-1) to direction
+    // Yaw: rotation around Y axis (horizontal angle)
+    float yaw = atan2(-direction.x, -direction.z); // Negate because camera looks down -Z
+    // Pitch: rotation around X axis (vertical angle)
+    float pitch = asin(direction.y); // Positive when looking up, negative when looking down
+    // Roll: always 0 for orbit camera
+    float roll = 0.0f;
+
+    glm::vec3 eulerAngles = glm::vec3(glm::degrees(pitch), glm::degrees(yaw), glm::degrees(roll));
 
     Boom::Transform3D cameraTransform{};
     cameraTransform.translate = m_CameraPosition;
+    cameraTransform.rotate = eulerAngles;
+    cameraTransform.scale = glm::vec3(1.0f);
 
+    // Debug: verify the transform produces the correct forward vector
+    static int debugCount = 0;
+    if (debugCount++ < 5) {
+        glm::quat testQuat = glm::quat(glm::radians(eulerAngles));
+        glm::vec3 testForward = testQuat * glm::vec3(0.0f, 0.0f, -1.0f);
+        BOOM_INFO("[ModelPreview] Desired Forward: ({:.2f}, {:.2f}, {:.2f})", direction.x, direction.y, direction.z);
+        BOOM_INFO("[ModelPreview] TestQuat Forward: ({:.2f}, {:.2f}, {:.2f})", testForward.x, testForward.y, testForward.z);
+        BOOM_INFO("[ModelPreview] Camera Euler (XYZ): ({:.2f}, {:.2f}, {:.2f})", eulerAngles.x, eulerAngles.y, eulerAngles.z);
+        BOOM_INFO("[ModelPreview] Camera Pos: ({:.2f}, {:.2f}, {:.2f})", m_CameraPosition.x, m_CameraPosition.y, m_CameraPosition.z);
+
+        // Test what the View matrix should be
+        glm::mat4 correctView = glm::lookAt(m_CameraPosition, m_CameraTarget, glm::vec3(0,1,0));
+        glm::mat4 ourView = camera.View(cameraTransform);
+        BOOM_INFO("[ModelPreview] Correct view[3]: ({:.2f}, {:.2f}, {:.2f}, {:.2f})",
+                  correctView[3][0], correctView[3][1], correctView[3][2], correctView[3][3]);
+        BOOM_INFO("[ModelPreview] Our view[3]: ({:.2f}, {:.2f}, {:.2f}, {:.2f})",
+                  ourView[3][0], ourView[3][1], ourView[3][2], ourView[3][3]);
+    }
+
+    // CRITICAL: Call SetCamera right before drawing to ensure it's not overwritten
     m_Ctx->renderer->SetCamera(camera, cameraTransform);
 
     // Set joints if model has skeleton
@@ -317,11 +401,51 @@ void ModelPreviewPanel::RenderModel()
         m_Ctx->renderer->SetJoints(transforms);
     }
 
-    // Draw the model (apply preview scale)
+    // Call SetCamera AGAIN right before Draw in case something overwrote it
+    m_Ctx->renderer->SetCamera(camera, cameraTransform);
+
+    // IMPORTANT: The PBR shader multiplies: transform * model->modelTransform
+    // We want the final result to be: T(0,0,0) * R(0,0,0) * S(m_ModelScale)
+    // So we need: transform * model->modelTransform = desired
+    // Therefore: transform = desired * inverse(model->modelTransform)
+
+    glm::mat4 desiredMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(m_ModelScale));
+    glm::mat4 assetMatrix = m_Model->modelTransform.Matrix();
+    glm::mat4 finalMatrix = desiredMatrix * glm::inverse(assetMatrix);
+
+    // Extract transform from matrix (decompose TRS)
+    // For simplicity, we'll manually construct it since we know the structure
+    glm::vec3 finalTranslate = glm::vec3(finalMatrix[3]);
+    glm::vec3 finalScale;
+    finalScale.x = glm::length(glm::vec3(finalMatrix[0]));
+    finalScale.y = glm::length(glm::vec3(finalMatrix[1]));
+    finalScale.z = glm::length(glm::vec3(finalMatrix[2]));
+
+    // Extract rotation (normalize the basis vectors)
+    glm::mat4 rotMatrix = finalMatrix;
+    rotMatrix[0] /= finalScale.x;
+    rotMatrix[1] /= finalScale.y;
+    rotMatrix[2] /= finalScale.z;
+    glm::quat modelRotQuat = glm::quat_cast(rotMatrix);
+    glm::vec3 finalRotate = glm::degrees(glm::eulerAngles(modelRotQuat));
+
     Boom::Transform3D modelTransform{};
-    modelTransform.translate = glm::vec3(0.0f);
-    modelTransform.rotate = glm::vec3(0.0f);
-    modelTransform.scale = glm::vec3(m_ModelScale); // Apply preview scale
+    modelTransform.translate = finalTranslate;
+    modelTransform.rotate = finalRotate;
+    modelTransform.scale = finalScale;
+
+    // Debug: log what transform we're actually using
+    static int transformDebugCount = 0;
+    if (transformDebugCount++ < 3) {
+        BOOM_INFO("[ModelPreview] Asset Transform - T: ({:.2f}, {:.2f}, {:.2f}), R: ({:.2f}, {:.2f}, {:.2f}), S: ({:.2f}, {:.2f}, {:.2f})",
+                  m_Model->modelTransform.translate.x, m_Model->modelTransform.translate.y, m_Model->modelTransform.translate.z,
+                  m_Model->modelTransform.rotate.x, m_Model->modelTransform.rotate.y, m_Model->modelTransform.rotate.z,
+                  m_Model->modelTransform.scale.x, m_Model->modelTransform.scale.y, m_Model->modelTransform.scale.z);
+        BOOM_INFO("[ModelPreview] Final Transform - T: ({:.2f}, {:.2f}, {:.2f}), R: ({:.2f}, {:.2f}, {:.2f}), S: ({:.2f}, {:.2f}, {:.2f})",
+                  modelTransform.translate.x, modelTransform.translate.y, modelTransform.translate.z,
+                  modelTransform.rotate.x, modelTransform.rotate.y, modelTransform.rotate.z,
+                  modelTransform.scale.x, modelTransform.scale.y, modelTransform.scale.z);
+    }
 
     // Use a default material (gray)
     Boom::PbrMaterial material{};
@@ -329,8 +453,24 @@ void ModelPreviewPanel::RenderModel()
     material.roughness = 0.5f;
     material.metallic = 0.0f;
 
+    // Debug logging once
+    static bool loggedOnce = false;
+    if (!loggedOnce)
+    {
+        BOOM_INFO("[ModelPreviewPanel] Rendering model - Scale: {:.3f}, Camera Distance: {:.2f}, Asset Scale: ({:.2f}, {:.2f}, {:.2f})",
+                  m_ModelScale, m_CameraDistance,
+                  m_Model->modelTransform.scale.x, m_Model->modelTransform.scale.y, m_Model->modelTransform.scale.z);
+        BOOM_INFO("[ModelPreviewPanel] Camera Pos: ({:.2f}, {:.2f}, {:.2f}), Target: ({:.2f}, {:.2f}, {:.2f})",
+                  m_CameraPosition.x, m_CameraPosition.y, m_CameraPosition.z,
+                  m_CameraTarget.x, m_CameraTarget.y, m_CameraTarget.z);
+        loggedOnce = true;
+    }
+
     // Draw takes Model3D which is shared_ptr<Model>
     m_Ctx->renderer->Draw(m_Model, modelTransform, material);
+
+    // Clear aspect override so it doesn't affect game viewport
+    m_Ctx->renderer->ClearAspectOverride();
 }
 
 void ModelPreviewPanel::RenderSkeleton()
@@ -359,13 +499,21 @@ void ModelPreviewPanel::RenderSkeleton()
     glm::vec4 boneColor = m_Ctx->BoneColor;
     glm::vec4 selectedBoneColor = m_Ctx->SelectedBoneColor;
 
+    // The bone positions from GetSkeletonLines() are in model space
+    // We need to transform them the same way as the model mesh
+    // Which is: desired * inverse(assetTransform) * assetTransform = desired
+    // So we just apply the desired transform (scale by m_ModelScale)
+    glm::mat4 boneTransform = glm::scale(glm::mat4(1.0f), glm::vec3(m_ModelScale));
+
     for (const auto& boneLine : boneLines)
     {
         bool isSelected = (!m_SelectedBoneName.empty() && boneLine.boneName == m_SelectedBoneName);
 
-        // Apply preview scale to bone positions
-        glm::vec3 scaledStart = boneLine.start * m_ModelScale;
-        glm::vec3 scaledEnd = boneLine.end * m_ModelScale;
+        // Transform bone positions to match model rendering
+        glm::vec4 start4 = boneTransform * glm::vec4(boneLine.start, 1.0f);
+        glm::vec4 end4 = boneTransform * glm::vec4(boneLine.end, 1.0f);
+        glm::vec3 scaledStart = glm::vec3(start4);
+        glm::vec3 scaledEnd = glm::vec3(end4);
 
         if (isSelected)
         {
@@ -558,42 +706,23 @@ void ModelPreviewPanel::FrameModel()
 {
     if (!m_Model) return;
 
-    // Get the asset's actual scale
-    glm::vec3 assetScale = m_Model->modelTransform.scale;
-    glm::vec3 assetTranslate = m_Model->modelTransform.translate;
+    // Model is always at origin, so just estimate a reasonable radius
+    // Most models fit within a 2-unit sphere when scaled by preview scale
+    float radius = 2.0f * m_ModelScale;
 
-    // Estimate bounding sphere radius based on asset scale
-    // For most models, the vertices are roughly in a -1 to 1 range before scaling
-    float maxScale = glm::max(glm::max(assetScale.x, assetScale.y), assetScale.z);
-    float radius = maxScale * 1.0f; // Assume model extends about 1 unit in each direction
-
-    // If scale is very small or zero, use default
-    if (radius < 0.01f)
-    {
-        radius = 2.0f;
-    }
-
-    // Set camera target to model center (considering asset transform)
-    m_CameraTarget = assetTranslate;
+    // Set camera target to origin (where model is)
+    m_CameraTarget = glm::vec3(0.0f, 1.0f, 0.0f); // Slightly above origin
 
     // Calculate camera distance to fit model in view (45 degree FOV)
     // Distance = radius / tan(FOV/2) with some padding
     float fovRadians = glm::radians(45.0f);
-    m_CameraDistance = (radius * 2.5f) / std::tan(fovRadians * 0.5f); // Increased padding
+    m_CameraDistance = (radius * 2.5f) / std::tan(fovRadians * 0.5f);
 
-    // Clamp to reasonable range (increased max for very large models)
+    // Clamp to reasonable range
     m_CameraDistance = glm::clamp(m_CameraDistance, 0.5f, 100.0f);
-
-    // For very large models, suggest scaling down
-    if (m_CameraDistance > 50.0f)
-    {
-        float suggestedScale = 50.0f / m_CameraDistance;
-        BOOM_WARN("[ModelPreviewPanel] Model is very large (distance: {:.2f}). Consider using Preview Scale: {:.3f}",
-                  m_CameraDistance, suggestedScale);
-    }
 
     UpdateCamera();
 
-    BOOM_INFO("[ModelPreviewPanel] Framed model - Distance: {:.2f}, Center: ({:.2f}, {:.2f}, {:.2f}), Radius: {:.2f}",
-              m_CameraDistance, m_CameraTarget.x, m_CameraTarget.y, m_CameraTarget.z, radius);
+    BOOM_INFO("[ModelPreviewPanel] Framed model - Distance: {:.2f}, Preview Scale: {:.3f}",
+              m_CameraDistance, m_ModelScale);
 }
