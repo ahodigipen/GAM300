@@ -157,9 +157,35 @@ void ModelPreviewPanel::RenderToolbar()
         ResetCamera();
     }
 
+    // Model scale control
+    if (m_HasModel)
+    {
+        ImGui::Text("Preview Scale:");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(150);
+        if (ImGui::SliderFloat("##ModelScale", &m_ModelScale, 0.01f, 10.0f, "%.2f"))
+        {
+            // Scale changed - optionally re-frame
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Reset Scale"))
+        {
+            m_ModelScale = 1.0f;
+        }
+
+        // Show actual model transform scale
+        if (m_Model)
+        {
+            ImGui::SameLine();
+            ImGui::TextDisabled("| Asset Scale: (%.2f, %.2f, %.2f)",
+                m_Model->modelTransform.scale.x,
+                m_Model->modelTransform.scale.y,
+                m_Model->modelTransform.scale.z);
+        }
+    }
+
     // Camera controls info
-    ImGui::SameLine();
-    ImGui::TextDisabled("| Right-Click+Drag: Orbit | Scroll: Zoom");
+    ImGui::TextDisabled("Controls: Right-Click+Drag: Orbit | Scroll: Zoom");
 
     ImGui::Separator();
 }
@@ -251,11 +277,11 @@ void ModelPreviewPanel::HandleCameraControls()
         m_IsOrbitingCamera = false;
     }
 
-    // Mouse wheel: zoom
+    // Mouse wheel: zoom (increased range for large models)
     if (io.MouseWheel != 0.0f)
     {
-        m_CameraDistance -= io.MouseWheel * 0.3f;
-        m_CameraDistance = glm::clamp(m_CameraDistance, 0.5f, 20.0f);
+        m_CameraDistance -= io.MouseWheel * 0.5f;
+        m_CameraDistance = glm::clamp(m_CameraDistance, 0.1f, 100.0f); // Increased max to 100
     }
 }
 
@@ -291,11 +317,11 @@ void ModelPreviewPanel::RenderModel()
         m_Ctx->renderer->SetJoints(transforms);
     }
 
-    // Draw the model (identity transform since we're in model space)
+    // Draw the model (apply preview scale)
     Boom::Transform3D modelTransform{};
     modelTransform.translate = glm::vec3(0.0f);
     modelTransform.rotate = glm::vec3(0.0f);
-    modelTransform.scale = glm::vec3(1.0f);
+    modelTransform.scale = glm::vec3(m_ModelScale); // Apply preview scale
 
     // Use a default material (gray)
     Boom::PbrMaterial material{};
@@ -324,7 +350,7 @@ void ModelPreviewPanel::RenderSkeleton()
     auto boneLines = m_Animator->GetSkeletonLines();
     if (boneLines.empty()) return;
 
-    // Convert bone lines to LineVert format
+    // Convert bone lines to LineVert format and apply preview scale
     std::vector<Boom::LineVert> normalBones;
     std::vector<Boom::LineVert> selectedBones;
     normalBones.reserve(boneLines.size() * 2);
@@ -337,15 +363,19 @@ void ModelPreviewPanel::RenderSkeleton()
     {
         bool isSelected = (!m_SelectedBoneName.empty() && boneLine.boneName == m_SelectedBoneName);
 
+        // Apply preview scale to bone positions
+        glm::vec3 scaledStart = boneLine.start * m_ModelScale;
+        glm::vec3 scaledEnd = boneLine.end * m_ModelScale;
+
         if (isSelected)
         {
-            selectedBones.push_back({ boneLine.start, selectedBoneColor });
-            selectedBones.push_back({ boneLine.end, selectedBoneColor });
+            selectedBones.push_back({ scaledStart, selectedBoneColor });
+            selectedBones.push_back({ scaledEnd, selectedBoneColor });
         }
         else
         {
-            normalBones.push_back({ boneLine.start, boneColor });
-            normalBones.push_back({ boneLine.end, boneColor });
+            normalBones.push_back({ scaledStart, boneColor });
+            normalBones.push_back({ scaledEnd, boneColor });
         }
     }
 
@@ -497,6 +527,9 @@ void ModelPreviewPanel::LoadModel(const std::string& modelPath)
         BOOM_INFO("[ModelPreviewPanel] No animator needed (static model)");
     }
 
+    // Reset preview scale when loading new model
+    m_ModelScale = 1.0f;
+
     // Auto-frame the model to fit it in view
     FrameModel();
 }
@@ -525,36 +558,42 @@ void ModelPreviewPanel::FrameModel()
 {
     if (!m_Model) return;
 
-    // Calculate model bounding box
-    // For simplicity, estimate based on model transform and a default size
-    // A more accurate approach would iterate through all vertices
-    glm::vec3 modelMin = m_Model->modelTransform.translate - m_Model->modelTransform.scale;
-    glm::vec3 modelMax = m_Model->modelTransform.translate + m_Model->modelTransform.scale;
+    // Get the asset's actual scale
+    glm::vec3 assetScale = m_Model->modelTransform.scale;
+    glm::vec3 assetTranslate = m_Model->modelTransform.translate;
 
-    // Calculate bounding sphere radius
-    glm::vec3 center = (modelMin + modelMax) * 0.5f;
-    glm::vec3 extent = modelMax - modelMin;
-    float radius = glm::length(extent) * 0.5f;
+    // Estimate bounding sphere radius based on asset scale
+    // For most models, the vertices are roughly in a -1 to 1 range before scaling
+    float maxScale = glm::max(glm::max(assetScale.x, assetScale.y), assetScale.z);
+    float radius = maxScale * 1.0f; // Assume model extends about 1 unit in each direction
 
-    // If radius is too small (default transform), use a reasonable default
-    if (radius < 0.1f)
+    // If scale is very small or zero, use default
+    if (radius < 0.01f)
     {
         radius = 2.0f;
     }
 
-    // Set camera target to model center
-    m_CameraTarget = center;
+    // Set camera target to model center (considering asset transform)
+    m_CameraTarget = assetTranslate;
 
     // Calculate camera distance to fit model in view (45 degree FOV)
-    // Distance = radius / tan(FOV/2)
+    // Distance = radius / tan(FOV/2) with some padding
     float fovRadians = glm::radians(45.0f);
-    m_CameraDistance = (radius * 1.5f) / std::tan(fovRadians * 0.5f);
+    m_CameraDistance = (radius * 2.5f) / std::tan(fovRadians * 0.5f); // Increased padding
 
-    // Clamp to reasonable range
-    m_CameraDistance = glm::clamp(m_CameraDistance, 1.0f, 50.0f);
+    // Clamp to reasonable range (increased max for very large models)
+    m_CameraDistance = glm::clamp(m_CameraDistance, 0.5f, 100.0f);
+
+    // For very large models, suggest scaling down
+    if (m_CameraDistance > 50.0f)
+    {
+        float suggestedScale = 50.0f / m_CameraDistance;
+        BOOM_WARN("[ModelPreviewPanel] Model is very large (distance: {:.2f}). Consider using Preview Scale: {:.3f}",
+                  m_CameraDistance, suggestedScale);
+    }
 
     UpdateCamera();
 
-    BOOM_INFO("[ModelPreviewPanel] Framed model - Distance: {:.2f}, Center: ({:.2f}, {:.2f}, {:.2f})",
-              m_CameraDistance, center.x, center.y, center.z);
+    BOOM_INFO("[ModelPreviewPanel] Framed model - Distance: {:.2f}, Center: ({:.2f}, {:.2f}, {:.2f}), Radius: {:.2f}",
+              m_CameraDistance, m_CameraTarget.x, m_CameraTarget.y, m_CameraTarget.z, radius);
 }

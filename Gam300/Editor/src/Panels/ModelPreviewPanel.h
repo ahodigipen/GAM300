@@ -82,6 +82,7 @@ namespace EditorUI {
         bool m_ShowSkeleton = true;
         bool m_ShowGrid = true;
         bool m_ShowFloor = true;
+        float m_ModelScale = 1.0f;  // Preview scale adjustment
 
         // Selected bone (for rigging later)
         std::string m_SelectedBoneName;
