@@ -47,7 +47,13 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
-            if (Entry.s_RequestedAction !=  Entry.PauseMenuAction.None)
+            // Only process input if the game is actually paused
+            if (!Entry.IsGamePaused)
+            {
+                return;
+            }
+
+            if (Entry.s_RequestedAction != Entry.PauseMenuAction.None)
             {
                 return;
             }

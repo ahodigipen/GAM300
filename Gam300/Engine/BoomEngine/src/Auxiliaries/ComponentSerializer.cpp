@@ -567,7 +567,8 @@ namespace Boom
                 e << YAML::EndMap;
             },
             // Deserialize
-            [](const YAML::Node& node, EntityRegistry& reg, EntityID ent, AssetRegistry& /*assets*/) {
+            [](const YAML::Node& node, EntityRegistry& reg, EntityID ent, AssetRegistry& assets) {
+                (void)assets; // Unused parameter
                 if (!node || !node.IsMap()) return;
                 auto& sc = reg.get_or_emplace<SoundComponent>(ent);
                 sc.entries.clear();

@@ -1014,25 +1014,6 @@ namespace Boom {
         return false;
     }
 
-    // Helper
-    static glm::mat4 TransformToMatrix(const Boom::Transform3D& transform) {
-        // Convert Transform3D to world matrix
-        glm::mat4 matrix = glm::mat4(1.0f);
-
-        // Apply translation
-        matrix = glm::translate(matrix, transform.translate);
-
-        // Apply rotation (assuming rotate is in degrees and represents Euler angles)
-        matrix = glm::rotate(matrix, glm::radians(transform.rotate.x), glm::vec3(1.0f, 0.0f, 0.0f));
-        matrix = glm::rotate(matrix, glm::radians(transform.rotate.y), glm::vec3(0.0f, 1.0f, 0.0f));
-        matrix = glm::rotate(matrix, glm::radians(transform.rotate.z), glm::vec3(0.0f, 0.0f, 1.0f));
-
-        // Apply scale
-        matrix = glm::scale(matrix, transform.scale);
-
-        return matrix;
-    }
-
     // Projects a 3D world point to 2D viewport pixel coordinates
     static bool ICALL_API_ProjectWorldToViewport(glm::vec3* worldPos, glm::vec2* outViewportPos)
     {
@@ -1108,7 +1089,9 @@ namespace Boom {
         glm::vec2 max{ pos + scale * 0.5f };
         glm::vec2 mouse{ mouseX, mouseY };
 
-        if (mouse.x < min.x || mouse.x > max.x || mouse.y < min.y || mouse.y > max.y) return false;
+        if (mouse.x < min.x || mouse.x > max.x || mouse.y < min.y || mouse.y > max.y) {
+            return false;
+        }
 
         return true;
     }

@@ -7,40 +7,46 @@ namespace GameScripts
     {
         public ulong Entity;
 
-        // ===== World convention =====
-        private const bool FORWARD_IS_NEG_Z = true;
+        private const bool WORLD_FORWARD_IS_NEG_Z = false;
+        private const bool LOCK_IN_PLACE = false;
 
-        // ===== New options =====
-        private const bool INVERT_FACING = true;     // NEW: face the opposite direction
-        private const bool LOCK_IN_PLACE = true;     // NEW: keep XZ position fixed (walk-in-place)
-        private const float YAW_OFFSET_DEG = 180f;     // NEW: amount to rotate to invert
-
-        // ===== Rotation tuning =====
         private float _rotationSpeedDeg = 360f;
         private float _minSpeedToRotate = 0.15f;
         private float _yaw;
 
-        // ===== Animator (optional) =====
         private const bool DRIVE_SPEED_PARAM = true;
         private const float SPEED_SMOOTH = 10f;
         private double _smoothedSpeed = 0.0;
 
-        // ===== Vision =====
         private VisionComponent _vision;
         private bool _isAlert;
         private bool _hasDealtDamage;
-        private float _debugTimer;
 
-        // ===== Anchor to cancel root motion =====
-        private Vec3 _anchorPos;                        // NEW
+        private Vec3 _anchorPos;
+
+        // ====== AUDIO ======
+        private const string SFX_FOOTSTEP_PATH = "Resources/Audio/playerRun_02.wav";
+        private const string SFX_ALERT_PATH = "Resources/Audio/enemyHurt_2.wav";
+
+        private string _footBase;     // base id for steps (unique per entity)
+        private string _alertName;
+
+        // cadence settings
+        private const float MOVE_START_SPEED = 0.25f; // start stepping above this (m/s)
+        private const float MOVE_STOP_SPEED = 0.15f; // stop stepping below this
+        private const float STEP_LENGTH_M = 0.7f;  // meters per step at normal walk (tune!)
+        private const float MIN_INTERVAL_S = 0.5f; // clamp so it never gets machine-gun fast
+        private const float MAX_INTERVAL_S = 2.0f;  // clamp for slow shuffles
+        private const float VOL_BASE = 0.8f; // base volume
+        private const float VOL_JITTER = 0.07f; // ± random variance
+
+        private float _stepTimer = 0f;
+        private bool _leftNext = true;
+        private float _debugTimer;
 
         public void OnStart(string json)
         {
-            if (!API.HasTransform(Entity))
-            {
-                API.Log("[PatrolEnemyController] Missing Transform.");
-                return;
-            }
+            if (!API.HasTransform(Entity)) { API.Log("[PatrolEnemyController] Missing Transform."); return; }
 
             _yaw = API.GetRotation(Entity).Y;
 
@@ -50,41 +56,82 @@ namespace GameScripts
                 if (DRIVE_SPEED_PARAM) API.AnimatorSetFloat(Entity, "Speed", 0f);
             }
 
-            // Anchor current XZ so we can cancel drift if desired
-            _anchorPos = API.GetPosition(Entity);       // NEW
+            _anchorPos = API.GetPosition(Entity);
 
             _vision = new VisionComponent { Entity = Entity };
             _vision.OnTargetDetected += OnPlayerDetected;
             _vision.OnTargetLost += OnPlayerLost;
             _vision.OnTargetUpdated += OnPlayerTracking;
             _vision.OnStart(json);
+
+            _footBase = "foot_" + Entity.ToString();
+            _alertName = "alert_" + Entity.ToString();
+
+            // optional: preload step clip once (non-loop)
+            API.PreloadSound(_footBase + "_L", SFX_FOOTSTEP_PATH, loop: false);
+            API.PreloadSound(_footBase + "_R", SFX_FOOTSTEP_PATH, loop: false);
+            API.PreloadSound(_alertName, SFX_ALERT_PATH, loop: false);
         }
 
         public void OnUpdate(float dt)
         {
             if (Entity == 0 || dt <= 0f) return;
 
-            if (!_isAlert)
-                FaceVelocity(dt);
+            var v = API.GetLinearVelocity(Entity);
+            float speedXZ = (float)Math.Sqrt(v.X * v.X + v.Z * v.Z);
+
+            if (!_isAlert) FaceVelocity(dt, v.X, v.Z);
 
             if (API.HasAnimator(Entity) && DRIVE_SPEED_PARAM)
             {
-                var v = API.GetLinearVelocity(Entity);
-                float speedXZ = (float)Math.Sqrt(v.X * v.X + v.Z * v.Z);
-                _smoothedSpeed += (speedXZ - _smoothedSpeed) * Math.Min(1.0, SPEED_SMOOTH * dt);
+                _smoothedSpeed += (speedXZ - _smoothedSpeed) * Min(1.0, SPEED_SMOOTH * dt);
                 API.AnimatorSetFloat(Entity, "Speed", (float)_smoothedSpeed);
             }
 
-            // === Keep walk in place (kill root motion / forward drift) ===
-            if (LOCK_IN_PLACE)
-            {
-                // Prevent animation from pushing enemy forward
-                var v = API.GetLinearVelocity(Entity);
-                API.SetLinearVelocity(Entity, new Vec3(0f, v.Y, 0f));
+            //if (LOCK_IN_PLACE)
+            //{
+            //    API.SetLinearVelocity(Entity, new Vec3(0f, v.Y, 0f));
+            //    var p = API.GetPosition(Entity);
+            //    API.SetPosition(Entity, new Vec3(_anchorPos.X, p.Y, _anchorPos.Z));
+            //}
 
-                // Keep the enemy anchored in place (XZ locked)
-                var p = API.GetPosition(Entity);
-                API.SetPosition(Entity, new Vec3(_anchorPos.X, p.Y, _anchorPos.Z));
+            // ======= DISCRETE FOOTSTEPS =======
+            bool grounded = API.IsColliding(Entity);              // your RB “grounded” flag
+            bool moving = speedXZ >= MOVE_START_SPEED;
+
+            if (grounded && moving)
+            {
+                // cadence: steps per second ≈ speed / stepLength
+                float cadence = Math.Max(0.0001f, speedXZ / STEP_LENGTH_M);
+                float interval = 1.0f / cadence;
+                if (interval < MIN_INTERVAL_S) interval = MIN_INTERVAL_S;
+                if (interval > MAX_INTERVAL_S) interval = MAX_INTERVAL_S;
+
+                _stepTimer -= dt;
+                if (_stepTimer <= 0f)
+                {
+                    var pos = API.GetPosition(Entity);
+
+                    // choose L/R alternating channel names so overlapping clicks don’t stomp each other
+                    string chName = _footBase + (_leftNext ? "_L" : "_R");
+                    _leftNext = !_leftNext;
+
+                    // play one-shot at position
+                    API.PlaySoundAt(chName, SFX_FOOTSTEP_PATH, pos, loop: false);
+
+                    // subtle volume variance
+                    float jitter = (float)(Random01() * 2.0 - 1.0) * VOL_JITTER; // [-VOL_JITTER, +VOL_JITTER]
+                    float vol = Clamp01(VOL_BASE + jitter);
+                    API.SetSoundVolume(chName, vol);
+
+                    // restart timer
+                    _stepTimer += interval;
+                }
+            }
+            else
+            {
+                // reset so the next move fires promptly, not after an old leftover remainder
+                _stepTimer = 0f;
             }
 
             _vision?.OnUpdate(dt);
@@ -94,30 +141,32 @@ namespace GameScripts
             {
                 _debugTimer = 0f;
                 var r = API.GetRotation(Entity);
-                API.Log($"[PatrolEnemyController] yaw={_yaw:F1}°, rot.Y={r.Y:F1}°");
+                API.Log($"[PatrolEnemyController] yaw={_yaw:F1}°, rotY={r.Y:F1}°, speed={speedXZ:F2} m/s");
             }
         }
 
-        // Rotate toward horizontal velocity
-        private void FaceVelocity(float dt)
+        // ---- Helpers (unchanged except we keep them here) ----
+        private void FaceVelocity(float dt, float vx, float vz)
         {
-            var vel = API.GetLinearVelocity(Entity);
-            float vx = vel.X, vz = vel.Z;
             float speedXZ = (float)Math.Sqrt(vx * vx + vz * vz);
             if (speedXZ < _minSpeedToRotate) return;
 
-            // Facing from velocity, with optional inversion
-            float baseYaw = FORWARD_IS_NEG_Z
-                ? (float)(Math.Atan2(vx, -vz) * 180.0 / Math.PI)
-                : (float)(Math.Atan2(vx, vz) * 180.0 / Math.PI);
-
-            float targetYawDeg = baseYaw + (INVERT_FACING ? YAW_OFFSET_DEG : 0f); // NEW
+            float baseYaw = ComputeYawFromVelocity(vx, vz);
+            float targetYawDeg = baseYaw;
 
             float delta = Wrap180(targetYawDeg - _yaw);
             float maxStep = _rotationSpeedDeg * dt;
+
             _yaw = (Math.Abs(delta) <= maxStep) ? targetYawDeg : _yaw + Math.Sign(delta) * maxStep;
             _yaw = Wrap360(_yaw);
             API.SetRotationY(Entity, _yaw);
+        }
+
+        private float ComputeYawFromVelocity(float vx, float vz)
+        {
+            return WORLD_FORWARD_IS_NEG_Z
+                ? (float)(Math.Atan2(vx, -vz) * 180.0 / Math.PI)
+                : (float)(Math.Atan2(vx, vz) * 180.0 / Math.PI);
         }
 
         private void OnPlayerDetected(ulong target, Vec3 pos)
@@ -125,44 +174,42 @@ namespace GameScripts
             _isAlert = true;
             var self = API.GetPosition(Entity);
             float dx = pos.X - self.X, dz = pos.Z - self.Z;
-
-            float baseYaw = FORWARD_IS_NEG_Z
+            float baseYaw = WORLD_FORWARD_IS_NEG_Z
                 ? (float)(Math.Atan2(dx, -dz) * 180.0 / Math.PI)
                 : (float)(Math.Atan2(dx, dz) * 180.0 / Math.PI);
-
-            _yaw = Wrap360(baseYaw + (INVERT_FACING ? YAW_OFFSET_DEG : 0f));      // NEW
+            _yaw = Wrap360(baseYaw);
             API.SetRotationY(Entity, _yaw);
 
-            if (!_hasDealtDamage)
-            {
-                _hasDealtDamage = true;
-                PlayerManager.NotifyPlayerCaught(Entity);
-            }
+            API.PlaySoundAt(_alertName, SFX_ALERT_PATH, self, loop: false);
+            API.SetSoundVolume(_alertName, 0.5f);
+
+            if (!_hasDealtDamage) { _hasDealtDamage = true; PlayerManager.NotifyPlayerCaught(Entity); }
         }
 
-        private void OnPlayerLost(ulong target, Vec3 lastPos)
-        {
-            _isAlert = false;
-            _hasDealtDamage = false;
-        }
+        private void OnPlayerLost(ulong t, Vec3 lastPos) { _isAlert = false; _hasDealtDamage = false; }
 
-        private void OnPlayerTracking(ulong target, Vec3 pos)
+        private void OnPlayerTracking(ulong t, Vec3 pos)
         {
             var self = API.GetPosition(Entity);
             float dx = pos.X - self.X, dz = pos.Z - self.Z;
-
-            float baseYaw = FORWARD_IS_NEG_Z
+            float baseYaw = WORLD_FORWARD_IS_NEG_Z
                 ? (float)(Math.Atan2(dx, -dz) * 180.0 / Math.PI)
                 : (float)(Math.Atan2(dx, dz) * 180.0 / Math.PI);
-
-            _yaw = Wrap360(baseYaw + (INVERT_FACING ? YAW_OFFSET_DEG : 0f));      // NEW
+            _yaw = Wrap360(baseYaw);
             API.SetRotationY(Entity, _yaw);
         }
 
-        public void OnDestroy() { _vision?.OnDestroy(); }
+        public void OnDestroy()
+        {
+            // no looping channels to stop now, but if a step is mid-play it will auto-stop
+            _vision?.OnDestroy();
+        }
 
-        // helpers
+        // utils
+        private static double Min(double a, double b) => (a < b) ? a : b;
         private static float Wrap360(float a) { while (a >= 360f) a -= 360f; while (a < 0f) a += 360f; return a; }
         private static float Wrap180(float a) { while (a > 180f) a -= 360f; while (a <= -180f) a += 360f; return a; }
+        private static double Random01() => new Random().NextDouble();
+        private static float Clamp01(float v) => v < 0f ? 0f : (v > 1f ? 1f : v);
     }
 }

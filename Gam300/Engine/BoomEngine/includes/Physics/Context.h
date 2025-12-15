@@ -1311,16 +1311,20 @@ namespace Boom {
             return true;
         }
 
-
-        BOOM_INLINE void Simulate(uint32_t step, float dt)
+        BOOM_INLINE void Simulate([[maybe_unused]] uint32_t step, float dt)
         {
-            for (uint32_t i = 0; i < step; ++i)
-            {
-                // simulate m_Physics for a time step
-                m_Scene->simulate(dt);
+            const float FIXED_TIMESTEP = 0.016f;
 
-                // block until simulation is complete
+            float accumulatedTime = dt;
+            uint32_t substeps = 0;
+
+            while (accumulatedTime > 0.0f && substeps < 4)  // Max 4 substeps
+            {
+                float timestep = std::min(accumulatedTime, FIXED_TIMESTEP);
+                m_Scene->simulate(timestep);
                 m_Scene->fetchResults(true);
+                accumulatedTime -= timestep;
+                substeps++;
             }
         }
 

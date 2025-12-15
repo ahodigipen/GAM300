@@ -15,7 +15,7 @@ namespace GameScripts
         private string _endSpriteName = "UI_End";
         private ulong _endSprite = 0;
 
-        private bool _isTriggered = false;
+       // private bool _isTriggered = false;
         private float _fadeSpeed = 0.5f;        // Slow dramatic fade
         private float _currentAlpha = 0.0f;
         private float _holdAtFullDuration = 3.0f;  // Hold at full opacity before proceeding
@@ -87,7 +87,7 @@ namespace GameScripts
             if (_currentState == State.Hidden)
             {
                 _currentState = State.FadingIn;
-                _isTriggered = true;
+                //_isTriggered = true;
                 API.Log("[UIEnd] End game sequence triggered");
             }
         }

@@ -29,8 +29,8 @@ namespace GameScripts
         private int _maxHealth = 5;
         private Vec3 _spawnPoint;
         private bool _isRespawning = false;
-        private float _respawnDelay = 1.0f;
-        private float _respawnTimer = 0f;
+        //private float _respawnDelay = 1.0f;
+        //private float _respawnTimer = 0f;
         private bool _isInvulnerable = false;
         private float _invulnerabilityDuration = 2.0f;
         private float _invulnerabilityTimer = 0f;
@@ -131,7 +131,7 @@ namespace GameScripts
         private void StartRespawn()
         {
             _isRespawning = true;
-            _respawnTimer = 0f;
+          //  _respawnTimer = 0f;
             API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
             _fadeState = FadeState.FadingOut;
             _fadeTimer = 0f;

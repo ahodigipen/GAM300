@@ -16,7 +16,10 @@ namespace Boom
         std::cout << "[RunContext] Loading scene MainMenu..." << std::endl;
         std::cout.flush();
 
-
+        if (!showFrame) { //for runtime game.exe
+            DataSerializer serializer;
+            serializer.DeserializeAsync(*m_Context->assets, "Resources/assets.yaml", GetWindowHandle().get());
+        }
 
         //LoadScene("level");
         LoadScene("MainMenu");
@@ -304,6 +307,8 @@ namespace Boom
                     SoundSystem::Update(m_Context->scene, static_cast<float>(m_Context->DeltaTime));
                 }
             }
+
+            SoundEngine::Instance().Update();
 
             LightsUpdate();
 

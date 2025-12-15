@@ -46,7 +46,9 @@
     <Compile Include="API.cs" />
     <Compile Include="AttackSquash.cs" />
     <Compile Include="CharacterAnimation.cs" />
+    <Compile Include="EndZoneTrigger.cs" />
     <Compile Include="EnemyAI.cs" />
+    <Compile Include="FootStepsMixer.cs" />
     <Compile Include="HowToPlayMenu.cs" />
     <Compile Include="CrouchTriggerText.cs" />
     <Compile Include="PatrolEnemyController.cs" />

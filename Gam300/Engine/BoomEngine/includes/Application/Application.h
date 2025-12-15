@@ -109,7 +109,7 @@ namespace Boom
 		bool m_ShouldExit = false;  // Flag for graceful shutdown
 		float m_TestRot = 0.0f;
 
-		bool m_PhysDebugViz = true;
+		bool m_PhysDebugViz = false;
 
 		// --- Mono State ---
 		MonoDomain* m_MonoRootDomain = nullptr;
@@ -529,8 +529,8 @@ namespace Boom
 
 			// CRITICAL: Load all assets from assets.yaml BEFORE loading the scene
 			// This ensures textures, models, etc. are available when scene references them
-			BOOM_INFO("[Scene] Loading assets from Resources/assets.yaml");
-			serializer.DeserializeAsync(*m_Context->assets, "Resources/assets.yaml", m_Context->window->Handle().get());
+			//BOOM_INFO("[Scene] Loading assets from Resources/assets.yaml");
+			//serializer.DeserializeAsync(*m_Context->assets, "Resources/assets.yaml", m_Context->window->Handle().get());
 			serializer.Deserialize(m_Context->scene, *m_Context->assets, sceneFilePath);
 
 			// *** ADD THIS LINE - Clear all trigger callbacks before loading new scene ***
@@ -557,7 +557,7 @@ namespace Boom
 			// This function now *only* loads from file if objects aren't already in the scene.
 			// It *always* leaves the objects in a deactivated state.
 
-			BOOM_INFO("[Scene] Checking for existing objects for: %s", sceneName.c_str());
+			BOOM_INFO("[Scene] Checking for existing objects for: {}", sceneName.c_str());
 			auto& reg = m_Context->scene;
 
 			// 1. Check if objects *already exist* (activated or deactivated)
@@ -565,7 +565,7 @@ namespace Boom
 			auto existingView = reg.view<PauseMenuTagComponent>();
 			if (!existingView.empty())
 			{
-				BOOM_INFO("[Scene] Objects for '%s' already exist in scene. Load unnecessary.", sceneName.c_str());
+				BOOM_INFO("[Scene] Objects for '{}' already exist in scene. Load unnecessary.", sceneName.c_str());
 				// Ensure they are deactivated, just in case
 				for (auto e : existingView) {
 					if (!reg.all_of<DeactivatedComponent>(e)) {
@@ -578,7 +578,7 @@ namespace Boom
 			// --- If we are here, no objects were found at all. ---
 			// --- Proceed with the ORIGINAL slow load (first time only). ---
 
-			BOOM_INFO("[Scene] No existing objects found. Performing full additive load for '%s'", sceneName.c_str());
+			BOOM_INFO("[Scene] No existing objects found. Performing full additive load for '{}'", sceneName.c_str());
 
 			DataSerializer serializer;
 			const std::string sceneFilePath = scenePath + sceneName + ".yaml";
