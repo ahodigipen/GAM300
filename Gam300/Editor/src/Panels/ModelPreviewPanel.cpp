@@ -12,6 +12,7 @@
 #include <GL/glew.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <cmath>
 
 using namespace EditorUI;
 
@@ -71,35 +72,77 @@ void ModelPreviewPanel::Render()
 void ModelPreviewPanel::RenderToolbar()
 {
     ImGui::Text("Model Preview Window");
-    ImGui::SameLine(ImGui::GetWindowWidth() - 120);
 
-    if (ImGui::Button("Load Model"))
+    // Model selection dropdown
+    if (ImGui::Button("Load Model", ImVec2(100, 0)))
     {
-        // TODO: Open file dialog to select model
-        // For now, just show a placeholder
-        ImGui::OpenPopup("LoadModelPopup");
+        ImGui::OpenPopup("SelectModelPopup");
     }
 
-    if (ImGui::BeginPopup("LoadModelPopup"))
+    if (ImGui::BeginPopup("SelectModelPopup"))
     {
-        ImGui::Text("Enter model path:");
-        static char modelPath[256] = "Resources/Models/";
-        if (ImGui::InputText("##modelpath", modelPath, sizeof(modelPath), ImGuiInputTextFlags_EnterReturnsTrue))
+        ImGui::Text("Select a model:");
+        ImGui::Separator();
+
+        if (m_Ctx && m_Ctx->assets)
         {
-            LoadModel(modelPath);
-            ImGui::CloseCurrentPopup();
+            auto& modelMap = m_Ctx->assets->GetMap<Boom::ModelAsset>();
+
+            for (auto& [assetID, assetPtr] : modelMap)
+            {
+                if (assetID == Boom::EMPTY_ASSET) continue;
+
+                auto* modelAsset = dynamic_cast<Boom::ModelAsset*>(assetPtr.get());
+                if (modelAsset && modelAsset->data)
+                {
+                    std::string displayName = modelAsset->name;
+                    if (modelAsset->hasJoints)
+                    {
+                        displayName += " (Skeletal)";
+                    }
+
+                    if (ImGui::Selectable(displayName.c_str()))
+                    {
+                        LoadModel(modelAsset->name);
+                        ImGui::CloseCurrentPopup();
+                    }
+
+                    // Tooltip with full path
+                    if (ImGui::IsItemHovered())
+                    {
+                        ImGui::BeginTooltip();
+                        ImGui::Text("Source: %s", modelAsset->source.c_str());
+                        ImGui::Text("Has Joints: %s", modelAsset->hasJoints ? "Yes" : "No");
+                        ImGui::EndTooltip();
+                    }
+                }
+            }
         }
-        if (ImGui::Button("Cancel"))
+        else
         {
-            ImGui::CloseCurrentPopup();
+            ImGui::TextDisabled("No models available");
         }
+
         ImGui::EndPopup();
     }
 
     ImGui::SameLine();
-    if (ImGui::Button("Clear") && m_HasModel)
+    if (ImGui::Button("Clear", ImVec2(60, 0)) && m_HasModel)
     {
         ClearModel();
+    }
+
+    ImGui::SameLine();
+    if (ImGui::Button("Frame Model", ImVec2(100, 0)) && m_HasModel)
+    {
+        FrameModel();
+    }
+
+    // Current model info
+    if (m_HasModel)
+    {
+        ImGui::SameLine();
+        ImGui::TextDisabled("| Model: %s", m_LoadedModelPath.c_str());
     }
 
     ImGui::Separator();
@@ -113,6 +156,10 @@ void ModelPreviewPanel::RenderToolbar()
     {
         ResetCamera();
     }
+
+    // Camera controls info
+    ImGui::SameLine();
+    ImGui::TextDisabled("| Right-Click+Drag: Orbit | Scroll: Zoom");
 
     ImGui::Separator();
 }
@@ -138,8 +185,7 @@ void ModelPreviewPanel::RenderViewport()
         }
     }
 
-    // Handle camera controls
-    HandleCameraControls();
+    // Update camera
     UpdateCamera();
 
     // Render to framebuffer
@@ -165,6 +211,9 @@ void ModelPreviewPanel::RenderViewport()
         ImVec2(0, 1), // UV top-left
         ImVec2(1, 0)  // UV bottom-right (flip Y)
     );
+
+    // Handle camera controls AFTER image is rendered (so IsItemHovered works)
+    HandleCameraControls();
 }
 
 void ModelPreviewPanel::HandleCameraControls()
@@ -448,8 +497,8 @@ void ModelPreviewPanel::LoadModel(const std::string& modelPath)
         BOOM_INFO("[ModelPreviewPanel] No animator needed (static model)");
     }
 
-    // Reset camera to view the model
-    ResetCamera();
+    // Auto-frame the model to fit it in view
+    FrameModel();
 }
 
 void ModelPreviewPanel::ClearModel()
@@ -470,4 +519,42 @@ void ModelPreviewPanel::ResetCamera()
     m_CameraPitch = 0.3f; // Slightly above horizontal
     m_CameraTarget = glm::vec3(0.0f, 1.0f, 0.0f);
     UpdateCamera();
+}
+
+void ModelPreviewPanel::FrameModel()
+{
+    if (!m_Model) return;
+
+    // Calculate model bounding box
+    // For simplicity, estimate based on model transform and a default size
+    // A more accurate approach would iterate through all vertices
+    glm::vec3 modelMin = m_Model->modelTransform.translate - m_Model->modelTransform.scale;
+    glm::vec3 modelMax = m_Model->modelTransform.translate + m_Model->modelTransform.scale;
+
+    // Calculate bounding sphere radius
+    glm::vec3 center = (modelMin + modelMax) * 0.5f;
+    glm::vec3 extent = modelMax - modelMin;
+    float radius = glm::length(extent) * 0.5f;
+
+    // If radius is too small (default transform), use a reasonable default
+    if (radius < 0.1f)
+    {
+        radius = 2.0f;
+    }
+
+    // Set camera target to model center
+    m_CameraTarget = center;
+
+    // Calculate camera distance to fit model in view (45 degree FOV)
+    // Distance = radius / tan(FOV/2)
+    float fovRadians = glm::radians(45.0f);
+    m_CameraDistance = (radius * 1.5f) / std::tan(fovRadians * 0.5f);
+
+    // Clamp to reasonable range
+    m_CameraDistance = glm::clamp(m_CameraDistance, 1.0f, 50.0f);
+
+    UpdateCamera();
+
+    BOOM_INFO("[ModelPreviewPanel] Framed model - Distance: {:.2f}, Center: ({:.2f}, {:.2f}, {:.2f})",
+              m_CameraDistance, center.x, center.y, center.z);
 }

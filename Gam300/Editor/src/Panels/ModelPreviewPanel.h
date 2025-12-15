@@ -50,6 +50,7 @@ namespace EditorUI {
 
         // Camera orbit controls
         void ResetCamera();
+        void FrameModel(); // Auto-adjust camera to fit model in view
 
     private:
         Editor* m_Owner = nullptr;
