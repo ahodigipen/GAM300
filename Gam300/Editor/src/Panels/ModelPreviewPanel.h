@@ -59,7 +59,7 @@ namespace EditorUI {
         // Loaded model
         std::string m_LoadedModelPath;
         std::shared_ptr<Boom::Model> m_Model;
-        std::unique_ptr<Boom::Animator> m_Animator;
+        std::shared_ptr<Boom::Animator> m_Animator;
         bool m_HasModel = false;
 
         // Viewport framebuffer

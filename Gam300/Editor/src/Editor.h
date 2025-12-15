@@ -63,6 +63,11 @@ namespace EditorUI {
         // Undo/Redo system
         CommandHistory* GetCommandHistory() const { return m_CommandHistory.get(); }
 
+        // Debug rendering (for panels like ModelPreviewPanel)
+        Boom::DebugLinesShader* GetDebugLinesShader() const {
+            return m_App ? m_App->GetDebugLinesShader() : nullptr;
+        }
+
     public:
       
         char m_SceneNameBuffer[256] = {};

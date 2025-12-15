@@ -4,6 +4,8 @@
 #include "Application/Context.h"
 #include "Graphics/Models/Model.h"
 #include "Graphics/Models/Animator.h"
+#include "Graphics/Shaders/DebugLines.h"
+#include "Graphics/Utilities/Data.h"
 #include "Auxiliaries/Assets.h"
 #include "Vendors/imgui/imgui.h"
 #include "common/Core.h"
@@ -222,30 +224,148 @@ void ModelPreviewPanel::RenderModel()
 {
     if (!m_Ctx || !m_Ctx->renderer || !m_Model) return;
 
-    // TODO: Render the loaded model using the renderer
-    // For now, we'll just render a placeholder
+    // Set up camera (creates frustum matrix internally)
+    Boom::Camera3D camera{};
+    camera.FOV = 45.0f;
+    camera.nearPlane = 0.1f;
+    camera.farPlane = 100.0f;
+
+    Boom::Transform3D cameraTransform{};
+    cameraTransform.translate = m_CameraPosition;
+
+    m_Ctx->renderer->SetCamera(camera, cameraTransform);
+
+    // Set joints if model has skeleton
+    if (m_Animator)
+    {
+        auto transforms = m_Animator->Animate(0.0f); // Get current transforms
+        m_Ctx->renderer->SetJoints(transforms);
+    }
+
+    // Draw the model (identity transform since we're in model space)
+    Boom::Transform3D modelTransform{};
+    modelTransform.translate = glm::vec3(0.0f);
+    modelTransform.rotate = glm::vec3(0.0f);
+    modelTransform.scale = glm::vec3(1.0f);
+
+    // Use a default material (gray)
+    Boom::PbrMaterial material{};
+    material.albedo = glm::vec3(0.7f, 0.7f, 0.7f);
+    material.roughness = 0.5f;
+    material.metallic = 0.0f;
+
+    // Draw takes Model3D which is shared_ptr<Model>
+    m_Ctx->renderer->Draw(m_Model, modelTransform, material);
+}
+
+void ModelPreviewPanel::RenderSkeleton()
+{
+    if (!m_Animator || !m_Ctx || !m_Owner) return;
+
+    // Get the debug lines shader from the main application
+    auto debugShader = m_Owner->GetDebugLinesShader();
+    if (!debugShader) return;
 
     // Get view and projection matrices
     glm::mat4 view = glm::lookAt(m_CameraPosition, m_CameraTarget, glm::vec3(0, 1, 0));
     float aspect = m_ViewportSize.x / m_ViewportSize.y;
     glm::mat4 proj = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
 
-    // TODO: Draw model with renderer->DrawModel() or similar
-    // This will require accessing the PBR shader and drawing the model mesh
-}
+    // Get skeleton lines from animator (in model space)
+    auto boneLines = m_Animator->GetSkeletonLines();
+    if (boneLines.empty()) return;
 
-void ModelPreviewPanel::RenderSkeleton()
-{
-    if (!m_Animator || !m_Ctx) return;
+    // Convert bone lines to LineVert format
+    std::vector<Boom::LineVert> normalBones;
+    std::vector<Boom::LineVert> selectedBones;
+    normalBones.reserve(boneLines.size() * 2);
+    selectedBones.reserve(10);
 
-    // TODO: Render skeleton bones similar to Application.cpp skeleton visualization
-    // We'll reuse the DebugLinesShader and GetSkeletonLines() method
+    glm::vec4 boneColor = m_Ctx->BoneColor;
+    glm::vec4 selectedBoneColor = m_Ctx->SelectedBoneColor;
+
+    for (const auto& boneLine : boneLines)
+    {
+        bool isSelected = (!m_SelectedBoneName.empty() && boneLine.boneName == m_SelectedBoneName);
+
+        if (isSelected)
+        {
+            selectedBones.push_back({ boneLine.start, selectedBoneColor });
+            selectedBones.push_back({ boneLine.end, selectedBoneColor });
+        }
+        else
+        {
+            normalBones.push_back({ boneLine.start, boneColor });
+            normalBones.push_back({ boneLine.end, boneColor });
+        }
+    }
+
+    // Draw normal bones first (with X-ray mode - depth test disabled)
+    if (!normalBones.empty())
+    {
+        debugShader->Draw(view, proj, normalBones, m_Ctx->BoneLineWidth, true);
+    }
+
+    // Draw selected bone on top with thicker line
+    if (!selectedBones.empty())
+    {
+        debugShader->Draw(view, proj, selectedBones, m_Ctx->BoneLineWidth * 3.0f, true);
+    }
 }
 
 void ModelPreviewPanel::RenderGrid()
 {
-    // TODO: Render a grid on the floor for reference
-    // Simple lines in XZ plane
+    if (!m_Owner || !m_Ctx) return;
+
+    auto debugShader = m_Owner->GetDebugLinesShader();
+    if (!debugShader) return;
+
+    // Get view and projection matrices
+    glm::mat4 view = glm::lookAt(m_CameraPosition, m_CameraTarget, glm::vec3(0, 1, 0));
+    float aspect = m_ViewportSize.x / m_ViewportSize.y;
+    glm::mat4 proj = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
+
+    // Create grid lines on XZ plane (Y=0)
+    std::vector<Boom::LineVert> gridLines;
+    const int gridSize = 10;
+    const float gridStep = 1.0f;
+    const glm::vec4 gridColor(0.3f, 0.3f, 0.3f, 1.0f);
+    const glm::vec4 axisXColor(0.6f, 0.2f, 0.2f, 1.0f); // Red for X axis
+    const glm::vec4 axisZColor(0.2f, 0.2f, 0.6f, 1.0f); // Blue for Z axis
+
+    // Grid lines parallel to Z axis
+    for (int i = -gridSize; i <= gridSize; ++i)
+    {
+        float x = i * gridStep;
+        glm::vec3 start(x, 0.0f, -gridSize * gridStep);
+        glm::vec3 end(x, 0.0f, gridSize * gridStep);
+
+        // Use axis color for center lines, otherwise grid color
+        glm::vec4 color = (i == 0) ? axisZColor : gridColor;
+
+        gridLines.push_back({ start, color });
+        gridLines.push_back({ end, color });
+    }
+
+    // Grid lines parallel to X axis
+    for (int i = -gridSize; i <= gridSize; ++i)
+    {
+        float z = i * gridStep;
+        glm::vec3 start(-gridSize * gridStep, 0.0f, z);
+        glm::vec3 end(gridSize * gridStep, 0.0f, z);
+
+        // Use axis color for center lines, otherwise grid color
+        glm::vec4 color = (i == 0) ? axisXColor : gridColor;
+
+        gridLines.push_back({ start, color });
+        gridLines.push_back({ end, color });
+    }
+
+    // Draw grid lines
+    if (!gridLines.empty())
+    {
+        debugShader->Draw(view, proj, gridLines, 1.0f, false);
+    }
 }
 
 void ModelPreviewPanel::LoadModel(const std::string& modelPath)
@@ -254,14 +374,82 @@ void ModelPreviewPanel::LoadModel(const std::string& modelPath)
 
     BOOM_INFO("[ModelPreviewPanel] Loading model: {}", modelPath);
 
-    // Try to load model from asset registry
-    // TODO: Implement model loading from file path
-    // For now, just set flags
+    // Clear previous model
+    ClearModel();
 
+    // Search asset registry for model matching the path
+    auto& modelMap = m_Ctx->assets->GetMap<Boom::ModelAsset>();
+
+    Boom::ModelAsset* foundAsset = nullptr;
+    Boom::AssetID foundID = Boom::EMPTY_ASSET;
+
+    for (auto& [assetID, assetPtr] : modelMap)
+    {
+        if (assetID == Boom::EMPTY_ASSET) continue;
+
+        auto* modelAsset = dynamic_cast<Boom::ModelAsset*>(assetPtr.get());
+        if (modelAsset && (modelAsset->source == modelPath || modelAsset->name == modelPath))
+        {
+            foundAsset = modelAsset;
+            foundID = assetID;
+            break;
+        }
+    }
+
+    if (!foundAsset || !foundAsset->data)
+    {
+        BOOM_ERROR("[ModelPreviewPanel] Model not found in asset registry: {}", modelPath);
+        BOOM_INFO("[ModelPreviewPanel] Available models:");
+        for (auto& [assetID, assetPtr] : modelMap)
+        {
+            if (assetID == Boom::EMPTY_ASSET) continue;
+            auto* modelAsset = dynamic_cast<Boom::ModelAsset*>(assetPtr.get());
+            if (modelAsset)
+            {
+                BOOM_INFO("  - {} (source: {})", modelAsset->name, modelAsset->source);
+            }
+        }
+        return;
+    }
+
+    // Load the model
+    m_Model = foundAsset->data;
     m_LoadedModelPath = modelPath;
-    m_HasModel = false; // Will be true once we implement loading
+    m_HasModel = true;
 
-    BOOM_WARN("[ModelPreviewPanel] Model loading not yet implemented");
+    BOOM_INFO("[ModelPreviewPanel] Model loaded successfully: {} (HasJoints: {})",
+              foundAsset->name, foundAsset->hasJoints);
+
+    // Get animator from skeletal model if it has skeleton
+    if (foundAsset->hasJoints && m_Model->HasJoint())
+    {
+        // Cast to SkeletalModel to access GetAnimator()
+        auto skeletalModel = std::dynamic_pointer_cast<Boom::SkeletalModel>(m_Model);
+        if (skeletalModel)
+        {
+            m_Animator = skeletalModel->GetAnimator();
+            if (m_Animator)
+            {
+                BOOM_INFO("[ModelPreviewPanel] Animator found for skeletal model");
+            }
+            else
+            {
+                BOOM_WARN("[ModelPreviewPanel] Model has joints but no animator");
+            }
+        }
+        else
+        {
+            BOOM_WARN("[ModelPreviewPanel] Model has joints but is not SkeletalModel");
+        }
+    }
+    else
+    {
+        m_Animator.reset();
+        BOOM_INFO("[ModelPreviewPanel] No animator needed (static model)");
+    }
+
+    // Reset camera to view the model
+    ResetCamera();
 }
 
 void ModelPreviewPanel::ClearModel()
