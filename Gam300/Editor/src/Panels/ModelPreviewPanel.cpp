@@ -372,37 +372,14 @@ void ModelPreviewPanel::RenderModel()
     cameraTransform.rotate = eulerAngles;
     cameraTransform.scale = glm::vec3(1.0f);
 
-    // Debug: verify the transform produces the correct forward vector
-    static int debugCount = 0;
-    if (debugCount++ < 5) {
-        glm::quat testQuat = glm::quat(glm::radians(eulerAngles));
-        glm::vec3 testForward = testQuat * glm::vec3(0.0f, 0.0f, -1.0f);
-        BOOM_INFO("[ModelPreview] Desired Forward: ({:.2f}, {:.2f}, {:.2f})", direction.x, direction.y, direction.z);
-        BOOM_INFO("[ModelPreview] TestQuat Forward: ({:.2f}, {:.2f}, {:.2f})", testForward.x, testForward.y, testForward.z);
-        BOOM_INFO("[ModelPreview] Camera Euler (XYZ): ({:.2f}, {:.2f}, {:.2f})", eulerAngles.x, eulerAngles.y, eulerAngles.z);
-        BOOM_INFO("[ModelPreview] Camera Pos: ({:.2f}, {:.2f}, {:.2f})", m_CameraPosition.x, m_CameraPosition.y, m_CameraPosition.z);
-
-        // Test what the View matrix should be
-        glm::mat4 correctView = glm::lookAt(m_CameraPosition, m_CameraTarget, glm::vec3(0,1,0));
-        glm::mat4 ourView = camera.View(cameraTransform);
-        BOOM_INFO("[ModelPreview] Correct view[3]: ({:.2f}, {:.2f}, {:.2f}, {:.2f})",
-                  correctView[3][0], correctView[3][1], correctView[3][2], correctView[3][3]);
-        BOOM_INFO("[ModelPreview] Our view[3]: ({:.2f}, {:.2f}, {:.2f}, {:.2f})",
-                  ourView[3][0], ourView[3][1], ourView[3][2], ourView[3][3]);
-    }
-
-    // CRITICAL: Call SetCamera right before drawing to ensure it's not overwritten
     m_Ctx->renderer->SetCamera(camera, cameraTransform);
 
     // Set joints if model has skeleton
     if (m_Animator)
     {
-        auto transforms = m_Animator->Animate(0.0f); // Get current transforms
+        auto transforms = m_Animator->Animate(0.0f);
         m_Ctx->renderer->SetJoints(transforms);
     }
-
-    // Call SetCamera AGAIN right before Draw in case something overwrote it
-    m_Ctx->renderer->SetCamera(camera, cameraTransform);
 
     // IMPORTANT: The PBR shader multiplies: transform * model->modelTransform
     // We want the final result to be: T(0,0,0) * R(0,0,0) * S(m_ModelScale)
@@ -434,39 +411,13 @@ void ModelPreviewPanel::RenderModel()
     modelTransform.rotate = finalRotate;
     modelTransform.scale = finalScale;
 
-    // Debug: log what transform we're actually using
-    static int transformDebugCount = 0;
-    if (transformDebugCount++ < 3) {
-        BOOM_INFO("[ModelPreview] Asset Transform - T: ({:.2f}, {:.2f}, {:.2f}), R: ({:.2f}, {:.2f}, {:.2f}), S: ({:.2f}, {:.2f}, {:.2f})",
-                  m_Model->modelTransform.translate.x, m_Model->modelTransform.translate.y, m_Model->modelTransform.translate.z,
-                  m_Model->modelTransform.rotate.x, m_Model->modelTransform.rotate.y, m_Model->modelTransform.rotate.z,
-                  m_Model->modelTransform.scale.x, m_Model->modelTransform.scale.y, m_Model->modelTransform.scale.z);
-        BOOM_INFO("[ModelPreview] Final Transform - T: ({:.2f}, {:.2f}, {:.2f}), R: ({:.2f}, {:.2f}, {:.2f}), S: ({:.2f}, {:.2f}, {:.2f})",
-                  modelTransform.translate.x, modelTransform.translate.y, modelTransform.translate.z,
-                  modelTransform.rotate.x, modelTransform.rotate.y, modelTransform.rotate.z,
-                  modelTransform.scale.x, modelTransform.scale.y, modelTransform.scale.z);
-    }
-
     // Use a default material (gray)
     Boom::PbrMaterial material{};
     material.albedo = glm::vec3(0.7f, 0.7f, 0.7f);
     material.roughness = 0.5f;
     material.metallic = 0.0f;
 
-    // Debug logging once
-    static bool loggedOnce = false;
-    if (!loggedOnce)
-    {
-        BOOM_INFO("[ModelPreviewPanel] Rendering model - Scale: {:.3f}, Camera Distance: {:.2f}, Asset Scale: ({:.2f}, {:.2f}, {:.2f})",
-                  m_ModelScale, m_CameraDistance,
-                  m_Model->modelTransform.scale.x, m_Model->modelTransform.scale.y, m_Model->modelTransform.scale.z);
-        BOOM_INFO("[ModelPreviewPanel] Camera Pos: ({:.2f}, {:.2f}, {:.2f}), Target: ({:.2f}, {:.2f}, {:.2f})",
-                  m_CameraPosition.x, m_CameraPosition.y, m_CameraPosition.z,
-                  m_CameraTarget.x, m_CameraTarget.y, m_CameraTarget.z);
-        loggedOnce = true;
-    }
-
-    // Draw takes Model3D which is shared_ptr<Model>
+    // Draw model
     m_Ctx->renderer->Draw(m_Model, modelTransform, material);
 
     // Clear aspect override so it doesn't affect game viewport
