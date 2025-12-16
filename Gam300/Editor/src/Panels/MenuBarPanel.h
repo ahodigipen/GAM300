@@ -42,6 +42,7 @@ namespace EditorUI {
         bool* showAnimatorGraph{ nullptr };
         bool* showSkeletonTree{ nullptr };
         bool* showModelPreview{ nullptr };
+        bool* showAnimationTimeline{ nullptr };
         // Dialog flags
         bool* showSaveDialog{ nullptr };
         bool* showLoadDialog{ nullptr };

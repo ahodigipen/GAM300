@@ -29,6 +29,7 @@ namespace EditorUI {
     class AnimatorGraphPanel;
     class SkeletonTreePanel;
     class ModelPreviewPanel;
+    class AnimationTimelinePanel;
     class CommandHistory;  // Forward-declare CommandHistory
     // FIXED: Now inherits from AppInterface (complete definition included above)
     class Editor : public Boom::AppInterface {
@@ -90,6 +91,7 @@ namespace EditorUI {
         bool m_ShowAnimatorGraph = true;
         bool m_ShowSkeletonTree = false;
         bool m_ShowModelPreview = false;
+        bool m_ShowAnimationTimeline = false;
         bool m_ShowSaveDialog = false;
         bool m_ShowLoadDialog = false;
         bool m_ShowSavePrefabDialog = false;
@@ -109,6 +111,7 @@ namespace EditorUI {
         std::unique_ptr<AnimatorGraphPanel>     m_AnimatorGraph;
         std::unique_ptr<SkeletonTreePanel>      m_SkeletonTree;
         std::unique_ptr<ModelPreviewPanel>      m_ModelPreview;
+        std::unique_ptr<AnimationTimelinePanel> m_AnimationTimeline;
 
         // Undo/Redo
         std::unique_ptr<CommandHistory>         m_CommandHistory;

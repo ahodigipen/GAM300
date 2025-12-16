@@ -1,7 +1,8 @@
-#include "Panels/ModelPreviewPanel.h"
+#include "Panels/AnimationTimelinePanel.h"
 #include "Editor.h"
 #include "Application/Interface.h"
 #include "Application/Context.h"
+#include "ECS/ECS.hpp"
 #include "Graphics/Models/Model.h"
 #include "Graphics/Models/Animator.h"
 #include "Graphics/Shaders/DebugLines.h"
@@ -19,12 +20,12 @@
 
 using namespace EditorUI;
 
-ModelPreviewPanel::ModelPreviewPanel(Editor* owner)
+AnimationTimelinePanel::AnimationTimelinePanel(Editor* owner)
     : m_Owner(owner)
     , m_App(owner ? static_cast<Boom::AppInterface*>(owner) : nullptr)
     , m_Ctx(m_App ? m_App->GetContext() : nullptr)
 {
-    // Create framebuffer for independent rendering
+    // Create framebuffer for 3D viewport
     glGenFramebuffers(1, &m_FramebufferID);
     glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
 
@@ -44,7 +45,7 @@ ModelPreviewPanel::ModelPreviewPanel(Editor* owner)
 
     // Check framebuffer status
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        BOOM_ERROR("[ModelPreviewPanel] Framebuffer is not complete!");
+        BOOM_ERROR("[AnimationTimelinePanel] Framebuffer is not complete!");
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -52,31 +53,134 @@ ModelPreviewPanel::ModelPreviewPanel(Editor* owner)
     ResetCamera();
 }
 
-ModelPreviewPanel::~ModelPreviewPanel()
+AnimationTimelinePanel::~AnimationTimelinePanel()
 {
     if (m_FramebufferID) glDeleteFramebuffers(1, &m_FramebufferID);
     if (m_TextureID) glDeleteTextures(1, &m_TextureID);
     if (m_DepthBufferID) glDeleteRenderbuffers(1, &m_DepthBufferID);
 }
 
-void ModelPreviewPanel::Render()
+void AnimationTimelinePanel::Render()
 {
-    if (!m_Owner) return;
+    if (!m_Owner || !m_App) return;
 
-    ImGui::SetNextWindowSize(ImVec2(1000, 700), ImGuiCond_FirstUseEver);
-    ImGui::Begin("Model Preview", &m_Owner->m_ShowModelPreview);
+    // Create the animation editor window
+    ImGui::SetNextWindowSize(ImVec2(1200, 800), ImGuiCond_FirstUseEver);
+    ImGui::Begin("Animation Timeline", &m_Owner->m_ShowAnimationTimeline);
 
-    RenderToolbar();
+    // Get selected entity and load model/animator (only if not in standalone mode)
+    auto selectedID = m_App->SelectedEntity();
+
+    // Only try to load from entity if we're not in standalone mode
+    if (!m_StandaloneMode && selectedID != entt::null)
+    {
+        Boom::Entity selected(&m_App->GetContext()->scene, selectedID);
+
+        // Get animator from AnimatorComponent
+        if (selected.Has<Boom::AnimatorComponent>())
+        {
+            auto& animComp = selected.Get<Boom::AnimatorComponent>();
+            m_Animator = animComp.animator;
+            BOOM_INFO("[AnimationTimeline] Entity has AnimatorComponent - Animator: {}", m_Animator ? "Valid" : "Null");
+        }
+        else
+        {
+            m_Animator.reset();
+        }
+
+        // Get model from ModelComponent
+        if (selected.Has<Boom::ModelComponent>())
+        {
+            auto& modelComp = selected.Get<Boom::ModelComponent>();
+            BOOM_INFO("[AnimationTimeline] Entity has ModelComponent - ModelID: {}", modelComp.modelID);
+
+            if (modelComp.modelID != Boom::EMPTY_ASSET && m_Ctx && m_Ctx->assets)
+            {
+                Boom::ModelAsset* modelAsset = m_Ctx->assets->TryGet<Boom::ModelAsset>(modelComp.modelID);
+                if (modelAsset && modelAsset->data)
+                {
+                    m_Model = modelAsset->data;
+                    m_HasModel = true;
+                    BOOM_INFO("[AnimationTimeline] Model loaded from entity: {}", modelComp.modelName);
+                }
+                else
+                {
+                    if (!m_StandaloneMode)
+                    {
+                        m_Model.reset();
+                        m_HasModel = false;
+                    }
+                    BOOM_ERROR("[AnimationTimeline] Failed to load model from asset registry");
+                }
+            }
+            else
+            {
+                if (!m_StandaloneMode)
+                {
+                    m_Model.reset();
+                    m_HasModel = false;
+                }
+            }
+        }
+        else
+        {
+            if (!m_StandaloneMode)
+            {
+                m_Model.reset();
+                m_HasModel = false;
+            }
+        }
+    }
+
+    // CHUNK 2: Detect animator change and auto-select first clip
+    if (m_Animator != m_PreviousAnimator)
+    {
+        m_PreviousAnimator = m_Animator;
+
+        if (m_Animator && m_Animator->GetClipCount() > 0)
+        {
+            m_SelectedClipIndex = 0;
+            m_Animator->PlayClip(0);
+            m_CurrentTime = 0.0f;
+            BOOM_INFO("[AnimationTimeline] Animator changed - Auto-selected first clip: {}",
+                m_Animator->GetClip(0)->name);
+        }
+        else
+        {
+            m_SelectedClipIndex = -1;
+            m_CurrentTime = 0.0f;
+        }
+    }
+
+    // --- LAYOUT: Four sections ---
+
+    // Section 1: Control Bar (top - fixed height)
+    RenderControlBar();
+
+    ImGui::Separator();
+
+    // Section 2: 3D Viewport (middle-top - resizable)
     RenderViewport();
+
+    ImGui::Separator();
+
+    // Section 3: Timeline Ruler (middle-bottom - fixed height)
+    RenderTimelineRuler();
+
+    ImGui::Separator();
+
+    // Section 4: Track List (bottom - remaining space)
+    RenderTrackList();
 
     ImGui::End();
 }
 
-void ModelPreviewPanel::RenderToolbar()
+void AnimationTimelinePanel::RenderControlBar()
 {
-    ImGui::Text("Model Preview Window");
+    // Top bar with model loading, playback controls, and visualization options
+    ImGui::BeginGroup();
 
-    // Model selection dropdown
+    // Model loading button
     if (ImGui::Button("Load Model", ImVec2(100, 0)))
     {
         ImGui::OpenPopup("SelectModelPopup");
@@ -110,7 +214,6 @@ void ModelPreviewPanel::RenderToolbar()
                         ImGui::CloseCurrentPopup();
                     }
 
-                    // Tooltip with full path
                     if (ImGui::IsItemHovered())
                     {
                         ImGui::BeginTooltip();
@@ -136,33 +239,45 @@ void ModelPreviewPanel::RenderToolbar()
     }
 
     ImGui::SameLine();
-    if (ImGui::Button("Frame Model", ImVec2(100, 0)) && m_HasModel)
-    {
-        FrameModel();
-    }
-
-    // Current model info
-    if (m_HasModel)
-    {
-        ImGui::SameLine();
-        ImGui::TextDisabled("| Model: %s", m_LoadedModelPath.c_str());
-    }
-
     ImGui::Separator();
+    ImGui::SameLine();
 
-    // Visualization options
+    // Playback controls (will be functional in Chunk 4)
+    ImGui::BeginDisabled(!m_HasModel);
+    if (ImGui::Button(m_IsPlaying ? "Pause" : "Play")) {
+        m_IsPlaying = !m_IsPlaying;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Stop")) {
+        m_IsPlaying = false;
+        m_CurrentTime = 0.0f;
+    }
+    ImGui::EndDisabled();
+
+    ImGui::SameLine(0, 20);
+    ImGui::Separator();
+    ImGui::SameLine(0, 20);
+
+    // Visualization toggles
     ImGui::Checkbox("Show Skeleton", &m_ShowSkeleton);
     ImGui::SameLine();
     ImGui::Checkbox("Show Grid", &m_ShowGrid);
     ImGui::SameLine();
     ImGui::Checkbox("Wireframe", &m_ShowWireframe);
+
     ImGui::SameLine();
-    if (ImGui::Button("Reset Camera"))
-    {
+    if (ImGui::Button("Reset Camera")) {
         ResetCamera();
     }
 
-    // Model scale control
+    if (m_HasModel) {
+        ImGui::SameLine();
+        if (ImGui::Button("Frame Model")) {
+            FrameModel();
+        }
+    }
+
+    // Scale controls (new row)
     if (m_HasModel)
     {
         ImGui::Text("Preview Scale:");
@@ -176,20 +291,26 @@ void ModelPreviewPanel::RenderToolbar()
         }
 
         ImGui::SameLine();
-        if (ImGui::Button("Reset to 1.0"))
+        if (ImGui::Button("Reset Scale"))
         {
             m_ModelScale = 1.0f;
         }
         ImGui::SameLine();
-        if (ImGui::Button("Set to 0.01"))
+        if (ImGui::Button("0.01x"))
         {
             m_ModelScale = 0.01f;
         }
+        ImGui::SameLine();
+        if (ImGui::Button("0.1x"))
+        {
+            m_ModelScale = 0.1f;
+        }
 
-        // Show actual model transform scale and camera info
+        // Show info
+        ImGui::SameLine();
         if (m_Model)
         {
-            ImGui::Text("Asset Scale: (%.2f, %.2f, %.2f) | Camera Distance: %.2f",
+            ImGui::TextDisabled("| Asset Scale: (%.2f, %.2f, %.2f) | Camera Dist: %.2f",
                 m_Model->modelTransform.scale.x,
                 m_Model->modelTransform.scale.y,
                 m_Model->modelTransform.scale.z,
@@ -197,22 +318,88 @@ void ModelPreviewPanel::RenderToolbar()
         }
     }
 
-    // Camera controls info
-    ImGui::TextDisabled("Controls: Right-Click+Drag: Orbit | Scroll: Zoom");
+    // ===== CHUNK 2: Animation Clip Selection & Info Display =====
+    if (m_Animator && m_Animator->GetClipCount() > 0)
+    {
+        ImGui::Separator();
+        ImGui::Text("Animation Clip:");
+        ImGui::SameLine();
 
-    ImGui::Separator();
+        // Animation clip dropdown
+        ImGui::SetNextItemWidth(200);
+        if (ImGui::BeginCombo("##AnimClip",
+            m_SelectedClipIndex >= 0 ? m_Animator->GetClip(m_SelectedClipIndex)->name.c_str() : "Select clip..."))
+        {
+            for (size_t i = 0; i < m_Animator->GetClipCount(); ++i)
+            {
+                const auto* clip = m_Animator->GetClip(i);
+                if (!clip) continue;
+
+                bool isSelected = (m_SelectedClipIndex == (int)i);
+                if (ImGui::Selectable(clip->name.c_str(), isSelected))
+                {
+                    m_SelectedClipIndex = (int)i;
+                    m_Animator->PlayClip(i);  // Switch to this clip
+                    m_CurrentTime = 0.0f;     // Reset time
+                }
+
+                if (isSelected)
+                {
+                    ImGui::SetItemDefaultFocus();
+                }
+            }
+            ImGui::EndCombo();
+        }
+
+        // Display clip information
+        if (m_SelectedClipIndex >= 0 && m_SelectedClipIndex < (int)m_Animator->GetClipCount())
+        {
+            const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
+            if (clip)
+            {
+                ImGui::SameLine();
+                ImGui::Text("|");
+
+                // Duration display
+                ImGui::SameLine();
+                ImGui::Text("Duration: %.2fs", clip->duration);
+
+                // FPS / Ticks per second
+                ImGui::SameLine();
+                ImGui::Text("| FPS: %.1f", clip->ticksPerSecond);
+
+                // Frame count (approximate)
+                int frameCount = (int)(clip->duration * clip->ticksPerSecond);
+                ImGui::SameLine();
+                ImGui::Text("| Frames: %d", frameCount);
+
+                // Current time / Total time
+                ImGui::SameLine();
+                ImGui::Text("| Time: %.2f / %.2f", m_CurrentTime, clip->duration);
+            }
+        }
+    }
+    else if (m_Animator)
+    {
+        ImGui::Separator();
+        ImGui::TextDisabled("No animation clips available");
+    }
+
+    ImGui::EndGroup();
 }
 
-void ModelPreviewPanel::RenderViewport()
+void AnimationTimelinePanel::RenderViewport()
 {
     ImVec2 availableSize = ImGui::GetContentRegionAvail();
+    // Take half of remaining space for viewport
+    ImVec2 viewportSize = ImVec2(availableSize.x, availableSize.y * 0.5f);
 
     // Resize framebuffer if viewport size changed
-    if (availableSize.x != m_ViewportSize.x || availableSize.y != m_ViewportSize.y)
+    if (viewportSize.x != m_ViewportSize.x || viewportSize.y != m_ViewportSize.y)
     {
-        if (availableSize.x > 0 && availableSize.y > 0)
+        if (viewportSize.x > 0 && viewportSize.y > 0)
         {
-            m_ViewportSize = availableSize;
+            m_ViewportSize = viewportSize;
 
             // Resize color texture
             glBindTexture(GL_TEXTURE_2D, m_TextureID);
@@ -232,23 +419,20 @@ void ModelPreviewPanel::RenderViewport()
     glViewport(0, 0, (GLsizei)m_ViewportSize.x, (GLsizei)m_ViewportSize.y);
 
     // Clear
-    glClearColor(0.2f, 0.2f, 0.25f, 1.0f);
+    glClearColor(0.15f, 0.15f, 0.18f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
-    // Set up simple lighting for preview
-    if (m_HasModel)
+    // Set up lighting for preview
+    if (m_HasModel && m_Ctx && m_Ctx->renderer)
     {
-        // Add a simple directional light
         std::vector<Boom::GPUDirLight> dirLights(1);
         dirLights[0].dir_intensity = glm::vec4(glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)), 1.0f);
         dirLights[0].radiance = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
         m_Ctx->renderer->UploadDirLights(dirLights, 1);
-
-        // Set ambient light
         m_Ctx->renderer->AmbientStrength() = 0.3f;
     }
 
@@ -272,6 +456,7 @@ void ModelPreviewPanel::RenderViewport()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // Display framebuffer texture in ImGui
+    ImVec2 viewportPos = ImGui::GetCursorScreenPos();
     ImGui::Image(
         (ImTextureID)(intptr_t)m_TextureID,
         m_ViewportSize,
@@ -279,11 +464,102 @@ void ModelPreviewPanel::RenderViewport()
         ImVec2(1, 0)  // UV bottom-right (flip Y)
     );
 
-    // Handle camera controls AFTER image is rendered (so IsItemHovered works)
+    // Show message overlay if no model loaded
+    if (!m_HasModel)
+    {
+        ImVec2 textPos = ImVec2(
+            viewportPos.x + m_ViewportSize.x * 0.5f - 150,
+            viewportPos.y + m_ViewportSize.y * 0.5f - 40
+        );
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+        // Draw semi-transparent background
+        drawList->AddRectFilled(
+            ImVec2(textPos.x - 10, textPos.y - 10),
+            ImVec2(textPos.x + 310, textPos.y + 90),
+            IM_COL32(0, 0, 0, 200)
+        );
+
+        // Draw text
+        drawList->AddText(ImVec2(textPos.x, textPos.y),
+                         IM_COL32(200, 200, 200, 255),
+                         "No model loaded");
+        drawList->AddText(ImVec2(textPos.x, textPos.y + 25),
+                         IM_COL32(150, 150, 150, 255),
+                         "Click 'Load Model' to select a model");
+        drawList->AddText(ImVec2(textPos.x, textPos.y + 50),
+                         IM_COL32(150, 150, 150, 255),
+                         "OR select an entity with AnimatorComponent");
+    }
+
+    // Handle camera controls AFTER image is rendered
     HandleCameraControls();
 }
 
-void ModelPreviewPanel::HandleCameraControls()
+void AnimationTimelinePanel::RenderTimelineRuler()
+{
+    // Middle section with time ruler and scrubber (will be implemented in Chunk 3)
+    ImGui::BeginGroup();
+
+    ImGui::Text("TIMELINE RULER");
+    ImGui::SameLine();
+    ImGui::TextDisabled("(Time scrubber will appear here in Chunk 3)");
+
+    // Placeholder ruler visual
+    ImVec2 rulerSize = ImVec2(ImGui::GetContentRegionAvail().x, 40);
+    ImVec2 rulerPos = ImGui::GetCursorScreenPos();
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+    // Draw ruler background
+    drawList->AddRectFilled(rulerPos,
+                           ImVec2(rulerPos.x + rulerSize.x, rulerPos.y + rulerSize.y),
+                           IM_COL32(40, 40, 40, 255));
+
+    // Draw ruler border
+    drawList->AddRect(rulerPos,
+                     ImVec2(rulerPos.x + rulerSize.x, rulerPos.y + rulerSize.y),
+                     IM_COL32(100, 100, 100, 255));
+
+    ImGui::Dummy(rulerSize);
+
+    ImGui::EndGroup();
+}
+
+void AnimationTimelinePanel::RenderTrackList()
+{
+    // Bottom section with bone tracks (will be populated in Chunk 5)
+    ImGui::BeginGroup();
+
+    ImGui::Text("TRACK LIST");
+    ImGui::SameLine();
+    ImGui::TextDisabled("(Bone tracks and keyframes will appear here in Chunk 5)");
+
+    if (ImGui::BeginChild("TrackListScroll", ImVec2(0, 0), true))
+    {
+        ImGui::TextDisabled("Bone tracks will be displayed here...");
+        ImGui::Spacing();
+        ImGui::BulletText("Position tracks");
+        ImGui::BulletText("Rotation tracks");
+        ImGui::BulletText("Scale tracks");
+    }
+    ImGui::EndChild();
+
+    ImGui::EndGroup();
+}
+
+// ========== Camera Functions ==========
+
+void AnimationTimelinePanel::UpdateCamera()
+{
+    // Calculate camera position based on spherical coordinates
+    float x = m_CameraDistance * cos(m_CameraPitch) * sin(m_CameraYaw);
+    float y = m_CameraDistance * sin(m_CameraPitch);
+    float z = m_CameraDistance * cos(m_CameraPitch) * cos(m_CameraYaw);
+
+    m_CameraPosition = m_CameraTarget + glm::vec3(x, y, z);
+}
+
+void AnimationTimelinePanel::HandleCameraControls()
 {
     if (!ImGui::IsItemHovered()) return;
 
@@ -305,8 +581,8 @@ void ModelPreviewPanel::HandleCameraControls()
         );
 
         // Update camera angles
-        m_CameraYaw -= delta.x * 0.005f;   // Horizontal rotation
-        m_CameraPitch -= delta.y * 0.005f; // Vertical rotation
+        m_CameraYaw -= delta.x * 0.005f;
+        m_CameraPitch -= delta.y * 0.005f;
 
         // Clamp pitch to avoid flipping
         m_CameraPitch = glm::clamp(m_CameraPitch, -1.5f, 1.5f);
@@ -318,51 +594,57 @@ void ModelPreviewPanel::HandleCameraControls()
         m_IsOrbitingCamera = false;
     }
 
-    // Mouse wheel: zoom (increased range for large models)
+    // Mouse wheel: zoom
     if (io.MouseWheel != 0.0f)
     {
         m_CameraDistance -= io.MouseWheel * 0.5f;
-        m_CameraDistance = glm::clamp(m_CameraDistance, 0.1f, 100.0f); // Increased max to 100
+        m_CameraDistance = glm::clamp(m_CameraDistance, 0.1f, 100.0f);
     }
 }
 
-void ModelPreviewPanel::UpdateCamera()
+void AnimationTimelinePanel::ResetCamera()
 {
-    // Calculate camera position based on spherical coordinates
-    float x = m_CameraDistance * cos(m_CameraPitch) * sin(m_CameraYaw);
-    float y = m_CameraDistance * sin(m_CameraPitch);
-    float z = m_CameraDistance * cos(m_CameraPitch) * cos(m_CameraYaw);
-
-    m_CameraPosition = m_CameraTarget + glm::vec3(x, y, z);
+    m_CameraDistance = 3.0f;
+    m_CameraYaw = 0.0f;
+    m_CameraPitch = 0.3f;
+    m_CameraTarget = glm::vec3(0.0f, 1.0f, 0.0f);
+    UpdateCamera();
 }
 
-void ModelPreviewPanel::RenderModel()
+void AnimationTimelinePanel::FrameModel()
+{
+    if (!m_Model) return;
+
+    float radius = 2.0f * m_ModelScale;
+    m_CameraTarget = glm::vec3(0.0f, 1.0f, 0.0f);
+
+    float fovRadians = glm::radians(45.0f);
+    m_CameraDistance = (radius * 2.5f) / std::tan(fovRadians * 0.5f);
+    m_CameraDistance = glm::clamp(m_CameraDistance, 0.5f, 100.0f);
+
+    UpdateCamera();
+}
+
+// ========== 3D Rendering Functions ==========
+
+void AnimationTimelinePanel::RenderModel()
 {
     if (!m_Ctx || !m_Ctx->renderer || !m_Model) return;
 
-    // IMPORTANT: Set aspect ratio for our viewport (not the game window)
+    // Set aspect ratio for viewport
     float aspect = m_ViewportSize.x / m_ViewportSize.y;
     m_Ctx->renderer->SetAspectOverride(aspect);
 
-    // Set up camera using the public API
-    // Based on the commented-out code in Camera3D::View(), the transform.rotate
-    // should produce: forward = rotQuat * vec3(0,0,-1) pointing at target
-
+    // Set up camera
     Boom::Camera3D camera{};
     camera.FOV = 45.0f;
     camera.nearPlane = 0.01f;
     camera.farPlane = 1000.0f;
 
-    // Compute the direction from camera to target
+    // Compute camera transform
     glm::vec3 direction = glm::normalize(m_CameraTarget - m_CameraPosition);
-
-    // Directly compute euler angles from the direction vector
-    // Camera's local -Z should point at target, so we need rotation that maps (0,0,-1) to direction
-    // Yaw: rotation around Y axis (horizontal angle)
-    float yaw = atan2(-direction.x, -direction.z); // Negate because camera looks down -Z
-    // Pitch: rotation around X axis (vertical angle)
-    float pitch = asin(direction.y); // Positive when looking up, negative when looking down
-    // Roll: always 0 for orbit camera
+    float yaw = atan2(-direction.x, -direction.z);
+    float pitch = asin(direction.y);
     float roll = 0.0f;
 
     glm::vec3 eulerAngles = glm::vec3(glm::degrees(pitch), glm::degrees(yaw), glm::degrees(roll));
@@ -377,31 +659,24 @@ void ModelPreviewPanel::RenderModel()
     // Set joints if model has skeleton
     if (m_Animator)
     {
-        auto transforms = m_Animator->Animate(0.0f);
+        auto transforms = m_Animator->Animate(m_CurrentTime);
         m_Ctx->renderer->SetJoints(transforms);
     }
 
     // CRITICAL: Call SetCamera again right before Draw in case something overwrote it
     m_Ctx->renderer->SetCamera(camera, cameraTransform);
 
-    // IMPORTANT: The PBR shader multiplies: transform * model->modelTransform
-    // We want the final result to be: T(0,0,0) * R(0,0,0) * S(m_ModelScale)
-    // So we need: transform * model->modelTransform = desired
-    // Therefore: transform = desired * inverse(model->modelTransform)
-
+    // Model transform (with preview scale)
     glm::mat4 desiredMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(m_ModelScale));
     glm::mat4 assetMatrix = m_Model->modelTransform.Matrix();
     glm::mat4 finalMatrix = desiredMatrix * glm::inverse(assetMatrix);
 
-    // Extract transform from matrix (decompose TRS)
-    // For simplicity, we'll manually construct it since we know the structure
     glm::vec3 finalTranslate = glm::vec3(finalMatrix[3]);
     glm::vec3 finalScale;
     finalScale.x = glm::length(glm::vec3(finalMatrix[0]));
     finalScale.y = glm::length(glm::vec3(finalMatrix[1]));
     finalScale.z = glm::length(glm::vec3(finalMatrix[2]));
 
-    // Extract rotation (normalize the basis vectors)
     glm::mat4 rotMatrix = finalMatrix;
     rotMatrix[0] /= finalScale.x;
     rotMatrix[1] /= finalScale.y;
@@ -414,7 +689,7 @@ void ModelPreviewPanel::RenderModel()
     modelTransform.rotate = finalRotate;
     modelTransform.scale = finalScale;
 
-    // Use a default material (gray)
+    // Default material
     Boom::PbrMaterial material{};
     material.albedo = glm::vec3(0.7f, 0.7f, 0.7f);
     material.roughness = 0.5f;
@@ -423,47 +698,36 @@ void ModelPreviewPanel::RenderModel()
     // Draw model
     m_Ctx->renderer->Draw(m_Model, modelTransform, material);
 
-    // Clear aspect override so it doesn't affect game viewport
     m_Ctx->renderer->ClearAspectOverride();
 }
 
-void ModelPreviewPanel::RenderSkeleton()
+void AnimationTimelinePanel::RenderSkeleton()
 {
     if (!m_Animator || !m_Ctx || !m_Owner) return;
 
-    // Get the debug lines shader from the main application
     auto debugShader = m_Owner->GetDebugLinesShader();
     if (!debugShader) return;
 
-    // Get view and projection matrices
     glm::mat4 view = glm::lookAt(m_CameraPosition, m_CameraTarget, glm::vec3(0, 1, 0));
     float aspect = m_ViewportSize.x / m_ViewportSize.y;
     glm::mat4 proj = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
 
-    // Get skeleton lines from animator (in model space)
     auto boneLines = m_Animator->GetSkeletonLines();
     if (boneLines.empty()) return;
 
-    // Convert bone lines to LineVert format and apply preview scale
     std::vector<Boom::LineVert> normalBones;
     std::vector<Boom::LineVert> selectedBones;
     normalBones.reserve(boneLines.size() * 2);
-    selectedBones.reserve(10);
 
     glm::vec4 boneColor = m_Ctx->BoneColor;
     glm::vec4 selectedBoneColor = m_Ctx->SelectedBoneColor;
 
-    // The bone positions from GetSkeletonLines() are in model space
-    // We need to transform them the same way as the model mesh
-    // Which is: desired * inverse(assetTransform) * assetTransform = desired
-    // So we just apply the desired transform (scale by m_ModelScale)
     glm::mat4 boneTransform = glm::scale(glm::mat4(1.0f), glm::vec3(m_ModelScale));
 
     for (const auto& boneLine : boneLines)
     {
         bool isSelected = (!m_SelectedBoneName.empty() && boneLine.boneName == m_SelectedBoneName);
 
-        // Transform bone positions to match model rendering
         glm::vec4 start4 = boneTransform * glm::vec4(boneLine.start, 1.0f);
         glm::vec4 end4 = boneTransform * glm::vec4(boneLine.end, 1.0f);
         glm::vec3 scaledStart = glm::vec3(start4);
@@ -481,38 +745,34 @@ void ModelPreviewPanel::RenderSkeleton()
         }
     }
 
-    // Draw normal bones first (with X-ray mode - depth test disabled)
     if (!normalBones.empty())
     {
         debugShader->Draw(view, proj, normalBones, m_Ctx->BoneLineWidth, true);
     }
 
-    // Draw selected bone on top with thicker line
     if (!selectedBones.empty())
     {
         debugShader->Draw(view, proj, selectedBones, m_Ctx->BoneLineWidth * 3.0f, true);
     }
 }
 
-void ModelPreviewPanel::RenderGrid()
+void AnimationTimelinePanel::RenderGrid()
 {
     if (!m_Owner || !m_Ctx) return;
 
     auto debugShader = m_Owner->GetDebugLinesShader();
     if (!debugShader) return;
 
-    // Get view and projection matrices
     glm::mat4 view = glm::lookAt(m_CameraPosition, m_CameraTarget, glm::vec3(0, 1, 0));
     float aspect = m_ViewportSize.x / m_ViewportSize.y;
     glm::mat4 proj = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
 
-    // Create grid lines on XZ plane (Y=0)
     std::vector<Boom::LineVert> gridLines;
     const int gridSize = 10;
     const float gridStep = 1.0f;
     const glm::vec4 gridColor(0.3f, 0.3f, 0.3f, 1.0f);
-    const glm::vec4 axisXColor(0.6f, 0.2f, 0.2f, 1.0f); // Red for X axis
-    const glm::vec4 axisZColor(0.2f, 0.2f, 0.6f, 1.0f); // Blue for Z axis
+    const glm::vec4 axisXColor(0.6f, 0.2f, 0.2f, 1.0f);
+    const glm::vec4 axisZColor(0.2f, 0.2f, 0.6f, 1.0f);
 
     // Grid lines parallel to Z axis
     for (int i = -gridSize; i <= gridSize; ++i)
@@ -520,10 +780,7 @@ void ModelPreviewPanel::RenderGrid()
         float x = i * gridStep;
         glm::vec3 start(x, 0.0f, -gridSize * gridStep);
         glm::vec3 end(x, 0.0f, gridSize * gridStep);
-
-        // Use axis color for center lines, otherwise grid color
         glm::vec4 color = (i == 0) ? axisZColor : gridColor;
-
         gridLines.push_back({ start, color });
         gridLines.push_back({ end, color });
     }
@@ -534,26 +791,24 @@ void ModelPreviewPanel::RenderGrid()
         float z = i * gridStep;
         glm::vec3 start(-gridSize * gridStep, 0.0f, z);
         glm::vec3 end(gridSize * gridStep, 0.0f, z);
-
-        // Use axis color for center lines, otherwise grid color
         glm::vec4 color = (i == 0) ? axisXColor : gridColor;
-
         gridLines.push_back({ start, color });
         gridLines.push_back({ end, color });
     }
 
-    // Draw grid lines
     if (!gridLines.empty())
     {
         debugShader->Draw(view, proj, gridLines, 1.0f, false);
     }
 }
 
-void ModelPreviewPanel::LoadModel(const std::string& modelPath)
+// ========== Model Loading (Standalone Mode) ==========
+
+void AnimationTimelinePanel::LoadModel(const std::string& modelPath)
 {
     if (!m_Ctx || !m_Ctx->assets) return;
 
-    BOOM_INFO("[ModelPreviewPanel] Loading model: {}", modelPath);
+    BOOM_INFO("[AnimationTimeline] Loading model in standalone mode: {}", modelPath);
 
     // Clear previous model
     ClearModel();
@@ -579,17 +834,7 @@ void ModelPreviewPanel::LoadModel(const std::string& modelPath)
 
     if (!foundAsset || !foundAsset->data)
     {
-        BOOM_ERROR("[ModelPreviewPanel] Model not found in asset registry: {}", modelPath);
-        BOOM_INFO("[ModelPreviewPanel] Available models:");
-        for (auto& [assetID, assetPtr] : modelMap)
-        {
-            if (assetID == Boom::EMPTY_ASSET) continue;
-            auto* modelAsset = dynamic_cast<Boom::ModelAsset*>(assetPtr.get());
-            if (modelAsset)
-            {
-                BOOM_INFO("  - {} (source: {})", modelAsset->name, modelAsset->source);
-            }
-        }
+        BOOM_ERROR("[AnimationTimeline] Model not found in asset registry: {}", modelPath);
         return;
     }
 
@@ -597,36 +842,54 @@ void ModelPreviewPanel::LoadModel(const std::string& modelPath)
     m_Model = foundAsset->data;
     m_LoadedModelPath = modelPath;
     m_HasModel = true;
+    m_StandaloneMode = true;
 
-    BOOM_INFO("[ModelPreviewPanel] Model loaded successfully: {} (HasJoints: {})",
+    BOOM_INFO("[AnimationTimeline] Model loaded successfully in standalone mode: {} (HasJoints: {})",
               foundAsset->name, foundAsset->hasJoints);
 
     // Get animator from skeletal model if it has skeleton
     if (foundAsset->hasJoints && m_Model->HasJoint())
     {
-        // Cast to SkeletalModel to access GetAnimator()
         auto skeletalModel = std::dynamic_pointer_cast<Boom::SkeletalModel>(m_Model);
         if (skeletalModel)
         {
             m_Animator = skeletalModel->GetAnimator();
             if (m_Animator)
             {
-                BOOM_INFO("[ModelPreviewPanel] Animator found for skeletal model");
+                BOOM_INFO("[AnimationTimeline] Animator found for skeletal model");
+
+                // CHUNK 2: Auto-select first animation clip if available
+                if (m_Animator->GetClipCount() > 0)
+                {
+                    m_SelectedClipIndex = 0;
+                    m_Animator->PlayClip(0);
+                    m_CurrentTime = 0.0f;
+                    BOOM_INFO("[AnimationTimeline] Auto-selected first clip: {}",
+                        m_Animator->GetClip(0)->name);
+                }
+                else
+                {
+                    m_SelectedClipIndex = -1;
+                    BOOM_WARN("[AnimationTimeline] Animator has no clips");
+                }
             }
             else
             {
-                BOOM_WARN("[ModelPreviewPanel] Model has joints but no animator");
+                BOOM_WARN("[AnimationTimeline] Model has joints but no animator");
+                m_SelectedClipIndex = -1;
             }
         }
         else
         {
-            BOOM_WARN("[ModelPreviewPanel] Model has joints but is not SkeletalModel");
+            BOOM_WARN("[AnimationTimeline] Model has joints but is not SkeletalModel");
+            m_SelectedClipIndex = -1;
         }
     }
     else
     {
         m_Animator.reset();
-        BOOM_INFO("[ModelPreviewPanel] No animator needed (static model)");
+        m_SelectedClipIndex = -1;
+        BOOM_INFO("[AnimationTimeline] No animator needed (static model)");
     }
 
     // Reset preview scale when loading new model
@@ -636,47 +899,17 @@ void ModelPreviewPanel::LoadModel(const std::string& modelPath)
     FrameModel();
 }
 
-void ModelPreviewPanel::ClearModel()
+void AnimationTimelinePanel::ClearModel()
 {
     m_Model.reset();
     m_Animator.reset();
+    m_PreviousAnimator.reset();  // CHUNK 2: Reset previous animator
     m_HasModel = false;
+    m_StandaloneMode = false;
     m_LoadedModelPath.clear();
     m_SelectedBoneName.clear();
+    m_SelectedClipIndex = -1;  // CHUNK 2: Reset clip selection
+    m_CurrentTime = 0.0f;
 
-    BOOM_INFO("[ModelPreviewPanel] Model cleared");
-}
-
-void ModelPreviewPanel::ResetCamera()
-{
-    m_CameraDistance = 3.0f;
-    m_CameraYaw = 0.0f;
-    m_CameraPitch = 0.3f; // Slightly above horizontal
-    m_CameraTarget = glm::vec3(0.0f, 1.0f, 0.0f);
-    UpdateCamera();
-}
-
-void ModelPreviewPanel::FrameModel()
-{
-    if (!m_Model) return;
-
-    // Model is always at origin, so just estimate a reasonable radius
-    // Most models fit within a 2-unit sphere when scaled by preview scale
-    float radius = 2.0f * m_ModelScale;
-
-    // Set camera target to origin (where model is)
-    m_CameraTarget = glm::vec3(0.0f, 1.0f, 0.0f); // Slightly above origin
-
-    // Calculate camera distance to fit model in view (45 degree FOV)
-    // Distance = radius / tan(FOV/2) with some padding
-    float fovRadians = glm::radians(45.0f);
-    m_CameraDistance = (radius * 2.5f) / std::tan(fovRadians * 0.5f);
-
-    // Clamp to reasonable range
-    m_CameraDistance = glm::clamp(m_CameraDistance, 0.5f, 100.0f);
-
-    UpdateCamera();
-
-    BOOM_INFO("[ModelPreviewPanel] Framed model - Distance: {:.2f}, Preview Scale: {:.3f}",
-              m_CameraDistance, m_ModelScale);
+    BOOM_INFO("[AnimationTimeline] Model cleared");
 }

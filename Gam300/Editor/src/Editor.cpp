@@ -21,6 +21,7 @@
 #include "Panels/AnimatorGraphPanel.h"
 #include "Panels/SkeletonTreePanel.h"
 #include "Panels/ModelPreviewPanel.h"
+#include "Panels/AnimationTimelinePanel.h"
 #include "BoomEngine.h"
 
 // Undo/Redo
@@ -158,6 +159,7 @@ namespace EditorUI {
         m_AnimatorGraph = std::make_unique<AnimatorGraphPanel>(this);
         m_SkeletonTree = std::make_unique<SkeletonTreePanel>(this);
         m_ModelPreview = std::make_unique<ModelPreviewPanel>(this);
+        m_AnimationTimeline = std::make_unique<AnimationTimelinePanel>(this);
 
         // Initialize Undo/Redo system
         m_CommandHistory = std::make_unique<CommandHistory>(100); // Max 100 undo levels
@@ -220,6 +222,7 @@ namespace EditorUI {
         if (m_ShowAnimatorGraph && m_AnimatorGraph) m_AnimatorGraph->Render();
         if (m_ShowSkeletonTree && m_SkeletonTree) m_SkeletonTree->Render();
         if (m_ShowModelPreview && m_ModelPreview) m_ModelPreview->Render();
+        if (m_ShowAnimationTimeline && m_AnimationTimeline) m_AnimationTimeline->Render();
         // --- End frame / draw ---
         EndImguiFrame();
     }
