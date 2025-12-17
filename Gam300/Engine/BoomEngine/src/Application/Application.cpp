@@ -478,7 +478,14 @@ namespace Boom
                 ModelAsset& model{ *mdlPtr };
                 if (entity.Has<AnimatorComponent>()) {
                     auto& an = entity.Get<AnimatorComponent>();
-                    m_Context->renderer->SetJoints(an.animator->GetJoints(), isPicking);
+                    if (isPicking) {
+                        m_Context->renderer->SetJoints(an.animator->GetJoints(), isPicking);
+                    }
+                    else {
+                        float dt = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) ? (float)m_Context->DeltaTime : 0.0f;
+                        auto& joints = an.animator->Animate(dt);
+                        m_Context->renderer->SetJoints(joints);
+                    }
                 }
                 else {
                     // Ensure no stale palette leaks into this draw
