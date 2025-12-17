@@ -5,6 +5,7 @@
 #include "Vendors/imgui/imgui.h"
 #include <glm/glm.hpp>
 #include <GL/glew.h>
+#include <entt/entity/entity.hpp>
 
 namespace Boom {
     struct AppContext;
@@ -61,8 +62,9 @@ namespace EditorUI {
 
         // Loaded model (from selected entity OR standalone)
         std::shared_ptr<Boom::Model> m_Model;
-        std::shared_ptr<Boom::Animator> m_Animator;
-        std::shared_ptr<Boom::Animator> m_PreviousAnimator;  // Track animator changes
+        std::shared_ptr<Boom::Animator> m_Animator;  // Our independent cloned animator
+        std::shared_ptr<Boom::Animator> m_SourceAnimator;  // The original animator we cloned from (for change detection)
+        entt::entity m_SourceEntityID = entt::null;  // Track which entity we cloned from
         bool m_HasModel = false;
         bool m_StandaloneMode = false; // true if model loaded directly (not from entity)
         std::string m_LoadedModelPath;
@@ -92,7 +94,10 @@ namespace EditorUI {
         float m_CurrentTime = 0.0f;
         float m_TimelineZoom = 1.0f;
         bool m_IsPlaying = false;
+        bool m_Loop = true;  // Loop animation playback
+        float m_PlaybackSpeed = 1.0f;  // Animation playback speed multiplier
         int m_SelectedClipIndex = -1;  // Currently selected animation clip (-1 = none)
+        float m_LastFrameTime = 0.0f;  // For delta time calculation
 
         // Selected bone (for keyframe editing later)
         std::string m_SelectedBoneName;

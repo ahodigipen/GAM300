@@ -25,6 +25,9 @@ AnimationTimelinePanel::AnimationTimelinePanel(Editor* owner)
     , m_App(owner ? static_cast<Boom::AppInterface*>(owner) : nullptr)
     , m_Ctx(m_App ? m_App->GetContext() : nullptr)
 {
+    // Initialize playback time
+    m_LastFrameTime = (float)ImGui::GetTime();
+
     // Create framebuffer for 3D viewport
     glGenFramebuffers(1, &m_FramebufferID);
     glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
@@ -68,6 +71,67 @@ void AnimationTimelinePanel::Render()
     ImGui::SetNextWindowSize(ImVec2(1200, 800), ImGuiCond_FirstUseEver);
     ImGui::Begin("Animation Timeline", &m_Owner->m_ShowAnimationTimeline);
 
+    // ===== PLAYBACK UPDATE: Independent timeline =====
+    float currentFrameTime = (float)ImGui::GetTime();
+    float deltaTime = currentFrameTime - m_LastFrameTime;
+
+    // Clamp deltaTime to prevent huge first-frame jumps (e.g., window opened late)
+    // Max 100ms (0.1s) per frame to avoid time spikes
+    if (deltaTime > 0.1f || deltaTime < 0.0f)
+    {
+        deltaTime = 0.0f;  // Skip this frame's time update
+    }
+
+    m_LastFrameTime = currentFrameTime;
+
+    // Update playback time (independent from game scene)
+    if (m_Animator && m_SelectedClipIndex >= 0)
+    {
+        const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
+        if (clip && clip->duration > 0.0f)
+        {
+            if (m_IsPlaying)
+            {
+                // CRITICAL: Manually advance time to control looping
+                // The animator always loops in clip mode (Animator.h:128), so we control it here
+                float newTime = m_CurrentTime + (deltaTime * m_PlaybackSpeed * clip->ticksPerSecond);
+
+                if (m_Loop)
+                {
+                    // Loop enabled: wrap time
+                    if (newTime >= clip->duration)
+                    {
+                        newTime = fmod(newTime, clip->duration);
+                    }
+                    m_CurrentTime = newTime;
+                }
+                else
+                {
+                    // Loop disabled: clamp and stop
+                    if (newTime >= clip->duration)
+                    {
+                        m_CurrentTime = clip->duration;
+                        m_IsPlaying = false;
+                    }
+                    else
+                    {
+                        m_CurrentTime = newTime;
+                    }
+                }
+
+                // Update animator to match our time (passing 0 delta to just set pose)
+                m_Animator->SetTime(m_CurrentTime);
+                m_Animator->Animate(0.0f);  // Compute transforms without advancing
+            }
+            else
+            {
+                // When paused, ensure animator is synced to our scrubber time
+                m_Animator->SetTime(m_CurrentTime);
+                m_Animator->Animate(0.0f);  // Compute transforms without advancing
+            }
+        }
+    }
+
     // Get selected entity and load model/animator (only if not in standalone mode)
     auto selectedID = m_App->SelectedEntity();
 
@@ -76,16 +140,55 @@ void AnimationTimelinePanel::Render()
     {
         Boom::Entity selected(&m_App->GetContext()->scene, selectedID);
 
-        // Get animator from AnimatorComponent
+        // Get animator from AnimatorComponent (CLONE IT for independent timeline)
         if (selected.Has<Boom::AnimatorComponent>())
         {
             auto& animComp = selected.Get<Boom::AnimatorComponent>();
-            m_Animator = animComp.animator;
-            BOOM_INFO("[AnimationTimeline] Entity has AnimatorComponent - Animator: {}", m_Animator ? "Valid" : "Null");
+            if (animComp.animator)
+            {
+                // CRITICAL: Only clone when ENTITY changes, not when animator pointer might change
+                // This prevents constant re-cloning during gameplay
+                bool entityChanged = (m_SourceEntityID != selectedID);
+                bool animatorPtrChanged = (m_SourceAnimator != animComp.animator);
+
+                if (entityChanged)
+                {
+                    BOOM_INFO("[AnimationTimeline] Entity changed (old={}, new={}), cloning animator",
+                        (uint32_t)m_SourceEntityID, (uint32_t)selectedID);
+
+                    m_SourceEntityID = selectedID;
+                    m_SourceAnimator = animComp.animator;
+                    m_Animator = animComp.animator->Clone();
+
+                    BOOM_INFO("[AnimationTimeline] Clone created: Original={}, Clone={}",
+                        (void*)animComp.animator.get(), (void*)m_Animator.get());
+
+                    // Reset playback state for new entity
+                    m_SelectedClipIndex = -1;
+                    m_CurrentTime = 0.0f;
+                    m_IsPlaying = false;
+                }
+                else if (animatorPtrChanged)
+                {
+                    // Entity didn't change but animator pointer did (game restarted?)
+                    BOOM_WARN("[AnimationTimeline] Animator pointer changed without entity change! Original={}, NewOriginal={}",
+                        (void*)m_SourceAnimator.get(), (void*)animComp.animator.get());
+                    BOOM_WARN("[AnimationTimeline] This might cause issues. Keeping our existing clone.");
+                }
+                // If entity didn't change, keep using our existing clone (don't re-clone!)
+            }
+            else
+            {
+                m_Animator.reset();
+                m_SourceAnimator.reset();
+                m_SourceEntityID = entt::null;
+            }
         }
         else
         {
             m_Animator.reset();
+            m_SourceAnimator.reset();
+            m_SourceEntityID = entt::null;
         }
 
         // Get model from ModelComponent
@@ -132,24 +235,16 @@ void AnimationTimelinePanel::Render()
         }
     }
 
-    // CHUNK 2: Detect animator change and auto-select first clip
-    if (m_Animator != m_PreviousAnimator)
+    // NOTE: Animator change detection is now handled in the clone logic above
+    // Auto-select first clip if we have an animator but no clip selected
+    if (m_Animator && m_Animator->GetClipCount() > 0 && m_SelectedClipIndex < 0)
     {
-        m_PreviousAnimator = m_Animator;
-
-        if (m_Animator && m_Animator->GetClipCount() > 0)
-        {
-            m_SelectedClipIndex = 0;
-            m_Animator->PlayClip(0);
-            m_CurrentTime = 0.0f;
-            BOOM_INFO("[AnimationTimeline] Animator changed - Auto-selected first clip: {}",
-                m_Animator->GetClip(0)->name);
-        }
-        else
-        {
-            m_SelectedClipIndex = -1;
-            m_CurrentTime = 0.0f;
-        }
+        m_SelectedClipIndex = 0;
+        m_Animator->PlayClip(0);
+        m_CurrentTime = 0.0f;
+        m_IsPlaying = false;  // Reset playback state
+        BOOM_INFO("[AnimationTimeline] Auto-selected first clip: {}",
+            m_Animator->GetClip(0)->name);
     }
 
     // --- LAYOUT: Four sections ---
@@ -242,8 +337,8 @@ void AnimationTimelinePanel::RenderControlBar()
     ImGui::Separator();
     ImGui::SameLine();
 
-    // Playback controls (will be functional in Chunk 4)
-    ImGui::BeginDisabled(!m_HasModel);
+    // Playback controls
+    ImGui::BeginDisabled(!m_HasModel || !m_Animator || m_SelectedClipIndex < 0);
     if (ImGui::Button(m_IsPlaying ? "Pause" : "Play")) {
         m_IsPlaying = !m_IsPlaying;
     }
@@ -251,6 +346,22 @@ void AnimationTimelinePanel::RenderControlBar()
     if (ImGui::Button("Stop")) {
         m_IsPlaying = false;
         m_CurrentTime = 0.0f;
+    }
+    ImGui::SameLine();
+    ImGui::Checkbox("Loop", &m_Loop);
+
+    // Playback speed control
+    ImGui::SameLine();
+    ImGui::Text("Speed:");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(80);
+    ImGui::SliderFloat("##PlaybackSpeed", &m_PlaybackSpeed, 0.1f, 3.0f, "%.2fx");
+    if (ImGui::IsItemHovered()) {
+        ImGui::SetTooltip("Playback speed multiplier");
+    }
+    ImGui::SameLine();
+    if (ImGui::SmallButton("1x")) {
+        m_PlaybackSpeed = 1.0f;
     }
     ImGui::EndDisabled();
 
@@ -341,6 +452,7 @@ void AnimationTimelinePanel::RenderControlBar()
                     m_SelectedClipIndex = (int)i;
                     m_Animator->PlayClip(i);  // Switch to this clip
                     m_CurrentTime = 0.0f;     // Reset time
+                    m_IsPlaying = false;      // Stop playback when switching clips
                 }
 
                 if (isSelected)
@@ -376,6 +488,15 @@ void AnimationTimelinePanel::RenderControlBar()
                 // Current time / Total time
                 ImGui::SameLine();
                 ImGui::Text("| Time: %.2f / %.2f", m_CurrentTime, clip->duration);
+
+                // DEBUG: Playback state
+                ImGui::SameLine();
+                ImGui::TextColored(m_IsPlaying ? ImVec4(0, 1, 0, 1) : ImVec4(1, 0, 0, 1),
+                    "| %s", m_IsPlaying ? "PLAYING" : "PAUSED");
+
+                ImGui::SameLine();
+                ImGui::TextColored(m_Loop ? ImVec4(0, 1, 1, 1) : ImVec4(0.5f, 0.5f, 0.5f, 1),
+                    "| Loop: %s", m_Loop ? "ON" : "OFF");
             }
         }
     }
@@ -414,6 +535,23 @@ void AnimationTimelinePanel::RenderViewport()
     // Update camera
     UpdateCamera();
 
+    // ===== SAVE RENDERER STATE (to prevent timeline from affecting game scene) =====
+    // CRITICAL: The renderer is SHARED between timeline and game scene
+    // Render order: Game scene FIRST, then Timeline SECOND
+    // We must save and restore state to prevent cross-contamination
+    float savedAmbient = 0.0f;
+    if (m_Ctx && m_Ctx->renderer)
+    {
+        savedAmbient = m_Ctx->renderer->AmbientStrength();
+
+        // CRITICAL: Clear joint state BEFORE rendering to ensure clean slate
+        // This prevents any stale joint data from game scene bleeding into timeline
+        std::vector<glm::mat4> clearPalette(100, glm::mat4(1.0f));
+        m_Ctx->renderer->SetJoints(clearPalette);
+
+        BOOM_INFO("[AnimationTimeline] BEFORE render: Cleared joints to identity");
+    }
+
     // Render to framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
     glViewport(0, 0, (GLsizei)m_ViewportSize.x, (GLsizei)m_ViewportSize.y);
@@ -426,7 +564,7 @@ void AnimationTimelinePanel::RenderViewport()
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
-    // Set up lighting for preview
+    // Set up lighting for preview (temporary - will restore after)
     if (m_HasModel && m_Ctx && m_Ctx->renderer)
     {
         std::vector<Boom::GPUDirLight> dirLights(1);
@@ -451,6 +589,24 @@ void AnimationTimelinePanel::RenderViewport()
     if (m_ShowWireframe)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+
+    // ===== RESTORE RENDERER STATE (critical to prevent leaking to game scene) =====
+    if (m_Ctx && m_Ctx->renderer)
+    {
+        // CRITICAL: Clear joint transforms to prevent affecting game scene models
+        // Must use identity matrices (like Application.cpp does), NOT empty vector!
+        // Empty vector doesn't upload to GPU, leaving stale timeline joints
+        // NOTE: NOT static - create fresh each time to force GPU upload
+        std::vector<glm::mat4> identityPalette(100, glm::mat4(1.0f));
+        m_Ctx->renderer->SetJoints(identityPalette);
+
+        BOOM_INFO("[AnimationTimeline] AFTER render: Cleared joints to identity (prevent leakage)");
+
+        // Restore ambient strength
+        m_Ctx->renderer->AmbientStrength() = savedAmbient;
+
+        // Note: Directional lights will be re-uploaded by game scene on next frame
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -657,9 +813,14 @@ void AnimationTimelinePanel::RenderModel()
     m_Ctx->renderer->SetCamera(camera, cameraTransform);
 
     // Set joints if model has skeleton
+    // NOTE: Animate() was already called in main Render() loop
+    // We just need to get the current transforms
     if (m_Animator)
     {
-        auto transforms = m_Animator->Animate(m_CurrentTime);
+        BOOM_INFO("[AnimationTimeline] RenderModel: Using CLONE animator at {}, time={:.2f}",
+            (void*)m_Animator.get(), m_CurrentTime);
+
+        auto& transforms = m_Animator->Animate(0.0f);  // Pass 0 delta to just get transforms without advancing
         m_Ctx->renderer->SetJoints(transforms);
     }
 
@@ -847,47 +1008,57 @@ void AnimationTimelinePanel::LoadModel(const std::string& modelPath)
     BOOM_INFO("[AnimationTimeline] Model loaded successfully in standalone mode: {} (HasJoints: {})",
               foundAsset->name, foundAsset->hasJoints);
 
-    // Get animator from skeletal model if it has skeleton
+    // Get animator from skeletal model if it has skeleton (CLONE for independence)
     if (foundAsset->hasJoints && m_Model->HasJoint())
     {
         auto skeletalModel = std::dynamic_pointer_cast<Boom::SkeletalModel>(m_Model);
         if (skeletalModel)
         {
-            m_Animator = skeletalModel->GetAnimator();
-            if (m_Animator)
+            auto sourceAnimator = skeletalModel->GetAnimator();
+            if (sourceAnimator)
             {
-                BOOM_INFO("[AnimationTimeline] Animator found for skeletal model");
+                // CRITICAL: Clone the animator for independent timeline
+                m_SourceAnimator = sourceAnimator;
+                m_Animator = sourceAnimator->Clone();
+                BOOM_INFO("[AnimationTimeline] Cloned animator from skeletal model for independent preview");
 
-                // CHUNK 2: Auto-select first animation clip if available
+                // Auto-select first animation clip if available
                 if (m_Animator->GetClipCount() > 0)
                 {
                     m_SelectedClipIndex = 0;
                     m_Animator->PlayClip(0);
                     m_CurrentTime = 0.0f;
+                    m_IsPlaying = false;  // Reset playback state
                     BOOM_INFO("[AnimationTimeline] Auto-selected first clip: {}",
                         m_Animator->GetClip(0)->name);
                 }
                 else
                 {
                     m_SelectedClipIndex = -1;
+                    m_IsPlaying = false;
                     BOOM_WARN("[AnimationTimeline] Animator has no clips");
                 }
             }
             else
             {
                 BOOM_WARN("[AnimationTimeline] Model has joints but no animator");
+                m_Animator.reset();
+                m_SourceAnimator.reset();
                 m_SelectedClipIndex = -1;
             }
         }
         else
         {
             BOOM_WARN("[AnimationTimeline] Model has joints but is not SkeletalModel");
+            m_Animator.reset();
+            m_SourceAnimator.reset();
             m_SelectedClipIndex = -1;
         }
     }
     else
     {
         m_Animator.reset();
+        m_SourceAnimator.reset();
         m_SelectedClipIndex = -1;
         BOOM_INFO("[AnimationTimeline] No animator needed (static model)");
     }
@@ -903,13 +1074,15 @@ void AnimationTimelinePanel::ClearModel()
 {
     m_Model.reset();
     m_Animator.reset();
-    m_PreviousAnimator.reset();  // CHUNK 2: Reset previous animator
+    m_SourceAnimator.reset();
+    m_SourceEntityID = entt::null;
     m_HasModel = false;
     m_StandaloneMode = false;
     m_LoadedModelPath.clear();
     m_SelectedBoneName.clear();
-    m_SelectedClipIndex = -1;  // CHUNK 2: Reset clip selection
+    m_SelectedClipIndex = -1;
     m_CurrentTime = 0.0f;
+    m_IsPlaying = false;
 
     BOOM_INFO("[AnimationTimeline] Model cleared");
 }
