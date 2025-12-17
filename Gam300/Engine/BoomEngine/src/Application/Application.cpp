@@ -322,7 +322,9 @@ namespace Boom
             glm::mat4 dbgProj(1.0f);
             glm::vec3 dbgCamPos(0.0f);
 
-            EnttView<Entity, CameraComponent>([this, &curMP, &prevMP, &dbgView, &dbgProj, &dbgCamPos](auto entity, CameraComponent& comp) {
+            Camera3D* mainCam{};
+            Transform3D mainCamT{};
+            EnttView<Entity, CameraComponent>([this, &curMP, &prevMP, &dbgView, &dbgProj, &dbgCamPos, &mainCam, &mainCamT](auto entity, CameraComponent& comp) {
                 Transform3D& transform{ entity.template Get<TransformComponent>().transform };
 
                 if (!m_IsInPlayMode) {
@@ -339,6 +341,8 @@ namespace Boom
                     }
                 }
 
+                mainCam = &comp.camera;
+                mainCamT = transform;
                 m_Context->renderer->SetCamera(comp.camera, transform);
                 dbgView = comp.camera.View(transform);
                 dbgProj = comp.camera.Projection(m_Context->renderer->Aspect());
@@ -441,6 +445,12 @@ namespace Boom
             m_Context->renderer->EndFrame();
             m_Context->profiler.End("Renderer End Frame");
 
+            //picking logic
+            m_Context->renderer->StartPickFrame();
+            m_Context->renderer->SetPickCamera(*mainCam, mainCamT);
+            RenderScene(true);
+            m_Context->renderer->EndPickFrame();
+
             m_Context->renderer->ShowFrame(showFrame);
 
             for (auto layer : m_Context->layers) {
@@ -452,11 +462,12 @@ namespace Boom
         }
     }
 
-    void Application::RenderScene()
+    //picking currently should only work on objects with model
+    void Application::RenderScene(bool isPicking)
     {
         std::vector<std::pair<SpriteComponent, Transform2D>> guiList;
         //pbr ecs (always render)
-        EnttView<Entity, TransformComponent>([this, &guiList](auto entity, TransformComponent& t) {
+        EnttView<Entity, TransformComponent>([this, &guiList, &isPicking](auto entity, TransformComponent& t) {
             if (entity.Has<DeactivatedComponent>()) return;
 
             if (entity.Has<ModelComponent>()) {
@@ -467,17 +478,14 @@ namespace Boom
                 ModelAsset& model{ *mdlPtr };
                 if (entity.Has<AnimatorComponent>()) {
                     auto& an = entity.Get<AnimatorComponent>();
-                    // Only update animations in play mode when RUNNING
-                    float dt = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) ? (float)m_Context->DeltaTime : 0.0f;
-                    auto& joints = an.animator->Animate(dt);
-                    m_Context->renderer->SetJoints(joints);
+                    m_Context->renderer->SetJoints(an.animator->GetJoints(), isPicking);
                 }
                 else {
                     // Ensure no stale palette leaks into this draw
                     if (model.hasJoints)
                     {
                         static std::vector<glm::mat4> identityPalette(100, glm::mat4(1.0f));
-                        m_Context->renderer->SetJoints(identityPalette);
+                        m_Context->renderer->SetJoints(identityPalette, isPicking);
                     }
                 }
 
@@ -486,37 +494,46 @@ namespace Boom
                 Transform3D worldTransform;
                 DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
 
-                //draw model with material if it has one otherwise draw default material
-                if (comp.materialID != EMPTY_ASSET) {
-                    auto& material{ m_Context->assets->Get<MaterialAsset>(comp.materialID) };
-
-                    // Only assign textures if they exist and are valid
-                    if (material.albedoMapID != EMPTY_ASSET) {
-                        auto& albedoTex = m_Context->assets->Get<TextureAsset>(material.albedoMapID);
-                        if (albedoTex.data) {
-                            material.data.albedoMap = albedoTex.data;
-                        }
-                    }
-                    if (material.normalMapID != EMPTY_ASSET) {
-                        auto& normalTex = m_Context->assets->Get<TextureAsset>(material.normalMapID);
-                        if (normalTex.data) {
-                            material.data.normalMap = normalTex.data;
-                        }
-                    }
-                    if (material.roughnessMapID != EMPTY_ASSET) {
-                        auto& roughnessTex = m_Context->assets->Get<TextureAsset>(material.roughnessMapID);
-                        if (roughnessTex.data) {
-                            material.data.roughnessMap = roughnessTex.data;
-                        }
-                    }
-
-                    m_Context->renderer->Draw(model.data, worldTransform, material.data);
+                if (isPicking) {
+                    m_Context->renderer->SetPickUniform(entt::to_integral(entity.ID())); //entity should be of type uint32_t
+                    m_Context->renderer->DrawPick(model.data, worldTransform);
                 }
                 else {
-                    m_Context->renderer->Draw(model.data, worldTransform);
+                    //draw model with material if it has one otherwise draw default material
+                    if (comp.materialID != EMPTY_ASSET) {
+                        auto& material{ m_Context->assets->Get<MaterialAsset>(comp.materialID) };
+
+                        // Only assign textures if they exist and are valid
+                        if (material.albedoMapID != EMPTY_ASSET) {
+                            auto& albedoTex = m_Context->assets->Get<TextureAsset>(material.albedoMapID);
+                            if (albedoTex.data) {
+                                material.data.albedoMap = albedoTex.data;
+                            }
+                        }
+                        if (material.normalMapID != EMPTY_ASSET) {
+                            auto& normalTex = m_Context->assets->Get<TextureAsset>(material.normalMapID);
+                            if (normalTex.data) {
+                                material.data.normalMap = normalTex.data;
+                            }
+                        }
+                        if (material.roughnessMapID != EMPTY_ASSET) {
+                            auto& roughnessTex = m_Context->assets->Get<TextureAsset>(material.roughnessMapID);
+                            if (roughnessTex.data) {
+                                material.data.roughnessMap = roughnessTex.data;
+                            }
+                        }
+
+                        m_Context->renderer->Draw(model.data, worldTransform, material.data);
+                    }
+                    else {
+                        m_Context->renderer->Draw(model.data, worldTransform);
+                    }
                 }
             }
             else if (entity.Has<SpriteComponent>()) {
+
+                if (isPicking) return; //skip drawing pick for sprite
+
                 SpriteComponent& comp{ entity.Get<SpriteComponent>() };
                 if (comp.textureID == EMPTY_ASSET) return;
 
@@ -556,7 +573,6 @@ namespace Boom
                 m_Context->renderer->DrawQuad(texture->data, gui.second, gui.first.color);
         }
     }
-
 
     void Application::UpdateThirdPersonCameras()
 
