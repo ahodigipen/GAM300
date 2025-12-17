@@ -172,7 +172,7 @@ namespace EditorUI {
 
                     if (u >= 0.f && u <= 1.f && v >= 0.f && v <= 1.f) {
                         // Map to picking framebuffer pixel coordinates
-                        auto const& fbSize{ m_Ctx->renderer->BackbufferSize() };
+                        auto const& fbSize{ m_Ctx->renderer->GetPickSize() };
                         int pickX = (int)(u * fbSize.first);
                         int pickY = (int)(v * fbSize.second);
 

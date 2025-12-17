@@ -350,6 +350,7 @@ namespace Boom {
         BOOM_INLINE void ClearAspectOverride() { m_AspectOverride = -1.0f; }
         BOOM_INLINE void SetTouchViewport(bool on) { m_TouchViewport = on; }
         BOOM_INLINE std::pair<int32_t, int32_t> BackbufferSize() const { return { m_Width, m_Height }; }
+        BOOM_INLINE std::pair<int32_t, int32_t> GetPickSize() const { return { oPickFrame->GetWidth(), oPickFrame->GetHeight() }; }
 
     private:
         BOOM_INLINE void PrintSpecs() {
