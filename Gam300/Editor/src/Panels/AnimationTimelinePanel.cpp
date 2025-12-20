@@ -195,7 +195,6 @@ void AnimationTimelinePanel::Render()
         if (selected.Has<Boom::ModelComponent>())
         {
             auto& modelComp = selected.Get<Boom::ModelComponent>();
-            BOOM_INFO("[AnimationTimeline] Entity has ModelComponent - ModelID: {}", modelComp.modelID);
 
             if (modelComp.modelID != Boom::EMPTY_ASSET && m_Ctx && m_Ctx->assets)
             {
@@ -204,7 +203,6 @@ void AnimationTimelinePanel::Render()
                 {
                     m_Model = modelAsset->data;
                     m_HasModel = true;
-                    BOOM_INFO("[AnimationTimeline] Model loaded from entity: {}", modelComp.modelName);
                 }
                 else
                 {
@@ -543,13 +541,6 @@ void AnimationTimelinePanel::RenderViewport()
     if (m_Ctx && m_Ctx->renderer)
     {
         savedAmbient = m_Ctx->renderer->AmbientStrength();
-
-        // CRITICAL: Clear joint state BEFORE rendering to ensure clean slate
-        // This prevents any stale joint data from game scene bleeding into timeline
-        std::vector<glm::mat4> clearPalette(100, glm::mat4(1.0f));
-        m_Ctx->renderer->SetJoints(clearPalette);
-
-        BOOM_INFO("[AnimationTimeline] BEFORE render: Cleared joints to identity");
     }
 
     // Render to framebuffer
@@ -600,8 +591,6 @@ void AnimationTimelinePanel::RenderViewport()
         // NOTE: NOT static - create fresh each time to force GPU upload
         std::vector<glm::mat4> identityPalette(100, glm::mat4(1.0f));
         m_Ctx->renderer->SetJoints(identityPalette);
-
-        BOOM_INFO("[AnimationTimeline] AFTER render: Cleared joints to identity (prevent leakage)");
 
         // Restore ambient strength
         m_Ctx->renderer->AmbientStrength() = savedAmbient;
@@ -817,9 +806,6 @@ void AnimationTimelinePanel::RenderModel()
     // We just need to get the current transforms
     if (m_Animator)
     {
-        BOOM_INFO("[AnimationTimeline] RenderModel: Using CLONE animator at {}, time={:.2f}",
-            (void*)m_Animator.get(), m_CurrentTime);
-
         auto& transforms = m_Animator->Animate(0.0f);  // Pass 0 delta to just get transforms without advancing
         m_Ctx->renderer->SetJoints(transforms);
     }
