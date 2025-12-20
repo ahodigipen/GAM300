@@ -239,6 +239,10 @@ namespace Boom
                     animator->SetDefaultState(data["CurrentStateIndex"].as<size_t>(0));
                 }
 
+                // Initialize bone transforms with bind pose
+                // Without this, cloned animators have empty m_Transforms and models won't render
+                animator->Animate(0.0f);
+
                 BOOM_INFO("[AnimatorComponent] Deserialized with {} clips, {} states",
                     animator->GetClipCount(), animator->GetStateCount());
             }

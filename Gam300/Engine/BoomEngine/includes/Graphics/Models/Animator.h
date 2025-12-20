@@ -822,7 +822,7 @@ namespace Boom
         {
             m_Root = source.m_Root;
             m_GlobalTransform = source.m_GlobalTransform;
-            m_Transforms.resize(source.m_Transforms.size());
+            m_Transforms = source.m_Transforms;  // Copy actual transform values
             // Keep existing m_States, m_Clips, parameters intact
         }
 
@@ -834,7 +834,7 @@ namespace Boom
             // Skeleton data
             clone->m_GlobalTransform = m_GlobalTransform;
             clone->m_Root = m_Root;
-            clone->m_Transforms.resize(m_Transforms.size());
+            clone->m_Transforms = m_Transforms;  // Copy actual transform values
 
             // Animation data
             clone->m_Clips = m_Clips; // Shared ownership of clips

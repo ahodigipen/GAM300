@@ -165,6 +165,7 @@ namespace Boom {
             // set pbr shader light space mtx and depth map
             pbrShader->Use();
             pbrShader->SetLightSpaceMatrix(lightSpaceMtx);
+            pbrShader->SetEnvMaps(0, 0, 0, shadowShader->GetDepthMap());
 
             // begin depth rendering
             shadowShader->BeginFrame(lightSpaceMtx);
