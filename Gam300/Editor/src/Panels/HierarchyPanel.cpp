@@ -402,15 +402,28 @@ namespace EditorUI {
             }
 
             // Render only root entities (those with no parent)
+            // Sort by UID to maintain consistent order across scene reloads
             auto view = registry.view<Boom::InfoComponent>();
+
+            // Collect root entities
+            std::vector<std::pair<entt::entity, uint64_t>> rootEntities;
+
             for (entt::entity e : view)
             {
                 const auto& info = view.get<Boom::InfoComponent>(e);
-
-                // Only render if this entity has no parent (is a root)
                 if (info.parent == EMPTY_ASSET) {
-                    RenderEntityNode(registry, e, m_App, m_Ctx, m_ShowDeletePopup, m_EntityToDelete);
+                    rootEntities.emplace_back(e, info.uid);
                 }
+            }
+
+            // Sort by UID (stable sort for consistent hierarchy order)
+            std::sort(rootEntities.begin(), rootEntities.end(),
+                [](const auto& a, const auto& b) { return a.second < b.second; });
+
+            // Render in sorted order
+            for (const auto& [entity, uid] : rootEntities)
+            {
+                RenderEntityNode(registry, entity, m_App, m_Ctx, m_ShowDeletePopup, m_EntityToDelete);
             }
 
             // Delete confirmation popup
