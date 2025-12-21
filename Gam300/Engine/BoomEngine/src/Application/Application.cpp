@@ -954,6 +954,54 @@ namespace Boom
         }
     }
 
+    // Logic for snapping an entity to a surface (floor or wall)
+    void Application::SnapEntityToSurface(entt::entity entity, glm::vec3 direction) {
+        auto& reg = m_Context->scene;
+        if (!reg.all_of<TransformComponent, ColliderComponent>(entity)) return;
+
+        // Use the registry to get the component
+        auto& tc = reg.get<TransformComponent>(entity);
+        auto& col = reg.get<ColliderComponent>(entity).Collider;
+
+        // 1. Determine the extent (half-size) of the collider in the snap direction
+        // This ensures the "feet" or "side" touches the surface, not the center.
+        float extent = 0.0f;
+        glm::vec3 worldScale = tc.transform.scale * col.localScale;
+
+        // Approximate extent based on collider type
+        if (col.type == Collider3D::BOX) {
+            // Find which axis of the box aligns most with our snap direction
+            extent = glm::abs(glm::dot(direction, glm::vec3(worldScale * 0.5f)));
+        }
+        else if (col.type == Collider3D::SPHERE) {
+            extent = (worldScale.x * 0.5f);
+        }
+        else if (col.type == Collider3D::CAPSULE || col.type == Collider3D::CYLINDER) {
+            // Assuming Y-up for these primitives
+            extent = (direction.y != 0) ? (worldScale.y * 0.5f) : (worldScale.x * 0.5f);
+        }
+
+        // 2. Perform the Raycast
+        glm::vec3 rayOrigin = tc.transform.translate;
+        float maxDistance = 50.0f; // Adjust based on scene scale
+        auto hit = m_Context->physics->Raycast(rayOrigin, direction, maxDistance);
+
+        if (hit.hitFound) {
+            // 3. Calculate new position
+            // Position = HitPoint - (Direction * Extent) 
+            // Example: If snapping down (0, -1, 0), pos = Hit + (0, extent, 0)
+            glm::vec3 newPos = hit.position - (direction * extent);
+
+            tc.transform.translate = newPos;
+
+            // 4. Sync with Physics immediately so it doesn't "pop" back
+            m_Context->physics->UpdateRigidBodyTransform(Entity(&reg, entity), tc.transform);
+
+            BOOM_INFO("[Snap] Snapped entity '{}' to surface at distance {}",
+                reg.get<InfoComponent>(entity).name, hit.distance);
+        }
+    }
+
     void Application::DrawRigidBodiesDebugOnly(const glm::mat4& view, const glm::mat4& proj)
     {
         if (!m_DebugLinesShader) return;

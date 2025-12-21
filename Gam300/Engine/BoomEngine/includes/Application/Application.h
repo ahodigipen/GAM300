@@ -1404,6 +1404,8 @@ namespace Boom
 
 		void RunPhysicsSimulation();
 
+		void SnapEntityToSurface(entt::entity entity, glm::vec3 direction);
+
 		void DrawRigidBodiesDebugOnly(const glm::mat4& view, const glm::mat4& proj);
 
 		static void AppendCapsuleWire(float radius, float halfHeight, const physx::PxTransform& world, std::vector<Boom::LineVert>& out, const glm::vec4& color);
