@@ -226,12 +226,26 @@ namespace Boom {
         if (!reg.valid(parent) || !reg.all_of<InfoComponent>(parent)) return children;
 
         AssetID parentUID = reg.get<InfoComponent>(parent).uid;
+
+        // Collect children with their UIDs for sorting
+        std::vector<std::pair<entt::entity, uint64_t>> childrenWithUID;
         auto view = reg.view<InfoComponent>();
         for (auto [e, info] : view.each()) {
             if (info.parent == parentUID) {
-                children.push_back(e);
+                childrenWithUID.emplace_back(e, info.uid);
             }
         }
+
+        // Sort by UID to maintain consistent order across scene reloads
+        std::sort(childrenWithUID.begin(), childrenWithUID.end(),
+            [](const auto& a, const auto& b) { return a.second < b.second; });
+
+        // Extract just the entities
+        children.reserve(childrenWithUID.size());
+        for (const auto& [entity, uid] : childrenWithUID) {
+            children.push_back(entity);
+        }
+
         return children;
     }
 

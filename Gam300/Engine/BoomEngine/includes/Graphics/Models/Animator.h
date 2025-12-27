@@ -135,6 +135,10 @@ namespace Boom
             return m_Transforms;
         }
 
+        BOOM_INLINE auto& GetJoints() {
+            return m_Transforms;
+        }
+
         // NEW: Switch animation at runtime
         BOOM_INLINE void PlayClip(size_t clipIndex)
         {

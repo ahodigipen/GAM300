@@ -4,7 +4,7 @@
 #include "../Models/Model.h"
 
 namespace Boom {
-	//UBO
+	//UBO must also change in pbr.glsl limits
 	inline constexpr int MAX_POINT_LIGHTS = 32;
 	inline constexpr int MAX_DIR_LIGHTS = 32;
 	inline constexpr int MAX_SPOT_LIGHTS = 128;
