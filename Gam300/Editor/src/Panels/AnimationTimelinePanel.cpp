@@ -159,13 +159,31 @@ void AnimationTimelinePanel::Render()
 
                     m_SourceEntityID = selectedID;
                     m_SourceAnimator = animComp.animator;
+
+                    // Capture the entity's current clip BEFORE cloning
+                    size_t entityCurrentClip = animComp.animator->GetCurrentClip();
+
                     m_Animator = animComp.animator->Clone();
 
-                    BOOM_INFO("[AnimationTimeline] Clone created: Original={}, Clone={}",
+                    // CRITICAL: Clear states to force clip mode (timeline doesn't use state machine)
+                    m_Animator->GetStates().clear();
+
+                    BOOM_INFO("[AnimationTimeline] Clone created: Original={}, Clone={} (states cleared for clip mode)",
                         (void*)animComp.animator.get(), (void*)m_Animator.get());
 
-                    // Reset playback state for new entity
-                    m_SelectedClipIndex = -1;
+                    // Default to the entity's current clip (better UX)
+                    if (entityCurrentClip < m_Animator->GetClipCount())
+                    {
+                        m_SelectedClipIndex = (int)entityCurrentClip;
+                        m_Animator->PlayClip(entityCurrentClip);
+                        BOOM_INFO("[AnimationTimeline] Defaulting to entity's current clip: {} (index {})",
+                            m_Animator->GetClip(entityCurrentClip)->name, entityCurrentClip);
+                    }
+                    else
+                    {
+                        m_SelectedClipIndex = -1;
+                    }
+
                     m_CurrentTime = 0.0f;
                     m_IsPlaying = false;
                 }
@@ -644,29 +662,240 @@ void AnimationTimelinePanel::RenderViewport()
 
 void AnimationTimelinePanel::RenderTimelineRuler()
 {
-    // Middle section with time ruler and scrubber (will be implemented in Chunk 3)
     ImGui::BeginGroup();
 
-    ImGui::Text("TIMELINE RULER");
-    ImGui::SameLine();
-    ImGui::TextDisabled("(Time scrubber will appear here in Chunk 3)");
+    // Get animation duration
+    float duration = 1.0f;  // Default
+    if (m_Animator && m_SelectedClipIndex >= 0 && static_cast<size_t>(m_SelectedClipIndex) < m_Animator->GetClipCount())
+    {
+        const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
+        if (clip)
+        {
+            duration = clip->duration;
+        }
+    }
 
-    // Placeholder ruler visual
-    ImVec2 rulerSize = ImVec2(ImGui::GetContentRegionAvail().x, 40);
+    // Timeline ruler dimensions
+    const float rulerHeight = 50.0f;
+    ImVec2 rulerSize = ImVec2(ImGui::GetContentRegionAvail().x, rulerHeight);
     ImVec2 rulerPos = ImGui::GetCursorScreenPos();
     ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-    // Draw ruler background
-    drawList->AddRectFilled(rulerPos,
-                           ImVec2(rulerPos.x + rulerSize.x, rulerPos.y + rulerSize.y),
-                           IM_COL32(40, 40, 40, 255));
+    // Draw ruler background with subtle gradient
+    drawList->AddRectFilledMultiColor(
+        rulerPos,
+        ImVec2(rulerPos.x + rulerSize.x, rulerPos.y + rulerSize.y),
+        IM_COL32(55, 55, 55, 255),  // Top-left
+        IM_COL32(55, 55, 55, 255),  // Top-right
+        IM_COL32(45, 45, 45, 255),  // Bottom-right
+        IM_COL32(45, 45, 45, 255)   // Bottom-left
+    );
 
-    // Draw ruler border
-    drawList->AddRect(rulerPos,
-                     ImVec2(rulerPos.x + rulerSize.x, rulerPos.y + rulerSize.y),
-                     IM_COL32(100, 100, 100, 255));
+    // Draw top border (separator from viewport)
+    drawList->AddLine(
+        rulerPos,
+        ImVec2(rulerPos.x + rulerSize.x, rulerPos.y),
+        IM_COL32(80, 80, 80, 255),
+        1.0f
+    );
 
-    ImGui::Dummy(rulerSize);
+    // Draw bottom border (separator from bone tracks)
+    drawList->AddLine(
+        ImVec2(rulerPos.x, rulerPos.y + rulerSize.y),
+        ImVec2(rulerPos.x + rulerSize.x, rulerPos.y + rulerSize.y),
+        IM_COL32(100, 100, 100, 255),
+        2.0f
+    );
+
+    // Draw time markers with dynamic spacing based on available width
+    if (duration > 0.0f && rulerSize.x > 0.0f)
+    {
+        // Calculate pixels per second
+        float pixelsPerSecond = rulerSize.x / duration;
+
+        // Choose marker interval based on zoom level
+        // We want major markers roughly every 60-120 pixels
+        float majorInterval = 1.0f;  // Default: 1 second
+        float minorInterval = 0.5f;  // Default: 0.5 seconds
+
+        if (pixelsPerSecond < 30.0f)  // Very zoomed out (< 30px per second)
+        {
+            majorInterval = 10.0f;
+            minorInterval = 5.0f;
+        }
+        else if (pixelsPerSecond < 60.0f)  // Zoomed out (30-60px per second)
+        {
+            majorInterval = 5.0f;
+            minorInterval = 1.0f;
+        }
+        else if (pixelsPerSecond < 100.0f)  // Medium (60-100px per second)
+        {
+            majorInterval = 2.0f;
+            minorInterval = 1.0f;
+        }
+        else if (pixelsPerSecond < 150.0f)  // Medium-close (100-150px per second)
+        {
+            majorInterval = 1.0f;
+            minorInterval = 0.5f;
+        }
+        else if (pixelsPerSecond < 300.0f)  // Close (150-300px per second)
+        {
+            majorInterval = 0.5f;
+            minorInterval = 0.1f;
+        }
+        else  // Very zoomed in (> 300px per second)
+        {
+            majorInterval = 0.1f;
+            minorInterval = 0.05f;
+        }
+
+        // Draw major markers
+        for (float t = 0.0f; t <= duration; t += majorInterval)
+        {
+            float normalizedTime = t / duration;
+            float x = rulerPos.x + normalizedTime * rulerSize.x;
+
+            // Major marker (longer line + time label)
+            drawList->AddLine(
+                ImVec2(x, rulerPos.y + rulerHeight - 20.0f),
+                ImVec2(x, rulerPos.y + rulerHeight),
+                IM_COL32(200, 200, 200, 255),
+                1.5f
+            );
+
+            // Time label with smart formatting
+            char timeLabel[16];
+            if (majorInterval >= 1.0f)
+            {
+                snprintf(timeLabel, sizeof(timeLabel), "%.0fs", t);  // No decimals for >= 1s intervals
+            }
+            else
+            {
+                snprintf(timeLabel, sizeof(timeLabel), "%.1fs", t);  // 1 decimal for < 1s intervals
+            }
+
+            // Calculate text size for proper centering and edge clamping
+            ImVec2 textSize = ImGui::CalcTextSize(timeLabel);
+            float textX = x - (textSize.x * 0.5f);  // Center text on tick mark
+
+            // Clamp text to stay within ruler bounds
+            textX = (textX < rulerPos.x) ? rulerPos.x : textX;  // Don't go off left edge
+            textX = (textX + textSize.x > rulerPos.x + rulerSize.x) ? (rulerPos.x + rulerSize.x - textSize.x) : textX;  // Don't go off right edge
+
+            drawList->AddText(
+                ImVec2(textX, rulerPos.y + 5.0f),
+                IM_COL32(220, 220, 220, 255),
+                timeLabel
+            );
+        }
+
+        // Draw minor markers (only if there's enough space)
+        if (pixelsPerSecond > 40.0f)  // Only show minor markers when not too cramped
+        {
+            for (float t = 0.0f; t <= duration; t += minorInterval)
+            {
+                // Skip if this is already a major marker
+                if (fmod(t, majorInterval) < 0.001f) continue;
+
+                float normalizedTime = t / duration;
+                float x = rulerPos.x + normalizedTime * rulerSize.x;
+
+                // Minor marker (shorter line)
+                drawList->AddLine(
+                    ImVec2(x, rulerPos.y + rulerHeight - 10.0f),
+                    ImVec2(x, rulerPos.y + rulerHeight),
+                    IM_COL32(150, 150, 150, 255),
+                    1.0f
+                );
+            }
+        }
+    }
+
+    // Draw playhead (red vertical line)
+    if (duration > 0.0f)
+    {
+        float normalizedTime = m_CurrentTime / duration;
+        normalizedTime = (normalizedTime < 0.0f) ? 0.0f : (normalizedTime > 1.0f) ? 1.0f : normalizedTime;
+        float playheadX = rulerPos.x + normalizedTime * rulerSize.x;
+
+        // Playhead line
+        drawList->AddLine(
+            ImVec2(playheadX, rulerPos.y),
+            ImVec2(playheadX, rulerPos.y + rulerHeight),
+            IM_COL32(255, 80, 80, 255),
+            3.0f
+        );
+
+        // Playhead triangle (at top)
+        ImVec2 triangleTop(playheadX, rulerPos.y);
+        ImVec2 triangleLeft(playheadX - 6.0f, rulerPos.y + 12.0f);
+        ImVec2 triangleRight(playheadX + 6.0f, rulerPos.y + 12.0f);
+        drawList->AddTriangleFilled(triangleTop, triangleLeft, triangleRight, IM_COL32(255, 80, 80, 255));
+
+        // Current time display (bottom-right corner)
+        char currentTimeLabel[32];
+        snprintf(currentTimeLabel, sizeof(currentTimeLabel), "%.2fs / %.2fs", m_CurrentTime, duration);
+
+        ImVec2 timeDisplaySize = ImGui::CalcTextSize(currentTimeLabel);
+        float timeDisplayX = rulerPos.x + rulerSize.x - timeDisplaySize.x - 5.0f;  // 5px padding from right edge
+
+        // Draw semi-transparent background for readability
+        drawList->AddRectFilled(
+            ImVec2(timeDisplayX - 3.0f, rulerPos.y + rulerHeight - 20.0f),
+            ImVec2(timeDisplayX + timeDisplaySize.x + 3.0f, rulerPos.y + rulerHeight - 2.0f),
+            IM_COL32(0, 0, 0, 150)
+        );
+
+        drawList->AddText(
+            ImVec2(timeDisplayX, rulerPos.y + rulerHeight - 18.0f),
+            IM_COL32(255, 255, 255, 255),
+            currentTimeLabel
+        );
+    }
+
+    // Make the ruler interactive (invisible button over the entire area)
+    ImGui::SetCursorScreenPos(rulerPos);
+    ImGui::InvisibleButton("TimelineRuler", rulerSize);
+
+    // Handle timeline scrubbing
+    if (ImGui::IsItemHovered())
+    {
+        // Change cursor to indicate interactivity
+        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+
+        // Click to jump to time
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+        {
+            m_IsDraggingTimeline = true;
+            m_IsPlaying = false;  // Pause playback when scrubbing
+        }
+    }
+
+    // Handle dragging
+    if (m_IsDraggingTimeline)
+    {
+        if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
+        {
+            // Calculate time from mouse position
+            ImVec2 mousePos = ImGui::GetMousePos();
+            float normalizedTime = (mousePos.x - rulerPos.x) / rulerSize.x;
+            normalizedTime = (normalizedTime < 0.0f) ? 0.0f : (normalizedTime > 1.0f) ? 1.0f : normalizedTime;
+
+            m_CurrentTime = normalizedTime * duration;
+
+            // Update animator to this time (if we have one)
+            if (m_Animator)
+            {
+                m_Animator->SetTime(m_CurrentTime);
+                m_Animator->Animate(0.0f);  // Update with 0 dt to just apply the time
+            }
+        }
+        else
+        {
+            // Mouse released - stop dragging
+            m_IsDraggingTimeline = false;
+        }
+    }
 
     ImGui::EndGroup();
 }
@@ -851,7 +1080,17 @@ void AnimationTimelinePanel::UpdateCamera()
 
 void AnimationTimelinePanel::HandleCameraControls()
 {
+    // CRITICAL: Only process input if the viewport is actually hovered AND
+    // this window (or its children) is focused (prevents bleed-through to windows underneath)
     if (!ImGui::IsItemHovered()) return;
+
+    // Check if Animation Timeline window is focused (prevents input bleed-through)
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
+    {
+        // Another window is focused on top - don't process input
+        m_IsOrbitingCamera = false;
+        return;
+    }
 
     ImGuiIO& io = ImGui::GetIO();
 
@@ -1151,7 +1390,11 @@ void AnimationTimelinePanel::LoadModel(const std::string& modelPath)
                 // CRITICAL: Clone the animator for independent timeline
                 m_SourceAnimator = sourceAnimator;
                 m_Animator = sourceAnimator->Clone();
-                BOOM_INFO("[AnimationTimeline] Cloned animator from skeletal model for independent preview");
+
+                // CRITICAL: Clear states to force clip mode (timeline doesn't use state machine)
+                m_Animator->GetStates().clear();
+
+                BOOM_INFO("[AnimationTimeline] Cloned animator from skeletal model for independent preview (states cleared)");
 
                 // Auto-select first animation clip if available
                 if (m_Animator->GetClipCount() > 0)

@@ -102,6 +102,7 @@ namespace EditorUI {
         float m_PlaybackSpeed = 1.0f;  // Animation playback speed multiplier
         int m_SelectedClipIndex = -1;  // Currently selected animation clip (-1 = none)
         float m_LastFrameTime = 0.0f;  // For delta time calculation
+        bool m_IsDraggingTimeline = false;  // Is user scrubbing the timeline?
 
         // Selected bone (for keyframe editing later)
         std::string m_SelectedBoneName;
