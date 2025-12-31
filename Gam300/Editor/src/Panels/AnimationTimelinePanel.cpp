@@ -5,6 +5,7 @@
 #include "ECS/ECS.hpp"
 #include "Graphics/Models/Model.h"
 #include "Graphics/Models/Animator.h"
+#include "Graphics/Models/Animation.h"
 #include "Graphics/Shaders/DebugLines.h"
 #include "Graphics/Shaders/PBR.h"
 #include "Graphics/Utilities/Data.h"
@@ -672,24 +673,168 @@ void AnimationTimelinePanel::RenderTimelineRuler()
 
 void AnimationTimelinePanel::RenderTrackList()
 {
-    // Bottom section with bone tracks (will be populated in Chunk 5)
     ImGui::BeginGroup();
 
-    ImGui::Text("TRACK LIST");
-    ImGui::SameLine();
-    ImGui::TextDisabled("(Bone tracks and keyframes will appear here in Chunk 5)");
+    ImGui::Text("BONE TRACKS");
 
-    if (ImGui::BeginChild("TrackListScroll", ImVec2(0, 0), true))
+    // Check if we have a valid animator with skeleton
+    if (!m_Animator || !m_HasModel)
     {
-        ImGui::TextDisabled("Bone tracks will be displayed here...");
-        ImGui::Spacing();
-        ImGui::BulletText("Position tracks");
-        ImGui::BulletText("Rotation tracks");
-        ImGui::BulletText("Scale tracks");
+        ImGui::TextDisabled("No model loaded");
+        ImGui::EndGroup();
+        return;
+    }
+
+    // Get animation duration for timeline scaling
+    float duration = 1.0f;  // Default
+    if (m_SelectedClipIndex >= 0 && static_cast<size_t>(m_SelectedClipIndex) < m_Animator->GetClipCount())
+    {
+        const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
+        if (clip)
+        {
+            duration = clip->duration;
+        }
+    }
+
+    if (ImGui::BeginChild("TrackListScroll", ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar))
+    {
+        // Setup two columns: bone names (left) and timeline tracks (right)
+        const float boneNameWidth = 250.0f;
+        ImGui::Columns(2, "BoneTrackColumns", true);
+        ImGui::SetColumnWidth(0, boneNameWidth);
+
+        // Get the root joint from animator
+        const Boom::Joint& root = m_Animator->GetRoot();
+
+        // Render bone hierarchy starting from root
+        RenderBoneTrack(root, duration);
+
+        // End columns
+        ImGui::Columns(1);
     }
     ImGui::EndChild();
 
     ImGui::EndGroup();
+}
+
+void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float duration)
+{
+    // === COLUMN 0: Bone Name (with tree hierarchy) ===
+
+    // Tree node flags
+    ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow
+                             | ImGuiTreeNodeFlags_OpenOnDoubleClick;
+
+    // Highlight if selected
+    if (joint.name == m_SelectedBoneName)
+    {
+        flags |= ImGuiTreeNodeFlags_Selected;
+    }
+
+    // If no children, make it a leaf node
+    if (joint.children.empty())
+    {
+        flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+    }
+
+    // Default to open for root and first level
+    if (joint.index == 0 || joint.index == 1)
+    {
+        flags |= ImGuiTreeNodeFlags_DefaultOpen;
+    }
+
+    // Store row position for timeline drawing
+    ImVec2 rowStartPos = ImGui::GetCursorScreenPos();
+    float rowHeight = ImGui::GetTextLineHeightWithSpacing();
+
+    // Display bone name with tree node in COLUMN 0
+    std::string label = joint.name + " [" + std::to_string(joint.index) + "]";
+    bool nodeOpen = ImGui::TreeNodeEx(label.c_str(), flags);
+
+    // Handle selection
+    if (ImGui::IsItemClicked())
+    {
+        m_SelectedBoneName = joint.name;
+        // Sync with global context for viewport highlighting
+        if (m_Ctx)
+        {
+            m_Ctx->SelectedBoneName = joint.name;
+        }
+    }
+
+    // Tooltip with bone info
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::Text("Bone: %s", joint.name.c_str());
+        ImGui::Text("Index: %d", joint.index);
+        ImGui::Text("Children: %zu", joint.children.size());
+        ImGui::EndTooltip();
+    }
+
+    // === COLUMN 1: Timeline Track (perfectly aligned) ===
+    ImGui::NextColumn();
+
+    // Get the timeline area dimensions
+    ImVec2 timelineStartPos = ImGui::GetCursorScreenPos();
+    float timelineWidth = ImGui::GetColumnWidth(1) - 10.0f; // Leave some padding
+
+    // Adjust vertical position to match the tree node row
+    timelineStartPos.y = rowStartPos.y;
+
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+    // Timeline background (dark gray)
+    ImVec2 timelineMin = timelineStartPos;
+    ImVec2 timelineMax(timelineMin.x + timelineWidth, timelineMin.y + rowHeight);
+    drawList->AddRectFilled(timelineMin, timelineMax, IM_COL32(40, 40, 40, 255));
+
+    // Draw grid lines for time markers (every second)
+    if (duration > 0.0f)
+    {
+        for (float t = 0.0f; t <= duration; t += 1.0f)
+        {
+            float x = timelineMin.x + (t / duration) * timelineWidth;
+            drawList->AddLine(
+                ImVec2(x, timelineMin.y),
+                ImVec2(x, timelineMax.y),
+                IM_COL32(80, 80, 80, 255)
+            );
+        }
+    }
+
+    // Draw current time indicator (red line)
+    if (duration > 0.0f && m_CurrentTime >= 0.0f)
+    {
+        float normalizedTime = m_CurrentTime / duration;
+        normalizedTime = (normalizedTime < 0.0f) ? 0.0f : (normalizedTime > 1.0f) ? 1.0f : normalizedTime;
+        float x = timelineMin.x + normalizedTime * timelineWidth;
+        drawList->AddLine(
+            ImVec2(x, timelineMin.y),
+            ImVec2(x, timelineMax.y),
+            IM_COL32(255, 0, 0, 255),
+            2.0f
+        );
+    }
+
+    // Placeholder for keyframes (will be added in next step)
+    // TODO: Draw keyframe diamonds from animation clip data
+
+    // Add invisible dummy item to properly extend window bounds
+    ImGui::Dummy(ImVec2(timelineWidth, rowHeight));
+
+    // Return to COLUMN 0 for next bone
+    ImGui::NextColumn();
+
+    // === Recurse to children if node is open ===
+    if (nodeOpen && !joint.children.empty())
+    {
+        for (const auto& child : joint.children)
+        {
+            RenderBoneTrack(child, duration);
+        }
+        ImGui::TreePop();
+    }
 }
 
 // ========== Camera Functions ==========

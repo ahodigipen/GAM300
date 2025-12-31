@@ -12,6 +12,7 @@ namespace Boom {
     struct AppInterface;
     struct Model;
     struct Animator;
+    struct Joint;
 }
 
 namespace EditorUI {
@@ -39,6 +40,9 @@ namespace EditorUI {
         void RenderViewport();        // 3D preview viewport
         void RenderTimelineRuler();   // Horizontal time ruler with scrubber
         void RenderTrackList();       // Bone tracks and keyframes
+
+        // Bone track helpers
+        void RenderBoneTrack(const Boom::Joint& joint, float duration);
 
         // 3D Viewport Rendering
         void UpdateCamera();
