@@ -354,16 +354,73 @@ void AnimationTimelinePanel::RenderControlBar()
     ImGui::Separator();
     ImGui::SameLine();
 
-    // Playback controls
+    // Playback controls (Unity-style layout)
     ImGui::BeginDisabled(!m_HasModel || !m_Animator || m_SelectedClipIndex < 0);
+
+    // First Frame button
+    if (ImGui::Button("|<")) {
+        m_CurrentTime = 0.0f;
+        m_IsPlaying = false;
+    }
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip("First Frame");
+
+    // Previous Keyframe button
+    ImGui::SameLine();
+    if (ImGui::Button("<K")) {
+        // Jump to previous keyframe
+        if (m_Animator && m_SelectedClipIndex >= 0) {
+            float prevTime = 0.0f;
+            const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
+            if (clip) {
+                // Find previous keyframe across all bones
+                for (const auto& [boneName, track] : clip->tracks) {
+                    for (const auto& kf : track) {
+                        if (kf.timeStamp < m_CurrentTime - 0.001f && kf.timeStamp > prevTime) {
+                            prevTime = kf.timeStamp;
+                        }
+                    }
+                }
+                if (prevTime > 0.0f) m_CurrentTime = prevTime;
+            }
+        }
+        m_IsPlaying = false;
+    }
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Previous Keyframe");
+
+    ImGui::SameLine();
     if (ImGui::Button(m_IsPlaying ? "Pause" : "Play")) {
         m_IsPlaying = !m_IsPlaying;
     }
+
+    // Next Keyframe button
+    ImGui::SameLine();
+    if (ImGui::Button("K>")) {
+        // Jump to next keyframe
+        if (m_Animator && m_SelectedClipIndex >= 0) {
+            const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
+            if (clip) {
+                float nextTime = clip->duration;
+                // Find next keyframe across all bones
+                for (const auto& [boneName, track] : clip->tracks) {
+                    for (const auto& kf : track) {
+                        if (kf.timeStamp > m_CurrentTime + 0.001f && kf.timeStamp < nextTime) {
+                            nextTime = kf.timeStamp;
+                        }
+                    }
+                }
+                if (nextTime < clip->duration) m_CurrentTime = nextTime;
+            }
+        }
+        m_IsPlaying = false;
+    }
+    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Next Keyframe");
+
     ImGui::SameLine();
     if (ImGui::Button("Stop")) {
         m_IsPlaying = false;
         m_CurrentTime = 0.0f;
     }
+
     ImGui::SameLine();
     ImGui::Checkbox("Loop", &m_Loop);
 
@@ -871,9 +928,14 @@ void AnimationTimelinePanel::RenderTimelineRuler()
         ImVec2 triangleRight(playheadX + 6.0f, rulerPos.y + 12.0f);
         drawList->AddTriangleFilled(triangleTop, triangleLeft, triangleRight, IM_COL32(255, 80, 80, 255));
 
-        // Current time display (bottom-right corner)
-        char currentTimeLabel[32];
-        snprintf(currentTimeLabel, sizeof(currentTimeLabel), "%.2fs / %.2fs", m_CurrentTime, duration);
+        // Current time display (Unity-style: frame number + seconds)
+        const float fps = 30.0f;  // Standard animation framerate
+        int currentFrame = (int)(m_CurrentTime * fps);
+        int totalFrames = (int)(duration * fps);
+
+        char currentTimeLabel[64];
+        snprintf(currentTimeLabel, sizeof(currentTimeLabel), "Frame %d / %d  (%.2fs / %.2fs)",
+                 currentFrame, totalFrames, m_CurrentTime, duration);
 
         ImVec2 timeDisplaySize = ImGui::CalcTextSize(currentTimeLabel);
         float timeDisplayX = rulerPos.x + rulerSize.x - timeDisplaySize.x - 5.0f;  // 5px padding from right edge
@@ -1228,92 +1290,10 @@ void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float dur
                     m_IsDraggingKeyframe = false;
                 }
 
-                // Add keyframe on empty timeline space (if not hovering an existing keyframe)
-                bool isOverTrack = (mousePos.x >= timelineMin.x && mousePos.x <= timelineMax.x &&
-                                    mousePos.y >= timelineMin.y && mousePos.y <= timelineMax.y);
-
-                // DEBUG: Log state
-                static bool debugLogged = false;
-                if (isOverTrack && !debugLogged)
-                {
-                    BOOM_INFO("[Keyframes DEBUG] Over track '{}': hoveredAny={}, dragging={}",
-                              joint.name, hoveredAnyKeyframe, m_IsDraggingKeyframe);
-                    debugLogged = true;
-                }
-
-                if (isOverTrack && !hoveredAnyKeyframe && !m_IsDraggingKeyframe)
-                {
-                    // Show tooltip for adding keyframe
-                    ImGui::SetTooltip("Click to add keyframe at current time (%.2fs)", m_CurrentTime);
-
-                    // Add keyframe on click
-                    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-                    {
-                        BOOM_INFO("[Keyframes DEBUG] Mouse clicked! Adding keyframe...");
-
-                        Boom::KeyFrame newKeyframe;
-                        newKeyframe.timeStamp = m_CurrentTime;
-
-                        // TODO: Capture actual bone transform from 3D viewport
-                        // For now, use identity transform as placeholder
-                        newKeyframe.position = glm::vec3(0.0f);
-                        newKeyframe.rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-                        newKeyframe.scale = glm::vec3(1.0f);
-
-                        // Create and execute add command
-                        KeyframeCommand cmd;
-                        cmd.type = KeyframeCommand::ADD;
-                        cmd.boneName = joint.name;
-                        cmd.keyframe = newKeyframe;
-                        ExecuteCommand(cmd);
-                    }
-                }
-            }
-            // No keyframes exist for this bone - allow creating first keyframe
-            else
-            {
-                ImVec2 mousePos = ImGui::GetMousePos();
-
-                // Check if mouse is over this timeline track
-                bool isOverTrack = (mousePos.x >= timelineMin.x && mousePos.x <= timelineMax.x &&
-                                    mousePos.y >= timelineMin.y && mousePos.y <= timelineMax.y);
-
-                // DEBUG: Log state for empty tracks
-                static bool debugLoggedEmpty = false;
-                if (isOverTrack && !debugLoggedEmpty)
-                {
-                    BOOM_INFO("[Keyframes DEBUG] Over EMPTY track '{}': dragging={}",
-                              joint.name, m_IsDraggingKeyframe);
-                    debugLoggedEmpty = true;
-                }
-
-                if (isOverTrack && !m_IsDraggingKeyframe)
-                {
-                    // Show tooltip
-                    ImGui::SetTooltip("Click to add first keyframe at current time (%.2fs)", m_CurrentTime);
-
-                    // Add keyframe on click
-                    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-                    {
-                        BOOM_INFO("[Keyframes DEBUG] Mouse clicked on empty track! Adding first keyframe...");
-
-                        Boom::KeyFrame newKeyframe;
-                        newKeyframe.timeStamp = m_CurrentTime;
-
-                        // TODO: Capture actual bone transform from 3D viewport
-                        // For now, use identity transform as placeholder
-                        newKeyframe.position = glm::vec3(0.0f);
-                        newKeyframe.rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-                        newKeyframe.scale = glm::vec3(1.0f);
-
-                        // Create and execute add command
-                        KeyframeCommand cmd;
-                        cmd.type = KeyframeCommand::ADD;
-                        cmd.boneName = joint.name;
-                        cmd.keyframe = newKeyframe;
-                        ExecuteCommand(cmd);
-                    }
-                }
+                // NOTE: "Click to add keyframe" feature disabled
+                // This is not Unity-like, and without bone manipulation capability,
+                // adding keyframes with identity transforms would break animations.
+                // TODO: Re-enable once we can capture actual bone transforms from 3D viewport
             }
         }
     }

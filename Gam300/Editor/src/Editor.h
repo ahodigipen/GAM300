@@ -27,7 +27,6 @@ namespace EditorUI {
     class PlaybackControlsPanel;
 	class NavmeshPanel;
     class AnimatorGraphPanel;
-    class SkeletonTreePanel;
     class ModelPreviewPanel;
     class AnimationTimelinePanel;
     class CommandHistory;  // Forward-declare CommandHistory
@@ -89,7 +88,6 @@ namespace EditorUI {
 		bool m_ShowDirectory = true;
         bool m_ShowNavmesh = true;
         bool m_ShowAnimatorGraph = true;
-        bool m_ShowSkeletonTree = false;
         bool m_ShowModelPreview = false;
         bool m_ShowAnimationTimeline = false;
         bool m_ShowSaveDialog = false;
@@ -109,7 +107,6 @@ namespace EditorUI {
         std::unique_ptr<PlaybackControlsPanel>  m_Playback;
 		std::unique_ptr<NavmeshPanel>            m_Navmesh;
         std::unique_ptr<AnimatorGraphPanel>     m_AnimatorGraph;
-        std::unique_ptr<SkeletonTreePanel>      m_SkeletonTree;
         std::unique_ptr<ModelPreviewPanel>      m_ModelPreview;
         std::unique_ptr<AnimationTimelinePanel> m_AnimationTimeline;
 
