@@ -880,6 +880,10 @@ namespace Boom
 
 		BOOM_INLINE const DetourNavSystem* GetNavSystem() const override { return m_Nav.get(); }
 
+		// Accessor for DebugLinesShader (used by Editor panels like ModelPreviewPanel)
+		BOOM_INLINE Boom::DebugLinesShader* GetDebugLinesShader() { return m_DebugLinesShader.get(); }
+		BOOM_INLINE const Boom::DebugLinesShader* GetDebugLinesShader() const { return m_DebugLinesShader.get(); }
+
 		BOOM_INLINE static void AppendLine(std::vector<Boom::LineVert>& out, const glm::vec3& a, const glm::vec3& b, const glm::vec4& cA, const glm::vec4& cB)
 		{
 			out.push_back(Boom::LineVert{ a, cA });

@@ -44,6 +44,8 @@ namespace EditorUI {
 			 m.showResources        = &m_Owner->m_ShowResources;
 			 m.showDirectory        = &m_Owner->m_ShowDirectory;
              m.showAnimatorGraph    = &m_Owner->m_ShowAnimatorGraph;
+             m.showModelPreview     = &m_Owner->m_ShowModelPreview;
+             m.showAnimationTimeline = &m_Owner->m_ShowAnimationTimeline;
              //Dialog flags & helpers can also be wired here if Editor exposes them.
              m.showSaveDialog = &m_Owner->m_ShowSaveDialog;
              m.showLoadDialog = &m_Owner->m_ShowLoadDialog;
@@ -149,6 +151,8 @@ namespace EditorUI {
 			if (m.showResources)     ImGui::MenuItem("Resources", nullptr, m.showResources);
 			if (m.showDirectory)       ImGui::MenuItem("Directory", nullptr, m.showDirectory);
             if (m.showAnimatorGraph)    ImGui::MenuItem("Animator Graph", nullptr, m.showAnimatorGraph);
+            if (m.showModelPreview)     ImGui::MenuItem("Model Preview", nullptr, m.showModelPreview);
+            if (m.showAnimationTimeline) ImGui::MenuItem("Animation Timeline", nullptr, m.showAnimationTimeline);
             ImGui::EndMenu();
         }
 

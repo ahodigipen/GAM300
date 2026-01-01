@@ -1,4 +1,5 @@
 #include "Core.h"
+#pragma warning(disable : 4834) // Disable [[nodiscard]] warnings for exception::what() in logging
 #include "Application/Application.h"
 #include "Audio/SoundSystem.hpp" // <-- added for per-entity sound updates
 
@@ -398,9 +399,23 @@ namespace Boom
 
             // World + GUI
             RenderScene();
+            //DrawDebugTPC();
 
-            // Debug draws
-            if (m_PhysDebugViz && m_DebugLinesShader) {
+            // Sync physics debug viz with context flag
+            if (m_PhysDebugViz != m_Context->ShowPhysicsDebug)
+            {
+                m_PhysDebugViz = m_Context->ShowPhysicsDebug;
+                m_Context->physics->EnableDebugVisualization(m_PhysDebugViz, 1.0f);
+            }
+
+            // Sync mesh debug viz with context flag
+            if (m_Context->renderer)
+            {
+                m_Context->renderer->isDrawDebugMode = m_Context->ShowMeshDebug;
+            }
+
+            if (m_PhysDebugViz && m_DebugLinesShader)
+            {
                 m_Context->physics->CollectDebugLines(m_PhysLinesCPU);
                 if (!m_PhysLinesCPU.empty()) {
                     std::vector<Boom::LineVert> lineVerts;
@@ -438,7 +453,104 @@ namespace Boom
                 m_Nav->DrawDetourNavMesh_Query(*m_DebugLinesShader, dbgView, dbgProj, dbgCamPos, navDrawRadius);
             }
 
-            // NOTE: removed the old "skybox ecs (should be drawn at the end)" block
+            // Skeleton visualization
+            if (m_Context->ShowSkeleton && m_DebugLinesShader)
+            {
+                std::vector<Boom::LineVert> normalBones;
+                std::vector<Boom::LineVert> selectedBones;
+                normalBones.reserve(200);
+                selectedBones.reserve(10);
+
+                // Debug: Print selected bone once per frame
+                static std::string lastSelectedBone;
+                if (m_Context->SelectedBoneName != lastSelectedBone)
+                {
+                    if (!m_Context->SelectedBoneName.empty())
+                    {
+                        BOOM_INFO("[BoneSelection] Selected: '{}'", m_Context->SelectedBoneName);
+                    }
+                    else
+                    {
+                        BOOM_INFO("[BoneSelection] Cleared");
+                    }
+                    lastSelectedBone = m_Context->SelectedBoneName;
+                }
+
+                EnttView<Entity, AnimatorComponent, TransformComponent>([this, &normalBones, &selectedBones](auto entity, AnimatorComponent& animComp, TransformComponent& /*tc*/) {
+                    if (!animComp.animator) return;
+
+                    // Get skeleton lines in model space
+                    auto boneLines = animComp.animator->GetSkeletonLines();
+
+                    // Transform to world space using entity transform
+                    glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+
+                    // Debug: Print first few bone names once
+                    static bool printedBoneNames = false;
+                    if (!printedBoneNames && !boneLines.empty())
+                    {
+                        BOOM_INFO("[BoneDebug] Printing first 5 bone names:");
+                        for (size_t i = 0; i < std::min(size_t(5), boneLines.size()); ++i)
+                        {
+                            BOOM_INFO("  [{}] boneName: '{}'", i, boneLines[i].boneName);
+                        }
+                        printedBoneNames = true;
+                    }
+
+                    for (const auto& bone : boneLines)
+                    {
+                        // Transform bone positions to world space
+                        glm::vec3 worldStart = glm::vec3(worldMatrix * glm::vec4(bone.start, 1.0f));
+                        glm::vec3 worldEnd = glm::vec3(worldMatrix * glm::vec4(bone.end, 1.0f));
+
+                        // Separate selected bone from normal bones
+                        bool isSelected = (!m_Context->SelectedBoneName.empty() && bone.boneName == m_Context->SelectedBoneName);
+
+                        if (isSelected)
+                        {
+                            selectedBones.push_back({ worldStart, m_Context->SelectedBoneColor });
+                            selectedBones.push_back({ worldEnd, m_Context->SelectedBoneColor });
+                        }
+                        else
+                        {
+                            normalBones.push_back({ worldStart, m_Context->BoneColor });
+                            normalBones.push_back({ worldEnd, m_Context->BoneColor });
+                        }
+                    }
+                });
+
+                // Draw normal bones first (disable depth test so bones are always visible on top)
+                if (!normalBones.empty())
+                {
+                    m_DebugLinesShader->Draw(dbgView, dbgProj, normalBones, m_Context->BoneLineWidth, true);
+                }
+
+                // Draw selected bone on top with thicker line (disable depth test)
+                if (!selectedBones.empty())
+                {
+                    m_DebugLinesShader->Draw(dbgView, dbgProj, selectedBones, m_Context->BoneLineWidth * 3.0f, true);
+                }
+            }
+
+            //skybox ecs (should be drawn at the end)
+            EnttView<Entity, SkyboxComponent>([this](auto entity, SkyboxComponent& comp) {
+                Transform3D& transform{ entity.template Get<TransformComponent>().transform };
+                static AssetID prevSkyID{ comp.skyboxID };
+
+                //reinitialize skybox if different
+                if (prevSkyID != comp.skyboxID) {
+                    EnttView<Entity, SkyboxComponent>([this](auto, auto& comp) {
+                        SkyboxAsset& skybox{ m_Context->assets->Get<SkyboxAsset>(comp.skyboxID) };
+                        m_Context->renderer->InitSkybox(skybox.data, skybox.envMap, skybox.size);
+                        return; //should stop after one skybox rendered
+                        });
+                }
+
+                prevSkyID = comp.skyboxID;
+                SkyboxAsset& skybox{ m_Context->assets->Get<SkyboxAsset>(comp.skyboxID) };
+                m_Context->renderer->DrawSkybox(skybox.data, transform);
+                return; //should stop after one skybox rendered
+                });
 
             // Frame end
             m_Context->profiler.Start("Renderer End Frame");
