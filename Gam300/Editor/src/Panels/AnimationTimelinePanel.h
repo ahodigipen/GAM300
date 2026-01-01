@@ -2,10 +2,12 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <vector>
 #include "Vendors/imgui/imgui.h"
 #include <glm/glm.hpp>
 #include <GL/glew.h>
 #include <entt/entity/entity.hpp>
+#include "Graphics/Models/Animation.h"  // For Boom::KeyFrame
 
 namespace Boom {
     struct AppContext;
@@ -17,6 +19,18 @@ namespace Boom {
 
 namespace EditorUI {
     class Editor;
+
+    // Undo/Redo command for keyframe operations
+    struct KeyframeCommand {
+        enum Type { ADD, REMOVE, MOVE };
+
+        Type type;
+        std::string boneName;
+        size_t keyframeIndex = 0;
+        Boom::KeyFrame keyframe;  // The keyframe data
+        float oldTime = 0.0f;     // For move operations
+        float newTime = 0.0f;     // For move operations
+    };
 
     /**
      * @brief Animation Timeline Editor - Unity-style animation editing with integrated 3D preview
@@ -106,6 +120,22 @@ namespace EditorUI {
 
         // Selected bone (for keyframe editing later)
         std::string m_SelectedBoneName;
+
+        // Keyframe interaction state
+        bool m_IsDraggingKeyframe = false;
+        std::string m_DraggedBoneName;
+        size_t m_DraggedKeyframeIndex = 0;
+        int m_HoveredKeyframeIndex = -1;  // -1 = no hover
+        std::string m_HoveredBoneName;
+
+        // Undo/Redo system
+        std::vector<KeyframeCommand> m_UndoStack;
+        std::vector<KeyframeCommand> m_RedoStack;
+        const size_t MAX_UNDO_HISTORY = 50;
+
+        void ExecuteCommand(const KeyframeCommand& cmd);
+        void Undo();
+        void Redo();
     };
 
 } // namespace EditorUI

@@ -382,6 +382,45 @@ void AnimationTimelinePanel::RenderControlBar()
     }
     ImGui::EndDisabled();
 
+    // Undo/Redo buttons
+    ImGui::SameLine(0, 20);
+    ImGui::Separator();
+    ImGui::SameLine(0, 20);
+
+    ImGui::BeginDisabled(m_UndoStack.empty());
+    if (ImGui::Button("Undo"))
+    {
+        Undo();
+    }
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::SetTooltip("Undo last keyframe edit (Ctrl+Z)");
+    }
+    ImGui::EndDisabled();
+
+    ImGui::SameLine();
+    ImGui::BeginDisabled(m_RedoStack.empty());
+    if (ImGui::Button("Redo"))
+    {
+        Redo();
+    }
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::SetTooltip("Redo keyframe edit (Ctrl+Y)");
+    }
+    ImGui::EndDisabled();
+
+    // Keyboard shortcuts
+    ImGuiIO& io = ImGui::GetIO();
+    if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z) && !io.KeyShift)
+    {
+        Undo();
+    }
+    if (io.KeyCtrl && (ImGui::IsKeyPressed(ImGuiKey_Y) || (ImGui::IsKeyPressed(ImGuiKey_Z) && io.KeyShift)))
+    {
+        Redo();
+    }
+
     ImGui::SameLine(0, 20);
     ImGui::Separator();
     ImGui::SameLine(0, 20);
@@ -1046,8 +1085,238 @@ void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float dur
         );
     }
 
-    // Placeholder for keyframes (will be added in next step)
-    // TODO: Draw keyframe diamonds from animation clip data
+    // Draw and interact with keyframe diamonds
+    if (m_Animator && m_SelectedClipIndex >= 0 && duration > 0.0f)
+    {
+        const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
+        if (clip)
+        {
+            const auto* keyframes = clip->GetTrack(joint.name);
+            if (keyframes && !keyframes->empty())
+            {
+                ImGuiIO& io = ImGui::GetIO();
+                ImVec2 mousePos = ImGui::GetMousePos();
+
+                // Track if we're hovering any keyframe on THIS bone (local to this iteration)
+                bool hoveredAnyKeyframe = false;
+
+                // Draw diamond at each keyframe timestamp
+                for (size_t i = 0; i < keyframes->size(); ++i)
+                {
+                    const auto& kf = (*keyframes)[i];
+
+                    // Calculate X position based on timestamp
+                    float normalizedTime = kf.timeStamp / duration;
+                    float x = timelineMin.x + normalizedTime * timelineWidth;
+
+                    // If we're dragging this keyframe, use mouse position for X
+                    if (m_IsDraggingKeyframe && m_DraggedBoneName == joint.name && m_DraggedKeyframeIndex == i)
+                    {
+                        x = mousePos.x;
+                        x = std::max(timelineMin.x, std::min(x, timelineMin.x + timelineWidth)); // Clamp to timeline bounds
+                    }
+
+                    // Diamond center (vertically centered in row)
+                    ImVec2 center(x, timelineMin.y + rowHeight * 0.5f);
+                    float size = 3.0f;
+                    float hitTestSize = 6.0f; // Larger hit area for easier clicking
+
+                    // Diamond vertices (rotated square)
+                    ImVec2 top(center.x, center.y - size);
+                    ImVec2 right(center.x + size, center.y);
+                    ImVec2 bottom(center.x, center.y + size);
+                    ImVec2 left(center.x - size, center.y);
+
+                    // Check if mouse is hovering over this keyframe
+                    bool isHovered = (mousePos.x >= center.x - hitTestSize && mousePos.x <= center.x + hitTestSize &&
+                                      mousePos.y >= center.y - hitTestSize && mousePos.y <= center.y + hitTestSize);
+
+                    // Determine color based on state
+                    ImU32 fillColor = IM_COL32(255, 200, 0, 255);  // Default gold
+                    ImU32 outlineColor = IM_COL32(200, 150, 0, 255);
+
+                    if (m_IsDraggingKeyframe && m_DraggedBoneName == joint.name && m_DraggedKeyframeIndex == i)
+                    {
+                        // Being dragged - bright cyan
+                        fillColor = IM_COL32(0, 255, 255, 255);
+                        outlineColor = IM_COL32(0, 200, 200, 255);
+                        size = 4.0f; // Slightly larger when dragging
+                    }
+                    else if (isHovered)
+                    {
+                        // Hovered - brighter yellow
+                        fillColor = IM_COL32(255, 255, 100, 255);
+                        outlineColor = IM_COL32(255, 200, 0, 255);
+                        size = 4.0f; // Slightly larger when hovered
+                    }
+
+                    // Recalculate vertices with potentially new size
+                    top = ImVec2(center.x, center.y - size);
+                    right = ImVec2(center.x + size, center.y);
+                    bottom = ImVec2(center.x, center.y + size);
+                    left = ImVec2(center.x - size, center.y);
+
+                    // Draw filled diamond
+                    drawList->AddQuadFilled(top, right, bottom, left, fillColor);
+
+                    // Draw outline for better visibility
+                    drawList->AddQuad(top, right, bottom, left, outlineColor, 1.5f);
+
+                    // Handle mouse interactions
+                    if (isHovered && !m_IsDraggingKeyframe)
+                    {
+                        // Mark that we're hovering a keyframe on this bone
+                        hoveredAnyKeyframe = true;
+
+                        // Set hover state
+                        m_HoveredKeyframeIndex = (int)i;
+                        m_HoveredBoneName = joint.name;
+
+                        // Show tooltip
+                        ImGui::SetTooltip("Keyframe at %.2fs\nLeft-click to drag\nRight-click to delete", kf.timeStamp);
+
+                        // Start dragging on left-click
+                        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                        {
+                            m_IsDraggingKeyframe = true;
+                            m_DraggedBoneName = joint.name;
+                            m_DraggedKeyframeIndex = i;
+                        }
+
+                        // Delete on right-click
+                        if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+                        {
+                            // Create and execute remove command
+                            KeyframeCommand cmd;
+                            cmd.type = KeyframeCommand::REMOVE;
+                            cmd.boneName = joint.name;
+                            cmd.keyframeIndex = i;
+                            cmd.keyframe = kf; // Store the keyframe data for undo
+                            ExecuteCommand(cmd);
+                            break; // Exit loop since we modified the array
+                        }
+                    }
+                }
+
+                // Handle drag release
+                if (m_IsDraggingKeyframe && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+                {
+                    // Calculate new timestamp from mouse position
+                    float newTime = ((mousePos.x - timelineMin.x) / timelineWidth) * duration;
+                    newTime = std::max(0.0f, std::min(newTime, duration)); // Clamp to clip duration
+
+                    // Get the old timestamp before moving
+                    auto* track = m_Animator->GetTrackMutable(m_SelectedClipIndex, m_DraggedBoneName);
+                    if (track && m_DraggedKeyframeIndex < track->size())
+                    {
+                        float oldTime = (*track)[m_DraggedKeyframeIndex].timeStamp;
+
+                        // Only create command if time actually changed
+                        if (std::abs(oldTime - newTime) > 0.001f)
+                        {
+                            // Create and execute move command
+                            KeyframeCommand cmd;
+                            cmd.type = KeyframeCommand::MOVE;
+                            cmd.boneName = m_DraggedBoneName;
+                            cmd.keyframeIndex = m_DraggedKeyframeIndex;
+                            cmd.oldTime = oldTime;
+                            cmd.newTime = newTime;
+                            ExecuteCommand(cmd);
+                        }
+                    }
+
+                    m_IsDraggingKeyframe = false;
+                }
+
+                // Add keyframe on empty timeline space (if not hovering an existing keyframe)
+                bool isOverTrack = (mousePos.x >= timelineMin.x && mousePos.x <= timelineMax.x &&
+                                    mousePos.y >= timelineMin.y && mousePos.y <= timelineMax.y);
+
+                // DEBUG: Log state
+                static bool debugLogged = false;
+                if (isOverTrack && !debugLogged)
+                {
+                    BOOM_INFO("[Keyframes DEBUG] Over track '{}': hoveredAny={}, dragging={}",
+                              joint.name, hoveredAnyKeyframe, m_IsDraggingKeyframe);
+                    debugLogged = true;
+                }
+
+                if (isOverTrack && !hoveredAnyKeyframe && !m_IsDraggingKeyframe)
+                {
+                    // Show tooltip for adding keyframe
+                    ImGui::SetTooltip("Click to add keyframe at current time (%.2fs)", m_CurrentTime);
+
+                    // Add keyframe on click
+                    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                    {
+                        BOOM_INFO("[Keyframes DEBUG] Mouse clicked! Adding keyframe...");
+
+                        Boom::KeyFrame newKeyframe;
+                        newKeyframe.timeStamp = m_CurrentTime;
+
+                        // TODO: Capture actual bone transform from 3D viewport
+                        // For now, use identity transform as placeholder
+                        newKeyframe.position = glm::vec3(0.0f);
+                        newKeyframe.rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+                        newKeyframe.scale = glm::vec3(1.0f);
+
+                        // Create and execute add command
+                        KeyframeCommand cmd;
+                        cmd.type = KeyframeCommand::ADD;
+                        cmd.boneName = joint.name;
+                        cmd.keyframe = newKeyframe;
+                        ExecuteCommand(cmd);
+                    }
+                }
+            }
+            // No keyframes exist for this bone - allow creating first keyframe
+            else
+            {
+                ImVec2 mousePos = ImGui::GetMousePos();
+
+                // Check if mouse is over this timeline track
+                bool isOverTrack = (mousePos.x >= timelineMin.x && mousePos.x <= timelineMax.x &&
+                                    mousePos.y >= timelineMin.y && mousePos.y <= timelineMax.y);
+
+                // DEBUG: Log state for empty tracks
+                static bool debugLoggedEmpty = false;
+                if (isOverTrack && !debugLoggedEmpty)
+                {
+                    BOOM_INFO("[Keyframes DEBUG] Over EMPTY track '{}': dragging={}",
+                              joint.name, m_IsDraggingKeyframe);
+                    debugLoggedEmpty = true;
+                }
+
+                if (isOverTrack && !m_IsDraggingKeyframe)
+                {
+                    // Show tooltip
+                    ImGui::SetTooltip("Click to add first keyframe at current time (%.2fs)", m_CurrentTime);
+
+                    // Add keyframe on click
+                    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                    {
+                        BOOM_INFO("[Keyframes DEBUG] Mouse clicked on empty track! Adding first keyframe...");
+
+                        Boom::KeyFrame newKeyframe;
+                        newKeyframe.timeStamp = m_CurrentTime;
+
+                        // TODO: Capture actual bone transform from 3D viewport
+                        // For now, use identity transform as placeholder
+                        newKeyframe.position = glm::vec3(0.0f);
+                        newKeyframe.rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+                        newKeyframe.scale = glm::vec3(1.0f);
+
+                        // Create and execute add command
+                        KeyframeCommand cmd;
+                        cmd.type = KeyframeCommand::ADD;
+                        cmd.boneName = joint.name;
+                        cmd.keyframe = newKeyframe;
+                        ExecuteCommand(cmd);
+                    }
+                }
+            }
+        }
+    }
 
     // Add invisible dummy item to properly extend window bounds
     ImGui::Dummy(ImVec2(timelineWidth, rowHeight));
@@ -1459,4 +1728,152 @@ void AnimationTimelinePanel::ClearModel()
     m_IsPlaying = false;
 
     BOOM_INFO("[AnimationTimeline] Model cleared");
+}
+
+// ========== Undo/Redo System ==========
+
+void AnimationTimelinePanel::ExecuteCommand(const KeyframeCommand& cmd)
+{
+    if (!m_Animator || m_SelectedClipIndex < 0) return;
+
+    // Push to undo stack
+    m_UndoStack.push_back(cmd);
+    if (m_UndoStack.size() > MAX_UNDO_HISTORY)
+    {
+        m_UndoStack.erase(m_UndoStack.begin()); // Remove oldest
+    }
+
+    // Clear redo stack (new action invalidates redo history)
+    m_RedoStack.clear();
+
+    // Execute the command
+    switch (cmd.type)
+    {
+    case KeyframeCommand::ADD:
+        m_Animator->AddKeyframe(m_SelectedClipIndex, cmd.boneName, cmd.keyframe);
+        BOOM_INFO("[Keyframes] Added keyframe at {:.2f}s on bone '{}'", (double)cmd.keyframe.timeStamp, cmd.boneName.c_str());
+        break;
+
+    case KeyframeCommand::REMOVE:
+        m_Animator->RemoveKeyframe(m_SelectedClipIndex, cmd.boneName, cmd.keyframeIndex);
+        BOOM_INFO("[Keyframes] Removed keyframe at index {} on bone '{}'", (int)cmd.keyframeIndex, cmd.boneName.c_str());
+        break;
+
+    case KeyframeCommand::MOVE:
+        m_Animator->UpdateKeyframeTime(m_SelectedClipIndex, cmd.boneName, cmd.keyframeIndex, cmd.newTime);
+        BOOM_INFO("[Keyframes] Moved keyframe on bone '{}' from {:.2f}s to {:.2f}s",
+                  cmd.boneName.c_str(), (double)cmd.oldTime, (double)cmd.newTime);
+        break;
+    }
+}
+
+void AnimationTimelinePanel::Undo()
+{
+    if (m_UndoStack.empty() || !m_Animator || m_SelectedClipIndex < 0) return;
+
+    KeyframeCommand cmd = m_UndoStack.back();
+    m_UndoStack.pop_back();
+
+    // Reverse the command
+    switch (cmd.type)
+    {
+    case KeyframeCommand::ADD:
+        // Undo add = remove the keyframe
+        {
+            auto* track = m_Animator->GetTrackMutable(m_SelectedClipIndex, cmd.boneName);
+            if (track)
+            {
+                // Find the keyframe we just added
+                for (size_t i = 0; i < track->size(); ++i)
+                {
+                    if (std::abs((*track)[i].timeStamp - cmd.keyframe.timeStamp) < 0.001f)
+                    {
+                        m_Animator->RemoveKeyframe(m_SelectedClipIndex, cmd.boneName, i);
+                        BOOM_INFO("[Undo] Removed added keyframe at {:.2f}s on bone '{}'",
+                                  (double)cmd.keyframe.timeStamp, cmd.boneName.c_str());
+                        break;
+                    }
+                }
+            }
+        }
+        break;
+
+    case KeyframeCommand::REMOVE:
+        // Undo remove = add it back
+        m_Animator->AddKeyframe(m_SelectedClipIndex, cmd.boneName, cmd.keyframe);
+        BOOM_INFO("[Undo] Restored removed keyframe at {:.2f}s on bone '{}'",
+                  (double)cmd.keyframe.timeStamp, cmd.boneName.c_str());
+        break;
+
+    case KeyframeCommand::MOVE:
+        // Undo move = move it back to old time
+        {
+            auto* track = m_Animator->GetTrackMutable(m_SelectedClipIndex, cmd.boneName);
+            if (track)
+            {
+                // Find the keyframe by timestamp
+                for (size_t i = 0; i < track->size(); ++i)
+                {
+                    if (std::abs((*track)[i].timeStamp - cmd.newTime) < 0.001f)
+                    {
+                        m_Animator->UpdateKeyframeTime(m_SelectedClipIndex, cmd.boneName, i, cmd.oldTime);
+                        BOOM_INFO("[Undo] Moved keyframe on bone '{}' back from {:.2f}s to {:.2f}s",
+                                  cmd.boneName.c_str(), (double)cmd.newTime, (double)cmd.oldTime);
+                        break;
+                    }
+                }
+            }
+        }
+        break;
+    }
+
+    // Push to redo stack
+    m_RedoStack.push_back(cmd);
+}
+
+void AnimationTimelinePanel::Redo()
+{
+    if (m_RedoStack.empty() || !m_Animator || m_SelectedClipIndex < 0) return;
+
+    KeyframeCommand cmd = m_RedoStack.back();
+    m_RedoStack.pop_back();
+
+    // Re-execute the command
+    switch (cmd.type)
+    {
+    case KeyframeCommand::ADD:
+        m_Animator->AddKeyframe(m_SelectedClipIndex, cmd.boneName, cmd.keyframe);
+        BOOM_INFO("[Redo] Re-added keyframe at {:.2f}s on bone '{}'",
+                  (double)cmd.keyframe.timeStamp, cmd.boneName.c_str());
+        break;
+
+    case KeyframeCommand::REMOVE:
+        m_Animator->RemoveKeyframe(m_SelectedClipIndex, cmd.boneName, cmd.keyframeIndex);
+        BOOM_INFO("[Redo] Re-removed keyframe at index {} on bone '{}'",
+                  (int)cmd.keyframeIndex, cmd.boneName.c_str());
+        break;
+
+    case KeyframeCommand::MOVE:
+        {
+            auto* track = m_Animator->GetTrackMutable(m_SelectedClipIndex, cmd.boneName);
+            if (track)
+            {
+                // Find the keyframe by old timestamp
+                for (size_t i = 0; i < track->size(); ++i)
+                {
+                    if (std::abs((*track)[i].timeStamp - cmd.oldTime) < 0.001f)
+                    {
+                        m_Animator->UpdateKeyframeTime(m_SelectedClipIndex, cmd.boneName, i, cmd.newTime);
+                        BOOM_INFO("[Redo] Re-moved keyframe on bone '{}' from {:.2f}s to {:.2f}s",
+                                  cmd.boneName.c_str(), (double)cmd.oldTime, (double)cmd.newTime);
+                        break;
+                    }
+                }
+            }
+        }
+        break;
+    }
+
+    // Push back to undo stack
+    m_UndoStack.push_back(cmd);
 }

@@ -170,6 +170,12 @@ namespace Boom
             return (index < m_Clips.size()) ? m_Clips[index].get() : nullptr;
         }
 
+        // Mutable version for editing (used by Animation Timeline panel)
+        BOOM_INLINE AnimationClip* GetClipMutable(size_t index)
+        {
+            return (index < m_Clips.size()) ? m_Clips[index].get() : nullptr;
+        }
+
         BOOM_INLINE size_t GetSequence() const { return GetCurrentClip(); }
         BOOM_INLINE void SetSequence(size_t index) { PlayClip(index); }
 
@@ -296,6 +302,65 @@ namespace Boom
             if (index < m_Clips.size()) {
                 m_Clips.erase(m_Clips.begin() + index);
             }
+        }
+
+        // === KEYFRAME EDITING API (for Animation Timeline) ===
+
+        // Get mutable track for editing
+        BOOM_INLINE std::vector<KeyFrame>* GetTrackMutable(size_t clipIndex, const std::string& jointName)
+        {
+            if (clipIndex >= m_Clips.size()) return nullptr;
+            auto& clip = m_Clips[clipIndex];
+            auto it = clip->tracks.find(jointName);
+            return (it != clip->tracks.end()) ? &it->second : nullptr;
+        }
+
+        // Add keyframe to track (maintains sorted order by timestamp)
+        BOOM_INLINE bool AddKeyframe(size_t clipIndex, const std::string& jointName, const KeyFrame& keyframe)
+        {
+            if (clipIndex >= m_Clips.size()) return false;
+            auto& clip = m_Clips[clipIndex];
+
+            // Create track if it doesn't exist
+            auto& track = clip->tracks[jointName];
+
+            // Find insertion point to maintain sorted order
+            auto insertPos = std::lower_bound(track.begin(), track.end(), keyframe,
+                [](const KeyFrame& a, const KeyFrame& b) { return a.timeStamp < b.timeStamp; });
+
+            track.insert(insertPos, keyframe);
+            return true;
+        }
+
+        // Remove keyframe at specific index from track
+        BOOM_INLINE bool RemoveKeyframe(size_t clipIndex, const std::string& jointName, size_t keyframeIndex)
+        {
+            auto* track = GetTrackMutable(clipIndex, jointName);
+            if (!track || keyframeIndex >= track->size()) return false;
+
+            track->erase(track->begin() + keyframeIndex);
+            return true;
+        }
+
+        // Update keyframe timestamp (re-sorts track)
+        BOOM_INLINE bool UpdateKeyframeTime(size_t clipIndex, const std::string& jointName, size_t keyframeIndex, float newTime)
+        {
+            auto* track = GetTrackMutable(clipIndex, jointName);
+            if (!track || keyframeIndex >= track->size()) return false;
+
+            // Store the keyframe data
+            KeyFrame kf = (*track)[keyframeIndex];
+            kf.timeStamp = newTime;
+
+            // Remove old keyframe
+            track->erase(track->begin() + keyframeIndex);
+
+            // Re-insert at correct position
+            auto insertPos = std::lower_bound(track->begin(), track->end(), kf,
+                [](const KeyFrame& a, const KeyFrame& b) { return a.timeStamp < b.timeStamp; });
+            track->insert(insertPos, kf);
+
+            return true;
         }
 
     private:
