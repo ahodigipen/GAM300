@@ -224,6 +224,13 @@ namespace Boom {
         BOOM_INLINE void DrawPick(Model3D const& model, Transform3D const& transform) {
             pickShader->Draw(model, transform);
         }
+        BOOM_INLINE void DrawPick(Transform3D const& transform) {
+            pickShader->Draw(transform);
+        }
+        BOOM_INLINE void DrawPick(Transform2D const& transform) {
+            if (isPickIgnoreGUI) return;
+            pickShader->Draw(transform);
+        }
 
         BOOM_INLINE void DrawQuad(Texture const& tex, Transform3D const& transform, glm::vec4 col = glm::vec4{ 1.f }) {
             color3DShader->ChangeColor(col);
@@ -421,6 +428,7 @@ namespace Boom {
         bool showLowPoly{};
         bool showNormalTexture{};
         bool enabledBloom{};
+        bool isPickIgnoreGUI{};
     };
 
 } // namespace Boom

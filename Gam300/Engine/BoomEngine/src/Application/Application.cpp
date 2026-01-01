@@ -577,7 +577,7 @@ namespace Boom
     //picking currently should only work on objects with model
     void Application::RenderScene(bool isPicking)
     {
-        std::vector<std::pair<SpriteComponent, Transform2D>> guiList;
+        std::vector<std::tuple<SpriteComponent, Transform2D, uint32_t>> guiList;
         //pbr ecs (always render)
         EnttView<Entity, TransformComponent>([this, &guiList, &isPicking](auto entity, TransformComponent& t) {
             if (entity.Has<DeactivatedComponent>()) return;
@@ -651,14 +651,21 @@ namespace Boom
             }
             else if (entity.Has<SpriteComponent>()) {
 
-                if (isPicking) return; //skip drawing pick for sprite
-
                 SpriteComponent& comp{ entity.Get<SpriteComponent>() };
                 if (comp.textureID == EMPTY_ASSET) return;
 
                 if (!comp.uiOverlay) {
                     TextureAsset& texture{ m_Context->assets->Get<TextureAsset>(comp.textureID) };
-                    m_Context->renderer->DrawQuad(texture.data, t.transform, comp.color);
+                    if (isPicking) {
+                        glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+                        Transform3D worldTransform;
+                        DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
+
+                        m_Context->renderer->SetPickUniform(entt::to_integral(entity.ID())); //entity should be of type uint32_t
+                        m_Context->renderer->DrawPick(worldTransform);
+                    }
+                    else
+                        m_Context->renderer->DrawQuad(texture.data, t.transform, comp.color);
                 }
                 else {
                     // Calculate world transform for GUI sprites (respects parent hierarchy)
@@ -673,23 +680,30 @@ namespace Boom
                         glm::vec2(worldTransform.scale.x, worldTransform.scale.y)  // 2D scale
                     };
 
-                    guiList.push_back({ comp, guiTransform });
+                    guiList.push_back({ comp, guiTransform, entt::to_integral(entity.ID()) });
                 }
             }
             });
 
         //sort guiList based on z-axis from negative to positive(opengl z-axis towards camera)
         std::sort(guiList.begin(), guiList.end(), [](const auto& a, const auto& b) {
-            return a.second.translate.z < b.second.translate.z;  // descending Z order
+            return std::get<1>(a).translate.z < std::get<1>(b).translate.z;  // descending Z order
             });
 
         //render gui overlays at the end
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL); //supports partial transparency to not interfere with background gui
+        
         for (auto const& gui : guiList) {
-            TextureAsset* texture{ m_Context->assets->TryGet<TextureAsset>(gui.first.textureID) };
-            if (texture)
-                m_Context->renderer->DrawQuad(texture->data, gui.second, gui.first.color);
+            if (isPicking) {
+                m_Context->renderer->SetPickUniform(std::get<2>(gui)); //entity should be of type uint32_t
+                m_Context->renderer->DrawPick(std::get<1>(gui));
+            }
+            else {
+                TextureAsset* texture{ m_Context->assets->TryGet<TextureAsset>(std::get<0>(gui).textureID) };
+                if (texture)
+                    m_Context->renderer->DrawQuad(texture->data, std::get<1>(gui), std::get<0>(gui).color);
+            }
         }
     }
 

@@ -183,7 +183,10 @@ namespace EditorUI {
                         m_Owner->GetApp()->m_PhysDebugViz = physDebugViz;
                         BOOM_INFO("[Options] Physics Debug Visualization (Collision Lines): {}", physDebugViz ? "ON" : "OFF");
                     }
-                }				ImGui::MenuItem("Bloom", nullptr, &m.ctx->renderer->enabledBloom);
+                }				
+                ImGui::MenuItem("Bloom", nullptr, &m.ctx->renderer->enabledBloom);
+
+                ImGui::MenuItem("Picking ignore GUI", nullptr, &m.ctx->renderer->isPickIgnoreGUI);
             }
             ImGui::EndMenu();
         }

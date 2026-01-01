@@ -27,6 +27,21 @@ namespace Boom {
 			SetUniform(jointsLoc, model->HasJoint());
 			model->Draw();
 		}
+		BOOM_INLINE void Draw(Transform3D const& transform) {
+			static Quad3D base{ CreateQuad3D() };
+			Use();
+			SetUniform(modelMatLoc, transform.Matrix());
+			SetUniform(jointsLoc, false);
+			base->Draw(GL_TRIANGLE_STRIP);
+		}
+		BOOM_INLINE void Draw(Transform2D const& transform) {
+			static Quad2D base{ CreateQuad2D() };
+			Use();
+			SetUniform(frustumMatLoc, glm::mat4(1.f));
+			SetUniform(modelMatLoc, transform.To3D().Matrix());
+			SetUniform(jointsLoc, false);
+			base->Draw(GL_TRIANGLE_STRIP);
+		}
 
 		//Animation 
 		BOOM_INLINE void SetJoints(std::vector<glm::mat4>& transforms)
