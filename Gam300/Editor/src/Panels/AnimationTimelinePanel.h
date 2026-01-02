@@ -3,8 +3,10 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <map>
 #include "Vendors/imgui/imgui.h"
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <GL/glew.h>
 #include <entt/entity/entity.hpp>
 #include "Graphics/Models/Animation.h"  // For Boom::KeyFrame
@@ -75,6 +77,14 @@ namespace EditorUI {
         void LoadModel(const std::string& modelPath);
         void ClearModel();
 
+        // Bone manipulation helpers
+        glm::mat4 GetBoneWorldTransform(const std::string& boneName);  // Get bone's world matrix
+        std::string GetParentBoneName(const std::string& boneName);    // Find parent bone name
+        void ApplyManualBonePosesToTransforms(std::vector<glm::mat4>& transforms);  // Apply manual poses to skinning transforms
+
+        // Keyframe recording
+        Boom::KeyFrame CaptureCurrentBoneTransform(const std::string& boneName);  // Capture bone's current pose
+
     private:
         Editor* m_Owner = nullptr;
         Boom::AppInterface* m_App = nullptr;
@@ -129,10 +139,19 @@ namespace EditorUI {
 
         // Transform gizmo state
         int m_GizmoOperation = 7;  // ImGuizmo::TRANSLATE (7 = translate)
-        int m_GizmoMode = 0;       // ImGuizmo::WORLD (0 = world space)
+        int m_GizmoMode = 1;       // ImGuizmo::WORLD (1 = world space, 0 = local space)
         bool m_GizmoWasUsing = false;  // Track if gizmo was being used last frame
         bool m_UseSnap = false;    // Snap to grid
         float m_SnapValues[3] = { 0.1f, 0.1f, 0.1f };  // Snap grid size
+
+        // Manual bone pose overrides (for gizmo manipulation)
+        struct BonePose {
+            glm::vec3 position;
+            glm::quat rotation;
+            glm::vec3 scale;
+        };
+        std::map<std::string, BonePose> m_ManualBonePoses;  // Overrides animation data
+        bool m_HasManualPoses = false;  // Flag to know if we need to apply overrides
 
         // Keyframe interaction state
         bool m_IsDraggingKeyframe = false;

@@ -18,7 +18,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/euler_angles.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 #include <cmath>
+#include <functional>
 
 using namespace EditorUI;
 
@@ -137,6 +139,25 @@ void AnimationTimelinePanel::Render()
     // Get selected entity and load model/animator (only if not in standalone mode)
     auto selectedID = m_App->SelectedEntity();
 
+    // Handle entity deselection (user clicked away in hierarchy)
+    if (!m_StandaloneMode && selectedID == entt::null && m_SourceEntityID != entt::null)
+    {
+        // Entity was deselected - clear timeline to avoid using stale data
+        BOOM_INFO("[AnimationTimeline] Entity deselected, clearing timeline");
+        m_Animator.reset();
+        m_SourceAnimator.reset();
+        m_Model.reset();
+        m_SourceEntityID = entt::null;
+        m_HasModel = false;
+        m_SelectedBoneName.clear();
+        m_ManualBonePoses.clear();
+        m_HasManualPoses = false;
+        m_SelectedClipIndex = -1;
+        m_CurrentTime = 0.0f;
+        m_IsPlaying = false;
+        return;  // Exit early
+    }
+
     // Only try to load from entity if we're not in standalone mode
     if (!m_StandaloneMode && selectedID != entt::null)
     {
@@ -187,15 +208,66 @@ void AnimationTimelinePanel::Render()
 
                     m_CurrentTime = 0.0f;
                     m_IsPlaying = false;
+
+                    // Clear manual poses when switching entities
+                    m_ManualBonePoses.clear();
+                    m_HasManualPoses = false;
+                    m_SelectedBoneName.clear();
                 }
                 else if (animatorPtrChanged)
                 {
-                    // Entity didn't change but animator pointer did (game restarted?)
-                    BOOM_WARN("[AnimationTimeline] Animator pointer changed without entity change! Original={}, NewOriginal={}",
-                        (void*)m_SourceAnimator.get(), (void*)animComp.animator.get());
-                    BOOM_WARN("[AnimationTimeline] This might cause issues. Keeping our existing clone.");
+                    // Entity didn't change but animator pointer did (scene reload from play/stop!)
+                    BOOM_INFO("[AnimationTimeline] Animator instance changed (scene reload?), re-cloning from new instance");
+
+                    m_SourceAnimator = animComp.animator;
+
+                    // Capture current clip before re-cloning
+                    int oldClipIndex = m_SelectedClipIndex;
+                    float oldTime = m_CurrentTime;
+                    bool wasPlaying = m_IsPlaying;
+
+                    // Re-clone from the new animator instance
+                    m_Animator = animComp.animator->Clone();
+                    m_Animator->GetStates().clear();
+
+                    // Restore timeline state
+                    if (oldClipIndex >= 0 && oldClipIndex < (int)m_Animator->GetClipCount())
+                    {
+                        m_SelectedClipIndex = oldClipIndex;
+                        m_Animator->PlayClip(oldClipIndex);
+
+                        // CRITICAL: Seek to saved time position using SetTime(), NOT Animate(deltaTime)!
+                        // Animate() advances by delta, SetTime() seeks to absolute time
+                        auto* clip = m_Animator->GetClip(oldClipIndex);
+                        if (clip)
+                        {
+                            // Clamp time to clip duration
+                            m_CurrentTime = glm::clamp(oldTime, 0.0f, clip->duration);
+
+                            // Seek to absolute time, then force transform computation
+                            m_Animator->SetTime(m_CurrentTime);
+                            m_Animator->Animate(0.0f);  // Compute transforms without advancing time
+                        }
+                        else
+                        {
+                            m_CurrentTime = 0.0f;
+                        }
+
+                        m_IsPlaying = wasPlaying;
+                        BOOM_INFO("[AnimationTimeline] Re-cloned and restored clip {} at time {:.2f}s",
+                                  oldClipIndex, m_CurrentTime);
+                    }
+                    else
+                    {
+                        m_CurrentTime = 0.0f;
+                        m_IsPlaying = false;
+                    }
+
+                    // Clear manual poses on scene reload
+                    m_ManualBonePoses.clear();
+                    m_HasManualPoses = false;
                 }
-                // If entity didn't change, keep using our existing clone (don't re-clone!)
+                // If entity AND animator didn't change, keep using our existing clone (don't re-clone!)
             }
             else
             {
@@ -479,7 +551,7 @@ void AnimationTimelinePanel::RenderControlBar()
         Redo();
     }
 
-    // Gizmo mode keyboard shortcuts (W/E/R) - only when viewport is focused
+    // Gizmo mode keyboard shortcuts (W/E/R/T/K) - only when viewport is focused
     if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
     {
         if (ImGui::IsKeyPressed(ImGuiKey_W, false)) {
@@ -490,6 +562,49 @@ void AnimationTimelinePanel::RenderControlBar()
         }
         if (ImGui::IsKeyPressed(ImGuiKey_R, false)) {
             m_GizmoOperation = 896;  // ImGuizmo::SCALE
+        }
+        if (ImGui::IsKeyPressed(ImGuiKey_T, false)) {
+            m_GizmoMode = (m_GizmoMode == 0) ? 1 : 0;  // Toggle LOCAL (0) / WORLD (1)
+            BOOM_INFO("[Gizmo] Toggled to {} space", m_GizmoMode == 1 ? "WORLD" : "LOCAL");
+        }
+
+        // K key - Add keyframe at current time for selected bone
+        if (ImGui::IsKeyPressed(ImGuiKey_K, false))
+        {
+            if (!m_SelectedBoneName.empty() && m_Animator && m_SelectedClipIndex >= 0)
+            {
+                // Capture current bone transform
+                Boom::KeyFrame kf = CaptureCurrentBoneTransform(m_SelectedBoneName);
+
+                if (kf.timeStamp >= 0.0f)  // Valid capture
+                {
+                    // Create and execute ADD command
+                    KeyframeCommand cmd;
+                    cmd.type = KeyframeCommand::ADD;
+                    cmd.boneName = m_SelectedBoneName;
+                    cmd.keyframe = kf;
+                    ExecuteCommand(cmd);
+
+                    BOOM_INFO("[Keyframe Record] Captured pose for bone '{}' at time {:.2f}s",
+                              m_SelectedBoneName.c_str(), (double)kf.timeStamp);
+                }
+                else
+                {
+                    BOOM_WARN("[Keyframe Record] Failed to capture bone transform for '{}'", m_SelectedBoneName.c_str());
+                }
+            }
+            else if (m_SelectedBoneName.empty())
+            {
+                BOOM_WARN("[Keyframe Record] No bone selected - select a bone first!");
+            }
+            else if (!m_Animator)
+            {
+                BOOM_WARN("[Keyframe Record] No animator loaded");
+            }
+            else if (m_SelectedClipIndex < 0)
+            {
+                BOOM_WARN("[Keyframe Record] No clip selected");
+            }
         }
     }
 
@@ -503,6 +618,8 @@ void AnimationTimelinePanel::RenderControlBar()
     else if (m_GizmoOperation == 120) gizmoModeText = "Rotate (E)";
     else if (m_GizmoOperation == 896) gizmoModeText = "Scale (R)";
 
+    const char* gizmoSpaceText = (m_GizmoMode == 1) ? "World" : "Local";
+
     ImGui::Text("Gizmo:");
     ImGui::SameLine();
     if (ImGui::Button("Move (W)")) m_GizmoOperation = 7;
@@ -511,7 +628,55 @@ void AnimationTimelinePanel::RenderControlBar()
     ImGui::SameLine();
     if (ImGui::Button("Scale (R)")) m_GizmoOperation = 896;
     ImGui::SameLine();
-    ImGui::Text("[%s]", gizmoModeText);
+    ImGui::Text("|");
+    ImGui::SameLine();
+    if (ImGui::Button("Toggle Space (T)"))
+    {
+        m_GizmoMode = (m_GizmoMode == 0) ? 1 : 0;
+    }
+    ImGui::SameLine();
+    ImGui::Text("[%s - %s]", gizmoModeText, gizmoSpaceText);
+
+    // Keyframe recording hint
+    ImGui::SameLine(0, 20);
+    ImGui::Separator();
+    ImGui::SameLine(0, 20);
+
+    // Show keyframe recording status
+    if (!m_SelectedBoneName.empty())
+    {
+        ImGui::Text("Add Keyframe:");
+        ImGui::SameLine();
+        if (ImGui::Button("K"))
+        {
+            // Trigger K key action manually via button
+            if (m_Animator && m_SelectedClipIndex >= 0)
+            {
+                Boom::KeyFrame kf = CaptureCurrentBoneTransform(m_SelectedBoneName);
+                if (kf.timeStamp >= 0.0f)
+                {
+                    KeyframeCommand cmd;
+                    cmd.type = KeyframeCommand::ADD;
+                    cmd.boneName = m_SelectedBoneName;
+                    cmd.keyframe = kf;
+                    ExecuteCommand(cmd);
+                }
+            }
+        }
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Add keyframe for '%s' at current time (%.2fs)\nOr press K key",
+                            m_SelectedBoneName.c_str(), m_CurrentTime);
+        }
+    }
+    else
+    {
+        ImGui::TextDisabled("Add Keyframe: K");
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Select a bone first, then press K to add a keyframe");
+        }
+    }
 
     ImGui::SameLine(0, 20);
     ImGui::Separator();
@@ -1423,6 +1588,10 @@ void AnimationTimelinePanel::HandleCameraControls()
 
 void AnimationTimelinePanel::HandleBonePicking()
 {
+    // CRITICAL: Don't pick bones while gizmo is being used OR hovered (prevents click-through)
+    if (ImGuizmo::IsUsing()) return;
+    if (ImGuizmo::IsOver()) return;  // Also block when mouse is over gizmo (even if not dragging yet)
+
     // Only process if viewport is hovered and window is focused
     if (!ImGui::IsItemHovered()) return;
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) return;
@@ -1461,8 +1630,44 @@ void AnimationTimelinePanel::HandleBonePicking()
     glm::vec3 rayOrigin = glm::vec3(rayStartWorld);
     glm::vec3 rayDir = glm::normalize(glm::vec3(rayEndWorld) - glm::vec3(rayStartWorld));
 
-    // Get all bone positions
-    auto boneLines = m_Animator->GetSkeletonLines();
+    // Get bone positions - use manual poses if available for accurate picking during gizmo manipulation
+    auto boneLines = m_Animator->GetSkeletonLines();  // Get default lines first
+
+    if (m_HasManualPoses)
+    {
+        // Rebuild bone lines with manual poses (same logic as RenderSkeleton)
+        boneLines.clear();  // Clear and rebuild with manual poses
+
+        const Boom::Joint& root = m_Animator->GetRoot();
+
+        std::function<void(const Boom::Joint&, const glm::vec3&)> buildBoneLinesFunc;
+        buildBoneLinesFunc = [&](const Boom::Joint& joint, const glm::vec3& parentPos)
+        {
+            glm::mat4 worldTransform = GetBoneWorldTransform(joint.name);
+            glm::vec3 bonePos = glm::vec3(worldTransform[3]);
+
+            Boom::Animator::BoneLine boneLine;  // Correct type
+            boneLine.start = parentPos;
+            boneLine.end = bonePos;
+            boneLine.boneName = joint.name;
+            boneLines.push_back(boneLine);
+
+            for (const auto& child : joint.children)
+            {
+                buildBoneLinesFunc(child, bonePos);
+            }
+        };
+
+        glm::mat4 rootTransform = GetBoneWorldTransform(root.name);
+        glm::vec3 rootPos = glm::vec3(rootTransform[3]);
+
+        for (const auto& child : root.children)
+        {
+            buildBoneLinesFunc(child, rootPos);
+        }
+    }
+    // else: keep the default boneLines from GetSkeletonLines()
+
     if (boneLines.empty()) return;
 
     // Apply same transform as skeleton rendering
@@ -1472,9 +1677,11 @@ void AnimationTimelinePanel::HandleBonePicking()
     float closestDist = FLT_MAX;
     std::string closestBone;
 
-    // Selection radius adapts to camera distance for consistent picking at any zoom level
-    // Further away = larger selection radius (screen-space consistency)
-    const float selectionRadius = m_CameraDistance * 0.08f;  // Increased from 0.05 for easier picking
+    // IMPROVED: Smaller, more precise selection radius
+    // Use a fixed screen-space equivalent radius that scales with camera distance
+    // But clamp it to prevent huge selection areas when far away
+    float baseRadius = m_CameraDistance * 0.03f;  // Reduced from 0.08 for better precision
+    const float selectionRadius = glm::clamp(baseRadius, 0.05f, 0.3f);  // Clamp between 5cm and 30cm
 
     for (const auto& boneLine : boneLines)
     {
@@ -1558,31 +1765,279 @@ void AnimationTimelinePanel::HandleBonePicking()
     }
 }
 
+glm::mat4 AnimationTimelinePanel::GetBoneWorldTransform(const std::string& boneName)
+{
+    // Walk the bone hierarchy and accumulate transforms to get world matrix
+    // This matches how GetSkeletonLines() computes bone positions
+
+    if (!m_Animator) return glm::mat4(1.0f);
+
+    // Helper lambda to recursively find bone and compute world transform
+    std::function<bool(const Boom::Joint&, const glm::mat4&, glm::mat4&)> findBone;
+    findBone = [&](const Boom::Joint& joint, const glm::mat4& parentWorld, glm::mat4& outWorld) -> bool
+    {
+        // Compute local transform for this bone
+        glm::mat4 localTransform = glm::mat4(1.0f);
+
+        // Check if we have manual override for this bone
+        auto it = m_ManualBonePoses.find(joint.name);
+        if (it != m_ManualBonePoses.end())
+        {
+            // Use manual pose
+            const BonePose& pose = it->second;
+            localTransform = glm::translate(glm::mat4(1.0f), pose.position);
+            localTransform *= glm::mat4_cast(pose.rotation);
+            localTransform = glm::scale(localTransform, pose.scale);
+        }
+        else
+        {
+            // Get transform from animation
+            if (m_SelectedClipIndex >= 0 && m_SelectedClipIndex < (int)m_Animator->GetClipCount())
+            {
+                const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
+                const auto* keys = clip->GetTrack(joint.name);
+
+                if (keys && keys->size() >= 2)
+                {
+                    // Find previous and next keyframes manually (GetPreviousAndNextFrames is private)
+                    Boom::KeyFrame prev = (*keys)[0];
+                    Boom::KeyFrame next = (*keys)[keys->size() - 1];
+
+                    for (size_t i = 0; i < keys->size() - 1; ++i)
+                    {
+                        if ((*keys)[i].timeStamp <= m_CurrentTime && (*keys)[i + 1].timeStamp >= m_CurrentTime)
+                        {
+                            prev = (*keys)[i];
+                            next = (*keys)[i + 1];
+                            break;
+                        }
+                    }
+
+                    float progression = 0.0f;
+                    float dt = next.timeStamp - prev.timeStamp;
+                    if (dt > 0.0f)
+                    {
+                        progression = (m_CurrentTime - prev.timeStamp) / dt;
+                    }
+
+                    // Interpolate between keyframes
+                    glm::vec3 pos = glm::mix(prev.position, next.position, progression);
+                    glm::quat rot = glm::slerp(prev.rotation, next.rotation, progression);
+                    glm::vec3 scl = glm::mix(prev.scale, next.scale, progression);
+
+                    localTransform = glm::translate(glm::mat4(1.0f), pos);
+                    localTransform *= glm::mat4_cast(rot);
+                    localTransform = glm::scale(localTransform, scl);
+                }
+            }
+        }
+
+        // Compute world transform
+        glm::mat4 worldTransform = parentWorld * localTransform;
+
+        // Is this the bone we're looking for?
+        if (joint.name == boneName)
+        {
+            outWorld = worldTransform;
+            return true;
+        }
+
+        // Search children
+        for (const auto& child : joint.children)
+        {
+            if (findBone(child, worldTransform, outWorld))
+                return true;
+        }
+
+        return false;
+    };
+
+    glm::mat4 result;
+    const Boom::Joint& root = m_Animator->GetRoot();
+    if (findBone(root, glm::mat4(1.0f), result))
+    {
+        return result;
+    }
+
+    return glm::mat4(1.0f);
+}
+
+std::string AnimationTimelinePanel::GetParentBoneName(const std::string& boneName)
+{
+    if (!m_Animator) return "";
+
+    const Boom::Joint& root = m_Animator->GetRoot();
+
+    // Lambda to search for parent
+    std::function<bool(const Boom::Joint&, std::string&)> findParent;
+    findParent = [&](const Boom::Joint& joint, std::string& parentName) -> bool
+    {
+        // Check if any direct child matches our bone
+        for (const auto& child : joint.children)
+        {
+            if (child.name == boneName)
+            {
+                parentName = joint.name;
+                return true;
+            }
+
+            // Recurse into children
+            if (findParent(child, parentName))
+                return true;
+        }
+        return false;
+    };
+
+    std::string parent;
+    if (findParent(root, parent))
+        return parent;
+
+    return "";  // No parent (root bone)
+}
+
+Boom::KeyFrame AnimationTimelinePanel::CaptureCurrentBoneTransform(const std::string& boneName)
+{
+    Boom::KeyFrame kf;
+    kf.timeStamp = -1.0f;  // Invalid by default
+
+    if (!m_Animator || boneName.empty() || m_SelectedClipIndex < 0)
+    {
+        return kf;  // Invalid
+    }
+
+    kf.timeStamp = m_CurrentTime;  // Capture at current timeline time
+
+    // Priority 1: Check if we have a manual override from gizmo manipulation
+    auto it = m_ManualBonePoses.find(boneName);
+    if (it != m_ManualBonePoses.end())
+    {
+        // Use the manually posed transform (already in LOCAL space)
+        const BonePose& pose = it->second;
+        kf.position = pose.position;
+        kf.rotation = pose.rotation;
+        kf.scale = pose.scale;
+
+        BOOM_INFO("[Keyframe Capture] Using manual pose for bone '{}'", boneName.c_str());
+        return kf;
+    }
+
+    // Priority 2: Get current bone transform from animation at current time
+    // We need to extract LOCAL space transform (relative to parent)
+
+    // Get the bone's world transform at current time
+    glm::mat4 boneWorld = GetBoneWorldTransform(boneName);
+
+    // Get parent's world transform
+    std::string parentName = GetParentBoneName(boneName);
+    glm::mat4 parentWorld = glm::mat4(1.0f);
+
+    if (!parentName.empty())
+    {
+        parentWorld = GetBoneWorldTransform(parentName);
+    }
+
+    // Convert to local space: local = inverse(parent) * world
+    glm::mat4 localTransform = glm::inverse(parentWorld) * boneWorld;
+
+    // Decompose local transform into position/rotation/scale
+    glm::vec3 scale, translation, skew;
+    glm::quat rotation;
+    glm::vec4 perspective;
+    glm::decompose(localTransform, scale, rotation, translation, skew, perspective);
+
+    kf.position = translation;
+    kf.rotation = rotation;
+    kf.scale = scale;
+
+    BOOM_INFO("[Keyframe Capture] Captured animated pose for bone '{}' - pos:({:.2f}, {:.2f}, {:.2f})",
+              boneName.c_str(), translation.x, translation.y, translation.z);
+
+    return kf;
+}
+
+void AnimationTimelinePanel::ApplyManualBonePosesToTransforms(std::vector<glm::mat4>& transforms)
+{
+    // Apply manual bone poses to the transform matrices for skinning
+    // This makes the model mesh move with the manually posed bones
+    // Uses a simple two-pass approach: extract locals, then rebuild with manual overrides
+
+    if (!m_Animator || m_ManualBonePoses.empty()) return;
+
+    const Boom::Joint& root = m_Animator->GetRoot();
+
+    // PASS 1: Extract all LOCAL transforms from current animation state
+    // We need to preserve the animated local transforms for bones without manual poses
+    std::map<std::string, glm::mat4> animatedLocalTransforms;
+
+    std::function<void(const Boom::Joint&, const glm::mat4&)> extractLocal;
+    extractLocal = [&](const Boom::Joint& joint, const glm::mat4& parentWorld)
+    {
+        // Get this bone's world transform from skinning matrix
+        // skinning = world * offset, so world = skinning * inverse(offset)
+        glm::mat4 world = transforms[joint.index] * glm::inverse(joint.offset);
+
+        // Compute local transform: local = inverse(parent) * world
+        glm::mat4 local = glm::inverse(parentWorld) * world;
+        animatedLocalTransforms[joint.name] = local;
+
+        // Recurse to children, passing this bone's world as their parent
+        for (const auto& child : joint.children)
+        {
+            extractLocal(child, world);
+        }
+    };
+    extractLocal(root, glm::mat4(1.0f));
+
+    // PASS 2: Rebuild entire hierarchy, replacing manual bone locals
+    // Children of manual bones will follow their parents correctly
+    std::function<void(const Boom::Joint&, const glm::mat4&)> rebuild;
+    rebuild = [&](const Boom::Joint& joint, const glm::mat4& parentWorld)
+    {
+        glm::mat4 localTransform;
+
+        // Check if this bone has a manual pose override
+        auto it = m_ManualBonePoses.find(joint.name);
+        if (it != m_ManualBonePoses.end())
+        {
+            // Use manual local transform from gizmo manipulation
+            const BonePose& pose = it->second;
+            localTransform = glm::translate(glm::mat4(1.0f), pose.position);
+            localTransform *= glm::mat4_cast(pose.rotation);
+            localTransform = glm::scale(localTransform, pose.scale);
+        }
+        else
+        {
+            // Use the animated local transform we extracted in pass 1
+            localTransform = animatedLocalTransforms[joint.name];
+        }
+
+        // Compute new world transform
+        // If parent was manually posed, this bone inherits the parent's new world transform
+        glm::mat4 worldTransform = parentWorld * localTransform;
+
+        // Update skinning transform for GPU
+        transforms[joint.index] = worldTransform * joint.offset;
+
+        // Recurse to children, passing this bone's world as their parent
+        for (const auto& child : joint.children)
+        {
+            rebuild(child, worldTransform);
+        }
+    };
+    rebuild(root, glm::mat4(1.0f));
+}
+
 void AnimationTimelinePanel::HandleGizmo(const ImVec2& viewportMin, const ImVec2& viewportSize)
 {
     // Only show gizmo if we have a selected bone
     if (m_SelectedBoneName.empty() || !m_Animator || !m_HasModel) return;
 
-    // Find the selected bone in the skeleton
-    auto boneLines = m_Animator->GetSkeletonLines();
-    glm::vec3 boneWorldPos(0.0f);
-    bool foundBone = false;
+    // Get current bone world transform (includes animation + manual overrides)
+    glm::mat4 boneWorldMatrix = GetBoneWorldTransform(m_SelectedBoneName);
 
-    glm::mat4 boneTransform = glm::scale(glm::mat4(1.0f), glm::vec3(m_ModelScale));
-
-    for (const auto& boneLine : boneLines)
-    {
-        if (boneLine.boneName == m_SelectedBoneName)
-        {
-            // Use the start position of the bone (the joint position)
-            glm::vec4 pos4 = boneTransform * glm::vec4(boneLine.start, 1.0f);
-            boneWorldPos = glm::vec3(pos4);
-            foundBone = true;
-            break;
-        }
-    }
-
-    if (!foundBone) return;
+    // Apply model scale
+    glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(m_ModelScale));
+    boneWorldMatrix = scaleMatrix * boneWorldMatrix;
 
     // Setup ImGuizmo
     ImGuizmo::SetOrthographic(false);
@@ -1595,23 +2050,83 @@ void AnimationTimelinePanel::HandleGizmo(const ImVec2& viewportMin, const ImVec2
     float aspect = m_ViewportSize.x / m_ViewportSize.y;
     glm::mat4 proj = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
 
-    // Create a matrix for the bone position (identity rotation/scale at bone position)
-    glm::mat4 boneMatrix = glm::translate(glm::mat4(1.0f), boneWorldPos);
-
-    // Render the gizmo
+    // Render the gizmo (modifies boneWorldMatrix if user drags it)
     ImGuizmo::Manipulate(
         glm::value_ptr(view),
         glm::value_ptr(proj),
         (ImGuizmo::OPERATION)m_GizmoOperation,
         (ImGuizmo::MODE)m_GizmoMode,
-        glm::value_ptr(boneMatrix),
+        glm::value_ptr(boneWorldMatrix),
         nullptr,
         m_UseSnap ? m_SnapValues : nullptr
     );
 
-    // TODO: Apply the transform back to the bone when gizmo is manipulated
-    // For now, this just shows the gizmo at the bone position
-    // We'll implement bone transform manipulation in the next step
+    // Check if user is manipulating the gizmo
+    // IMPORTANT: Only process gizmo input if our viewport is hovered/focused
+    // This prevents the main viewport from also responding to the same gizmo
+    bool isUsing = ImGuizmo::IsUsing();
+    bool isOurGizmo = ImGuizmo::IsOver() || m_GizmoWasUsing;  // IsOver or we started the drag
+
+    // When user releases gizmo, convert world transform to local and store override
+    // ONLY if this is our gizmo (not the main viewport's gizmo)
+    if (!isUsing && m_GizmoWasUsing && isOurGizmo)
+    {
+        BOOM_INFO("[AnimTimeline Gizmo] User released gizmo on bone: {}", m_SelectedBoneName);
+
+        // Remove model scale to get actual bone world transform
+        glm::mat4 boneWorld = glm::inverse(scaleMatrix) * boneWorldMatrix;
+
+        // Get parent bone's world transform
+        std::string parentName = GetParentBoneName(m_SelectedBoneName);
+        glm::mat4 parentWorld = glm::mat4(1.0f);
+
+        if (!parentName.empty())
+        {
+            // Temporarily remove our bone's manual pose to get parent's clean transform
+            auto it = m_ManualBonePoses.find(m_SelectedBoneName);
+            BonePose tempPose;
+            bool hadPose = false;
+            if (it != m_ManualBonePoses.end())
+            {
+                tempPose = it->second;
+                hadPose = true;
+                m_ManualBonePoses.erase(it);
+            }
+
+            // Get parent's world transform
+            parentWorld = GetBoneWorldTransform(parentName);
+
+            // Restore our pose
+            if (hadPose)
+            {
+                m_ManualBonePoses[m_SelectedBoneName] = tempPose;
+            }
+        }
+
+        // Convert to local space: local = inverse(parent) * world
+        glm::mat4 localTransform = glm::inverse(parentWorld) * boneWorld;
+
+        // Decompose local transform to position/rotation/scale
+        glm::vec3 scale;
+        glm::quat rotation;
+        glm::vec3 translation;
+        glm::vec3 skew;
+        glm::vec4 perspective;
+        glm::decompose(localTransform, scale, rotation, translation, skew, perspective);
+
+        BonePose pose;
+        pose.position = translation;
+        pose.rotation = rotation;
+        pose.scale = scale;
+
+        m_ManualBonePoses[m_SelectedBoneName] = pose;
+        m_HasManualPoses = true;
+
+        BOOM_INFO("[Gizmo] Stored LOCAL pose - pos:({}, {}, {}) parent:{}",
+                  translation.x, translation.y, translation.z, parentName);
+    }
+
+    m_GizmoWasUsing = isUsing;
 }
 
 void AnimationTimelinePanel::ResetCamera()
@@ -1669,11 +2184,22 @@ void AnimationTimelinePanel::RenderModel()
     m_Ctx->renderer->SetCamera(camera, cameraTransform);
 
     // Set joints if model has skeleton
-    // NOTE: Animate() was already called in main Render() loop
-    // We just need to get the current transforms
     if (m_Animator)
     {
-        auto& transforms = m_Animator->Animate(0.0f);  // Pass 0 delta to just get transforms without advancing
+        // CRITICAL: Ensure animator is synced to current time before rendering
+        // This is especially important after re-cloning on scene reload
+        m_Animator->SetTime(m_CurrentTime);
+
+        // Get transforms - Animate(0.0f) returns current transforms without advancing time
+        auto& transforms = m_Animator->Animate(0.0f);
+
+        // CRITICAL: Apply manual bone poses to transforms for skinning
+        if (m_HasManualPoses)
+        {
+            // Modify the transforms to include manual poses
+            ApplyManualBonePosesToTransforms(transforms);
+        }
+
         m_Ctx->renderer->SetJoints(transforms);
     }
 
@@ -1726,7 +2252,49 @@ void AnimationTimelinePanel::RenderSkeleton()
     float aspect = m_ViewportSize.x / m_ViewportSize.y;
     glm::mat4 proj = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
 
-    auto boneLines = m_Animator->GetSkeletonLines();
+    // If we have manual poses, rebuild bone lines to show real-time updates during gizmo drag
+    auto boneLines = m_Animator->GetSkeletonLines();  // Get default lines first
+
+    if (m_HasManualPoses)
+    {
+        // REAL-TIME UPDATE: Rebuild bone lines using manual poses
+        boneLines.clear();  // Clear and rebuild with manual poses
+
+        const Boom::Joint& root = m_Animator->GetRoot();
+
+        // Lambda to recursively build bone lines with manual pose overrides
+        std::function<void(const Boom::Joint&, const glm::vec3&)> buildBoneLinesFunc;
+        buildBoneLinesFunc = [&](const Boom::Joint& joint, const glm::vec3& parentPos)
+        {
+            // Get bone's world position (respects manual overrides)
+            glm::mat4 worldTransform = GetBoneWorldTransform(joint.name);
+            glm::vec3 bonePos = glm::vec3(worldTransform[3]);
+
+            // Create line from parent to this bone
+            Boom::Animator::BoneLine boneLine;  // Correct type
+            boneLine.start = parentPos;
+            boneLine.end = bonePos;
+            boneLine.boneName = joint.name;
+            boneLines.push_back(boneLine);
+
+            // Recurse to children
+            for (const auto& child : joint.children)
+            {
+                buildBoneLinesFunc(child, bonePos);
+            }
+        };
+
+        // Start from root
+        glm::mat4 rootTransform = GetBoneWorldTransform(root.name);
+        glm::vec3 rootPos = glm::vec3(rootTransform[3]);
+
+        for (const auto& child : root.children)
+        {
+            buildBoneLinesFunc(child, rootPos);
+        }
+    }
+    // else: keep the default boneLines from GetSkeletonLines()
+
     if (boneLines.empty()) return;
 
     std::vector<Boom::LineVert> normalBones;
