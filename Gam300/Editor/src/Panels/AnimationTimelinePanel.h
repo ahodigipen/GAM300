@@ -61,6 +61,8 @@ namespace EditorUI {
         // 3D Viewport Rendering
         void UpdateCamera();
         void HandleCameraControls();
+        void HandleBonePicking();  // Mouse picking for bone selection in viewport
+        void HandleGizmo(const ImVec2& viewportMin, const ImVec2& viewportSize);  // Transform gizmo for bone manipulation
         void RenderModel();
         void RenderSkeleton();
         void RenderGrid();
@@ -120,6 +122,17 @@ namespace EditorUI {
 
         // Selected bone (for keyframe editing later)
         std::string m_SelectedBoneName;
+
+        // Bone picking state (viewport 3D interaction)
+        std::string m_HoveredBoneNameViewport;  // Bone currently hovered in 3D viewport
+        ImVec2 m_ViewportMousePos = { 0.0f, 0.0f };  // Mouse position relative to viewport
+
+        // Transform gizmo state
+        int m_GizmoOperation = 7;  // ImGuizmo::TRANSLATE (7 = translate)
+        int m_GizmoMode = 0;       // ImGuizmo::WORLD (0 = world space)
+        bool m_GizmoWasUsing = false;  // Track if gizmo was being used last frame
+        bool m_UseSnap = false;    // Snap to grid
+        float m_SnapValues[3] = { 0.1f, 0.1f, 0.1f };  // Snap grid size
 
         // Keyframe interaction state
         bool m_IsDraggingKeyframe = false;

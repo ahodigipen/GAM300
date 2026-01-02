@@ -11,6 +11,7 @@
 #include "Graphics/Utilities/Data.h"
 #include "Auxiliaries/Assets.h"
 #include "Vendors/imgui/imgui.h"
+#include "Vendors/imGuizmo/ImGuizmo.h"
 #include "common/Core.h"
 #include <GL/glew.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -478,6 +479,40 @@ void AnimationTimelinePanel::RenderControlBar()
         Redo();
     }
 
+    // Gizmo mode keyboard shortcuts (W/E/R) - only when viewport is focused
+    if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
+    {
+        if (ImGui::IsKeyPressed(ImGuiKey_W, false)) {
+            m_GizmoOperation = 7;  // ImGuizmo::TRANSLATE
+        }
+        if (ImGui::IsKeyPressed(ImGuiKey_E, false)) {
+            m_GizmoOperation = 120;  // ImGuizmo::ROTATE
+        }
+        if (ImGui::IsKeyPressed(ImGuiKey_R, false)) {
+            m_GizmoOperation = 896;  // ImGuizmo::SCALE
+        }
+    }
+
+    ImGui::SameLine(0, 20);
+    ImGui::Separator();
+    ImGui::SameLine(0, 20);
+
+    // Gizmo mode buttons
+    const char* gizmoModeText = "";
+    if (m_GizmoOperation == 7) gizmoModeText = "Move (W)";
+    else if (m_GizmoOperation == 120) gizmoModeText = "Rotate (E)";
+    else if (m_GizmoOperation == 896) gizmoModeText = "Scale (R)";
+
+    ImGui::Text("Gizmo:");
+    ImGui::SameLine();
+    if (ImGui::Button("Move (W)")) m_GizmoOperation = 7;
+    ImGui::SameLine();
+    if (ImGui::Button("Rotate (E)")) m_GizmoOperation = 120;
+    ImGui::SameLine();
+    if (ImGui::Button("Scale (R)")) m_GizmoOperation = 896;
+    ImGui::SameLine();
+    ImGui::Text("[%s]", gizmoModeText);
+
     ImGui::SameLine(0, 20);
     ImGui::Separator();
     ImGui::SameLine(0, 20);
@@ -754,6 +789,12 @@ void AnimationTimelinePanel::RenderViewport()
 
     // Handle camera controls AFTER image is rendered
     HandleCameraControls();
+
+    // Handle bone picking for selection in 3D viewport
+    HandleBonePicking();
+
+    // Render transform gizmo at selected bone
+    HandleGizmo(viewportPos, m_ViewportSize);
 }
 
 void AnimationTimelinePanel::RenderTimelineRuler()
@@ -1380,6 +1421,199 @@ void AnimationTimelinePanel::HandleCameraControls()
     }
 }
 
+void AnimationTimelinePanel::HandleBonePicking()
+{
+    // Only process if viewport is hovered and window is focused
+    if (!ImGui::IsItemHovered()) return;
+    if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) return;
+    if (!m_Animator || !m_HasModel) return;
+
+    ImGuiIO& io = ImGui::GetIO();
+
+    // Get mouse position relative to viewport
+    ImVec2 mousePos = ImGui::GetMousePos();
+    ImVec2 viewportScreenPos = ImGui::GetItemRectMin();  // Top-left corner of viewport
+    m_ViewportMousePos = ImVec2(
+        mousePos.x - viewportScreenPos.x,
+        mousePos.y - viewportScreenPos.y
+    );
+
+    // Convert to normalized device coordinates [-1, 1]
+    float ndcX = (m_ViewportMousePos.x / m_ViewportSize.x) * 2.0f - 1.0f;
+    float ndcY = 1.0f - (m_ViewportMousePos.y / m_ViewportSize.y) * 2.0f;  // Flip Y
+
+    // Compute ray in world space
+    float aspect = m_ViewportSize.x / m_ViewportSize.y;
+    glm::mat4 proj = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
+    glm::mat4 view = glm::lookAt(m_CameraPosition, m_CameraTarget, glm::vec3(0, 1, 0));
+    glm::mat4 invProjView = glm::inverse(proj * view);
+
+    // Near and far points in world space
+    glm::vec4 rayStartNDC(ndcX, ndcY, -1.0f, 1.0f);  // Near plane
+    glm::vec4 rayEndNDC(ndcX, ndcY, 1.0f, 1.0f);     // Far plane
+
+    glm::vec4 rayStartWorld = invProjView * rayStartNDC;
+    glm::vec4 rayEndWorld = invProjView * rayEndNDC;
+
+    rayStartWorld /= rayStartWorld.w;
+    rayEndWorld /= rayEndWorld.w;
+
+    glm::vec3 rayOrigin = glm::vec3(rayStartWorld);
+    glm::vec3 rayDir = glm::normalize(glm::vec3(rayEndWorld) - glm::vec3(rayStartWorld));
+
+    // Get all bone positions
+    auto boneLines = m_Animator->GetSkeletonLines();
+    if (boneLines.empty()) return;
+
+    // Apply same transform as skeleton rendering
+    glm::mat4 boneTransform = glm::scale(glm::mat4(1.0f), glm::vec3(m_ModelScale));
+
+    // Find closest bone to ray
+    float closestDist = FLT_MAX;
+    std::string closestBone;
+
+    // Selection radius adapts to camera distance for consistent picking at any zoom level
+    // Further away = larger selection radius (screen-space consistency)
+    const float selectionRadius = m_CameraDistance * 0.08f;  // Increased from 0.05 for easier picking
+
+    for (const auto& boneLine : boneLines)
+    {
+        // Transform bone positions (same as RenderSkeleton)
+        glm::vec4 start4 = boneTransform * glm::vec4(boneLine.start, 1.0f);
+        glm::vec4 end4 = boneTransform * glm::vec4(boneLine.end, 1.0f);
+        glm::vec3 boneStart = glm::vec3(start4);
+        glm::vec3 boneEnd = glm::vec3(end4);
+
+        // Compute distance from ray to bone LINE SEGMENT (not just start point)
+        // This makes selection work for entire bone length, not just the joint
+        glm::vec3 boneDir = boneEnd - boneStart;
+        float boneLength = glm::length(boneDir);
+
+        // Handle zero-length bones (shouldn't happen but be safe)
+        if (boneLength < 0.001f)
+        {
+            boneDir = glm::vec3(0, 1, 0);
+            boneLength = 0.001f;
+        }
+        else
+        {
+            boneDir /= boneLength;  // Normalize
+        }
+
+        // Line-segment to line distance (closest approach between ray and bone segment)
+        // Based on: http://geomalgorithms.com/a07-_distance.html
+        glm::vec3 w0 = rayOrigin - boneStart;
+        float a = glm::dot(rayDir, rayDir);        // Always 1 (ray is normalized)
+        float b = glm::dot(rayDir, boneDir);
+        float c = glm::dot(boneDir, boneDir);      // Always 1 (bone dir normalized)
+        float d = glm::dot(rayDir, w0);
+        float e = glm::dot(boneDir, w0);
+
+        float denom = a * c - b * b;
+        float sc, tc;
+
+        // Compute parameters for closest points
+        if (denom < 0.001f)
+        {
+            // Lines are parallel
+            sc = 0.0f;
+            tc = (b > c ? d / b : e / c);
+        }
+        else
+        {
+            sc = (b * e - c * d) / denom;
+            tc = (a * e - b * d) / denom;
+        }
+
+        // Clamp tc to bone segment [0, boneLength]
+        tc = glm::clamp(tc, 0.0f, boneLength);
+
+        // Compute closest points
+        glm::vec3 closestOnRay = rayOrigin + sc * rayDir;
+        glm::vec3 closestOnBone = boneStart + tc * boneDir;
+
+        float dist = glm::length(closestOnRay - closestOnBone);
+
+        // Check if within selection radius and closer than previous bones
+        if (dist < selectionRadius && dist < closestDist)
+        {
+            closestDist = dist;
+            closestBone = boneLine.boneName;
+        }
+    }
+
+    // Update hover state
+    m_HoveredBoneNameViewport = closestBone;
+
+    // Handle mouse click for selection
+    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !closestBone.empty())
+    {
+        m_SelectedBoneName = closestBone;
+
+        // Sync with global context for track list highlighting (same as RenderBoneTrack does)
+        if (m_Ctx)
+        {
+            m_Ctx->SelectedBoneName = closestBone;
+        }
+    }
+}
+
+void AnimationTimelinePanel::HandleGizmo(const ImVec2& viewportMin, const ImVec2& viewportSize)
+{
+    // Only show gizmo if we have a selected bone
+    if (m_SelectedBoneName.empty() || !m_Animator || !m_HasModel) return;
+
+    // Find the selected bone in the skeleton
+    auto boneLines = m_Animator->GetSkeletonLines();
+    glm::vec3 boneWorldPos(0.0f);
+    bool foundBone = false;
+
+    glm::mat4 boneTransform = glm::scale(glm::mat4(1.0f), glm::vec3(m_ModelScale));
+
+    for (const auto& boneLine : boneLines)
+    {
+        if (boneLine.boneName == m_SelectedBoneName)
+        {
+            // Use the start position of the bone (the joint position)
+            glm::vec4 pos4 = boneTransform * glm::vec4(boneLine.start, 1.0f);
+            boneWorldPos = glm::vec3(pos4);
+            foundBone = true;
+            break;
+        }
+    }
+
+    if (!foundBone) return;
+
+    // Setup ImGuizmo
+    ImGuizmo::SetOrthographic(false);
+    ImGuizmo::SetDrawlist();
+    ImGuizmo::SetRect(viewportMin.x, viewportMin.y, viewportSize.x, viewportSize.y);
+    ImGuizmo::SetGizmoSizeClipSpace(0.15f);
+
+    // Setup view and projection matrices
+    glm::mat4 view = glm::lookAt(m_CameraPosition, m_CameraTarget, glm::vec3(0, 1, 0));
+    float aspect = m_ViewportSize.x / m_ViewportSize.y;
+    glm::mat4 proj = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
+
+    // Create a matrix for the bone position (identity rotation/scale at bone position)
+    glm::mat4 boneMatrix = glm::translate(glm::mat4(1.0f), boneWorldPos);
+
+    // Render the gizmo
+    ImGuizmo::Manipulate(
+        glm::value_ptr(view),
+        glm::value_ptr(proj),
+        (ImGuizmo::OPERATION)m_GizmoOperation,
+        (ImGuizmo::MODE)m_GizmoMode,
+        glm::value_ptr(boneMatrix),
+        nullptr,
+        m_UseSnap ? m_SnapValues : nullptr
+    );
+
+    // TODO: Apply the transform back to the bone when gizmo is manipulated
+    // For now, this just shows the gizmo at the bone position
+    // We'll implement bone transform manipulation in the next step
+}
+
 void AnimationTimelinePanel::ResetCamera()
 {
     m_CameraDistance = 3.0f;
@@ -1496,17 +1730,20 @@ void AnimationTimelinePanel::RenderSkeleton()
     if (boneLines.empty()) return;
 
     std::vector<Boom::LineVert> normalBones;
+    std::vector<Boom::LineVert> hoveredBones;
     std::vector<Boom::LineVert> selectedBones;
     normalBones.reserve(boneLines.size() * 2);
 
     glm::vec4 boneColor = m_Ctx->BoneColor;
     glm::vec4 selectedBoneColor = m_Ctx->SelectedBoneColor;
+    glm::vec4 hoveredBoneColor = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);  // Yellow for hover
 
     glm::mat4 boneTransform = glm::scale(glm::mat4(1.0f), glm::vec3(m_ModelScale));
 
     for (const auto& boneLine : boneLines)
     {
         bool isSelected = (!m_SelectedBoneName.empty() && boneLine.boneName == m_SelectedBoneName);
+        bool isHovered = (!m_HoveredBoneNameViewport.empty() && boneLine.boneName == m_HoveredBoneNameViewport);
 
         glm::vec4 start4 = boneTransform * glm::vec4(boneLine.start, 1.0f);
         glm::vec4 end4 = boneTransform * glm::vec4(boneLine.end, 1.0f);
@@ -1518,6 +1755,11 @@ void AnimationTimelinePanel::RenderSkeleton()
             selectedBones.push_back({ scaledStart, selectedBoneColor });
             selectedBones.push_back({ scaledEnd, selectedBoneColor });
         }
+        else if (isHovered)
+        {
+            hoveredBones.push_back({ scaledStart, hoveredBoneColor });
+            hoveredBones.push_back({ scaledEnd, hoveredBoneColor });
+        }
         else
         {
             normalBones.push_back({ scaledStart, boneColor });
@@ -1525,9 +1767,15 @@ void AnimationTimelinePanel::RenderSkeleton()
         }
     }
 
+    // Render in order: normal first, then hovered (thicker), then selected (thickest)
     if (!normalBones.empty())
     {
         debugShader->Draw(view, proj, normalBones, m_Ctx->BoneLineWidth, true);
+    }
+
+    if (!hoveredBones.empty())
+    {
+        debugShader->Draw(view, proj, hoveredBones, m_Ctx->BoneLineWidth * 2.0f, true);
     }
 
     if (!selectedBones.empty())
