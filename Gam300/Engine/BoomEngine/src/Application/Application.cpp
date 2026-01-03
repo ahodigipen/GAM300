@@ -576,7 +576,13 @@ namespace Boom
                         m_Context->renderer->SetJoints(an.animator->GetJoints(), isPicking);
                     }
                     else {
-                        float dt = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) ? (float)m_Context->DeltaTime : 0.0f;
+                        // float dt = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) ? (float)m_Context->DeltaTime : 0.0f;
+                        bool shouldAnimate = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING);
+                        bool isPauseMenuObj = entity.Has<PauseMenuTagComponent>();
+                        if (m_IsGameLogicPaused && !isPauseMenuObj) {
+                            shouldAnimate = false;
+                        }
+                        float dt = shouldAnimate ? (float)m_Context->DeltaTime : 0.0f;
                         auto& joints = an.animator->Animate(dt);
                         m_Context->renderer->SetJoints(joints);
                     }
