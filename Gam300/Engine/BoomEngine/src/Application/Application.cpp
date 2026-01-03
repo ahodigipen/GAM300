@@ -242,24 +242,6 @@ namespace Boom
             if (activeCam) camera.attachCamera(activeCam);
             glfwMakeContextCurrent(engineWindow.get());
 
-            // F11 toggle rigid body type (test)
-            {
-                static bool prevF11 = false;
-                bool f11Pressed = glfwGetKey(engineWindow.get(), GLFW_KEY_F11) == GLFW_PRESS;
-                if (f11Pressed && !prevF11)
-                {
-                    EnttView<Entity, InfoComponent, RigidBodyComponent>([this](auto entity, InfoComponent& info, RigidBodyComponent& rb) {
-                        if (info.name == "Sphere") {
-                            RigidBody3D::Type currentType = rb.RigidBody.type;
-                            RigidBody3D::Type newType = (currentType == RigidBody3D::DYNAMIC) ? RigidBody3D::STATIC : RigidBody3D::DYNAMIC;
-                            m_Context->physics->SetRigidBodyType(entity, newType);
-                            BOOM_INFO("[Test F11] Toggled Sphere rigid body to: {}", (newType == RigidBody3D::DYNAMIC) ? "DYNAMIC" : "STATIC");
-                        }
-                        });
-                }
-                prevF11 = f11Pressed;
-            }
-
 
             ComputeFrameDeltaTime();
             // Always run file watcher
@@ -779,78 +761,58 @@ namespace Boom
 
 
     //Physics stuff
-
     void Application::DestroyPhysicsActors()
     {
-        // Get the scene from the physics context *once* outside the loop
         auto* pxScene = m_Context->physics->GetPxScene();
-        if (!pxScene) {
-            BOOM_ERROR("DestroyPhysicsActors failed: No PxScene available.");
-            return;
-        }
+        if (!pxScene) return;
 
-        // Iterate over all entities with a RigidBodyComponent
+        // 1. RigidBodies
         EnttView<Entity, RigidBodyComponent>([this, pxScene](auto entity, auto& comp)
             {
                 auto* actor = comp.RigidBody.actor;
-                if (!actor) return; // Skip if no actor
+                if (!actor) return;
 
-                // 1. Clean up Collider Pointers (if they exist)
-                if (entity.template Has<ColliderComponent>())
-                {
+                // Cleanup Collider Pointers
+                if (entity.template Has<ColliderComponent>()) {
                     auto& collider = entity.template Get<ColliderComponent>().Collider;
-                    if (collider.material) {
-                        collider.material->release();
-                        collider.material = nullptr;
-                    }
-                    if (collider.Shape) {
-                        collider.Shape->release();
-                        collider.Shape = nullptr;
-                    }
+                    if (collider.material) { collider.material->release(); collider.material = nullptr; }
+
+                    // The shape is released by the actor, so we just null the pointer
+                    collider.Shape = nullptr;
                 }
 
-                // 2. Destroy actor user data
                 if (actor->userData) {
-                    EntityID* owner = static_cast<EntityID*>(actor->userData);
-                    BOOM_DELETE(owner);
+                    delete static_cast<EntityID*>(actor->userData);
                     actor->userData = nullptr;
                 }
 
-                // 3. (THE FIX) Remove from scene, THEN release memory
                 pxScene->removeActor(*actor);
                 actor->release();
                 comp.RigidBody.actor = nullptr;
             });
 
-        // *** Also destroy collider-only actors (triggers) ***
+        // 2. Collider-Only (Triggers/Static) -- THIS WAS THE CAUSE OF THE CRASH
         EnttView<Entity, ColliderComponent>([this, pxScene](auto entity, auto& comp) {
-            // Skip if it has a RigidBodyComponent (already handled above)
             if (entity.template Has<RigidBodyComponent>()) return;
 
             auto* actor = comp.Collider.actor;
             if (!actor) return;
 
-            // Clean up user data
             if (actor->userData) {
-                EntityID* owner = static_cast<EntityID*>(actor->userData);
-                BOOM_DELETE(owner);
+                delete static_cast<EntityID*>(actor->userData);
                 actor->userData = nullptr;
             }
 
-            // Remove and release
             pxScene->removeActor(*actor);
-            actor->release();
+            actor->release(); // <--- This destroys the attached Shape!
+
             comp.Collider.actor = nullptr;
+            comp.Collider.Shape = nullptr; // <--- CRITICAL FIX: Mark shape as dead
             });
 
-        // *** FIX: Use a small positive deltaTime instead of 0.0f ***
         if (pxScene) {
-            // Simulate with very small delta time to flush event queue
-            // PhysX requires deltaTime > 0
-            const float kMinDeltaTime = 0.0001f; // 0.1ms
-            pxScene->simulate(kMinDeltaTime);
-            pxScene->fetchResults(true); // Block until complete
-            BOOM_INFO("[Physics] Flushed physics event queue after destroying actors");
+            pxScene->simulate(0.0001f);
+            pxScene->fetchResults(true);
         }
     }
 
@@ -1118,6 +1080,54 @@ namespace Boom
         }
     }
 
+    // Logic for snapping an entity to a surface (floor or wall)
+    void Application::SnapEntityToSurface(entt::entity entity, glm::vec3 direction) {
+        auto& reg = m_Context->scene;
+        if (!reg.all_of<TransformComponent, ColliderComponent>(entity)) return;
+
+        // Use the registry to get the component
+        auto& tc = reg.get<TransformComponent>(entity);
+        auto& col = reg.get<ColliderComponent>(entity).Collider;
+
+        // 1. Determine the extent (half-size) of the collider in the snap direction
+        // This ensures the "feet" or "side" touches the surface, not the center.
+        float extent = 0.0f;
+        glm::vec3 worldScale = tc.transform.scale * col.localScale;
+
+        // Approximate extent based on collider type
+        if (col.type == Collider3D::BOX) {
+            // Find which axis of the box aligns most with our snap direction
+            extent = glm::abs(glm::dot(direction, glm::vec3(worldScale * 0.5f)));
+        }
+        else if (col.type == Collider3D::SPHERE) {
+            extent = (worldScale.x * 0.5f);
+        }
+        else if (col.type == Collider3D::CAPSULE || col.type == Collider3D::CYLINDER) {
+            // Assuming Y-up for these primitives
+            extent = (direction.y != 0) ? (worldScale.y * 0.5f) : (worldScale.x * 0.5f);
+        }
+
+        // 2. Perform the Raycast
+        glm::vec3 rayOrigin = tc.transform.translate;
+        float maxDistance = 50.0f; // Adjust based on scene scale
+        auto hit = m_Context->physics->Raycast(rayOrigin, direction, maxDistance);
+
+        if (hit.hitFound) {
+            // 3. Calculate new position
+            // Position = HitPoint - (Direction * Extent) 
+            // Example: If snapping down (0, -1, 0), pos = Hit + (0, extent, 0)
+            glm::vec3 newPos = hit.position - (direction * extent);
+
+            tc.transform.translate = newPos;
+
+            // 4. Sync with Physics immediately so it doesn't "pop" back
+            m_Context->physics->UpdateRigidBodyTransform(Entity(&reg, entity), tc.transform);
+
+            BOOM_INFO("[Snap] Snapped entity '{}' to surface at distance {}",
+                reg.get<InfoComponent>(entity).name, hit.distance);
+        }
+    }
+
     void Application::DrawRigidBodiesDebugOnly(const glm::mat4& view, const glm::mat4& proj)
     {
         if (!m_DebugLinesShader) return;
@@ -1346,6 +1356,4 @@ namespace Boom
         if (!verts.empty())
             m_DebugLinesShader->Draw(view, proj, verts, 10.5f);
     }
-
-
 }

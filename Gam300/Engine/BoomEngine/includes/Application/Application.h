@@ -803,7 +803,7 @@ namespace Boom
 				});
 		}
 
-
+		void SnapEntity(Entity entity, const glm::vec3& direction, float maxDistance = 100.0f);
 		/**
 		* @brief Creates a new empty scene
 		* @param sceneName Optional name for the new scene
@@ -1407,6 +1407,8 @@ namespace Boom
 		BOOM_API void DestroyPhysicsActors();
 
 		void RunPhysicsSimulation();
+
+		void SnapEntityToSurface(entt::entity entity, glm::vec3 direction);
 
 		void DrawRigidBodiesDebugOnly(const glm::mat4& view, const glm::mat4& proj);
 
