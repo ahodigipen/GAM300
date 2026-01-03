@@ -22,7 +22,7 @@ namespace Boom
                 if (scene.all_of<T>(entity)) {
                     auto& comp = scene.get<T>(entity);
 
-                    BOOM_INFO("[PropertySerializer] Serializing {} for entity {}", name, (uint32_t)entity);  // ADD THIS
+                    // BOOM_INFO("[PropertySerializer] Serializing {} for entity {}", name, (uint32_t)entity);
 
                     e << YAML::Key << name << YAML::Value << YAML::BeginMap;
 
@@ -39,7 +39,7 @@ namespace Boom
             },
             // ===== DESERIALIZE =====
             [name](const YAML::Node& node, EntityRegistry& scene, EntityID entity, AssetRegistry& /*assets*/) {
-                BOOM_INFO("[PropertySerializer] Deserializing {} for entity {}", name, (uint32_t)entity);  // ADD THIS
+                // BOOM_INFO("[PropertySerializer] Deserializing {} for entity {}", name, (uint32_t)entity);
 
                 auto& comp = scene.get_or_emplace<T>(entity);
 
@@ -47,7 +47,7 @@ namespace Boom
                     xproperty::settings::context ctx;
                     if (auto* pObj = xproperty::getObject(comp)) {
                         DeserializeObjectFromYAML(node, pObj, (void*)&comp, ctx);
-                        BOOM_INFO("[PropertySerializer] Successfully deserialized {}", name);  // ADD THIS
+                        // BOOM_INFO("[PropertySerializer] Successfully deserialized {}", name);
                     }
                     else {
                         BOOM_ERROR("[PropertySerializer] Failed to get object info for {} during deserialize", name);

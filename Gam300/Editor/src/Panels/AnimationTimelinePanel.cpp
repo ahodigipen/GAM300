@@ -123,15 +123,15 @@ void AnimationTimelinePanel::Render()
                     }
                 }
 
-                // Update animator to match our time (passing 0 delta to just set pose)
+                // Update animator to match our timeline time
                 m_Animator->SetTime(m_CurrentTime);
-                m_Animator->Animate(0.0f);  // Compute transforms without advancing
+                m_Animator->UpdateJointsFromCurrentTime();
             }
             else
             {
                 // When paused, ensure animator is synced to our scrubber time
                 m_Animator->SetTime(m_CurrentTime);
-                m_Animator->Animate(0.0f);  // Compute transforms without advancing
+                m_Animator->UpdateJointsFromCurrentTime();
             }
         }
     }
@@ -161,7 +161,27 @@ void AnimationTimelinePanel::Render()
     // Only try to load from entity if we're not in standalone mode
     if (!m_StandaloneMode && selectedID != entt::null)
     {
-        Boom::Entity selected(&m_App->GetContext()->scene, selectedID);
+        // FIX 1: Validate entity before using it (scene reload can invalidate entities)
+        auto& scene = m_App->GetContext()->scene;
+        if (!scene.valid(selectedID))
+        {
+            // Entity ID is invalid (scene was reloaded) - treat like deselection
+            BOOM_WARN("[AnimationTimeline] Entity ID {} is invalid after scene reload, clearing timeline", (uint32_t)selectedID);
+            m_Animator.reset();
+            m_SourceAnimator.reset();
+            m_Model.reset();
+            m_SourceEntityID = entt::null;
+            m_HasModel = false;
+            m_SelectedBoneName.clear();
+            m_ManualBonePoses.clear();
+            m_HasManualPoses = false;
+            m_SelectedClipIndex = -1;
+            m_CurrentTime = 0.0f;
+            m_IsPlaying = false;
+            return;  // Exit early
+        }
+
+        Boom::Entity selected(&scene, selectedID);
 
         // Get animator from AnimatorComponent (CLONE IT for independent timeline)
         if (selected.Has<Boom::AnimatorComponent>())
@@ -216,56 +236,26 @@ void AnimationTimelinePanel::Render()
                 }
                 else if (animatorPtrChanged)
                 {
-                    // Entity didn't change but animator pointer did (scene reload from play/stop!)
-                    BOOM_INFO("[AnimationTimeline] Animator instance changed (scene reload?), re-cloning from new instance");
+                    // FIX 2: Animator pointer changed (scene reload) - re-clone immediately
+                    BOOM_INFO("[AnimationTimeline] Animator pointer changed (scene reload), re-cloning from entity");
 
+                    // Update source reference
                     m_SourceAnimator = animComp.animator;
 
-                    // Capture current clip before re-cloning
-                    int oldClipIndex = m_SelectedClipIndex;
-                    float oldTime = m_CurrentTime;
-                    bool wasPlaying = m_IsPlaying;
-
-                    // Re-clone from the new animator instance
+                    // Re-clone the animator
                     m_Animator = animComp.animator->Clone();
-                    m_Animator->GetStates().clear();
+                    m_Animator->GetStates().clear();  // Force clip mode
 
-                    // Restore timeline state
-                    if (oldClipIndex >= 0 && oldClipIndex < (int)m_Animator->GetClipCount())
+                    // Restore playback state
+                    if (m_SelectedClipIndex >= 0 && m_SelectedClipIndex < (int)m_Animator->GetClipCount())
                     {
-                        m_SelectedClipIndex = oldClipIndex;
-                        m_Animator->PlayClip(oldClipIndex);
-
-                        // CRITICAL: Seek to saved time position using SetTime(), NOT Animate(deltaTime)!
-                        // Animate() advances by delta, SetTime() seeks to absolute time
-                        auto* clip = m_Animator->GetClip(oldClipIndex);
-                        if (clip)
-                        {
-                            // Clamp time to clip duration
-                            m_CurrentTime = glm::clamp(oldTime, 0.0f, clip->duration);
-
-                            // Seek to absolute time, then force transform computation
-                            m_Animator->SetTime(m_CurrentTime);
-                            m_Animator->Animate(0.0f);  // Compute transforms without advancing time
-                        }
-                        else
-                        {
-                            m_CurrentTime = 0.0f;
-                        }
-
-                        m_IsPlaying = wasPlaying;
-                        BOOM_INFO("[AnimationTimeline] Re-cloned and restored clip {} at time {:.2f}s",
-                                  oldClipIndex, m_CurrentTime);
-                    }
-                    else
-                    {
-                        m_CurrentTime = 0.0f;
-                        m_IsPlaying = false;
+                        m_Animator->PlayClip(m_SelectedClipIndex);
+                        m_Animator->SetTime(m_CurrentTime);
+                        BOOM_INFO("[AnimationTimeline] Restored clip {} at time {:.2f}", m_SelectedClipIndex, m_CurrentTime);
                     }
 
-                    // Clear manual poses on scene reload
-                    m_ManualBonePoses.clear();
-                    m_HasManualPoses = false;
+                    BOOM_INFO("[AnimationTimeline] Re-clone complete: Original={}, New Clone={}",
+                        (void*)animComp.animator.get(), (void*)m_Animator.get());
                 }
                 // If entity AND animator didn't change, keep using our existing clone (don't re-clone!)
             }
@@ -860,6 +850,53 @@ void AnimationTimelinePanel::RenderViewport()
 
     // Render to framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
+
+    // CRITICAL: Check if framebuffer is still valid after scene reload
+    GLenum fbStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if (fbStatus != GL_FRAMEBUFFER_COMPLETE)
+    {
+        BOOM_ERROR("[AnimationTimeline] Framebuffer invalid (status: 0x{:X}) - recreating!", fbStatus);
+
+        // Unbind before deleting
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        // Delete old framebuffer resources
+        if (m_FramebufferID) glDeleteFramebuffers(1, &m_FramebufferID);
+        if (m_TextureID) glDeleteTextures(1, &m_TextureID);
+        if (m_DepthBufferID) glDeleteRenderbuffers(1, &m_DepthBufferID);
+
+        // Recreate framebuffer
+        glGenFramebuffers(1, &m_FramebufferID);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
+
+        // Recreate color texture
+        glGenTextures(1, &m_TextureID);
+        glBindTexture(GL_TEXTURE_2D, m_TextureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLsizei)m_ViewportSize.x, (GLsizei)m_ViewportSize.y, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_TextureID, 0);
+
+        // Recreate depth buffer
+        glGenRenderbuffers(1, &m_DepthBufferID);
+        glBindRenderbuffer(GL_RENDERBUFFER, m_DepthBufferID);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, (GLsizei)m_ViewportSize.x, (GLsizei)m_ViewportSize.y);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_DepthBufferID);
+
+        // Verify new framebuffer
+        GLenum newStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        if (newStatus == GL_FRAMEBUFFER_COMPLETE)
+        {
+            BOOM_INFO("[AnimationTimeline] Framebuffer recreated successfully!");
+        }
+        else
+        {
+            BOOM_ERROR("[AnimationTimeline] Failed to recreate framebuffer (status: 0x{:X})", newStatus);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            return;  // Abort rendering if framebuffer is broken
+        }
+    }
+
     glViewport(0, 0, (GLsizei)m_ViewportSize.x, (GLsizei)m_ViewportSize.y);
 
     // Clear
@@ -1535,8 +1572,7 @@ void AnimationTimelinePanel::UpdateCamera()
 
 void AnimationTimelinePanel::HandleCameraControls()
 {
-    // CRITICAL: Only process input if the viewport is actually hovered AND
-    // this window (or its children) is focused (prevents bleed-through to windows underneath)
+    // Only process input if the viewport is actually hovered
     if (!ImGui::IsItemHovered()) return;
 
     // Check if Animation Timeline window is focused (prevents input bleed-through)
@@ -2156,7 +2192,10 @@ void AnimationTimelinePanel::FrameModel()
 
 void AnimationTimelinePanel::RenderModel()
 {
-    if (!m_Ctx || !m_Ctx->renderer || !m_Model) return;
+    if (!m_Ctx || !m_Ctx->renderer || !m_Model)
+    {
+        return;
+    }
 
     // Set aspect ratio for viewport
     float aspect = m_ViewportSize.x / m_ViewportSize.y;
@@ -2186,17 +2225,16 @@ void AnimationTimelinePanel::RenderModel()
     // Set joints if model has skeleton
     if (m_Animator)
     {
-        // CRITICAL: Ensure animator is synced to current time before rendering
-        // This is especially important after re-cloning on scene reload
+        // Sync animator to timeline time and update joint transforms
         m_Animator->SetTime(m_CurrentTime);
+        m_Animator->UpdateJointsFromCurrentTime();
 
-        // Get transforms - Animate(0.0f) returns current transforms without advancing time
-        auto& transforms = m_Animator->Animate(0.0f);
+        // Get the updated transforms
+        auto& transforms = m_Animator->GetJoints();
 
-        // CRITICAL: Apply manual bone poses to transforms for skinning
+        // Apply manual bone poses if we're manipulating bones with gizmo
         if (m_HasManualPoses)
         {
-            // Modify the transforms to include manual poses
             ApplyManualBonePosesToTransforms(transforms);
         }
 

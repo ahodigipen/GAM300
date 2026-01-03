@@ -933,6 +933,22 @@ namespace Boom
             }
         }
 
+        BOOM_INLINE void SetCurrentClip(size_t clipIndex)
+        {
+            // Set current clip WITHOUT resetting time (unlike PlayClip)
+            if (clipIndex < m_Clips.size())
+            {
+                m_CurrentClip = clipIndex;
+            }
+        }
+
+        BOOM_INLINE void UpdateJointsFromCurrentTime()
+        {
+            // Force joint transform update without advancing time
+            // Used when seeking to a specific time position
+            UpdateJoints(m_Root, glm::identity<glm::mat4>());
+        }
+
         BOOM_INLINE void LoadAnimationFromFile(const std::string& filepath, const std::string& clipName = "")
         {
             // Use Assimp to load just the animation data
