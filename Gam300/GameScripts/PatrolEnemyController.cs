@@ -112,25 +112,41 @@ namespace GameScripts
                 {
                     var pos = API.GetPosition(Entity);
 
-                    // choose L/R alternating channel names so overlapping clicks don’t stomp each other
-                    string chName = _footBase + (_leftNext ? "_L" : "_R");
-                    _leftNext = !_leftNext;
+                    // Check vertical distance to player (Y-axis)
+                    // Only play footsteps if on same floor (within 10 units vertically)
+                    ulong playerEntity = PlayerMovement.GetPlayerEntity();
+                    bool shouldPlayFootstep = true;
 
-                    // play one-shot at position
-                    API.PlaySoundAt(chName, SFX_FOOTSTEP_PATH, pos, loop: false);
+                    if (playerEntity != 0 && API.HasTransform(playerEntity))
+                    {
+                        var playerPos = API.GetPosition(playerEntity);
+                        float verticalDistance = Math.Abs(pos.Y - playerPos.Y);
 
-                    // subtle volume variance
-                    float jitter = (float)(Random01() * 2.0 - 1.0) * VOL_JITTER; // [-VOL_JITTER, +VOL_JITTER]
-                    float vol = Clamp01(VOL_BASE + jitter);
-                    API.SetSoundVolume(chName, vol);
+                        // Floor separation is 12 units, so 10 units ensures same floor only
+                        shouldPlayFootstep = verticalDistance < 10.0f;
+                    }
 
-                    // Set 3D distance: full volume when close, silent through floors
-                    // Floor height difference = 12 units (Y: 1.0 → 13.0)
-                    // Min 6.0 = full volume within 6 units (hear patrolling enemies clearly on same floor)
-                    // Max 11.0 = silent beyond 11 units (enemies 12 units above/below are SILENT)
-                    API.Set3DMinMaxDistance(chName, 6.0f, 11.0f);
+                    if (shouldPlayFootstep)
+                    {
+                        // choose L/R alternating channel names so overlapping clicks don't stomp each other
+                        string chName = _footBase + (_leftNext ? "_L" : "_R");
+                        _leftNext = !_leftNext;
 
-                    // restart timer
+                        // play one-shot at position
+                        API.PlaySoundAt(chName, SFX_FOOTSTEP_PATH, pos, loop: false);
+
+                        // subtle volume variance
+                        float jitter = (float)(Random01() * 2.0 - 1.0) * VOL_JITTER; // [-VOL_JITTER, +VOL_JITTER]
+                        float vol = Clamp01(VOL_BASE + jitter);
+                        API.SetSoundVolume(chName, vol);
+
+                        // Set 3D distance: with vertical check, we can use larger max distance for horizontal range
+                        // Min 6.0 = full volume within 6 units
+                        // Max 30.0 = can hear across entire floor when visible
+                        API.Set3DMinMaxDistance(chName, 6.0f, 30.0f);
+                    }
+
+                    // restart timer regardless of whether we played the sound
                     _stepTimer += interval;
                 }
             }
