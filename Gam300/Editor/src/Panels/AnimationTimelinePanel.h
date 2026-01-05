@@ -21,6 +21,7 @@ namespace Boom {
 
 namespace EditorUI {
     class Editor;
+    class CommandHistory;  // Forward declaration
 
     // Undo/Redo command for keyframe operations
     struct KeyframeCommand {
@@ -32,6 +33,13 @@ namespace EditorUI {
         Boom::KeyFrame keyframe;  // The keyframe data
         float oldTime = 0.0f;     // For move operations
         float newTime = 0.0f;     // For move operations
+    };
+
+    // Bone pose for undo/redo
+    struct BonePose {
+        glm::vec3 position;
+        glm::quat rotation;
+        glm::vec3 scale;
     };
 
     /**
@@ -49,6 +57,11 @@ namespace EditorUI {
         ~AnimationTimelinePanel();
 
         void Render();
+
+        // Bone pose manipulation (public for undo/redo commands)
+        void SetBonePose(const std::string& boneName, const BonePose& pose);  // Set bone pose (for undo/redo)
+        void ClearBonePose(const std::string& boneName);  // Clear bone pose override
+        void ClearAllBonePoses();  // Clear all bone pose overrides
 
     private:
         // UI Sections
@@ -143,15 +156,16 @@ namespace EditorUI {
         bool m_GizmoWasUsing = false;  // Track if gizmo was being used last frame
         bool m_UseSnap = false;    // Snap to grid
         float m_SnapValues[3] = { 0.1f, 0.1f, 0.1f };  // Snap grid size
+        bool m_RotationOnlyMode = true;  // Rotation-only mode (prevents translation warping)
 
         // Manual bone pose overrides (for gizmo manipulation)
-        struct BonePose {
-            glm::vec3 position;
-            glm::quat rotation;
-            glm::vec3 scale;
-        };
         std::map<std::string, BonePose> m_ManualBonePoses;  // Overrides animation data
         bool m_HasManualPoses = false;  // Flag to know if we need to apply overrides
+
+        // Bone manipulation state (for undo/redo)
+        std::string m_BoneBeingManipulated;  // Bone name currently being manipulated
+        BonePose m_BonePoseBeforeManipulation;  // Pose before gizmo manipulation started
+        bool m_HasPoseBeforeManipulation = false;  // Flag to track if we captured the before state
 
         // Keyframe interaction state
         bool m_IsDraggingKeyframe = false;

@@ -2,6 +2,7 @@
 #include "Editor.h"
 #include "Application/Interface.h"
 #include "Application/Context.h"
+#include "Commands/UndoRedo.h"
 #include "ECS/ECS.hpp"
 #include "Graphics/Models/Model.h"
 #include "Graphics/Models/Animator.h"
@@ -21,8 +22,51 @@
 #include <glm/gtx/matrix_decompose.hpp>
 #include <cmath>
 #include <functional>
+#include <chrono>
 
 using namespace EditorUI;
+
+// ==================== BONE POSE UNDO/REDO COMMAND ====================
+
+namespace EditorUI {
+    // Command for bone pose manipulation with undo/redo support
+    class BonePoseCommand : public ICommand {
+    public:
+        BonePoseCommand(AnimationTimelinePanel* panel,
+                       const std::string& boneName,
+                       const BonePose& oldPose,
+                       const BonePose& newPose)
+            : m_Panel(panel)
+            , m_BoneName(boneName)
+            , m_OldPose(oldPose)
+            , m_NewPose(newPose)
+        {
+        }
+
+        void Execute() override {
+            if (!m_Panel) return;
+            m_Panel->SetBonePose(m_BoneName, m_NewPose);
+        }
+
+        void Undo() override {
+            if (!m_Panel) return;
+            m_Panel->SetBonePose(m_BoneName, m_OldPose);
+        }
+
+        std::string GetDescription() const override {
+            return "Bone Pose: " + m_BoneName;
+        }
+
+        // Public method to set the panel (for when panel needs to be updated)
+        void SetPanel(AnimationTimelinePanel* panel) { m_Panel = panel; }
+
+    private:
+        AnimationTimelinePanel* m_Panel;
+        std::string m_BoneName;
+        BonePose m_OldPose;
+        BonePose m_NewPose;
+    };
+}
 
 AnimationTimelinePanel::AnimationTimelinePanel(Editor* owner)
     : m_Owner(owner)
@@ -545,13 +589,25 @@ void AnimationTimelinePanel::RenderControlBar()
     if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
     {
         if (ImGui::IsKeyPressed(ImGuiKey_W, false)) {
-            m_GizmoOperation = 7;  // ImGuizmo::TRANSLATE
+            // Only allow translate if not in rotation-only mode
+            if (!m_RotationOnlyMode) {
+                m_GizmoOperation = 7;  // ImGuizmo::TRANSLATE
+            }
+            else {
+                BOOM_WARN("[Gizmo] Translation disabled in Rotation-Only mode. Uncheck 'Rotation Only' to enable.");
+            }
         }
         if (ImGui::IsKeyPressed(ImGuiKey_E, false)) {
             m_GizmoOperation = 120;  // ImGuizmo::ROTATE
         }
         if (ImGui::IsKeyPressed(ImGuiKey_R, false)) {
-            m_GizmoOperation = 896;  // ImGuizmo::SCALE
+            // Only allow scale if not in rotation-only mode
+            if (!m_RotationOnlyMode) {
+                m_GizmoOperation = 896;  // ImGuizmo::SCALE
+            }
+            else {
+                BOOM_WARN("[Gizmo] Scaling disabled in Rotation-Only mode. Uncheck 'Rotation Only' to enable.");
+            }
         }
         if (ImGui::IsKeyPressed(ImGuiKey_T, false)) {
             m_GizmoMode = (m_GizmoMode == 0) ? 1 : 0;  // Toggle LOCAL (0) / WORLD (1)
@@ -679,6 +735,41 @@ void AnimationTimelinePanel::RenderControlBar()
     ImGui::SameLine();
     ImGui::Checkbox("Wireframe", &m_ShowWireframe);
 
+    ImGui::SameLine(0, 20);
+    ImGui::Separator();
+    ImGui::SameLine(0, 10);
+
+    // Gizmo manipulation mode toggle
+    if (ImGui::Checkbox("Rotation Only", &m_RotationOnlyMode))
+    {
+        // If switching to rotation-only mode, force rotate gizmo
+        if (m_RotationOnlyMode)
+        {
+            m_GizmoOperation = 120;  // ImGuizmo::ROTATE
+            BOOM_INFO("[Gizmo] Rotation-Only Mode ENABLED - translation disabled to prevent bone stretching");
+        }
+        else
+        {
+            BOOM_INFO("[Gizmo] Rotation-Only Mode DISABLED - translation allowed (may cause bone stretching)");
+        }
+    }
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::SetTooltip("When enabled, only rotation gizmo is allowed.\nPrevents bone length stretching from translation.");
+    }
+
+    // Show current gizmo mode indicator
+    ImGui::SameLine();
+    const char* gizmoModeLabel = "Unknown";
+    if (m_GizmoOperation == 7) gizmoModeLabel = "Translate (W)";
+    else if (m_GizmoOperation == 120) gizmoModeLabel = "Rotate (E)";
+    else if (m_GizmoOperation == 896) gizmoModeLabel = "Scale (R)";
+    ImGui::TextColored(ImVec4(0.4f, 0.8f, 1.0f, 1.0f), "[%s]", gizmoModeLabel);
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::SetTooltip("Current gizmo mode. Press W/E/R to switch.\nPress T to toggle World/Local space.");
+    }
+
     ImGui::SameLine();
     if (ImGui::Button("Reset Camera")) {
         ResetCamera();
@@ -688,6 +779,34 @@ void AnimationTimelinePanel::RenderControlBar()
         ImGui::SameLine();
         if (ImGui::Button("Frame Model")) {
             FrameModel();
+        }
+
+        // Clear bone poses button (only show if we have manual poses)
+        if (m_HasManualPoses && !m_SelectedBoneName.empty())
+        {
+            ImGui::SameLine();
+            if (ImGui::Button("Clear Bone Pose"))
+            {
+                ClearBonePose(m_SelectedBoneName);
+            }
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::SetTooltip("Clear manual pose for selected bone '%s'\n(Ctrl+Z to undo)",
+                                m_SelectedBoneName.c_str());
+            }
+        }
+
+        if (m_HasManualPoses)
+        {
+            ImGui::SameLine();
+            if (ImGui::Button("Clear All Poses"))
+            {
+                ClearAllBonePoses();
+            }
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::SetTooltip("Clear all manual bone poses\n(Returns to animation keyframes)");
+            }
         }
     }
 
@@ -764,6 +883,236 @@ void AnimationTimelinePanel::RenderControlBar()
                 }
             }
             ImGui::EndCombo();
+        }
+
+        // Clip management buttons
+        ImGui::SameLine();
+        if (ImGui::Button("New"))
+        {
+            ImGui::OpenPopup("CreateClipPopup");
+        }
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Create a new animation clip");
+        }
+
+        ImGui::SameLine();
+        ImGui::BeginDisabled(m_SelectedClipIndex < 0);
+        if (ImGui::Button("Duplicate"))
+        {
+            if (m_Animator && m_SelectedClipIndex >= 0 && m_SelectedClipIndex < (int)m_Animator->GetClipCount())
+            {
+                auto* sourceClip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+                if (sourceClip)
+                {
+                    // Create a deep copy of the clip
+                    auto newClip = std::make_shared<Boom::AnimationClip>();
+                    newClip->name = sourceClip->name + " Copy";
+                    newClip->duration = sourceClip->duration;
+                    newClip->ticksPerSecond = sourceClip->ticksPerSecond;
+                    newClip->filePath = sourceClip->filePath;
+                    newClip->tracks = sourceClip->tracks;  // Deep copy tracks
+
+                    // Add to animator
+                    m_Animator->AddClip(newClip);
+                    m_SelectedClipIndex = (int)m_Animator->GetClipCount() - 1;
+                    m_Animator->PlayClip(m_SelectedClipIndex);
+                    m_CurrentTime = 0.0f;
+                    m_IsPlaying = false;
+
+                    BOOM_INFO("[AnimTimeline] Duplicated clip '{}' as '{}'",
+                              sourceClip->name, newClip->name);
+                }
+            }
+        }
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Duplicate selected animation clip");
+        }
+        ImGui::EndDisabled();
+
+        ImGui::SameLine();
+        ImGui::BeginDisabled(m_SelectedClipIndex < 0);
+        if (ImGui::Button("Rename"))
+        {
+            if (m_Animator && m_SelectedClipIndex >= 0)
+            {
+                ImGui::OpenPopup("RenameClipPopup");
+            }
+        }
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Rename selected animation clip");
+        }
+        ImGui::EndDisabled();
+
+        ImGui::SameLine();
+        ImGui::BeginDisabled(m_SelectedClipIndex < 0 || (m_Animator && m_Animator->GetClipCount() <= 1));
+        if (ImGui::Button("Delete"))
+        {
+            if (m_Animator && m_SelectedClipIndex >= 0)
+            {
+                ImGui::OpenPopup("DeleteClipConfirm");
+            }
+        }
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Delete selected animation clip");
+        }
+        ImGui::EndDisabled();
+
+        // Create clip popup
+        if (ImGui::BeginPopup("CreateClipPopup"))
+        {
+            static char clipName[128] = "New Clip";
+            static float clipDuration = 1.0f;
+            static float clipFPS = 30.0f;
+
+            ImGui::Text("Create New Animation Clip");
+            ImGui::Separator();
+
+            ImGui::InputText("Name", clipName, sizeof(clipName));
+            ImGui::InputFloat("Duration (s)", &clipDuration, 0.1f, 1.0f, "%.2f");
+            ImGui::InputFloat("FPS", &clipFPS, 1.0f, 10.0f, "%.1f");
+
+            if (clipDuration < 0.01f) clipDuration = 0.01f;
+            if (clipFPS < 1.0f) clipFPS = 1.0f;
+
+            if (ImGui::Button("Create", ImVec2(120, 0)))
+            {
+                if (m_Animator)
+                {
+                    auto newClip = std::make_shared<Boom::AnimationClip>();
+                    newClip->name = std::string(clipName);
+                    newClip->duration = clipDuration;
+                    newClip->ticksPerSecond = clipFPS;
+                    newClip->filePath = "";  // No source file
+
+                    // Add to animator
+                    m_Animator->AddClip(newClip);
+                    m_SelectedClipIndex = (int)m_Animator->GetClipCount() - 1;
+                    m_Animator->PlayClip(m_SelectedClipIndex);
+                    m_CurrentTime = 0.0f;
+                    m_IsPlaying = false;
+
+                    BOOM_INFO("[AnimTimeline] Created new clip '{}'", newClip->name);
+
+                    // Reset form
+                    strcpy_s(clipName, sizeof(clipName), "New Clip");
+                    clipDuration = 1.0f;
+                    clipFPS = 30.0f;
+                }
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
+        }
+
+        // Rename clip popup
+        if (ImGui::BeginPopup("RenameClipPopup"))
+        {
+            static char newName[128] = "";
+            static bool firstOpen = true;
+
+            if (firstOpen)
+            {
+                if (m_Animator && m_SelectedClipIndex >= 0)
+                {
+                    auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+                    if (clip)
+                    {
+                        strncpy_s(newName, sizeof(newName), clip->name.c_str(), _TRUNCATE);
+                    }
+                }
+                firstOpen = false;
+            }
+
+            ImGui::Text("Rename Animation Clip");
+            ImGui::Separator();
+
+            ImGui::InputText("New Name", newName, sizeof(newName));
+
+            if (ImGui::Button("Rename", ImVec2(120, 0)))
+            {
+                if (m_Animator && m_SelectedClipIndex >= 0)
+                {
+                    auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+                    if (clip && strlen(newName) > 0)
+                    {
+                        std::string oldName = clip->name;
+                        clip->name = std::string(newName);
+                        BOOM_INFO("[AnimTimeline] Renamed clip '{}' to '{}'", oldName, clip->name);
+                    }
+                }
+                firstOpen = true;
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            {
+                firstOpen = true;
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
+        }
+
+        // Delete clip confirmation popup
+        if (ImGui::BeginPopupModal("DeleteClipConfirm", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            if (m_Animator && m_SelectedClipIndex >= 0)
+            {
+                const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
+                if (clip)
+                {
+                    ImGui::Text("Are you sure you want to delete clip:");
+                    ImGui::TextColored(ImVec4(1, 1, 0, 1), "  %s", clip->name.c_str());
+                    ImGui::Text("This action cannot be undone!");
+                }
+            }
+
+            ImGui::Separator();
+
+            if (ImGui::Button("Delete", ImVec2(120, 0)))
+            {
+                if (m_Animator && m_SelectedClipIndex >= 0 && m_Animator->GetClipCount() > 1)
+                {
+                    const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
+                    std::string clipName = clip ? clip->name : "Unknown";
+
+                    m_Animator->RemoveClip(m_SelectedClipIndex);
+                    BOOM_INFO("[AnimTimeline] Deleted clip '{}'", clipName);
+
+                    // Select the first remaining clip
+                    if (m_Animator->GetClipCount() > 0)
+                    {
+                        m_SelectedClipIndex = 0;
+                        m_Animator->PlayClip(0);
+                        m_CurrentTime = 0.0f;
+                        m_IsPlaying = false;
+                    }
+                    else
+                    {
+                        m_SelectedClipIndex = -1;
+                    }
+                }
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
         }
 
         // Display clip information
@@ -996,6 +1345,7 @@ void AnimationTimelinePanel::RenderViewport()
     HandleBonePicking();
 
     // Render transform gizmo at selected bone
+    // NOTE: Gizmo draws on top of the image, but we already rendered with updated poses
     HandleGizmo(viewportPos, m_ViewportSize);
 }
 
@@ -1399,7 +1749,6 @@ void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float dur
             const auto* keyframes = clip->GetTrack(joint.name);
             if (keyframes && !keyframes->empty())
             {
-                ImGuiIO& io = ImGui::GetIO();
                 ImVec2 mousePos = ImGui::GetMousePos();
 
                 // Track if we're hovering any keyframe on THIS bone (local to this iteration)
@@ -1632,8 +1981,6 @@ void AnimationTimelinePanel::HandleBonePicking()
     if (!ImGui::IsItemHovered()) return;
     if (!ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)) return;
     if (!m_Animator || !m_HasModel) return;
-
-    ImGuiIO& io = ImGui::GetIO();
 
     // Get mouse position relative to viewport
     ImVec2 mousePos = ImGui::GetMousePos();
@@ -1991,76 +2338,112 @@ Boom::KeyFrame AnimationTimelinePanel::CaptureCurrentBoneTransform(const std::st
     return kf;
 }
 
+// ========== Bone Pose Manipulation ==========
+
+void AnimationTimelinePanel::SetBonePose(const std::string& boneName, const BonePose& pose)
+{
+    m_ManualBonePoses[boneName] = pose;
+    m_HasManualPoses = !m_ManualBonePoses.empty();
+}
+
+void AnimationTimelinePanel::ClearBonePose(const std::string& boneName)
+{
+    m_ManualBonePoses.erase(boneName);
+    m_HasManualPoses = !m_ManualBonePoses.empty();
+}
+
+void AnimationTimelinePanel::ClearAllBonePoses()
+{
+    m_ManualBonePoses.clear();
+    m_HasManualPoses = false;
+}
+
 void AnimationTimelinePanel::ApplyManualBonePosesToTransforms(std::vector<glm::mat4>& transforms)
 {
     // Apply manual bone poses to the transform matrices for skinning
     // This makes the model mesh move with the manually posed bones
-    // Uses a simple two-pass approach: extract locals, then rebuild with manual overrides
+    // CRITICAL: This must match GetBoneWorldTransform() logic exactly for consistency
 
     if (!m_Animator || m_ManualBonePoses.empty()) return;
 
     const Boom::Joint& root = m_Animator->GetRoot();
+    const auto* clip = (m_SelectedClipIndex >= 0 && m_SelectedClipIndex < (int)m_Animator->GetClipCount())
+                       ? m_Animator->GetClip(m_SelectedClipIndex)
+                       : nullptr;
 
-    // PASS 1: Extract all LOCAL transforms from current animation state
-    // We need to preserve the animated local transforms for bones without manual poses
-    std::map<std::string, glm::mat4> animatedLocalTransforms;
-
-    std::function<void(const Boom::Joint&, const glm::mat4&)> extractLocal;
-    extractLocal = [&](const Boom::Joint& joint, const glm::mat4& parentWorld)
+    // Recursively rebuild all transforms using manual poses where applicable
+    std::function<void(const Boom::Joint&, const glm::mat4&, bool)> rebuild;
+    rebuild = [&](const Boom::Joint& joint, const glm::mat4& parentWorld, bool parentHadManualPose)
     {
-        // Get this bone's world transform from skinning matrix
-        // skinning = world * offset, so world = skinning * inverse(offset)
-        glm::mat4 world = transforms[joint.index] * glm::inverse(joint.offset);
-
-        // Compute local transform: local = inverse(parent) * world
-        glm::mat4 local = glm::inverse(parentWorld) * world;
-        animatedLocalTransforms[joint.name] = local;
-
-        // Recurse to children, passing this bone's world as their parent
-        for (const auto& child : joint.children)
-        {
-            extractLocal(child, world);
-        }
-    };
-    extractLocal(root, glm::mat4(1.0f));
-
-    // PASS 2: Rebuild entire hierarchy, replacing manual bone locals
-    // Children of manual bones will follow their parents correctly
-    std::function<void(const Boom::Joint&, const glm::mat4&)> rebuild;
-    rebuild = [&](const Boom::Joint& joint, const glm::mat4& parentWorld)
-    {
-        glm::mat4 localTransform;
+        glm::mat4 localTransform = glm::mat4(1.0f);
+        bool hasManualPose = false;
 
         // Check if this bone has a manual pose override
         auto it = m_ManualBonePoses.find(joint.name);
         if (it != m_ManualBonePoses.end())
         {
-            // Use manual local transform from gizmo manipulation
+            // Use manual local transform (from gizmo manipulation)
             const BonePose& pose = it->second;
             localTransform = glm::translate(glm::mat4(1.0f), pose.position);
             localTransform *= glm::mat4_cast(pose.rotation);
             localTransform = glm::scale(localTransform, pose.scale);
+            hasManualPose = true;
         }
         else
         {
-            // Use the animated local transform we extracted in pass 1
-            localTransform = animatedLocalTransforms[joint.name];
+            // Get transform from animation at current time
+            if (clip)
+            {
+                const auto* keys = clip->GetTrack(joint.name);
+                if (keys && keys->size() >= 2)
+                {
+                    // Find keyframes for interpolation
+                    Boom::KeyFrame prev = (*keys)[0];
+                    Boom::KeyFrame next = (*keys)[keys->size() - 1];
+
+                    for (size_t i = 0; i < keys->size() - 1; ++i)
+                    {
+                        if ((*keys)[i].timeStamp <= m_CurrentTime && (*keys)[i + 1].timeStamp >= m_CurrentTime)
+                        {
+                            prev = (*keys)[i];
+                            next = (*keys)[i + 1];
+                            break;
+                        }
+                    }
+
+                    float progression = 0.0f;
+                    float dt = next.timeStamp - prev.timeStamp;
+                    if (dt > 0.0f)
+                    {
+                        progression = (m_CurrentTime - prev.timeStamp) / dt;
+                    }
+
+                    // Interpolate
+                    glm::vec3 pos = glm::mix(prev.position, next.position, progression);
+                    glm::quat rot = glm::slerp(prev.rotation, next.rotation, progression);
+                    glm::vec3 scl = glm::mix(prev.scale, next.scale, progression);
+
+                    localTransform = glm::translate(glm::mat4(1.0f), pos);
+                    localTransform *= glm::mat4_cast(rot);
+                    localTransform = glm::scale(localTransform, scl);
+                }
+            }
         }
 
-        // Compute new world transform
-        // If parent was manually posed, this bone inherits the parent's new world transform
+        // Compute world transform
         glm::mat4 worldTransform = parentWorld * localTransform;
 
-        // Update skinning transform for GPU
+        // Update skinning transform for GPU: skinning = world * offset
         transforms[joint.index] = worldTransform * joint.offset;
 
-        // Recurse to children, passing this bone's world as their parent
+        // Recurse to children
         for (const auto& child : joint.children)
         {
-            rebuild(child, worldTransform);
+            rebuild(child, worldTransform, hasManualPose || parentHadManualPose);
         }
     };
-    rebuild(root, glm::mat4(1.0f));
+
+    rebuild(root, glm::mat4(1.0f), false);  // false = root has no parent with manual pose
 }
 
 void AnimationTimelinePanel::HandleGizmo(const ImVec2& viewportMin, const ImVec2& viewportSize)
@@ -2081,10 +2464,17 @@ void AnimationTimelinePanel::HandleGizmo(const ImVec2& viewportMin, const ImVec2
     ImGuizmo::SetRect(viewportMin.x, viewportMin.y, viewportSize.x, viewportSize.y);
     ImGuizmo::SetGizmoSizeClipSpace(0.15f);
 
+    // Enable ImGuizmo to receive input
+    ImGuizmo::Enable(true);
+    ImGuizmo::AllowAxisFlip(true);
+
     // Setup view and projection matrices
     glm::mat4 view = glm::lookAt(m_CameraPosition, m_CameraTarget, glm::vec3(0, 1, 0));
     float aspect = m_ViewportSize.x / m_ViewportSize.y;
     glm::mat4 proj = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
+
+    // Store the original matrix before manipulation
+    glm::mat4 originalMatrix = boneWorldMatrix;
 
     // Render the gizmo (modifies boneWorldMatrix if user drags it)
     ImGuizmo::Manipulate(
@@ -2101,65 +2491,169 @@ void AnimationTimelinePanel::HandleGizmo(const ImVec2& viewportMin, const ImVec2
     // IMPORTANT: Only process gizmo input if our viewport is hovered/focused
     // This prevents the main viewport from also responding to the same gizmo
     bool isUsing = ImGuizmo::IsUsing();
-    bool isOurGizmo = ImGuizmo::IsOver() || m_GizmoWasUsing;  // IsOver or we started the drag
+    bool isOver = ImGuizmo::IsOver();
+    bool isOurGizmo = isOver || m_GizmoWasUsing;  // IsOver or we started the drag
 
-    // When user releases gizmo, convert world transform to local and store override
-    // ONLY if this is our gizmo (not the main viewport's gizmo)
+    // UNITY-STYLE BONE MANIPULATION
+    // Key difference: Apply changes in REAL-TIME during drag, not just on release
+
+    // Capture pose when starting manipulation (for undo)
+    if (isUsing && !m_GizmoWasUsing && isOurGizmo)
+    {
+        // User just started manipulating - capture the BEFORE state
+        m_BoneBeingManipulated = m_SelectedBoneName;
+        m_HasPoseBeforeManipulation = false;
+
+        // Try to get existing manual pose
+        auto it = m_ManualBonePoses.find(m_SelectedBoneName);
+        if (it != m_ManualBonePoses.end())
+        {
+            // Bone already has manual pose - use that as the before state
+            m_BonePoseBeforeManipulation = it->second;
+            m_HasPoseBeforeManipulation = true;
+        }
+        else
+        {
+            // No manual pose yet - capture current animated pose as before state
+            glm::mat4 boneWorld = GetBoneWorldTransform(m_SelectedBoneName);
+            std::string parentName = GetParentBoneName(m_SelectedBoneName);
+            glm::mat4 parentWorld = glm::mat4(1.0f);
+            if (!parentName.empty())
+            {
+                parentWorld = GetBoneWorldTransform(parentName);
+            }
+
+            glm::mat4 localTransform = glm::inverse(parentWorld) * boneWorld;
+            glm::vec3 scale, translation, skew;
+            glm::quat rotation;
+            glm::vec4 perspective;
+            glm::decompose(localTransform, scale, rotation, translation, skew, perspective);
+
+            m_BonePoseBeforeManipulation.position = translation;
+            m_BonePoseBeforeManipulation.rotation = rotation;
+            m_BonePoseBeforeManipulation.scale = scale;
+            m_HasPoseBeforeManipulation = true;
+        }
+    }
+
+    // REAL-TIME UPDATE: Apply transformation during drag (UNITY BEHAVIOR)
+    if (isUsing && isOurGizmo)
+    {
+        // Check if the matrix actually changed - check BOTH position AND rotation
+        glm::vec3 oldPos = glm::vec3(originalMatrix[3]);
+        glm::vec3 newPos = glm::vec3(boneWorldMatrix[3]);
+        float posDiff = glm::distance(oldPos, newPos);
+
+        // Extract rotation from matrices
+        glm::quat oldRot = glm::quat_cast(originalMatrix);
+        glm::quat newRot = glm::quat_cast(boneWorldMatrix);
+        float rotDot = glm::abs(glm::dot(oldRot, newRot));
+        bool rotChanged = (rotDot < 0.9999f);  // Quaternions differ if dot product isn't ~1.0
+
+        float detDiff = glm::abs(glm::determinant(originalMatrix) - glm::determinant(boneWorldMatrix));
+
+        bool matrixChanged = (posDiff > 0.00001f || rotChanged || detDiff > 0.00001f);
+
+        if (matrixChanged)
+        {
+            // CRITICAL FIX: Remove model scale to get actual bone world transform
+            glm::mat4 boneWorld = glm::inverse(scaleMatrix) * boneWorldMatrix;
+
+            // Get parent bone's world transform
+            std::string parentName = GetParentBoneName(m_SelectedBoneName);
+            glm::mat4 parentWorld = glm::mat4(1.0f);
+
+            if (!parentName.empty())
+            {
+                // Temporarily remove our bone's manual pose to get parent's clean transform
+                auto it = m_ManualBonePoses.find(m_SelectedBoneName);
+                BonePose tempPose = {};  // Initialize to avoid warning
+                bool hadPose = false;
+                if (it != m_ManualBonePoses.end())
+                {
+                    tempPose = it->second;
+                    hadPose = true;
+                    m_ManualBonePoses.erase(it);
+                }
+
+                // Get parent's world transform
+                parentWorld = GetBoneWorldTransform(parentName);
+
+                // Restore our pose
+                if (hadPose)
+                {
+                    m_ManualBonePoses[m_SelectedBoneName] = tempPose;
+                }
+            }
+
+            // Convert to local space: local = inverse(parent) * world
+            glm::mat4 localTransform = glm::inverse(parentWorld) * boneWorld;
+
+            // Extract transform components
+            glm::vec3 scale, translation, skew;
+            glm::quat rotation;
+            glm::vec4 perspective;
+            bool decomposed = glm::decompose(localTransform, scale, rotation, translation, skew, perspective);
+
+            if (decomposed)
+            {
+                // Normalize rotation to prevent drift and ensure valid quaternion
+                rotation = glm::normalize(rotation);
+
+                // Ensure scale is reasonable (prevent collapse or explosion)
+                for (int i = 0; i < 3; i++)
+                {
+                    if (scale[i] < 0.001f) scale[i] = 0.001f;
+                    if (scale[i] > 1000.0f) scale[i] = 1000.0f;
+                }
+
+                // Create new pose and apply immediately for real-time feedback
+                BonePose newPose;
+                newPose.position = translation;
+                newPose.rotation = rotation;
+                newPose.scale = scale;
+
+                m_ManualBonePoses[m_SelectedBoneName] = newPose;
+                m_HasManualPoses = true;
+            }
+        }
+    }
+
+    // On release: Create undo command
     if (!isUsing && m_GizmoWasUsing && isOurGizmo)
     {
         BOOM_INFO("[AnimTimeline Gizmo] User released gizmo on bone: {}", m_SelectedBoneName);
 
-        // Remove model scale to get actual bone world transform
-        glm::mat4 boneWorld = glm::inverse(scaleMatrix) * boneWorldMatrix;
-
-        // Get parent bone's world transform
-        std::string parentName = GetParentBoneName(m_SelectedBoneName);
-        glm::mat4 parentWorld = glm::mat4(1.0f);
-
-        if (!parentName.empty())
+        // Get the final pose that was applied
+        auto it = m_ManualBonePoses.find(m_SelectedBoneName);
+        if (it != m_ManualBonePoses.end() && m_HasPoseBeforeManipulation)
         {
-            // Temporarily remove our bone's manual pose to get parent's clean transform
-            auto it = m_ManualBonePoses.find(m_SelectedBoneName);
-            BonePose tempPose;
-            bool hadPose = false;
-            if (it != m_ManualBonePoses.end())
-            {
-                tempPose = it->second;
-                hadPose = true;
-                m_ManualBonePoses.erase(it);
-            }
+            BonePose finalPose = it->second;
 
-            // Get parent's world transform
-            parentWorld = GetBoneWorldTransform(parentName);
+            // Check if pose actually changed
+            const float posThreshold = 0.0001f;
+            const float rotThreshold = 0.0001f;
+            const float scaleThreshold = 0.0001f;
 
-            // Restore our pose
-            if (hadPose)
+            bool poseChanged =
+                glm::distance(m_BonePoseBeforeManipulation.position, finalPose.position) > posThreshold ||
+                glm::abs(glm::dot(m_BonePoseBeforeManipulation.rotation, finalPose.rotation)) < (1.0f - rotThreshold) ||
+                glm::distance(m_BonePoseBeforeManipulation.scale, finalPose.scale) > scaleThreshold;
+
+            if (poseChanged && m_Owner && m_Owner->GetCommandHistory())
             {
-                m_ManualBonePoses[m_SelectedBoneName] = tempPose;
+                auto cmd = std::make_unique<BonePoseCommand>(
+                    this,
+                    m_SelectedBoneName,
+                    m_BonePoseBeforeManipulation,
+                    finalPose
+                );
+
+                // Temporarily set the old pose, then Execute() will apply the new one
+                m_ManualBonePoses[m_SelectedBoneName] = m_BonePoseBeforeManipulation;
+                m_Owner->GetCommandHistory()->Execute(std::move(cmd));
             }
         }
-
-        // Convert to local space: local = inverse(parent) * world
-        glm::mat4 localTransform = glm::inverse(parentWorld) * boneWorld;
-
-        // Decompose local transform to position/rotation/scale
-        glm::vec3 scale;
-        glm::quat rotation;
-        glm::vec3 translation;
-        glm::vec3 skew;
-        glm::vec4 perspective;
-        glm::decompose(localTransform, scale, rotation, translation, skew, perspective);
-
-        BonePose pose;
-        pose.position = translation;
-        pose.rotation = rotation;
-        pose.scale = scale;
-
-        m_ManualBonePoses[m_SelectedBoneName] = pose;
-        m_HasManualPoses = true;
-
-        BOOM_INFO("[Gizmo] Stored LOCAL pose - pos:({}, {}, {}) parent:{}",
-                  translation.x, translation.y, translation.z, parentName);
     }
 
     m_GizmoWasUsing = isUsing;

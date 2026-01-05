@@ -298,6 +298,10 @@ namespace Boom
         BOOM_INLINE std::vector<State>& GetStates() { return m_States; }
         BOOM_INLINE const std::vector<State>& GetStates() const { return m_States; }
 
+        BOOM_INLINE void AddClip(std::shared_ptr<AnimationClip> clip) {
+            m_Clips.push_back(clip);
+        }
+
         BOOM_INLINE void RemoveClip(size_t index) {
             if (index < m_Clips.size()) {
                 m_Clips.erase(m_Clips.begin() + index);
