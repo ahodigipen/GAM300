@@ -272,6 +272,21 @@ namespace EditorUI {
                     }
                     m_IsTransformBeingEdited = false;
                 }
+                ImGui::Spacing();
+                ImGui::SeparatorText("Utilities");
+
+                // We use -1 width to make the buttons span the whole panel
+                if (ImGui::Button("Snap to Floor", ImVec2(-1, 0))) {
+                    SnapEntity(selected, glm::vec3(0.0f, -1.0f, 0.0f));
+                }
+
+                if (ImGui::Button("Snap to Wall (Left)", ImVec2(ImGui::GetContentRegionAvail().x * 0.5f - 4, 0))) {
+                    SnapEntity(selected, glm::vec3(-1.0f, 0.0f, 0.0f));
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Snap to Wall (Right)", ImVec2(-1, 0))) {
+                    SnapEntity(selected, glm::vec3(1.0f, 0.0f, 0.0f));
+                }
             }
         }
 
@@ -2123,6 +2138,65 @@ namespace EditorUI {
             }
             ImGui::EndChild();
             ImGui::EndPopup();
+        }
+    }
+
+    void InspectorPanel::SnapEntity(Boom::Entity& entity, glm::vec3 direction) {
+        if (!entity.Has<Boom::TransformComponent>() || !entity.Has<Boom::ColliderComponent>()) {
+            BOOM_WARN("Cannot snap: Entity needs both Transform and Collider");
+            return;
+        }
+
+        auto& tc = entity.Get<Boom::TransformComponent>();
+        auto& col = entity.Get<Boom::ColliderComponent>().Collider;
+        auto& phys = m_App->GetPhysicsContext();
+
+        // 1. Calculate the extent (offset) based on the collider type
+        // This prevents the object from being buried halfway into the surface
+        float extent = 0.0f;
+        glm::vec3 worldScale = tc.transform.scale * col.localScale;
+
+        if (col.type == Boom::Collider3D::BOX) {
+            extent = glm::abs(glm::dot(direction, worldScale * 0.5f));
+        }
+        else if (col.type == Boom::Collider3D::SPHERE) {
+            extent = (worldScale.x * 0.5f);
+        }
+        else {
+            // Fallback for complex meshes/capsules
+            extent = (glm::abs(direction.y) > 0.9f) ? (worldScale.y * 0.5f) : (worldScale.x * 0.5f);
+        }
+
+        // 2. Perform the raycast using your existing physics system
+        // We start slightly above/inside the object to ensure we hit the floor beneath it
+        glm::vec3 rayOrigin = tc.transform.translate;
+        auto hit = phys.Raycast(rayOrigin, direction, 100.0f);
+
+        if (hit.hitFound) {
+            // 3. Move the object to the hit point, adjusted by the extent
+            glm::vec3 newPos = hit.position - (direction * extent);
+
+            // Use an undo command so you can revert the snap
+            auto* history = m_Owner->GetCommandHistory();
+            if (history) {
+                Boom::Transform3D oldTransform = tc.transform;
+                tc.transform.translate = newPos;
+
+                auto command = std::make_unique<TransformCommand>(
+                    &GetContext()->scene,
+                    entity.ID(),
+                    oldTransform,
+                    tc.transform,
+                    "Snap to Surface"
+                );
+                history->Execute(std::move(command));
+            }
+            else {
+                tc.transform.translate = newPos;
+            }
+
+            // 4. Sync physics actor immediately
+            phys.UpdateRigidBodyTransform(entity, tc.transform);
         }
     }
 

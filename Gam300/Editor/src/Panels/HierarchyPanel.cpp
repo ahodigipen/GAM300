@@ -1,4 +1,5 @@
 #include "Panels/HierarchyPanel.h"
+#pragma warning(disable : 4834) // Disable [[nodiscard]] warnings for logging
 
 // keep header light; pull real types here
 #include "Editor.h"
@@ -402,28 +403,30 @@ namespace EditorUI {
             }
 
             // Render only root entities (those with no parent)
-            // Sort by UID to maintain consistent order across scene reloads
+            // Collect root entities and sort by UID for consistent order across scene reloads
+            struct RootEntity {
+                entt::entity entity;
+                AssetID uid;
+            };
+            std::vector<RootEntity> rootEntities;
+
             auto view = registry.view<Boom::InfoComponent>();
-
-            // Collect root entities
-            std::vector<std::pair<entt::entity, uint64_t>> rootEntities;
-
             for (entt::entity e : view)
             {
                 const auto& info = view.get<Boom::InfoComponent>(e);
+                // Only collect root entities (those with no parent)
                 if (info.parent == EMPTY_ASSET) {
-                    rootEntities.emplace_back(e, info.uid);
+                    rootEntities.push_back({e, info.uid});
                 }
             }
 
-            // Sort by UID (stable sort for consistent hierarchy order)
+            // Sort by UID to maintain consistent order (UIDs are stable, entity IDs are not)
             std::sort(rootEntities.begin(), rootEntities.end(),
-                [](const auto& a, const auto& b) { return a.second < b.second; });
+                     [](const RootEntity& a, const RootEntity& b) { return a.uid < b.uid; });
 
             // Render in sorted order
-            for (const auto& [entity, uid] : rootEntities)
-            {
-                RenderEntityNode(registry, entity, m_App, m_Ctx, m_ShowDeletePopup, m_EntityToDelete);
+            for (const auto& root : rootEntities) {
+                RenderEntityNode(registry, root.entity, m_App, m_Ctx, m_ShowDeletePopup, m_EntityToDelete);
             }
 
             // Delete confirmation popup

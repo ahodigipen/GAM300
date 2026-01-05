@@ -27,6 +27,9 @@ x64/
 .claude/
 claude.md
 CLAUDE.md
+NEXT_SESSION.md
+TOKEN_OPTIMIZATION.md
+
 
 Gam300/conanbuild/cmakedeps_macros.cmake
 Gam300/conanbuild/CMakePresets.json

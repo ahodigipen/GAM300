@@ -59,6 +59,13 @@ namespace Boom {
 			, scale{ t.scale.x, t.scale.y }
 		{
 		}
+		BOOM_INLINE Transform3D To3D() const {
+			return {
+				translate,
+				{0.f, 0.f, rotate},
+				{scale.x, scale.y, 1.f}
+			};
+		}
 		BOOM_INLINE glm::mat3 Matrix() const {
 			float rad{ glm::radians(rotate) };
 			return {  cosf(rad) * scale.x, -sinf(rad) * scale.x, 0.f,

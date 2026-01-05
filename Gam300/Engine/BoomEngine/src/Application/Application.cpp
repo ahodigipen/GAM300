@@ -1,4 +1,5 @@
 #include "Core.h"
+#pragma warning(disable : 4834) // Disable [[nodiscard]] warnings for exception::what() in logging
 #include "Application/Application.h"
 #include "Audio/SoundSystem.hpp" // <-- added for per-entity sound updates
 
@@ -241,24 +242,6 @@ namespace Boom
             if (activeCam) camera.attachCamera(activeCam);
             glfwMakeContextCurrent(engineWindow.get());
 
-            // F11 toggle rigid body type (test)
-            {
-                static bool prevF11 = false;
-                bool f11Pressed = glfwGetKey(engineWindow.get(), GLFW_KEY_F11) == GLFW_PRESS;
-                if (f11Pressed && !prevF11)
-                {
-                    EnttView<Entity, InfoComponent, RigidBodyComponent>([this](auto entity, InfoComponent& info, RigidBodyComponent& rb) {
-                        if (info.name == "Sphere") {
-                            RigidBody3D::Type currentType = rb.RigidBody.type;
-                            RigidBody3D::Type newType = (currentType == RigidBody3D::DYNAMIC) ? RigidBody3D::STATIC : RigidBody3D::DYNAMIC;
-                            m_Context->physics->SetRigidBodyType(entity, newType);
-                            BOOM_INFO("[Test F11] Toggled Sphere rigid body to: {}", (newType == RigidBody3D::DYNAMIC) ? "DYNAMIC" : "STATIC");
-                        }
-                        });
-                }
-                prevF11 = f11Pressed;
-            }
-
 
             ComputeFrameDeltaTime();
             // Always run file watcher
@@ -416,9 +399,23 @@ namespace Boom
 
             // World + GUI
             RenderScene();
+            //DrawDebugTPC();
 
-            // Debug draws
-            if (m_PhysDebugViz && m_DebugLinesShader) {
+            // Sync physics debug viz with context flag
+            if (m_PhysDebugViz != m_Context->ShowPhysicsDebug)
+            {
+                m_PhysDebugViz = m_Context->ShowPhysicsDebug;
+                m_Context->physics->EnableDebugVisualization(m_PhysDebugViz, 1.0f);
+            }
+
+            // Sync mesh debug viz with context flag
+            if (m_Context->renderer)
+            {
+                m_Context->renderer->isDrawDebugMode = m_Context->ShowMeshDebug;
+            }
+
+            if (m_PhysDebugViz && m_DebugLinesShader)
+            {
                 m_Context->physics->CollectDebugLines(m_PhysLinesCPU);
                 if (!m_PhysLinesCPU.empty()) {
                     std::vector<Boom::LineVert> lineVerts;
@@ -456,7 +453,104 @@ namespace Boom
                 m_Nav->DrawDetourNavMesh_Query(*m_DebugLinesShader, dbgView, dbgProj, dbgCamPos, navDrawRadius);
             }
 
-            // NOTE: removed the old "skybox ecs (should be drawn at the end)" block
+            // Skeleton visualization
+            if (m_Context->ShowSkeleton && m_DebugLinesShader)
+            {
+                std::vector<Boom::LineVert> normalBones;
+                std::vector<Boom::LineVert> selectedBones;
+                normalBones.reserve(200);
+                selectedBones.reserve(10);
+
+                // Debug: Print selected bone once per frame
+                static std::string lastSelectedBone;
+                if (m_Context->SelectedBoneName != lastSelectedBone)
+                {
+                    if (!m_Context->SelectedBoneName.empty())
+                    {
+                        BOOM_INFO("[BoneSelection] Selected: '{}'", m_Context->SelectedBoneName);
+                    }
+                    else
+                    {
+                        BOOM_INFO("[BoneSelection] Cleared");
+                    }
+                    lastSelectedBone = m_Context->SelectedBoneName;
+                }
+
+                EnttView<Entity, AnimatorComponent, TransformComponent>([this, &normalBones, &selectedBones](auto entity, AnimatorComponent& animComp, TransformComponent& /*tc*/) {
+                    if (!animComp.animator) return;
+
+                    // Get skeleton lines in model space
+                    auto boneLines = animComp.animator->GetSkeletonLines();
+
+                    // Transform to world space using entity transform
+                    glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+
+                    // Debug: Print first few bone names once
+                    static bool printedBoneNames = false;
+                    if (!printedBoneNames && !boneLines.empty())
+                    {
+                        BOOM_INFO("[BoneDebug] Printing first 5 bone names:");
+                        for (size_t i = 0; i < std::min(size_t(5), boneLines.size()); ++i)
+                        {
+                            BOOM_INFO("  [{}] boneName: '{}'", i, boneLines[i].boneName);
+                        }
+                        printedBoneNames = true;
+                    }
+
+                    for (const auto& bone : boneLines)
+                    {
+                        // Transform bone positions to world space
+                        glm::vec3 worldStart = glm::vec3(worldMatrix * glm::vec4(bone.start, 1.0f));
+                        glm::vec3 worldEnd = glm::vec3(worldMatrix * glm::vec4(bone.end, 1.0f));
+
+                        // Separate selected bone from normal bones
+                        bool isSelected = (!m_Context->SelectedBoneName.empty() && bone.boneName == m_Context->SelectedBoneName);
+
+                        if (isSelected)
+                        {
+                            selectedBones.push_back({ worldStart, m_Context->SelectedBoneColor });
+                            selectedBones.push_back({ worldEnd, m_Context->SelectedBoneColor });
+                        }
+                        else
+                        {
+                            normalBones.push_back({ worldStart, m_Context->BoneColor });
+                            normalBones.push_back({ worldEnd, m_Context->BoneColor });
+                        }
+                    }
+                });
+
+                // Draw normal bones first (disable depth test so bones are always visible on top)
+                if (!normalBones.empty())
+                {
+                    m_DebugLinesShader->Draw(dbgView, dbgProj, normalBones, m_Context->BoneLineWidth, true);
+                }
+
+                // Draw selected bone on top with thicker line (disable depth test)
+                if (!selectedBones.empty())
+                {
+                    m_DebugLinesShader->Draw(dbgView, dbgProj, selectedBones, m_Context->BoneLineWidth * 3.0f, true);
+                }
+            }
+
+            //skybox ecs (should be drawn at the end)
+            EnttView<Entity, SkyboxComponent>([this](auto entity, SkyboxComponent& comp) {
+                Transform3D& transform{ entity.template Get<TransformComponent>().transform };
+                static AssetID prevSkyID{ comp.skyboxID };
+
+                //reinitialize skybox if different
+                if (prevSkyID != comp.skyboxID) {
+                    EnttView<Entity, SkyboxComponent>([this](auto, auto& comp) {
+                        SkyboxAsset& skybox{ m_Context->assets->Get<SkyboxAsset>(comp.skyboxID) };
+                        m_Context->renderer->InitSkybox(skybox.data, skybox.envMap, skybox.size);
+                        return; //should stop after one skybox rendered
+                        });
+                }
+
+                prevSkyID = comp.skyboxID;
+                SkyboxAsset& skybox{ m_Context->assets->Get<SkyboxAsset>(comp.skyboxID) };
+                m_Context->renderer->DrawSkybox(skybox.data, transform);
+                return; //should stop after one skybox rendered
+                });
 
             // Frame end
             m_Context->profiler.Start("Renderer End Frame");
@@ -483,7 +577,7 @@ namespace Boom
     //picking currently should only work on objects with model
     void Application::RenderScene(bool isPicking)
     {
-        std::vector<std::pair<SpriteComponent, Transform2D>> guiList;
+        std::vector<std::tuple<SpriteComponent, Transform2D, uint32_t>> guiList;
         //pbr ecs (always render)
         EnttView<Entity, TransformComponent>([this, &guiList, &isPicking](auto entity, TransformComponent& t) {
             if (entity.Has<DeactivatedComponent>()) return;
@@ -500,7 +594,13 @@ namespace Boom
                         m_Context->renderer->SetJoints(an.animator->GetJoints(), isPicking);
                     }
                     else {
-                        float dt = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) ? (float)m_Context->DeltaTime : 0.0f;
+                        // float dt = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) ? (float)m_Context->DeltaTime : 0.0f;
+                        bool shouldAnimate = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING);
+                        bool isPauseMenuObj = entity.Has<PauseMenuTagComponent>();
+                        if (m_IsGameLogicPaused && !isPauseMenuObj) {
+                            shouldAnimate = false;
+                        }
+                        float dt = shouldAnimate ? (float)m_Context->DeltaTime : 0.0f;
                         auto& joints = an.animator->Animate(dt);
                         m_Context->renderer->SetJoints(joints);
                     }
@@ -557,14 +657,21 @@ namespace Boom
             }
             else if (entity.Has<SpriteComponent>()) {
 
-                if (isPicking) return; //skip drawing pick for sprite
-
                 SpriteComponent& comp{ entity.Get<SpriteComponent>() };
                 if (comp.textureID == EMPTY_ASSET) return;
 
                 if (!comp.uiOverlay) {
                     TextureAsset& texture{ m_Context->assets->Get<TextureAsset>(comp.textureID) };
-                    m_Context->renderer->DrawQuad(texture.data, t.transform, comp.color);
+                    if (isPicking) {
+                        glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+                        Transform3D worldTransform;
+                        DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
+
+                        m_Context->renderer->SetPickUniform(entt::to_integral(entity.ID())); //entity should be of type uint32_t
+                        m_Context->renderer->DrawPick(worldTransform);
+                    }
+                    else
+                        m_Context->renderer->DrawQuad(texture.data, t.transform, comp.color);
                 }
                 else {
                     // Calculate world transform for GUI sprites (respects parent hierarchy)
@@ -579,23 +686,30 @@ namespace Boom
                         glm::vec2(worldTransform.scale.x, worldTransform.scale.y)  // 2D scale
                     };
 
-                    guiList.push_back({ comp, guiTransform });
+                    guiList.push_back({ comp, guiTransform, entt::to_integral(entity.ID()) });
                 }
             }
             });
 
         //sort guiList based on z-axis from negative to positive(opengl z-axis towards camera)
         std::sort(guiList.begin(), guiList.end(), [](const auto& a, const auto& b) {
-            return a.second.translate.z < b.second.translate.z;  // descending Z order
+            return std::get<1>(a).translate.z < std::get<1>(b).translate.z;  // descending Z order
             });
 
         //render gui overlays at the end
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL); //supports partial transparency to not interfere with background gui
+        
         for (auto const& gui : guiList) {
-            TextureAsset* texture{ m_Context->assets->TryGet<TextureAsset>(gui.first.textureID) };
-            if (texture)
-                m_Context->renderer->DrawQuad(texture->data, gui.second, gui.first.color);
+            if (isPicking) {
+                m_Context->renderer->SetPickUniform(std::get<2>(gui)); //entity should be of type uint32_t
+                m_Context->renderer->DrawPick(std::get<1>(gui));
+            }
+            else {
+                TextureAsset* texture{ m_Context->assets->TryGet<TextureAsset>(std::get<0>(gui).textureID) };
+                if (texture)
+                    m_Context->renderer->DrawQuad(texture->data, std::get<1>(gui), std::get<0>(gui).color);
+            }
         }
     }
 
@@ -671,78 +785,58 @@ namespace Boom
 
 
     //Physics stuff
-
     void Application::DestroyPhysicsActors()
     {
-        // Get the scene from the physics context *once* outside the loop
         auto* pxScene = m_Context->physics->GetPxScene();
-        if (!pxScene) {
-            BOOM_ERROR("DestroyPhysicsActors failed: No PxScene available.");
-            return;
-        }
+        if (!pxScene) return;
 
-        // Iterate over all entities with a RigidBodyComponent
+        // 1. RigidBodies
         EnttView<Entity, RigidBodyComponent>([this, pxScene](auto entity, auto& comp)
             {
                 auto* actor = comp.RigidBody.actor;
-                if (!actor) return; // Skip if no actor
+                if (!actor) return;
 
-                // 1. Clean up Collider Pointers (if they exist)
-                if (entity.template Has<ColliderComponent>())
-                {
+                // Cleanup Collider Pointers
+                if (entity.template Has<ColliderComponent>()) {
                     auto& collider = entity.template Get<ColliderComponent>().Collider;
-                    if (collider.material) {
-                        collider.material->release();
-                        collider.material = nullptr;
-                    }
-                    if (collider.Shape) {
-                        collider.Shape->release();
-                        collider.Shape = nullptr;
-                    }
+                    if (collider.material) { collider.material->release(); collider.material = nullptr; }
+
+                    // The shape is released by the actor, so we just null the pointer
+                    collider.Shape = nullptr;
                 }
 
-                // 2. Destroy actor user data
                 if (actor->userData) {
-                    EntityID* owner = static_cast<EntityID*>(actor->userData);
-                    BOOM_DELETE(owner);
+                    delete static_cast<EntityID*>(actor->userData);
                     actor->userData = nullptr;
                 }
 
-                // 3. (THE FIX) Remove from scene, THEN release memory
                 pxScene->removeActor(*actor);
                 actor->release();
                 comp.RigidBody.actor = nullptr;
             });
 
-        // *** Also destroy collider-only actors (triggers) ***
+        // 2. Collider-Only (Triggers/Static) -- THIS WAS THE CAUSE OF THE CRASH
         EnttView<Entity, ColliderComponent>([this, pxScene](auto entity, auto& comp) {
-            // Skip if it has a RigidBodyComponent (already handled above)
             if (entity.template Has<RigidBodyComponent>()) return;
 
             auto* actor = comp.Collider.actor;
             if (!actor) return;
 
-            // Clean up user data
             if (actor->userData) {
-                EntityID* owner = static_cast<EntityID*>(actor->userData);
-                BOOM_DELETE(owner);
+                delete static_cast<EntityID*>(actor->userData);
                 actor->userData = nullptr;
             }
 
-            // Remove and release
             pxScene->removeActor(*actor);
-            actor->release();
+            actor->release(); // <--- This destroys the attached Shape!
+
             comp.Collider.actor = nullptr;
+            comp.Collider.Shape = nullptr; // <--- CRITICAL FIX: Mark shape as dead
             });
 
-        // *** FIX: Use a small positive deltaTime instead of 0.0f ***
         if (pxScene) {
-            // Simulate with very small delta time to flush event queue
-            // PhysX requires deltaTime > 0
-            const float kMinDeltaTime = 0.0001f; // 0.1ms
-            pxScene->simulate(kMinDeltaTime);
-            pxScene->fetchResults(true); // Block until complete
-            BOOM_INFO("[Physics] Flushed physics event queue after destroying actors");
+            pxScene->simulate(0.0001f);
+            pxScene->fetchResults(true);
         }
     }
 
@@ -1010,6 +1104,54 @@ namespace Boom
         }
     }
 
+    // Logic for snapping an entity to a surface (floor or wall)
+    void Application::SnapEntityToSurface(entt::entity entity, glm::vec3 direction) {
+        auto& reg = m_Context->scene;
+        if (!reg.all_of<TransformComponent, ColliderComponent>(entity)) return;
+
+        // Use the registry to get the component
+        auto& tc = reg.get<TransformComponent>(entity);
+        auto& col = reg.get<ColliderComponent>(entity).Collider;
+
+        // 1. Determine the extent (half-size) of the collider in the snap direction
+        // This ensures the "feet" or "side" touches the surface, not the center.
+        float extent = 0.0f;
+        glm::vec3 worldScale = tc.transform.scale * col.localScale;
+
+        // Approximate extent based on collider type
+        if (col.type == Collider3D::BOX) {
+            // Find which axis of the box aligns most with our snap direction
+            extent = glm::abs(glm::dot(direction, glm::vec3(worldScale * 0.5f)));
+        }
+        else if (col.type == Collider3D::SPHERE) {
+            extent = (worldScale.x * 0.5f);
+        }
+        else if (col.type == Collider3D::CAPSULE || col.type == Collider3D::CYLINDER) {
+            // Assuming Y-up for these primitives
+            extent = (direction.y != 0) ? (worldScale.y * 0.5f) : (worldScale.x * 0.5f);
+        }
+
+        // 2. Perform the Raycast
+        glm::vec3 rayOrigin = tc.transform.translate;
+        float maxDistance = 50.0f; // Adjust based on scene scale
+        auto hit = m_Context->physics->Raycast(rayOrigin, direction, maxDistance);
+
+        if (hit.hitFound) {
+            // 3. Calculate new position
+            // Position = HitPoint - (Direction * Extent) 
+            // Example: If snapping down (0, -1, 0), pos = Hit + (0, extent, 0)
+            glm::vec3 newPos = hit.position - (direction * extent);
+
+            tc.transform.translate = newPos;
+
+            // 4. Sync with Physics immediately so it doesn't "pop" back
+            m_Context->physics->UpdateRigidBodyTransform(Entity(&reg, entity), tc.transform);
+
+            BOOM_INFO("[Snap] Snapped entity '{}' to surface at distance {}",
+                reg.get<InfoComponent>(entity).name, hit.distance);
+        }
+    }
+
     void Application::DrawRigidBodiesDebugOnly(const glm::mat4& view, const glm::mat4& proj)
     {
         if (!m_DebugLinesShader) return;
@@ -1238,6 +1380,4 @@ namespace Boom
         if (!verts.empty())
             m_DebugLinesShader->Draw(view, proj, verts, 10.5f);
     }
-
-
 }

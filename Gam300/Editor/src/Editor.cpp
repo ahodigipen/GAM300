@@ -1,5 +1,6 @@
 ﻿// src/Editor/Editor.cpp
 #include "Editor.h"
+#pragma warning(disable : 4834) // Disable [[nodiscard]] warnings for logging
 
 // Bring in the full AppContext definition here (not in the header)
 #include "Context/Context.h"
@@ -18,6 +19,8 @@
 #include "Panels/PlaybackControlsPanel.h"
 #include "Panels/NavMeshPanel.h"
 #include "Panels/AnimatorGraphPanel.h"
+#include "Panels/ModelPreviewPanel.h"
+#include "Panels/AnimationTimelinePanel.h"
 #include "BoomEngine.h"
 
 // Undo/Redo
@@ -153,6 +156,8 @@ namespace EditorUI {
         m_Playback = std::make_unique<PlaybackControlsPanel>(this, m_App);
 		m_Navmesh = std::make_unique<NavmeshPanel>(this);
         m_AnimatorGraph = std::make_unique<AnimatorGraphPanel>(this);
+        m_ModelPreview = std::make_unique<ModelPreviewPanel>(this);
+        m_AnimationTimeline = std::make_unique<AnimationTimelinePanel>(this);
 
         // Initialize Undo/Redo system
         m_CommandHistory = std::make_unique<CommandHistory>(100); // Max 100 undo levels
@@ -213,6 +218,8 @@ namespace EditorUI {
         if (m_ShowPlaybackControls && m_Playback) m_Playback->OnShow();
 		if (m_ShowNavmesh && m_Navmesh)       m_Navmesh->Render();
         if (m_ShowAnimatorGraph && m_AnimatorGraph) m_AnimatorGraph->Render();
+        if (m_ShowModelPreview && m_ModelPreview) m_ModelPreview->Render();
+        if (m_ShowAnimationTimeline && m_AnimationTimeline) m_AnimationTimeline->Render();
         // --- End frame / draw ---
         EndImguiFrame();
     }

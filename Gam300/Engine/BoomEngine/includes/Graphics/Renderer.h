@@ -165,6 +165,7 @@ namespace Boom {
             // set pbr shader light space mtx and depth map
             pbrShader->Use();
             pbrShader->SetLightSpaceMatrix(lightSpaceMtx);
+            pbrShader->SetEnvMaps(0, 0, 0, shadowShader->GetDepthMap());
 
             // begin depth rendering
             shadowShader->BeginFrame(lightSpaceMtx);
@@ -180,7 +181,7 @@ namespace Boom {
         }
         BOOM_INLINE void DrawSkybox(Skybox const& sky, Transform3D const& transform) {
             skyBoxShader->Draw(skyboxMesh, sky.cubeMap, transform);
-            //pbrShader->SetEnvMaps(0, 0, 0, shadowShader->GetDepthMap());
+            pbrShader->SetEnvMaps(0, 0, 0, shadowShader->GetDepthMap());
         }
 
     public: // -------------------- Animator (skinning) -------------
@@ -222,6 +223,13 @@ namespace Boom {
 
         BOOM_INLINE void DrawPick(Model3D const& model, Transform3D const& transform) {
             pickShader->Draw(model, transform);
+        }
+        BOOM_INLINE void DrawPick(Transform3D const& transform) {
+            pickShader->Draw(transform);
+        }
+        BOOM_INLINE void DrawPick(Transform2D const& transform) {
+            if (isPickIgnoreGUI) return;
+            pickShader->Draw(transform);
         }
 
         BOOM_INLINE void DrawQuad(Texture const& tex, Transform3D const& transform, glm::vec4 col = glm::vec4{ 1.f }) {
@@ -420,6 +428,7 @@ namespace Boom {
         bool showLowPoly{};
         bool showNormalTexture{};
         bool enabledBloom{};
+        bool isPickIgnoreGUI{};
     };
 
 } // namespace Boom

@@ -7,6 +7,7 @@ namespace GameScripts
     {
         private const int MOUSE_LEFT = 0;
 
+        // --- Texture Constants ---
         private const string RESUME_TEX_NORMAL = "Resources/Textures/PauseMenu/ResumeButton.png";
         private const string RESTART_TEX_NORMAL = "Resources/Textures/PauseMenu/RestartButton.png";
         private const string MAINMENU_TEX_NORMAL = "Resources/Textures/PauseMenu/ReturnMenuButton.png";
@@ -17,7 +18,6 @@ namespace GameScripts
         private const string MAINMENU_TEX_CLICKED = "Resources/Textures/PauseMenu/ReturnMenuButton_Clicked.png";
         private const string QUIT_TEX_CLICKED = "Resources/Textures/PauseMenu/QuitButton_Clicked.png";
 
-
         private ulong _resumeButtonID;
         private ulong _restartButtonID;
         private ulong _mainMenuButtonID;
@@ -26,11 +26,14 @@ namespace GameScripts
         private enum MenuState
         {
             Idle,
-            ButtonDelay
+            ButtonDelay,
+            WaitingForMouseUp
         }
 
         private MenuState _currentState = MenuState.Idle;
         private ulong _clickedButtonID = 0;
+
+        private bool _wasPausedLastFrame = false;
 
         public void OnStart(string jsonParams)
         {
@@ -47,19 +50,29 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
-            // Only process input if the game is actually paused
-            if (!Entry.IsGamePaused)
+            if (Entry.s_ActivePauseMenuInstance != this)
             {
-                return;
+                Entry.s_ActivePauseMenuInstance = this;
             }
 
-            if (Entry.s_RequestedAction != Entry.PauseMenuAction.None)
+            if (Entry.IsGamePaused && !_wasPausedLastFrame)
             {
-                return;
+                ResetButtonState();
             }
+            _wasPausedLastFrame = Entry.IsGamePaused;
+
+            if (!Entry.IsGamePaused) return;
+            if (Entry.s_RequestedAction != Entry.PauseMenuAction.None) return;
 
             switch (_currentState)
             {
+                case MenuState.WaitingForMouseUp:
+                    if (!API.IsMouseDown(MOUSE_LEFT))
+                    {
+                        _currentState = MenuState.Idle;
+                    }
+                    break;
+
                 case MenuState.Idle:
                     Update_Idle();
                     break;
@@ -72,8 +85,7 @@ namespace GameScripts
 
         public void ResetButtonState()
         {
-            API.Log("Resetting PauseMenu state and textures...");
-            _currentState = MenuState.Idle;
+            _currentState = MenuState.WaitingForMouseUp;
             _clickedButtonID = 0;
 
             if (_resumeButtonID != 0)
@@ -85,7 +97,6 @@ namespace GameScripts
             if (_quitButtonID != 0)
                 API.SetSpriteTexture(_quitButtonID, QUIT_TEX_NORMAL);
         }
-
 
         private void Update_Idle()
         {
@@ -130,22 +141,18 @@ namespace GameScripts
 
             if (_clickedButtonID == _resumeButtonID)
             {
-                API.Log(">> Resume Button Clicked! Requesting resume...");
                 Entry.s_RequestedAction = Entry.PauseMenuAction.Resume;
             }
             else if (_clickedButtonID == _mainMenuButtonID)
             {
-                API.Log(">> Main Menu Button Clicked! Requesting menu load...");
                 Entry.s_RequestedAction = Entry.PauseMenuAction.MainMenu;
             }
             else if (_clickedButtonID == _restartButtonID)
             {
-                API.Log(">> Restart Button Clicked! Requesting restart...");
                 Entry.s_RequestedAction = Entry.PauseMenuAction.Restart;
             }
             else if (_clickedButtonID == _quitButtonID)
             {
-                API.Log(">> Quit Button Clicked! Requesting quit...");
                 Entry.s_RequestedAction = Entry.PauseMenuAction.Quit;
             }
         }

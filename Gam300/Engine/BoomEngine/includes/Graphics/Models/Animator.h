@@ -170,6 +170,12 @@ namespace Boom
             return (index < m_Clips.size()) ? m_Clips[index].get() : nullptr;
         }
 
+        // Mutable version for editing (used by Animation Timeline panel)
+        BOOM_INLINE AnimationClip* GetClipMutable(size_t index)
+        {
+            return (index < m_Clips.size()) ? m_Clips[index].get() : nullptr;
+        }
+
         BOOM_INLINE size_t GetSequence() const { return GetCurrentClip(); }
         BOOM_INLINE void SetSequence(size_t index) { PlayClip(index); }
 
@@ -292,10 +298,73 @@ namespace Boom
         BOOM_INLINE std::vector<State>& GetStates() { return m_States; }
         BOOM_INLINE const std::vector<State>& GetStates() const { return m_States; }
 
+        BOOM_INLINE void AddClip(std::shared_ptr<AnimationClip> clip) {
+            m_Clips.push_back(clip);
+        }
+
         BOOM_INLINE void RemoveClip(size_t index) {
             if (index < m_Clips.size()) {
                 m_Clips.erase(m_Clips.begin() + index);
             }
+        }
+
+        // === KEYFRAME EDITING API (for Animation Timeline) ===
+
+        // Get mutable track for editing
+        BOOM_INLINE std::vector<KeyFrame>* GetTrackMutable(size_t clipIndex, const std::string& jointName)
+        {
+            if (clipIndex >= m_Clips.size()) return nullptr;
+            auto& clip = m_Clips[clipIndex];
+            auto it = clip->tracks.find(jointName);
+            return (it != clip->tracks.end()) ? &it->second : nullptr;
+        }
+
+        // Add keyframe to track (maintains sorted order by timestamp)
+        BOOM_INLINE bool AddKeyframe(size_t clipIndex, const std::string& jointName, const KeyFrame& keyframe)
+        {
+            if (clipIndex >= m_Clips.size()) return false;
+            auto& clip = m_Clips[clipIndex];
+
+            // Create track if it doesn't exist
+            auto& track = clip->tracks[jointName];
+
+            // Find insertion point to maintain sorted order
+            auto insertPos = std::lower_bound(track.begin(), track.end(), keyframe,
+                [](const KeyFrame& a, const KeyFrame& b) { return a.timeStamp < b.timeStamp; });
+
+            track.insert(insertPos, keyframe);
+            return true;
+        }
+
+        // Remove keyframe at specific index from track
+        BOOM_INLINE bool RemoveKeyframe(size_t clipIndex, const std::string& jointName, size_t keyframeIndex)
+        {
+            auto* track = GetTrackMutable(clipIndex, jointName);
+            if (!track || keyframeIndex >= track->size()) return false;
+
+            track->erase(track->begin() + keyframeIndex);
+            return true;
+        }
+
+        // Update keyframe timestamp (re-sorts track)
+        BOOM_INLINE bool UpdateKeyframeTime(size_t clipIndex, const std::string& jointName, size_t keyframeIndex, float newTime)
+        {
+            auto* track = GetTrackMutable(clipIndex, jointName);
+            if (!track || keyframeIndex >= track->size()) return false;
+
+            // Store the keyframe data
+            KeyFrame kf = (*track)[keyframeIndex];
+            kf.timeStamp = newTime;
+
+            // Remove old keyframe
+            track->erase(track->begin() + keyframeIndex);
+
+            // Re-insert at correct position
+            auto insertPos = std::lower_bound(track->begin(), track->end(), kf,
+                [](const KeyFrame& a, const KeyFrame& b) { return a.timeStamp < b.timeStamp; });
+            track->insert(insertPos, kf);
+
+            return true;
         }
 
     private:
@@ -805,6 +874,9 @@ namespace Boom
         }
 
     public:
+        // Access to skeleton root
+        BOOM_INLINE const Joint& GetRoot() const { return m_Root; }
+
         // Extract skeleton as lines for debug visualization
         BOOM_INLINE std::vector<BoneLine> GetSkeletonLines() const
         {
@@ -819,7 +891,7 @@ namespace Boom
         {
             m_Root = source.m_Root;
             m_GlobalTransform = source.m_GlobalTransform;
-            m_Transforms.resize(source.m_Transforms.size());
+            m_Transforms = source.m_Transforms;  // Copy actual transform values
             // Keep existing m_States, m_Clips, parameters intact
         }
 
@@ -831,7 +903,7 @@ namespace Boom
             // Skeleton data
             clone->m_GlobalTransform = m_GlobalTransform;
             clone->m_Root = m_Root;
-            clone->m_Transforms.resize(m_Transforms.size());
+            clone->m_Transforms = m_Transforms;  // Copy actual transform values
 
             // Animation data
             clone->m_Clips = m_Clips; // Shared ownership of clips
@@ -863,6 +935,22 @@ namespace Boom
                 // Clamp to clip duration
                 m_Time = std::min(m_Time, m_Clips[m_CurrentClip]->duration);
             }
+        }
+
+        BOOM_INLINE void SetCurrentClip(size_t clipIndex)
+        {
+            // Set current clip WITHOUT resetting time (unlike PlayClip)
+            if (clipIndex < m_Clips.size())
+            {
+                m_CurrentClip = clipIndex;
+            }
+        }
+
+        BOOM_INLINE void UpdateJointsFromCurrentTime()
+        {
+            // Force joint transform update without advancing time
+            // Used when seeking to a specific time position
+            UpdateJoints(m_Root, glm::identity<glm::mat4>());
         }
 
         BOOM_INLINE void LoadAnimationFromFile(const std::string& filepath, const std::string& clipName = "")
