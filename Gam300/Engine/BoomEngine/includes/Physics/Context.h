@@ -29,7 +29,7 @@ namespace Boom {
         // ====================================================================================
         // REGION: LIFECYCLE & CORE
         // ====================================================================================
-        #pragma region Lifecycle
+#pragma region Lifecycle
         BOOM_INLINE PhysicsContext()
             : m_Foundation(nullptr), m_Physics(nullptr), m_Dispatcher(nullptr), m_Scene(nullptr), m_DebugVisEnabled(false)
         {
@@ -78,14 +78,14 @@ namespace Boom {
         BOOM_INLINE void SetEventCallback(PxCallbackFunction&& callback) {
             m_EventCallback.m_Callback = callback;
         }
-        #pragma endregion
+#pragma endregion
 
         // ====================================================================================
         // REGION: ACTOR MANAGEMENT (ADD / REMOVE)
         // ====================================================================================
-        #pragma region ActorManagement
+#pragma region ActorManagement
 
-        // Adds a RigidBody (Dynamic/Static/Kinematic) to the entity
+// Adds a RigidBody (Dynamic/Static/Kinematic) to the entity
         BOOM_INLINE void AddRigidBody(Entity& entity, AssetRegistry& assetRegistry) {
             auto& transform = entity.Get<TransformComponent>().transform;
             auto& body = entity.Get<RigidBodyComponent>().RigidBody;
@@ -227,12 +227,12 @@ namespace Boom {
                 }
             }
         }
-        #pragma endregion
+#pragma endregion
 
         // ====================================================================================
         // REGION: RUNTIME UPDATES
         // ====================================================================================
-        #pragma region RuntimeUpdates
+#pragma region RuntimeUpdates
 
         BOOM_INLINE void UpdateColliderShape(Entity& entity, AssetRegistry& assetRegistry) {
             if (!entity.Has<RigidBodyComponent>() || !entity.Has<ColliderComponent>()) return;
@@ -353,12 +353,12 @@ namespace Boom {
                 dyn->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, lockZ);
             }
         }
-        #pragma endregion
+#pragma endregion
 
         // ====================================================================================
         // REGION: QUERIES (RAYCAST)
         // ====================================================================================
-        #pragma region Queries
+#pragma region Queries
 
         BOOM_INLINE PhysXRayResult Raycast(const glm::vec3& origin, const glm::vec3& direction, float maxDist) {
             PhysXRayResult result;
@@ -389,12 +389,12 @@ namespace Boom {
             return ToGLMVec3(idealCamPos);
         }
 
-        #pragma endregion
+#pragma endregion
 
         // ====================================================================================
         // REGION: MESH COOKING & IO
         // ====================================================================================
-        #pragma region Cooking
+#pragma region Cooking
 
         BOOM_INLINE bool CompileAndSavePhysicsMesh(ModelAsset& modelAsset, const std::string& savePath) {
             return GenericCookMesh(modelAsset, savePath, false);
@@ -438,12 +438,12 @@ namespace Boom {
 
             return CookConvexGeometryFromDesc(meshDesc);
         }
-        #pragma endregion
+#pragma endregion
 
         // ====================================================================================
         // REGION: DEBUG VISUALIZATION
         // ====================================================================================
-        #pragma region DebugViz
+#pragma region DebugViz
 
         BOOM_INLINE void EnableDebugVisualization(bool enable, float scale = 1.0f) {
             m_DebugVisEnabled = enable;
@@ -472,7 +472,7 @@ namespace Boom {
                 outLines.push_back({ a, b, ca, cb }); outLines.push_back({ b, c, cb, cc }); outLines.push_back({ c, a, cc, ca });
             }
         }
-        #pragma endregion
+#pragma endregion
 
 
     private:
