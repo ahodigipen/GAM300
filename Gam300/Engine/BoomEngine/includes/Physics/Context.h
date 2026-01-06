@@ -665,7 +665,17 @@ namespace Boom {
             return false;
         }
 
-        static PxFilterFlags CustomFilterShader(PxFilterObjectAttributes attr0, PxFilterData fd0, PxFilterObjectAttributes attr1, PxFilterData fd1, PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize) {
+        static PxFilterFlags CustomFilterShader(
+            PxFilterObjectAttributes attr0, [[maybe_unused]] PxFilterData fd0,
+            PxFilterObjectAttributes attr1, [[maybe_unused]] PxFilterData fd1,
+            PxPairFlags& pairFlags, [[maybe_unused]] const void* constantBlock,
+            [[maybe_unused]] PxU32 constantBlockSize)
+        {
+            (void)fd0;
+            (void)fd1;
+            (void)constantBlock;
+            (void)constantBlockSize;
+
             if (PxFilterObjectIsTrigger(attr0) || PxFilterObjectIsTrigger(attr1)) {
                 pairFlags = PxPairFlag::eNOTIFY_TOUCH_FOUND | PxPairFlag::eNOTIFY_TOUCH_LOST | PxPairFlag::eDETECT_DISCRETE_CONTACT;
             }
