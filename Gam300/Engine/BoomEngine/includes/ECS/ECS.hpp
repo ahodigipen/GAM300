@@ -757,8 +757,10 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
 
     struct SceneNavmeshComponent {
         std::string navmeshFile;   // e.g. "Resources/NavData/level1.bin"
+        float ambientStrength = 0.5f;  // Default ambient light strength for the scene
         XPROPERTY_DEF("SceneNavmeshComponent", SceneNavmeshComponent,
-            obj_member<"NavmeshFile", &SceneNavmeshComponent::navmeshFile>)
+            obj_member<"NavmeshFile", &SceneNavmeshComponent::navmeshFile>,
+            obj_member<"AmbientStrength", &SceneNavmeshComponent::ambientStrength>)
     };
 
     struct DeactivatedComponent {

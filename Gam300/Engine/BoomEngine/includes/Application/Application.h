@@ -1212,6 +1212,19 @@ namespace Boom
 				}
 				});
 
+			// Apply scene ambient strength from SceneNavmeshComponent (scene settings)
+			entt::entity sceneSettings = TryGetSceneSettings(m_Context->scene);
+			if (sceneSettings != entt::null) {
+				auto& settings = m_Context->scene.get<SceneNavmeshComponent>(sceneSettings);
+				m_Context->renderer->AmbientStrength() = settings.ambientStrength;
+				BOOM_INFO("[Scene] Applied ambient strength: {}", settings.ambientStrength);
+			}
+			else {
+				// If no scene settings exist, use default
+				m_Context->renderer->AmbientStrength() = 0.5f;
+				BOOM_INFO("[Scene] No scene settings found, using default ambient strength: 0.5");
+			}
+
 			// Reinitialize physics - BOTH RigidBodies AND Collider-Only (Triggers)
 			EnttView<Entity, RigidBodyComponent>([this](auto entity, auto&) {
 				m_Context->physics->AddRigidBody(entity, *m_Context->assets);

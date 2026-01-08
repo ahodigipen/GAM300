@@ -170,9 +170,27 @@ namespace EditorUI {
                     }
                     ImGui::EndMenu();
                 }
-                ImGui::SliderFloat("Ambient Strength",
-                    &m.ctx->renderer->AmbientStrength(),
-                    0.0f, 0.5f);
+                // Get or create scene settings entity
+                entt::entity sceneSettings = Boom::TryGetSceneSettings(m.ctx->scene);
+                if (sceneSettings == entt::null) {
+                    sceneSettings = m.ctx->scene.create();
+
+                    // Add InfoComponent for proper identification
+                    auto& info = m.ctx->scene.emplace<Boom::InfoComponent>(sceneSettings);
+                    info.name = "Scene Settings";
+                    info.uid = static_cast<Boom::AssetID>(sceneSettings); // Use entity ID as UID
+
+                    // Add SceneNavmeshComponent with default ambient strength
+                    auto& sceneComp = m.ctx->scene.emplace<Boom::SceneNavmeshComponent>(sceneSettings);
+                    sceneComp.ambientStrength = 0.5f; // Default value
+                }
+                auto& settings = m.ctx->scene.get<Boom::SceneNavmeshComponent>(sceneSettings);
+
+                // Slider modifies the scene component
+                if (ImGui::SliderFloat("Ambient Strength", &settings.ambientStrength, 0.0f, 1.0f)) {
+                    // Apply to renderer in real-time for immediate visual feedback
+                    m.ctx->renderer->AmbientStrength() = settings.ambientStrength;
+                }
                 if (m.ctx->physics && m_Owner && m_Owner->GetApp()) {
                     // Get current state from Application
                     bool physDebugViz = m_Owner->GetApp()->m_PhysDebugViz;
