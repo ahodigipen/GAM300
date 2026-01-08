@@ -142,9 +142,17 @@ float ComputeShadow()
 {
   vec4 pos = u_lightSpace * vec4(vertex.position, 1.0);
   vec3 uvs = (pos.xyz / pos.w) * 0.5 + 0.5;
+
+  // Check if fragment is outside light frustum
+  if(uvs.x < 0.0 || uvs.x > 1.0 || uvs.y < 0.0 || uvs.y > 1.0 || uvs.z > 1.0)
+    return 0.0; // not in shadow
+
   float depth = texture(u_depthMap, uvs.xy).r;
 
-  return pos.z > depth ? 1.0 : 0.0;
+  // Add bias to reduce shadow acne
+  float bias = 0.005;
+
+  return uvs.z - bias > depth ? 1.0 : 0.0;
 }
 
 //this effect influences the appearance of surfaces
