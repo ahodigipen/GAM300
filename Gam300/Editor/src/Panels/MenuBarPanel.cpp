@@ -187,6 +187,8 @@ namespace EditorUI {
                 ImGui::MenuItem("Bloom", nullptr, &m.ctx->renderer->enabledBloom);
 
                 ImGui::MenuItem("Picking ignore GUI", nullptr, &m.ctx->renderer->isPickIgnoreGUI);
+
+                ImGui::MenuItem("Toggle Shadows", nullptr, &m.ctx->app->toggleShadows);
             }
             ImGui::EndMenu();
         }

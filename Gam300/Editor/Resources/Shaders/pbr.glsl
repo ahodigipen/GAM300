@@ -138,8 +138,13 @@ uniform bool showNormalTexture;
 // shadow mapping
 uniform mat4 u_lightSpace;
 uniform sampler2D u_depthMap;
+uniform bool u_enableShadows = false;
+
 float ComputeShadow()
 {
+  // Early return if shadows are disabled
+  if (!u_enableShadows) return 0.0;
+
   vec4 pos = u_lightSpace * vec4(vertex.position, 1.0);
   vec3 uvs = (pos.xyz / pos.w) * 0.5 + 0.5;
 
@@ -150,7 +155,9 @@ float ComputeShadow()
   float depth = texture(u_depthMap, uvs.xy).r;
 
   // Add bias to reduce shadow acne
-  float bias = 0.005;
+  // Increase if you see shadow acne (noise)
+  // Decrease if shadows float (peter panning)
+  float bias = 0.002;
 
   return uvs.z - bias > depth ? 1.0 : 0.0;
 }
@@ -225,25 +232,27 @@ void main() {
 
     //fresnel reflectivity
     vec3 f0 = mix(vec3(0.04), albedo, metallic);
-         
-    vec3 ambient = ambientStrength * albedo;
-    //lights
-    vec3 color = ComputePointLights(N, V, f0, albedo, roughness, metallic) + 
-                ComputeDirLights(N, V, f0, albedo, roughness, metallic) + 
-                ComputeSpotLights(N, V, f0, albedo, roughness, metallic);
-    
-    //shadows, occ and em
-//    color = (color * occlusion) + emissive;
-//    color *= 1.0 - ComputeShadow();
-// float shadow = ComputeShadow();
-//
-//    // direct light
-    color = color * (1.0 - ComputeShadow()) * occlusion;
 
-    // ambient: only AO, not shadowed
+    vec3 ambient = ambientStrength * albedo;
+
+    // Calculate shadow factor once
+    float shadow = ComputeShadow();
+
+    // Lights - shadows only affect directional lights
+    vec3 pointLight = ComputePointLights(N, V, f0, albedo, roughness, metallic);
+    vec3 dirLight = ComputeDirLights(N, V, f0, albedo, roughness, metallic);
+    vec3 spotLight = ComputeSpotLights(N, V, f0, albedo, roughness, metallic);
+
+    // Apply shadow only to directional light
+    vec3 color = pointLight + (dirLight * (1.0 - shadow)) + spotLight;
+
+    // Apply occlusion to all lighting
+    color = color * occlusion;
+
+    // Add ambient light (not affected by shadows, only by AO)
     color += ambient * occlusion;
 
-  
+    // Add emissive (not affected by lighting or shadows)
     color += emissive;
 
     if (dot(color,BLOOM_THRESHOLD)>1.0) {

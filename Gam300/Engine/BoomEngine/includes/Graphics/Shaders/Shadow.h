@@ -72,8 +72,7 @@ namespace Boom {
 
         BOOM_INLINE void EndFrame()
         {
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            glDisable(GL_DEPTH_TEST);
+            // Just unbind the shadow shader - let the renderer restore the FBO
             UnUse();
         }
 

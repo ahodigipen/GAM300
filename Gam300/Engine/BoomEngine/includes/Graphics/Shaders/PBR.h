@@ -61,6 +61,7 @@ namespace Boom {
 			, ambientStrengthLoc{ GetUniformVar("ambientStrength") }
 			, u_LightSpace{ GetUniformVar("u_lightSpace") }
 			, u_DepthMap{ GetUniformVar("u_depthMap") }
+			, u_EnableShadows{ GetUniformVar("u_enableShadows") }
 		{
 			GLuint prog = shaderId; 
 
@@ -140,6 +141,10 @@ namespace Boom {
 		{
 			// set view projection matrix
 			SetUniform(u_LightSpace, lightSpaceMtx);
+		}
+		BOOM_INLINE void SetShadowsEnabled(bool enabled)
+		{
+			SetUniform(u_EnableShadows, enabled);
 		}
 	public:
 		BOOM_INLINE void SetEnvMaps(uint32_t, uint32_t, uint32_t, uint32_t depthMap) {
@@ -284,6 +289,7 @@ namespace Boom {
 
 		int32_t u_LightSpace = 0;
 		int32_t u_DepthMap = 0;
+		int32_t u_EnableShadows = 0;
 
 		int32_t ambientStrengthLoc;
 	};
