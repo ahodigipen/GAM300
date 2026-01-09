@@ -25,6 +25,9 @@ uniform mat4 frustumMat; // proj * view
 
 uniform mat4 jointsMat[MAX_JOINTS];
 uniform bool hasJoints = false;
+uniform mat4 u_lightSpace;
+
+out vec4 fragPosLightSpace;
 
 void main() {
     mat4 transform = mat4(1.0);
@@ -44,6 +47,7 @@ void main() {
     vertex.position = (transform * vec4(position, 1.0)).xyz;
     gl_Position = frustumMat * transform * vec4(position, 1.0);
     vertex.TBN = mat3(transform) * mat3(tangent, biTangent, normal);
+    fragPosLightSpace = u_lightSpace * vec4(vertex.position, 1.0);
 }
 ==VERTEX==
 
@@ -55,6 +59,9 @@ in Vertex {
     mat3 TBN;
     vec2 uv;
 } vertex;
+
+//shadow in vec4 pos
+in vec4 fragPosLightSpace;
 
 struct Material {
     vec3 emissive;
@@ -136,7 +143,6 @@ uniform bool isDebugMode;
 uniform bool showNormalTexture;
 
 // shadow mapping
-uniform mat4 u_lightSpace;
 uniform sampler2D u_depthMap;
 uniform bool u_enableShadows = false;
 
@@ -145,8 +151,7 @@ float ComputeShadow()
   // Early return if shadows are disabled
   if (!u_enableShadows) return 0.0;
 
-  vec4 pos = u_lightSpace * vec4(vertex.position, 1.0);
-  vec3 uvs = (pos.xyz / pos.w) * 0.5 + 0.5;
+  vec3 uvs = (fragPosLightSpace.xyz / fragPosLightSpace.w) * 0.5 + 0.5;
 
   // Check if fragment is outside light frustum
   if(uvs.x < 0.0 || uvs.x > 1.0 || uvs.y < 0.0 || uvs.y > 1.0 || uvs.z > 1.0)

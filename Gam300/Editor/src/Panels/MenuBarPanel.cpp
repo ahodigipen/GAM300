@@ -188,7 +188,12 @@ namespace EditorUI {
 
                 ImGui::MenuItem("Picking ignore GUI", nullptr, &m.ctx->renderer->isPickIgnoreGUI);
 
-                ImGui::MenuItem("Toggle Shadows", nullptr, &m.ctx->app->toggleShadows);
+                if (ImGui::BeginMenu("Shadow Debug")) {
+                    ImGui::MenuItem("Toggle Shadows", nullptr, &m.ctx->app->toggleShadows);
+                    ImGui::MenuItem("Toggle DepthBuffer", nullptr, &m.ctx->renderer->isDepthBufferView);
+                    ImGui::EndMenu();
+                }
+                
             }
             ImGui::EndMenu();
         }

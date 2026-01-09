@@ -1581,8 +1581,8 @@ namespace Boom
 			}
 		}
 
-	public:
-		bool toggleShadows{};
+	public: //imgui mutators
+		bool toggleShadows{true};
 	};
 
 

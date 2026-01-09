@@ -167,6 +167,7 @@ namespace Boom {
 		}
 
 		BOOM_INLINE void SetMaterial(PbrMaterial const& material, int32_t unit) {
+			glActiveTexture(GL_TEXTURE0 + unit);  // Switch to material's starting unit to avoid unbinding depth map on unit 0
 			glBindTexture(GL_TEXTURE_2D, 0);
 			SetUniform(albedoLoc, material.albedo);
 			SetUniform(roughLoc, material.roughness);

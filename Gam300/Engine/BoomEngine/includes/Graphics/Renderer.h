@@ -178,7 +178,7 @@ namespace Boom {
 
             // prepare projection and view mtx
             float orthoSize = 10.0f; // Shadow coverage area
-            auto proj = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, 0.1f, 25.0f);
+            auto proj = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, 1.f, 25.0f);
             auto view = glm::lookAt(lightPos, sceneCenter, up);
 
             // compute light space
@@ -350,7 +350,7 @@ namespace Boom {
             else {
                 if (m_TouchViewport) glViewport(0, 0, frame->GetWidth(), frame->GetHeight());
                 //shadowShader->GetDepthMap() //frame->GetTexture()
-                finalShader->Render(frame->GetTexture(), bloom->GetMap(), useFBO, enabledBloom); // toggle bloom inside final if needed
+                finalShader->Render(isDepthBufferView ? shadowShader->GetDepthMap() : frame->GetTexture(), bloom->GetMap(), useFBO, enabledBloom); // toggle bloom inside final if needed
             }
         }
 
@@ -474,6 +474,7 @@ namespace Boom {
         bool showNormalTexture{};
         bool enabledBloom{};
         bool isPickIgnoreGUI{};
+        bool isDepthBufferView{};
     };
 
 } // namespace Boom
