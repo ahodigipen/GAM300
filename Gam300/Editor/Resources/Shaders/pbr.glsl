@@ -25,6 +25,9 @@ uniform mat4 frustumMat; // proj * view
 
 uniform mat4 jointsMat[MAX_JOINTS];
 uniform bool hasJoints = false;
+uniform mat4 u_lightSpace;
+
+out vec4 fragPosLightSpace;
 
 void main() {
     mat4 transform = mat4(1.0);
@@ -44,6 +47,7 @@ void main() {
     vertex.position = (transform * vec4(position, 1.0)).xyz;
     gl_Position = frustumMat * transform * vec4(position, 1.0);
     vertex.TBN = mat3(transform) * mat3(tangent, biTangent, normal);
+    fragPosLightSpace = u_lightSpace * vec4(vertex.position, 1.0);
 }
 ==VERTEX==
 
@@ -55,6 +59,9 @@ in Vertex {
     mat3 TBN;
     vec2 uv;
 } vertex;
+
+//shadow in vec4 pos
+in vec4 fragPosLightSpace;
 
 struct Material {
     vec3 emissive;
@@ -136,15 +143,28 @@ uniform bool isDebugMode;
 uniform bool showNormalTexture;
 
 // shadow mapping
-uniform mat4 u_lightSpace;
 uniform sampler2D u_depthMap;
+uniform bool u_enableShadows = false;
+
 float ComputeShadow()
 {
-  vec4 pos = u_lightSpace * vec4(vertex.position, 1.0);
-  vec3 uvs = (pos.xyz / pos.w) * 0.5 + 0.5;
+  // Early return if shadows are disabled
+  if (!u_enableShadows) return 0.0;
+
+  vec3 uvs = (fragPosLightSpace.xyz / fragPosLightSpace.w) * 0.5 + 0.5;
+
+  // Check if fragment is outside light frustum
+  if(uvs.x < 0.0 || uvs.x > 1.0 || uvs.y < 0.0 || uvs.y > 1.0 || uvs.z > 1.0)
+    return 0.0; // not in shadow
+
   float depth = texture(u_depthMap, uvs.xy).r;
 
-  return pos.z > depth ? 1.0 : 0.0;
+  // Add bias to reduce shadow acne
+  // Increase if you see shadow acne (noise)
+  // Decrease if shadows float (peter panning)
+  float bias = 0.002;
+
+  return uvs.z - bias > depth ? 1.0 : 0.0;
 }
 
 //this effect influences the appearance of surfaces
@@ -217,25 +237,27 @@ void main() {
 
     //fresnel reflectivity
     vec3 f0 = mix(vec3(0.04), albedo, metallic);
-         
-    vec3 ambient = ambientStrength * albedo;
-    //lights
-    vec3 color = ComputePointLights(N, V, f0, albedo, roughness, metallic) + 
-                ComputeDirLights(N, V, f0, albedo, roughness, metallic) + 
-                ComputeSpotLights(N, V, f0, albedo, roughness, metallic);
-    
-    //shadows, occ and em
-//    color = (color * occlusion) + emissive;
-//    color *= 1.0 - ComputeShadow();
-// float shadow = ComputeShadow();
-//
-//    // direct light
-    color = color * (1.0 - ComputeShadow()) * occlusion;
 
-    // ambient: only AO, not shadowed
+    vec3 ambient = ambientStrength * albedo;
+
+    // Calculate shadow factor once
+    float shadow = ComputeShadow();
+
+    // Lights - shadows only affect directional lights
+    vec3 pointLight = ComputePointLights(N, V, f0, albedo, roughness, metallic);
+    vec3 dirLight = ComputeDirLights(N, V, f0, albedo, roughness, metallic);
+    vec3 spotLight = ComputeSpotLights(N, V, f0, albedo, roughness, metallic);
+
+    // Apply shadow only to directional light
+    vec3 color = pointLight + (dirLight * (1.0 - shadow)) + spotLight;
+
+    // Apply occlusion to all lighting
+    color = color * occlusion;
+
+    // Add ambient light (not affected by shadows, only by AO)
     color += ambient * occlusion;
 
-  
+    // Add emissive (not affected by lighting or shadows)
     color += emissive;
 
     if (dot(color,BLOOM_THRESHOLD)>1.0) {

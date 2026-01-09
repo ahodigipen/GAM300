@@ -153,11 +153,33 @@ namespace Boom {
             shadowShader->Draw(model, transform);
             //glCullFace(GL_BACK);
         }
-        BOOM_INLINE void BeginShadowPass(const glm::vec3& LightDir)
+        BOOM_INLINE void BeginShadowPass(const glm::vec3& LightRotation, bool enableShadows = true)
         {
+            // Convert Euler angles (degrees) to direction vector
+            glm::vec3 eulerRadians = glm::radians(LightRotation);
+            glm::quat rotation = glm::quat(eulerRadians);
+            glm::vec3 lightDir = rotation * glm::vec3(0.0f, 0.0f, -1.0f); // Forward direction
+
+            // Position the light camera at distance along the light direction
+            // For directional lights, we look "backwards" from the direction
+            float lightDistance = 10.0f; // Distance from scene center
+            glm::vec3 lightPos = -lightDir * lightDistance; // Negative because we want to look towards the scene
+            glm::vec3 sceneCenter = glm::vec3(0.0f, 0.0f, 0.0f); // Look at scene origin
+
+            // Calculate view direction (from camera to scene)
+            glm::vec3 viewDir = glm::normalize(sceneCenter - lightPos);
+
+            // Calculate up vector (must not be parallel to view direction)
+            glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+            if (glm::abs(glm::dot(viewDir, up)) > 0.99f) {
+                // If viewing straight up/down, use right vector as up
+                up = glm::vec3(1.0f, 0.0f, 0.0f);
+            }
+
             // prepare projection and view mtx
-            static auto proj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 10.0f);
-            auto view = glm::lookAt(LightDir, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            float orthoSize = 10.0f; // Shadow coverage area
+            auto proj = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, 1.f, 25.0f);
+            auto view = glm::lookAt(lightPos, sceneCenter, up);
 
             // compute light space
             auto lightSpaceMtx = proj * view;
@@ -166,13 +188,31 @@ namespace Boom {
             pbrShader->Use();
             pbrShader->SetLightSpaceMatrix(lightSpaceMtx);
             pbrShader->SetEnvMaps(0, 0, 0, shadowShader->GetDepthMap());
+            pbrShader->SetShadowsEnabled(enableShadows);
 
             // begin depth rendering
             shadowShader->BeginFrame(lightSpaceMtx);
         }
         BOOM_INLINE void EndShadowPass()
         {
+            // End shadow rendering and restore to main framebuffer
             shadowShader->EndFrame();
+
+            // Rebind the main framebuffer that was active from NewFrame()
+            if (showLowPoly) {
+                lowPolyFrame->SBind();
+            } else {
+                frame->SBind();
+            }
+
+            // Re-enable depth test (SBind doesn't do this)
+            glEnable(GL_DEPTH_TEST);
+
+            // Re-bind the PBR shader for subsequent rendering
+            pbrShader->Use();
+            glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_PointLightUBO);
+            glBindBufferBase(GL_UNIFORM_BUFFER, 1, m_DirLightUBO);
+            glBindBufferBase(GL_UNIFORM_BUFFER, 2, m_SpotLightUBO);
         }
 
     public: // ----------------------- Skybox -----------------------
@@ -310,7 +350,7 @@ namespace Boom {
             else {
                 if (m_TouchViewport) glViewport(0, 0, frame->GetWidth(), frame->GetHeight());
                 //shadowShader->GetDepthMap() //frame->GetTexture()
-                finalShader->Render(frame->GetTexture(), bloom->GetMap(), useFBO, enabledBloom); // toggle bloom inside final if needed
+                finalShader->Render(isDepthBufferView ? shadowShader->GetDepthMap() : frame->GetTexture(), bloom->GetMap(), useFBO, enabledBloom); // toggle bloom inside final if needed
             }
         }
 
@@ -349,7 +389,12 @@ namespace Boom {
         BOOM_INLINE float& DitherThreshold() { return pbrShader->ditherThreshold; }
         BOOM_INLINE float& AmbientStrength()
         {
-            return pbrShader->ambientStrength;   
+            return pbrShader->ambientStrength;
+        }
+        BOOM_INLINE void SetShadowsEnabled(bool enabled)
+        {
+            pbrShader->Use();
+            pbrShader->SetShadowsEnabled(enabled);
         }
         BOOM_INLINE float AspectRatio() const { return frame->Ratio(); }
 
@@ -429,6 +474,7 @@ namespace Boom {
         bool showNormalTexture{};
         bool enabledBloom{};
         bool isPickIgnoreGUI{};
+        bool isDepthBufferView{};
     };
 
 } // namespace Boom

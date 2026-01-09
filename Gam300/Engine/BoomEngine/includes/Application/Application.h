@@ -735,7 +735,12 @@ namespace Boom
 					if (directs >= MAX_DIR_LIGHTS) return;
 
 					GPUDirLight g{};
-					g.dir_intensity = glm::vec4(glm::normalize(tc.transform.rotate), dlc.light.intensity);
+					// Convert Euler rotation (degrees) to direction vector
+					glm::vec3 eulerRadians = glm::radians(tc.transform.rotate);
+					glm::quat rotation = glm::quat(eulerRadians);
+					glm::vec3 lightDir = rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+
+					g.dir_intensity = glm::vec4(glm::normalize(lightDir), dlc.light.intensity);
 					g.radiance = glm::vec4(dlc.light.radiance, 0.0f);
 					gpuDirs.push_back(g);
 					++directs;
@@ -755,7 +760,12 @@ namespace Boom
 
 					GPUSpotLight g{};
 					g.position_falloff = glm::vec4(tc.transform.translate, slc.light.fallOff);
-					g.dir_cutoff = glm::vec4(glm::normalize(tc.transform.rotate), slc.light.cutOff);
+					// Convert Euler rotation (degrees) to direction vector
+					glm::vec3 eulerRadians = glm::radians(tc.transform.rotate);
+					glm::quat rotation = glm::quat(eulerRadians);
+					glm::vec3 lightDir = rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+
+					g.dir_cutoff = glm::vec4(glm::normalize(lightDir), slc.light.cutOff);
 					g.radiance_intensity = glm::vec4(slc.light.radiance, slc.light.intensity);
 					gpuSpots.push_back(g);
 					++spots;
@@ -766,13 +776,27 @@ namespace Boom
 		}
 
 		BOOM_INLINE void RenderShadowScene() {
-			//building shadows
+			// Count directional lights first
+			int dirLightCount = 0;
+			EnttView<Entity, DirectLightComponent>([&dirLightCount](auto, auto&) { dirLightCount++; });
+
+			// Early exit if no directional lights
+			if (dirLightCount == 0) {
+				m_Context->renderer->SetShadowsEnabled(false);
+				return;
+			}
+
+			//building shadows - only use first directional light
+			bool shadowRendered = false;
 			EnttView<Entity, DirectLightComponent, TransformComponent>(
-				[this](auto, DirectLightComponent&, TransformComponent& tc)
+				[this, &shadowRendered](auto, DirectLightComponent&, TransformComponent& tc)
 				{
+					if (shadowRendered) return; // Only render shadows for first directional light
+					shadowRendered = true;
+
 					// light direction
 					auto& lightDir = tc.transform.rotate;
-					m_Context->renderer->BeginShadowPass(lightDir);
+					m_Context->renderer->BeginShadowPass(lightDir, toggleShadows);
 
 					EnttView<Entity, ModelComponent>([this](auto entity, ModelComponent& comp) {
 						//ignore lights and non initialized models
@@ -785,7 +809,8 @@ namespace Boom
 						std::vector<glm::mat4> joints;
 						if (entity.Has<AnimatorComponent>()) {
 							auto& an = entity.Get<AnimatorComponent>();
-							joints = an.animator->Animate(0); //dont update animation here
+							joints = an.animator->GetJoints(); //dont update animation here
+
 						}
 						else if (model->hasJoints) {
 							static std::vector<glm::mat4> identityPalette(100, glm::mat4(1.0f));
@@ -1569,6 +1594,8 @@ namespace Boom
 			}
 		}
 
+	public: //imgui mutators
+		bool toggleShadows{true};
 	};
 
 
