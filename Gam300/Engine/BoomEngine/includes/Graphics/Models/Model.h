@@ -64,8 +64,8 @@ namespace Boom {
 				aiProcess_OptimizeMeshes |
 				aiProcess_OptimizeGraph | aiProcess_ValidateDataStructure |
 				aiProcess_ImproveCacheLocality |
-				aiProcess_FixInfacingNormals |
-				aiProcess_GenUVCoords | aiProcess_FlipUVs;
+				aiProcess_FixInfacingNormals | aiProcess_TransformUVCoords |
+				aiProcess_GenUVCoords;
 
 			Assimp::Importer importer;
 			const aiScene* ai_scene = importer.ReadFile(filename, flags);
@@ -187,7 +187,7 @@ namespace Boom {
 				aiProcess_FixInfacingNormals |
 				aiProcess_SortByPType |
 				aiProcess_JoinIdenticalVertices |
-				aiProcess_FlipUVs | aiProcess_GenUVCoords |
+				aiProcess_GenUVCoords | aiProcess_TransformUVCoords |
 				aiProcess_LimitBoneWeights;
 
 			Assimp::Importer importer;
