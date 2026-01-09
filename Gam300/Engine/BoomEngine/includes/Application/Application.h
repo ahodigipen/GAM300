@@ -211,6 +211,18 @@ namespace Boom
 				}
 			});
 
+			// Find Samurai to add Capsule Controller
+			auto viewinfo = m_Context->scene.view<InfoComponent>();
+			for (auto entity : viewinfo) {
+				auto& info = viewinfo.get<InfoComponent>(entity);
+				if (info.name == "Samurai") {
+					Entity samuraiEntity{ &m_Context->scene, entity };
+					CreateControllerForEntity(samuraiEntity, 0.8f, 1.8f);
+					BOOM_INFO("[Play] Added Capsule Controller for Samurai entity {}", static_cast<uint32_t>(entity));
+					break;
+				}
+			}
+
 			// Reset time tracking
 			m_PausedTime = 0.0;
 			m_LastPauseTime = 0.0;
@@ -1613,6 +1625,31 @@ namespace Boom
 			const float t = glm::clamp(glm::dot(p - a, ab) / ab2, 0.0f, 1.0f);
 			const glm::vec3 closest = a + t * ab;
 			return glm::distance(p, closest);
+		}
+
+		BOOM_INLINE void CreateControllerForEntity(entt::entity e, float radius, float height) {
+			if (!m_Context || !m_Context->physics) return;
+			if (e == entt::null || !m_Context->scene.valid(e)) return;
+
+			Entity entity{ &m_Context->scene, e };
+
+			// Create controller
+			if (!entity.Has<TransformComponent>()) {
+				BOOM_ERROR("[Physics] Cannot create controller for entity {} without TransformComponent", static_cast<uint32_t>(e));
+				return;
+			}
+
+			if (m_Context->physics->HasController(entity)) {
+				BOOM_ERROR("[Physics] Entity {} has a controller. Cannot create another.", static_cast<uint32_t>(e));
+				return;
+			}
+
+			if (m_Context->physics->CreateCapsuleController(entity, radius, height)) {
+				BOOM_INFO("[Physics] Create capsule controller for entity {}", static_cast<uint32_t>(e));
+			}
+			else {
+				BOOM_ERROR("[Physics] Failed to create capsule controller for entity {}", static_cast<uint32_t>(e));
+			}
 		}
 
 		// -- MONO functions -- 

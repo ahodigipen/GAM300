@@ -96,6 +96,18 @@ namespace GameScripts
             _footstepComponent = new FootstepComponent { Entity = Entity };
             _footstepComponent.OnStart("");
 
+            // Request a PhysX capsule controller for this entity.
+            // Adjust radius/height to fit your character model.
+            // This call is safe if the controller already exists (native side guards duplicates).
+            try
+            {
+                API.CreateController(Entity, 0.35f, 1.8f);
+            }
+            catch (Exception ex)
+            {
+                API.Log($"[PlayerMovement] CreateController failed: {ex.Message}");
+            }
+
             if (API.HasAnimator(Entity))
             {
                 _hasAnimator = true;
@@ -132,7 +144,7 @@ namespace GameScripts
         private void StartRespawn()
         {
             _isRespawning = true;
-          //  _respawnTimer = 0f;
+            //  _respawnTimer = 0f;
             API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
             _fadeState = FadeState.FadingOut;
             _fadeTimer = 0f;
