@@ -776,6 +776,8 @@ namespace Boom
 		}
 
 		BOOM_INLINE void RenderShadowScene() {
+
+			glCullFace(GL_FRONT);
 			// Count directional lights first
 			int dirLightCount = 0;
 			EnttView<Entity, DirectLightComponent>([&dirLightCount](auto, auto&) { dirLightCount++; });
@@ -826,6 +828,8 @@ namespace Boom
 
 					m_Context->renderer->EndShadowPass();
 				});
+
+			glCullFace(GL_BACK);
 		}
 
 		void SnapEntity(Entity entity, const glm::vec3& direction, float maxDistance = 100.0f);

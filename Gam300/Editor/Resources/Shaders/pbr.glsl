@@ -157,14 +157,27 @@ float ComputeShadow()
   if(uvs.x < 0.0 || uvs.x > 1.0 || uvs.y < 0.0 || uvs.y > 1.0 || uvs.z > 1.0)
     return 0.0; // not in shadow
 
-  float depth = texture(u_depthMap, uvs.xy).r;
-
   // Add bias to reduce shadow acne
   // Increase if you see shadow acne (noise)
   // Decrease if shadows float (peter panning)
-  float bias = 0.002;
+  float bias = 0.005;
 
-  return uvs.z - bias > depth ? 1.0 : 0.0;
+  // PCF (Percentage Closer Filtering) for softer shadows
+  float shadow = 0.0;
+  vec2 texelSize = 1.0 / textureSize(u_depthMap, 0);
+
+  // 3x3 PCF kernel - samples 9 points around the fragment
+  for(int x = -1; x <= 1; ++x)
+  {
+    for(int y = -1; y <= 1; ++y)
+    {
+      float pcfDepth = texture(u_depthMap, uvs.xy + vec2(x, y) * texelSize).r;
+      shadow += uvs.z - bias > pcfDepth ? 1.0 : 0.0;
+    }
+  }
+
+  // Average the 9 samples for soft shadow edges
+  return shadow / 9.0;
 }
 
 //this effect influences the appearance of surfaces

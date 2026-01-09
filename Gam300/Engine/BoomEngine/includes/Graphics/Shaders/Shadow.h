@@ -45,9 +45,7 @@ namespace Boom {
         {
             SetUniform(jointsLoc, model->HasJoint());
             SetUniform(u_Model, transform.Matrix() * model->modelTransform.Matrix());
-            //glCullFace(GL_FRONT);
             model->Draw();
-            //glCullFace(GL_BACK);
         }
 
         BOOM_INLINE void BeginFrame(const glm::mat4& lightSpaceMtx)
