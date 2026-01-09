@@ -4,8 +4,11 @@
 #include "Utilities.h"
 #include "Auxiliaries/Assets.h"
 #include <iostream>
+#include <unordered_map>
 #include "PxPhysicsAPI.h"
 #include <foundation/PxMath.h>
+#include <characterkinematic/PxController.h>
+#include <characterkinematic/PxControllerManager.h>
 
 namespace Boom {
     struct PhysicsContext {
@@ -31,7 +34,8 @@ namespace Boom {
         // ====================================================================================
 #pragma region Lifecycle
         BOOM_INLINE PhysicsContext()
-            : m_Foundation(nullptr), m_Physics(nullptr), m_Dispatcher(nullptr), m_Scene(nullptr), m_DebugVisEnabled(false)
+            : m_Foundation(nullptr), m_Physics(nullptr), m_Dispatcher(nullptr), m_Scene(nullptr), m_DebugVisEnabled(false),
+            m_ControllerManager(nullptr), m_ControllerMaterial(nullptr)
         {
             // Initialize PhysX SDK
             m_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_AllocatorCallback, m_ErrorCallback);
@@ -55,10 +59,38 @@ namespace Boom {
             m_Scene = m_Physics->createScene(sceneDesc);
             if (!m_Scene) { BOOM_ERROR("Error creating PhysX m_Scene"); m_Physics->release(); m_Foundation->release(); return; }
 
+            // Create Controller Manager for character controllers
+            // PxCreateControllerManager expects a reference to PxScene
+            m_ControllerManager = PxCreateControllerManager(*m_Scene);
+            if (!m_ControllerManager) {
+                BOOM_ERROR("Failed to create PxControllerManager");
+            }
+
+            // Create a shared controller material for controllers (comfortable defaults)
+            if (m_Physics) {
+                m_ControllerMaterial = m_Physics->createMaterial(0.0f, 0.0f, 0.0f); // friction not used directly by controllers
+            }
+
             m_DebugVisEnabled = false;
         }
 
         BOOM_INLINE ~PhysicsContext() {
+            // Destroy controllers first (clean userData, release controllers)
+            for (auto& kv : m_Controllers) {
+                PxController* c = kv.second;
+                if (c) {
+                    if (c->getActor() && c->getActor()->userData) {
+                        delete static_cast<EntityID*>(c->getActor()->userData);
+                        c->getActor()->userData = nullptr;
+                    }
+                    c->release();
+                }
+            }
+            m_Controllers.clear();
+
+            if (m_ControllerManager) { m_ControllerManager->release(); m_ControllerManager = nullptr; }
+            if (m_ControllerMaterial) { m_ControllerMaterial->release(); m_ControllerMaterial = nullptr; }
+
             if (m_Scene) { m_Scene->release(); }
             if (m_Physics) { m_Physics->release(); }
             if (m_Dispatcher) { m_Dispatcher->release(); }
@@ -78,6 +110,99 @@ namespace Boom {
         BOOM_INLINE void SetEventCallback(PxCallbackFunction&& callback) {
             m_EventCallback.m_Callback = callback;
         }
+#pragma endregion
+
+        // ====================================================================================
+        // REGION: CHARACTER CONTROLLER (PxController) MANAGEMENT
+        // ====================================================================================
+#pragma region Controllers
+
+        // Expose manager (if needed elsewhere)
+        BOOM_INLINE PxControllerManager* GetControllerManager() const { return m_ControllerManager; }
+
+        // Create a capsule controller for an entity.
+        // radius: capsule radius
+        // height: total capsule height (including hemispheres). Some APIs expect 'height' to be cylinder height; adjust as needed.
+        // stepOffset: maximum step height agent can climb
+        BOOM_INLINE bool CreateCapsuleController(Entity& entity, float radius, float height, float stepOffset = 0.25f, float contactOffset = 0.1f)
+        {
+            if (!m_ControllerManager || !m_Physics || !m_Scene) return false;
+            if (!entity.Has<TransformComponent>()) return false;
+
+            // Avoid double-creation
+            uint32_t id = static_cast<uint32_t>(entity.ID());
+            if (m_Controllers.find(id) != m_Controllers.end()) return true;
+
+            // Prepare descriptor
+            PxCapsuleControllerDesc desc;
+            desc.radius = radius;
+            // PhysX controller 'height' typically represents distance between capsule hemispheres (cylinder height).
+            // To be safe, clamp to small positive value.
+            desc.height = std::max(0.01f, height - 2.0f * radius);
+            desc.stepOffset = stepOffset;
+            desc.contactOffset = contactOffset;
+            // Keep Y-up
+            desc.upDirection = physx::PxVec3(0, 1, 0);
+            desc.slopeLimit = cosf(glm::radians(50.0f)); // default slope limit (cos of angle)
+            desc.nonWalkableMode = PxControllerNonWalkableMode::ePREVENT_CLIMBING;
+            desc.material = m_ControllerMaterial;
+            // Initial position from entity transform
+            const auto& t = entity.Get<TransformComponent>().transform;
+            desc.position = PxExtendedVec3(t.translate.x, t.translate.y, t.translate.z);
+            // Set userData on creation after controller created
+
+            PxController* controller = m_ControllerManager->createController(desc);
+            if (!controller) {
+                BOOM_ERROR("[Physics] Failed to create capsule controller for entity {}", id);
+                return false;
+            }
+
+            // Attach userData so callbacks and raycasts can map back to entity
+            if (controller->getActor()) {
+                controller->getActor()->userData = new EntityID(entity.ID());
+            }
+
+            m_Controllers[id] = controller;
+            return true;
+        }
+
+        BOOM_INLINE void DestroyController(Entity& entity) {
+            DestroyController(static_cast<uint32_t>(entity.ID()));
+        }
+
+        BOOM_INLINE void DestroyController(uint32_t entityID) {
+            auto it = m_Controllers.find(entityID);
+            if (it == m_Controllers.end()) return;
+            PxController* ctrl = it->second;
+            if (ctrl) {
+                if (ctrl->getActor() && ctrl->getActor()->userData) {
+                    delete static_cast<EntityID*>(ctrl->getActor()->userData);
+                    ctrl->getActor()->userData = nullptr;
+                }
+                ctrl->release();
+            }
+            m_Controllers.erase(it);
+        }
+
+        // Move a controller by displacement (world-space). Returns collision flags from PhysX.
+        BOOM_INLINE PxControllerCollisionFlags MoveController(Entity& entity, const glm::vec3& displacement, float minDist, float elapsedTime) {
+            uint32_t id = static_cast<uint32_t>(entity.ID());
+            auto it = m_Controllers.find(id);
+            if (it == m_Controllers.end()) return PxControllerCollisionFlags();
+            PxController* ctrl = it->second;
+            if (!ctrl) return PxControllerCollisionFlags();
+
+            // Controllers expect PxVec3 displacement and elapsed time. We don't pass filters here.
+            PxVec3 disp = ToPxVec3(displacement);
+            PxControllerCollisionFlags flags = ctrl->move(disp, minDist, elapsedTime, nullptr);
+            return flags;
+        }
+
+        // Query whether an entity has a controller
+        BOOM_INLINE bool HasController(Entity& entity) const {
+            return m_Controllers.find(static_cast<uint32_t>(entity.ID())) != m_Controllers.end();
+        }
+
 #pragma endregion
 
         // ====================================================================================
@@ -693,5 +818,11 @@ namespace Boom {
         PxPhysics* m_Physics;
         PxScene* m_Scene;
         bool m_DebugVisEnabled;
+
+        // --- Character Controller support ---
+        PxControllerManager* m_ControllerManager;
+        PxMaterial* m_ControllerMaterial;
+        std::unordered_map<uint32_t, PxController*> m_Controllers;
+
     };
 }
