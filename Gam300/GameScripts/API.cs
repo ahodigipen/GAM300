@@ -223,6 +223,12 @@ namespace Boom
         internal extern static void Boom_API_SetSpriteAlpha(ulong handle, float alpha);
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_SetSpriteTexture(ulong handle, string texturePath);
+
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        internal extern static void Boom_API_CreateController(ulong handle, float radius, float height);
+
+
+
     }
 
     // ========= DELEGATES =========
@@ -703,6 +709,11 @@ namespace Boom
                 return;
             }
             Native.Boom_API_SetSpriteTexture(entity, texturePath);
+        }
+
+        public static void CreateController(ulong handle, float radius, float height)
+        {
+            Native.Boom_API_CreateController(handle, radius, height);
         }
 
         // ===== GLFW key codes =====

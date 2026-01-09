@@ -601,7 +601,7 @@ BOOM_API void SoundEngine::PlaySoundAt(const std::string& name, const std::strin
         return;
     }
 
-    std::cout << "[SoundEngine] PlaySoundAt: " << name << " -> " << filePath << " pos(" << position.x << "," << position.y << "," << position.z << ")\n";
+    //std::cout << "[SoundEngine] PlaySoundAt: " << name << " -> " << filePath << " pos(" << position.x << "," << position.y << "," << position.z << ")\n";
 
     // For looped audio (BGM/ambient), play as 2D so it's always audible
     // For one-shot audio (SFX), play as 3D with positional attenuation

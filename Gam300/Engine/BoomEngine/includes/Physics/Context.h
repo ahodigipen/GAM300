@@ -166,6 +166,37 @@ namespace Boom {
             return true;
         }
 
+        //BOOM_INLINE PxControllerCollisionFlags MoveController(Entity& entity, glm::vec3 const& displacement, float minDist, float elapsedTime) {
+        //    uint32_t id = static_cast<uint32_t>(entity.ID());
+        //    auto it = m_Controllers.find(id);
+        //    if (it == m_Controllers.end()) return PxControllerCollisionFlags();
+        //    PxController* ctrl = it->second;
+        //    if (!ctrl) return PxControllerCollisionFlags();
+
+        //    // PhysX controller move expects a PxVec3 displacement and elapsed time.
+        //    PxVec3 disp = ToPxVec3(displacement);
+        //    PxControllerCollisionFlags flags = ctrl->move(disp, minDist, elapsedTime, nullptr);
+
+        //    // After moving the controller, sync the ECS Transform (if present) with the controller actor pose.
+        //    // This keeps the entity TransformComponent in sync for rendering / scripting.
+        //    if (ctrl->getActor()) {
+        //        physx::PxTransform pose = ctrl->getActor()->getGlobalPose();
+
+        //        // Convert PhysX pose to glm types
+        //        glm::vec3 worldPos = ToGLMVec3(pose.p);
+        //        glm::quat rotQuat(pose.q.w, pose.q.x, pose.q.y, pose.q.z);
+        //        glm::vec3 worldRotDeg = glm::degrees(glm::eulerAngles(rotQuat));
+
+        //        if (entity.Has<TransformComponent>()) {
+        //            auto& tc = entity.Get<TransformComponent>().transform;
+        //            tc.translate = worldPos;
+        //            tc.rotate = worldRotDeg;
+        //        }
+        //    }
+
+        //    return flags;
+        //}
+
         BOOM_INLINE void DestroyController(Entity& entity) {
             DestroyController(static_cast<uint32_t>(entity.ID()));
         }
@@ -184,17 +215,34 @@ namespace Boom {
             m_Controllers.erase(it);
         }
 
-        // Move a controller by displacement (world-space). Returns collision flags from PhysX.
-        BOOM_INLINE PxControllerCollisionFlags MoveController(Entity& entity, const glm::vec3& displacement, float minDist, float elapsedTime) {
+        BOOM_INLINE PxControllerCollisionFlags MoveController(Entity& entity, glm::vec3 const& displacement, float minDist, float elapsedTime) {
             uint32_t id = static_cast<uint32_t>(entity.ID());
             auto it = m_Controllers.find(id);
             if (it == m_Controllers.end()) return PxControllerCollisionFlags();
             PxController* ctrl = it->second;
             if (!ctrl) return PxControllerCollisionFlags();
 
-            // Controllers expect PxVec3 displacement and elapsed time. We don't pass filters here.
+            // PhysX controller move expects a PxVec3 displacement and elapsed time.
             PxVec3 disp = ToPxVec3(displacement);
             PxControllerCollisionFlags flags = ctrl->move(disp, minDist, elapsedTime, nullptr);
+
+            // After moving the controller, sync the ECS Transform (if present) with the controller actor pose.
+            // This keeps the entity TransformComponent in sync for rendering / scripting.
+            if (ctrl->getActor()) {
+                physx::PxTransform pose = ctrl->getActor()->getGlobalPose();
+
+                // Convert PhysX pose to glm types
+                glm::vec3 worldPos = ToGLMVec3(pose.p);
+                glm::quat rotQuat(pose.q.w, pose.q.x, pose.q.y, pose.q.z);
+                glm::vec3 worldRotDeg = glm::degrees(glm::eulerAngles(rotQuat));
+
+                if (entity.Has<TransformComponent>()) {
+                    auto& tc = entity.Get<TransformComponent>().transform;
+                    tc.translate = worldPos;
+                    tc.rotate = worldRotDeg;
+                }
+            }
+
             return flags;
         }
 
