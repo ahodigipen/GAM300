@@ -769,9 +769,35 @@ namespace EditorUI {
                         ImGui::Checkbox("Loop", &entry.loop);
                         ImGui::SameLine();
                         ImGui::Checkbox("Play On Start", &entry.playOnStart);
+                        ImGui::SameLine();
+                        ImGui::Checkbox("Mute", &entry.mute);
 
                         // Volume
-                        ImGui::SliderFloat("Volume", &entry.volume,0.0f,1.0f);
+                        ImGui::SliderFloat("Volume", &entry.volume, 0.0f, 1.0f);
+
+                        // Pitch
+                        ImGui::SliderFloat("Pitch", &entry.pitch, 0.5f, 2.0f, "%.2f");
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("Playback speed: 0.5 = half speed, 1.0 = normal, 2.0 = double speed");
+                        }
+
+                        // Priority
+                        ImGui::SliderInt("Priority", &entry.priority, 0, 256);
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("Channel priority: 0 = highest, 256 = lowest (128 = default)");
+                        }
+
+                        // Stereo Pan
+                        ImGui::SliderFloat("Stereo Pan", &entry.stereoPan, -1.0f, 1.0f, "%.2f");
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("-1.0 = full left, 0.0 = center, 1.0 = full right");
+                        }
+
+                        // Spatial Blend
+                        ImGui::SliderFloat("Spatial Blend", &entry.spatialBlend, 0.0f, 1.0f, "%.2f");
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("0.0 = fully 2D (no positional audio), 1.0 = fully 3D (positional)");
+                        }
 
                         ImGui::Separator();
                         ImGui::Text("Triggers");

@@ -178,6 +178,55 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_SetSoundPosition(string name, ref Vec3 position);
 
+        // ========= SOUND COMPONENT MANIPULATION =========
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern bool Boom_API_HasSoundComponent(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_AddSoundComponent(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern int Boom_API_GetSoundEntryCount(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_AddSoundEntry(ulong handle, string name, string filePath);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_RemoveSoundEntry(ulong handle, string name);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetSoundEntryVolume(ulong handle, string name, float volume);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetSoundEntryPitch(ulong handle, string name, float pitch);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetSoundEntryLoop(ulong handle, string name, bool loop);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetSoundEntryMute(ulong handle, string name, bool mute);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetSoundEntryPan(ulong handle, string name, float pan);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetSoundEntrySpatialBlend(ulong handle, string name, float blend);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetSoundEntryPriority(ulong handle, string name, int priority);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetSoundEntry3DDistance(ulong handle, string name, float minDist, float maxDist);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetSoundEntryPlayOnStart(ulong handle, string name, bool playOnStart);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_PlaySoundEntry(ulong handle, string name);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_StopSoundEntry(ulong handle, string name);
+
         // Raycasting & Main Menu
         [MethodImpl(MethodImplOptions.InternalCall)] 
         internal static extern ulong Boom_API_PickGameEntity();
@@ -633,6 +682,138 @@ namespace Boom
         public static void SetSoundPosition(string name, Vec3 position)
         {
             Native.Boom_API_SetSoundPosition(name, ref position);
+        }
+
+        // ===== SOUND COMPONENT API =====
+        // These methods modify the SoundComponent on an entity, which is visible in the Inspector
+        // and processed by SoundSystem for playback
+
+        /// <summary>
+        /// Check if entity has a SoundComponent
+        /// </summary>
+        public static bool HasSoundComponent(ulong entityHandle)
+        {
+            return Native.Boom_API_HasSoundComponent(entityHandle);
+        }
+
+        /// <summary>
+        /// Add a SoundComponent to an entity (if it doesn't have one)
+        /// </summary>
+        public static void AddSoundComponent(ulong entityHandle)
+        {
+            Native.Boom_API_AddSoundComponent(entityHandle);
+        }
+
+        /// <summary>
+        /// Get the number of sound entries in an entity's SoundComponent
+        /// </summary>
+        public static int GetSoundEntryCount(ulong entityHandle)
+        {
+            return Native.Boom_API_GetSoundEntryCount(entityHandle);
+        }
+
+        /// <summary>
+        /// Add a new sound entry to an entity's SoundComponent
+        /// </summary>
+        public static void AddSoundEntry(ulong entityHandle, string name, string filePath)
+        {
+            Native.Boom_API_AddSoundEntry(entityHandle, name, filePath);
+        }
+
+        /// <summary>
+        /// Remove a sound entry from an entity's SoundComponent by name
+        /// </summary>
+        public static void RemoveSoundEntry(ulong entityHandle, string name)
+        {
+            Native.Boom_API_RemoveSoundEntry(entityHandle, name);
+        }
+
+        /// <summary>
+        /// Set the volume of a sound entry (0.0 - 1.0)
+        /// </summary>
+        public static void SetSoundEntryVolume(ulong entityHandle, string name, float volume)
+        {
+            Native.Boom_API_SetSoundEntryVolume(entityHandle, name, volume);
+        }
+
+        /// <summary>
+        /// Set the pitch of a sound entry (0.5 = half speed, 1.0 = normal, 2.0 = double)
+        /// </summary>
+        public static void SetSoundEntryPitch(ulong entityHandle, string name, float pitch)
+        {
+            Native.Boom_API_SetSoundEntryPitch(entityHandle, name, pitch);
+        }
+
+        /// <summary>
+        /// Set whether a sound entry loops
+        /// </summary>
+        public static void SetSoundEntryLoop(ulong entityHandle, string name, bool loop)
+        {
+            Native.Boom_API_SetSoundEntryLoop(entityHandle, name, loop);
+        }
+
+        /// <summary>
+        /// Mute/unmute a sound entry
+        /// </summary>
+        public static void SetSoundEntryMute(ulong entityHandle, string name, bool mute)
+        {
+            Native.Boom_API_SetSoundEntryMute(entityHandle, name, mute);
+        }
+
+        /// <summary>
+        /// Set stereo pan of a sound entry (-1.0 = left, 0.0 = center, 1.0 = right)
+        /// </summary>
+        public static void SetSoundEntryPan(ulong entityHandle, string name, float pan)
+        {
+            Native.Boom_API_SetSoundEntryPan(entityHandle, name, pan);
+        }
+
+        /// <summary>
+        /// Set spatial blend of a sound entry (0.0 = 2D, 1.0 = 3D)
+        /// </summary>
+        public static void SetSoundEntrySpatialBlend(ulong entityHandle, string name, float blend)
+        {
+            Native.Boom_API_SetSoundEntrySpatialBlend(entityHandle, name, blend);
+        }
+
+        /// <summary>
+        /// Set priority of a sound entry (0-256, lower = higher priority)
+        /// </summary>
+        public static void SetSoundEntryPriority(ulong entityHandle, string name, int priority)
+        {
+            Native.Boom_API_SetSoundEntryPriority(entityHandle, name, priority);
+        }
+
+        /// <summary>
+        /// Set 3D distance settings for a sound entry
+        /// </summary>
+        public static void SetSoundEntry3DDistance(ulong entityHandle, string name, float minDist, float maxDist)
+        {
+            Native.Boom_API_SetSoundEntry3DDistance(entityHandle, name, minDist, maxDist);
+        }
+
+        /// <summary>
+        /// Set whether a sound entry plays on start
+        /// </summary>
+        public static void SetSoundEntryPlayOnStart(ulong entityHandle, string name, bool playOnStart)
+        {
+            Native.Boom_API_SetSoundEntryPlayOnStart(entityHandle, name, playOnStart);
+        }
+
+        /// <summary>
+        /// Trigger playback of a sound entry (sets playOnStart = true)
+        /// </summary>
+        public static void PlaySoundEntry(ulong entityHandle, string name)
+        {
+            Native.Boom_API_PlaySoundEntry(entityHandle, name);
+        }
+
+        /// <summary>
+        /// Stop a sound entry
+        /// </summary>
+        public static void StopSoundEntry(ulong entityHandle, string name)
+        {
+            Native.Boom_API_StopSoundEntry(entityHandle, name);
         }
 
         public static bool LinecastIgnoreBoth(Vec3 from, Vec3 to, ulong ignoreEntity1, ulong ignoreEntity2)
