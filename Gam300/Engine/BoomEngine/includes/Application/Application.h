@@ -776,6 +776,8 @@ namespace Boom
 		}
 
 		BOOM_INLINE void RenderShadowScene() {
+
+			glCullFace(GL_FRONT);
 			// Count directional lights first
 			int dirLightCount = 0;
 			EnttView<Entity, DirectLightComponent>([&dirLightCount](auto, auto&) { dirLightCount++; });
@@ -826,6 +828,69 @@ namespace Boom
 
 					m_Context->renderer->EndShadowPass();
 				});
+
+			glCullFace(GL_BACK);
+
+			// Render spot light shadows
+			RenderSpotShadowScene();
+		}
+
+		BOOM_INLINE void RenderSpotShadowScene() {
+			if (!toggleShadows) return;
+
+			glCullFace(GL_FRONT);
+
+			// Collect spot lights that should cast shadows (up to MAX_SPOT_SHADOW_LIGHTS)
+			int spotShadowIndex = 0;
+			EnttView<Entity, SpotLightComponent, TransformComponent>(
+				[this, &spotShadowIndex](auto, SpotLightComponent& light, TransformComponent& tc)
+				{
+					if (spotShadowIndex >= MAX_SPOT_SHADOW_LIGHTS) return;
+
+					// Get spot light properties
+					glm::vec3 position = tc.transform.translate;
+					glm::vec3 rotation = tc.transform.rotate;
+					float cutOffAngle = glm::degrees(glm::acos(light.light.cutOff)); // Convert from cos to degrees
+					float range = 50.0f; // Default range, could be added to SpotLight struct
+
+					// Begin shadow pass for this spot light
+					m_Context->renderer->BeginSpotShadowPass(spotShadowIndex, position, rotation, cutOffAngle, range);
+
+					// Render all shadow-casting objects
+					EnttView<Entity, ModelComponent>([this](auto entity, ModelComponent& comp) {
+						if (!entity.Has<ModelComponent>() || comp.modelID == EMPTY_ASSET) return;
+						if (entity.Has<DirectLightComponent>() || entity.Has<PointLightComponent>() || entity.Has<SpotLightComponent>()) return;
+
+						ModelAsset* model{ m_Context->assets->TryGet<ModelAsset>(comp.modelID) };
+						if (!model) return;
+
+						std::vector<glm::mat4> joints;
+						if (entity.Has<AnimatorComponent>()) {
+							auto& an = entity.Get<AnimatorComponent>();
+							joints = an.animator->GetJoints();
+						}
+						else if (model->hasJoints) {
+							static std::vector<glm::mat4> identityPalette(100, glm::mat4(1.0f));
+							joints = identityPalette;
+						}
+
+						glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+						Transform3D worldTransform;
+						DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
+
+						m_Context->renderer->DrawShadow(model->data, worldTransform, joints);
+					});
+
+					m_Context->renderer->EndSpotShadowPass();
+					++spotShadowIndex;
+				});
+
+			glCullFace(GL_BACK);
+
+			// Upload spot shadow data to the PBR shader
+			if (spotShadowIndex > 0) {
+				m_Context->renderer->UploadSpotShadowData(spotShadowIndex);
+			}
 		}
 
 		void SnapEntity(Entity entity, const glm::vec3& direction, float maxDistance = 100.0f);

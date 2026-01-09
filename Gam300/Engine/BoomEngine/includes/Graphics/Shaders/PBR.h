@@ -2,6 +2,7 @@
 #include "Shader.h"
 #include "../Utilities/Data.h"
 #include "../Models/Model.h"
+#include "Shadow.h"  // For MAX_SPOT_SHADOW_LIGHTS
 
 namespace Boom {
 	//UBO must also change in pbr.glsl limits
@@ -146,6 +147,34 @@ namespace Boom {
 		{
 			SetUniform(u_EnableShadows, enabled);
 		}
+
+		// === Spot Light Shadow Functions ===
+		BOOM_INLINE void SetSpotShadowCount(int count)
+		{
+			SetUniform(GetUniformVar("u_numSpotShadows"), glm::min(count, MAX_SPOT_SHADOW_LIGHTS));
+		}
+
+		BOOM_INLINE void SetSpotShadowMap(int index, uint32_t depthMap)
+		{
+			if (index < 0 || index >= MAX_SPOT_SHADOW_LIGHTS) return;
+
+			// Spot shadow maps start at texture unit 8 (after material textures)
+			int textureUnit = 8 + index;
+			glActiveTexture(GL_TEXTURE0 + textureUnit);
+			glBindTexture(GL_TEXTURE_2D, depthMap);
+
+			std::string uniformName = "u_spotDepthMaps[" + std::to_string(index) + "]";
+			SetUniform(GetUniformVar(uniformName.c_str()), textureUnit);
+		}
+
+		BOOM_INLINE void SetSpotLightSpaceMatrix(int index, const glm::mat4& matrix)
+		{
+			if (index < 0 || index >= MAX_SPOT_SHADOW_LIGHTS) return;
+
+			std::string uniformName = "u_spotLightSpaceMatrices[" + std::to_string(index) + "]";
+			SetUniform(GetUniformVar(uniformName.c_str()), matrix);
+		}
+
 	public:
 		BOOM_INLINE void SetEnvMaps(uint32_t, uint32_t, uint32_t, uint32_t depthMap) {
 			Use();

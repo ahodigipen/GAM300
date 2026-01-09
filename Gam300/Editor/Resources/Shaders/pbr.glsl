@@ -142,9 +142,15 @@ uniform vec3 viewPos;
 uniform bool isDebugMode;
 uniform bool showNormalTexture;
 
-// shadow mapping
+// shadow mapping - directional light
 uniform sampler2D u_depthMap;
 uniform bool u_enableShadows = false;
+
+// shadow mapping - spot lights
+#define MAX_SPOT_SHADOW_LIGHTS 4
+uniform sampler2D u_spotDepthMaps[MAX_SPOT_SHADOW_LIGHTS];
+uniform mat4 u_spotLightSpaceMatrices[MAX_SPOT_SHADOW_LIGHTS];
+uniform int u_numSpotShadows = 0;
 
 float ComputeShadow()
 {
@@ -157,14 +163,60 @@ float ComputeShadow()
   if(uvs.x < 0.0 || uvs.x > 1.0 || uvs.y < 0.0 || uvs.y > 1.0 || uvs.z > 1.0)
     return 0.0; // not in shadow
 
-  float depth = texture(u_depthMap, uvs.xy).r;
-
   // Add bias to reduce shadow acne
   // Increase if you see shadow acne (noise)
   // Decrease if shadows float (peter panning)
-  float bias = 0.002;
+  float bias = 0.005;
 
-  return uvs.z - bias > depth ? 1.0 : 0.0;
+  // PCF (Percentage Closer Filtering) for softer shadows
+  float shadow = 0.0;
+  vec2 texelSize = 1.0 / textureSize(u_depthMap, 0);
+
+  // 3x3 PCF kernel - samples 9 points around the fragment
+  for(int x = -1; x <= 1; ++x)
+  {
+    for(int y = -1; y <= 1; ++y)
+    {
+      float pcfDepth = texture(u_depthMap, uvs.xy + vec2(x, y) * texelSize).r;
+      shadow += uvs.z - bias > pcfDepth ? 1.0 : 0.0;
+    }
+  }
+
+  // Average the 9 samples for soft shadow edges
+  return shadow / 9.0;
+}
+
+// Compute shadow for a specific spot light
+float ComputeSpotShadow(int lightIndex)
+{
+  // Check if this light has shadow mapping enabled
+  if (lightIndex < 0 || lightIndex >= u_numSpotShadows) return 0.0;
+
+  // Transform fragment position to light space
+  vec4 fragPosSpotLight = u_spotLightSpaceMatrices[lightIndex] * vec4(vertex.position, 1.0);
+  vec3 uvs = (fragPosSpotLight.xyz / fragPosSpotLight.w) * 0.5 + 0.5;
+
+  // Check if fragment is outside light frustum
+  if(uvs.x < 0.0 || uvs.x > 1.0 || uvs.y < 0.0 || uvs.y > 1.0 || uvs.z > 1.0)
+    return 0.0; // not in shadow (outside light cone)
+
+  float bias = 0.005;
+
+  // PCF for softer shadows
+  float shadow = 0.0;
+  vec2 texelSize = 1.0 / textureSize(u_spotDepthMaps[lightIndex], 0);
+
+  // 3x3 PCF kernel
+  for(int x = -1; x <= 1; ++x)
+  {
+    for(int y = -1; y <= 1; ++y)
+    {
+      float pcfDepth = texture(u_spotDepthMaps[lightIndex], uvs.xy + vec2(x, y) * texelSize).r;
+      shadow += uvs.z - bias > pcfDepth ? 1.0 : 0.0;
+    }
+  }
+
+  return shadow / 9.0;
 }
 
 //this effect influences the appearance of surfaces
@@ -403,13 +455,20 @@ vec3 ComputeSpotLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, fl
         float dist        = length(lightPos - vertex.position);
         float attenuation = intensity / (dist * dist);
 
-        // 
+        // Compute shadow for this spot light (only first MAX_SPOT_SHADOW_LIGHTS can cast shadows)
+        float shadow = 0.0;
+        if (i < MAX_SPOT_SHADOW_LIGHTS && u_enableShadows) {
+            shadow = ComputeSpotShadow(i);
+        }
+
+        // Apply shadow to light contribution
         result += (diffuse + specular) *
                   radiance *
                   intensity *
                   attenuation *
                   nDotL *
-                  spotFactor;
+                  spotFactor *
+                  (1.0 - shadow);
     }
 
     return result;

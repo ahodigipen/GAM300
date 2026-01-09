@@ -215,6 +215,67 @@ namespace Boom {
             glBindBufferBase(GL_UNIFORM_BUFFER, 2, m_SpotLightUBO);
         }
 
+        // === Spot Light Shadow Functions ===
+        BOOM_INLINE void BeginSpotShadowPass(int index, const glm::vec3& position, const glm::vec3& rotation, float cutOffAngle, float range)
+        {
+            if (index < 0 || index >= MAX_SPOT_SHADOW_LIGHTS) return;
+
+            // Convert Euler angles (degrees) to direction vector
+            glm::vec3 eulerRadians = glm::radians(rotation);
+            glm::quat rot = glm::quat(eulerRadians);
+            glm::vec3 lightDir = rot * glm::vec3(0.0f, 0.0f, -1.0f);
+
+            // Calculate up vector (must not be parallel to light direction)
+            glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+            if (glm::abs(glm::dot(lightDir, up)) > 0.99f) {
+                up = glm::vec3(1.0f, 0.0f, 0.0f);
+            }
+
+            // Perspective projection based on spot light cone angle
+            // Use outer cutoff angle for FOV, doubled because cutoff is half-angle
+            float fov = glm::radians(cutOffAngle * 2.0f);
+            fov = glm::clamp(fov, glm::radians(10.0f), glm::radians(170.0f)); // Clamp to reasonable range
+
+            float nearPlane = 0.1f;
+            float farPlane = range > 0.0f ? range : 50.0f;
+
+            glm::mat4 proj = glm::perspective(fov, 1.0f, nearPlane, farPlane);
+            glm::mat4 view = glm::lookAt(position, position + lightDir, up);
+            glm::mat4 lightSpaceMtx = proj * view;
+
+            // Begin shadow rendering for this spot light
+            shadowShader->BeginSpotLightFrame(index, lightSpaceMtx);
+        }
+
+        BOOM_INLINE void EndSpotShadowPass()
+        {
+            shadowShader->EndSpotLightFrame();
+
+            // Rebind the main framebuffer
+            if (showLowPoly) {
+                lowPolyFrame->SBind();
+            } else {
+                frame->SBind();
+            }
+
+            glEnable(GL_DEPTH_TEST);
+        }
+
+        BOOM_INLINE void UploadSpotShadowData(int count)
+        {
+            pbrShader->Use();
+            pbrShader->SetSpotShadowCount(count);
+
+            // Upload all spot light shadow maps and matrices
+            for (int i = 0; i < count && i < MAX_SPOT_SHADOW_LIGHTS; ++i)
+            {
+                pbrShader->SetSpotShadowMap(i, shadowShader->GetSpotDepthMap(i));
+                pbrShader->SetSpotLightSpaceMatrix(i, shadowShader->GetSpotLightSpaceMatrix(i));
+            }
+        }
+
+        BOOM_INLINE ShadowShader* GetShadowShader() { return shadowShader.get(); }
+
     public: // ----------------------- Skybox -----------------------
         BOOM_INLINE void InitSkybox(Skybox& sky, Texture const& tex, int32_t size) {
             sky.cubeMap = skyMapShader->Generate(tex, skyboxMesh, size);
