@@ -239,7 +239,7 @@ namespace Boom {
                 if (entity.Has<TransformComponent>()) {
                     auto& tc = entity.Get<TransformComponent>().transform;
                     tc.translate = worldPos;
-                    tc.rotate = worldRotDeg;
+                    //tc.rotate = worldRotDeg;
                 }
             }
 

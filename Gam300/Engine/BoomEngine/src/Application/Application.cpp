@@ -847,6 +847,10 @@ namespace Boom
 
             EnttView<Entity, RigidBodyComponent>([this](auto entity, auto& comp)
                 {
+                    if (m_Context->physics->HasController(entity)) {
+                        return;
+                    }
+
                     auto& transform = entity.template Get<TransformComponent>().transform;
 
                     // --- guard / lazy create ---
