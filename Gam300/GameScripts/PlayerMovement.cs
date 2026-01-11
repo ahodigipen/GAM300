@@ -76,7 +76,8 @@ namespace GameScripts
             API.SetScreenFadeAlpha(0f);
             s_playerEntity = Entity;
             s_instance = this;
-
+            Vec3 rot = API.GetRotation(Entity);
+            API.SetRotation(Entity, new Vec3(0, rot.Y, 0)); // Force X and Z to be 0
             PlayerManager.RegisterPlayer(this);
 
             if (!API.HasTransform(Entity))
@@ -319,6 +320,20 @@ namespace GameScripts
             var vel = API.GetLinearVelocity(Entity);
             bool allowMove = !API.IsMouseDown(API.MOUSE_RIGHT);
             bool isGrounded = IsPlayerGrounded();
+
+            // Reset horizontal velocity for new input
+            vel.X = 0;
+            vel.Z = 0;
+
+            // Apply Gravity
+            if (!isGrounded)
+            {
+                vel.Y -= 9.81f * dt; // Simple constant gravity
+            }
+            else if (vel.Y < 0)
+            {
+                vel.Y = -0.1f; // Stick to ground
+            }
 
             float inputX = 0f, inputZ = 0f;
             if (allowMove)

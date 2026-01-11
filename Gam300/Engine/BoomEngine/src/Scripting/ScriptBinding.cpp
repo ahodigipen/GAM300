@@ -214,13 +214,14 @@ namespace Boom {
             return;
 
         entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        Entity ent{ &s_Ctx->scene, e };
         if (e == entt::null || !s_Ctx->scene.valid(e))
         {
             BOOM_WARN("[ScriptBinding] SetLinearVelocity: Invalid or dead entity");
             return;
         }
 
-        Entity ent{ &s_Ctx->scene, e };
+
 
         // If entity uses a character controller, drive it using the PxController API.
         // Move controller by displacement = velocity * deltaTime so scripts can continue
@@ -228,10 +229,8 @@ namespace Boom {
         if (s_Ctx->physics && s_Ctx->physics->HasController(ent)) {
             // Compute world-space displacement for this frame
             float dt = static_cast<float>(s_Ctx->DeltaTime);
-            glm::vec3 displacement = glm::vec3(vel->x, vel->y, vel->z) * dt;
-
+            glm::vec3 displacement = (*vel) * dt;
             // Use a small minDist for controller movement to avoid tunneling; pass elapsedTime as dt.
-            Entity ent{ &s_Ctx->scene, e };
             s_Ctx->physics->MoveController(ent, displacement, 0.001f, dt);
             return;
         }
@@ -1179,48 +1178,41 @@ namespace Boom {
             return;
         }
 
-        if (!s_Ctx->scene.any_of<TransformComponent>(e)) {
+        // 1. ALWAYS update the TransformComponent (This drives the visual model)
+        if (s_Ctx->scene.any_of<TransformComponent>(e)) {
+            auto& transform = s_Ctx->scene.get<TransformComponent>(e).transform;
+            transform.rotate.y = yawDegrees;
+        }
+        else {
             BOOM_WARN("[ScriptBinding] SetRotationY: Entity has no TransformComponent");
             return;
         }
 
-        if (!s_Ctx->scene.any_of<RigidBodyComponent>(e)) {
-            BOOM_WARN("[ScriptBinding] SetRotationY: Entity has no RigidBodyComponent");
-            return;
-        }
+        // 2. Update RigidBody Actor if it exists
+        // We no longer 'return' if this is missing, allowing Controllers to work.
+        if (s_Ctx->scene.any_of<RigidBodyComponent>(e)) {
+            auto& rb = s_Ctx->scene.get<RigidBodyComponent>(e).RigidBody;
+            if (rb.actor) {
+                PxTransform currentPose = rb.actor->getGlobalPose();
 
-        auto& rb = s_Ctx->scene.get<RigidBodyComponent>(e).RigidBody;
-        if (!rb.actor) return;
+                // Convert yaw to quaternion (assuming Y-up world)
+                float yawRadians = glm::radians(yawDegrees);
+                PxQuat newRotation = PxQuat(yawRadians, PxVec3(0, 1, 0));
+                PxTransform newPose(currentPose.p, newRotation);
 
-        // Get the current PhysX transform
-        PxTransform currentPose = rb.actor->getGlobalPose();
-
-        // Convert yaw to quaternion (only Y-axis rotation)
-        float yawRadians = glm::radians(yawDegrees);
-        PxQuat newRotation = PxQuat(yawRadians, PxVec3(0, 1, 0));
-
-        // Update the pose with new rotation, keeping position
-        PxTransform newPose(currentPose.p, newRotation);
-
-        // For dynamic bodies, use kinematic target or direct pose update
-        if (PxRigidDynamic* dyn = rb.actor->is<PxRigidDynamic>()) {
-            if (dyn->getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC) {
-                dyn->setKinematicTarget(newPose);
-            }
-            else {
-                // For dynamic bodies, directly set the pose
-                // This is safe because X/Z rotation is locked
-                dyn->setGlobalPose(newPose);
+                if (PxRigidDynamic* dyn = rb.actor->is<PxRigidDynamic>()) {
+                    if (dyn->getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC) {
+                        dyn->setKinematicTarget(newPose);
+                    }
+                    else {
+                        dyn->setGlobalPose(newPose);
+                    }
+                }
+                else {
+                    rb.actor->setGlobalPose(newPose);
+                }
             }
         }
-        else {
-            // For static bodies
-            rb.actor->setGlobalPose(newPose);
-        }
-
-        // Also update the transform component for rendering
-        auto& transform = s_Ctx->scene.get<TransformComponent>(e).transform;
-        transform.rotate.y = yawDegrees;
     }
 
     // Add new overload that ignores two entities
