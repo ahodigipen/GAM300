@@ -29,8 +29,6 @@ namespace GameScripts
         private int _maxHealth = 5;
         private Vec3 _spawnPoint;
         private bool _isRespawning = false;
-        //private float _respawnDelay = 1.0f;
-        //private float _respawnTimer = 0f;
         private bool _isInvulnerable = false;
         private float _invulnerabilityDuration = 2.0f;
         private float _invulnerabilityTimer = 0f;
@@ -70,6 +68,12 @@ namespace GameScripts
         private bool _isCrouching = false;
         private static bool s_isStealthInvisible = false;
 
+        // ==== Gravity constant ====
+        private const float GRAVITY = 9.81f;
+
+        // ==== CRITICAL: Manual vertical velocity tracking for Character Controller ====
+        private float _verticalVelocity = 0f;
+
         public void OnStart(string jsonParams)
         {
             API.Log($"[PlayerMovement] OnStart() - Entity: {Entity}");
@@ -77,7 +81,7 @@ namespace GameScripts
             s_playerEntity = Entity;
             s_instance = this;
             Vec3 rot = API.GetRotation(Entity);
-            API.SetRotation(Entity, new Vec3(0, rot.Y, 0)); // Force X and Z to be 0
+            API.SetRotation(Entity, new Vec3(0, rot.Y, 0));
             PlayerManager.RegisterPlayer(this);
 
             if (!API.HasTransform(Entity))
@@ -97,12 +101,10 @@ namespace GameScripts
             _footstepComponent = new FootstepComponent { Entity = Entity };
             _footstepComponent.OnStart("");
 
-            // Request a PhysX capsule controller for this entity.
-            // Adjust radius/height to fit your character model.
-            // This call is safe if the controller already exists (native side guards duplicates).
             try
             {
                 API.CreateController(Entity, 0.35f, 1.8f);
+                API.Log("[PlayerMovement] Character controller created successfully");
             }
             catch (Exception ex)
             {
@@ -145,7 +147,7 @@ namespace GameScripts
         private void StartRespawn()
         {
             _isRespawning = true;
-            //  _respawnTimer = 0f;
+            _verticalVelocity = 0f; // Reset vertical velocity
             API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
             _fadeState = FadeState.FadingOut;
             _fadeTimer = 0f;
@@ -164,6 +166,7 @@ namespace GameScripts
         private void RespawnAtCheckpoint()
         {
             API.TeleportRigidBody(Entity, _spawnPoint);
+            _verticalVelocity = 0f; // Reset vertical velocity
             API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
             _isInvulnerable = true;
             _invulnerabilityTimer = 0f;
@@ -193,7 +196,6 @@ namespace GameScripts
                 }
             }
 
-            // Register CrouchTriggerZone separately with detailed logging
             ulong crouchZone = API.FindEntity("CrouchTriggerZone");
             API.Log($"[PlayerMovement] CrouchTriggerZone entity ID: {crouchZone}");
 
@@ -274,7 +276,10 @@ namespace GameScripts
                     _isInvulnerable = false;
             }
 
-            // Crouch logic (use hold-Q while inside zone)
+            // Declare isGrounded ONCE at the top of the method
+            bool isGrounded = IsPlayerGrounded();
+
+            // Crouch logic
             if (_inCrouchZone)
             {
                 bool crouchDown = API.IsKeyDown(CROUCH_KEY);
@@ -303,10 +308,8 @@ namespace GameScripts
 
             if (_isCrouching)
             {
-                var locked = API.GetLinearVelocity(Entity);
-                locked.X = 0f;
-                locked.Z = 0f;
-                API.SetLinearVelocity(Entity, locked);
+                // Lock movement when crouching
+                API.SetLinearVelocity(Entity, new Vec3(0, _verticalVelocity, 0));
                 if (_hasAnimator)
                 {
                     API.AnimatorSetFloat(Entity, "Speed", 0f);
@@ -314,27 +317,37 @@ namespace GameScripts
                     API.AnimatorSetBool(Entity, "Sprint", false);
                     API.AnimatorSetBool(Entity, "IsSneaking", false);
                 }
+                // Still apply gravity - REMOVED the duplicate 'bool isGrounded' declaration
+                if (!isGrounded)
+                {
+                    _verticalVelocity -= GRAVITY * dt;
+                }
+                else
+                {
+                    _verticalVelocity = -0.5f; // Small downward force to stay grounded
+                }
                 return;
             }
 
-            var vel = API.GetLinearVelocity(Entity);
             bool allowMove = !API.IsMouseDown(API.MOUSE_RIGHT);
-            bool isGrounded = IsPlayerGrounded();
+            // REMOVED the duplicate 'bool isGrounded = IsPlayerGrounded();' here
 
-            // Reset horizontal velocity for new input
-            vel.X = 0;
-            vel.Z = 0;
-
-            // Apply Gravity
+            // ==== CRITICAL FIX: Update vertical velocity with gravity accumulation ====
             if (!isGrounded)
             {
-                vel.Y -= 9.81f * dt; // Simple constant gravity
+                _verticalVelocity -= GRAVITY * dt;
             }
-            else if (vel.Y < 0)
+            else
             {
-                vel.Y = -0.1f; // Stick to ground
+                // When grounded, apply small downward force to stay on ground
+                _verticalVelocity = -0.5f;
             }
 
+            // Clamp vertical velocity
+            if (_verticalVelocity < -20f) _verticalVelocity = -20f;
+            if (_verticalVelocity > 7.5f) _verticalVelocity = 7.5f;
+
+            // Horizontal movement input
             float inputX = 0f, inputZ = 0f;
             if (allowMove)
             {
@@ -352,6 +365,8 @@ namespace GameScripts
             if (sneakKey) currentSpeed = _sneakSpeed;
             else if (sprintKey) currentSpeed = _sprintSpeed;
 
+            // Calculate horizontal velocity
+            float velX = 0f, velZ = 0f;
             if (hasInput)
             {
                 float camYawDeg = API.GetThirdPersonCameraYaw();
@@ -366,20 +381,16 @@ namespace GameScripts
                 float len = (float)Math.Sqrt(moveDir.X * moveDir.X + moveDir.Z * moveDir.Z);
                 if (len > 0f)
                 {
-                    vel.X = (moveDir.X / len) * currentSpeed;
-                    vel.Z = (moveDir.Z / len) * currentSpeed;
+                    velX = (moveDir.X / len) * currentSpeed;
+                    velZ = (moveDir.Z / len) * currentSpeed;
                     float targetYaw = (float)(Math.Atan2(moveDir.X, moveDir.Z) * 180.0 / Math.PI) + _modelForwardOffset;
                     while (targetYaw > 180f) targetYaw -= 360f;
                     while (targetYaw < -180f) targetYaw += 360f;
                     API.SetRotationY(Entity, targetYaw);
                 }
             }
-            else
-            {
-                vel.X = 0f;
-                vel.Z = 0f;
-            }
 
+            // Roll logic
             bool ctrlDown = API.IsKeyDown(API.KEY_LEFT_CONTROL);
             Vec3 desiredMoveDir = new Vec3(0, 0, 0);
             if (hasInput)
@@ -411,22 +422,19 @@ namespace GameScripts
                     API.AnimatorSetBool(Entity, "IsSneaking", false);
                     API.AnimatorSetBool(Entity, "Sprint", false);
                 }
-                var burst = API.GetLinearVelocity(Entity);
-                burst.X = _rollDir.X * _rollSpeed;
-                burst.Z = _rollDir.Z * _rollSpeed;
-                API.SetLinearVelocity(Entity, burst);
+                velX = _rollDir.X * _rollSpeed;
+                velZ = _rollDir.Z * _rollSpeed;
                 _isInvulnerable = true;
                 _wasCtrlPressed = ctrlDown;
+                API.SetLinearVelocity(Entity, new Vec3(velX, _verticalVelocity, velZ));
                 return;
             }
 
             if (_isRolling)
             {
                 _rollTimer -= dt;
-                var rv = API.GetLinearVelocity(Entity);
-                rv.X = _rollDir.X * _rollSpeed;
-                rv.Z = _rollDir.Z * _rollSpeed;
-                API.SetLinearVelocity(Entity, rv);
+                velX = _rollDir.X * _rollSpeed;
+                velZ = _rollDir.Z * _rollSpeed;
                 if (_rollTimer <= 0f)
                 {
                     _isRolling = false;
@@ -435,6 +443,7 @@ namespace GameScripts
                     if (_hasAnimator) API.AnimatorSetBool(Entity, "IsRolling", false);
                 }
                 _wasCtrlPressed = ctrlDown;
+                API.SetLinearVelocity(Entity, new Vec3(velX, _verticalVelocity, velZ));
                 return;
             }
 
@@ -442,12 +451,12 @@ namespace GameScripts
                 _rollCooldownTimer = Math.Max(0f, _rollCooldownTimer - dt);
             _wasCtrlPressed = ctrlDown;
 
-            if (vel.Y > 7.5f) vel.Y = 7.5f;
-            API.SetLinearVelocity(Entity, vel);
+            // Apply final velocity with accumulated vertical velocity
+            API.SetLinearVelocity(Entity, new Vec3(velX, _verticalVelocity, velZ));
 
             if (_hasAnimator)
             {
-                float speedXZ = (float)Math.Sqrt(vel.X * vel.X + vel.Z * vel.Z);
+                float speedXZ = (float)Math.Sqrt(velX * velX + velZ * velZ);
                 _smoothedSpeed += (speedXZ - _smoothedSpeed) * Math.Min(1.0, SPEED_DAMP * dt);
                 API.AnimatorSetFloat(Entity, "Speed", (float)_smoothedSpeed);
                 API.AnimatorSetBool(Entity, "IsMoving", _smoothedSpeed > MOVE_EPS || hasInput);
