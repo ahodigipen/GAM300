@@ -116,9 +116,9 @@ namespace EditorUI {
                 ImU32 borderCol = ImGui::IsItemHovered() ? IM_COL32(100, 200, 100, 255) : IM_COL32(80, 80, 80, 255);
                 drawList->AddRect(cursorPos, ImVec2(cursorPos.x + dropZoneSize.x, cursorPos.y + dropZoneSize.y), borderCol, 4.0f, 0, 2.0f);
 
-                ImVec2 textSize = ImGui::CalcTextSize("Drag animation file here (.fbx, .gltf)");
+                ImVec2 textSize = ImGui::CalcTextSize("Drag animation file here (.fbx, .gltf, .anim)");
                 ImVec2 textPos(cursorPos.x + (dropZoneSize.x - textSize.x) * 0.5f, cursorPos.y + (dropZoneSize.y - textSize.y) * 0.5f);
-                drawList->AddText(textPos, IM_COL32(150, 150, 150, 255), "Drag animation file here (.fbx, .gltf)");
+                drawList->AddText(textPos, IM_COL32(150, 150, 150, 255), "Drag animation file here (.fbx, .gltf, .anim)");
 
                 // Accept drop
                 if (ImGui::BeginDragDropTarget()) {
@@ -143,6 +143,18 @@ namespace EditorUI {
                             std::string defaultName = p.stem().string();
                             animator->LoadAnimationFromFile(modelAsset->source, defaultName);
                             BOOM_INFO("Loaded animation clip from asset: {}", modelAsset->source);
+                        }
+                    }
+                    // Accept animation asset (from resource panel)
+                    else if (const ImGuiPayload* animPayload = ImGui::AcceptDragDropPayload(CONSTANTS::DND_PAYLOAD_ANIMATION.data())) {
+                        Boom::AssetID assetID = *(Boom::AssetID*)animPayload->Data;
+                        auto& assetReg = m_App->GetAssetRegistry();
+                        auto* animAsset = assetReg.TryGet<Boom::AnimationAsset>(assetID);
+                        if (animAsset && animAsset->uid != EMPTY_ASSET) {
+                            std::filesystem::path p(animAsset->source);
+                            std::string defaultName = p.stem().string();
+                            animator->LoadAnimationFromFile(animAsset->source, defaultName);
+                            BOOM_INFO("Loaded animation clip from animation asset: {}", animAsset->source);
                         }
                     }
                     ImGui::EndDragDropTarget();
