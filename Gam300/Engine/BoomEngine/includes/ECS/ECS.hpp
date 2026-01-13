@@ -703,6 +703,8 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
  };
  struct AIComponent {
  enum class AIMode : int { Auto = 0, Idle = 1, Patrol = 2, Seek = 3 };
+
+ bool active = true;
  AIMode mode = AIMode::Auto;   // exposed in Inspector
  AIMode lastMode = AIMode::Auto;
  float detectRadius = 8.0f;    // start seeking when within this distance
@@ -721,6 +723,7 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
 
  XPROPERTY_DEF
  ("AIComponent", AIComponent
+ , obj_member<"Active", &AIComponent::active>
  , obj_member<"DetectRadius", &AIComponent::detectRadius>
  , obj_member<"LoseRadius", &AIComponent::loseRadius>
  , obj_member<"IdleWait", &AIComponent::idleWait>

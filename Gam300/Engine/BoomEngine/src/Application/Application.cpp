@@ -608,6 +608,14 @@ namespace Boom
                         if (m_IsGameLogicPaused && !isPauseMenuObj) {
                             shouldAnimate = false;
                         }
+
+                        if (entity.Has<AIComponent>()) {
+                            const auto& ai = entity.Get<AIComponent>();
+                            if (!ai.active) {
+                                shouldAnimate = false;
+                            }
+                        }
+
                         float dt = shouldAnimate ? (float)m_Context->DeltaTime : 0.0f;
                         auto& joints = an.animator->Animate(dt);
                         m_Context->renderer->SetJoints(joints);

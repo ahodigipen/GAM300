@@ -413,6 +413,35 @@ namespace Boom {
         auto& ai = reg.get<Boom::AIComponent>(e);
         return static_cast<int>(ai.mode);
     }
+
+    static void ICALL_API_SetNavAgentActive(uint64_t handle, bool active)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+
+        // 1. Toggle AI Brain
+        if (s_Ctx->scene.any_of<Boom::AIComponent>(e)) {
+            auto& ai = s_Ctx->scene.get<Boom::AIComponent>(e);
+            ai.active = active;
+        }
+
+        // 2. Toggle Nav Agent
+        if (s_Ctx->scene.any_of<Boom::NavAgentComponent>(e)) {
+            auto& ag = s_Ctx->scene.get<Boom::NavAgentComponent>(e);
+            ag.active = active;
+
+            if (!active) {
+                // FREEZE
+                ag.velocity = glm::vec3(0.0f);
+            }
+            else {
+                // UNFREEZE
+            }
+        }
+    }
+
     static float ICALL_API_GetThirdPersonCameraYaw() {
         if (!s_Ctx) return 0.0f;
 
@@ -1429,6 +1458,8 @@ namespace Boom {
             (const void*)ICALL_API_AI_GetPatrolPoint);
         mono_add_internal_call("Boom.Native::Boom_API_AI_GetMode",
             (const void*)ICALL_API_AI_GetMode);
+        mono_add_internal_call("Boom.Native::Boom_API_SetNavAgentActive",
+            (const void*)ICALL_API_SetNavAgentActive);
 
 
         // Animator function

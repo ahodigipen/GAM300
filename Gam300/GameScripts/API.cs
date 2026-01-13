@@ -147,6 +147,9 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static int Boom_API_AI_GetMode(ulong handle);
 
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetNavAgentActive(ulong handle, bool active);
+
         //Animator Stuff
 
 
@@ -332,6 +335,12 @@ namespace Boom
             int mode = Native.Boom_API_AI_GetMode(h);
             return (AIMode)mode;
         }
+
+        public static void SetNavAgentActive(ulong h, bool active)
+        {
+            Native.Boom_API_SetNavAgentActive(h, active);
+        }
+
         // ===== Transform with validation =====
         public static Vec3 GetPosition(ulong h)
         {
@@ -737,6 +746,7 @@ namespace Boom
         public const int KEY_Q = 81;
         public const int KEY_LEFT_CONTROL = 341;
         public const int KEY_LEFT_SHIFT = 340;
+        public const int KEY_F = 70; // Freeze
 
         public const int MOUSE_LEFT = 0;
         public const int MOUSE_RIGHT = 1;

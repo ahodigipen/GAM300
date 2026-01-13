@@ -29,8 +29,6 @@ namespace GameScripts
         private int _maxHealth = 5;
         private Vec3 _spawnPoint;
         private bool _isRespawning = false;
-        //private float _respawnDelay = 1.0f;
-        //private float _respawnTimer = 0f;
         private bool _isInvulnerable = false;
         private float _invulnerabilityDuration = 2.0f;
         private float _invulnerabilityTimer = 0f;
@@ -69,6 +67,12 @@ namespace GameScripts
         private bool _inCrouchZone = false;
         private bool _isCrouching = false;
         private static bool s_isStealthInvisible = false;
+
+        // ==== Freeze Ability Fields ====
+        private const int FREEZE_KEY = API.KEY_F;
+        private bool _canPickupFreeze = false;       // NEW: Track if we are standing on a pickup
+        private ulong _currentPickupEntity = 0;      // NEW: Track which pickup we are standing on
+        private bool _wasFreezeKeyDown = false;
 
         public void OnStart(string jsonParams)
         {
@@ -132,7 +136,6 @@ namespace GameScripts
         private void StartRespawn()
         {
             _isRespawning = true;
-          //  _respawnTimer = 0f;
             API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
             _fadeState = FadeState.FadingOut;
             _fadeTimer = 0f;
@@ -168,7 +171,7 @@ namespace GameScripts
 
         private void RegisterTriggerCallbacksOnAllTriggers()
         {
-            string[] triggerNames = { "Checkpoint", "DamageZone", "PowerUp", "DoorTrigger", "TriggerVolume", "AreaTrigger" };
+            string[] triggerNames = { "Checkpoint", "DamageZone", "PowerUp", "DoorTrigger", "TriggerVolume", "AreaTrigger", "FreezePowerUp" };
             foreach (string triggerName in triggerNames)
             {
                 ulong triggerEntity = API.FindEntity(triggerName);
@@ -182,30 +185,10 @@ namespace GameScripts
 
             // Register CrouchTriggerZone separately with detailed logging
             ulong crouchZone = API.FindEntity("CrouchTriggerZone");
-            API.Log($"[PlayerMovement] CrouchTriggerZone entity ID: {crouchZone}");
-
-            if (crouchZone != 0)
+            if (crouchZone != 0 && API.HasCollider(crouchZone) && API.IsTrigger(crouchZone))
             {
-                bool hasCollider = API.HasCollider(crouchZone);
-                API.Log($"[PlayerMovement] CrouchTriggerZone HasCollider: {hasCollider}");
-
-                if (hasCollider)
-                {
-                    bool isTrigger = API.IsTrigger(crouchZone);
-                    API.Log($"[PlayerMovement] CrouchTriggerZone IsTrigger: {isTrigger}");
-
-                    API.RegisterTriggerEnterCallback(crouchZone, OnTriggerEnter);
-                    API.RegisterTriggerExitCallback(crouchZone, OnTriggerExit);
-                    API.Log("[PlayerMovement] Registered callbacks for CrouchTriggerZone (forced)");
-                }
-                else
-                {
-                    API.Log("[PlayerMovement] ERROR: CrouchTriggerZone has no collider component!");
-                }
-            }
-            else
-            {
-                API.Log("[PlayerMovement] ERROR: CrouchTriggerZone entity not found in scene!");
+                API.RegisterTriggerEnterCallback(crouchZone, OnTriggerEnter);
+                API.RegisterTriggerExitCallback(crouchZone, OnTriggerExit);
             }
         }
 
@@ -251,6 +234,50 @@ namespace GameScripts
         {
             UpdateFade(dt);
             if (!API.HasTransform(Entity) || !API.HasScript(Entity)) return;
+
+            // 1. UPDATE FREEZE MANAGER
+            FreezeManager.Update(dt);
+
+            // --- INPUT HANDLING: SINGLE PRESS DETECTION ---
+            bool isFreezeKeyDown = API.IsKeyDown(FREEZE_KEY);
+            // "Pressed" is true ONLY if it is down now, but was NOT down last frame
+            bool isFreezePressed = isFreezeKeyDown && !_wasFreezeKeyDown;
+            // Update the history for the next frame
+            _wasFreezeKeyDown = isFreezeKeyDown;
+
+            // 2. HANDLE FREEZE INPUT (F Key)
+            if (isFreezePressed && API.GetApplicationState() != API.APP_STATE_PAUSED)
+            {
+                // PRIORITY 1: PICKUP
+                if (_canPickupFreeze && !PlayerInventory.HasFreezePower())
+                {
+                    if (PlayerInventory.TryAddFreezeCharge())
+                    {
+                        API.Log("[PlayerMovement] Picked up Freeze Ability (Manual)!");
+                        if (_currentPickupEntity != 0)
+                        {
+                            API.SetPosition(_currentPickupEntity, new Vec3(0, -5000, 0));
+                            _canPickupFreeze = false;
+                            _currentPickupEntity = 0;
+                        }
+                    }
+                }
+                // PRIORITY 2: ACTIVATE (If we have power)
+                else if (PlayerInventory.HasFreezePower() && !FreezeManager.IsFrozen(API.GetPosition(Entity)))
+                {
+                    PlayerInventory.ConsumeFreezeCharge();
+
+                    // --- CONFIG ---
+                    float radius = 6.0f;
+                    float duration = 3.0f;
+
+                    // 1. Get Player Position (Center of Bubble)
+                    Vec3 playerPos = API.GetPosition(Entity);
+
+                    // 2. Trigger
+                    FreezeManager.TriggerFreeze(playerPos, radius, duration);
+                }
+            }
             _footstepComponent?.OnUpdate(dt);
             if (_isRespawning) return;
 
@@ -265,7 +292,6 @@ namespace GameScripts
             if (_inCrouchZone)
             {
                 bool crouchDown = API.IsKeyDown(CROUCH_KEY);
-
                 if (crouchDown && !_isCrouching)
                 {
                     _isCrouching = true;
@@ -442,13 +468,23 @@ namespace GameScripts
             try
             {
                 if (otherEntity != s_playerEntity) return;
-                ulong crouchZone = API.FindEntity("CrouchTriggerZone");
-                API.Log($"[PlayerMovement] OnTriggerEnter: triggerEntity={triggerEntity}, crouchZone={crouchZone}");
 
+                // Crouch Logic
+                ulong crouchZone = API.FindEntity("CrouchTriggerZone");
                 if (triggerEntity == crouchZone && crouchZone != 0 && s_instance != null)
                 {
                     s_instance._inCrouchZone = true;
                     API.Log("[PlayerMovement] Player ENTERED CrouchTriggerZone");
+                    return;
+                }
+
+                // FREEZE POWERUP LOGIC (Modified: Only detects, doesn't pickup)
+                ulong freezePickup = API.FindEntity("FreezePowerUp");
+                if (triggerEntity == freezePickup && freezePickup != 0 && s_instance != null)
+                {
+                    s_instance._canPickupFreeze = true;
+                    s_instance._currentPickupEntity = triggerEntity;
+                    API.Log("[PlayerMovement] Standing on Freeze Powerup. Press F to pickup.");
                     return;
                 }
             }
@@ -463,9 +499,9 @@ namespace GameScripts
             try
             {
                 if (otherEntity != s_playerEntity) return;
-                ulong crouchZone = API.FindEntity("CrouchTriggerZone");
-                API.Log($"[PlayerMovement] OnTriggerExit: triggerEntity={triggerEntity}, crouchZone={crouchZone}");
 
+                // Crouch Logic
+                ulong crouchZone = API.FindEntity("CrouchTriggerZone");
                 if (triggerEntity == crouchZone && crouchZone != 0 && s_instance != null)
                 {
                     s_instance._inCrouchZone = false;
@@ -479,6 +515,15 @@ namespace GameScripts
                             API.AnimatorSetBool(s_instance.Entity, "IsCrouching", false);
                     }
                     return;
+                }
+
+                // FREEZE POWERUP LOGIC (Modified: Reset flags)
+                ulong freezePickup = API.FindEntity("FreezePowerUp");
+                if (triggerEntity == freezePickup && freezePickup != 0 && s_instance != null)
+                {
+                    s_instance._canPickupFreeze = false;
+                    s_instance._currentPickupEntity = 0;
+                    API.Log("[PlayerMovement] Left Freeze Powerup zone.");
                 }
             }
             catch (Exception ex)
