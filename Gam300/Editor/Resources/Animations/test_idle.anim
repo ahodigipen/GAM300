@@ -1,0 +1,21 @@
+AnimationClip:
+  name: "Test_Idle"
+  duration: 2.0
+  ticksPerSecond: 30.0
+  filePath: "Resources/Animations/test_idle.anim"
+
+  tracks:
+    - boneName: "Root"
+      keyframes:
+        - time: 0.0
+          position: [0.0, 0.0, 0.0]
+          rotation: [0.0, 0.0, 0.0, 1.0]
+          scale: [1.0, 1.0, 1.0]
+        - time: 1.0
+          position: [0.0, 0.05, 0.0]
+          rotation: [0.0, 0.0, 0.0, 1.0]
+          scale: [1.0, 1.0, 1.0]
+        - time: 2.0
+          position: [0.0, 0.0, 0.0]
+          rotation: [0.0, 0.0, 0.0, 1.0]
+          scale: [1.0, 1.0, 1.0]
