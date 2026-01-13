@@ -301,7 +301,7 @@ namespace Boom
             SoundEngine::Instance().Update();
 
             // Update 3D audio listener to follow the third-person camera
-            EnttView<Entity, ThirdPersonCameraComponent, TransformComponent>([this](auto entity, ThirdPersonCameraComponent& tpCam, TransformComponent& transform) {
+            EnttView<Entity, ThirdPersonCameraComponent, TransformComponent>([this](auto /*entity*/, ThirdPersonCameraComponent& /*tpCam*/, TransformComponent& transform) {
                 Transform3D& camTransform = transform.transform;
 
                 // Calculate forward and up vectors from camera rotation
