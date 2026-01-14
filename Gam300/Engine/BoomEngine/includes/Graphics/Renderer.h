@@ -241,6 +241,16 @@ namespace Boom {
             colorShader->Show(*tex.get(), transform);
         }
 
+        // Raw texture ID overloads (for video playback, dynamic textures, etc.)
+        BOOM_INLINE void DrawQuadRaw(uint32_t textureId, Transform3D const& transform, glm::vec4 col = glm::vec4{ 1.f }) {
+            color3DShader->ChangeColor(col);
+            color3DShader->Show(textureId, transform);
+        }
+        BOOM_INLINE void DrawQuadRaw(uint32_t textureId, Transform2D const& transform, glm::vec4 col = glm::vec4{ 1.f }) {
+            colorShader->ChangeColor(col);
+            colorShader->Show(textureId, transform);
+        }
+
         BOOM_INLINE float Aspect() const { return frame->Ratio(); } // kept for backward compatibility
 
     public: // ---------------------- Frame lifecycle ----------------------

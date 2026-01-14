@@ -300,12 +300,16 @@ if exist "$(glew_BIN_DIRS)" xcopy /y /i "$(glew_BIN_DIRS)\*.dll" "$(TargetDir)"<
     <ClInclude Include="src\Windows\Viewport.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Video\output.mpg" />
     <None Include="src\Vendors\imgui\examples\example_glfw_wgpu\web\index.html" />
     <None Include="src\Vendors\imgui\examples\libs\emscripten\shell_minimal.html" />
     <None Include="VendorSettings.props" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Editor.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="Resources\Video\DOGGIE.mp4" />
   </ItemGroup>
   <!-- Resolve conanbuild folder: prefer SolutionDir, fallback to ProjectDir -->
   <PropertyGroup Label="ConanImportSettings">

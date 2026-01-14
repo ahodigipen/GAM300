@@ -27,6 +27,8 @@
     <ClCompile Include="src\Auxiliaries\DataSerializerAsync.cpp" />
     <ClCompile Include="src\Auxiliaries\AsyncAssetLoader.cpp" />
     <ClCompile Include="src\Models\ModelLoader.cpp" />
+    <ClCompile Include="src\Graphics\Video\VideoPlayer.cpp" />
+    <ClCompile Include="src\Graphics\Video\VideoSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\Application\Application.h" />
@@ -100,6 +102,10 @@
     <ClInclude Include="includes\Auxiliaries\AssetLoadContext.h" />
     <ClInclude Include="includes\Auxiliaries\AsyncAssetLoader.h" />
     <ClInclude Include="includes\Graphics\Shaders\PickingShader.h" />
+    <ClInclude Include="includes\Graphics\Video\VideoPlayer.h" />
+    <ClInclude Include="includes\Graphics\Video\VideoSystem.h" />
+    <ClInclude Include="..\..\..\..\..\..\Downloads\pl_mpeg-master\pl_mpeg-master\pl_mpeg.h" />
+    <ClInclude Include="includes\Graphics\Video\pl_mpeg.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="VendorSettings.props" />

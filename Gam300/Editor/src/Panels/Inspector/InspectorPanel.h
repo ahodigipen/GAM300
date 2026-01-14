@@ -44,6 +44,7 @@ namespace EditorUI {
 
 		void AnimatorComponentUI(Boom::Entity& selected);
 		void SoundComponentUI(Boom::Entity& selected);
+		void VideoComponentUI(Boom::Entity& selected);
 
     private:
         Editor* m_Owner = nullptr;

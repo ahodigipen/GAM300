@@ -537,6 +537,9 @@ namespace Boom
         // === DEACTIVATED COMPONENT ===
         RegisterPropertyComponent<DeactivatedComponent>("DeactivatedComponent");
 
+        // === VIDEO COMPONENT ===
+        RegisterPropertyComponent<VideoComponent>("VideoComponent");
+
         // === SOUND COMPONENT ===
         registry.RegisterComponentSerializer(
             "SoundComponent",
