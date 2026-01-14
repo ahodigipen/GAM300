@@ -1,5 +1,6 @@
 ﻿using Boom;
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace GameScripts
@@ -69,10 +70,17 @@ namespace GameScripts
         private static bool s_isStealthInvisible = false;
 
         // ==== Freeze Ability Fields ====
-        private const int FREEZE_KEY = API.KEY_F;
+        private const int PICKUP_KEY = API.KEY_F;
+        private const int USE_KEY = API.KEY_G;
+
         private bool _canPickupFreeze = false;       // NEW: Track if we are standing on a pickup
         private ulong _currentPickupEntity = 0;      // NEW: Track which pickup we are standing on
-        private bool _wasFreezeKeyDown = false;
+
+        private bool _wasPickupKeyDown = false;
+        private bool _wasUseKeyDown = false;
+
+        private HashSet<ulong> _freezePickupIDs = new HashSet<ulong>();
+        private const int MAX_PICKUPS_TO_CHECK = 10; // Will look for FreezePowerUp_1 to _10
 
         public void OnStart(string jsonParams)
         {
@@ -171,24 +179,48 @@ namespace GameScripts
 
         private void RegisterTriggerCallbacksOnAllTriggers()
         {
-            string[] triggerNames = { "Checkpoint", "DamageZone", "PowerUp", "DoorTrigger", "TriggerVolume", "AreaTrigger", "FreezePowerUp" };
-            foreach (string triggerName in triggerNames)
+            // 1. Clear old list
+            _freezePickupIDs.Clear();
+
+            // 2. Register Standard Triggers
+            string[] standardTriggers = { "Checkpoint", "DamageZone", "PowerUp", "DoorTrigger", "TriggerVolume", "AreaTrigger" };
+            foreach (string name in standardTriggers)
             {
-                ulong triggerEntity = API.FindEntity(triggerName);
-                if (triggerEntity == 0) continue;
-                if (API.HasCollider(triggerEntity) && API.IsTrigger(triggerEntity))
+                ulong id = API.FindEntity(name);
+                if (id != 0 && API.HasCollider(id) && API.IsTrigger(id))
                 {
-                    API.RegisterTriggerEnterCallback(triggerEntity, OnTriggerEnter);
-                    API.RegisterTriggerExitCallback(triggerEntity, OnTriggerExit);
+                    API.RegisterTriggerEnterCallback(id, OnTriggerEnter);
+                    API.RegisterTriggerExitCallback(id, OnTriggerExit);
                 }
             }
 
-            // Register CrouchTriggerZone separately with detailed logging
+            // 3. Register Freeze Powerups (With Unique Names)
+            // Look for "FreezePowerUp", "FreezePowerUp_1", "FreezePowerUp_2", etc.
+            RegisterFreezePickup("FreezePowerUp"); // The original
+            for (int i = 1; i <= MAX_PICKUPS_TO_CHECK; i++)
+            {
+                RegisterFreezePickup($"FreezePowerUp_{i}");
+            }
+
+            // 4. Register Crouch Zone
             ulong crouchZone = API.FindEntity("CrouchTriggerZone");
-            if (crouchZone != 0 && API.HasCollider(crouchZone) && API.IsTrigger(crouchZone))
+            if (crouchZone != 0)
             {
                 API.RegisterTriggerEnterCallback(crouchZone, OnTriggerEnter);
                 API.RegisterTriggerExitCallback(crouchZone, OnTriggerExit);
+            }
+        }
+
+        // Helper to register and store ID
+        private void RegisterFreezePickup(string name)
+        {
+            ulong id = API.FindEntity(name);
+            if (id != 0 && API.HasCollider(id) && API.IsTrigger(id))
+            {
+                API.Log($"[PlayerMovement] Found Freeze Pickup: {name} (ID: {id})");
+                API.RegisterTriggerEnterCallback(id, OnTriggerEnter);
+                API.RegisterTriggerExitCallback(id, OnTriggerExit);
+                _freezePickupIDs.Add(id); // Add to our list of valid pickups
             }
         }
 
@@ -238,46 +270,68 @@ namespace GameScripts
             // 1. UPDATE FREEZE MANAGER
             FreezeManager.Update(dt);
 
-            // --- INPUT HANDLING: SINGLE PRESS DETECTION ---
-            bool isFreezeKeyDown = API.IsKeyDown(FREEZE_KEY);
-            // "Pressed" is true ONLY if it is down now, but was NOT down last frame
-            bool isFreezePressed = isFreezeKeyDown && !_wasFreezeKeyDown;
-            // Update the history for the next frame
-            _wasFreezeKeyDown = isFreezeKeyDown;
+            // --- INPUT HANDLING ---
+            bool isPickupDown = API.IsKeyDown(PICKUP_KEY);
+            bool isPickupPressed = isPickupDown && !_wasPickupKeyDown;
+            _wasPickupKeyDown = isPickupDown;
 
-            // 2. HANDLE FREEZE INPUT (F Key)
-            if (isFreezePressed && API.GetApplicationState() != API.APP_STATE_PAUSED)
+            bool isUseDown = API.IsKeyDown(USE_KEY);
+            bool isUsePressed = isUseDown && !_wasUseKeyDown;
+            _wasUseKeyDown = isUseDown;
+
+            if (API.GetApplicationState() != API.APP_STATE_PAUSED)
             {
-                // PRIORITY 1: PICKUP
-                if (_canPickupFreeze && !PlayerInventory.HasFreezePower())
+                // --- LOGIC 1: PICKUP (F KEY) ---
+                // We check if Player pressed F and is standing on a pickup
+                if (isPickupPressed && _canPickupFreeze)
                 {
-                    if (PlayerInventory.TryAddFreezeCharge())
+                    // Case A: Inventory is empty -> Success
+                    if (!PlayerInventory.HasFreezePower())
                     {
-                        API.Log("[PlayerMovement] Picked up Freeze Ability (Manual)!");
-                        if (_currentPickupEntity != 0)
+                        if (PlayerInventory.TryAddFreezeCharge())
                         {
-                            API.SetPosition(_currentPickupEntity, new Vec3(0, -5000, 0));
-                            _canPickupFreeze = false;
-                            _currentPickupEntity = 0;
+                            API.Log("[PlayerMovement] Picked up Freeze Ability!");
+
+                            if (_currentPickupEntity != 0)
+                            {
+                                API.SetPosition(_currentPickupEntity, new Vec3(0, -5000, 0));
+                                _canPickupFreeze = false;
+                                _currentPickupEntity = 0;
+                            }
                         }
                     }
+                    // Case B: Inventory is full -> Fail + Log
+                    else
+                    {
+                        API.Log("[PlayerMovement] Cannot pickup: You already have a Freeze Charge!");
+                    }
                 }
-                // PRIORITY 2: ACTIVATE (If we have power)
-                else if (PlayerInventory.HasFreezePower() && !FreezeManager.IsFrozen(API.GetPosition(Entity)))
+
+                // --- LOGIC 2: USE ABILITY (G KEY) ---
+                if (isUsePressed)
                 {
-                    PlayerInventory.ConsumeFreezeCharge();
-
-                    // --- CONFIG ---
-                    float radius = 6.0f;
-                    float duration = 3.0f;
-
-                    // 1. Get Player Position (Center of Bubble)
-                    Vec3 playerPos = API.GetPosition(Entity);
-
-                    // 2. Trigger
-                    FreezeManager.TriggerFreeze(playerPos, radius, duration);
+                    if (PlayerInventory.HasFreezePower())
+                    {
+                        if (!FreezeManager.IsFrozen(API.GetPosition(Entity)))
+                        {
+                            PlayerInventory.ConsumeFreezeCharge();
+                            float radius = 6.0f;
+                            float duration = 3.0f;
+                            Vec3 playerPos = API.GetPosition(Entity);
+                            FreezeManager.TriggerFreeze(playerPos, radius, duration);
+                        }
+                        else
+                        {
+                            API.Log("[PlayerMovement] Cannot use ability: Freeze already active!");
+                        }
+                    }
+                    else
+                    {
+                        API.Log("[PlayerMovement] No Freeze Charge available!");
+                    }
                 }
             }
+
             _footstepComponent?.OnUpdate(dt);
             if (_isRespawning) return;
 
@@ -478,13 +532,12 @@ namespace GameScripts
                     return;
                 }
 
-                // FREEZE POWERUP LOGIC (Modified: Only detects, doesn't pickup)
-                ulong freezePickup = API.FindEntity("FreezePowerUp");
-                if (triggerEntity == freezePickup && freezePickup != 0 && s_instance != null)
+                // CHECK NEW LIST: Is this entity one of our known freeze powerups?
+                if (s_instance != null && s_instance._freezePickupIDs.Contains(triggerEntity))
                 {
                     s_instance._canPickupFreeze = true;
                     s_instance._currentPickupEntity = triggerEntity;
-                    API.Log("[PlayerMovement] Standing on Freeze Powerup. Press F to pickup.");
+                    API.Log($"[PlayerMovement] Standing on Freeze Powerup (ID: {triggerEntity}). Press F to pickup.");
                     return;
                 }
             }
@@ -517,12 +570,15 @@ namespace GameScripts
                     return;
                 }
 
-                // FREEZE POWERUP LOGIC (Modified: Reset flags)
-                ulong freezePickup = API.FindEntity("FreezePowerUp");
-                if (triggerEntity == freezePickup && freezePickup != 0 && s_instance != null)
+                // CHECK NEW LIST
+                if (s_instance != null && s_instance._freezePickupIDs.Contains(triggerEntity))
                 {
                     s_instance._canPickupFreeze = false;
-                    s_instance._currentPickupEntity = 0;
+                    // Only clear current pickup if it's the one we just left
+                    if (s_instance._currentPickupEntity == triggerEntity)
+                    {
+                        s_instance._currentPickupEntity = 0;
+                    }
                     API.Log("[PlayerMovement] Left Freeze Powerup zone.");
                 }
             }

@@ -746,7 +746,8 @@ namespace Boom
         public const int KEY_Q = 81;
         public const int KEY_LEFT_CONTROL = 341;
         public const int KEY_LEFT_SHIFT = 340;
-        public const int KEY_F = 70; // Freeze
+        public const int KEY_F = 70; // Freeze / Pickup
+        public const int KEY_G = 71; // Use Ability
 
         public const int MOUSE_LEFT = 0;
         public const int MOUSE_RIGHT = 1;
