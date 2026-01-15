@@ -625,32 +625,43 @@ namespace Boom {
 #pragma region RuntimeUpdates
 
         BOOM_INLINE void UpdateColliderShape(Entity& entity, AssetRegistry& assetRegistry) {
-            if (!entity.Has<RigidBodyComponent>() || !entity.Has<ColliderComponent>()) return;
+            // Handle both RigidBody and Collider-only entities
+            PxRigidActor* actor = nullptr;
 
-            auto& body = entity.Get<RigidBodyComponent>().RigidBody;
+            if (entity.Has<RigidBodyComponent>()) {
+                actor = entity.Get<RigidBodyComponent>().RigidBody.actor;
+            }
+            else if (entity.Has<ColliderComponent>()) {
+                actor = entity.Get<ColliderComponent>().Collider.actor;
+            }
+
+            if (!actor) return;
+            if (!entity.Has<ColliderComponent>()) return;
+
             auto& collider = entity.Get<ColliderComponent>().Collider;
             auto& transform = entity.Get<TransformComponent>().transform;
 
-            if (!body.actor) return;
-
             // 1. Detach and Release Old Shape
             if (collider.Shape) {
-                body.actor->detachShape(*collider.Shape);
-                collider.Shape->release(); // Release should decrease ref count to 0 if detached
+                actor->detachShape(*collider.Shape);
+                // Don't release here - the shape might be shared or already released
                 collider.Shape = nullptr;
             }
 
-            // 2. Create New Shape
-            collider.Shape = CreatePxShape(collider, transform, assetRegistry);
+            // 2. Create New Shape (this also sets collider.Shape)
+            PxShape* newShape = CreatePxShape(collider, transform, assetRegistry);
 
             // 3. Attach New Shape
-            if (collider.Shape) {
-                body.actor->attachShape(*collider.Shape);
-                collider.Shape->release(); // Actor owns it now
+            if (newShape) {
+                actor->attachShape(*newShape);
+                newShape->release(); // Actor now owns it, release our reference
 
                 // Recalculate mass for dynamic objects
-                if (body.type == RigidBody3D::DYNAMIC) {
-                    PxRigidBodyExt::updateMassAndInertia(*static_cast<PxRigidBody*>(body.actor), body.density);
+                if (entity.Has<RigidBodyComponent>()) {
+                    auto& body = entity.Get<RigidBodyComponent>().RigidBody;
+                    if (body.type == RigidBody3D::DYNAMIC) {
+                        PxRigidBodyExt::updateMassAndInertia(*static_cast<PxRigidBody*>(actor), body.density);
+                    }
                 }
             }
         }
@@ -871,6 +882,7 @@ namespace Boom {
         // ====================================================================================
 
         // Centralized Shape Creation to avoid code duplication in AddRigidBody/AddColliderOnly
+                // Centralized Shape Creation to avoid code duplication in AddRigidBody/AddColliderOnly
         BOOM_INLINE PxShape* CreatePxShape(Collider3D& collider, Transform3D& transform, AssetRegistry& assetRegistry)
         {
             if (!m_Physics) return nullptr;
@@ -880,7 +892,10 @@ namespace Boom {
                 collider.material = m_Physics->createMaterial(collider.staticFriction, collider.dynamicFriction, collider.restitution);
             }
 
-            PxTransform userLocalPose(ToPxVec3(collider.localPosition), ToPxQuat(collider.localRotation));
+            // Convert user's local rotation from Euler degrees to quaternion
+            PxQuat userRotation = ToPxQuat(collider.localRotation);
+            PxTransform userLocalPose(ToPxVec3(collider.localPosition), userRotation);
+
             PxShape* shape = nullptr;
             glm::vec3 s = glm::abs(transform.scale * collider.localScale);
 
@@ -897,7 +912,7 @@ namespace Boom {
                 shape->setLocalPose(userLocalPose);
             }
             else if (collider.type == Collider3D::CAPSULE) {
-                // Determine Axis
+                // Determine Axis based on scale
                 int axis = 0; // 0=X, 1=Y, 2=Z
                 if (s.y > s.x && s.y > s.z) axis = 1;
                 else if (s.z > s.x && s.z > s.y) axis = 2;
@@ -912,19 +927,24 @@ namespace Boom {
 
                 shape = m_Physics->createShape(PxCapsuleGeometry(radius, halfHeight), *collider.material);
 
-                // Align rotation
-                PxQuat rot = PxQuat(PxIdentity);
-                if (axis == 1) rot = PxQuat(PxHalfPi, PxVec3(0, 0, 1));
-                else if (axis == 2) rot = PxQuat(-PxHalfPi, PxVec3(0, 1, 0));
+                // PhysX capsules are X-axis aligned by default, rotate to desired axis
+                PxQuat axisAlignmentRot = PxQuat(PxIdentity);
+                if (axis == 1) axisAlignmentRot = PxQuat(PxHalfPi, PxVec3(0, 0, 1));
+                else if (axis == 2) axisAlignmentRot = PxQuat(-PxHalfPi, PxVec3(0, 1, 0));
 
-                shape->setLocalPose(userLocalPose * PxTransform(PxVec3(0), rot));
+                // Combine: user rotation * axis alignment (apply axis alignment in user's rotated space)
+                PxTransform finalPose(userLocalPose.p, userRotation * axisAlignmentRot);
+                shape->setLocalPose(finalPose);
             }
             else if (collider.type == Collider3D::PLANE) {
                 shape = m_Physics->createShape(PxPlaneGeometry(), *collider.material);
-                PxQuat rot = PxQuat(PxIdentity);
-                if (s.y < s.x && s.y < s.z) rot = PxQuat(PxHalfPi, PxVec3(0, 0, 1)); // Floor
-                else if (s.z < s.x && s.z < s.y) rot = PxQuat(-PxHalfPi, PxVec3(0, 1, 0)); // Wall
-                shape->setLocalPose(userLocalPose * PxTransform(PxVec3(0), rot));
+                // Planes need special handling - they face +X by default in PhysX
+                PxQuat planeRot = PxQuat(PxIdentity);
+                if (s.y < s.x && s.y < s.z) planeRot = PxQuat(PxHalfPi, PxVec3(0, 0, 1)); // Floor (face +Y)
+                else if (s.z < s.x && s.z < s.y) planeRot = PxQuat(-PxHalfPi, PxVec3(0, 1, 0)); // Wall
+
+                PxTransform finalPose(userLocalPose.p, userRotation * planeRot);
+                shape->setLocalPose(finalPose);
             }
             else if (collider.type == Collider3D::CONVEX_MESH) {
                 if (collider.physicsMeshID != EMPTY_ASSET) {
@@ -946,7 +966,6 @@ namespace Boom {
                     }
                 }
             }
-            // Simple Primitive Meshes (Cylinder/Tri)
             else if (collider.type == Collider3D::CYLINDER) {
                 PxConvexMesh* mesh = CreateCylinderMesh(1.0f, 1.0f);
                 if (mesh) {
@@ -968,6 +987,9 @@ namespace Boom {
                     shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, false);
                     shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, true);
                 }
+
+                // Store shape reference in collider
+                collider.Shape = shape;
             }
 
             return shape;
