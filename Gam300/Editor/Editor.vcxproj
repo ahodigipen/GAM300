@@ -214,6 +214,8 @@ if exist "$(glew_BIN_DIRS)" xcopy /y /i "$(glew_BIN_DIRS)\*.dll" "$(TargetDir)"<
     <ClCompile Include="src\Panels\AnimatorGraphPanel.cpp" />
     <ClCompile Include="src\Panels\ModelPreviewPanel.cpp" />
     <ClCompile Include="src\Panels\AnimationTimelinePanel.cpp" />
+    <ClCompile Include="src\Panels\AnimationTimelinePanel_Timeline.cpp" />
+    <ClCompile Include="src\Panels\AnimationTimelinePanel_Viewport.cpp" />
     <ClCompile Include="src\Panels\AudioPanel.cpp" />
     <ClCompile Include="src\Panels\ConsolePanel.cpp" />
     <ClCompile Include="src\Panels\DirectoryPanel.cpp" />
