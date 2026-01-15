@@ -61,7 +61,7 @@ namespace Boom {
 
                 // Update component state
                 videoComp.isPlaying = player.IsPlaying();
-                videoComp.currentTime = player.GetCurrentTime();
+                videoComp.currentTime = player.GetTickCount();
 
                 // Upload new frame to texture
                 if (player.HasNewFrame()) {

@@ -64,9 +64,11 @@ namespace Boom {
         int GetWidth() const { return m_Width; }
         int GetHeight() const { return m_Height; }
         double GetDuration() const { return m_Duration; }
-        double GetCurrentTime() const { return m_CurrentTime; }
         double GetFramerate() const { return m_Framerate; }
         int GetSampleRate() const { return m_SampleRate; }
+
+        // Alias for GetCurrentTime() - for compatibility with UI code
+        double GetTickCount() const { return m_CurrentTime; }
 
         // Frame data access (RGB format)
         const uint8_t* GetFrameData() const { return m_FrameBuffer.get(); }
