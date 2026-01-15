@@ -1794,39 +1794,221 @@ namespace EditorUI {
                         sc.Enabled, sc.TypeName);
                 }
 
-                // ----- Params (JSON) -----
-                ImGui::AlignTextToFramePadding();
-                ImGui::Text("Params (JSON)");
-                ImGui::SameLine(150);
-                ImGui::SetNextItemWidth(-1);
+                // ----- Exposed Script Fields -----
+                if (scripting && scripting->IsAlive() && sc.InstanceId != 0 && !sc.TypeName.empty()) {
+                    auto exposedFields = scripting->GetExposedFields(sc.TypeName);
 
-                static char paramsBuf[2048];
-                static entt::entity lastJsonEntity = entt::null;
+                    if (!exposedFields.empty()) {
+                        ImGui::Separator();
+                        ImGui::Text("Script Properties");
+                        ImGui::Spacing();
 
-                if (currentEntity != lastJsonEntity) {
-                    std::string initial = sc.Params.dump(2);
+                        for (const auto& field : exposedFields) {
+                            ImGui::PushID(field.fieldName.c_str());
+
+                            // Get current value
+                            std::string valueJson = scripting->GetFieldValue(sc.InstanceId, field.fieldName);
+                            bool valueChanged = false;
+
+                            // Label
+                            ImGui::AlignTextToFramePadding();
+                            ImGui::Text("%s", field.displayName.c_str());
+                            if (!field.tooltip.empty() && ImGui::IsItemHovered()) {
+                                ImGui::SetTooltip("%s", field.tooltip.c_str());
+                            }
+                            ImGui::SameLine(150);
+                            ImGui::SetNextItemWidth(-1);
+
+                            // Helper lambda to update both live instance AND Params for serialization
+                            auto updateFieldValue = [&](const std::string& fieldName, const nlohmann::json& jsonValue) {
+                                // Update live instance
+                                scripting->SetFieldValue(sc.InstanceId, fieldName, jsonValue.dump());
+                                // Update Params for serialization (scene save/load)
+                                sc.Params[fieldName] = jsonValue;
+                            };
+
+                            // Type-specific widget
+                            if (field.typeName == "float") {
+                                float val = 0.0f;
+                                try { val = std::stof(valueJson); } catch (...) {}
+
+                                if (field.useSlider && field.minValue > -FLT_MAX && field.maxValue < FLT_MAX) {
+                                    if (ImGui::SliderFloat("##val", &val, field.minValue, field.maxValue)) {
+                                        valueChanged = true;
+                                    }
+                                } else {
+                                    if (ImGui::DragFloat("##val", &val, 0.1f, field.minValue, field.maxValue)) {
+                                        valueChanged = true;
+                                    }
+                                }
+
+                                if (valueChanged) {
+                                    updateFieldValue(field.fieldName, val);
+                                }
+                            }
+                            else if (field.typeName == "int") {
+                                int val = 0;
+                                try { val = std::stoi(valueJson); } catch (...) {}
+
+                                if (field.useSlider && field.minValue > -FLT_MAX && field.maxValue < FLT_MAX) {
+                                    if (ImGui::SliderInt("##val", &val, (int)field.minValue, (int)field.maxValue)) {
+                                        valueChanged = true;
+                                    }
+                                } else {
+                                    if (ImGui::DragInt("##val", &val)) {
+                                        valueChanged = true;
+                                    }
+                                }
+
+                                if (valueChanged) {
+                                    updateFieldValue(field.fieldName, val);
+                                }
+                            }
+                            else if (field.typeName == "bool") {
+                                bool val = (valueJson == "true");
+                                if (ImGui::Checkbox("##val", &val)) {
+                                    updateFieldValue(field.fieldName, val);
+                                }
+                            }
+                            else if (field.typeName == "string") {
+                                // Parse string (remove quotes)
+                                std::string val = valueJson;
+                                if (val.size() >= 2 && val.front() == '"' && val.back() == '"') {
+                                    val = val.substr(1, val.size() - 2);
+                                }
+
+                                // Check if this is an audio/sound field - show dropdown instead
+                                bool isAudioField = (field.displayName.find("Sound") != std::string::npos ||
+                                                    field.displayName.find("Audio") != std::string::npos ||
+                                                    field.fieldName.find("Sound") != std::string::npos ||
+                                                    field.fieldName.find("Audio") != std::string::npos ||
+                                                    field.fieldName.find("sound") != std::string::npos ||
+                                                    field.fieldName.find("audio") != std::string::npos);
+
+                                if (isAudioField) {
+                                    // Show audio asset dropdown
+                                    std::string curLabel = val.empty() ? "Select Audio..." : std::filesystem::path(val).filename().string();
+                                    if (ImGui::BeginCombo("##audioSelect", curLabel.c_str())) {
+                                        auto& audioMap = m_App->GetAssetRegistry().GetMap<AudioAsset>();
+
+                                        // Allow clearing
+                                        bool noneSel = val.empty();
+                                        if (ImGui::Selectable("None", noneSel)) {
+                                            updateFieldValue(field.fieldName, "");
+                                        }
+                                        if (noneSel) ImGui::SetItemDefaultFocus();
+
+                                        // List all audio assets
+                                        for (auto& [uid, asset] : audioMap) {
+                                            if (uid == EMPTY_ASSET) continue;
+                                            bool isSel = (val == asset->source);
+                                            if (ImGui::Selectable(asset->name.c_str(), isSel)) {
+                                                updateFieldValue(field.fieldName, asset->source);
+                                            }
+                                            if (isSel) ImGui::SetItemDefaultFocus();
+                                        }
+                                        ImGui::EndCombo();
+                                    }
+                                } else {
+                                    // Regular string input
+                                    char buf[256];
 #ifdef _MSC_VER
-                    strncpy_s(paramsBuf, sizeof(paramsBuf), initial.c_str(), sizeof(paramsBuf) - 1);
+                                    strncpy_s(buf, sizeof(buf), val.c_str(), sizeof(buf) - 1);
 #else
-                    std::snprintf(paramsBuf, sizeof(paramsBuf), "%s", initial.c_str());
+                                    std::snprintf(buf, sizeof(buf), "%s", val.c_str());
 #endif
-                    lastJsonEntity = currentEntity;
+                                    if (ImGui::InputText("##val", buf, sizeof(buf))) {
+                                        updateFieldValue(field.fieldName, std::string(buf));
+                                    }
+                                }
+                            }
+                            else if (field.typeName == "Vec3") {
+                                float vals[3] = {0, 0, 0};
+                                try {
+                                    auto j = nlohmann::json::parse(valueJson);
+                                    vals[0] = j.value("X", 0.0f);
+                                    vals[1] = j.value("Y", 0.0f);
+                                    vals[2] = j.value("Z", 0.0f);
+                                } catch (...) {}
+
+                                if (ImGui::DragFloat3("##val", vals, 0.1f)) {
+                                    nlohmann::json vecJson = {{"X", vals[0]}, {"Y", vals[1]}, {"Z", vals[2]}};
+                                    updateFieldValue(field.fieldName, vecJson);
+                                }
+                            }
+                            else if (field.typeName == "Vec2") {
+                                float vals[2] = {0, 0};
+                                try {
+                                    auto j = nlohmann::json::parse(valueJson);
+                                    vals[0] = j.value("X", 0.0f);
+                                    vals[1] = j.value("Y", 0.0f);
+                                } catch (...) {}
+
+                                if (ImGui::DragFloat2("##val", vals, 0.1f)) {
+                                    nlohmann::json vecJson = {{"X", vals[0]}, {"Y", vals[1]}};
+                                    updateFieldValue(field.fieldName, vecJson);
+                                }
+                            }
+                            else if (field.typeName == "Vec4") {
+                                float vals[4] = {0, 0, 0, 0};
+                                try {
+                                    auto j = nlohmann::json::parse(valueJson);
+                                    vals[0] = j.value("X", 0.0f);
+                                    vals[1] = j.value("Y", 0.0f);
+                                    vals[2] = j.value("Z", 0.0f);
+                                    vals[3] = j.value("W", 0.0f);
+                                } catch (...) {}
+
+                                if (ImGui::DragFloat4("##val", vals, 0.1f)) {
+                                    nlohmann::json vecJson = {{"X", vals[0]}, {"Y", vals[1]}, {"Z", vals[2]}, {"W", vals[3]}};
+                                    updateFieldValue(field.fieldName, vecJson);
+                                }
+                            }
+                            else if (field.typeName == "ulong") {
+                                // Entity reference - show as text for now
+                                ImGui::TextDisabled("Entity: %s", valueJson.c_str());
+                            }
+                            else {
+                                // Unknown type - show as read-only text
+                                ImGui::TextDisabled("%s: %s", field.typeName.c_str(), valueJson.c_str());
+                            }
+
+                            ImGui::PopID();
+                        }
+                    }
                 }
 
-                if (ImGui::InputTextMultiline(
-                    "##ScriptParams",
-                    paramsBuf,
-                    IM_ARRAYSIZE(paramsBuf),
-                    ImVec2(-1, 120),
-                    ImGuiInputTextFlags_AllowTabInput))
-                {
-                    try {
-                        sc.Params = nlohmann::json::parse(paramsBuf);
+                // ----- Raw Params (JSON) - Collapsible for Advanced Users -----
+                ImGui::Spacing();
+                if (ImGui::TreeNode("Advanced: Raw Params (JSON)")) {
+                    static char paramsBuf[2048];
+                    static entt::entity lastJsonEntity = entt::null;
+
+                    if (currentEntity != lastJsonEntity) {
+                        std::string initial = sc.Params.dump(2);
+#ifdef _MSC_VER
+                        strncpy_s(paramsBuf, sizeof(paramsBuf), initial.c_str(), sizeof(paramsBuf) - 1);
+#else
+                        std::snprintf(paramsBuf, sizeof(paramsBuf), "%s", initial.c_str());
+#endif
+                        lastJsonEntity = currentEntity;
                     }
-                    catch (...) {
-                        ImGui::SameLine();
-                        ImGui::TextColored(ImVec4(1, 0.3f, 0.3f, 1), "Invalid JSON");
+
+                    if (ImGui::InputTextMultiline(
+                        "##ScriptParams",
+                        paramsBuf,
+                        IM_ARRAYSIZE(paramsBuf),
+                        ImVec2(-1, 80),
+                        ImGuiInputTextFlags_AllowTabInput))
+                    {
+                        try {
+                            sc.Params = nlohmann::json::parse(paramsBuf);
+                        }
+                        catch (...) {
+                            ImGui::TextColored(ImVec4(1, 0.3f, 0.3f, 1), "Invalid JSON");
+                        }
                     }
+                    ImGui::TreePop();
                 }
 
                 // ----- Runtime info -----

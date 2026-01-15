@@ -12,8 +12,13 @@ namespace Boom
         public ulong Entity;
 
         // Footstep configuration
+        [EditorExposed("Footstep Interval", "Time between footstep sounds in seconds", 0.1f, 2f, true)]
         private float _footstepInterval = 0.5f; // Time between footsteps
+
+        [EditorExposed("Min Speed", "Minimum movement speed to trigger footsteps", 0.1f, 5f, true)]
         private float _minSpeed = 1.0f; // Minimum movement speed to trigger footsteps
+
+        [EditorExposed("Footstep Volume", "Volume of footstep sounds", 0f, 1f, true)]
         private float _footstepVolume = 0.95f;
 
         // Runtime state
@@ -22,12 +27,20 @@ namespace Boom
         private bool _isMoving = false;
 
         // Sound files (customize these paths for your project)
-        private readonly string[] _footstepSounds = {
-            "Resources/Audio/playerWalk_01.wav",
-            "Resources/Audio/playerWalk_02.wav",
-            "Resources/Audio/playerWalk_03.wav",
-            "Resources/Audio/playerWalk_04.wav"
-        };
+        [EditorExposed("Footstep Sound 1", "First footstep sound variant")]
+        private string _footstepSound1 = "Resources/Audio/playerWalk_01.wav";
+
+        [EditorExposed("Footstep Sound 2", "Second footstep sound variant")]
+        private string _footstepSound2 = "Resources/Audio/playerWalk_02.wav";
+
+        [EditorExposed("Footstep Sound 3", "Third footstep sound variant")]
+        private string _footstepSound3 = "Resources/Audio/playerWalk_03.wav";
+
+        [EditorExposed("Footstep Sound 4", "Fourth footstep sound variant")]
+        private string _footstepSound4 = "Resources/Audio/playerWalk_04.wav";
+
+        // Helper to get footstep sounds as array
+        private string[] GetFootstepSounds() => new string[] { _footstepSound1, _footstepSound2, _footstepSound3, _footstepSound4 };
 
         private Random _random = new Random();
 
@@ -47,10 +60,10 @@ namespace Boom
             _lastPosition = API.GetPosition(Entity);
 
             // Preload all footstep sounds for better performance
-            for (int i = 0; i < _footstepSounds.Length; i++)
+            for (int i = 0; i < GetFootstepSounds().Length; i++)
             {
                 string soundName = $"footstep_{Entity}_{i}";
-                API.PreloadSound(soundName, _footstepSounds[i]);
+                API.PreloadSound(soundName, GetFootstepSounds()[i]);
             }
 
             API.Log("[FootstepComponent] Footstep sounds preloaded successfully");
@@ -107,14 +120,14 @@ namespace Boom
         private void PlayFootstepSound(Vec3 position)
         {
             // Choose random footstep sound
-            int soundIndex = _random.Next(_footstepSounds.Length);
+            int soundIndex = _random.Next(GetFootstepSounds().Length);
             string soundName = $"footstep_{Entity}_current";
 
             // Stop any previous footstep from this entity
             API.StopSound(soundName);
 
             // Play the footstep sound at the entity's position (3D sound)
-            API.PlaySoundAt(soundName, _footstepSounds[soundIndex], position, false);
+            API.PlaySoundAt(soundName, GetFootstepSounds()[soundIndex], position, false);
             API.SetSoundVolume(soundName, _footstepVolume);
             // Note: No Set3DMinMaxDistance needed - player should always hear their own footsteps clearly
             // since the camera/listener follows right behind the player

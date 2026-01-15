@@ -10,15 +10,30 @@ namespace GameScripts
 
         // Rotation parameters
         private float _rotationTimer = 0f;
+
+        [Boom.EditorExposed("Rotation Interval", "Time between random rotations in seconds", 0.5f, 10f, true)]
         private float _rotationInterval = 2f;
+
         private float _currentYRotation = 0f;
         private float _targetYRotation = 0f;
+
+        [Boom.EditorExposed("Rotation Speed", "Degrees per second for smooth rotation", 10f, 360f, true)]
         private float _rotationSpeed = 90f; // Degrees per second for smooth rotation
         private bool _isRotating = false;
         private const string TURN_SOUND_ID = "enemy_turn";
-        private const string TURN_SOUND_PATH = "Resources/Audio/StatueTurn_01.wav";
-        private const string TURN_SOUND_PATH2 = "Resources/Audio/StatueTurn_02.wav";
-        private const string TURN_SOUND_PATH3 = "Resources/Audio/StatueTurn_03.wav";
+
+        // ===== Audio Settings =====
+        [Boom.EditorExposed("Turn Sound 1", "First rotation sound variant")]
+        private string _turnSoundPath1 = "Resources/Audio/StatueTurn_01.wav";
+
+        [Boom.EditorExposed("Turn Sound 2", "Second rotation sound variant")]
+        private string _turnSoundPath2 = "Resources/Audio/StatueTurn_02.wav";
+
+        [Boom.EditorExposed("Turn Sound 3", "Third rotation sound variant")]
+        private string _turnSoundPath3 = "Resources/Audio/StatueTurn_03.wav";
+
+        [Boom.EditorExposed("Alert Sound", "Sound played when enemy detects player")]
+        private string _alertSoundPath = "Resources/Audio/playerPunch_1.wav";
         // Vision system
         private VisionComponent _vision;
 
@@ -100,16 +115,16 @@ namespace GameScripts
                         switch (index)
                         {
                             case 0:
-                                clipPath = TURN_SOUND_PATH;
+                                clipPath = _turnSoundPath1;
                                 soundId = TURN_SOUND_ID + "_0";
                                 break;
                             case 1:
-                                clipPath = TURN_SOUND_PATH2;
+                                clipPath = _turnSoundPath2;
                                 soundId = TURN_SOUND_ID + "_1";
                                 break;
                             case 2:
                             default:
-                                clipPath = TURN_SOUND_PATH3;
+                                clipPath = _turnSoundPath3;
                                 soundId = TURN_SOUND_ID + "_2";
                                 break;
                         }
@@ -198,7 +213,7 @@ namespace GameScripts
             }
 
             // Play alert sound
-            API.PlaySoundAt("enemy_alert", "Resources/Audio/playerPunch_1.wav", enemyPos, false);
+            API.PlaySoundAt("enemy_alert", _alertSoundPath, enemyPos, false);
             API.SetSoundVolume("enemy_alert", 0.8f);
             // Set 3D audio distance - alert should be heard from medium distance
             API.Set3DMinMaxDistance("enemy_alert", 1.0f, 25.0f);
