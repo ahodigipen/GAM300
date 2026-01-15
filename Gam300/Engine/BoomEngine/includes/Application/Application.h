@@ -201,27 +201,23 @@ namespace Boom
 
 			// Initialize physics actors for all rigid bodies
 			EnttView<Entity, ColliderComponent>([this](auto entity, auto&) {
-				// Only add if it DOESN'T have a RigidBodyComponent
 				if (!entity.Has<RigidBodyComponent>()) {
 					m_Context->physics->AddColliderOnly(entity, *m_Context->assets);
 				}
 				else {
-					// Has both collider and rigidbody - use existing logic
 					m_Context->physics->AddRigidBody(entity, *m_Context->assets);
 				}
-			});
+				});
 
-			// Find Samurai to add Capsule Controller
-			auto viewinfo = m_Context->scene.view<InfoComponent>();
-			for (auto entity : viewinfo) {
-				auto& info = viewinfo.get<InfoComponent>(entity);
-				if (info.name == "Samurai") {
-					Entity samuraiEntity{ &m_Context->scene, entity };
-					CreateControllerForEntity(samuraiEntity, 0.8f, 1.8f);
-					BOOM_INFO("[Play] Added Capsule Controller for Samurai entity {}", static_cast<uint32_t>(entity));
-					break;
+			// Create controllers for all entities with CharacterControllerComponent
+			EnttView<Entity, CharacterControllerComponent>([this](auto entity, CharacterControllerComponent& cc) {
+				if (!cc.isCreated) {
+					if (m_Context->physics->CreateCapsuleController(entity, cc.radius, cc.height, cc.stepOffset, cc.contactOffset)) {
+						cc.isCreated = true;
+						BOOM_INFO("[Play] Created Character Controller for entity {}", static_cast<uint32_t>(entity.ID()));
+					}
 				}
-			}
+				});
 
 			// Reset time tracking
 			m_PausedTime = 0.0;
@@ -305,6 +301,8 @@ namespace Boom
 			}
 		}
 
+
+
 		/**
 		* @brief Stops play mode and restores the scene to pre-play state (like Unity's Stop button)
 		*/
@@ -317,6 +315,7 @@ namespace Boom
 
 			BOOM_INFO("[Application] Stopping play mode...");
 
+			// Destroy script instances
 			if (m_Context->scriptingSystem && m_Context->scriptingSystem->IsAlive()) {
 				auto& registry = m_Context->scene;
 				auto scriptView = registry.view<ScriptComponent>();
@@ -324,7 +323,6 @@ namespace Boom
 				int scriptsDestroyed = 0;
 				for (auto entity : scriptView) {
 					auto& sc = scriptView.get<ScriptComponent>(entity);
-
 					if (sc.InstanceId != 0) {
 						m_Context->scriptingSystem->DestroyForEntity(entity, sc);
 						scriptsDestroyed++;
@@ -335,6 +333,12 @@ namespace Boom
 					BOOM_INFO("[Stop] Destroyed {} script instances", scriptsDestroyed);
 				}
 			}
+
+			// Destroy all character controllers BEFORE destroying physics actors
+			for (const auto& [entityID, controller] : m_Context->physics->GetControllers()) {
+				BOOM_INFO("[Stop] Destroying controller for entity {}", entityID);
+			}
+			m_Context->physics->DestroyAllControllers();  // <-- New method needed
 
 			// Destroy all physics actors before restoring scene
 			DestroyPhysicsActors();
@@ -1247,11 +1251,11 @@ namespace Boom
 		{
 			BOOM_INFO("[Scene] Cleaning up current scene...");
 
+			// Destroy character controllers first
+			m_Context->physics->DestroyAllControllers();
+
 			// Destroy physics actors before clearing scene
 			DestroyPhysicsActors();
-
-			// Clear trigger tracking
-			m_ActiveTriggerPairs.clear();
 
 			// *** ADD THIS - Clear trigger callbacks to prevent stale delegates ***
 			Boom::ClearAllTriggerCallbacks();

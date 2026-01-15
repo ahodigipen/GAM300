@@ -607,6 +607,201 @@ namespace EditorUI {
             ImGui::PopID();
         }
 
+        // === CHARACTER CONTROLLER COMPONENT ===
+        if (selected.Has<Boom::CharacterControllerComponent>()) {
+            ImGui::PushID("CharacterController");
+
+            bool isOpen = ImGui::CollapsingHeader("Character Controller", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap);
+
+            // Settings button
+            const ImVec2 headerMin = ImGui::GetItemRectMin();
+            const ImVec2 headerMax = ImGui::GetItemRectMax();
+            const float lineH = ImGui::GetFrameHeight();
+            const float y = headerMin.y + (headerMax.y - headerMin.y - lineH) * 0.5f;
+            ImGui::SetCursorScreenPos(ImVec2(headerMax.x - lineH, y));
+            if (ImGui::Button("...", ImVec2(lineH, lineH)))
+                ImGui::OpenPopup("CharacterControllerSettings");
+
+            bool removed = false;
+            if (ImGui::BeginPopup("CharacterControllerSettings")) {
+                if (ImGui::MenuItem("Remove Component")) {
+                    removed = true;
+                }
+                ImGui::EndPopup();
+            }
+
+            ImGui::SetCursorScreenPos(ImVec2(headerMin.x, headerMax.y + ImGui::GetStyle().ItemSpacing.y));
+
+            if (isOpen) {
+                ImGui::Indent(12.0f);
+                ImGui::Spacing();
+
+                auto& cc = selected.Get<Boom::CharacterControllerComponent>();
+                bool hasPhysicsController = m_App->GetPhysicsContext().HasController(selected);
+
+                // Sync component values from actual PhysX controller if it exists
+                if (hasPhysicsController) {
+                    float actualRadius, actualHeight;
+                    if (m_App->GetPhysicsContext().GetControllerDimensions(
+                        static_cast<uint32_t>(selected.ID()), actualRadius, actualHeight)) {
+                        // Update component to reflect actual PhysX state
+                        cc.radius = actualRadius;
+                        cc.height = actualHeight;
+                    }
+                }
+
+                // Store old values for change detection
+                float oldRadius = cc.radius;
+                float oldHeight = cc.height;
+                float oldStepOffset = cc.stepOffset;
+                float oldContactOffset = cc.contactOffset;
+                float oldSlopeLimit = cc.slopeLimit;
+                glm::vec3 oldLocalOffset = cc.localOffset;
+
+                ImGui::SeparatorText("Capsule Shape");
+                ImGui::Spacing();
+
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Radius");
+                ImGui::SameLine(150);
+                ImGui::SetNextItemWidth(-1);
+                ImGui::DragFloat("##CCRadius", &cc.radius, 0.01f, 0.1f, 10.0f);
+
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Height");
+                ImGui::SameLine(150);
+                ImGui::SetNextItemWidth(-1);
+                ImGui::DragFloat("##CCHeight", &cc.height, 0.01f, 0.5f, 20.0f);
+
+                ImGui::Spacing();
+                ImGui::SeparatorText("Transform");
+                ImGui::Spacing();
+
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Center Offset");
+                ImGui::SameLine(150);
+                ImGui::SetNextItemWidth(-1);
+                ImGui::DragFloat3("##CCLocalOffset", &cc.localOffset.x, 0.01f);
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Offset of the capsule center from the entity's pivot.\nUse positive Y to raise the capsule (fixes floating).");
+                }
+
+                ImGui::Spacing();
+                ImGui::SeparatorText("Movement");
+                ImGui::Spacing();
+
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Step Offset");
+                ImGui::SameLine(150);
+                ImGui::SetNextItemWidth(-1);
+                ImGui::DragFloat("##CCStepOffset", &cc.stepOffset, 0.01f, 0.0f, 2.0f);
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Maximum height the controller can step up");
+                }
+
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Contact Offset");
+                ImGui::SameLine(150);
+                ImGui::SetNextItemWidth(-1);
+                ImGui::DragFloat("##CCContactOffset", &cc.contactOffset, 0.01f, 0.01f, 1.0f);
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Skin width for collision detection (prevents tunneling)");
+                }
+
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Slope Limit (deg)");
+                ImGui::SameLine(150);
+                ImGui::SetNextItemWidth(-1);
+                ImGui::DragFloat("##CCSlopeLimit", &cc.slopeLimit, 0.5f, 0.0f, 90.0f);
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Maximum walkable slope angle in degrees");
+                }
+
+                // Runtime status
+                ImGui::Spacing();
+                ImGui::SeparatorText("Runtime Status");
+                ImGui::Spacing();
+
+                if (hasPhysicsController) {
+                    ImGui::TextColored(ImVec4(0, 1, 0, 1), "[OK] Physics controller active");
+                }
+                else {
+                    ImGui::TextColored(ImVec4(1, 0.5f, 0, 1), "[!] Controller not created (enter Play mode)");
+                }
+
+                // Utility buttons
+                ImGui::Spacing();
+                if (hasPhysicsController) {
+                    if (ImGui::Button("Reset to Transform Position", ImVec2(-1, 0))) {
+                        // Teleport controller to entity's transform position + offset
+                        if (selected.Has<Boom::TransformComponent>()) {
+                            auto& tc = selected.Get<Boom::TransformComponent>();
+                            glm::vec3 targetPos = tc.transform.translate + cc.localOffset;
+                            m_App->GetPhysicsContext().SetControllerPosition(
+                                static_cast<uint32_t>(selected.ID()),
+                                targetPos
+                            );
+                        }
+                    }
+                }
+
+                // Check if shape parameters changed - update PhysX controller immediately if it exists
+                if (cc.radius != oldRadius || cc.height != oldHeight) {
+                    // If controller exists at runtime, resize it immediately
+                    if (hasPhysicsController) {
+                        m_App->GetPhysicsContext().ResizeCapsuleController(
+                            static_cast<uint32_t>(selected.ID()),
+                            cc.radius,
+                            cc.height
+                        );
+                        BOOM_INFO("[Inspector] Resized active controller to radius={}, height={}", cc.radius, cc.height);
+                    }
+                    else {
+                        // Controller doesn't exist yet - mark for recreation on play
+                        cc.isCreated = false;
+                        BOOM_INFO("[Inspector] Character controller parameters changed - will recreate on play");
+                    }
+                }
+
+                // Handle local offset changes - teleport controller if it exists
+                if (cc.localOffset != oldLocalOffset && hasPhysicsController) {
+                    if (selected.Has<Boom::TransformComponent>()) {
+                        auto& tc = selected.Get<Boom::TransformComponent>();
+                        glm::vec3 targetPos = tc.transform.translate + cc.localOffset;
+                        m_App->GetPhysicsContext().SetControllerPosition(
+                            static_cast<uint32_t>(selected.ID()),
+                            targetPos
+                        );
+                        BOOM_INFO("[Inspector] Updated controller position with new offset");
+                    }
+                }
+
+                // Also handle stepOffset, contactOffset, slopeLimit changes
+                // These require controller recreation since PhysX doesn't allow runtime changes
+                if (cc.stepOffset != oldStepOffset || cc.contactOffset != oldContactOffset ||
+                    cc.slopeLimit != oldSlopeLimit) {
+                    cc.isCreated = false;
+                    if (hasPhysicsController) {
+                        ImGui::TextColored(ImVec4(1, 0.5f, 0, 1),
+                            "Step/Contact/Slope changes require re-entering Play mode");
+                    }
+                }
+
+                ImGui::Spacing();
+                ImGui::Unindent(12.0f);
+            }
+
+            ImGui::PopID();
+
+            if (removed) {
+                // Destroy physics controller if exists
+                m_App->GetPhysicsContext().DestroyController(static_cast<uint32_t>(m_App->SelectedEntity()));
+                ctx->scene.remove<Boom::CharacterControllerComponent>(m_App->SelectedEntity());
+                return;
+            }
+            ImGui::Spacing();
+        }
+
         if (selected.Has<Boom::AnimatorComponent>()) {
             AnimatorComponentUI(selected);
         }
@@ -1499,19 +1694,19 @@ namespace EditorUI {
                     ImGui::Text("Dynamic Friction");
                     ImGui::SameLine(150);
                     ImGui::SetNextItemWidth(-1);
-                    ImGui::DragFloat("##DynamicFriction", &collider->dynamicFriction, 0.01f, 0.0f, 100.0f);
+                    ImGui::DragFloat("##DynamicFriction", &collider->dynamicFriction, 0.01f, 0.0f, 1000.0f);
 
                     ImGui::AlignTextToFramePadding();
                     ImGui::Text("Static Friction");
                     ImGui::SameLine(150);
                     ImGui::SetNextItemWidth(-1);
-                    ImGui::DragFloat("##StaticFriction", &collider->staticFriction, 0.01f, 0.0f, 100.0f);
+                    ImGui::DragFloat("##StaticFriction", &collider->staticFriction, 0.01f, 0.0f, 1000.0f);
 
                     ImGui::AlignTextToFramePadding();
                     ImGui::Text("Restitution");
                     ImGui::SameLine(150);
                     ImGui::SetNextItemWidth(-1);
-                    ImGui::DragFloat("##Restitution", &collider->restitution, 0.01f, 0.0f, 100.0f);
+                    ImGui::DragFloat("##Restitution", &collider->restitution, 0.01f, 0.0f, 1000.0f);
                 }
                 else {
                     ImGui::Spacing();
@@ -2133,6 +2328,7 @@ namespace EditorUI {
 					UpdateComponent<Boom::SpriteComponent>(Boom::ComponentID::SPRITE, selected);
                     UpdateComponent<Boom::PauseMenuTagComponent>(Boom::ComponentID::PAUSE_MENU_TAG, selected);
                     UpdateComponent<Boom::DeactivatedComponent>(Boom::ComponentID::DEACTIVATED_TAG, selected);
+                    UpdateComponent<Boom::CharacterControllerComponent>(Boom::ComponentID::CHARACTER_CONTROLLER, selected);
                     ImGui::EndTable();
                 }
             }

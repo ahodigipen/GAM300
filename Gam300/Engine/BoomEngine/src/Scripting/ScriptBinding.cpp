@@ -268,7 +268,6 @@ namespace Boom {
             return;
         }
 
-        // Construct ECS wrapper and call PhysicsContext API directly (CreateControllerForEntity is not public).
         Entity entity{ &s_Ctx->scene, e };
 
         if (s_Ctx->physics->HasController(entity)) {
@@ -276,13 +275,46 @@ namespace Boom {
             return;
         }
 
+        // Ensure CharacterControllerComponent exists and is synced with the values
+        if (!s_Ctx->scene.any_of<CharacterControllerComponent>(e)) {
+            s_Ctx->scene.emplace<CharacterControllerComponent>(e);
+        }
+
+        // Update the component with the values being used to create the controller
+        auto& cc = s_Ctx->scene.get<CharacterControllerComponent>(e);
+        cc.radius = radius;
+        cc.height = height;
+
         if (s_Ctx->physics->CreateCapsuleController(entity, radius, height)) {
+            cc.isCreated = true;
             BOOM_INFO("[ScriptBinding] Created capsule controller for entity {} (r={}, h={})", static_cast<uint32_t>(e), radius, height);
         }
         else {
             BOOM_WARN("[ScriptBinding] Failed to create capsule controller for entity {}", static_cast<uint32_t>(e));
         }
     }
+
+    static void ICALL_API_TeleportController(uint64_t handle, glm::vec3* pos) {
+        if (!s_Ctx || !pos) return;
+        uint32_t entityID = static_cast<uint32_t>(handle);
+
+        entt::entity e = static_cast<entt::entity>(entityID);
+        if (e == entt::null || !s_Ctx->scene.valid(e)) {
+            BOOM_WARN("[ScriptBinding] TeleportController: Invalid entity {}", entityID);
+            return;
+        }
+
+        // Create a named Entity lvalue and pass it by reference (required by HasController).
+        Entity entity{ &s_Ctx->scene, e };
+
+        if (s_Ctx->physics && s_Ctx->physics->HasController(entity)) {
+            s_Ctx->physics->SetControllerPosition(entityID, *pos);
+        }
+        else {
+            BOOM_WARN("[ScriptBinding] TeleportController: Entity {} has no controller", entityID);
+        }
+    }
+
 
     static bool ICALL_API_IsColliding(uint64_t handle)
     {
@@ -1584,6 +1616,7 @@ namespace Boom {
 
 		// Physics Controller internal calls
         mono_add_internal_call("Boom.Native::Boom_API_CreateController", (const void*)ICALL_API_CreateController);
+        mono_add_internal_call("Native::Boom_API_TeleportController", (void*)ICALL_API_TeleportController);
 
         // Sprite component internal calls
         mono_add_internal_call("Boom.Native::Boom_API_HasSprite", (const void*)ICALL_API_HasSprite);

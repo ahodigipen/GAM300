@@ -133,6 +133,16 @@ namespace Boom {
             uint32_t id = static_cast<uint32_t>(entity.ID());
             if (m_Controllers.find(id) != m_Controllers.end()) return true;
 
+            // Get transform and character controller component for offset
+            const auto& t = entity.Get<TransformComponent>().transform;
+
+            // Apply local offset if CharacterControllerComponent exists
+            glm::vec3 initialPos = t.translate;
+            if (entity.Has<CharacterControllerComponent>()) {
+                const auto& cc = entity.Get<CharacterControllerComponent>();
+                initialPos += cc.localOffset;
+            }
+
             // Prepare descriptor
             PxCapsuleControllerDesc desc;
             desc.radius = radius;
@@ -146,10 +156,9 @@ namespace Boom {
             desc.slopeLimit = cosf(glm::radians(50.0f)); // default slope limit (cos of angle)
             desc.nonWalkableMode = PxControllerNonWalkableMode::ePREVENT_CLIMBING;
             desc.material = m_ControllerMaterial;
-            // Initial position from entity transform
-            const auto& t = entity.Get<TransformComponent>().transform;
-            desc.position = PxExtendedVec3(t.translate.x, t.translate.y, t.translate.z);
-            // Set userData on creation after controller created
+
+            // Initial position from entity transform + local offset
+            desc.position = PxExtendedVec3(initialPos.x, initialPos.y, initialPos.z);
 
             PxController* controller = m_ControllerManager->createController(desc);
             if (!controller) {
@@ -160,10 +169,109 @@ namespace Boom {
             // Attach userData so callbacks and raycasts can map back to entity
             if (controller->getActor()) {
                 controller->getActor()->userData = new EntityID(entity.ID());
+
+                // Enable the controller's shapes for scene queries (trigger detection)
+                PxRigidActor* actor = controller->getActor();
+                PxU32 numShapes = actor->getNbShapes();
+                std::vector<PxShape*> shapes(numShapes);
+                actor->getShapes(shapes.data(), numShapes);
+
+                for (PxShape* shape : shapes) {
+                    // Enable scene query so raycasts and overlap tests can detect the controller
+                    shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, true);
+                }
             }
 
             m_Controllers[id] = controller;
             return true;
+        }
+
+        BOOM_INLINE bool ResizeCapsuleController(uint32_t entityID, float newRadius, float newHeight) {
+            auto it = m_Controllers.find(entityID);
+            if (it == m_Controllers.end() || !it->second) {
+                BOOM_WARN("[Physics] ResizeCapsuleController: No controller for entity {}", entityID);
+                return false;
+            }
+
+            PxController* ctrl = it->second;
+            if (ctrl->getType() != PxControllerShapeType::eCAPSULE) {
+                BOOM_WARN("[Physics] ResizeCapsuleController: Controller is not a capsule");
+                return false;
+            }
+
+            PxCapsuleController* capsule = static_cast<PxCapsuleController*>(ctrl);
+
+            // PhysX capsule height is the cylinder portion (excluding hemispheres)
+            float cylinderHeight = std::max(0.01f, newHeight - 2.0f * newRadius);
+
+            capsule->setRadius(newRadius);
+            capsule->setHeight(cylinderHeight);
+
+            BOOM_INFO("[Physics] Resized controller {} to radius={}, height={}", entityID, newRadius, newHeight);
+            return true;
+        }
+
+        // Get current controller dimensions
+        BOOM_INLINE bool GetControllerDimensions(uint32_t entityID, float& outRadius, float& outHeight) const {
+            auto it = m_Controllers.find(entityID);
+            if (it == m_Controllers.end() || !it->second) {
+                return false;
+            }
+
+            PxController* ctrl = it->second;
+            if (ctrl->getType() == PxControllerShapeType::eCAPSULE) {
+                PxCapsuleController* capsule = static_cast<PxCapsuleController*>(ctrl);
+                outRadius = capsule->getRadius();
+                // Convert back to total height (cylinder + 2 hemispheres)
+                outHeight = capsule->getHeight() + 2.0f * capsule->getRadius();
+                return true;
+            }
+            return false;
+        }
+
+        BOOM_INLINE void SetControllerPosition(uint32_t entityID, const glm::vec3& position) {
+            auto it = m_Controllers.find(entityID);
+            if (it == m_Controllers.end() || !it->second) {
+                BOOM_WARN("[Physics] SetControllerPosition: No controller for entity {}", entityID);
+                return;
+            }
+
+            PxController* ctrl = it->second;
+            ctrl->setPosition(PxExtendedVec3(position.x, position.y, position.z));
+            BOOM_INFO("[Physics] Teleported controller {} to ({}, {}, {})", entityID, position.x, position.y, position.z);
+        }
+
+        // Overload that automatically applies the local offset from CharacterControllerComponent
+        BOOM_INLINE void SetControllerPositionWithOffset(Entity& entity, const glm::vec3& entityPosition) {
+            uint32_t id = static_cast<uint32_t>(entity.ID());
+
+            glm::vec3 controllerPos = entityPosition;
+            if (entity.Has<CharacterControllerComponent>()) {
+                const auto& cc = entity.Get<CharacterControllerComponent>();
+                controllerPos += cc.localOffset;
+            }
+
+            SetControllerPosition(id, controllerPos);
+        }
+
+        // Destroy all controllers (used when stopping play mode or loading a new scene)
+        BOOM_INLINE void DestroyAllControllers() {
+            for (auto& [entityID, ctrl] : m_Controllers) {
+                if (ctrl) {
+                    if (ctrl->getActor() && ctrl->getActor()->userData) {
+                        delete static_cast<EntityID*>(ctrl->getActor()->userData);
+                        ctrl->getActor()->userData = nullptr;
+                    }
+                    ctrl->release();
+                }
+            }
+            m_Controllers.clear();
+            m_ControllerCollisionFlags.clear();
+            BOOM_INFO("[Physics] Destroyed all character controllers");
+        }
+
+        BOOM_INLINE const std::unordered_map<uint32_t, PxController*>& GetControllers() const {
+            return m_Controllers;
         }
 
         //BOOM_INLINE PxControllerCollisionFlags MoveController(Entity& entity, glm::vec3 const& displacement, float minDist, float elapsedTime) {
@@ -197,6 +305,72 @@ namespace Boom {
         //    return flags;
         //}
 
+        BOOM_INLINE std::vector<EntityID> GetControllerTriggerOverlaps(uint32_t entityID) const {
+            std::vector<EntityID> overlappingTriggers;
+
+            auto it = m_Controllers.find(entityID);
+            if (it == m_Controllers.end() || !it->second) return overlappingTriggers;
+
+            PxController* ctrl = it->second;
+            PxRigidActor* actor = ctrl->getActor();
+            if (!actor) return overlappingTriggers;
+
+            // Get controller shape for overlap query
+            PxU32 numShapes = actor->getNbShapes();
+            if (numShapes == 0) return overlappingTriggers;
+
+            std::vector<PxShape*> shapes(numShapes);
+            actor->getShapes(shapes.data(), numShapes);
+
+            PxShape* controllerShape = shapes[0];
+            PxGeometryHolder geom = controllerShape->getGeometry();
+            PxTransform pose = actor->getGlobalPose() * controllerShape->getLocalPose();
+
+            // Perform overlap query
+            const PxU32 bufferSize = 64;
+            PxOverlapHit hitBuffer[bufferSize];
+            PxOverlapBuffer overlapBuffer(hitBuffer, bufferSize);
+
+            PxQueryFilterData filterData;
+            filterData.flags = PxQueryFlag::eANY_HIT | PxQueryFlag::eSTATIC | PxQueryFlag::eDYNAMIC;
+
+            bool hasOverlaps = false;
+            switch (geom.getType()) {
+            case PxGeometryType::eCAPSULE:
+                hasOverlaps = m_Scene->overlap(geom.capsule(), pose, overlapBuffer, filterData);
+                break;
+            case PxGeometryType::eBOX:
+                hasOverlaps = m_Scene->overlap(geom.box(), pose, overlapBuffer, filterData);
+                break;
+            case PxGeometryType::eSPHERE:
+                hasOverlaps = m_Scene->overlap(geom.sphere(), pose, overlapBuffer, filterData);
+                break;
+            default:
+                break;
+            }
+
+            if (hasOverlaps) {
+                for (PxU32 i = 0; i < overlapBuffer.getNbTouches(); ++i) {
+                    const PxOverlapHit& hit = overlapBuffer.getTouch(i);
+
+                    // Skip self
+                    if (hit.actor == actor) continue;
+
+                    // Check if the hit shape is a trigger
+                    if (hit.shape && (hit.shape->getFlags() & PxShapeFlag::eTRIGGER_SHAPE)) {
+                        if (hit.actor && hit.actor->userData) {
+                            EntityID* triggerEntityID = static_cast<EntityID*>(hit.actor->userData);
+                            if (triggerEntityID) {
+                                overlappingTriggers.push_back(*triggerEntityID);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return overlappingTriggers;
+        }
+
         BOOM_INLINE void DestroyController(Entity& entity) {
             DestroyController(static_cast<uint32_t>(entity.ID()));
         }
@@ -228,14 +402,22 @@ namespace Boom {
             // Store the collision flags for later query
             m_ControllerCollisionFlags[id] = flags;
 
-            // Sync transform...
+            // Sync transform - subtract offset to get entity's actual position
             if (ctrl->getActor()) {
                 physx::PxTransform pose = ctrl->getActor()->getGlobalPose();
-                glm::vec3 worldPos = ToGLMVec3(pose.p);
+                glm::vec3 controllerPos = ToGLMVec3(pose.p);
 
                 if (entity.Has<TransformComponent>()) {
                     auto& tc = entity.Get<TransformComponent>().transform;
-                    tc.translate = worldPos;
+
+                    // Subtract local offset to get the entity's feet/pivot position
+                    if (entity.Has<CharacterControllerComponent>()) {
+                        const auto& cc = entity.Get<CharacterControllerComponent>();
+                        tc.translate = controllerPos - cc.localOffset;
+                    }
+                    else {
+                        tc.translate = controllerPos;
+                    }
                 }
             }
 

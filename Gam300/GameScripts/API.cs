@@ -236,8 +236,11 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_SetSpriteTexture(ulong handle, string texturePath);
 
-        [MethodImpl(MethodImplOptions.InternalCall)] 
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_CreateController(ulong handle, float radius, float height);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_TeleportController(ulong handle, ref Vec3 pos);
 
 
 
@@ -752,6 +755,11 @@ namespace Boom
         public static void CreateController(ulong handle, float radius, float height)
         {
             Native.Boom_API_CreateController(handle, radius, height);
+        }
+
+        public static void TeleportController(ulong entity, Vec3 pos)
+        {
+            Native.Boom_API_TeleportController(entity, ref pos);
         }
 
         // ===== GLFW key codes =====
