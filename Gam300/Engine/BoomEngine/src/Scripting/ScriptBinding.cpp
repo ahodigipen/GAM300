@@ -315,6 +315,21 @@ namespace Boom {
         }
     }
 
+    static MonoArray* ICALL_API_GetControllerTriggerOverlaps(uint64_t handle) {
+        if (!s_Ctx || !s_Ctx->physics) return nullptr;
+
+        uint32_t entityID = static_cast<uint32_t>(handle);
+        std::vector<EntityID> overlaps = s_Ctx->physics->GetControllerTriggerOverlaps(entityID);
+
+        // Create a C# array to return
+        MonoArray* result = mono_array_new(mono_domain_get(), mono_get_uint64_class(), overlaps.size());
+        for (size_t i = 0; i < overlaps.size(); i++) {
+            mono_array_set(result, uint64_t, i, static_cast<uint64_t>(static_cast<uint32_t>(overlaps[i])));
+        }
+
+        return result;
+    }
+
 
     static bool ICALL_API_IsColliding(uint64_t handle)
     {
@@ -1617,6 +1632,7 @@ namespace Boom {
 		// Physics Controller internal calls
         mono_add_internal_call("Boom.Native::Boom_API_CreateController", (const void*)ICALL_API_CreateController);
         mono_add_internal_call("Native::Boom_API_TeleportController", (void*)ICALL_API_TeleportController);
+        mono_add_internal_call("Boom.Native::Boom_API_GetControllerTriggerOverlaps", (const void*)ICALL_API_GetControllerTriggerOverlaps);
 
         // Sprite component internal calls
         mono_add_internal_call("Boom.Native::Boom_API_HasSprite", (const void*)ICALL_API_HasSprite);

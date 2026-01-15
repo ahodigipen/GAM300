@@ -242,7 +242,8 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_TeleportController(ulong handle, ref Vec3 pos);
 
-
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static ulong[] Boom_API_GetControllerTriggerOverlaps(ulong handle);
 
     }
 
@@ -761,6 +762,12 @@ namespace Boom
         {
             Native.Boom_API_TeleportController(entity, ref pos);
         }
+
+        public static ulong[] GetControllerTriggerOverlaps(ulong entity)
+        {
+            return Native.Boom_API_GetControllerTriggerOverlaps(entity) ?? new ulong[0];
+        }
+
 
         // ===== GLFW key codes =====
         public const int KEY_LEFT = 263;
