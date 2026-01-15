@@ -212,6 +212,18 @@ namespace Boom
 				}
 			});
 
+			// Find Samurai to add Capsule Controller
+			auto viewinfo = m_Context->scene.view<InfoComponent>();
+			for (auto entity : viewinfo) {
+				auto& info = viewinfo.get<InfoComponent>(entity);
+				if (info.name == "Samurai") {
+					Entity samuraiEntity{ &m_Context->scene, entity };
+					CreateControllerForEntity(samuraiEntity, 0.8f, 1.8f);
+					BOOM_INFO("[Play] Added Capsule Controller for Samurai entity {}", static_cast<uint32_t>(entity));
+					break;
+				}
+			}
+
 			// Reset time tracking
 			m_PausedTime = 0.0;
 			m_LastPauseTime = 0.0;
@@ -736,7 +748,12 @@ namespace Boom
 					if (directs >= MAX_DIR_LIGHTS) return;
 
 					GPUDirLight g{};
-					g.dir_intensity = glm::vec4(glm::normalize(tc.transform.rotate), dlc.light.intensity);
+					// Convert Euler rotation (degrees) to direction vector
+					glm::vec3 eulerRadians = glm::radians(tc.transform.rotate);
+					glm::quat rotation = glm::quat(eulerRadians);
+					glm::vec3 lightDir = rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+
+					g.dir_intensity = glm::vec4(glm::normalize(lightDir), dlc.light.intensity);
 					g.radiance = glm::vec4(dlc.light.radiance, 0.0f);
 					gpuDirs.push_back(g);
 					++directs;
@@ -756,7 +773,12 @@ namespace Boom
 
 					GPUSpotLight g{};
 					g.position_falloff = glm::vec4(tc.transform.translate, slc.light.fallOff);
-					g.dir_cutoff = glm::vec4(glm::normalize(tc.transform.rotate), slc.light.cutOff);
+					// Convert Euler rotation (degrees) to direction vector
+					glm::vec3 eulerRadians = glm::radians(tc.transform.rotate);
+					glm::quat rotation = glm::quat(eulerRadians);
+					glm::vec3 lightDir = rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+
+					g.dir_cutoff = glm::vec4(glm::normalize(lightDir), slc.light.cutOff);
 					g.radiance_intensity = glm::vec4(slc.light.radiance, slc.light.intensity);
 					gpuSpots.push_back(g);
 					++spots;
@@ -767,13 +789,29 @@ namespace Boom
 		}
 
 		BOOM_INLINE void RenderShadowScene() {
-			//building shadows
+
+			glCullFace(GL_FRONT);
+			// Count directional lights first
+			int dirLightCount = 0;
+			EnttView<Entity, DirectLightComponent>([&dirLightCount](auto, auto&) { dirLightCount++; });
+
+			// Early exit if no directional lights
+			if (dirLightCount == 0) {
+				m_Context->renderer->SetShadowsEnabled(false);
+				return;
+			}
+
+			//building shadows - only use first directional light
+			bool shadowRendered = false;
 			EnttView<Entity, DirectLightComponent, TransformComponent>(
-				[this](auto, DirectLightComponent&, TransformComponent& tc)
+				[this, &shadowRendered](auto, DirectLightComponent&, TransformComponent& tc)
 				{
+					if (shadowRendered) return; // Only render shadows for first directional light
+					shadowRendered = true;
+
 					// light direction
 					auto& lightDir = tc.transform.rotate;
-					m_Context->renderer->BeginShadowPass(lightDir);
+					m_Context->renderer->BeginShadowPass(lightDir, toggleShadows);
 
 					EnttView<Entity, ModelComponent>([this](auto entity, ModelComponent& comp) {
 						//ignore lights and non initialized models
@@ -786,7 +824,8 @@ namespace Boom
 						std::vector<glm::mat4> joints;
 						if (entity.Has<AnimatorComponent>()) {
 							auto& an = entity.Get<AnimatorComponent>();
-							joints = an.animator->Animate(0); //dont update animation here
+							joints = an.animator->GetJoints(); //dont update animation here
+
 						}
 						else if (model->hasJoints) {
 							static std::vector<glm::mat4> identityPalette(100, glm::mat4(1.0f));
@@ -802,6 +841,69 @@ namespace Boom
 
 					m_Context->renderer->EndShadowPass();
 				});
+
+			glCullFace(GL_BACK);
+
+			// Render spot light shadows
+			RenderSpotShadowScene();
+		}
+
+		BOOM_INLINE void RenderSpotShadowScene() {
+			if (!toggleShadows) return;
+
+			glCullFace(GL_FRONT);
+
+			// Collect spot lights that should cast shadows (up to MAX_SPOT_SHADOW_LIGHTS)
+			int spotShadowIndex = 0;
+			EnttView<Entity, SpotLightComponent, TransformComponent>(
+				[this, &spotShadowIndex](auto, SpotLightComponent& light, TransformComponent& tc)
+				{
+					if (spotShadowIndex >= MAX_SPOT_SHADOW_LIGHTS) return;
+
+					// Get spot light properties
+					glm::vec3 position = tc.transform.translate;
+					glm::vec3 rotation = tc.transform.rotate;
+					float cutOffAngle = glm::degrees(glm::acos(light.light.cutOff)); // Convert from cos to degrees
+					float range = 50.0f; // Default range, could be added to SpotLight struct
+
+					// Begin shadow pass for this spot light
+					m_Context->renderer->BeginSpotShadowPass(spotShadowIndex, position, rotation, cutOffAngle, range);
+
+					// Render all shadow-casting objects
+					EnttView<Entity, ModelComponent>([this](auto entity, ModelComponent& comp) {
+						if (!entity.Has<ModelComponent>() || comp.modelID == EMPTY_ASSET) return;
+						if (entity.Has<DirectLightComponent>() || entity.Has<PointLightComponent>() || entity.Has<SpotLightComponent>()) return;
+
+						ModelAsset* model{ m_Context->assets->TryGet<ModelAsset>(comp.modelID) };
+						if (!model) return;
+
+						std::vector<glm::mat4> joints;
+						if (entity.Has<AnimatorComponent>()) {
+							auto& an = entity.Get<AnimatorComponent>();
+							joints = an.animator->GetJoints();
+						}
+						else if (model->hasJoints) {
+							static std::vector<glm::mat4> identityPalette(100, glm::mat4(1.0f));
+							joints = identityPalette;
+						}
+
+						glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+						Transform3D worldTransform;
+						DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
+
+						m_Context->renderer->DrawShadow(model->data, worldTransform, joints);
+					});
+
+					m_Context->renderer->EndSpotShadowPass();
+					++spotShadowIndex;
+				});
+
+			glCullFace(GL_BACK);
+
+			// Upload spot shadow data to the PBR shader
+			if (spotShadowIndex > 0) {
+				m_Context->renderer->UploadSpotShadowData(spotShadowIndex);
+			}
 		}
 
 		void SnapEntity(Entity entity, const glm::vec3& direction, float maxDistance = 100.0f);
@@ -1213,6 +1315,19 @@ namespace Boom
 				}
 				});
 
+			// Apply scene ambient strength from SceneNavmeshComponent (scene settings)
+			entt::entity sceneSettings = TryGetSceneSettings(m_Context->scene);
+			if (sceneSettings != entt::null) {
+				auto& settings = m_Context->scene.get<SceneNavmeshComponent>(sceneSettings);
+				m_Context->renderer->AmbientStrength() = settings.ambientStrength;
+				BOOM_INFO("[Scene] Applied ambient strength: {}", settings.ambientStrength);
+			}
+			else {
+				// If no scene settings exist, use default
+				m_Context->renderer->AmbientStrength() = 0.5f;
+				BOOM_INFO("[Scene] No scene settings found, using default ambient strength: 0.5");
+			}
+
 			// Reinitialize physics - BOTH RigidBodies AND Collider-Only (Triggers)
 			EnttView<Entity, RigidBodyComponent>([this](auto entity, auto&) {
 				m_Context->physics->AddRigidBody(entity, *m_Context->assets);
@@ -1513,6 +1628,31 @@ namespace Boom
 			return glm::distance(p, closest);
 		}
 
+		BOOM_INLINE void CreateControllerForEntity(entt::entity e, float radius, float height) {
+			if (!m_Context || !m_Context->physics) return;
+			if (e == entt::null || !m_Context->scene.valid(e)) return;
+
+			Entity entity{ &m_Context->scene, e };
+
+			// Create controller
+			if (!entity.Has<TransformComponent>()) {
+				BOOM_ERROR("[Physics] Cannot create controller for entity {} without TransformComponent", static_cast<uint32_t>(e));
+				return;
+			}
+
+			if (m_Context->physics->HasController(entity)) {
+				BOOM_ERROR("[Physics] Entity {} has a controller. Cannot create another.", static_cast<uint32_t>(e));
+				return;
+			}
+
+			if (m_Context->physics->CreateCapsuleController(entity, radius, height)) {
+				BOOM_INFO("[Physics] Create capsule controller for entity {}", static_cast<uint32_t>(e));
+			}
+			else {
+				BOOM_ERROR("[Physics] Failed to create capsule controller for entity {}", static_cast<uint32_t>(e));
+			}
+		}
+
 		// -- MONO functions -- 
 		void UpdateThirdPersonCameras();
 
@@ -1557,6 +1697,8 @@ namespace Boom
 			}
 		}
 
+	public: //imgui mutators
+		bool toggleShadows{true};
 	};
 
 

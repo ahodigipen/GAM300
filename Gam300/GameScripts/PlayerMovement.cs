@@ -1,5 +1,6 @@
 ﻿using Boom;
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace GameScripts
@@ -29,8 +30,6 @@ namespace GameScripts
         private int _maxHealth = 5;
         private Vec3 _spawnPoint;
         private bool _isRespawning = false;
-        //private float _respawnDelay = 1.0f;
-        //private float _respawnTimer = 0f;
         private bool _isInvulnerable = false;
         private float _invulnerabilityDuration = 2.0f;
         private float _invulnerabilityTimer = 0f;
@@ -70,13 +69,34 @@ namespace GameScripts
         private bool _isCrouching = false;
         private static bool s_isStealthInvisible = false;
 
+        // ==== Freeze Ability Fields ====
+        private const int PICKUP_KEY = API.KEY_F;
+        private const int USE_KEY = API.KEY_G;
+
+        private bool _canPickupFreeze = false;
+        private ulong _currentPickupEntity = 0;
+
+        private bool _wasPickupKeyDown = false;
+        private bool _wasUseKeyDown = false;
+
+        private HashSet<ulong> _freezePickupIDs = new HashSet<ulong>();
+        private const int MAX_PICKUPS_TO_CHECK = 10;
+
+        // ==== Gravity constant ====
+        private const float GRAVITY = 20f;
+        private const float GROUND_STICK = -5.0f;
+
+        // ==== CRITICAL: Manual vertical velocity tracking for Character Controller ====
+        private float _verticalVelocity = 0f;
+
         public void OnStart(string jsonParams)
         {
             API.Log($"[PlayerMovement] OnStart() - Entity: {Entity}");
             API.SetScreenFadeAlpha(0f);
             s_playerEntity = Entity;
             s_instance = this;
-
+            Vec3 rot = API.GetRotation(Entity);
+            API.SetRotation(Entity, new Vec3(0, rot.Y, 0));
             PlayerManager.RegisterPlayer(this);
 
             if (!API.HasTransform(Entity))
@@ -95,6 +115,16 @@ namespace GameScripts
 
             _footstepComponent = new FootstepComponent { Entity = Entity };
             _footstepComponent.OnStart("");
+
+            try
+            {
+                API.CreateController(Entity, 0.35f, 1.8f);
+                API.Log("[PlayerMovement] Character controller created successfully");
+            }
+            catch (Exception ex)
+            {
+                API.Log($"[PlayerMovement] CreateController failed: {ex.Message}");
+            }
 
             if (API.HasAnimator(Entity))
             {
@@ -120,7 +150,7 @@ namespace GameScripts
 
             Vec3 playerPos = API.GetPosition(Entity);
             API.PlaySoundAt("player_damage", "Resources/Audio/playerPunch_1.wav", playerPos, false);
-            API.Set3DMinMaxDistance("player_damage", 1.0f, 20.0f);  // Damage sound heard from medium distance
+            API.Set3DMinMaxDistance("player_damage", 1.0f, 20.0f);
             API.SetSoundVolume("player_damage", 1.0f);
 
             if (_health <= 0)
@@ -132,8 +162,9 @@ namespace GameScripts
         private void StartRespawn()
         {
             _isRespawning = true;
-          //  _respawnTimer = 0f;
-            API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
+            _verticalVelocity = 0f;
+            // Stop movement by applying zero displacement
+            API.MoveController(Entity, new Vec3(0, 0, 0), 0.001f, 0.016f);
             _fadeState = FadeState.FadingOut;
             _fadeTimer = 0f;
             API.SetScreenFadeAlpha(0f);
@@ -143,7 +174,7 @@ namespace GameScripts
         {
             Vec3 playerPos = API.GetPosition(Entity);
             API.PlaySoundAt("player_death", "Resources/Audio/playerPunch_1.wav", playerPos, false);
-            API.Set3DMinMaxDistance("player_death", 2.0f, 30.0f);  // Death sound heard from further away
+            API.Set3DMinMaxDistance("player_death", 2.0f, 30.0f);
             API.SetSoundVolume("player_death", 1.0f);
             API.LoadScene(API.GetCurrentSceneName());
         }
@@ -151,7 +182,9 @@ namespace GameScripts
         private void RespawnAtCheckpoint()
         {
             API.TeleportRigidBody(Entity, _spawnPoint);
-            API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
+            _verticalVelocity = 0f;
+            // Stop movement by applying zero displacement
+            API.MoveController(Entity, new Vec3(0, 0, 0), 0.001f, 0.016f);
             _isInvulnerable = true;
             _invulnerabilityTimer = 0f;
             HUD.SetHealth(_health, _maxHealth);
@@ -162,50 +195,50 @@ namespace GameScripts
         {
             _spawnPoint = newCheckpoint;
             API.PlaySoundAt("checkpoint_save", "Resources/Audio/playerPunch_1.wav", newCheckpoint, false);
-            API.Set3DMinMaxDistance("checkpoint_save", 1.0f, 15.0f);  // Checkpoint sound
+            API.Set3DMinMaxDistance("checkpoint_save", 1.0f, 15.0f);
             API.SetSoundVolume("checkpoint_save", 0.8f);
         }
 
         private void RegisterTriggerCallbacksOnAllTriggers()
         {
-            string[] triggerNames = { "Checkpoint", "DamageZone", "PowerUp", "DoorTrigger", "TriggerVolume", "AreaTrigger" };
-            foreach (string triggerName in triggerNames)
+            _freezePickupIDs.Clear();
+
+            string[] standardTriggers = { "Checkpoint", "DamageZone", "PowerUp", "DoorTrigger", "TriggerVolume", "AreaTrigger" };
+            foreach (string name in standardTriggers)
             {
-                ulong triggerEntity = API.FindEntity(triggerName);
-                if (triggerEntity == 0) continue;
-                if (API.HasCollider(triggerEntity) && API.IsTrigger(triggerEntity))
+                ulong id = API.FindEntity(name);
+                if (id != 0 && API.HasCollider(id) && API.IsTrigger(id))
                 {
-                    API.RegisterTriggerEnterCallback(triggerEntity, OnTriggerEnter);
-                    API.RegisterTriggerExitCallback(triggerEntity, OnTriggerExit);
+                    API.RegisterTriggerEnterCallback(id, OnTriggerEnter);
+                    API.RegisterTriggerExitCallback(id, OnTriggerExit);
                 }
             }
 
-            // Register CrouchTriggerZone separately with detailed logging
             ulong crouchZone = API.FindEntity("CrouchTriggerZone");
             API.Log($"[PlayerMovement] CrouchTriggerZone entity ID: {crouchZone}");
 
+            RegisterFreezePickup("FreezePowerUp");
+            for (int i = 1; i <= MAX_PICKUPS_TO_CHECK; i++)
+            {
+                RegisterFreezePickup($"FreezePowerUp_{i}");
+            }
+
             if (crouchZone != 0)
             {
-                bool hasCollider = API.HasCollider(crouchZone);
-                API.Log($"[PlayerMovement] CrouchTriggerZone HasCollider: {hasCollider}");
-
-                if (hasCollider)
-                {
-                    bool isTrigger = API.IsTrigger(crouchZone);
-                    API.Log($"[PlayerMovement] CrouchTriggerZone IsTrigger: {isTrigger}");
-
-                    API.RegisterTriggerEnterCallback(crouchZone, OnTriggerEnter);
-                    API.RegisterTriggerExitCallback(crouchZone, OnTriggerExit);
-                    API.Log("[PlayerMovement] Registered callbacks for CrouchTriggerZone (forced)");
-                }
-                else
-                {
-                    API.Log("[PlayerMovement] ERROR: CrouchTriggerZone has no collider component!");
-                }
+                API.RegisterTriggerEnterCallback(crouchZone, OnTriggerEnter);
+                API.RegisterTriggerExitCallback(crouchZone, OnTriggerExit);
             }
-            else
+        }
+
+        private void RegisterFreezePickup(string name)
+        {
+            ulong id = API.FindEntity(name);
+            if (id != 0 && API.HasCollider(id) && API.IsTrigger(id))
             {
-                API.Log("[PlayerMovement] ERROR: CrouchTriggerZone entity not found in scene!");
+                API.Log($"[PlayerMovement] Found Freeze Pickup: {name} (ID: {id})");
+                API.RegisterTriggerEnterCallback(id, OnTriggerEnter);
+                API.RegisterTriggerExitCallback(id, OnTriggerExit);
+                _freezePickupIDs.Add(id);
             }
         }
 
@@ -251,6 +284,65 @@ namespace GameScripts
         {
             UpdateFade(dt);
             if (!API.HasTransform(Entity) || !API.HasScript(Entity)) return;
+
+            FreezeManager.Update(dt);
+
+            bool isPickupDown = API.IsKeyDown(PICKUP_KEY);
+            bool isPickupPressed = isPickupDown && !_wasPickupKeyDown;
+            _wasPickupKeyDown = isPickupDown;
+
+            bool isUseDown = API.IsKeyDown(USE_KEY);
+            bool isUsePressed = isUseDown && !_wasUseKeyDown;
+            _wasUseKeyDown = isUseDown;
+
+            if (API.GetApplicationState() != API.APP_STATE_PAUSED)
+            {
+                if (isPickupPressed && _canPickupFreeze)
+                {
+                    if (!PlayerInventory.HasFreezePower())
+                    {
+                        if (PlayerInventory.TryAddFreezeCharge())
+                        {
+                            API.Log("[PlayerMovement] Picked up Freeze Ability!");
+
+                            if (_currentPickupEntity != 0)
+                            {
+                                API.SetPosition(_currentPickupEntity, new Vec3(0, -5000, 0));
+                                _canPickupFreeze = false;
+                                _currentPickupEntity = 0;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        API.Log("[PlayerMovement] Cannot pickup: You already have a Freeze Charge!");
+                    }
+                }
+
+                if (isUsePressed)
+                {
+                    if (PlayerInventory.HasFreezePower())
+                    {
+                        if (!FreezeManager.IsFrozen(API.GetPosition(Entity)))
+                        {
+                            PlayerInventory.ConsumeFreezeCharge();
+                            float radius = 6.0f;
+                            float duration = 3.0f;
+                            Vec3 playerPos = API.GetPosition(Entity);
+                            FreezeManager.TriggerFreeze(playerPos, radius, duration);
+                        }
+                        else
+                        {
+                            API.Log("[PlayerMovement] Cannot use ability: Freeze already active!");
+                        }
+                    }
+                    else
+                    {
+                        API.Log("[PlayerMovement] No Freeze Charge available!");
+                    }
+                }
+            }
+
             _footstepComponent?.OnUpdate(dt);
             if (_isRespawning) return;
 
@@ -261,11 +353,12 @@ namespace GameScripts
                     _isInvulnerable = false;
             }
 
-            // Crouch logic (use hold-Q while inside zone)
+            bool isGrounded = IsPlayerGrounded();
+
+            // Crouch logic
             if (_inCrouchZone)
             {
                 bool crouchDown = API.IsKeyDown(CROUCH_KEY);
-
                 if (crouchDown && !_isCrouching)
                 {
                     _isCrouching = true;
@@ -290,10 +383,20 @@ namespace GameScripts
 
             if (_isCrouching)
             {
-                var locked = API.GetLinearVelocity(Entity);
-                locked.X = 0f;
-                locked.Z = 0f;
-                API.SetLinearVelocity(Entity, locked);
+                // Apply gravity while crouching
+                if (!isGrounded)
+                {
+                    _verticalVelocity -= GRAVITY * dt;
+                }
+                else
+                {
+                    _verticalVelocity = -0.5f;
+                }
+
+                // Use MoveController with displacement (velocity * dt)
+                Vec3 displacement = new Vec3(0, _verticalVelocity * dt, 0);
+                API.MoveController(Entity, displacement, 0.001f, dt);
+
                 if (_hasAnimator)
                 {
                     API.AnimatorSetFloat(Entity, "Speed", 0f);
@@ -304,10 +407,31 @@ namespace GameScripts
                 return;
             }
 
-            var vel = API.GetLinearVelocity(Entity);
             bool allowMove = !API.IsMouseDown(API.MOUSE_RIGHT);
-            bool isGrounded = IsPlayerGrounded();
 
+            // Update vertical velocity with gravity
+            if (!isGrounded)
+            {
+                _verticalVelocity -= GRAVITY * dt;
+            }
+            else
+            {
+                // Only reset if we were actually falling
+                if (_verticalVelocity < GROUND_STICK)
+                {
+                    _verticalVelocity = GROUND_STICK;
+                }
+                else
+                {
+                    _verticalVelocity = GROUND_STICK;
+                }
+            }
+
+            // Clamp terminal velocity
+            if (_verticalVelocity < -50f) _verticalVelocity = -50f;
+            if (_verticalVelocity > 15f) _verticalVelocity = 15f;
+
+            // Horizontal movement input
             float inputX = 0f, inputZ = 0f;
             if (allowMove)
             {
@@ -325,6 +449,8 @@ namespace GameScripts
             if (sneakKey) currentSpeed = _sneakSpeed;
             else if (sprintKey) currentSpeed = _sprintSpeed;
 
+            // Calculate horizontal velocity
+            float velX = 0f, velZ = 0f;
             if (hasInput)
             {
                 float camYawDeg = API.GetThirdPersonCameraYaw();
@@ -339,20 +465,16 @@ namespace GameScripts
                 float len = (float)Math.Sqrt(moveDir.X * moveDir.X + moveDir.Z * moveDir.Z);
                 if (len > 0f)
                 {
-                    vel.X = (moveDir.X / len) * currentSpeed;
-                    vel.Z = (moveDir.Z / len) * currentSpeed;
+                    velX = (moveDir.X / len) * currentSpeed;
+                    velZ = (moveDir.Z / len) * currentSpeed;
                     float targetYaw = (float)(Math.Atan2(moveDir.X, moveDir.Z) * 180.0 / Math.PI) + _modelForwardOffset;
                     while (targetYaw > 180f) targetYaw -= 360f;
                     while (targetYaw < -180f) targetYaw += 360f;
                     API.SetRotationY(Entity, targetYaw);
                 }
             }
-            else
-            {
-                vel.X = 0f;
-                vel.Z = 0f;
-            }
 
+            // Roll logic
             bool ctrlDown = API.IsKeyDown(API.KEY_LEFT_CONTROL);
             Vec3 desiredMoveDir = new Vec3(0, 0, 0);
             if (hasInput)
@@ -384,22 +506,22 @@ namespace GameScripts
                     API.AnimatorSetBool(Entity, "IsSneaking", false);
                     API.AnimatorSetBool(Entity, "Sprint", false);
                 }
-                var burst = API.GetLinearVelocity(Entity);
-                burst.X = _rollDir.X * _rollSpeed;
-                burst.Z = _rollDir.Z * _rollSpeed;
-                API.SetLinearVelocity(Entity, burst);
+                velX = _rollDir.X * _rollSpeed;
+                velZ = _rollDir.Z * _rollSpeed;
                 _isInvulnerable = true;
                 _wasCtrlPressed = ctrlDown;
+
+                // Use MoveController with displacement (velocity * dt)
+                Vec3 displacement = new Vec3(velX * dt, _verticalVelocity * dt, velZ * dt);
+                API.MoveController(Entity, displacement, 0.001f, dt);
                 return;
             }
 
             if (_isRolling)
             {
                 _rollTimer -= dt;
-                var rv = API.GetLinearVelocity(Entity);
-                rv.X = _rollDir.X * _rollSpeed;
-                rv.Z = _rollDir.Z * _rollSpeed;
-                API.SetLinearVelocity(Entity, rv);
+                velX = _rollDir.X * _rollSpeed;
+                velZ = _rollDir.Z * _rollSpeed;
                 if (_rollTimer <= 0f)
                 {
                     _isRolling = false;
@@ -408,6 +530,10 @@ namespace GameScripts
                     if (_hasAnimator) API.AnimatorSetBool(Entity, "IsRolling", false);
                 }
                 _wasCtrlPressed = ctrlDown;
+
+                // Use MoveController with displacement (velocity * dt)
+                Vec3 displacement = new Vec3(velX * dt, _verticalVelocity * dt, velZ * dt);
+                API.MoveController(Entity, displacement, 0.001f, dt);
                 return;
             }
 
@@ -415,12 +541,13 @@ namespace GameScripts
                 _rollCooldownTimer = Math.Max(0f, _rollCooldownTimer - dt);
             _wasCtrlPressed = ctrlDown;
 
-            if (vel.Y > 7.5f) vel.Y = 7.5f;
-            API.SetLinearVelocity(Entity, vel);
+            // Apply final movement using MoveController with displacement (velocity * dt)
+            Vec3 finalDisplacement = new Vec3(velX * dt, _verticalVelocity * dt, velZ * dt);
+            API.MoveController(Entity, finalDisplacement, 0.001f, dt);
 
             if (_hasAnimator)
             {
-                float speedXZ = (float)Math.Sqrt(vel.X * vel.X + vel.Z * vel.Z);
+                float speedXZ = (float)Math.Sqrt(velX * velX + velZ * velZ);
                 _smoothedSpeed += (speedXZ - _smoothedSpeed) * Math.Min(1.0, SPEED_DAMP * dt);
                 API.AnimatorSetFloat(Entity, "Speed", (float)_smoothedSpeed);
                 API.AnimatorSetBool(Entity, "IsMoving", _smoothedSpeed > MOVE_EPS || hasInput);
@@ -431,10 +558,7 @@ namespace GameScripts
 
         private bool IsPlayerGrounded()
         {
-            Vec3 p = API.GetPosition(Entity);
-            Vec3 start = new Vec3(p.X, p.Y + 0.1f, p.Z);
-            Vec3 end = new Vec3(p.X, p.Y - 0.6f, p.Z);
-            return !API.Linecast(start, end, Entity);
+            return API.IsControllerGrounded(Entity);
         }
 
         private static void OnTriggerEnter(ulong triggerEntity, ulong otherEntity)
@@ -442,13 +566,20 @@ namespace GameScripts
             try
             {
                 if (otherEntity != s_playerEntity) return;
-                ulong crouchZone = API.FindEntity("CrouchTriggerZone");
-                API.Log($"[PlayerMovement] OnTriggerEnter: triggerEntity={triggerEntity}, crouchZone={crouchZone}");
 
+                ulong crouchZone = API.FindEntity("CrouchTriggerZone");
                 if (triggerEntity == crouchZone && crouchZone != 0 && s_instance != null)
                 {
                     s_instance._inCrouchZone = true;
                     API.Log("[PlayerMovement] Player ENTERED CrouchTriggerZone");
+                    return;
+                }
+
+                if (s_instance != null && s_instance._freezePickupIDs.Contains(triggerEntity))
+                {
+                    s_instance._canPickupFreeze = true;
+                    s_instance._currentPickupEntity = triggerEntity;
+                    API.Log($"[PlayerMovement] Standing on Freeze Powerup (ID: {triggerEntity}). Press F to pickup.");
                     return;
                 }
             }
@@ -463,9 +594,8 @@ namespace GameScripts
             try
             {
                 if (otherEntity != s_playerEntity) return;
-                ulong crouchZone = API.FindEntity("CrouchTriggerZone");
-                API.Log($"[PlayerMovement] OnTriggerExit: triggerEntity={triggerEntity}, crouchZone={crouchZone}");
 
+                ulong crouchZone = API.FindEntity("CrouchTriggerZone");
                 if (triggerEntity == crouchZone && crouchZone != 0 && s_instance != null)
                 {
                     s_instance._inCrouchZone = false;
@@ -479,6 +609,16 @@ namespace GameScripts
                             API.AnimatorSetBool(s_instance.Entity, "IsCrouching", false);
                     }
                     return;
+                }
+
+                if (s_instance != null && s_instance._freezePickupIDs.Contains(triggerEntity))
+                {
+                    s_instance._canPickupFreeze = false;
+                    if (s_instance._currentPickupEntity == triggerEntity)
+                    {
+                        s_instance._currentPickupEntity = 0;
+                    }
+                    API.Log("[PlayerMovement] Left Freeze Powerup zone.");
                 }
             }
             catch (Exception ex)

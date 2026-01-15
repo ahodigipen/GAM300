@@ -248,13 +248,21 @@ namespace Boom
             m_Context->scriptingSystem->UpdateFileWatcher();
 
             // Always run Entry.cs. This will set our new m_IsGameLogicPaused flag.
-            // Frame begin
+			// Frame begin
             m_Context->profiler.BeginFrame();
             m_Context->profiler.Start("Total Frame");
             m_Context->profiler.Start("Renderer Start Frame");
             std::apply(glClearColor, CONSTANTS::DEFAULT_BACKGROUND_COLOR);
             m_Context->renderer->NewFrame();
             m_Context->profiler.End("Renderer Start Frame");
+
+            // Render shadow map AFTER NewFrame, but before scene rendering
+            if (toggleShadows) {
+                RenderShadowScene();
+            } else {
+                // Explicitly disable shadows in the shader when toggled off
+                m_Context->renderer->SetShadowsEnabled(false);
+            }
 
             float dt = static_cast<float>(m_Context->DeltaTime);
             if (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING)
@@ -605,6 +613,14 @@ namespace Boom
                         if (m_IsGameLogicPaused && !isPauseMenuObj) {
                             shouldAnimate = false;
                         }
+
+                        if (entity.Has<AIComponent>()) {
+                            const auto& ai = entity.Get<AIComponent>();
+                            if (!ai.active) {
+                                shouldAnimate = false;
+                            }
+                        }
+
                         float dt = shouldAnimate ? (float)m_Context->DeltaTime : 0.0f;
                         auto& joints = an.animator->Animate(dt);
                         m_Context->renderer->SetJoints(joints);
@@ -906,6 +922,10 @@ namespace Boom
 
             EnttView<Entity, RigidBodyComponent>([this](auto entity, auto& comp)
                 {
+                    if (m_Context->physics->HasController(entity)) {
+                        return;
+                    }
+
                     auto& transform = entity.template Get<TransformComponent>().transform;
 
                     // --- guard / lazy create ---

@@ -214,16 +214,31 @@ namespace Boom {
             return;
 
         entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        Entity ent{ &s_Ctx->scene, e };
         if (e == entt::null || !s_Ctx->scene.valid(e))
         {
             BOOM_WARN("[ScriptBinding] SetLinearVelocity: Invalid or dead entity");
             return;
         }
 
+
+
+        // If entity uses a character controller, drive it using the PxController API.
+        // Move controller by displacement = velocity * deltaTime so scripts can continue
+        // to call SetLinearVelocity with a desired velocity vector.
+        if (s_Ctx->physics && s_Ctx->physics->HasController(ent)) {
+            // Compute world-space displacement for this frame
+            float dt = static_cast<float>(s_Ctx->DeltaTime);
+            glm::vec3 displacement = (*vel) * dt;
+            // Use a small minDist for controller movement to avoid tunneling; pass elapsedTime as dt.
+            s_Ctx->physics->MoveController(ent, displacement, 0.001f, dt);
+            return;
+        }
+
+        // Fallback: existing rigidbody velocity path (dynamic bodies)
         if (!s_Ctx->scene.any_of<RigidBodyComponent>(e))
         {
-            BOOM_WARN("[ScriptBinding] SetLinearVelocity: Entity {} has no RigidBodyComponent",
-                static_cast<uint32_t>(e));
+            BOOM_WARN("[ScriptBinding] SetLinearVelocity: Entity {} has no RigidBodyComponent", static_cast<uint32_t>(e));
             return;
         }
 
@@ -235,6 +250,37 @@ namespace Boom {
             {
                 dyn->setLinearVelocity(PxVec3(vel->x, vel->y, vel->z));
             }
+        }
+    }
+
+    static void ICALL_API_CreateController(uint64_t handle, float radius, float height)
+    {
+        if (!s_Ctx) return;
+
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) {
+            BOOM_WARN("[ScriptBinding] CreateController: invalid entity handle {}", static_cast<uint32_t>(e));
+            return;
+        }
+
+        if (!s_Ctx->physics) {
+            BOOM_WARN("[ScriptBinding] CreateController: no physics context available");
+            return;
+        }
+
+        // Construct ECS wrapper and call PhysicsContext API directly (CreateControllerForEntity is not public).
+        Entity entity{ &s_Ctx->scene, e };
+
+        if (s_Ctx->physics->HasController(entity)) {
+            BOOM_INFO("[ScriptBinding] CreateController: controller already exists for entity {}", static_cast<uint32_t>(e));
+            return;
+        }
+
+        if (s_Ctx->physics->CreateCapsuleController(entity, radius, height)) {
+            BOOM_INFO("[ScriptBinding] Created capsule controller for entity {} (r={}, h={})", static_cast<uint32_t>(e), radius, height);
+        }
+        else {
+            BOOM_WARN("[ScriptBinding] Failed to create capsule controller for entity {}", static_cast<uint32_t>(e));
         }
     }
 
@@ -413,6 +459,63 @@ namespace Boom {
         auto& ai = reg.get<Boom::AIComponent>(e);
         return static_cast<int>(ai.mode);
     }
+
+    static void ICALL_API_SetNavAgentActive(uint64_t handle, bool active)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+
+        // 1. Toggle AI Brain
+        if (s_Ctx->scene.any_of<Boom::AIComponent>(e)) {
+            auto& ai = s_Ctx->scene.get<Boom::AIComponent>(e);
+            ai.active = active;
+        }
+
+        // 2. Toggle Nav Agent
+        if (s_Ctx->scene.any_of<Boom::NavAgentComponent>(e)) {
+            auto& ag = s_Ctx->scene.get<Boom::NavAgentComponent>(e);
+            ag.active = active;
+
+            if (!active) {
+                // FREEZE
+                ag.velocity = glm::vec3(0.0f);
+            }
+            else {
+                // UNFREEZE
+            }
+        }
+    }
+
+    // Add this internal call function
+    static void Boom_API_MoveController(uint64_t handle, glm::vec3* displacement, float minDist, float dt) {
+        if (!s_Ctx || !s_Ctx->physics) return;
+
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+
+        Entity entity{ &s_Ctx->scene, e };
+        glm::vec3 disp(displacement->x, displacement->y, displacement->z);
+        s_Ctx->physics->MoveController(entity, disp, minDist, dt);
+    }
+
+    static bool Boom_API_IsControllerGrounded(uint64_t handle) {
+        if (!s_Ctx || !s_Ctx->physics) return false;
+
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return false;
+
+        // Use a short raycast downward to detect ground
+        if (!s_Ctx->scene.any_of<TransformComponent>(e)) return false;
+
+        auto& tc = s_Ctx->scene.get<TransformComponent>(e);
+        glm::vec3 origin = tc.transform.translate + glm::vec3(0, 0.1f, 0);
+        glm::vec3 dir(0, -1, 0);
+        auto result = s_Ctx->physics->Raycast(origin, dir, 0.3f);
+        return result.hitFound;
+    }
+
     static float ICALL_API_GetThirdPersonCameraYaw() {
         if (!s_Ctx) return 0.0f;
 
@@ -1132,48 +1235,41 @@ namespace Boom {
             return;
         }
 
-        if (!s_Ctx->scene.any_of<TransformComponent>(e)) {
+        // 1. ALWAYS update the TransformComponent (This drives the visual model)
+        if (s_Ctx->scene.any_of<TransformComponent>(e)) {
+            auto& transform = s_Ctx->scene.get<TransformComponent>(e).transform;
+            transform.rotate.y = yawDegrees;
+        }
+        else {
             BOOM_WARN("[ScriptBinding] SetRotationY: Entity has no TransformComponent");
             return;
         }
 
-        if (!s_Ctx->scene.any_of<RigidBodyComponent>(e)) {
-            BOOM_WARN("[ScriptBinding] SetRotationY: Entity has no RigidBodyComponent");
-            return;
-        }
+        // 2. Update RigidBody Actor if it exists
+        // We no longer 'return' if this is missing, allowing Controllers to work.
+        if (s_Ctx->scene.any_of<RigidBodyComponent>(e)) {
+            auto& rb = s_Ctx->scene.get<RigidBodyComponent>(e).RigidBody;
+            if (rb.actor) {
+                PxTransform currentPose = rb.actor->getGlobalPose();
 
-        auto& rb = s_Ctx->scene.get<RigidBodyComponent>(e).RigidBody;
-        if (!rb.actor) return;
+                // Convert yaw to quaternion (assuming Y-up world)
+                float yawRadians = glm::radians(yawDegrees);
+                PxQuat newRotation = PxQuat(yawRadians, PxVec3(0, 1, 0));
+                PxTransform newPose(currentPose.p, newRotation);
 
-        // Get the current PhysX transform
-        PxTransform currentPose = rb.actor->getGlobalPose();
-
-        // Convert yaw to quaternion (only Y-axis rotation)
-        float yawRadians = glm::radians(yawDegrees);
-        PxQuat newRotation = PxQuat(yawRadians, PxVec3(0, 1, 0));
-
-        // Update the pose with new rotation, keeping position
-        PxTransform newPose(currentPose.p, newRotation);
-
-        // For dynamic bodies, use kinematic target or direct pose update
-        if (PxRigidDynamic* dyn = rb.actor->is<PxRigidDynamic>()) {
-            if (dyn->getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC) {
-                dyn->setKinematicTarget(newPose);
-            }
-            else {
-                // For dynamic bodies, directly set the pose
-                // This is safe because X/Z rotation is locked
-                dyn->setGlobalPose(newPose);
+                if (PxRigidDynamic* dyn = rb.actor->is<PxRigidDynamic>()) {
+                    if (dyn->getRigidBodyFlags() & PxRigidBodyFlag::eKINEMATIC) {
+                        dyn->setKinematicTarget(newPose);
+                    }
+                    else {
+                        dyn->setGlobalPose(newPose);
+                    }
+                }
+                else {
+                    rb.actor->setGlobalPose(newPose);
+                }
             }
         }
-        else {
-            // For static bodies
-            rb.actor->setGlobalPose(newPose);
-        }
-
-        // Also update the transform component for rendering
-        auto& transform = s_Ctx->scene.get<TransformComponent>(e).transform;
-        transform.rotate.y = yawDegrees;
     }
 
     // Add new overload that ignores two entities
@@ -1422,13 +1518,18 @@ namespace Boom {
 
         mono_add_internal_call("Boom.Native::Boom_API_IsColliding",
             (const void*)ICALL_API_IsColliding);
-		// AI Component functions
+
+        mono_add_internal_call("Boom.Native::Boom_API_MoveController", (void*)Boom_API_MoveController);
+        mono_add_internal_call("Boom.Native::Boom_API_IsControllerGrounded", (void*)Boom_API_IsControllerGrounded);
+        // AI Component functions
         mono_add_internal_call("Boom.Native::Boom_API_AI_GetPatrolPointCount",
             (const void*)ICALL_API_AI_GetPatrolPointCount);
         mono_add_internal_call("Boom.Native::Boom_API_AI_GetPatrolPoint",
             (const void*)ICALL_API_AI_GetPatrolPoint);
         mono_add_internal_call("Boom.Native::Boom_API_AI_GetMode",
             (const void*)ICALL_API_AI_GetMode);
+        mono_add_internal_call("Boom.Native::Boom_API_SetNavAgentActive",
+            (const void*)ICALL_API_SetNavAgentActive);
 
 
         // Animator function
@@ -1480,6 +1581,9 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_TeleportRigidBody", (void*)ICALL_API_TeleportRigidBody);
 
         mono_add_internal_call("Boom.Native::Boom_API_SetScreenFadeAlpha", (const void*)ICALL_API_SetScreenFadeAlpha);
+
+		// Physics Controller internal calls
+        mono_add_internal_call("Boom.Native::Boom_API_CreateController", (const void*)ICALL_API_CreateController);
 
         // Sprite component internal calls
         mono_add_internal_call("Boom.Native::Boom_API_HasSprite", (const void*)ICALL_API_HasSprite);

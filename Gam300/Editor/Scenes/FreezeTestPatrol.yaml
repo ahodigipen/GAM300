@@ -13,6 +13,60 @@ ENTITIES:
         Type: BOX
     InfoComponent:
       Parent: 0
+      Name: FreezePowerUp_2
+      UID: 11048737223468991294
+    TransformComponent:
+      Transform:
+        Translate: [2.43700004, 3.06999993, 15]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.129999995, 0.200000003]
+    ModelComponent:
+      ModelID: 600481613562228247
+      MaterialID: 1773827607540986892
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: FreezePowerUp_1
+      UID: 6541869905228355538
+    TransformComponent:
+      Transform:
+        Translate: [-5.40299988, 3.06999993, 15]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.129999995, 0.200000003]
+    ModelComponent:
+      ModelID: 600481613562228247
+      MaterialID: 1773827607540986892
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
+      Parent: 0
       Name: EndTriggerZone
       UID: 2484585604236038765
     TransformComponent:
@@ -861,8 +915,8 @@ ENTITIES:
       UID: 9778697280815915040
     TransformComponent:
       Transform:
-        Translate: [13.6493149, 13.4210186, -9.57754517]
-        Rotate: [0, 89.980217, 0]
+        Translate: [23.0799866, 13.4210176, -9.57754421]
+        Rotate: [180, 89.980217, 180]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -902,12 +956,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.47071886
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [23.1396694, 13.4210176, -9.57754421]
+      Target: [-4.79301453, 13.4210176, -9.57754421]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -923,7 +977,7 @@ ENTITIES:
       PatrolPoints:
         - [-4.79301453, 13.4210176, -9.57754421]
         - [23.1396694, 13.4210176, -9.57754421]
-      PatrolIndex: 1
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -945,8 +999,8 @@ ENTITIES:
       UID: 3476234535713046263
     TransformComponent:
       Transform:
-        Translate: [5.49377155, 13.4210176, 19.3370743]
-        Rotate: [0, 90, 0]
+        Translate: [9.19307709, 13.4210176, 19.3370762]
+        Rotate: [360, -90, 0]
         Scale: [0.0200004801, 0.0199999996, 0.0200004801]
     RigidBodyComponent:
       RigidBody:
@@ -986,12 +1040,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.47072124
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [10.9044418, 13.404274, 19.3370762]
+      Target: [-22.7366295, 13.404274, 19.3370762]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -1007,7 +1061,7 @@ ENTITIES:
       PatrolPoints:
         - [-22.7366295, 13.404274, 19.3370762]
         - [10.9044418, 13.404274, 19.3370762]
-      PatrolIndex: 1
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -1029,7 +1083,7 @@ ENTITIES:
       UID: 7568830222834310318
     TransformComponent:
       Transform:
-        Translate: [-8.98202515, 13.4210176, -1.25659931]
+        Translate: [-8.98202515, 13.4210186, 3.81982493]
         Rotate: [180, -5.00895612e-06, 180]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
@@ -1070,7 +1124,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.47071528
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -1339,7 +1393,7 @@ ENTITIES:
         CutOff: 0.34906584
   - SceneNavmeshComponent:
       NavmeshFile: Resources/NavData/solo_navmesh.bin
-      AmbientStrength: 0.0939999968
+      AmbientStrength: 0.5
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1384,7 +1438,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-14.5949755, 14.7237701, 22.6192093]
-        Rotate: [5.00895521e-06, 88.2967148, 5.00895521e-06]
+        Rotate: [5.00895521e-06, 23.1599426, 5.00895521e-06]
         Scale: [0.0144999903, 0.0145000005, 0.0144999903]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -1404,7 +1458,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [17.540493, 14.3824339, 3.31294298]
-        Rotate: [180, 88.2967148, 180]
+        Rotate: [180, 23.1599426, 180]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -1424,7 +1478,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [9.27553558, 2.17216253, -14.2555885]
-        Rotate: [5.00895612e-06, 67.6595078, 5.00895612e-06]
+        Rotate: [5.00895612e-06, 2.52282715, 5.00895612e-06]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -1444,7 +1498,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 2.17216253, -14.2555885]
-        Rotate: [0, 72.1896591, 0]
+        Rotate: [0, 7.05300903, 0]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -1739,7 +1793,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [17.4115829, 58.9146423, -101.037125]
-        Rotate: [0, 0, 90]
+        Rotate: [0, -0, 90]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -4243,8 +4297,8 @@ ENTITIES:
       UID: 693392909073787642
     TransformComponent:
       Transform:
-        Translate: [15.7273293, 1.14433169, 6.02052069]
-        Rotate: [0, -0, 5.1908959e-05]
+        Translate: [15.0600014, 1.14433169, 6.93048859]
+        Rotate: [-3.960339e-11, -0, 5.19088826e-05]
         Scale: [0.0149999997, 0.0149999997, 0.0149999997]
     RigidBodyComponent:
       RigidBody:
@@ -4280,8 +4334,8 @@ ENTITIES:
       UID: 3199022155007006803
     TransformComponent:
       Transform:
-        Translate: [-14.2100849, 1.33913541, 5.51450253]
-        Rotate: [0, -11.3839827, -3.13526689e-05]
+        Translate: [-14.2421303, 0.51933521, 6.10503626]
+        Rotate: [3.32224851e-12, -11.383975, -3.13526762e-05]
         Scale: [0.0149999997, 0.0149999997, 0.0149999997]
     RigidBodyComponent:
       RigidBody:
@@ -4555,21 +4609,21 @@ ENTITIES:
       UID: 3820564189371600480
     TransformComponent:
       Transform:
-        Translate: [5.46808004, 17.8589993, 58.8430405]
-        Rotate: [0, 0, 0]
-        Scale: [0.0500000007, 0.0500000007, 0.0500000007]
+        Translate: [5.46808004, 17.757452, 58.8430405]
+        Rotate: [-90, 0, 0]
+        Scale: [2.5, 2.5, 2.5]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0500000007, 0.0500000007, 0.0500000007]
+        Previous Scale: [2.5, 2.5, 2.5]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
-      ModelID: 16321407537260162659
+      ModelID: 618926925563278836
       MaterialID: 295392599374634747
       ModelName: ""
       MaterialName: ""
@@ -4592,21 +4646,21 @@ ENTITIES:
       UID: 8415643198172161472
     TransformComponent:
       Transform:
-        Translate: [0.311001986, 17.8589993, 63.8384285]
-        Rotate: [0, 0, 0]
-        Scale: [0.0500000007, 0.0500000007, 0.0500000007]
+        Translate: [0.311001986, 17.757, 63.8384285]
+        Rotate: [-90, 0, 0]
+        Scale: [2.5, 2.5, 2.5]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0500000007, 0.0500000007, 0.0500000007]
+        Previous Scale: [2.5, 2.5, 2.5]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
-      ModelID: 16321407537260162659
+      ModelID: 618926925563278836
       MaterialID: 295392599374634747
       ModelName: ""
       MaterialName: ""
@@ -4629,21 +4683,21 @@ ENTITIES:
       UID: 1861805954047498574
     TransformComponent:
       Transform:
-        Translate: [0.51077801, 17.8591137, 54.8099899]
-        Rotate: [0, -0, 0]
-        Scale: [0.0500000007, 0.0500000007, 0.0500000007]
+        Translate: [0.51077801, 17.757, 54.8099899]
+        Rotate: [-90, 0, 0]
+        Scale: [2.5, 2.5, 2.5]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0500000007, 0.0500000007, 0.0500000007]
+        Previous Scale: [2.5, 2.5, 2.5]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
-      ModelID: 16321407537260162659
+      ModelID: 618926925563278836
       MaterialID: 295392599374634747
       ModelName: ""
       MaterialName: ""
@@ -4666,21 +4720,21 @@ ENTITIES:
       UID: 2249271849963366371
     TransformComponent:
       Transform:
-        Translate: [-4.52539015, 17.8589993, 58.1401901]
-        Rotate: [0, 0, 0]
-        Scale: [0.0500000007, 0.0500000007, 0.0500000007]
+        Translate: [-4.52539015, 17.757, 58.1401901]
+        Rotate: [-90, 0, 0]
+        Scale: [2.5, 2.5, 2.5]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0500000007, 0.0500000007, 0.0500000007]
+        Previous Scale: [2.5, 2.5, 2.5]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
-      ModelID: 16321407537260162659
+      ModelID: 618926925563278836
       MaterialID: 295392599374634747
       ModelName: ""
       MaterialName: ""
@@ -4703,21 +4757,21 @@ ENTITIES:
       UID: 16020692895328883736
     TransformComponent:
       Transform:
-        Translate: [0.780245006, 17.7140808, 58.7899513]
-        Rotate: [0, -0, 0]
-        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+        Translate: [0.780245006, 17.4244804, 58.7899513]
+        Rotate: [-90, 0, 0]
+        Scale: [1.875, 1.875, 1.875]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+        Previous Scale: [1.875, 1.875, 1.875]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
-      ModelID: 13412897965077684229
+      ModelID: 5838446488854438722
       MaterialID: 14891281585286011240
       ModelName: ""
       MaterialName: ""
@@ -5174,8 +5228,8 @@ ENTITIES:
       UID: 2443250646068502005
     TransformComponent:
       Transform:
-        Translate: [19.4503727, 13.4251757, 22.6484566]
-        Rotate: [0, 0, 0]
+        Translate: [19.4503727, 13.3938704, 22.6484566]
+        Rotate: [0, -0, 0]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -5248,15 +5302,15 @@ ENTITIES:
       UID: 13972879706102874778
     TransformComponent:
       Transform:
-        Translate: [3.71992993, 13.6502399, 4.24085999]
-        Rotate: [0, 0, 0]
-        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+        Translate: [3.99679375, 13.3662214, 3.38080907]
+        Rotate: [0, 89.980217, 0]
+        Scale: [0.0199999977, 0.0199999996, 0.0199999977]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+        Previous Scale: [0.0199999977, 0.0199999996, 0.0199999977]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -5687,8 +5741,8 @@ ENTITIES:
       UID: 9853635101962824744
     TransformComponent:
       Transform:
-        Translate: [-2.80950379, 18.7372131, -22.2343197]
-        Rotate: [180, -0, 0]
+        Translate: [-2.80950379, 18.7372131, -22.1056709]
+        Rotate: [-180, -0, 0]
         Scale: [1.97171724, 1.15727019, 0.36048156]
     RigidBodyComponent:
       RigidBody:
@@ -6072,7 +6126,7 @@ ENTITIES:
       UID: 16568992521348852646
     TransformComponent:
       Transform:
-        Translate: [-22.110651, 6.63590956, 3.09660268]
+        Translate: [-20.9687862, 6.63590956, 3.52375007]
         Rotate: [0, -0, 0]
         Scale: [0.200000003, 1.375, 4.67500019]
     RigidBodyComponent:
@@ -6109,15 +6163,15 @@ ENTITIES:
       UID: 11914392841982844469
     TransformComponent:
       Transform:
-        Translate: [21.8964272, 6.56983852, 3.97473001]
+        Translate: [21.8964272, 6.56983852, 3.59040999]
         Rotate: [-89.9999847, 0, 0]
-        Scale: [0.200000003, 5.39865923, 1.35548878]
+        Scale: [0.200000003, 5.39873505, 1.35550773]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.200000003, 5.39865923, 1.35548878]
+        Previous Scale: [0.200000003, 5.39873505, 1.35550773]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -6395,15 +6449,15 @@ ENTITIES:
       UID: 7363969942927904993
     TransformComponent:
       Transform:
-        Translate: [5.03408146, 0.741999984, 9.57666016]
+        Translate: [5.03408146, 0.793423414, 9.57666016]
         Rotate: [0, -0, 0]
-        Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+        Scale: [0.0399999991, 0.0399999991, 0.0399999991]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+        Previous Scale: [0.0399999991, 0.0399999991, 0.0399999991]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -6499,22 +6553,22 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [0.816580713, 3.92837, 14.1151657]
-        Rotate: [-95, -24.0000534, 180]
+        Translate: [-12.5798264, 4.74306774, 14.2317209]
+        Rotate: [1.99999785, -82.9999161, 1.75138314e-06]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.00100000005
         FarPlane: 935.47998
-        FOV: 68.0083313
+        FOV: 71.0083313
     ThirdPersonCameraComponent:
       Target UID: 2377197601835279376
       Offset: [0.00999999978, 4.1500001, 0]
       Current Distance: 4
       Min Distance: 1
       Max Distance: 5
-      Current Yaw: -2136
-      Current Pitch: -85
+      Current Yaw: -3503
+      Current Pitch: -2
       Mouse Sensitivity: 1
       Scroll Sensitivity: 1
   - InfoComponent:
@@ -6579,7 +6633,7 @@ ENTITIES:
       UID: 14423942184205972563
     TransformComponent:
       Transform:
-        Translate: [13.5607443, 1.79463005, -15.8301144]
+        Translate: [13.1353016, 1.91324997, -15.8301144]
         Rotate: [0, 89.980217, 0]
         Scale: [0.5, 1.2529999, 1.37462664]
     RigidBodyComponent:
@@ -6616,7 +6670,7 @@ ENTITIES:
       UID: 43420598284529509
     TransformComponent:
       Transform:
-        Translate: [-13.8217173, 1.91249001, -16.0023098]
+        Translate: [-13.2136154, 1.91249001, -16.0023098]
         Rotate: [0, -89.980217, 0]
         Scale: [0.574999869, 1.25, 1.30595565]
     RigidBodyComponent:
@@ -6653,15 +6707,15 @@ ENTITIES:
       UID: 1078971789643419703
     TransformComponent:
       Transform:
-        Translate: [12.3542604, 3.277385, -17.711401]
+        Translate: [12.3542604, 3.73061991, -17.8971958]
         Rotate: [0, -0, 0]
-        Scale: [1.28400004, 1.34000003, 1.29999995]
+        Scale: [1.28385949, 1.25300002, 1.28822517]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.28400004, 1.34000003, 1.29999995]
+        Previous Scale: [1.28385949, 1.25300002, 1.28822517]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -6690,15 +6744,15 @@ ENTITIES:
       UID: 14807325083218498713
     TransformComponent:
       Transform:
-        Translate: [-12.0617018, 3.17116499, -19.325325]
+        Translate: [-12.0675001, 3.85201001, -18.8526535]
         Rotate: [180, 5.00895658e-06, 180]
-        Scale: [1.28400004, 1.34300005, 1.28799999]
+        Scale: [1.25, 1.25, 1.07972503]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.28400004, 1.34300005, 1.28799999]
+        Previous Scale: [1.25, 1.25, 1.07972503]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -6764,15 +6818,15 @@ ENTITIES:
       UID: 13247074783709319581
     TransformComponent:
       Transform:
-        Translate: [-2.83864999, 0.741778612, 9.69554996]
+        Translate: [-3.08850503, 0.85946846, 9.69554996]
         Rotate: [0, -0, 0]
-        Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+        Scale: [0.0399999991, 0.0399999991, 0.0399999991]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+        Previous Scale: [0.0399999991, 0.0399999991, 0.0399999991]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -6801,8 +6855,8 @@ ENTITIES:
       UID: 3918560396689782353
     TransformComponent:
       Transform:
-        Translate: [0.81777817, 0.560218334, 9.6626091]
-        Rotate: [0, -0, 0]
+        Translate: [0.81777817, 1.23635006, 9.6626091]
+        Rotate: [0, 0, 0]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -7801,8 +7855,8 @@ ENTITIES:
       UID: 2377197601835279376
     TransformComponent:
       Transform:
-        Translate: [0.840539336, 0.7326653, 14.1914377]
-        Rotate: [-180, -4.99969387, -180]
+        Translate: [-8.62206173, 0.732665539, 13.7445326]
+        Rotate: [180, 84.0000153, 180]
         Scale: [0.0164999887, 0.0164999999, 0.0164999887]
     RigidBodyComponent:
       RigidBody:
@@ -8125,8 +8179,8 @@ ENTITIES:
       UID: 11344090768170482118
     TransformComponent:
       Transform:
-        Translate: [-22.2951069, 13.4210186, 4.63392448]
-        Rotate: [180, 0.00014525521, 180]
+        Translate: [-22.2951088, 13.4210186, -5.96899557]
+        Rotate: [180, 2.23118004e-05, 180]
         Scale: [0.0199999977, 0.0199999996, 0.0199999977]
     RigidBodyComponent:
       RigidBody:
@@ -8166,7 +8220,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.47065043
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -8209,7 +8263,7 @@ ENTITIES:
       UID: 17902731174235545789
     TransformComponent:
       Transform:
-        Translate: [3.92018199, 13.4210176, 15.2881212]
+        Translate: [9.61977291, 13.4210176, 15.2133579]
         Rotate: [0, -89.2487869, 0]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
@@ -8250,7 +8304,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.47072101
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -8629,3 +8683,43 @@ ENTITIES:
           moveThreshold: 0.100000001
           repeatInterval: 0.5
           animTrigger: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: FreezePowerUp
+      UID: 8532016967145659493
+    TransformComponent:
+      Transform:
+        Translate: [-1.88300002, 3.0999999, 15]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.129999995, 0.200000003]
+    ModelComponent:
+      ModelID: 600481613562228247
+      MaterialID: 1773827607540986892
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: UI_Freeze
+      UID: 7428358880111193624
+    TransformComponent:
+      Transform:
+        Translate: [0.699999988, 0.699999988, 0.800000012]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.100000001, 0.100000001]
+    SpriteComponent:
+      textureID: 13937156857161099910
+      color: [1, 1, 1, 0]
+      uiOverlay: true

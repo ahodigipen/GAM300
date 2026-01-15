@@ -497,6 +497,7 @@ namespace Boom
 
                 e << YAML::Key << "SceneNavmeshComponent" << YAML::Value << YAML::BeginMap;
                 e << YAML::Key << "NavmeshFile" << YAML::Value << sn.navmeshFile;
+                e << YAML::Key << "AmbientStrength" << YAML::Value << sn.ambientStrength;
                 e << YAML::EndMap;
             },
             // ----- DESERIALIZE -----
@@ -509,6 +510,9 @@ namespace Boom
 
                 if (auto v = data["NavmeshFile"])
                     sn.navmeshFile = v.as<std::string>(sn.navmeshFile);
+
+                if (auto v = data["AmbientStrength"])
+                    sn.ambientStrength = v.as<float>(sn.ambientStrength);
             }
         );
 
