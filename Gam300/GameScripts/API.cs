@@ -191,6 +191,12 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern bool Boom_API_Check2DViewportClick(ulong handle, float mouseX, float mouseY);
 
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Boom_API_IsControllerGrounded(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_MoveController(ulong handle, ref Vec3 displacement, float minDist, float dt);
+
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Boom_API_Linecast(ref Vec3 from, ref Vec3 to, ulong ignoreEntity);
@@ -657,6 +663,15 @@ namespace Boom
 
         // Raycasting
         public static ulong PickGameEntity() => Native.Boom_API_PickGameEntity();
+        public static void MoveController(ulong h, Vec3 displacement, float minDist, float dt)
+        {
+            Native.Boom_API_MoveController(h, ref displacement, minDist, dt);
+        }
+
+        public static bool IsControllerGrounded(ulong h)
+        {
+            return Native.Boom_API_IsControllerGrounded(h);
+        }
         public static bool GetMousePosInViewport(out Vec2 outPos)
         {
             return Native.Boom_API_GetMousePosInViewport(out outPos);

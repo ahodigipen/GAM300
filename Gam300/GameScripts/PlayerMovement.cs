@@ -73,17 +73,18 @@ namespace GameScripts
         private const int PICKUP_KEY = API.KEY_F;
         private const int USE_KEY = API.KEY_G;
 
-        private bool _canPickupFreeze = false;       // NEW: Track if we are standing on a pickup
-        private ulong _currentPickupEntity = 0;      // NEW: Track which pickup we are standing on
+        private bool _canPickupFreeze = false;
+        private ulong _currentPickupEntity = 0;
 
         private bool _wasPickupKeyDown = false;
         private bool _wasUseKeyDown = false;
 
         private HashSet<ulong> _freezePickupIDs = new HashSet<ulong>();
-        private const int MAX_PICKUPS_TO_CHECK = 10; // Will look for FreezePowerUp_1 to _10
+        private const int MAX_PICKUPS_TO_CHECK = 10;
 
         // ==== Gravity constant ====
-        private const float GRAVITY = 9.81f;
+        private const float GRAVITY = 20f;
+        private const float GROUND_STICK = -5.0f;
 
         // ==== CRITICAL: Manual vertical velocity tracking for Character Controller ====
         private float _verticalVelocity = 0f;
@@ -149,7 +150,7 @@ namespace GameScripts
 
             Vec3 playerPos = API.GetPosition(Entity);
             API.PlaySoundAt("player_damage", "Resources/Audio/playerPunch_1.wav", playerPos, false);
-            API.Set3DMinMaxDistance("player_damage", 1.0f, 20.0f);  // Damage sound heard from medium distance
+            API.Set3DMinMaxDistance("player_damage", 1.0f, 20.0f);
             API.SetSoundVolume("player_damage", 1.0f);
 
             if (_health <= 0)
@@ -161,8 +162,9 @@ namespace GameScripts
         private void StartRespawn()
         {
             _isRespawning = true;
-            _verticalVelocity = 0f; // Reset vertical velocity
-            API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
+            _verticalVelocity = 0f;
+            // Stop movement by applying zero displacement
+            API.MoveController(Entity, new Vec3(0, 0, 0), 0.001f, 0.016f);
             _fadeState = FadeState.FadingOut;
             _fadeTimer = 0f;
             API.SetScreenFadeAlpha(0f);
@@ -172,7 +174,7 @@ namespace GameScripts
         {
             Vec3 playerPos = API.GetPosition(Entity);
             API.PlaySoundAt("player_death", "Resources/Audio/playerPunch_1.wav", playerPos, false);
-            API.Set3DMinMaxDistance("player_death", 2.0f, 30.0f);  // Death sound heard from further away
+            API.Set3DMinMaxDistance("player_death", 2.0f, 30.0f);
             API.SetSoundVolume("player_death", 1.0f);
             API.LoadScene(API.GetCurrentSceneName());
         }
@@ -180,8 +182,9 @@ namespace GameScripts
         private void RespawnAtCheckpoint()
         {
             API.TeleportRigidBody(Entity, _spawnPoint);
-            _verticalVelocity = 0f; // Reset vertical velocity
-            API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
+            _verticalVelocity = 0f;
+            // Stop movement by applying zero displacement
+            API.MoveController(Entity, new Vec3(0, 0, 0), 0.001f, 0.016f);
             _isInvulnerable = true;
             _invulnerabilityTimer = 0f;
             HUD.SetHealth(_health, _maxHealth);
@@ -192,16 +195,14 @@ namespace GameScripts
         {
             _spawnPoint = newCheckpoint;
             API.PlaySoundAt("checkpoint_save", "Resources/Audio/playerPunch_1.wav", newCheckpoint, false);
-            API.Set3DMinMaxDistance("checkpoint_save", 1.0f, 15.0f);  // Checkpoint sound
+            API.Set3DMinMaxDistance("checkpoint_save", 1.0f, 15.0f);
             API.SetSoundVolume("checkpoint_save", 0.8f);
         }
 
         private void RegisterTriggerCallbacksOnAllTriggers()
         {
-            // 1. Clear old list
             _freezePickupIDs.Clear();
 
-            // 2. Register Standard Triggers
             string[] standardTriggers = { "Checkpoint", "DamageZone", "PowerUp", "DoorTrigger", "TriggerVolume", "AreaTrigger" };
             foreach (string name in standardTriggers)
             {
@@ -215,16 +216,13 @@ namespace GameScripts
 
             ulong crouchZone = API.FindEntity("CrouchTriggerZone");
             API.Log($"[PlayerMovement] CrouchTriggerZone entity ID: {crouchZone}");
-            // 3. Register Freeze Powerups (With Unique Names)
-            // Look for "FreezePowerUp", "FreezePowerUp_1", "FreezePowerUp_2", etc.
-            RegisterFreezePickup("FreezePowerUp"); // The original
+
+            RegisterFreezePickup("FreezePowerUp");
             for (int i = 1; i <= MAX_PICKUPS_TO_CHECK; i++)
             {
                 RegisterFreezePickup($"FreezePowerUp_{i}");
             }
 
-            // 4. Register Crouch Zone
-            ulong crouchZone = API.FindEntity("CrouchTriggerZone");
             if (crouchZone != 0)
             {
                 API.RegisterTriggerEnterCallback(crouchZone, OnTriggerEnter);
@@ -232,7 +230,6 @@ namespace GameScripts
             }
         }
 
-        // Helper to register and store ID
         private void RegisterFreezePickup(string name)
         {
             ulong id = API.FindEntity(name);
@@ -241,7 +238,7 @@ namespace GameScripts
                 API.Log($"[PlayerMovement] Found Freeze Pickup: {name} (ID: {id})");
                 API.RegisterTriggerEnterCallback(id, OnTriggerEnter);
                 API.RegisterTriggerExitCallback(id, OnTriggerExit);
-                _freezePickupIDs.Add(id); // Add to our list of valid pickups
+                _freezePickupIDs.Add(id);
             }
         }
 
@@ -288,10 +285,8 @@ namespace GameScripts
             UpdateFade(dt);
             if (!API.HasTransform(Entity) || !API.HasScript(Entity)) return;
 
-            // 1. UPDATE FREEZE MANAGER
             FreezeManager.Update(dt);
 
-            // --- INPUT HANDLING ---
             bool isPickupDown = API.IsKeyDown(PICKUP_KEY);
             bool isPickupPressed = isPickupDown && !_wasPickupKeyDown;
             _wasPickupKeyDown = isPickupDown;
@@ -302,11 +297,8 @@ namespace GameScripts
 
             if (API.GetApplicationState() != API.APP_STATE_PAUSED)
             {
-                // --- LOGIC 1: PICKUP (F KEY) ---
-                // We check if Player pressed F and is standing on a pickup
                 if (isPickupPressed && _canPickupFreeze)
                 {
-                    // Case A: Inventory is empty -> Success
                     if (!PlayerInventory.HasFreezePower())
                     {
                         if (PlayerInventory.TryAddFreezeCharge())
@@ -321,14 +313,12 @@ namespace GameScripts
                             }
                         }
                     }
-                    // Case B: Inventory is full -> Fail + Log
                     else
                     {
                         API.Log("[PlayerMovement] Cannot pickup: You already have a Freeze Charge!");
                     }
                 }
 
-                // --- LOGIC 2: USE ABILITY (G KEY) ---
                 if (isUsePressed)
                 {
                     if (PlayerInventory.HasFreezePower())
@@ -363,7 +353,6 @@ namespace GameScripts
                     _isInvulnerable = false;
             }
 
-            // Declare isGrounded ONCE at the top of the method
             bool isGrounded = IsPlayerGrounded();
 
             // Crouch logic
@@ -394,8 +383,20 @@ namespace GameScripts
 
             if (_isCrouching)
             {
-                // Lock movement when crouching
-                API.SetLinearVelocity(Entity, new Vec3(0, _verticalVelocity, 0));
+                // Apply gravity while crouching
+                if (!isGrounded)
+                {
+                    _verticalVelocity -= GRAVITY * dt;
+                }
+                else
+                {
+                    _verticalVelocity = -0.5f;
+                }
+
+                // Use MoveController with displacement (velocity * dt)
+                Vec3 displacement = new Vec3(0, _verticalVelocity * dt, 0);
+                API.MoveController(Entity, displacement, 0.001f, dt);
+
                 if (_hasAnimator)
                 {
                     API.AnimatorSetFloat(Entity, "Speed", 0f);
@@ -403,35 +404,32 @@ namespace GameScripts
                     API.AnimatorSetBool(Entity, "Sprint", false);
                     API.AnimatorSetBool(Entity, "IsSneaking", false);
                 }
-                // Still apply gravity - REMOVED the duplicate 'bool isGrounded' declaration
-                if (!isGrounded)
-                {
-                    _verticalVelocity -= GRAVITY * dt;
-                }
-                else
-                {
-                    _verticalVelocity = -0.5f; // Small downward force to stay grounded
-                }
                 return;
             }
 
             bool allowMove = !API.IsMouseDown(API.MOUSE_RIGHT);
-            // REMOVED the duplicate 'bool isGrounded = IsPlayerGrounded();' here
 
-            // ==== CRITICAL FIX: Update vertical velocity with gravity accumulation ====
+            // Update vertical velocity with gravity
             if (!isGrounded)
             {
                 _verticalVelocity -= GRAVITY * dt;
             }
             else
             {
-                // When grounded, apply small downward force to stay on ground
-                _verticalVelocity = -0.5f;
+                // Only reset if we were actually falling
+                if (_verticalVelocity < GROUND_STICK)
+                {
+                    _verticalVelocity = GROUND_STICK;
+                }
+                else
+                {
+                    _verticalVelocity = GROUND_STICK;
+                }
             }
 
-            // Clamp vertical velocity
-            if (_verticalVelocity < -20f) _verticalVelocity = -20f;
-            if (_verticalVelocity > 7.5f) _verticalVelocity = 7.5f;
+            // Clamp terminal velocity
+            if (_verticalVelocity < -50f) _verticalVelocity = -50f;
+            if (_verticalVelocity > 15f) _verticalVelocity = 15f;
 
             // Horizontal movement input
             float inputX = 0f, inputZ = 0f;
@@ -512,7 +510,10 @@ namespace GameScripts
                 velZ = _rollDir.Z * _rollSpeed;
                 _isInvulnerable = true;
                 _wasCtrlPressed = ctrlDown;
-                API.SetLinearVelocity(Entity, new Vec3(velX, _verticalVelocity, velZ));
+
+                // Use MoveController with displacement (velocity * dt)
+                Vec3 displacement = new Vec3(velX * dt, _verticalVelocity * dt, velZ * dt);
+                API.MoveController(Entity, displacement, 0.001f, dt);
                 return;
             }
 
@@ -529,7 +530,10 @@ namespace GameScripts
                     if (_hasAnimator) API.AnimatorSetBool(Entity, "IsRolling", false);
                 }
                 _wasCtrlPressed = ctrlDown;
-                API.SetLinearVelocity(Entity, new Vec3(velX, _verticalVelocity, velZ));
+
+                // Use MoveController with displacement (velocity * dt)
+                Vec3 displacement = new Vec3(velX * dt, _verticalVelocity * dt, velZ * dt);
+                API.MoveController(Entity, displacement, 0.001f, dt);
                 return;
             }
 
@@ -537,8 +541,9 @@ namespace GameScripts
                 _rollCooldownTimer = Math.Max(0f, _rollCooldownTimer - dt);
             _wasCtrlPressed = ctrlDown;
 
-            // Apply final velocity with accumulated vertical velocity
-            API.SetLinearVelocity(Entity, new Vec3(velX, _verticalVelocity, velZ));
+            // Apply final movement using MoveController with displacement (velocity * dt)
+            Vec3 finalDisplacement = new Vec3(velX * dt, _verticalVelocity * dt, velZ * dt);
+            API.MoveController(Entity, finalDisplacement, 0.001f, dt);
 
             if (_hasAnimator)
             {
@@ -553,10 +558,7 @@ namespace GameScripts
 
         private bool IsPlayerGrounded()
         {
-            Vec3 p = API.GetPosition(Entity);
-            Vec3 start = new Vec3(p.X, p.Y + 0.1f, p.Z);
-            Vec3 end = new Vec3(p.X, p.Y - 0.6f, p.Z);
-            return !API.Linecast(start, end, Entity);
+            return API.IsControllerGrounded(Entity);
         }
 
         private static void OnTriggerEnter(ulong triggerEntity, ulong otherEntity)
@@ -565,7 +567,6 @@ namespace GameScripts
             {
                 if (otherEntity != s_playerEntity) return;
 
-                // Crouch Logic
                 ulong crouchZone = API.FindEntity("CrouchTriggerZone");
                 if (triggerEntity == crouchZone && crouchZone != 0 && s_instance != null)
                 {
@@ -574,7 +575,6 @@ namespace GameScripts
                     return;
                 }
 
-                // CHECK NEW LIST: Is this entity one of our known freeze powerups?
                 if (s_instance != null && s_instance._freezePickupIDs.Contains(triggerEntity))
                 {
                     s_instance._canPickupFreeze = true;
@@ -595,7 +595,6 @@ namespace GameScripts
             {
                 if (otherEntity != s_playerEntity) return;
 
-                // Crouch Logic
                 ulong crouchZone = API.FindEntity("CrouchTriggerZone");
                 if (triggerEntity == crouchZone && crouchZone != 0 && s_instance != null)
                 {
@@ -612,11 +611,9 @@ namespace GameScripts
                     return;
                 }
 
-                // CHECK NEW LIST
                 if (s_instance != null && s_instance._freezePickupIDs.Contains(triggerEntity))
                 {
                     s_instance._canPickupFreeze = false;
-                    // Only clear current pickup if it's the one we just left
                     if (s_instance._currentPickupEntity == triggerEntity)
                     {
                         s_instance._currentPickupEntity = 0;

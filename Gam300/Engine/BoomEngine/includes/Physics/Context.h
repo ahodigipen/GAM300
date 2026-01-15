@@ -222,30 +222,65 @@ namespace Boom {
             PxController* ctrl = it->second;
             if (!ctrl) return PxControllerCollisionFlags();
 
-            // PhysX controller move expects a PxVec3 displacement and elapsed time.
             PxVec3 disp = ToPxVec3(displacement);
             PxControllerCollisionFlags flags = ctrl->move(disp, minDist, elapsedTime, nullptr);
 
-            // After moving the controller, sync the ECS Transform (if present) with the controller actor pose.
-            // This keeps the entity TransformComponent in sync for rendering / scripting.
+            // Store the collision flags for later query
+            m_ControllerCollisionFlags[id] = flags;
+
+            // Sync transform...
             if (ctrl->getActor()) {
                 physx::PxTransform pose = ctrl->getActor()->getGlobalPose();
-
-                // Convert PhysX pose to glm types
                 glm::vec3 worldPos = ToGLMVec3(pose.p);
-                glm::quat rotQuat(pose.q.w, pose.q.x, pose.q.y, pose.q.z);
-                glm::vec3 worldRotDeg = glm::degrees(glm::eulerAngles(rotQuat));
 
                 if (entity.Has<TransformComponent>()) {
                     auto& tc = entity.Get<TransformComponent>().transform;
                     tc.translate = worldPos;
-                    //tc.rotate = worldRotDeg;
                 }
             }
 
             return flags;
         }
 
+        // Add a new method to query grounded state:
+        // Replace or add this more robust ground check:
+        BOOM_INLINE bool IsControllerGrounded(uint32_t entityID) const {
+            auto it = m_Controllers.find(entityID);
+            if (it == m_Controllers.end()) return false;
+
+            PxController* ctrl = it->second;
+            if (!ctrl) return false;
+
+            // Get controller position and dimensions
+            PxExtendedVec3 pos = ctrl->getPosition();
+            float radius = 0.0f;
+            float halfHeight = 0.0f;
+
+            if (ctrl->getType() == PxControllerShapeType::eCAPSULE) {
+                PxCapsuleController* capsule = static_cast<PxCapsuleController*>(ctrl);
+                radius = capsule->getRadius();
+                halfHeight = capsule->getHeight() / 2.0f;
+            }
+
+            // Raycast from bottom of controller downward
+            float skinWidth = ctrl->getContactOffset();
+            PxVec3 origin((float)pos.x, (float)pos.y - halfHeight - radius + skinWidth, (float)pos.z);
+            PxVec3 dir(0, -1, 0);
+            float maxDist = skinWidth + 0.1f;  // Small distance below feet
+
+            PxRaycastBuffer hit;
+            if (m_Scene->raycast(origin, dir, maxDist, hit)) {
+                return true;
+            }
+
+            // Fallback to collision flags if raycast misses
+            auto flagIt = m_ControllerCollisionFlags.find(entityID);
+            if (flagIt != m_ControllerCollisionFlags.end()) {
+                return flagIt->second.isSet(PxControllerCollisionFlag::eCOLLISION_DOWN);
+            }
+
+            return false;
+        }
         // Query whether an entity has a controller
         BOOM_INLINE bool HasController(Entity& entity) const {
             return m_Controllers.find(static_cast<uint32_t>(entity.ID())) != m_Controllers.end();
@@ -871,6 +906,8 @@ namespace Boom {
         PxControllerManager* m_ControllerManager;
         PxMaterial* m_ControllerMaterial;
         std::unordered_map<uint32_t, PxController*> m_Controllers;
+        std::unordered_map<uint32_t, PxControllerCollisionFlags> m_ControllerCollisionFlags;
+
 
     };
 }

@@ -488,6 +488,34 @@ namespace Boom {
         }
     }
 
+    // Add this internal call function
+    static void Boom_API_MoveController(uint64_t handle, glm::vec3* displacement, float minDist, float dt) {
+        if (!s_Ctx || !s_Ctx->physics) return;
+
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+
+        Entity entity{ &s_Ctx->scene, e };
+        glm::vec3 disp(displacement->x, displacement->y, displacement->z);
+        s_Ctx->physics->MoveController(entity, disp, minDist, dt);
+    }
+
+    static bool Boom_API_IsControllerGrounded(uint64_t handle) {
+        if (!s_Ctx || !s_Ctx->physics) return false;
+
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return false;
+
+        // Use a short raycast downward to detect ground
+        if (!s_Ctx->scene.any_of<TransformComponent>(e)) return false;
+
+        auto& tc = s_Ctx->scene.get<TransformComponent>(e);
+        glm::vec3 origin = tc.transform.translate + glm::vec3(0, 0.1f, 0);
+        glm::vec3 dir(0, -1, 0);
+        auto result = s_Ctx->physics->Raycast(origin, dir, 0.3f);
+        return result.hitFound;
+    }
+
     static float ICALL_API_GetThirdPersonCameraYaw() {
         if (!s_Ctx) return 0.0f;
 
@@ -1490,7 +1518,10 @@ namespace Boom {
 
         mono_add_internal_call("Boom.Native::Boom_API_IsColliding",
             (const void*)ICALL_API_IsColliding);
-		// AI Component functions
+
+        mono_add_internal_call("Boom.Native::Boom_API_MoveController", (void*)Boom_API_MoveController);
+        mono_add_internal_call("Boom.Native::Boom_API_IsControllerGrounded", (void*)Boom_API_IsControllerGrounded);
+        // AI Component functions
         mono_add_internal_call("Boom.Native::Boom_API_AI_GetPatrolPointCount",
             (const void*)ICALL_API_AI_GetPatrolPointCount);
         mono_add_internal_call("Boom.Native::Boom_API_AI_GetPatrolPoint",
