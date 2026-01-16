@@ -122,10 +122,45 @@ namespace EditorUI {
         curCamPos = glm::lerp(startingCamPos, targetPos, t);
     }    
 
+    // Helper to check if entity or any descendant matches search
+    bool EntityMatchesSearch(entt::registry& registry, entt::entity entity, const char* searchText) {
+        if (!searchText || searchText[0] == '\0') {
+            return true; // Empty search = show all
+        }
+
+        // Convert search to lowercase for case-insensitive search
+        std::string searchLower = searchText;
+        std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), ::tolower);
+
+        // Check current entity
+        if (registry.all_of<Boom::InfoComponent>(entity)) {
+            std::string nameLower = registry.get<Boom::InfoComponent>(entity).name;
+            std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
+            if (nameLower.find(searchLower) != std::string::npos) {
+                return true;
+            }
+        }
+
+        // Check children recursively
+        auto children = Boom::GetChildren(registry, entity);
+        for (entt::entity child : children) {
+            if (EntityMatchesSearch(registry, child, searchText)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // Helper to render entity tree recursively
     void HierarchyPanel::RenderEntityNode(entt::registry& registry, entt::entity entity, Boom::AppInterface* app, Boom::AppContext* ctx,
                           bool& showDeletePopup, entt::entity& entityToDelete)
     {
+        // Skip if doesn't match search filter
+        if (!EntityMatchesSearch(registry, entity, m_SearchBuffer)) {
+            return;
+        }
+
         const auto& info = registry.get<Boom::InfoComponent>(entity);
         const bool isSelected = (app->SelectedEntity() == entity);
 
@@ -140,6 +175,10 @@ namespace EditorUI {
         }
         if (!hasChildren) {
             flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+        }
+        // Auto-expand nodes when searching
+        if (m_SearchBuffer[0] != '\0') {
+            flags |= ImGuiTreeNodeFlags_DefaultOpen;
         }
 
         ImGui::PushID(static_cast<int>(entt::to_integral(entity)));
@@ -321,6 +360,13 @@ namespace EditorUI {
         if (ImGui::Begin("Hierarchy", p_open))
         {
             ImGui::TextUnformatted("Scene Hierarchy");
+            ImGui::Separator();
+
+            // Search bar
+            ImGui::SetNextItemWidth(-1.0f); // Full width
+            if (ImGui::InputTextWithHint("##HierarchySearch", "Search entities...", m_SearchBuffer, IM_ARRAYSIZE(m_SearchBuffer))) {
+                // Text changed - filter will update automatically on next render
+            }
             ImGui::Separator();
 
             auto& registry = m_Ctx->scene;
