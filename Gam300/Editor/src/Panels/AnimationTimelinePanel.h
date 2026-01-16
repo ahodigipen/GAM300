@@ -142,6 +142,7 @@ namespace EditorUI {
         int m_SelectedClipIndex = -1;  // Currently selected animation clip (-1 = none)
         float m_LastFrameTime = 0.0f;  // For delta time calculation
         bool m_IsDraggingTimeline = false;  // Is user scrubbing the timeline?
+        bool m_ClipModified = false;  // Track unsaved changes to current clip
 
         // Selected bone (for keyframe editing later)
         std::string m_SelectedBoneName;

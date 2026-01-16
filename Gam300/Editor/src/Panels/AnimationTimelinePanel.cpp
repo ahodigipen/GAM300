@@ -7,6 +7,7 @@
 #include "Graphics/Models/Model.h"
 #include "Graphics/Models/Animator.h"
 #include "Graphics/Models/Animation.h"
+#include "Graphics/Models/AnimationIO.h"
 #include "Graphics/Shaders/DebugLines.h"
 #include "Graphics/Shaders/PBR.h"
 #include "Graphics/Utilities/Data.h"
@@ -860,8 +861,16 @@ void AnimationTimelinePanel::RenderControlBar()
 
         // Animation clip dropdown
         ImGui::SetNextItemWidth(200);
-        if (ImGui::BeginCombo("##AnimClip",
-            m_SelectedClipIndex >= 0 ? m_Animator->GetClip(m_SelectedClipIndex)->name.c_str() : "Select clip..."))
+        std::string clipDisplayName = "Select clip...";
+        if (m_SelectedClipIndex >= 0)
+        {
+            clipDisplayName = m_Animator->GetClip(m_SelectedClipIndex)->name;
+            if (m_ClipModified)
+            {
+                clipDisplayName += " *";  // Asterisk indicates unsaved changes
+            }
+        }
+        if (ImGui::BeginCombo("##AnimClip", clipDisplayName.c_str()))
         {
             for (size_t i = 0; i < m_Animator->GetClipCount(); ++i)
             {
@@ -875,6 +884,7 @@ void AnimationTimelinePanel::RenderControlBar()
                     m_Animator->PlayClip(i);  // Switch to this clip
                     m_CurrentTime = 0.0f;     // Reset time
                     m_IsPlaying = false;      // Stop playback when switching clips
+                    m_ClipModified = false;   // Reset dirty flag for new clip
                 }
 
                 if (isSelected)
@@ -958,6 +968,21 @@ void AnimationTimelinePanel::RenderControlBar()
         if (ImGui::IsItemHovered())
         {
             ImGui::SetTooltip("Delete selected animation clip");
+        }
+        ImGui::EndDisabled();
+
+        ImGui::SameLine();
+        ImGui::BeginDisabled(m_SelectedClipIndex < 0);
+        if (ImGui::Button("Save"))
+        {
+            if (m_Animator && m_SelectedClipIndex >= 0)
+            {
+                ImGui::OpenPopup("SaveClipPopup");
+            }
+        }
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Save animation clip to .anim file");
         }
         ImGui::EndDisabled();
 
@@ -1115,6 +1140,76 @@ void AnimationTimelinePanel::RenderControlBar()
             ImGui::EndPopup();
         }
 
+        // Save clip popup
+        if (ImGui::BeginPopup("SaveClipPopup"))
+        {
+            if (m_Animator && m_SelectedClipIndex >= 0)
+            {
+                auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+                if (clip)
+                {
+                    static char saveNameBuffer[128] = "";
+                    static bool initBuffer = true;
+
+                    if (initBuffer || ImGui::IsWindowAppearing())
+                    {
+                        // Pre-fill with clip name (sanitized for filename)
+                        std::string safeName = clip->name;
+                        std::replace(safeName.begin(), safeName.end(), ' ', '_');
+                        strncpy_s(saveNameBuffer, sizeof(saveNameBuffer), safeName.c_str(), _TRUNCATE);
+                        initBuffer = false;
+                    }
+
+                    ImGui::Text("Save Animation Clip to .anim File");
+                    ImGui::Separator();
+
+                    ImGui::Text("Filename:");
+                    ImGui::SetNextItemWidth(250.0f);
+                    ImGui::InputText("##SaveFileName", saveNameBuffer, sizeof(saveNameBuffer));
+                    ImGui::SameLine();
+                    ImGui::TextDisabled(".anim");
+
+                    // Show preview path
+                    std::string previewPath = "Resources/Animations/" + std::string(saveNameBuffer) + ".anim";
+                    ImGui::TextDisabled("Path: %s", previewPath.c_str());
+
+                    ImGui::Spacing();
+
+                    if (ImGui::Button("Save", ImVec2(120, 0)))
+                    {
+                        std::string filename = saveNameBuffer;
+                        if (!filename.empty())
+                        {
+                            std::string filepath = "Resources/Animations/" + filename + ".anim";
+
+                            if (Boom::SaveAnimationClip(*clip, filepath))
+                            {
+                                // Update clip's filePath to point to the saved .anim file
+                                clip->filePath = filepath;
+                                m_ClipModified = false;  // Clear dirty flag
+                                BOOM_INFO("[AnimTimeline] Saved clip '{}' to {}", clip->name, filepath);
+                            }
+                            else
+                            {
+                                BOOM_ERROR("[AnimTimeline] Failed to save clip to {}", filepath);
+                            }
+
+                            initBuffer = true;
+                            ImGui::CloseCurrentPopup();
+                        }
+                    }
+
+                    ImGui::SameLine();
+                    if (ImGui::Button("Cancel", ImVec2(120, 0)))
+                    {
+                        initBuffer = true;
+                        ImGui::CloseCurrentPopup();
+                    }
+                }
+            }
+            ImGui::EndPopup();
+        }
+
         // Display clip information
         if (m_SelectedClipIndex >= 0 && m_SelectedClipIndex < (int)m_Animator->GetClipCount())
         {
@@ -1194,6 +1289,9 @@ void AnimationTimelinePanel::ExecuteCommand(const KeyframeCommand& cmd)
                   cmd.boneName.c_str(), (double)cmd.oldTime, (double)cmd.newTime);
         break;
     }
+
+    // Mark clip as modified (unsaved changes)
+    m_ClipModified = true;
 }
 
 void AnimationTimelinePanel::Undo()
@@ -1258,6 +1356,9 @@ void AnimationTimelinePanel::Undo()
 
     // Push to redo stack
     m_RedoStack.push_back(cmd);
+
+    // Mark clip as modified (unsaved changes)
+    m_ClipModified = true;
 }
 
 void AnimationTimelinePanel::Redo()
@@ -1305,4 +1406,7 @@ void AnimationTimelinePanel::Redo()
 
     // Push back to undo stack
     m_UndoStack.push_back(cmd);
+
+    // Mark clip as modified (unsaved changes)
+    m_ClipModified = true;
 }
