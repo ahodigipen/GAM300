@@ -2347,30 +2347,60 @@ namespace EditorUI {
         auto& col = entity.Get<Boom::ColliderComponent>().Collider;
         auto& phys = m_App->GetPhysicsContext();
 
-        // 1. Calculate the extent (offset) based on the collider type
-        // This prevents the object from being buried halfway into the surface
-        float extent = 0.0f;
+        // 1. Calculate the half-extent in the snap direction based on collider type
         glm::vec3 worldScale = tc.transform.scale * col.localScale;
+        float halfExtent = 0.0f;
 
         if (col.type == Boom::Collider3D::BOX) {
-            extent = glm::abs(glm::dot(direction, worldScale * 0.5f));
+            // For box: project the half-size onto the snap direction
+            glm::vec3 halfSize = worldScale * 0.5f;
+            halfExtent = glm::abs(glm::dot(direction, halfSize));
         }
         else if (col.type == Boom::Collider3D::SPHERE) {
-            extent = (worldScale.x * 0.5f);
+            // For sphere: use the radius
+            halfExtent = glm::max(worldScale.x, glm::max(worldScale.y, worldScale.z)) * 0.5f;
+        }
+        else if (col.type == Boom::Collider3D::CAPSULE || col.type == Boom::Collider3D::CYLINDER) {
+            // For capsule/cylinder: use height/2 for Y direction, radius for X/Z
+            if (glm::abs(direction.y) > 0.5f) {
+                halfExtent = worldScale.y * 0.5f;
+            }
+            else {
+                halfExtent = glm::max(worldScale.x, worldScale.z) * 0.5f;
+            }
         }
         else {
-            // Fallback for complex meshes/capsules
-            extent = (glm::abs(direction.y) > 0.9f) ? (worldScale.y * 0.5f) : (worldScale.x * 0.5f);
+            // Fallback for mesh colliders
+            halfExtent = glm::abs(glm::dot(direction, worldScale * 0.5f));
         }
 
-        // 2. Perform the raycast using your existing physics system
-        // We start slightly above/inside the object to ensure we hit the floor beneath it
-        glm::vec3 rayOrigin = tc.transform.translate;
-        auto hit = phys.Raycast(rayOrigin, direction, 100.0f);
+        // Ensure minimum extent to prevent issues with very small objects
+        halfExtent = glm::max(halfExtent, 0.01f);
+
+        // 2. Start the raycast from OUTSIDE the object in the snap direction
+        // Move the ray origin opposite to the snap direction by the half-extent + small offset
+        float rayOffset = halfExtent + 0.1f; // Small buffer to ensure we're outside the collider
+        glm::vec3 rayOrigin = tc.transform.translate - (direction * rayOffset);
+
+        // 3. Perform the raycast - increase distance to account for the offset
+        float maxDistance = 100.0f + rayOffset;
+        auto hit = phys.Raycast(rayOrigin, direction, maxDistance);
 
         if (hit.hitFound) {
-            // 3. Move the object to the hit point, adjusted by the extent
-            glm::vec3 newPos = hit.position - (direction * extent);
+            // 4. Don't snap to self - check if hit entity is this entity
+            if (hit.hitEntity == entity.ID()) {
+                // Try again with a longer ray, starting further out
+                rayOrigin = tc.transform.translate - (direction * (halfExtent + 1.0f));
+                hit = phys.Raycast(rayOrigin, direction, maxDistance + 1.0f);
+
+                if (!hit.hitFound || hit.hitEntity == entity.ID()) {
+                    BOOM_WARN("Snap failed: No valid surface found");
+                    return;
+                }
+            }
+
+            // 5. Calculate new position: hit point offset by half-extent in opposite direction
+            glm::vec3 newPos = hit.position - (direction * halfExtent);
 
             // Use an undo command so you can revert the snap
             auto* history = m_Owner->GetCommandHistory();
@@ -2391,8 +2421,14 @@ namespace EditorUI {
                 tc.transform.translate = newPos;
             }
 
-            // 4. Sync physics actor immediately
+            // 6. Sync physics actor immediately
             phys.UpdateRigidBodyTransform(entity, tc.transform);
+
+            BOOM_INFO("Snapped entity to surface at distance {:.2f}", hit.distance);
+        }
+        else {
+            BOOM_WARN("Snap failed: No surface found in direction ({:.1f}, {:.1f}, {:.1f})",
+                direction.x, direction.y, direction.z);
         }
     }
 
