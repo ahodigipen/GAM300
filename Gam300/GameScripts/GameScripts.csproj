@@ -61,6 +61,7 @@
     <Compile Include="DoorTriggerLeft.cs" />
     <Compile Include="PlayerInventory.cs" />
     <Compile Include="BloodOverlayController.cs" />
+    <Compile Include="SpotlightFollower.cs" />
     <Compile Include="UIEndController.cs" />
     <Compile Include="UIFreezeController.cs" />
     <Compile Include="UIHoldController.cs" />

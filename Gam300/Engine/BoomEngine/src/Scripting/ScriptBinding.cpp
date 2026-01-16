@@ -894,6 +894,57 @@ namespace Boom {
         s_Ctx->scene.get<SpriteComponent>(e).color.a = glm::clamp(alpha, 0.0f, 1.0f);
     }
 
+    // ========= SPOTLIGHT COMPONENT INTERNAL CALLS =========
+    static bool ICALL_API_HasSpotLight(uint64_t handle)
+    {
+        if (!s_Ctx) return false;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        return (e != entt::null && s_Ctx->scene.valid(e) && s_Ctx->scene.any_of<SpotLightComponent>(e));
+    }
+
+    static void ICALL_API_GetSpotLightColor(uint64_t handle, glm::vec3* outColor)
+    {
+        if (!outColor || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<SpotLightComponent>(e)) {
+            *outColor = glm::vec3(1.0f);
+            return;
+        }
+        *outColor = s_Ctx->scene.get<SpotLightComponent>(e).light.radiance;
+    }
+
+    static void ICALL_API_SetSpotLightColor(uint64_t handle, glm::vec3* color)
+    {
+        if (!color || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<SpotLightComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetSpotLightColor: Entity doesn't have SpotLightComponent");
+            return;
+        }
+        s_Ctx->scene.get<SpotLightComponent>(e).light.radiance = *color;
+    }
+
+    static float ICALL_API_GetSpotLightIntensity(uint64_t handle)
+    {
+        if (!s_Ctx) return 1.0f;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<SpotLightComponent>(e)) {
+            return 1.0f;
+        }
+        return s_Ctx->scene.get<SpotLightComponent>(e).light.intensity;
+    }
+
+    static void ICALL_API_SetSpotLightIntensity(uint64_t handle, float intensity)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<SpotLightComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetSpotLightIntensity: Entity doesn't have SpotLightComponent");
+            return;
+        }
+        s_Ctx->scene.get<SpotLightComponent>(e).light.intensity = intensity;
+    }
+
     struct ScriptTransform {
         float posX, posY, posZ;
         float rotX, rotY, rotZ;
@@ -1641,5 +1692,12 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_GetSpriteAlpha", (const void*)ICALL_API_GetSpriteAlpha);
         mono_add_internal_call("Boom.Native::Boom_API_SetSpriteAlpha", (const void*)ICALL_API_SetSpriteAlpha);
         mono_add_internal_call("Boom.Native::Boom_API_SetSpriteTexture", (const void*)ICALL_API_SetSpriteTexture);
+
+        // SpotLight component internal calls
+        mono_add_internal_call("Boom.Native::Boom_API_HasSpotLight", (const void*)ICALL_API_HasSpotLight);
+        mono_add_internal_call("Boom.Native::Boom_API_GetSpotLightColor", (const void*)ICALL_API_GetSpotLightColor);
+        mono_add_internal_call("Boom.Native::Boom_API_SetSpotLightColor", (const void*)ICALL_API_SetSpotLightColor);
+        mono_add_internal_call("Boom.Native::Boom_API_GetSpotLightIntensity", (const void*)ICALL_API_GetSpotLightIntensity);
+        mono_add_internal_call("Boom.Native::Boom_API_SetSpotLightIntensity", (const void*)ICALL_API_SetSpotLightIntensity);
     }
 }

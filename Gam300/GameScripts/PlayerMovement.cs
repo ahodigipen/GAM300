@@ -189,6 +189,9 @@ namespace GameScripts
             _invulnerabilityTimer = 0f;
             HUD.SetHealth(_health, _maxHealth);
             _isRespawning = false;
+
+            // Reset all spotlight colors back to original
+            SpotlightFollower.ResetAllSpotlights();
         }
 
         public void UpdateCheckpoint(Vec3 newCheckpoint)
