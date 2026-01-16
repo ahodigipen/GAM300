@@ -49,6 +49,7 @@
     <Compile Include="EndZoneTrigger.cs" />
     <Compile Include="EnemyAI.cs" />
     <Compile Include="FootStepsMixer.cs" />
+    <Compile Include="FreezeManager.cs" />
     <Compile Include="HowToPlayMenu.cs" />
     <Compile Include="CrouchTriggerText.cs" />
     <Compile Include="PatrolEnemyController.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="PlayerInventory.cs" />
     <Compile Include="BloodOverlayController.cs" />
     <Compile Include="UIEndController.cs" />
+    <Compile Include="UIFreezeController.cs" />
     <Compile Include="UIHoldController.cs" />
     <Compile Include="UIHeartController.cs" />
     <Compile Include="UIKeyController.cs" />

@@ -201,15 +201,23 @@ namespace Boom
 
 			// Initialize physics actors for all rigid bodies
 			EnttView<Entity, ColliderComponent>([this](auto entity, auto&) {
-				// Only add if it DOESN'T have a RigidBodyComponent
 				if (!entity.Has<RigidBodyComponent>()) {
 					m_Context->physics->AddColliderOnly(entity, *m_Context->assets);
 				}
 				else {
-					// Has both collider and rigidbody - use existing logic
 					m_Context->physics->AddRigidBody(entity, *m_Context->assets);
 				}
-			});
+				});
+
+			// Create controllers for all entities with CharacterControllerComponent
+			EnttView<Entity, CharacterControllerComponent>([this](auto entity, CharacterControllerComponent& cc) {
+				if (!cc.isCreated) {
+					if (m_Context->physics->CreateCapsuleController(entity, cc.radius, cc.height, cc.stepOffset, cc.contactOffset)) {
+						cc.isCreated = true;
+						BOOM_INFO("[Play] Created Character Controller for entity {}", static_cast<uint32_t>(entity.ID()));
+					}
+				}
+				});
 
 			// Reset time tracking
 			m_PausedTime = 0.0;
@@ -293,6 +301,8 @@ namespace Boom
 			}
 		}
 
+
+
 		/**
 		* @brief Stops play mode and restores the scene to pre-play state (like Unity's Stop button)
 		*/
@@ -305,6 +315,7 @@ namespace Boom
 
 			BOOM_INFO("[Application] Stopping play mode...");
 
+			// Destroy script instances
 			if (m_Context->scriptingSystem && m_Context->scriptingSystem->IsAlive()) {
 				auto& registry = m_Context->scene;
 				auto scriptView = registry.view<ScriptComponent>();
@@ -312,7 +323,6 @@ namespace Boom
 				int scriptsDestroyed = 0;
 				for (auto entity : scriptView) {
 					auto& sc = scriptView.get<ScriptComponent>(entity);
-
 					if (sc.InstanceId != 0) {
 						m_Context->scriptingSystem->DestroyForEntity(entity, sc);
 						scriptsDestroyed++;
@@ -323,6 +333,12 @@ namespace Boom
 					BOOM_INFO("[Stop] Destroyed {} script instances", scriptsDestroyed);
 				}
 			}
+
+			// Destroy all character controllers BEFORE destroying physics actors
+			for (const auto& [entityID, controller] : m_Context->physics->GetControllers()) {
+				BOOM_INFO("[Stop] Destroying controller for entity {}", entityID);
+			}
+			m_Context->physics->DestroyAllControllers();  // <-- New method needed
 
 			// Destroy all physics actors before restoring scene
 			DestroyPhysicsActors();
@@ -1235,11 +1251,11 @@ namespace Boom
 		{
 			BOOM_INFO("[Scene] Cleaning up current scene...");
 
+			// Destroy character controllers first
+			m_Context->physics->DestroyAllControllers();
+
 			// Destroy physics actors before clearing scene
 			DestroyPhysicsActors();
-
-			// Clear trigger tracking
-			m_ActiveTriggerPairs.clear();
 
 			// *** ADD THIS - Clear trigger callbacks to prevent stale delegates ***
 			Boom::ClearAllTriggerCallbacks();
@@ -1613,6 +1629,31 @@ namespace Boom
 			const float t = glm::clamp(glm::dot(p - a, ab) / ab2, 0.0f, 1.0f);
 			const glm::vec3 closest = a + t * ab;
 			return glm::distance(p, closest);
+		}
+
+		BOOM_INLINE void CreateControllerForEntity(entt::entity e, float radius, float height) {
+			if (!m_Context || !m_Context->physics) return;
+			if (e == entt::null || !m_Context->scene.valid(e)) return;
+
+			Entity entity{ &m_Context->scene, e };
+
+			// Create controller
+			if (!entity.Has<TransformComponent>()) {
+				BOOM_ERROR("[Physics] Cannot create controller for entity {} without TransformComponent", static_cast<uint32_t>(e));
+				return;
+			}
+
+			if (m_Context->physics->HasController(entity)) {
+				BOOM_ERROR("[Physics] Entity {} has a controller. Cannot create another.", static_cast<uint32_t>(e));
+				return;
+			}
+
+			if (m_Context->physics->CreateCapsuleController(entity, radius, height)) {
+				BOOM_INFO("[Physics] Create capsule controller for entity {}", static_cast<uint32_t>(e));
+			}
+			else {
+				BOOM_ERROR("[Physics] Failed to create capsule controller for entity {}", static_cast<uint32_t>(e));
+			}
 		}
 
 		// -- MONO functions -- 

@@ -608,6 +608,14 @@ namespace Boom
                         if (m_IsGameLogicPaused && !isPauseMenuObj) {
                             shouldAnimate = false;
                         }
+
+                        if (entity.Has<AIComponent>()) {
+                            const auto& ai = entity.Get<AIComponent>();
+                            if (!ai.active) {
+                                shouldAnimate = false;
+                            }
+                        }
+
                         float dt = shouldAnimate ? (float)m_Context->DeltaTime : 0.0f;
                         auto& joints = an.animator->Animate(dt);
                         m_Context->renderer->SetJoints(joints);
@@ -873,6 +881,10 @@ namespace Boom
 
             EnttView<Entity, RigidBodyComponent>([this](auto entity, auto& comp)
                 {
+                    if (m_Context->physics->HasController(entity)) {
+                        return;
+                    }
+
                     auto& transform = entity.template Get<TransformComponent>().transform;
 
                     // --- guard / lazy create ---
@@ -894,7 +906,50 @@ namespace Boom
                         transform.translate = PxToVec3(pose.p);
                     }
                 });
+            // Check controller-trigger overlaps and fire callbacks
+            for (const auto& [entityID, controller] : m_Context->physics->GetControllers()) {
+                if (!controller) continue;
 
+                auto overlappingTriggers = m_Context->physics->GetControllerTriggerOverlaps(entityID);
+
+                for (EntityID triggerID : overlappingTriggers) {
+                    std::pair<uint32_t, uint32_t> triggerPair = { entityID, static_cast<uint32_t>(triggerID) };
+
+                    // Check if this is a new overlap (enter event)
+                    if (m_ActiveTriggerPairs.find(triggerPair) == m_ActiveTriggerPairs.end()) {
+                        m_ActiveTriggerPairs.insert(triggerPair);
+
+                        // Fire enter callback
+                        CallTriggerEnterCallbacks(
+                            static_cast<uint64_t>(triggerID),
+                            static_cast<uint64_t>(entityID)
+                        );
+                    }
+                }
+
+                // Check for exit events (pairs that are no longer overlapping)
+                auto it = m_ActiveTriggerPairs.begin();
+                while (it != m_ActiveTriggerPairs.end()) {
+                    if (it->first == entityID) {
+                        // This pair involves our controller
+                        EntityID triggerID = static_cast<EntityID>(it->second);
+                        bool stillOverlapping = std::find(overlappingTriggers.begin(),
+                            overlappingTriggers.end(),
+                            triggerID) != overlappingTriggers.end();
+
+                        if (!stillOverlapping) {
+                            // Fire exit callback
+                            CallTriggerExitCallbacks(
+                                static_cast<uint64_t>(triggerID),
+                                static_cast<uint64_t>(entityID)
+                            );
+                            it = m_ActiveTriggerPairs.erase(it);
+                            continue;
+                        }
+                    }
+                    ++it;
+                }
+            }
         }
     }
 
@@ -1384,6 +1439,37 @@ namespace Boom
                 break;
             }
             });
+            if (m_Context->physics->GetControllerManager())
+            {
+                const glm::vec4 controllerColor(0.0f, 1.0f, 0.5f, 1.0f); // Bright green for controllers
+
+                // Iterate through all controllers via the map exposed by PhysicsContext
+                for (const auto& [entityID, controller] : m_Context->physics->GetControllers())
+                {
+                    if (!controller) continue;
+
+                    // Get controller position
+                    physx::PxExtendedVec3 pos = controller->getPosition();
+                    physx::PxVec3 position((float)pos.x, (float)pos.y, (float)pos.z);
+
+                    // Handle capsule controllers
+                    if (controller->getType() == physx::PxControllerShapeType::eCAPSULE)
+                    {
+                        physx::PxCapsuleController* capsule = static_cast<physx::PxCapsuleController*>(controller);
+                        float radius = capsule->getRadius();
+                        float height = capsule->getHeight(); // This is the cylinder height between hemispheres
+
+                        // Create transform at controller position (no rotation for capsules, Y-up)
+                        // PhysX capsules in controllers are Y-aligned, but AppendCapsuleWire expects X-aligned
+                        // We need to rotate 90 degrees around Z to convert from Y-up to X-aligned
+                        physx::PxQuat capsuleRotation(physx::PxHalfPi, physx::PxVec3(0.0f, 0.0f, 1.0f));
+                        physx::PxTransform world(position, capsuleRotation);
+
+                        AppendCapsuleWire(radius, height / 2.0f, world, verts, controllerColor);
+                    }
+                    // Could add box controller support here if needed
+                }
+            }
 
         if (!verts.empty())
             m_DebugLinesShader->Draw(view, proj, verts, 10.5f);
