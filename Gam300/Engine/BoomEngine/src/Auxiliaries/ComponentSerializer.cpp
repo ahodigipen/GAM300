@@ -82,7 +82,54 @@ namespace Boom
 
         // === MODEL COMPONENT ===
 		RegisterPropertyComponent<ModelComponent>("ModelComponent");
-		
+
+        // === CHARACTER CONTROLLER COMPONENT ===
+        registry.RegisterComponentSerializer(
+            "CharacterControllerComponent",
+            // ----- SERIALIZE -----
+            [](YAML::Emitter& e, EntityRegistry& reg, EntityID ent)
+            {
+                if (!reg.all_of<CharacterControllerComponent>(ent))
+                    return;
+
+                auto& cc = reg.get<CharacterControllerComponent>(ent);
+
+                e << YAML::Key << "CharacterControllerComponent" << YAML::Value << YAML::BeginMap;
+                e << YAML::Key << "Radius" << YAML::Value << cc.radius;
+                e << YAML::Key << "Height" << YAML::Value << cc.height;
+                e << YAML::Key << "StepOffset" << YAML::Value << cc.stepOffset;
+                e << YAML::Key << "ContactOffset" << YAML::Value << cc.contactOffset;
+                e << YAML::Key << "SlopeLimit" << YAML::Value << cc.slopeLimit;
+                e << YAML::Key << "LocalOffset" << YAML::Value
+                    << YAML::Flow << YAML::BeginSeq
+                    << cc.localOffset.x << cc.localOffset.y << cc.localOffset.z
+                    << YAML::EndSeq;
+                e << YAML::EndMap;
+            },
+            // ----- DESERIALIZE -----
+            [](const YAML::Node& data, EntityRegistry& reg, EntityID ent, AssetRegistry&)
+            {
+                if (!data || !data.IsMap())
+                    return;
+
+                auto& cc = reg.get_or_emplace<CharacterControllerComponent>(ent);
+
+                if (auto v = data["Radius"])        cc.radius = v.as<float>(cc.radius);
+                if (auto v = data["Height"])        cc.height = v.as<float>(cc.height);
+                if (auto v = data["StepOffset"])    cc.stepOffset = v.as<float>(cc.stepOffset);
+                if (auto v = data["ContactOffset"]) cc.contactOffset = v.as<float>(cc.contactOffset);
+                if (auto v = data["SlopeLimit"])    cc.slopeLimit = v.as<float>(cc.slopeLimit);
+
+                if (auto o = data["LocalOffset"]; o && o.IsSequence() && o.size() == 3) {
+                    cc.localOffset.x = o[0].as<float>(cc.localOffset.x);
+                    cc.localOffset.y = o[1].as<float>(cc.localOffset.y);
+                    cc.localOffset.z = o[2].as<float>(cc.localOffset.z);
+                }
+
+                // Reset runtime flag on load
+                cc.isCreated = false;
+            }
+        );
         // === ANIMATOR COMPONENT ===
         registry.RegisterComponentSerializer(
             "AnimatorComponent",
@@ -541,8 +588,6 @@ namespace Boom
         // === DEACTIVATED COMPONENT ===
         RegisterPropertyComponent<DeactivatedComponent>("DeactivatedComponent");
 
-        // === CHARACTER CONTROLLER COMPONENT ===
-        RegisterPropertyComponent<CharacterControllerComponent>("CharacterControllerComponent");
 
         // === SOUND COMPONENT ===
         registry.RegisterComponentSerializer(
