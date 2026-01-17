@@ -986,6 +986,71 @@ void AnimationTimelinePanel::RenderControlBar()
         }
         ImGui::EndDisabled();
 
+        // Apply to Entity button - syncs changes without saving to file
+        ImGui::SameLine();
+        bool canApply = (m_SelectedClipIndex >= 0 && m_SourceEntityID != entt::null && !m_StandaloneMode);
+        ImGui::BeginDisabled(!canApply);
+        if (ImGui::Button("Apply"))
+        {
+            if (m_Animator && m_SelectedClipIndex >= 0 && m_Ctx && m_SourceEntityID != entt::null)
+            {
+                if (m_Ctx->scene.valid(m_SourceEntityID))
+                {
+                    Boom::Entity entity(&m_Ctx->scene, static_cast<Boom::EntityID>(m_SourceEntityID));
+                    if (entity.Has<Boom::AnimatorComponent>())
+                    {
+                        auto& animComp = entity.Get<Boom::AnimatorComponent>();
+                        if (animComp.animator)
+                        {
+                            // Get the shared clip pointer from timeline (not just data)
+                            auto timelineClipPtr = m_Animator->GetClipShared(m_SelectedClipIndex);
+                            if (timelineClipPtr)
+                            {
+                                // DIRECTLY SHARE the clip pointer with entity
+                                // This ensures entity uses the exact same clip object
+                                if (m_SelectedClipIndex < (int)animComp.animator->GetClipCount())
+                                {
+                                    // Replace existing clip with timeline's clip pointer
+                                    animComp.animator->SetClip(m_SelectedClipIndex, timelineClipPtr);
+                                    BOOM_INFO("[AnimTimeline] Shared clip pointer with entity (index {})", m_SelectedClipIndex);
+                                }
+                                else
+                                {
+                                    // Add the timeline's clip to entity
+                                    animComp.animator->AddClip(timelineClipPtr);
+                                    BOOM_INFO("[AnimTimeline] Added shared clip '{}' to entity", timelineClipPtr->name);
+                                }
+
+                                // Force entity to play this clip
+                                // Clear states to force legacy clip-based mode (simpler for editor preview)
+                                auto& states = animComp.animator->GetStates();
+                                states.clear();
+
+                                // Set the clip and time
+                                animComp.animator->PlayClip(m_SelectedClipIndex);
+                                animComp.animator->SetTime(m_CurrentTime);
+
+                                // Force immediate joint transform update
+                                animComp.animator->UpdateJointsFromCurrentTime();
+
+                                // Clear manual bone poses so animation plays cleanly
+                                m_ManualBonePoses.clear();
+                                m_HasManualPoses = false;
+
+                                BOOM_INFO("[AnimTimeline] Applied - entity now shares clip with timeline (clip: '{}', time: {:.2f})",
+                                    timelineClipPtr->name, m_CurrentTime);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Apply changes to entity and clear manual poses\n(Preview animation in real-time)");
+        }
+        ImGui::EndDisabled();
+
         // Create clip popup
         if (ImGui::BeginPopup("CreateClipPopup"))
         {
@@ -1188,6 +1253,50 @@ void AnimationTimelinePanel::RenderControlBar()
                                 clip->filePath = filepath;
                                 m_ClipModified = false;  // Clear dirty flag
                                 BOOM_INFO("[AnimTimeline] Saved clip '{}' to {}", clip->name, filepath);
+
+                                // Sync changes back to the entity's animator
+                                if (m_SourceEntityID != entt::null && m_Ctx)
+                                {
+                                    if (m_Ctx->scene.valid(m_SourceEntityID))
+                                    {
+                                        Boom::Entity entity(&m_Ctx->scene, static_cast<Boom::EntityID>(m_SourceEntityID));
+                                        if (entity.Has<Boom::AnimatorComponent>())
+                                        {
+                                            auto& animComp = entity.Get<Boom::AnimatorComponent>();
+                                            if (animComp.animator && m_SelectedClipIndex >= 0)
+                                            {
+                                                // Get shared clip pointer from timeline
+                                                auto timelineClipPtr = m_Animator->GetClipShared(m_SelectedClipIndex);
+                                                if (timelineClipPtr)
+                                                {
+                                                    // Share clip pointer with entity
+                                                    if (m_SelectedClipIndex < (int)animComp.animator->GetClipCount())
+                                                    {
+                                                        animComp.animator->SetClip(m_SelectedClipIndex, timelineClipPtr);
+                                                    }
+                                                    else
+                                                    {
+                                                        animComp.animator->AddClip(timelineClipPtr);
+                                                    }
+
+                                                    // Clear states and force clip playback
+                                                    auto& states = animComp.animator->GetStates();
+                                                    states.clear();
+
+                                                    animComp.animator->PlayClip(m_SelectedClipIndex);
+                                                    animComp.animator->SetTime(m_CurrentTime);
+                                                    animComp.animator->UpdateJointsFromCurrentTime();
+
+                                                    // Clear manual poses
+                                                    m_ManualBonePoses.clear();
+                                                    m_HasManualPoses = false;
+
+                                                    BOOM_INFO("[AnimTimeline] Synced - entity now shares clip pointer");
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                             else
                             {

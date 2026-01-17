@@ -309,6 +309,18 @@ namespace Boom
             }
         }
 
+        // Replace clip at index with a new clip (for syncing between timeline and entity)
+        BOOM_INLINE void SetClip(size_t index, std::shared_ptr<AnimationClip> clip) {
+            if (index < m_Clips.size()) {
+                m_Clips[index] = clip;
+            }
+        }
+
+        // Get shared_ptr to clip (for sharing between animators)
+        BOOM_INLINE std::shared_ptr<AnimationClip> GetClipShared(size_t index) {
+            return (index < m_Clips.size()) ? m_Clips[index] : nullptr;
+        }
+
         // === KEYFRAME EDITING API (for Animation Timeline) ===
 
         // Get mutable track for editing
