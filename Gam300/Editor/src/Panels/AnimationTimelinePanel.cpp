@@ -200,6 +200,8 @@ void AnimationTimelinePanel::Render()
         m_SelectedClipIndex = -1;
         m_CurrentTime = 0.0f;
         m_IsPlaying = false;
+        m_UndoStack.clear();
+        m_RedoStack.clear();
         return;  // Exit early
     }
 
@@ -223,6 +225,8 @@ void AnimationTimelinePanel::Render()
             m_SelectedClipIndex = -1;
             m_CurrentTime = 0.0f;
             m_IsPlaying = false;
+            m_UndoStack.clear();
+            m_RedoStack.clear();
             return;  // Exit early
         }
 
@@ -278,6 +282,10 @@ void AnimationTimelinePanel::Render()
                     m_ManualBonePoses.clear();
                     m_HasManualPoses = false;
                     m_SelectedBoneName.clear();
+
+                    // Clear undo/redo stacks - old commands reference old animator
+                    m_UndoStack.clear();
+                    m_RedoStack.clear();
                 }
                 else if (animatorPtrChanged)
                 {
@@ -301,6 +309,10 @@ void AnimationTimelinePanel::Render()
 
                     BOOM_INFO("[AnimationTimeline] Re-clone complete: Original={}, New Clone={}",
                         (void*)animComp.animator.get(), (void*)m_Animator.get());
+
+                    // Clear undo/redo stacks - old commands reference old animator
+                    m_UndoStack.clear();
+                    m_RedoStack.clear();
                 }
                 // If entity AND animator didn't change, keep using our existing clone (don't re-clone!)
             }
@@ -1002,23 +1014,31 @@ void AnimationTimelinePanel::RenderControlBar()
                         auto& animComp = entity.Get<Boom::AnimatorComponent>();
                         if (animComp.animator)
                         {
-                            // Get the shared clip pointer from timeline (not just data)
-                            auto timelineClipPtr = m_Animator->GetClipShared(m_SelectedClipIndex);
-                            if (timelineClipPtr)
+                            // Get the clip from timeline and COPY its data to entity
+                            // We copy instead of sharing to keep timeline and entity clips independent
+                            // This prevents gizmo manipulations from affecting the entity directly
+                            const auto* timelineClip = m_Animator->GetClip(m_SelectedClipIndex);
+                            if (timelineClip)
                             {
-                                // DIRECTLY SHARE the clip pointer with entity
-                                // This ensures entity uses the exact same clip object
+                                // Create a copy of the clip data for the entity
+                                auto entityClip = std::make_shared<Boom::AnimationClip>();
+                                entityClip->name = timelineClip->name;
+                                entityClip->duration = timelineClip->duration;
+                                entityClip->ticksPerSecond = timelineClip->ticksPerSecond;
+                                entityClip->filePath = timelineClip->filePath;
+                                entityClip->tracks = timelineClip->tracks;  // Deep copy tracks
+
                                 if (m_SelectedClipIndex < (int)animComp.animator->GetClipCount())
                                 {
-                                    // Replace existing clip with timeline's clip pointer
-                                    animComp.animator->SetClip(m_SelectedClipIndex, timelineClipPtr);
-                                    BOOM_INFO("[AnimTimeline] Shared clip pointer with entity (index {})", m_SelectedClipIndex);
+                                    // Replace existing clip with copied data
+                                    animComp.animator->SetClip(m_SelectedClipIndex, entityClip);
+                                    BOOM_INFO("[AnimTimeline] Copied clip data to entity (index {})", m_SelectedClipIndex);
                                 }
                                 else
                                 {
-                                    // Add the timeline's clip to entity
-                                    animComp.animator->AddClip(timelineClipPtr);
-                                    BOOM_INFO("[AnimTimeline] Added shared clip '{}' to entity", timelineClipPtr->name);
+                                    // Add the copied clip to entity
+                                    animComp.animator->AddClip(entityClip);
+                                    BOOM_INFO("[AnimTimeline] Added copied clip '{}' to entity", entityClip->name);
                                 }
 
                                 // Force entity to play this clip
@@ -1037,8 +1057,8 @@ void AnimationTimelinePanel::RenderControlBar()
                                 m_ManualBonePoses.clear();
                                 m_HasManualPoses = false;
 
-                                BOOM_INFO("[AnimTimeline] Applied - entity now shares clip with timeline (clip: '{}', time: {:.2f})",
-                                    timelineClipPtr->name, m_CurrentTime);
+                                BOOM_INFO("[AnimTimeline] Applied - entity now has copy of clip (clip: '{}', time: {:.2f})",
+                                    entityClip->name, m_CurrentTime);
                             }
                         }
                     }
@@ -1397,6 +1417,17 @@ void AnimationTimelinePanel::ExecuteCommand(const KeyframeCommand& cmd)
         BOOM_INFO("[Keyframes] Moved keyframe on bone '{}' from {:.2f}s to {:.2f}s",
                   cmd.boneName.c_str(), (double)cmd.oldTime, (double)cmd.newTime);
         break;
+
+    case KeyframeCommand::BONE_POSE:
+        {
+            BonePose newPose;
+            newPose.position = cmd.newPosition;
+            newPose.rotation = cmd.newRotation;
+            newPose.scale = cmd.newScale;
+            SetBonePose(cmd.boneName, newPose);
+            BOOM_INFO("[BonePose] Applied pose change to bone '{}'", cmd.boneName.c_str());
+        }
+        break;
     }
 
     // Mark clip as modified (unsaved changes)
@@ -1461,6 +1492,18 @@ void AnimationTimelinePanel::Undo()
             }
         }
         break;
+
+    case KeyframeCommand::BONE_POSE:
+        // Undo bone pose = restore old pose
+        {
+            BonePose oldPose;
+            oldPose.position = cmd.oldPosition;
+            oldPose.rotation = cmd.oldRotation;
+            oldPose.scale = cmd.oldScale;
+            SetBonePose(cmd.boneName, oldPose);
+            BOOM_INFO("[Undo] Restored bone '{}' pose", cmd.boneName.c_str());
+        }
+        break;
     }
 
     // Push to redo stack
@@ -1511,6 +1554,18 @@ void AnimationTimelinePanel::Redo()
             }
         }
         break;
+
+    case KeyframeCommand::BONE_POSE:
+        // Redo bone pose = apply new pose again
+        {
+            BonePose newPose;
+            newPose.position = cmd.newPosition;
+            newPose.rotation = cmd.newRotation;
+            newPose.scale = cmd.newScale;
+            SetBonePose(cmd.boneName, newPose);
+            BOOM_INFO("[Redo] Re-applied bone '{}' pose", cmd.boneName.c_str());
+        }
+        break;
     }
 
     // Push back to undo stack
@@ -1518,4 +1573,30 @@ void AnimationTimelinePanel::Redo()
 
     // Mark clip as modified (unsaved changes)
     m_ClipModified = true;
+}
+
+void AnimationTimelinePanel::RecordBonePoseChange(const std::string& boneName, const BonePose& oldPose, const BonePose& newPose)
+{
+    // Create a BONE_POSE command and add to undo stack (don't execute, pose is already applied)
+    KeyframeCommand cmd;
+    cmd.type = KeyframeCommand::BONE_POSE;
+    cmd.boneName = boneName;
+    cmd.oldPosition = oldPose.position;
+    cmd.oldRotation = oldPose.rotation;
+    cmd.oldScale = oldPose.scale;
+    cmd.newPosition = newPose.position;
+    cmd.newRotation = newPose.rotation;
+    cmd.newScale = newPose.scale;
+
+    // Push to undo stack
+    m_UndoStack.push_back(cmd);
+    if (m_UndoStack.size() > MAX_UNDO_HISTORY)
+    {
+        m_UndoStack.erase(m_UndoStack.begin()); // Remove oldest
+    }
+
+    // Clear redo stack (new action invalidates redo history)
+    m_RedoStack.clear();
+
+    BOOM_INFO("[BonePose] Recorded pose change for bone '{}' (undoable)", boneName.c_str());
 }

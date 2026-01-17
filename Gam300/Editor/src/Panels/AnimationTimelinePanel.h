@@ -23,9 +23,9 @@ namespace EditorUI {
     class Editor;
     class CommandHistory;  // Forward declaration
 
-    // Undo/Redo command for keyframe operations
+    // Undo/Redo command for keyframe and bone pose operations
     struct KeyframeCommand {
-        enum Type { ADD, REMOVE, MOVE };
+        enum Type { ADD, REMOVE, MOVE, BONE_POSE };
 
         Type type;
         std::string boneName;
@@ -33,6 +33,14 @@ namespace EditorUI {
         Boom::KeyFrame keyframe;  // The keyframe data
         float oldTime = 0.0f;     // For move operations
         float newTime = 0.0f;     // For move operations
+
+        // For BONE_POSE operations
+        glm::vec3 oldPosition = glm::vec3(0.0f);
+        glm::quat oldRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+        glm::vec3 oldScale = glm::vec3(1.0f);
+        glm::vec3 newPosition = glm::vec3(0.0f);
+        glm::quat newRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+        glm::vec3 newScale = glm::vec3(1.0f);
     };
 
     // Bone pose for undo/redo
@@ -62,6 +70,9 @@ namespace EditorUI {
         void SetBonePose(const std::string& boneName, const BonePose& pose);  // Set bone pose (for undo/redo)
         void ClearBonePose(const std::string& boneName);  // Clear bone pose override
         void ClearAllBonePoses();  // Clear all bone pose overrides
+
+        // Record bone pose change for undo/redo (called from viewport gizmo manipulation)
+        void RecordBonePoseChange(const std::string& boneName, const BonePose& oldPose, const BonePose& newPose);
 
     private:
         // UI Sections

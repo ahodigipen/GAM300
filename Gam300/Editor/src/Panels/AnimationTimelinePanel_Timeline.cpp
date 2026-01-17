@@ -19,6 +19,20 @@
 
 using namespace EditorUI;
 
+// ========== Helper Functions ==========
+
+// Check if a joint or any of its descendants has the given name
+static bool JointContainsDescendant(const Boom::Joint& joint, const std::string& targetName)
+{
+    if (joint.name == targetName) return true;
+
+    for (const auto& child : joint.children)
+    {
+        if (JointContainsDescendant(child, targetName)) return true;
+    }
+    return false;
+}
+
 // ========== Timeline Ruler ==========
 
 void AnimationTimelinePanel::RenderTimelineRuler()
@@ -300,11 +314,16 @@ void AnimationTimelinePanel::RenderTrackList()
         ImGui::Columns(2, "BoneTrackColumns", true);
         ImGui::SetColumnWidth(0, boneNameWidth);
 
+        // Reduce indentation spacing to show more of bone names
+        ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 10.0f);  // Default is ~21
+
         // Get the root joint from animator
         const Boom::Joint& root = m_Animator->GetRoot();
 
         // Render bone hierarchy starting from root
         RenderBoneTrack(root, duration);
+
+        ImGui::PopStyleVar();  // IndentSpacing
 
         // End columns
         ImGui::Columns(1);
@@ -318,9 +337,10 @@ void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float dur
 {
     // === COLUMN 0: Bone Name (with tree hierarchy) ===
 
-    // Tree node flags
+    // Tree node flags - SpanAvailWidth prevents text from overflowing column
     ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow
-                             | ImGuiTreeNodeFlags_OpenOnDoubleClick;
+                             | ImGuiTreeNodeFlags_OpenOnDoubleClick
+                             | ImGuiTreeNodeFlags_SpanAvailWidth;
 
     // Highlight if selected
     if (joint.name == m_SelectedBoneName)
@@ -340,13 +360,94 @@ void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float dur
         flags |= ImGuiTreeNodeFlags_DefaultOpen;
     }
 
+    // Auto-expand if this joint contains the selected bone as a descendant
+    // (but not if this IS the selected bone - we only expand parents)
+    bool shouldAutoExpand = false;
+    if (!m_SelectedBoneName.empty() && joint.name != m_SelectedBoneName && !joint.children.empty())
+    {
+        // Check if any child (recursively) is the selected bone
+        for (const auto& child : joint.children)
+        {
+            if (JointContainsDescendant(child, m_SelectedBoneName))
+            {
+                shouldAutoExpand = true;
+                break;
+            }
+        }
+    }
+
+    if (shouldAutoExpand)
+    {
+        ImGui::SetNextItemOpen(true);
+    }
+
     // Store row position for timeline drawing
     ImVec2 rowStartPos = ImGui::GetCursorScreenPos();
     float rowHeight = ImGui::GetTextLineHeightWithSpacing();
 
-    // Display bone name with tree node in COLUMN 0
-    std::string label = joint.name + " [" + std::to_string(joint.index) + "]";
-    bool nodeOpen = ImGui::TreeNodeEx(label.c_str(), flags);
+    // Draw highlight background for selected bone (more visible than default)
+    bool isSelected = (joint.name == m_SelectedBoneName);
+    if (isSelected)
+    {
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+        float fullRowWidth = ImGui::GetColumnWidth(0) + ImGui::GetColumnWidth(1);
+        ImVec2 highlightMin = ImVec2(rowStartPos.x - ImGui::GetCursorPosX(), rowStartPos.y);
+        ImVec2 highlightMax = ImVec2(highlightMin.x + fullRowWidth, rowStartPos.y + rowHeight);
+
+        // Bright highlight color (orange/yellow tint)
+        ImU32 highlightColor = IM_COL32(255, 180, 50, 60);  // RGBA with alpha
+        drawList->AddRectFilled(highlightMin, highlightMax, highlightColor);
+
+        // Add a left border for extra visibility
+        ImU32 borderColor = IM_COL32(255, 180, 50, 200);
+        drawList->AddLine(
+            ImVec2(highlightMin.x, highlightMin.y),
+            ImVec2(highlightMin.x, highlightMax.y),
+            borderColor, 3.0f);
+    }
+
+    // Calculate available width for bone name (accounting for tree indentation)
+    float cursorX = ImGui::GetCursorPosX();
+    float columnWidth = ImGui::GetColumnWidth(0);
+    float availableWidth = columnWidth - cursorX - 5.0f;  // 5px right margin
+
+    // Build full label
+    std::string fullLabel = joint.name + " [" + std::to_string(joint.index) + "]";
+    std::string displayLabel = fullLabel;
+
+    // Truncate if label is too wide for available space
+    if (availableWidth > 40.0f)  // Minimum width to show anything meaningful
+    {
+        ImVec2 textSize = ImGui::CalcTextSize(fullLabel.c_str());
+        if (textSize.x > availableWidth)
+        {
+            // Truncate bone name and add ellipsis
+            std::string truncated = joint.name;
+            std::string suffix = "... [" + std::to_string(joint.index) + "]";
+            float suffixWidth = ImGui::CalcTextSize(suffix.c_str()).x;
+
+            while (!truncated.empty() &&
+                   ImGui::CalcTextSize((truncated + suffix).c_str()).x > availableWidth)
+            {
+                truncated.pop_back();
+            }
+
+            if (!truncated.empty())
+            {
+                displayLabel = truncated + suffix;
+            }
+            else
+            {
+                // If even truncated name doesn't fit, just show index
+                displayLabel = "..." + std::to_string(joint.index);
+            }
+        }
+    }
+
+    // Use unique ID (joint index) but display potentially truncated label
+    ImGui::PushID(joint.index);
+    bool nodeOpen = ImGui::TreeNodeEx(displayLabel.c_str(), flags);
+    ImGui::PopID();
 
     // Handle selection
     if (ImGui::IsItemClicked())
@@ -359,7 +460,7 @@ void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float dur
         }
     }
 
-    // Tooltip with bone info
+    // Tooltip with full bone info (especially useful for truncated names)
     if (ImGui::IsItemHovered())
     {
         ImGui::BeginTooltip();
@@ -381,10 +482,23 @@ void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float dur
 
     ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-    // Timeline background (dark gray)
+    // Timeline background - highlighted if bone is selected
     ImVec2 timelineMin = timelineStartPos;
     ImVec2 timelineMax(timelineMin.x + timelineWidth, timelineMin.y + rowHeight);
-    drawList->AddRectFilled(timelineMin, timelineMax, IM_COL32(40, 40, 40, 255));
+
+    if (isSelected)
+    {
+        // Highlighted background for selected bone (orange tint over dark)
+        drawList->AddRectFilled(timelineMin, timelineMax, IM_COL32(80, 60, 30, 255));
+        // Add top/bottom border for emphasis
+        drawList->AddLine(timelineMin, ImVec2(timelineMax.x, timelineMin.y), IM_COL32(255, 180, 50, 150), 1.0f);
+        drawList->AddLine(ImVec2(timelineMin.x, timelineMax.y), timelineMax, IM_COL32(255, 180, 50, 150), 1.0f);
+    }
+    else
+    {
+        // Normal dark gray background
+        drawList->AddRectFilled(timelineMin, timelineMax, IM_COL32(40, 40, 40, 255));
+    }
 
     // Draw grid lines for time markers (every second)
     if (duration > 0.0f)

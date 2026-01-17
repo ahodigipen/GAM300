@@ -978,14 +978,12 @@ void AnimationTimelinePanel::HandleGizmo(const ImVec2& viewportMin, const ImVec2
                 glm::abs(glm::dot(m_BonePoseBeforeManipulation.rotation, finalPose.rotation)) < (1.0f - rotThreshold) ||
                 glm::distance(m_BonePoseBeforeManipulation.scale, finalPose.scale) > scaleThreshold;
 
-            if (poseChanged && m_Owner && m_Owner->GetCommandHistory())
+            if (poseChanged)
             {
-                // Create BonePoseCommand (defined in main AnimationTimelinePanel.cpp)
-                // This requires the BonePoseCommand class to be accessible
-                // Since it's defined in the namespace EditorUI in the main file, we can't directly create it here
-                // We'll need to handle this via a public method or keep the command creation in main file
-                // For now, we'll skip the undo command creation as it requires refactoring the command class
-                BOOM_WARN("[AnimTimeline] Undo command creation not yet refactored - pose changes won't be undoable");
+                // Record the bone pose change for undo/redo using the new method
+                BonePose oldPose = m_BonePoseBeforeManipulation;
+                BonePose newPose = finalPose;
+                RecordBonePoseChange(m_SelectedBoneName, oldPose, newPose);
             }
         }
     }
