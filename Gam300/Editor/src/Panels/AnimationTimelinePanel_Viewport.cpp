@@ -1032,8 +1032,9 @@ void AnimationTimelinePanel::RenderModel()
         m_Animator->SetTime(m_CurrentTime);
         m_Animator->UpdateJointsFromCurrentTime();
 
-        // Get the updated transforms
-        auto& transforms = m_Animator->GetJoints();
+        // Get a COPY of the transforms (not a reference) to avoid modifying animator's internal state
+        // This prevents timeline bone manipulation from affecting the game scene entity
+        std::vector<glm::mat4> transforms = m_Animator->GetJoints();
 
         // Apply manual bone poses if we're manipulating bones with gizmo
         if (m_HasManualPoses)

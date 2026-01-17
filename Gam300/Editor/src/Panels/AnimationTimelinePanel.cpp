@@ -184,8 +184,16 @@ void AnimationTimelinePanel::Render()
     // Get selected entity and load model/animator (only if not in standalone mode)
     auto selectedID = m_App->SelectedEntity();
 
-    // Handle entity deselection (user clicked away in hierarchy)
-    if (!m_StandaloneMode && selectedID == entt::null && m_SourceEntityID != entt::null)
+    // Early validation: Check if selectedID is actually valid before doing anything
+    // Some systems return entity 0 instead of entt::null when nothing is selected
+    bool hasValidSelection = (selectedID != entt::null);
+    if (hasValidSelection && m_Ctx)
+    {
+        hasValidSelection = m_Ctx->scene.valid(selectedID);
+    }
+
+    // Handle entity deselection (user clicked away in hierarchy, or entity became invalid)
+    if (!m_StandaloneMode && !hasValidSelection && m_SourceEntityID != entt::null)
     {
         // Entity was deselected - clear timeline to avoid using stale data
         BOOM_INFO("[AnimationTimeline] Entity deselected, clearing timeline");
@@ -202,34 +210,14 @@ void AnimationTimelinePanel::Render()
         m_IsPlaying = false;
         m_UndoStack.clear();
         m_RedoStack.clear();
-        return;  // Exit early
+        ImGui::End();  // Must end the window before returning
+        return;
     }
 
-    // Only try to load from entity if we're not in standalone mode
-    if (!m_StandaloneMode && selectedID != entt::null)
+    // Only try to load from entity if we're not in standalone mode and have valid selection
+    if (!m_StandaloneMode && hasValidSelection)
     {
-        // FIX 1: Validate entity before using it (scene reload can invalidate entities)
         auto& scene = m_App->GetContext()->scene;
-        if (!scene.valid(selectedID))
-        {
-            // Entity ID is invalid (scene was reloaded) - treat like deselection
-            BOOM_WARN("[AnimationTimeline] Entity ID {} is invalid after scene reload, clearing timeline", (uint32_t)selectedID);
-            m_Animator.reset();
-            m_SourceAnimator.reset();
-            m_Model.reset();
-            m_SourceEntityID = entt::null;
-            m_HasModel = false;
-            m_SelectedBoneName.clear();
-            m_ManualBonePoses.clear();
-            m_HasManualPoses = false;
-            m_SelectedClipIndex = -1;
-            m_CurrentTime = 0.0f;
-            m_IsPlaying = false;
-            m_UndoStack.clear();
-            m_RedoStack.clear();
-            return;  // Exit early
-        }
-
         Boom::Entity selected(&scene, selectedID);
 
         // Get animator from AnimatorComponent (CLONE IT for independent timeline)
@@ -587,15 +575,19 @@ void AnimationTimelinePanel::RenderControlBar()
     }
     ImGui::EndDisabled();
 
-    // Keyboard shortcuts
-    ImGuiIO& io = ImGui::GetIO();
-    if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z) && !io.KeyShift)
+    // Keyboard shortcuts - only process when Animation Timeline window is focused
+    // The Editor's global undo/redo is skipped when this window is focused (see Editor.cpp)
+    if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
     {
-        Undo();
-    }
-    if (io.KeyCtrl && (ImGui::IsKeyPressed(ImGuiKey_Y) || (ImGui::IsKeyPressed(ImGuiKey_Z) && io.KeyShift)))
-    {
-        Redo();
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z) && !io.KeyShift)
+        {
+            Undo();
+        }
+        if (io.KeyCtrl && (ImGui::IsKeyPressed(ImGuiKey_Y) || (ImGui::IsKeyPressed(ImGuiKey_Z) && io.KeyShift)))
+        {
+            Redo();
+        }
     }
 
     // Gizmo mode keyboard shortcuts (W/E/R/T/K) - only when viewport is focused

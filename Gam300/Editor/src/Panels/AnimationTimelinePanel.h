@@ -163,7 +163,7 @@ namespace EditorUI {
         ImVec2 m_ViewportMousePos = { 0.0f, 0.0f };  // Mouse position relative to viewport
 
         // Transform gizmo state
-        int m_GizmoOperation = 7;  // ImGuizmo::TRANSLATE (7 = translate)
+        int m_GizmoOperation = 120;  // ImGuizmo::ROTATE (120 = rotate, default for animation editing)
         int m_GizmoMode = 1;       // ImGuizmo::WORLD (1 = world space, 0 = local space)
         bool m_GizmoWasUsing = false;  // Track if gizmo was being used last frame
         bool m_UseSnap = false;    // Snap to grid
