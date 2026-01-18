@@ -154,7 +154,8 @@ namespace GameScripts
             API.SetSoundVolume("player_damage", 1.0f);
 
             if (_health <= 0)
-                RestartLevel();
+                //RestartLevel();
+                Entry.TriggerPlayerDeath();
             else
                 StartRespawn();
         }

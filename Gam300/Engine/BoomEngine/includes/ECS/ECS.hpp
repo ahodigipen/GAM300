@@ -26,6 +26,7 @@ namespace Boom {
  PAUSE_MENU_TAG,
  DEACTIVATED_TAG,
  CHARACTER_CONTROLLER,
+ DEATH_MENU_TAG,
  COUNT
  };
  constexpr std::string_view COMPONENT_NAMES[]{
@@ -46,8 +47,9 @@ namespace Boom {
  "AI Component",         //14
  "Sprite",               //15
  "Pause Menu Tag",       //16
- "Deactived Tag",         //17
- "Character Controller"  //18
+ "Deactivated Tag",      //17
+ "Character Controller", //18
+ "Death Menu Tag"        //19
  };
 
  // transform component
@@ -760,6 +762,17 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
         )
     };
 
+ struct DeathMenuTagComponent {
+     BOOM_INLINE DeathMenuTagComponent(const DeathMenuTagComponent&) = default;
+     BOOM_INLINE DeathMenuTagComponent() = default;
+
+     bool isTag = true;
+
+     XPROPERTY_DEF(
+         "DeathMenuTagComponent", DeathMenuTagComponent
+     )
+ };
+
     struct SceneNavmeshComponent {
         std::string navmeshFile;   // e.g. "Resources/NavData/level1.bin"
         float ambientStrength = 0.5f;  // Default ambient light strength for the scene
@@ -1054,6 +1067,11 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
         // Copy PauseMenuTagComponent
         if (reg.all_of<PauseMenuTagComponent>(source)) {
             reg.emplace<PauseMenuTagComponent>(duplicate);
+        }
+
+        // Copy DeathMenuTagComponent
+        if (reg.all_of<DeathMenuTagComponent>(source)) {
+            reg.emplace<DeathMenuTagComponent>(duplicate);
         }
 
         // Copy DeactivatedComponent
