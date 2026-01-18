@@ -6,7 +6,7 @@ ENTITIES:
       UID: 3023727914892643418
     TransformComponent:
       Transform:
-        Translate: [0, -0.300000012, 0]
+        Translate: [0, -0.400000006, 0]
         Rotate: [0, 0, 0]
         Scale: [0.200000003, 0.100000001, 1]
     DeathMenuTagComponent:
@@ -23,7 +23,7 @@ ENTITIES:
       UID: 15993560601461334781
     TransformComponent:
       Transform:
-        Translate: [0, -0.5, 0]
+        Translate: [0, -0.600000024, 0]
         Rotate: [0, 0, 0]
         Scale: [0.200000003, 0.100000001, 1]
     DeathMenuTagComponent:
@@ -36,7 +36,7 @@ ENTITIES:
       {}
   - InfoComponent:
       Parent: 0
-      Name: Camera
+      Name: Death_Camera
       UID: 9201024860084647067
     TransformComponent:
       Transform:
@@ -48,6 +48,8 @@ ENTITIES:
         NearPlane: 0.300000012
         FarPlane: 1000
         FOV: 91
+    DeathMenuTagComponent:
+      {}
   - InfoComponent:
       Parent: 0
       Name: Death Menu Script
@@ -71,13 +73,13 @@ ENTITIES:
       UID: 6565047407581518351
     TransformComponent:
       Transform:
-        Translate: [0, 0.400000006, 0]
+        Translate: [0, 0.200000003, 0]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.300000012, 1]
+        Scale: [1, 0.699999988, 1]
     DeathMenuTagComponent:
       {}
     SpriteComponent:
-      textureID: 9401454698162006202
+      textureID: 789126300687402624
       color: [1, 1, 1, 1]
       uiOverlay: true
     DeactivatedComponent:
