@@ -605,6 +605,52 @@ namespace Boom
 			const std::string sceneFilePath = scenePath + sceneName + ".yaml";
 			serializer.Deserialize(m_Context->scene, *m_Context->assets, sceneFilePath);
 
+			// --- NEW: Destroy newly-added menu entities that contain CameraComponent
+			// Rationale: when additive scenes are UI/menu scenes we don't want their cameras at all.
+			// Collect entities first (do not destroy while iterating views).
+			{
+				std::vector<entt::entity> toDestroy;
+
+				for (auto e : reg.view<PauseMenuTagComponent, CameraComponent>()) toDestroy.push_back(e);
+				for (auto e : reg.view<DeathMenuTagComponent, CameraComponent>()) toDestroy.push_back(e);
+
+				if (!toDestroy.empty()) {
+					BOOM_INFO("[Scene] Found {} additive menu entities with CameraComponent - destroying them to avoid camera duplication", (int)toDestroy.size());
+				}
+
+				for (auto e : toDestroy)
+				{
+					// Safety checks and per-entity cleanup BEFORE destroy.
+					// Release any physics actors attached to the entity so PhysX doesn't hold stale pointers.
+					if (reg.all_of<RigidBodyComponent>(e)) {
+						auto& rb = reg.get<RigidBodyComponent>(e);
+						if (rb.RigidBody.actor) {
+							rb.RigidBody.actor->release();
+							rb.RigidBody.actor = nullptr;
+						}
+					}
+					if (reg.all_of<ColliderComponent>(e)) {
+						auto& col = reg.get<ColliderComponent>(e);
+						if (col.Collider.actor) {
+							col.Collider.actor->release();
+							col.Collider.actor = nullptr;
+						}
+					}
+
+					// If a script instance was (unexpectedly) created, destroy it.
+					if (m_Context->scriptingSystem && reg.all_of<ScriptComponent>(e)) {
+						auto& sc = reg.get<ScriptComponent>(e);
+						if (sc.InstanceId != 0) {
+							m_Context->scriptingSystem->DestroyForEntity(e, sc);
+						}
+					}
+
+					// Finally destroy the entity entirely.
+					BOOM_INFO("[Scene] Destroying additive menu entity ({}) that contained a CameraComponent", static_cast<uint32_t>(e));
+					reg.destroy(e);
+				}
+			}
+
 			// --- 2. DEACTIVATE (HIDE) NEW OBJECTS ---
 			BOOM_INFO("[Scene] Deactivating newly deserialized objects...");
 
