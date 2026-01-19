@@ -1877,7 +1877,7 @@ namespace EditorUI {
                                     val = val.substr(1, val.size() - 2);
                                 }
 
-                                // Check if this is an audio/sound field - show dropdown instead
+                                // Check if this is an audio/sound field - use SoundComponent integration
                                 bool isAudioField = (field.displayName.find("Sound") != std::string::npos ||
                                                     field.displayName.find("Audio") != std::string::npos ||
                                                     field.fieldName.find("Sound") != std::string::npos ||
@@ -1886,14 +1886,56 @@ namespace EditorUI {
                                                     field.fieldName.find("audio") != std::string::npos);
 
                                 if (isAudioField) {
-                                    // Show audio asset dropdown
-                                    std::string curLabel = val.empty() ? "Select Audio..." : std::filesystem::path(val).filename().string();
+                                    // Auto-create SoundComponent if it doesn't exist
+                                    if (!selected.Has<Boom::SoundComponent>()) {
+                                        ctx->scene.emplace<Boom::SoundComponent>(currentEntity);
+                                    }
+                                    auto& soundComp = selected.Get<Boom::SoundComponent>();
+
+                                    // Find or create entry with the field name
+                                    Boom::SoundComponent::Entry* audioEntry = nullptr;
+                                    for (auto& entry : soundComp.entries) {
+                                        if (entry.name == field.fieldName) {
+                                            audioEntry = &entry;
+                                            break;
+                                        }
+                                    }
+
+                                    // Create new entry if not found
+                                    if (!audioEntry) {
+                                        Boom::SoundComponent::Entry newEntry{};
+                                        newEntry.name = field.fieldName;
+                                        newEntry.filePath = val; // Use current script value
+                                        if (!val.empty()) {
+                                            newEntry.filePaths.push_back(val);
+                                        }
+                                        soundComp.entries.push_back(std::move(newEntry));
+                                        audioEntry = &soundComp.entries.back();
+                                    }
+
+                                    // Sync script value to entry if different
+                                    if (!val.empty() && audioEntry->filePath != val) {
+                                        audioEntry->filePath = val;
+                                        if (audioEntry->filePaths.empty()) {
+                                            audioEntry->filePaths.push_back(val);
+                                        } else {
+                                            audioEntry->filePaths[0] = val;
+                                        }
+                                    }
+
+                                    // ===== Display full SoundComponent Entry UI =====
+                                    ImGui::PushID(field.fieldName.c_str());
+
+                                    // Audio asset dropdown
+                                    std::string curLabel = audioEntry->filePath.empty() ? "Select Audio..." : std::filesystem::path(audioEntry->filePath).filename().string();
                                     if (ImGui::BeginCombo("##audioSelect", curLabel.c_str())) {
                                         auto& audioMap = m_App->GetAssetRegistry().GetMap<AudioAsset>();
 
                                         // Allow clearing
-                                        bool noneSel = val.empty();
+                                        bool noneSel = audioEntry->filePath.empty();
                                         if (ImGui::Selectable("None", noneSel)) {
+                                            audioEntry->filePath.clear();
+                                            audioEntry->filePaths.clear();
                                             updateFieldValue(field.fieldName, "");
                                         }
                                         if (noneSel) ImGui::SetItemDefaultFocus();
@@ -1901,14 +1943,98 @@ namespace EditorUI {
                                         // List all audio assets
                                         for (auto& [uid, asset] : audioMap) {
                                             if (uid == EMPTY_ASSET) continue;
-                                            bool isSel = (val == asset->source);
+                                            bool isSel = (audioEntry->filePath == asset->source);
                                             if (ImGui::Selectable(asset->name.c_str(), isSel)) {
+                                                audioEntry->filePath = asset->source;
+                                                if (audioEntry->filePaths.empty()) {
+                                                    audioEntry->filePaths.push_back(asset->source);
+                                                } else {
+                                                    audioEntry->filePaths[0] = asset->source;
+                                                }
                                                 updateFieldValue(field.fieldName, asset->source);
                                             }
                                             if (isSel) ImGui::SetItemDefaultFocus();
                                         }
                                         ImGui::EndCombo();
                                     }
+
+                                    // Show audio settings indented
+                                    ImGui::Indent(10.0f);
+
+                                    // Loop, Play On Start, Mute checkboxes
+                                    ImGui::Checkbox("Loop##scriptAudio", &audioEntry->loop);
+                                    ImGui::SameLine();
+                                    ImGui::Checkbox("Play On Start##scriptAudio", &audioEntry->playOnStart);
+                                    ImGui::SameLine();
+                                    ImGui::Checkbox("Mute##scriptAudio", &audioEntry->mute);
+
+                                    // Volume slider
+                                    ImGui::SliderFloat("Volume##scriptAudio", &audioEntry->volume, 0.0f, 1.0f);
+
+                                    // Pitch slider
+                                    ImGui::SliderFloat("Pitch##scriptAudio", &audioEntry->pitch, 0.5f, 2.0f, "%.2f");
+                                    if (ImGui::IsItemHovered()) {
+                                        ImGui::SetTooltip("Playback speed: 0.5 = half speed, 1.0 = normal, 2.0 = double speed");
+                                    }
+
+                                    // Priority slider
+                                    ImGui::SliderInt("Priority##scriptAudio", &audioEntry->priority, 0, 256);
+                                    if (ImGui::IsItemHovered()) {
+                                        ImGui::SetTooltip("Channel priority: 0 = highest, 256 = lowest (128 = default)");
+                                    }
+
+                                    // Stereo Pan slider
+                                    ImGui::SliderFloat("Stereo Pan##scriptAudio", &audioEntry->stereoPan, -1.0f, 1.0f, "%.2f");
+                                    if (ImGui::IsItemHovered()) {
+                                        ImGui::SetTooltip("-1.0 = full left, 0.0 = center, 1.0 = full right");
+                                    }
+
+                                    // Spatial Blend slider
+                                    ImGui::SliderFloat("Spatial Blend##scriptAudio", &audioEntry->spatialBlend, 0.0f, 1.0f, "%.2f");
+                                    if (ImGui::IsItemHovered()) {
+                                        ImGui::SetTooltip("0.0 = fully 2D (no positional audio), 1.0 = fully 3D (positional)");
+                                    }
+
+                                    // 3D Audio Settings in collapsible section
+                                    if (ImGui::TreeNode("3D Audio##scriptAudio")) {
+                                        ImGui::SliderFloat("Min Distance##scriptAudio", &audioEntry->minDistance, 0.1f, 100.0f, "%.1f");
+                                        if (ImGui::IsItemHovered()) {
+                                            ImGui::SetTooltip("Distance at which sound is at full volume");
+                                        }
+
+                                        ImGui::SliderFloat("Max Distance##scriptAudio", &audioEntry->maxDistance, 1.0f, 200.0f, "%.1f");
+                                        if (ImGui::IsItemHovered()) {
+                                            ImGui::SetTooltip("Distance at which sound becomes silent");
+                                        }
+
+                                        // Validation
+                                        if (audioEntry->minDistance >= audioEntry->maxDistance) {
+                                            audioEntry->minDistance = audioEntry->maxDistance - 0.1f;
+                                        }
+
+                                        // Quick presets
+                                        ImGui::Text("Presets:");
+                                        if (ImGui::SmallButton("Footsteps##scriptAudio")) {
+                                            audioEntry->minDistance = 0.5f;
+                                            audioEntry->maxDistance = 10.0f;
+                                        }
+                                        ImGui::SameLine();
+                                        if (ImGui::SmallButton("Dialogue##scriptAudio")) {
+                                            audioEntry->minDistance = 1.0f;
+                                            audioEntry->maxDistance = 30.0f;
+                                        }
+                                        ImGui::SameLine();
+                                        if (ImGui::SmallButton("Environment##scriptAudio")) {
+                                            audioEntry->minDistance = 2.0f;
+                                            audioEntry->maxDistance = 100.0f;
+                                        }
+
+                                        ImGui::TreePop();
+                                    }
+
+                                    ImGui::Unindent(10.0f);
+                                    ImGui::PopID();
+
                                 } else {
                                     // Regular string input
                                     char buf[256];
