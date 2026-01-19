@@ -59,10 +59,16 @@ void SoundSystem::Update(Boom::EntityRegistry& registry, float dt)
 
 				SoundEngine::Instance().PreloadSound(instanceName, chosen, false, entry.loop);
 				SoundEngine::Instance().PlaySoundAt(instanceName, chosen, tf.transform.translate, entry.loop);
-				// Apply configured volume
-				SoundEngine::Instance().SetVolume(instanceName, entry.volume);
+				// Apply configured volume (unless muted)
+				SoundEngine::Instance().SetVolume(instanceName, entry.mute ? 0.0f : entry.volume);
 				// Apply 3D audio distance settings
 				SoundEngine::Instance().Set3DMinMaxDistance(instanceName, entry.minDistance, entry.maxDistance);
+				// Apply new Unity-style properties
+				SoundEngine::Instance().SetPitch(instanceName, entry.pitch);
+				SoundEngine::Instance().SetPan(instanceName, entry.stereoPan);
+				SoundEngine::Instance().SetPriority(instanceName, entry.priority);
+				SoundEngine::Instance().SetMute(instanceName, entry.mute);
+				SoundEngine::Instance().SetSpatialBlend(instanceName, entry.spatialBlend);
 
 				instances.push_back(instanceName);
 				s_lastPos[uid] = tf.transform.translate;
@@ -106,17 +112,23 @@ void SoundSystem::Update(Boom::EntityRegistry& registry, float dt)
 					std::string playName = instanceName + "_play_" + std::to_string((uint64_t)now);
 					SoundEngine::Instance().PreloadSound(playName, chosen, false, false);
 					SoundEngine::Instance().PlaySoundAt(playName, chosen, tf.transform.translate, false);
-					// Apply configured volume for this transient instance
-					SoundEngine::Instance().SetVolume(playName, entry.volume);
+					// Apply configured volume for this transient instance (unless muted)
+					SoundEngine::Instance().SetVolume(playName, entry.mute ? 0.0f : entry.volume);
 					// Apply 3D audio distance settings for this transient instance
 					SoundEngine::Instance().Set3DMinMaxDistance(playName, entry.minDistance, entry.maxDistance);
+					// Apply new Unity-style properties
+					SoundEngine::Instance().SetPitch(playName, entry.pitch);
+					SoundEngine::Instance().SetPan(playName, entry.stereoPan);
+					SoundEngine::Instance().SetPriority(playName, entry.priority);
+					SoundEngine::Instance().SetMute(playName, entry.mute);
+					SoundEngine::Instance().SetSpatialBlend(playName, entry.spatialBlend);
 					// track this playing temporary instance so it can be cleaned up later
 					instances.push_back(playName);
 					lastTimes[playName] = now;
 				}
 			}
 
-			// If there's an active instance for this entry, update its position
+			// If there's an active instance for this entry, update its position and properties (real-time inspector changes)
 			for (const auto& n : instances)
 			{
 				// only update position for instances that belong to this logical entry
@@ -126,11 +138,14 @@ void SoundSystem::Update(Boom::EntityRegistry& registry, float dt)
 					SoundEngine::Instance().SetSoundPosition(n, pos);
 					s_lastPos[uid] = pos;
 
-					// Also ensure volume follows component value (allow realtime changes from inspector)
-					SoundEngine::Instance().SetVolume(n, entry.volume);
-
-					// If filePath cleared, stop and unload this instance
-					// Note: we treat legacy filePath empty as no-op
+					// Apply all properties in real-time (allow inspector changes)
+					SoundEngine::Instance().SetVolume(n, entry.mute ? 0.0f : entry.volume);
+					SoundEngine::Instance().SetPitch(n, entry.pitch);
+					SoundEngine::Instance().SetPan(n, entry.stereoPan);
+					SoundEngine::Instance().SetPriority(n, entry.priority);
+					SoundEngine::Instance().SetMute(n, entry.mute);
+					SoundEngine::Instance().SetSpatialBlend(n, entry.spatialBlend);
+					SoundEngine::Instance().Set3DMinMaxDistance(n, entry.minDistance, entry.maxDistance);
 				}
 			}
 		}

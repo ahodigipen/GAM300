@@ -767,3 +767,72 @@ BOOM_API glm::vec3 SoundEngine::GetListenerPosition() const
 {
     return mLastListenerPos;
 }
+
+BOOM_API bool SoundEngine::HasChannelGroup(const std::string& groupName) const
+{
+    std::scoped_lock lock(mMutex);
+    return mChannelGroups.find(groupName) != mChannelGroups.end();
+}
+
+BOOM_API std::vector<std::string> SoundEngine::GetChannelGroupNames() const
+{
+    std::scoped_lock lock(mMutex);
+    std::vector<std::string> names;
+    names.reserve(mChannelGroups.size());
+    for (const auto& [name, group] : mChannelGroups) {
+        names.push_back(name);
+    }
+    return names;
+}
+
+// ========= NEW UNITY-STYLE AUDIO PROPERTIES =========
+
+BOOM_API void SoundEngine::SetPitch(const std::string& name, float pitch)
+{
+    std::scoped_lock lock(mMutex);
+    auto it = mChannels.find(name);
+    if (it != mChannels.end() && it->second) {
+        // FMOD pitch: 0.5 = half speed, 1.0 = normal, 2.0 = double speed
+        it->second->setPitch(pitch);
+    }
+}
+
+BOOM_API void SoundEngine::SetPan(const std::string& name, float pan)
+{
+    std::scoped_lock lock(mMutex);
+    auto it = mChannels.find(name);
+    if (it != mChannels.end() && it->second) {
+        // FMOD pan: -1.0 = full left, 0.0 = center, 1.0 = full right
+        it->second->setPan(pan);
+    }
+}
+
+BOOM_API void SoundEngine::SetPriority(const std::string& name, int priority)
+{
+    std::scoped_lock lock(mMutex);
+    auto it = mChannels.find(name);
+    if (it != mChannels.end() && it->second) {
+        // FMOD priority: 0 = most important, 256 = least important
+        it->second->setPriority(priority);
+    }
+}
+
+BOOM_API void SoundEngine::SetMute(const std::string& name, bool mute)
+{
+    std::scoped_lock lock(mMutex);
+    auto it = mChannels.find(name);
+    if (it != mChannels.end() && it->second) {
+        it->second->setMute(mute);
+    }
+}
+
+BOOM_API void SoundEngine::SetSpatialBlend(const std::string& name, float blend)
+{
+    std::scoped_lock lock(mMutex);
+    auto it = mChannels.find(name);
+    if (it != mChannels.end() && it->second) {
+        // FMOD 3DLevel: 0.0 = fully 2D, 1.0 = fully 3D
+        // This controls how much 3D processing is applied
+        it->second->set3DLevel(blend);
+    }
+}

@@ -11,6 +11,7 @@ namespace GameScripts
         public ulong Entity;
 
         // Optional: sound to play on pickup
+        [Boom.EditorExposed("Pickup Sound", "Sound played when the key is collected")]
         private string _pickupSound = "Resources/Audio/pickup.wav";
 
         private static readonly Dictionary<ulong, KeyPickup> s_instances = new Dictionary<ulong, KeyPickup>();

@@ -52,6 +52,13 @@ public:
     // Set 3D audio parameters for a sound
     BOOM_API void  Set3DMinMaxDistance(const std::string& name, float minDist, float maxDist);
 
+    // New Unity-style audio properties
+    BOOM_API void  SetPitch(const std::string& name, float pitch);
+    BOOM_API void  SetPan(const std::string& name, float pan);          // -1.0 (left) to 1.0 (right)
+    BOOM_API void  SetPriority(const std::string& name, int priority);  // 0-256, lower = higher priority
+    BOOM_API void  SetMute(const std::string& name, bool mute);
+    BOOM_API void  SetSpatialBlend(const std::string& name, float blend); // 0.0 = 2D, 1.0 = 3D
+
     // Get listener position (for debugging)
     BOOM_API glm::vec3 GetListenerPosition() const;
 

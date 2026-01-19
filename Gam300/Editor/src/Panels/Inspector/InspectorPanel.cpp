@@ -9,7 +9,9 @@
 #include"Physics/Context.h"
 #include "Commands/UndoRedo.h"  // for ComponentPropertyCommand
 #include "Graphics/Video/VideoSystem.h"  // for VideoComponent UI
+#include "Audio/Audio.hpp"     // for SoundEngine (real-time audio preview)
 #include <GLFW/glfw3.h>
+#include <unordered_map>       // for audio preview tracking
 //#include "BoomProperties.h"
 using namespace EditorUI;
 
@@ -965,9 +967,35 @@ namespace EditorUI {
                         ImGui::Checkbox("Loop", &entry.loop);
                         ImGui::SameLine();
                         ImGui::Checkbox("Play On Start", &entry.playOnStart);
+                        ImGui::SameLine();
+                        ImGui::Checkbox("Mute", &entry.mute);
 
                         // Volume
-                        ImGui::SliderFloat("Volume", &entry.volume,0.0f,1.0f);
+                        ImGui::SliderFloat("Volume", &entry.volume, 0.0f, 1.0f);
+
+                        // Pitch
+                        ImGui::SliderFloat("Pitch", &entry.pitch, 0.5f, 2.0f, "%.2f");
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("Playback speed: 0.5 = half speed, 1.0 = normal, 2.0 = double speed");
+                        }
+
+                        // Priority
+                        ImGui::SliderInt("Priority", &entry.priority, 0, 256);
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("Channel priority: 0 = highest, 256 = lowest (128 = default)");
+                        }
+
+                        // Stereo Pan
+                        ImGui::SliderFloat("Stereo Pan", &entry.stereoPan, -1.0f, 1.0f, "%.2f");
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("-1.0 = full left, 0.0 = center, 1.0 = full right");
+                        }
+
+                        // Spatial Blend
+                        ImGui::SliderFloat("Spatial Blend", &entry.spatialBlend, 0.0f, 1.0f, "%.2f");
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("0.0 = fully 2D (no positional audio), 1.0 = fully 3D (positional)");
+                        }
 
                         ImGui::Separator();
                         ImGui::Text("Triggers");
@@ -2460,18 +2488,12 @@ namespace EditorUI {
                     : nullptr;
                 entt::entity currentEntity = m_App->SelectedEntity();
 
-                // *** FIX: Detect and fix "dead" script instances ***
+                // *** AUTO-FIX: Automatically recreate dead script instances ***
                 bool needsRecreation = false;
-                if (sc.InstanceId == 0 && sc.Enabled && !sc.TypeName.empty()) {
-                    // Script should be alive but isn't - show warning
-                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.0f, 1.0f));
-                    ImGui::TextWrapped("WARNING: Script instance is missing (InstanceId=0)");
-                    ImGui::PopStyleColor();
-
-                    if (ImGui::Button("Fix: Recreate Instance", ImVec2(-1, 0))) {
-                        needsRecreation = true;
-                    }
-                    ImGui::Separator();
+                if (sc.InstanceId == 0 && sc.Enabled && !sc.TypeName.empty() && scripting && scripting->IsAlive()) {
+                    // Script should be alive but isn't - auto-recreate it
+                    needsRecreation = true;
+                    BOOM_INFO("[Inspector] Auto-recreating missing script instance for type: {}", sc.TypeName);
                 }
 
                 // Track if we need to recreate the instance this frame
@@ -2533,39 +2555,472 @@ namespace EditorUI {
                         sc.Enabled, sc.TypeName);
                 }
 
-                // ----- Params (JSON) -----
-                ImGui::AlignTextToFramePadding();
-                ImGui::Text("Params (JSON)");
-                ImGui::SameLine(150);
-                ImGui::SetNextItemWidth(-1);
+                // ----- Exposed Script Fields -----
+                if (scripting && scripting->IsAlive() && sc.InstanceId != 0 && !sc.TypeName.empty()) {
+                    auto exposedFields = scripting->GetExposedFields(sc.TypeName);
 
-                static char paramsBuf[2048];
-                static entt::entity lastJsonEntity = entt::null;
+                    if (!exposedFields.empty()) {
+                        ImGui::Separator();
+                        ImGui::Text("Script Properties");
+                        ImGui::Spacing();
 
-                if (currentEntity != lastJsonEntity) {
-                    std::string initial = sc.Params.dump(2);
+                        for (const auto& field : exposedFields) {
+                            ImGui::PushID(field.fieldName.c_str());
+
+                            // Get current value
+                            std::string valueJson = scripting->GetFieldValue(sc.InstanceId, field.fieldName);
+                            bool valueChanged = false;
+
+                            // Label
+                            ImGui::AlignTextToFramePadding();
+                            ImGui::Text("%s", field.displayName.c_str());
+                            if (!field.tooltip.empty() && ImGui::IsItemHovered()) {
+                                ImGui::SetTooltip("%s", field.tooltip.c_str());
+                            }
+                            ImGui::SameLine(150);
+                            ImGui::SetNextItemWidth(-1);
+
+                            // Helper lambda to update both live instance AND Params for serialization
+                            auto updateFieldValue = [&](const std::string& fieldName, const nlohmann::json& jsonValue) {
+                                // Update Params for serialization (scene save/load) - always do this
+                                sc.Params[fieldName] = jsonValue;
+
+                                // Update live instance if it exists
+                                if (sc.InstanceId != 0) {
+                                    bool success = scripting->SetFieldValue(sc.InstanceId, fieldName, jsonValue.dump());
+                                    if (!success) {
+                                        BOOM_WARN("[Inspector] Failed to set field '{}' on live instance", fieldName);
+                                    }
+                                }
+                            };
+
+                            // Type-specific widget
+                            if (field.typeName == "float") {
+                                float val = 0.0f;
+                                try { val = std::stof(valueJson); } catch (...) {}
+
+                                if (field.useSlider && field.minValue > -FLT_MAX && field.maxValue < FLT_MAX) {
+                                    if (ImGui::SliderFloat("##val", &val, field.minValue, field.maxValue)) {
+                                        valueChanged = true;
+                                    }
+                                } else {
+                                    if (ImGui::DragFloat("##val", &val, 0.1f, field.minValue, field.maxValue)) {
+                                        valueChanged = true;
+                                    }
+                                }
+
+                                if (valueChanged) {
+                                    updateFieldValue(field.fieldName, val);
+                                }
+                            }
+                            else if (field.typeName == "int") {
+                                int val = 0;
+                                try { val = std::stoi(valueJson); } catch (...) {}
+
+                                if (field.useSlider && field.minValue > -FLT_MAX && field.maxValue < FLT_MAX) {
+                                    if (ImGui::SliderInt("##val", &val, (int)field.minValue, (int)field.maxValue)) {
+                                        valueChanged = true;
+                                    }
+                                } else {
+                                    if (ImGui::DragInt("##val", &val)) {
+                                        valueChanged = true;
+                                    }
+                                }
+
+                                if (valueChanged) {
+                                    updateFieldValue(field.fieldName, val);
+                                }
+                            }
+                            else if (field.typeName == "bool") {
+                                bool val = (valueJson == "true");
+                                if (ImGui::Checkbox("##val", &val)) {
+                                    updateFieldValue(field.fieldName, val);
+                                }
+                            }
+                            else if (field.typeName == "string") {
+                                // Parse string (remove quotes)
+                                std::string val = valueJson;
+                                if (val.size() >= 2 && val.front() == '"' && val.back() == '"') {
+                                    val = val.substr(1, val.size() - 2);
+                                }
+
+                                // Check if this is an audio/sound field - use SoundComponent integration
+                                bool isAudioField = (field.displayName.find("Sound") != std::string::npos ||
+                                                    field.displayName.find("Audio") != std::string::npos ||
+                                                    field.fieldName.find("Sound") != std::string::npos ||
+                                                    field.fieldName.find("Audio") != std::string::npos ||
+                                                    field.fieldName.find("sound") != std::string::npos ||
+                                                    field.fieldName.find("audio") != std::string::npos);
+
+                                if (isAudioField) {
+                                    // Auto-create SoundComponent if it doesn't exist
+                                    if (!selected.Has<Boom::SoundComponent>()) {
+                                        ctx->scene.emplace<Boom::SoundComponent>(currentEntity);
+                                    }
+                                    auto& soundComp = selected.Get<Boom::SoundComponent>();
+
+                                    // Find or create entry with the field name
+                                    Boom::SoundComponent::Entry* audioEntry = nullptr;
+                                    for (auto& entry : soundComp.entries) {
+                                        if (entry.name == field.fieldName) {
+                                            audioEntry = &entry;
+                                            break;
+                                        }
+                                    }
+
+                                    // Create new entry if not found
+                                    if (!audioEntry) {
+                                        Boom::SoundComponent::Entry newEntry{};
+                                        newEntry.name = field.fieldName;
+                                        soundComp.entries.push_back(std::move(newEntry));
+                                        audioEntry = &soundComp.entries.back();
+                                    }
+
+                                    // Script's Params is the source of truth for the file path
+                                    // Get the current value from Params (serialized) rather than live instance
+                                    std::string currentAudioPath = val; // Default to live instance value
+                                    if (sc.Params.contains(field.fieldName)) {
+                                        auto& paramVal = sc.Params[field.fieldName];
+                                        if (paramVal.is_string()) {
+                                            currentAudioPath = paramVal.get<std::string>();
+                                        }
+                                    }
+
+                                    // Sync SoundComponent entry FROM script Params (entry mirrors script)
+                                    if (audioEntry->filePath != currentAudioPath) {
+                                        audioEntry->filePath = currentAudioPath;
+                                        if (audioEntry->filePaths.empty()) {
+                                            if (!currentAudioPath.empty()) {
+                                                audioEntry->filePaths.push_back(currentAudioPath);
+                                            }
+                                        } else {
+                                            audioEntry->filePaths[0] = currentAudioPath;
+                                        }
+                                    }
+
+                                    // ===== Display full SoundComponent Entry UI =====
+                                    ImGui::PushID(field.fieldName.c_str());
+
+                                    // Static map to track preview sounds and their file paths
+                                    static std::unordered_map<std::string, std::string> s_previewFilePaths;
+
+                                    // Generate unique preview instance name
+                                    uint64_t entityUid = static_cast<uint64_t>(static_cast<uint32_t>(currentEntity));
+                                    std::string previewName = "preview_" + std::to_string(entityUid) + "_" + field.fieldName;
+
+                                    // Audio asset dropdown - use currentAudioPath (from Params) as the display value
+                                    std::string curLabel = currentAudioPath.empty() ? "Select Audio..." : std::filesystem::path(currentAudioPath).filename().string();
+
+                                    // Track if file changed for real-time update
+                                    std::string previousFilePath = s_previewFilePaths[previewName];
+                                    bool fileChanged = false;
+
+                                    if (ImGui::BeginCombo("##audioSelect", curLabel.c_str())) {
+                                        auto& audioMap = m_App->GetAssetRegistry().GetMap<AudioAsset>();
+
+                                        // Allow clearing
+                                        bool noneSel = currentAudioPath.empty();
+                                        if (ImGui::Selectable("None", noneSel)) {
+                                            // Update Params first (source of truth)
+                                            sc.Params[field.fieldName] = "";
+                                            // Then update entry to match
+                                            audioEntry->filePath.clear();
+                                            audioEntry->filePaths.clear();
+                                            // Try to update live instance (may fail, but Params is already updated)
+                                            if (sc.InstanceId != 0) {
+                                                scripting->SetFieldValue(sc.InstanceId, field.fieldName, "\"\"");
+                                            }
+                                            fileChanged = true;
+                                        }
+                                        if (noneSel) ImGui::SetItemDefaultFocus();
+
+                                        // List all audio assets
+                                        for (auto& [uid, asset] : audioMap) {
+                                            if (uid == EMPTY_ASSET) continue;
+                                            bool isSel = (currentAudioPath == asset->source);
+                                            if (ImGui::Selectable(asset->name.c_str(), isSel)) {
+                                                // Update Params first (source of truth)
+                                                sc.Params[field.fieldName] = asset->source;
+                                                // Then update entry to match
+                                                audioEntry->filePath = asset->source;
+                                                if (audioEntry->filePaths.empty()) {
+                                                    audioEntry->filePaths.push_back(asset->source);
+                                                } else {
+                                                    audioEntry->filePaths[0] = asset->source;
+                                                }
+                                                // Try to update live instance (may fail, but Params is already updated)
+                                                if (sc.InstanceId != 0) {
+                                                    std::string jsonStr = "\"" + asset->source + "\"";
+                                                    scripting->SetFieldValue(sc.InstanceId, field.fieldName, jsonStr);
+                                                }
+                                                fileChanged = true;
+                                            }
+                                            if (isSel) ImGui::SetItemDefaultFocus();
+                                        }
+                                        ImGui::EndCombo();
+                                    }
+
+                                    // If file changed while preview is playing, restart with new file
+                                    if (fileChanged && SoundEngine::Instance().IsPlaying(previewName)) {
+                                        SoundEngine::Instance().StopSound(previewName);
+                                        if (!audioEntry->filePath.empty()) {
+                                            SoundEngine::Instance().PlaySound(previewName, audioEntry->filePath, audioEntry->loop);
+                                            // Apply all current settings
+                                            SoundEngine::Instance().SetVolume(previewName, audioEntry->mute ? 0.0f : audioEntry->volume);
+                                            SoundEngine::Instance().SetPitch(previewName, audioEntry->pitch);
+                                            SoundEngine::Instance().SetPan(previewName, audioEntry->stereoPan);
+                                            SoundEngine::Instance().SetPriority(previewName, audioEntry->priority);
+                                            SoundEngine::Instance().SetMute(previewName, audioEntry->mute);
+                                        }
+                                    }
+                                    s_previewFilePaths[previewName] = audioEntry->filePath;
+
+                                    // Show audio settings indented
+                                    ImGui::Indent(10.0f);
+
+                                    // ===== Preview Play/Stop buttons =====
+                                    bool isPlaying = SoundEngine::Instance().IsPlaying(previewName);
+
+                                    if (!audioEntry->filePath.empty()) {
+                                        if (isPlaying) {
+                                            if (ImGui::Button("Stop##preview")) {
+                                                SoundEngine::Instance().StopSound(previewName);
+                                            }
+                                        } else {
+                                            if (ImGui::Button("Play##preview")) {
+                                                SoundEngine::Instance().PlaySound(previewName, audioEntry->filePath, audioEntry->loop);
+                                                // Apply all current settings immediately
+                                                SoundEngine::Instance().SetVolume(previewName, audioEntry->mute ? 0.0f : audioEntry->volume);
+                                                SoundEngine::Instance().SetPitch(previewName, audioEntry->pitch);
+                                                SoundEngine::Instance().SetPan(previewName, audioEntry->stereoPan);
+                                                SoundEngine::Instance().SetPriority(previewName, audioEntry->priority);
+                                                SoundEngine::Instance().SetMute(previewName, audioEntry->mute);
+                                            }
+                                        }
+                                        ImGui::SameLine();
+                                        if (isPlaying) {
+                                            ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Playing");
+                                        }
+                                    } else {
+                                        ImGui::TextDisabled("Select audio to preview");
+                                    }
+
+                                    ImGui::Spacing();
+
+                                    // Loop, Play On Start, Mute checkboxes
+                                    bool loopChanged = ImGui::Checkbox("Loop##scriptAudio", &audioEntry->loop);
+                                    ImGui::SameLine();
+                                    ImGui::Checkbox("Play On Start##scriptAudio", &audioEntry->playOnStart);
+                                    ImGui::SameLine();
+                                    bool muteChanged = ImGui::Checkbox("Mute##scriptAudio", &audioEntry->mute);
+
+                                    // Volume slider - apply in real-time
+                                    bool volumeChanged = ImGui::SliderFloat("Volume##scriptAudio", &audioEntry->volume, 0.0f, 1.0f);
+
+                                    // Pitch slider - apply in real-time
+                                    bool pitchChanged = ImGui::SliderFloat("Pitch##scriptAudio", &audioEntry->pitch, 0.5f, 2.0f, "%.2f");
+                                    if (ImGui::IsItemHovered()) {
+                                        ImGui::SetTooltip("Playback speed: 0.5 = half speed, 1.0 = normal, 2.0 = double speed");
+                                    }
+
+                                    // Priority slider - apply in real-time
+                                    bool priorityChanged = ImGui::SliderInt("Priority##scriptAudio", &audioEntry->priority, 0, 256);
+                                    if (ImGui::IsItemHovered()) {
+                                        ImGui::SetTooltip("Channel priority: 0 = highest, 256 = lowest (128 = default)");
+                                    }
+
+                                    // Stereo Pan slider - apply in real-time
+                                    bool panChanged = ImGui::SliderFloat("Stereo Pan##scriptAudio", &audioEntry->stereoPan, -1.0f, 1.0f, "%.2f");
+                                    if (ImGui::IsItemHovered()) {
+                                        ImGui::SetTooltip("-1.0 = full left, 0.0 = center, 1.0 = full right");
+                                    }
+
+                                    // Spatial Blend slider - apply in real-time
+                                    bool spatialChanged = ImGui::SliderFloat("Spatial Blend##scriptAudio", &audioEntry->spatialBlend, 0.0f, 1.0f, "%.2f");
+                                    if (ImGui::IsItemHovered()) {
+                                        ImGui::SetTooltip("0.0 = fully 2D (no positional audio), 1.0 = fully 3D (positional)");
+                                    }
+
+                                    // Apply real-time changes to preview if playing
+                                    if (isPlaying) {
+                                        if (volumeChanged || muteChanged) {
+                                            SoundEngine::Instance().SetVolume(previewName, audioEntry->mute ? 0.0f : audioEntry->volume);
+                                        }
+                                        if (pitchChanged) {
+                                            SoundEngine::Instance().SetPitch(previewName, audioEntry->pitch);
+                                        }
+                                        if (priorityChanged) {
+                                            SoundEngine::Instance().SetPriority(previewName, audioEntry->priority);
+                                        }
+                                        if (panChanged) {
+                                            SoundEngine::Instance().SetPan(previewName, audioEntry->stereoPan);
+                                        }
+                                        if (spatialChanged) {
+                                            SoundEngine::Instance().SetSpatialBlend(previewName, audioEntry->spatialBlend);
+                                        }
+                                        if (muteChanged) {
+                                            SoundEngine::Instance().SetMute(previewName, audioEntry->mute);
+                                        }
+                                        if (loopChanged) {
+                                            SoundEngine::Instance().SetLooping(previewName, audioEntry->loop);
+                                        }
+                                    }
+
+                                    // 3D Audio Settings in collapsible section
+                                    bool minDistChanged = false, maxDistChanged = false;
+                                    if (ImGui::TreeNode("3D Audio##scriptAudio")) {
+                                        minDistChanged = ImGui::SliderFloat("Min Distance##scriptAudio", &audioEntry->minDistance, 0.1f, 100.0f, "%.1f");
+                                        if (ImGui::IsItemHovered()) {
+                                            ImGui::SetTooltip("Distance at which sound is at full volume");
+                                        }
+
+                                        maxDistChanged = ImGui::SliderFloat("Max Distance##scriptAudio", &audioEntry->maxDistance, 1.0f, 200.0f, "%.1f");
+                                        if (ImGui::IsItemHovered()) {
+                                            ImGui::SetTooltip("Distance at which sound becomes silent");
+                                        }
+
+                                        // Validation
+                                        if (audioEntry->minDistance >= audioEntry->maxDistance) {
+                                            audioEntry->minDistance = audioEntry->maxDistance - 0.1f;
+                                        }
+
+                                        // Apply 3D distance changes in real-time
+                                        if (isPlaying && (minDistChanged || maxDistChanged)) {
+                                            SoundEngine::Instance().Set3DMinMaxDistance(previewName, audioEntry->minDistance, audioEntry->maxDistance);
+                                        }
+
+                                        // Quick presets
+                                        ImGui::Text("Presets:");
+                                        if (ImGui::SmallButton("Footsteps##scriptAudio")) {
+                                            audioEntry->minDistance = 0.5f;
+                                            audioEntry->maxDistance = 10.0f;
+                                            if (isPlaying) {
+                                                SoundEngine::Instance().Set3DMinMaxDistance(previewName, audioEntry->minDistance, audioEntry->maxDistance);
+                                            }
+                                        }
+                                        ImGui::SameLine();
+                                        if (ImGui::SmallButton("Dialogue##scriptAudio")) {
+                                            audioEntry->minDistance = 1.0f;
+                                            audioEntry->maxDistance = 30.0f;
+                                            if (isPlaying) {
+                                                SoundEngine::Instance().Set3DMinMaxDistance(previewName, audioEntry->minDistance, audioEntry->maxDistance);
+                                            }
+                                        }
+                                        ImGui::SameLine();
+                                        if (ImGui::SmallButton("Environment##scriptAudio")) {
+                                            audioEntry->minDistance = 2.0f;
+                                            audioEntry->maxDistance = 100.0f;
+                                            if (isPlaying) {
+                                                SoundEngine::Instance().Set3DMinMaxDistance(previewName, audioEntry->minDistance, audioEntry->maxDistance);
+                                            }
+                                        }
+
+                                        ImGui::TreePop();
+                                    }
+
+                                    ImGui::Unindent(10.0f);
+                                    ImGui::PopID();
+
+                                } else {
+                                    // Regular string input
+                                    char buf[256];
 #ifdef _MSC_VER
-                    strncpy_s(paramsBuf, sizeof(paramsBuf), initial.c_str(), sizeof(paramsBuf) - 1);
+                                    strncpy_s(buf, sizeof(buf), val.c_str(), sizeof(buf) - 1);
 #else
-                    std::snprintf(paramsBuf, sizeof(paramsBuf), "%s", initial.c_str());
+                                    std::snprintf(buf, sizeof(buf), "%s", val.c_str());
 #endif
-                    lastJsonEntity = currentEntity;
+                                    if (ImGui::InputText("##val", buf, sizeof(buf))) {
+                                        updateFieldValue(field.fieldName, std::string(buf));
+                                    }
+                                }
+                            }
+                            else if (field.typeName == "Vec3") {
+                                float vals[3] = {0, 0, 0};
+                                try {
+                                    auto j = nlohmann::json::parse(valueJson);
+                                    vals[0] = j.value("X", 0.0f);
+                                    vals[1] = j.value("Y", 0.0f);
+                                    vals[2] = j.value("Z", 0.0f);
+                                } catch (...) {}
+
+                                if (ImGui::DragFloat3("##val", vals, 0.1f)) {
+                                    nlohmann::json vecJson = {{"X", vals[0]}, {"Y", vals[1]}, {"Z", vals[2]}};
+                                    updateFieldValue(field.fieldName, vecJson);
+                                }
+                            }
+                            else if (field.typeName == "Vec2") {
+                                float vals[2] = {0, 0};
+                                try {
+                                    auto j = nlohmann::json::parse(valueJson);
+                                    vals[0] = j.value("X", 0.0f);
+                                    vals[1] = j.value("Y", 0.0f);
+                                } catch (...) {}
+
+                                if (ImGui::DragFloat2("##val", vals, 0.1f)) {
+                                    nlohmann::json vecJson = {{"X", vals[0]}, {"Y", vals[1]}};
+                                    updateFieldValue(field.fieldName, vecJson);
+                                }
+                            }
+                            else if (field.typeName == "Vec4") {
+                                float vals[4] = {0, 0, 0, 0};
+                                try {
+                                    auto j = nlohmann::json::parse(valueJson);
+                                    vals[0] = j.value("X", 0.0f);
+                                    vals[1] = j.value("Y", 0.0f);
+                                    vals[2] = j.value("Z", 0.0f);
+                                    vals[3] = j.value("W", 0.0f);
+                                } catch (...) {}
+
+                                if (ImGui::DragFloat4("##val", vals, 0.1f)) {
+                                    nlohmann::json vecJson = {{"X", vals[0]}, {"Y", vals[1]}, {"Z", vals[2]}, {"W", vals[3]}};
+                                    updateFieldValue(field.fieldName, vecJson);
+                                }
+                            }
+                            else if (field.typeName == "ulong") {
+                                // Entity reference - show as text for now
+                                ImGui::TextDisabled("Entity: %s", valueJson.c_str());
+                            }
+                            else {
+                                // Unknown type - show as read-only text
+                                ImGui::TextDisabled("%s: %s", field.typeName.c_str(), valueJson.c_str());
+                            }
+
+                            ImGui::PopID();
+                        }
+                    }
                 }
 
-                if (ImGui::InputTextMultiline(
-                    "##ScriptParams",
-                    paramsBuf,
-                    IM_ARRAYSIZE(paramsBuf),
-                    ImVec2(-1, 120),
-                    ImGuiInputTextFlags_AllowTabInput))
-                {
-                    try {
-                        sc.Params = nlohmann::json::parse(paramsBuf);
+                // ----- Raw Params (JSON) - Collapsible for Advanced Users -----
+                ImGui::Spacing();
+                if (ImGui::TreeNode("Advanced: Raw Params (JSON)")) {
+                    static char paramsBuf[2048];
+                    static entt::entity lastJsonEntity = entt::null;
+
+                    if (currentEntity != lastJsonEntity) {
+                        std::string initial = sc.Params.dump(2);
+#ifdef _MSC_VER
+                        strncpy_s(paramsBuf, sizeof(paramsBuf), initial.c_str(), sizeof(paramsBuf) - 1);
+#else
+                        std::snprintf(paramsBuf, sizeof(paramsBuf), "%s", initial.c_str());
+#endif
+                        lastJsonEntity = currentEntity;
                     }
-                    catch (...) {
-                        ImGui::SameLine();
-                        ImGui::TextColored(ImVec4(1, 0.3f, 0.3f, 1), "Invalid JSON");
+
+                    if (ImGui::InputTextMultiline(
+                        "##ScriptParams",
+                        paramsBuf,
+                        IM_ARRAYSIZE(paramsBuf),
+                        ImVec2(-1, 80),
+                        ImGuiInputTextFlags_AllowTabInput))
+                    {
+                        try {
+                            sc.Params = nlohmann::json::parse(paramsBuf);
+                        }
+                        catch (...) {
+                            ImGui::TextColored(ImVec4(1, 0.3f, 0.3f, 1), "Invalid JSON");
+                        }
                     }
+                    ImGui::TreePop();
                 }
 
                 // ----- Runtime info -----
@@ -2600,17 +3055,32 @@ namespace EditorUI {
                 ImGui::Separator();
                 ImGui::Spacing();
 
-                if (ImGui::Button("Reload This Script", ImVec2(-1, 0))) {
-                    if (scripting) {
-                        scripting->RecreateForEntity(currentEntity, sc);
-                        BOOM_INFO("[Inspector] Manually reloaded script instance");
+                // Show scripting system status
+                if (!scripting) {
+                    ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "Scripting system not available");
+                } else if (!scripting->IsAlive()) {
+                    ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), "Scripting system not alive");
+                    if (ImGui::Button("Initialize Scripting System", ImVec2(-1, 0))) {
+                        // Try to reinitialize
+                        BOOM_INFO("[Inspector] Attempting to reinitialize scripting system...");
                     }
-                }
+                } else {
+                    if (ImGui::Button("Reload This Script", ImVec2(-1, 0))) {
+                        bool success = scripting->RecreateForEntity(currentEntity, sc);
+                        if (success) {
+                            BOOM_INFO("[Inspector] Manually reloaded script instance (InstanceId={})", sc.InstanceId);
+                        } else {
+                            BOOM_ERROR("[Inspector] Failed to reload script instance");
+                        }
+                    }
 
-                if (ImGui::Button("Hot Reload All Scripts (DLL)", ImVec2(-1, 0))) {
-                    if (scripting) {
-                        scripting->ReloadScripts();
-                        BOOM_INFO("[Inspector] Hot reloaded all scripts from DLL!");
+                    if (ImGui::Button("Hot Reload All Scripts (DLL)", ImVec2(-1, 0))) {
+                        bool success = scripting->ReloadScripts();
+                        if (success) {
+                            BOOM_INFO("[Inspector] Hot reloaded all scripts from DLL!");
+                        } else {
+                            BOOM_ERROR("[Inspector] Hot reload failed!");
+                        }
                     }
                 }
 
