@@ -168,6 +168,20 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_ShowPauseMenu();
 
+        // Death
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_UnloadDeathMenu();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_ShowDeathMenu();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern bool Boom_API_IsDeathMenuLoaded();
+        // End Death
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetPlayerDead(bool isDead);
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_TogglePause();
 
@@ -186,6 +200,9 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static int Boom_API_AI_GetMode(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetNavAgentActive(ulong handle, bool active);
 
         //Animator Stuff
 
@@ -277,6 +294,12 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern bool Boom_API_Check2DViewportClick(ulong handle, float mouseX, float mouseY);
 
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Boom_API_IsControllerGrounded(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_MoveController(ulong handle, ref Vec3 displacement, float minDist, float dt);
+
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Boom_API_Linecast(ref Vec3 from, ref Vec3 to, ulong ignoreEntity);
@@ -315,6 +338,16 @@ namespace Boom
         internal extern static void Boom_API_SetSpriteAlpha(ulong handle, float alpha);
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_SetSpriteTexture(ulong handle, string texturePath);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_CreateController(ulong handle, float radius, float height);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_TeleportController(ulong handle, ref Vec3 pos);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static ulong[] Boom_API_GetControllerTriggerOverlaps(ulong handle);
+
     }
 
     // ========= DELEGATES =========
@@ -421,6 +454,12 @@ namespace Boom
             int mode = Native.Boom_API_AI_GetMode(h);
             return (AIMode)mode;
         }
+
+        public static void SetNavAgentActive(ulong h, bool active)
+        {
+            Native.Boom_API_SetNavAgentActive(h, active);
+        }
+
         // ===== Transform with validation =====
         public static Vec3 GetPosition(ulong h)
         {
@@ -638,6 +677,12 @@ namespace Boom
         public static void TogglePause() => Native.Boom_API_TogglePause();
         public static int GetApplicationState() => Native.Boom_API_GetApplicationState();
         public static bool IsPauseMenuLoaded() => Native.Boom_API_IsPauseMenuLoaded();
+
+        // Death
+        public static void UnloadDeathMenu() => Native.Boom_API_UnloadDeathMenu();
+        public static void ShowDeathMenu() => Native.Boom_API_ShowDeathMenu();
+        public static bool IsDeathMenuLoaded() => Native.Boom_API_IsDeathMenuLoaded();
+        public static void SetPlayerDead(bool isDead) => Native.Boom_API_SetPlayerDead(isDead);
 
         // ===== Animator =====
         public static void AnimatorSetFloat(ulong h, string n, float v) => Native.Boom_API_AnimatorSetFloat(h, n, v);
@@ -863,6 +908,15 @@ namespace Boom
 
         // Raycasting
         public static ulong PickGameEntity() => Native.Boom_API_PickGameEntity();
+        public static void MoveController(ulong h, Vec3 displacement, float minDist, float dt)
+        {
+            Native.Boom_API_MoveController(h, ref displacement, minDist, dt);
+        }
+
+        public static bool IsControllerGrounded(ulong h)
+        {
+            return Native.Boom_API_IsControllerGrounded(h);
+        }
         public static bool GetMousePosInViewport(out Vec2 outPos)
         {
             return Native.Boom_API_GetMousePosInViewport(out outPos);
@@ -940,6 +994,21 @@ namespace Boom
             Native.Boom_API_SetSpriteTexture(entity, texturePath);
         }
 
+        public static void CreateController(ulong handle, float radius, float height)
+        {
+            Native.Boom_API_CreateController(handle, radius, height);
+        }
+
+        public static void TeleportController(ulong entity, Vec3 pos)
+        {
+            Native.Boom_API_TeleportController(entity, ref pos);
+        }
+
+        public static ulong[] GetControllerTriggerOverlaps(ulong entity)
+        {
+            return Native.Boom_API_GetControllerTriggerOverlaps(entity) ?? new ulong[0];
+        }
+
         // ===== GLFW key codes =====
         public const int KEY_LEFT = 263;
         public const int KEY_RIGHT = 262;
@@ -958,6 +1027,8 @@ namespace Boom
         public const int KEY_Q = 81;
         public const int KEY_LEFT_CONTROL = 341;
         public const int KEY_LEFT_SHIFT = 340;
+        public const int KEY_F = 70; // Freeze / Pickup
+        public const int KEY_G = 71; // Use Ability
 
         public const int MOUSE_LEFT = 0;
         public const int MOUSE_RIGHT = 1;

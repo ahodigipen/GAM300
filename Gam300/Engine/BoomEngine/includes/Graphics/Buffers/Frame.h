@@ -121,6 +121,9 @@ namespace Boom {
 		BOOM_INLINE int32_t GetHeight() const {
 			return height;
 		}
+		BOOM_INLINE uint32_t GetBufferId() const {
+			return buffId;
+		}
 
 	private:
 		BOOM_INLINE void CreateColorAttachment(GLenum internalFormat, GLenum format) {

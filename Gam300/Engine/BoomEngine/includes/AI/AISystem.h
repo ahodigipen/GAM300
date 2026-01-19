@@ -77,6 +77,8 @@ namespace Boom {
             for (auto e : view) {
                 auto& ai = view.get<AIComponent>(e);
 
+                if (!ai.active) continue;
+
                 BTNodePtr& root = m_trees[e];  // creates empty unique_ptr if missing
 
                 // 3) When Mode changes (ImGui) or no tree yet, rebuild it

@@ -25,6 +25,8 @@ namespace Boom {
  SPRITE,
  PAUSE_MENU_TAG,
  DEACTIVATED_TAG,
+ CHARACTER_CONTROLLER,
+ DEATH_MENU_TAG,
  COUNT
  };
  constexpr std::string_view COMPONENT_NAMES[]{
@@ -45,7 +47,9 @@ namespace Boom {
  "AI Component",         //14
  "Sprite",               //15
  "Pause Menu Tag",       //16
- "Deactived Tag"         //17
+ "Deactivated Tag",      //17
+ "Character Controller", //18
+ "Death Menu Tag"        //19
  };
 
  // transform component
@@ -721,6 +725,8 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
  };
  struct AIComponent {
  enum class AIMode : int { Auto = 0, Idle = 1, Patrol = 2, Seek = 3 };
+
+ bool active = true;
  AIMode mode = AIMode::Auto;   // exposed in Inspector
  AIMode lastMode = AIMode::Auto;
  float detectRadius = 8.0f;    // start seeking when within this distance
@@ -739,6 +745,7 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
 
  XPROPERTY_DEF
  ("AIComponent", AIComponent
+ , obj_member<"Active", &AIComponent::active>
  , obj_member<"DetectRadius", &AIComponent::detectRadius>
  , obj_member<"LoseRadius", &AIComponent::loseRadius>
  , obj_member<"IdleWait", &AIComponent::idleWait>
@@ -773,6 +780,17 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
         )
     };
 
+ struct DeathMenuTagComponent {
+     BOOM_INLINE DeathMenuTagComponent(const DeathMenuTagComponent&) = default;
+     BOOM_INLINE DeathMenuTagComponent() = default;
+
+     bool isTag = true;
+
+     XPROPERTY_DEF(
+         "DeathMenuTagComponent", DeathMenuTagComponent
+     )
+ };
+
     struct SceneNavmeshComponent {
         std::string navmeshFile;   // e.g. "Resources/NavData/level1.bin"
         float ambientStrength = 0.5f;  // Default ambient light strength for the scene
@@ -791,7 +809,32 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
             "DeactivatedComponent", DeactivatedComponent
         )
     };
-   
+
+    // Character Controller Component (PxController wrapper)
+    struct CharacterControllerComponent {
+        BOOM_INLINE CharacterControllerComponent(const CharacterControllerComponent&) = default;
+        BOOM_INLINE CharacterControllerComponent() = default;
+
+        // Configuration (serialized to YAML)
+        float radius = 0.5f;
+        float height = 2.0f;
+        float stepOffset = 0.3f;
+        float contactOffset = 0.1f;
+        float slopeLimit = 45.0f;
+        glm::vec3 localOffset = glm::vec3(0.0f); // NEW: Local offset from entity transform
+        bool isCreated = false;
+
+        XPROPERTY_DEF(
+            "CharacterControllerComponent", CharacterControllerComponent,
+            obj_member<"Radius", &CharacterControllerComponent::radius>,
+            obj_member<"Height", &CharacterControllerComponent::height>,
+            obj_member<"StepOffset", &CharacterControllerComponent::stepOffset>,
+            obj_member<"ContactOffset", &CharacterControllerComponent::contactOffset>,
+            obj_member<"LocalOffset", &CharacterControllerComponent::localOffset>,
+            obj_member<"SlopeLimit", &CharacterControllerComponent::slopeLimit>
+        )
+    };
+
     struct Entity
     {
         BOOM_INLINE Entity(EntityRegistry* registry, EntityID entity) :
@@ -1042,6 +1085,11 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
         // Copy PauseMenuTagComponent
         if (reg.all_of<PauseMenuTagComponent>(source)) {
             reg.emplace<PauseMenuTagComponent>(duplicate);
+        }
+
+        // Copy DeathMenuTagComponent
+        if (reg.all_of<DeathMenuTagComponent>(source)) {
+            reg.emplace<DeathMenuTagComponent>(duplicate);
         }
 
         // Copy DeactivatedComponent

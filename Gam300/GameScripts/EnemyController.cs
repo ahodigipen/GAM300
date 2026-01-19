@@ -71,6 +71,13 @@ namespace GameScripts
         {
             if (!API.HasTransform(Entity)) return;
 
+            // --- FREEZE CHECK ---
+            if (FreezeManager.IsFrozen(API.GetPosition(Entity)))
+            {
+                // Return early to disable rotation and vision detection
+                return;
+            }
+
             // Update vision system
             _vision?.OnUpdate(dt);
 
@@ -223,7 +230,7 @@ namespace GameScripts
             {
                 _hasDealtDamage = true;
                 API.Log($"[EnemyController] Dealing damage to player!");
-                PlayerManager.NotifyPlayerCaught(Entity);
+                PlayerManager.NotifyPlayerCaught(Entity); // Comment out to test freeze
             }
         }
 

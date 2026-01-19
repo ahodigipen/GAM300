@@ -25,6 +25,9 @@ uniform mat4 frustumMat; // proj * view
 
 uniform mat4 jointsMat[MAX_JOINTS];
 uniform bool hasJoints = false;
+uniform mat4 u_lightSpace;
+
+out vec4 fragPosLightSpace;
 
 void main() {
     mat4 transform = mat4(1.0);
@@ -38,12 +41,13 @@ void main() {
         }
     }
 
-    vertex.uv = vec2(uv.x, 1.0 - uv.y); //flip vertically due to opengl rendering logic
+    vertex.uv = vec2(uv.x, uv.y); //flip vertically due to opengl rendering logic
     transform = modelMat * transform;
     vertex.normal = mat3(transform) * normal;
     vertex.position = (transform * vec4(position, 1.0)).xyz;
     gl_Position = frustumMat * transform * vec4(position, 1.0);
     vertex.TBN = mat3(transform) * mat3(tangent, biTangent, normal);
+    fragPosLightSpace = u_lightSpace * vec4(vertex.position, 1.0);
 }
 ==VERTEX==
 
@@ -55,6 +59,9 @@ in Vertex {
     mat3 TBN;
     vec2 uv;
 } vertex;
+
+//shadow in vec4 pos
+in vec4 fragPosLightSpace;
 
 struct Material {
     vec3 emissive;
@@ -135,16 +142,81 @@ uniform vec3 viewPos;
 uniform bool isDebugMode;
 uniform bool showNormalTexture;
 
-// shadow mapping
-uniform mat4 u_lightSpace;
+// shadow mapping - directional light
 uniform sampler2D u_depthMap;
+uniform bool u_enableShadows = false;
+
+// shadow mapping - spot lights
+#define MAX_SPOT_SHADOW_LIGHTS 4
+uniform sampler2D u_spotDepthMaps[MAX_SPOT_SHADOW_LIGHTS];
+uniform mat4 u_spotLightSpaceMatrices[MAX_SPOT_SHADOW_LIGHTS];
+uniform int u_numSpotShadows = 0;
+
 float ComputeShadow()
 {
-  vec4 pos = u_lightSpace * vec4(vertex.position, 1.0);
-  vec3 uvs = (pos.xyz / pos.w) * 0.5 + 0.5;
-  float depth = texture(u_depthMap, uvs.xy).r;
+  // Early return if shadows are disabled
+  if (!u_enableShadows) return 0.0;
 
-  return pos.z > depth ? 1.0 : 0.0;
+  vec3 uvs = (fragPosLightSpace.xyz / fragPosLightSpace.w) * 0.5 + 0.5;
+
+  // Check if fragment is outside light frustum
+  if(uvs.x < 0.0 || uvs.x > 1.0 || uvs.y < 0.0 || uvs.y > 1.0 || uvs.z > 1.0)
+    return 0.0; // not in shadow
+
+  // Add bias to reduce shadow acne
+  // Increase if you see shadow acne (noise)
+  // Decrease if shadows float (peter panning)
+  float bias = 0.005;
+
+  // PCF (Percentage Closer Filtering) for softer shadows
+  float shadow = 0.0;
+  vec2 texelSize = 1.0 / textureSize(u_depthMap, 0);
+
+  // 3x3 PCF kernel - samples 9 points around the fragment
+  for(int x = -1; x <= 1; ++x)
+  {
+    for(int y = -1; y <= 1; ++y)
+    {
+      float pcfDepth = texture(u_depthMap, uvs.xy + vec2(x, y) * texelSize).r;
+      shadow += uvs.z - bias > pcfDepth ? 1.0 : 0.0;
+    }
+  }
+
+  // Average the 9 samples for soft shadow edges
+  return shadow / 9.0;
+}
+
+// Compute shadow for a specific spot light
+float ComputeSpotShadow(int lightIndex)
+{
+  // Check if this light has shadow mapping enabled
+  if (lightIndex < 0 || lightIndex >= u_numSpotShadows) return 0.0;
+
+  // Transform fragment position to light space
+  vec4 fragPosSpotLight = u_spotLightSpaceMatrices[lightIndex] * vec4(vertex.position, 1.0);
+  vec3 uvs = (fragPosSpotLight.xyz / fragPosSpotLight.w) * 0.5 + 0.5;
+
+  // Check if fragment is outside light frustum
+  if(uvs.x < 0.0 || uvs.x > 1.0 || uvs.y < 0.0 || uvs.y > 1.0 || uvs.z > 1.0)
+    return 0.0; // not in shadow (outside light cone)
+
+  float bias = 0.005;
+
+  // PCF for softer shadows
+  float shadow = 0.0;
+  vec2 texelSize = 1.0 / textureSize(u_spotDepthMaps[lightIndex], 0);
+
+  // 3x3 PCF kernel
+  for(int x = -1; x <= 1; ++x)
+  {
+    for(int y = -1; y <= 1; ++y)
+    {
+      float pcfDepth = texture(u_spotDepthMaps[lightIndex], uvs.xy + vec2(x, y) * texelSize).r;
+      shadow += uvs.z - bias > pcfDepth ? 1.0 : 0.0;
+    }
+  }
+
+  return shadow / 9.0;
 }
 
 //this effect influences the appearance of surfaces
@@ -217,25 +289,27 @@ void main() {
 
     //fresnel reflectivity
     vec3 f0 = mix(vec3(0.04), albedo, metallic);
-         
-    vec3 ambient = ambientStrength * albedo;
-    //lights
-    vec3 color = ComputePointLights(N, V, f0, albedo, roughness, metallic) + 
-                ComputeDirLights(N, V, f0, albedo, roughness, metallic) + 
-                ComputeSpotLights(N, V, f0, albedo, roughness, metallic);
-    
-    //shadows, occ and em
-//    color = (color * occlusion) + emissive;
-//    color *= 1.0 - ComputeShadow();
-// float shadow = ComputeShadow();
-//
-//    // direct light
-    color = color * (1.0 - ComputeShadow()) * occlusion;
 
-    // ambient: only AO, not shadowed
+    vec3 ambient = ambientStrength * albedo;
+
+    // Calculate shadow factor once
+    float shadow = ComputeShadow();
+
+    // Lights - shadows only affect directional lights
+    vec3 pointLight = ComputePointLights(N, V, f0, albedo, roughness, metallic);
+    vec3 dirLight = ComputeDirLights(N, V, f0, albedo, roughness, metallic);
+    vec3 spotLight = ComputeSpotLights(N, V, f0, albedo, roughness, metallic);
+
+    // Apply shadow only to directional light
+    vec3 color = pointLight + (dirLight * (1.0 - shadow)) + spotLight;
+
+    // Apply occlusion to all lighting
+    color = color * occlusion;
+
+    // Add ambient light (not affected by shadows, only by AO)
     color += ambient * occlusion;
 
-  
+    // Add emissive (not affected by lighting or shadows)
     color += emissive;
 
     if (dot(color,BLOOM_THRESHOLD)>1.0) {
@@ -381,13 +455,20 @@ vec3 ComputeSpotLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, fl
         float dist        = length(lightPos - vertex.position);
         float attenuation = intensity / (dist * dist);
 
-        // 
+        // Compute shadow for this spot light (only first MAX_SPOT_SHADOW_LIGHTS can cast shadows)
+        float shadow = 0.0;
+        if (i < MAX_SPOT_SHADOW_LIGHTS && u_enableShadows) {
+            shadow = ComputeSpotShadow(i);
+        }
+
+        // Apply shadow to light contribution
         result += (diffuse + specular) *
                   radiance *
                   intensity *
                   attenuation *
                   nDotL *
-                  spotFactor;
+                  spotFactor *
+                  (1.0 - shadow);
     }
 
     return result;

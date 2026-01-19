@@ -102,13 +102,13 @@ ENTITIES:
       UID: 12363776012929465708
     TransformComponent:
       Transform:
-        Translate: [-0.499514699, 1.51802635, 1.51343977]
-        Rotate: [0.31400001, -0.68599999, -1.57000005]
-        Scale: [0.100000001, 0.100000001, 0.100000001]
+        Translate: [-0.499514699, 3.09964633, 1.51343977]
+        Rotate: [0.313998967, -14.5109997, -1.56999195]
+        Scale: [0.100000001, 0.100000001, 0.100006118]
     SpotLightComponent:
       Light:
         Radiance: [1, 1, 1]
-        Intensity: 3.79999995
+        Intensity: 3.8599999
         FallOff: 0.730000019
         CutOff: 0.499000013
   - InfoComponent:
@@ -118,7 +118,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
-        Rotate: [-1.88499999, -0.685000002, -0.312999994]
+        Rotate: [-83.5770035, -0.685000002, 44.9319992]
         Scale: [1, 1, 1]
     DirectLightComponent:
       Light:
@@ -151,8 +151,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-0.0222550929, 3.22613192, 4.05554438]
-        Rotate: [-28.1274986, 5.125, 0]
+        Translate: [1.27251744, 3.38842225, 2.7138021]
+        Rotate: [-17.8149986, 12.4375, 0]
         Scale: [1, 1, 1]
     CameraComponent:
       Camera:
@@ -176,11 +176,11 @@ ENTITIES:
       UID: 6042260349840611439
     TransformComponent:
       Transform:
-        Translate: [-0.244383037, 0.569547296, 1.88206768]
-        Rotate: [0, 0, 0]
-        Scale: [0.5, 0.5, 0.5]
+        Translate: [-0.244383037, 0.611718833, 1.88206768]
+        Rotate: [12.5285921, 3.01809025, -53.5438538]
+        Scale: [0.499985904, 0.499989063, 0.499994665]
     ModelComponent:
-      ModelID: 11565258723769024311
+      ModelID: 7633162898494281895
       MaterialID: 11573253777835523025
       ModelName: ""
       MaterialName: ""

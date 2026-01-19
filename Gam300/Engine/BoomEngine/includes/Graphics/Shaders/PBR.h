@@ -2,6 +2,7 @@
 #include "Shader.h"
 #include "../Utilities/Data.h"
 #include "../Models/Model.h"
+#include "Shadow.h"  // For MAX_SPOT_SHADOW_LIGHTS
 
 namespace Boom {
 	//UBO must also change in pbr.glsl limits
@@ -61,6 +62,7 @@ namespace Boom {
 			, ambientStrengthLoc{ GetUniformVar("ambientStrength") }
 			, u_LightSpace{ GetUniformVar("u_lightSpace") }
 			, u_DepthMap{ GetUniformVar("u_depthMap") }
+			, u_EnableShadows{ GetUniformVar("u_enableShadows") }
 		{
 			GLuint prog = shaderId; 
 
@@ -141,6 +143,38 @@ namespace Boom {
 			// set view projection matrix
 			SetUniform(u_LightSpace, lightSpaceMtx);
 		}
+		BOOM_INLINE void SetShadowsEnabled(bool enabled)
+		{
+			SetUniform(u_EnableShadows, enabled);
+		}
+
+		// === Spot Light Shadow Functions ===
+		BOOM_INLINE void SetSpotShadowCount(int count)
+		{
+			SetUniform(GetUniformVar("u_numSpotShadows"), glm::min(count, MAX_SPOT_SHADOW_LIGHTS));
+		}
+
+		BOOM_INLINE void SetSpotShadowMap(int index, uint32_t depthMap)
+		{
+			if (index < 0 || index >= MAX_SPOT_SHADOW_LIGHTS) return;
+
+			// Spot shadow maps start at texture unit 8 (after material textures)
+			int textureUnit = 8 + index;
+			glActiveTexture(GL_TEXTURE0 + textureUnit);
+			glBindTexture(GL_TEXTURE_2D, depthMap);
+
+			std::string uniformName = "u_spotDepthMaps[" + std::to_string(index) + "]";
+			SetUniform(GetUniformVar(uniformName.c_str()), textureUnit);
+		}
+
+		BOOM_INLINE void SetSpotLightSpaceMatrix(int index, const glm::mat4& matrix)
+		{
+			if (index < 0 || index >= MAX_SPOT_SHADOW_LIGHTS) return;
+
+			std::string uniformName = "u_spotLightSpaceMatrices[" + std::to_string(index) + "]";
+			SetUniform(GetUniformVar(uniformName.c_str()), matrix);
+		}
+
 	public:
 		BOOM_INLINE void SetEnvMaps(uint32_t, uint32_t, uint32_t, uint32_t depthMap) {
 			Use();
@@ -162,6 +196,7 @@ namespace Boom {
 		}
 
 		BOOM_INLINE void SetMaterial(PbrMaterial const& material, int32_t unit) {
+			glActiveTexture(GL_TEXTURE0 + unit);  // Switch to material's starting unit to avoid unbinding depth map on unit 0
 			glBindTexture(GL_TEXTURE_2D, 0);
 			SetUniform(albedoLoc, material.albedo);
 			SetUniform(roughLoc, material.roughness);
@@ -284,6 +319,7 @@ namespace Boom {
 
 		int32_t u_LightSpace = 0;
 		int32_t u_DepthMap = 0;
+		int32_t u_EnableShadows = 0;
 
 		int32_t ambientStrengthLoc;
 	};
