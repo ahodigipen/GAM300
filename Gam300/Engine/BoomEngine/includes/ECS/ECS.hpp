@@ -49,7 +49,7 @@ namespace Boom {
  "Sprite",               //15
  "Pause Menu Tag",       //16
  "Deactived Tag",        //17
- "Video"                 //18
+ "Video"          ,      //18
  "Deactivated Tag",      //19
  "Character Controller", //20
  "Death Menu Tag"        //21
