@@ -268,7 +268,6 @@ namespace Boom {
             return;
         }
 
-        // Construct ECS wrapper and call PhysicsContext API directly (CreateControllerForEntity is not public).
         Entity entity{ &s_Ctx->scene, e };
 
         if (s_Ctx->physics->HasController(entity)) {
@@ -276,13 +275,61 @@ namespace Boom {
             return;
         }
 
+        // Ensure CharacterControllerComponent exists and is synced with the values
+        if (!s_Ctx->scene.any_of<CharacterControllerComponent>(e)) {
+            s_Ctx->scene.emplace<CharacterControllerComponent>(e);
+        }
+
+        // Update the component with the values being used to create the controller
+        auto& cc = s_Ctx->scene.get<CharacterControllerComponent>(e);
+        cc.radius = radius;
+        cc.height = height;
+
         if (s_Ctx->physics->CreateCapsuleController(entity, radius, height)) {
+            cc.isCreated = true;
             BOOM_INFO("[ScriptBinding] Created capsule controller for entity {} (r={}, h={})", static_cast<uint32_t>(e), radius, height);
         }
         else {
             BOOM_WARN("[ScriptBinding] Failed to create capsule controller for entity {}", static_cast<uint32_t>(e));
         }
     }
+
+    static void ICALL_API_TeleportController(uint64_t handle, glm::vec3* pos) {
+        if (!s_Ctx || !pos) return;
+        uint32_t entityID = static_cast<uint32_t>(handle);
+
+        entt::entity e = static_cast<entt::entity>(entityID);
+        if (e == entt::null || !s_Ctx->scene.valid(e)) {
+            BOOM_WARN("[ScriptBinding] TeleportController: Invalid entity {}", entityID);
+            return;
+        }
+
+        // Create a named Entity lvalue and pass it by reference (required by HasController).
+        Entity entity{ &s_Ctx->scene, e };
+
+        if (s_Ctx->physics && s_Ctx->physics->HasController(entity)) {
+            s_Ctx->physics->SetControllerPosition(entityID, *pos);
+        }
+        else {
+            BOOM_WARN("[ScriptBinding] TeleportController: Entity {} has no controller", entityID);
+        }
+    }
+
+    static MonoArray* ICALL_API_GetControllerTriggerOverlaps(uint64_t handle) {
+        if (!s_Ctx || !s_Ctx->physics) return nullptr;
+
+        uint32_t entityID = static_cast<uint32_t>(handle);
+        std::vector<EntityID> overlaps = s_Ctx->physics->GetControllerTriggerOverlaps(entityID);
+
+        // Create a C# array to return
+        MonoArray* result = mono_array_new(mono_domain_get(), mono_get_uint64_class(), overlaps.size());
+        for (size_t i = 0; i < overlaps.size(); i++) {
+            mono_array_set(result, uint64_t, i, static_cast<uint64_t>(static_cast<uint32_t>(overlaps[i])));
+        }
+
+        return result;
+    }
+
 
     static bool ICALL_API_IsColliding(uint64_t handle)
     {
@@ -374,6 +421,7 @@ namespace Boom {
         }
     }
 
+    // Pause Menu
     static void ICALL_API_UnloadPauseMenu() {
         if (!s_Ctx || !s_Ctx->app) return;
         s_Ctx->app->UnloadAdditiveScene<PauseMenuTagComponent>();
@@ -384,15 +432,48 @@ namespace Boom {
         s_Ctx->app->ShowAdditiveScene<PauseMenuTagComponent>();
     }
 
-    static void ICALL_API_TogglePause() {
-        if (s_Ctx && s_Ctx->app) {
-            s_Ctx->app->TogglePause();
-        }
+    static bool ICALL_API_IsPauseMenuLoaded() {
+        if (!s_Ctx) return false;
+        // Check if any entity in the scene has the pause menu tag
+        auto view = s_Ctx->scene.view<PauseMenuTagComponent>();
+        return !view.empty();
     }
 
     static void ICALL_API_SetGameLogicPaused(bool isPaused) {
         if (s_Ctx && s_Ctx->app) {
             s_Ctx->app->SetGameLogicPaused(isPaused);
+        }
+    }
+    // End Pause Menu
+
+    // Death Menu
+    static void ICALL_API_UnloadDeathMenu() {
+        if (!s_Ctx || !s_Ctx->app) return;
+        s_Ctx->app->UnloadAdditiveScene<DeathMenuTagComponent>();
+    }
+
+    static void ICALL_API_ShowDeathMenu() {
+        if (!s_Ctx || !s_Ctx->app) return;
+        s_Ctx->app->ShowAdditiveScene<DeathMenuTagComponent>();
+    }
+
+    static bool ICALL_API_IsDeathMenuLoaded() {
+        if (!s_Ctx) return false;
+        // Check if any entity in the scene has the pause menu tag
+        auto view = s_Ctx->scene.view<DeathMenuTagComponent>();
+        return !view.empty();
+    }
+
+    static void ICALL_API_SetPlayerDead(bool isDead) {
+        if (s_Ctx && s_Ctx->app) {
+            s_Ctx->app->SetPlayerDead(isDead);
+        }
+    }
+    // End Death Menu
+
+    static void ICALL_API_TogglePause() {
+        if (s_Ctx && s_Ctx->app) {
+            s_Ctx->app->TogglePause();
         }
     }
 
@@ -417,12 +498,6 @@ namespace Boom {
         return (int)s_Ctx->app->GetState();
     }
 
-    static bool ICALL_API_IsPauseMenuLoaded() {
-        if (!s_Ctx) return false;
-        // Check if any entity in the scene has the pause menu tag
-        auto view = s_Ctx->scene.view<PauseMenuTagComponent>();
-        return !view.empty();
-    }
 	//AI Component functions
     static int ICALL_API_AI_GetPatrolPointCount(uint64_t entityHandle)
     {
@@ -1499,12 +1574,23 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_GetCurrentSceneName", (const void*)ICALL_API_GetCurrentSceneName);
         mono_add_internal_call("Boom.Native::Boom_API_QuitGame", (const void*)ICALL_API_QuitGame);
         mono_add_internal_call("Boom.Native::Boom_API_ShutdownApplication", (const void*)ICALL_API_ShutdownApplication); // CORRECT QUIT
+        
         mono_add_internal_call("Boom.Native::Boom_API_LoadSceneAdditive", (const void*)ICALL_API_LoadSceneAdditive);
+        // Pause
         mono_add_internal_call("Boom.Native::Boom_API_UnloadPauseMenu", (const void*)ICALL_API_UnloadPauseMenu);
         mono_add_internal_call("Boom.Native::Boom_API_ShowPauseMenu", (const void*)ICALL_API_ShowPauseMenu);
+        mono_add_internal_call("Boom.Native::Boom_API_IsPauseMenuLoaded", (const void*)ICALL_API_IsPauseMenuLoaded);
+        mono_add_internal_call("Boom.Native::Boom_API_SetGameLogicPaused", (const void*)ICALL_API_SetGameLogicPaused);
+
+        // Death
+        mono_add_internal_call("Boom.Native::Boom_API_UnloadDeathMenu", (const void*)ICALL_API_UnloadDeathMenu);
+        mono_add_internal_call("Boom.Native::Boom_API_ShowDeathMenu", (const void*)ICALL_API_ShowDeathMenu);
+        mono_add_internal_call("Boom.Native::Boom_API_IsDeathMenuLoaded", (const void*)ICALL_API_IsDeathMenuLoaded);
+        mono_add_internal_call("Boom.Native::Boom_API_SetPlayerDead", (const void*)ICALL_API_SetPlayerDead);
+
         mono_add_internal_call("Boom.Native::Boom_API_TogglePause", (const void*)ICALL_API_TogglePause);
         mono_add_internal_call("Boom.Native::Boom_API_GetApplicationState", (const void*)ICALL_API_GetApplicationState);
-        mono_add_internal_call("Boom.Native::Boom_API_IsPauseMenuLoaded", (const void*)ICALL_API_IsPauseMenuLoaded);
+        
         // Component checking functions
         mono_add_internal_call("Boom.Native::Boom_API_HasTransform", (const void*)ICALL_API_HasTransform);
         mono_add_internal_call("Boom.Native::Boom_API_HasScript", (const void*)ICALL_API_HasScript);
@@ -1575,7 +1661,6 @@ namespace Boom {
     
         mono_add_internal_call("Boom.Native::Boom_API_LinecastIgnoreBoth",(const void*)ICALL_API_LinecastIgnoreBoth);
 
-        mono_add_internal_call("Boom.Native::Boom_API_SetGameLogicPaused", (const void*)ICALL_API_SetGameLogicPaused);
         mono_add_internal_call("Boom.Native::Boom_API_EnableFileWatcher", (const void*)ICALL_API_EnableFileWatcher);
 
         mono_add_internal_call("Boom.Native::Boom_API_TeleportRigidBody", (void*)ICALL_API_TeleportRigidBody);
@@ -1584,6 +1669,8 @@ namespace Boom {
 
 		// Physics Controller internal calls
         mono_add_internal_call("Boom.Native::Boom_API_CreateController", (const void*)ICALL_API_CreateController);
+        mono_add_internal_call("Native::Boom_API_TeleportController", (void*)ICALL_API_TeleportController);
+        mono_add_internal_call("Boom.Native::Boom_API_GetControllerTriggerOverlaps", (const void*)ICALL_API_GetControllerTriggerOverlaps);
 
         // Sprite component internal calls
         mono_add_internal_call("Boom.Native::Boom_API_HasSprite", (const void*)ICALL_API_HasSprite);

@@ -118,7 +118,7 @@ namespace GameScripts
 
             try
             {
-                API.CreateController(Entity, 0.35f, 1.8f);
+                API.CreateController(Entity, 0.8f, 4.8f);
                 API.Log("[PlayerMovement] Character controller created successfully");
             }
             catch (Exception ex)
@@ -154,7 +154,8 @@ namespace GameScripts
             API.SetSoundVolume("player_damage", 1.0f);
 
             if (_health <= 0)
-                RestartLevel();
+                //RestartLevel();
+                Entry.TriggerPlayerDeath();
             else
                 StartRespawn();
         }

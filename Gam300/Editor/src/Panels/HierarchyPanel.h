@@ -38,6 +38,9 @@ namespace EditorUI {
         float curTime{};
         glm::vec3 startingCamPos{};
         glm::vec3 targetPos{};
+
+        // Search functionality
+        char m_SearchBuffer[256] = "";
     };
 
 } // namespace EditorUI

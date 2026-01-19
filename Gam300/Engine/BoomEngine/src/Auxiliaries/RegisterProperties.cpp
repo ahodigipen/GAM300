@@ -37,7 +37,8 @@ XPROPERTY_REG(ThirdPersonCameraComponent)
 XPROPERTY_REG(SpriteComponent)
 XPROPERTY_REG(PauseMenuTagComponent)
 XPROPERTY_REG(DeactivatedComponent)
-
+XPROPERTY_REG(CharacterControllerComponent)
+XPROPERTY_REG(DeathMenuTagComponent)
 //===============ASSETS================= 
 XPROPERTY_REG(MaterialAsset)
 XPROPERTY_REG(TextureAsset)
