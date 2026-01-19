@@ -54,6 +54,26 @@ namespace Boom {
         // Get available script types for dropdown
         std::vector<std::string> GetAvailableScriptTypes() const;
 
+        // ---- Editor-exposed field support ----
+        struct ExposedFieldInfo {
+            std::string fieldName;
+            std::string displayName;
+            std::string typeName;
+            std::string tooltip;
+            float minValue = -FLT_MAX;
+            float maxValue = FLT_MAX;
+            bool useSlider = false;
+        };
+
+        // Get exposed fields for a script type (calls C# ScriptRegistry)
+        std::vector<ExposedFieldInfo> GetExposedFields(const std::string& typeName) const;
+
+        // Get/set field values on a live script instance
+        std::string GetFieldValue(uint64_t instanceId, const std::string& fieldName) const;
+        bool SetFieldValue(uint64_t instanceId, const std::string& fieldName, const std::string& valueJson);
+
+        // Get the GC handle for an instance (for direct Mono operations if needed)
+        uint64_t GetInstanceGCHandle(uint64_t instanceId) const;
 
     private:
         MonoRuntime    m_Mono;

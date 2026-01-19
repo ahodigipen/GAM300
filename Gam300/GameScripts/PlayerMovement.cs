@@ -22,15 +22,31 @@ namespace GameScripts
     {
         public ulong Entity;
 
+        [Boom.EditorExposed("Walk Speed", "Base walking speed in m/s", 0.5f, 10f, true)]
         private float _walkSpeed = 3f;
+
+        [Boom.EditorExposed("Sprint Speed", "Running speed in m/s", 1f, 20f, true)]
         private float _sprintSpeed = 8f;
+
+        [Boom.EditorExposed("Sneak Speed", "Crouching/sneaking speed in m/s", 0.1f, 5f, true)]
         private float _sneakSpeed = 1.5f;
 
+        [Boom.EditorExposed("Health", "Current player health", 0, 10)]
         private int _health = 5;
+
+        [Boom.EditorExposed("Max Health", "Maximum player health", 1, 10)]
         private int _maxHealth = 5;
+        [Boom.EditorExposed("Spawn Point", "Checkpoint/respawn position")]
         private Vec3 _spawnPoint;
+
         private bool _isRespawning = false;
+        //private float _respawnDelay = 1.0f;
+        //private float _respawnTimer = 0f;
+
+        [Boom.EditorExposed("Is Invulnerable", "Whether player is currently invulnerable")]
         private bool _isInvulnerable = false;
+
+        [Boom.EditorExposed("Invulnerability Duration", "How long invulnerability lasts in seconds", 0.1f, 10f, true)]
         private float _invulnerabilityDuration = 2.0f;
         private float _invulnerabilityTimer = 0f;
 
@@ -53,9 +69,24 @@ namespace GameScripts
         private double _smoothedSpeed = 0.0;
         private bool _hasAnimator = false;
 
+        [Boom.EditorExposed("Roll Speed", "Speed during roll/dodge in m/s", 5f, 30f, true)]
         private float _rollSpeed = 14.0f;
+
+        [Boom.EditorExposed("Roll Duration", "How long the roll lasts in seconds", 0.1f, 2f, true)]
         private float _rollDuration = 0.9f;
+
+        [Boom.EditorExposed("Roll Cooldown", "Time between rolls in seconds", 0f, 2f, true)]
         private float _rollCooldown = 0.35f;
+
+        // ===== Audio Settings =====
+        [Boom.EditorExposed("Damage Sound", "Sound played when player takes damage")]
+        private string _damageSoundPath = "Resources/Audio/playerPunch_1.wav";
+
+        [Boom.EditorExposed("Death Sound", "Sound played when player dies")]
+        private string _deathSoundPath = "Resources/Audio/playerPunch_1.wav";
+
+        [Boom.EditorExposed("Checkpoint Sound", "Sound played when reaching a checkpoint")]
+        private string _checkpointSoundPath = "Resources/Audio/playerPunch_1.wav";
 
         private bool _isRolling = false;
         private float _rollTimer = 0f;
@@ -149,8 +180,8 @@ namespace GameScripts
             HUD.SetHealth(_health, _maxHealth);
 
             Vec3 playerPos = API.GetPosition(Entity);
-            API.PlaySoundAt("player_damage", "Resources/Audio/playerPunch_1.wav", playerPos, false);
-            API.Set3DMinMaxDistance("player_damage", 1.0f, 20.0f);
+            API.PlaySoundAt("player_damage", _damageSoundPath, playerPos, false);
+            API.Set3DMinMaxDistance("player_damage", 1.0f, 20.0f);  // Damage sound heard from medium distance
             API.SetSoundVolume("player_damage", 1.0f);
 
             if (_health <= 0)
@@ -174,8 +205,8 @@ namespace GameScripts
         private void RestartLevel()
         {
             Vec3 playerPos = API.GetPosition(Entity);
-            API.PlaySoundAt("player_death", "Resources/Audio/playerPunch_1.wav", playerPos, false);
-            API.Set3DMinMaxDistance("player_death", 2.0f, 30.0f);
+            API.PlaySoundAt("player_death", _deathSoundPath, playerPos, false);
+            API.Set3DMinMaxDistance("player_death", 2.0f, 30.0f);  // Death sound heard from further away
             API.SetSoundVolume("player_death", 1.0f);
             API.LoadScene(API.GetCurrentSceneName());
         }
@@ -195,8 +226,8 @@ namespace GameScripts
         public void UpdateCheckpoint(Vec3 newCheckpoint)
         {
             _spawnPoint = newCheckpoint;
-            API.PlaySoundAt("checkpoint_save", "Resources/Audio/playerPunch_1.wav", newCheckpoint, false);
-            API.Set3DMinMaxDistance("checkpoint_save", 1.0f, 15.0f);
+            API.PlaySoundAt("checkpoint_save", _checkpointSoundPath, newCheckpoint, false);
+            API.Set3DMinMaxDistance("checkpoint_save", 1.0f, 15.0f);  // Checkpoint sound
             API.SetSoundVolume("checkpoint_save", 0.8f);
         }
 
