@@ -26,13 +26,14 @@ namespace Boom {
 		MeshData<QuadVert> data;
 
 		data.vtx = {
-			{{-1.f, -1.f}, {0.f, 0.f}},
-			{{ 1.f, -1.f}, {1.f, 0.f}},
-			{{ 1.f,  1.f}, {1.f, 1.f}},
-			{{-1.f,  1.f}, {0.f, 1.f}}
+			{{-1.f, -1.f}, {0.f, 0.f}},  // 0: bottom-left
+			{{ 1.f, -1.f}, {1.f, 0.f}},  // 1: bottom-right
+			{{-1.f,  1.f}, {0.f, 1.f}},  // 2: top-left
+			{{ 1.f,  1.f}, {1.f, 1.f}}   // 3: top-right
 		};
+		// Correct triangle strip order: 0-1-2-3 creates two triangles
 		data.idx = {
-			3, 0, 2, 1
+			0, 1, 2, 3
 		};
 
 		return std::make_unique<Mesh<QuadVert>>(std::move(data));

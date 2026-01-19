@@ -32,6 +32,9 @@ namespace Boom {
         IMPLEMENT_COMPONENT_PROPERTY_API(PauseMenuTagComponent);
         IMPLEMENT_COMPONENT_PROPERTY_API(SceneNavmeshComponent);
         IMPLEMENT_COMPONENT_PROPERTY_API(DeactivatedComponent);
+        IMPLEMENT_COMPONENT_PROPERTY_API(CharacterControllerComponent)
+        IMPLEMENT_COMPONENT_PROPERTY_API(DeathMenuTagComponent);
+
         // Add more as needed - one line each
 
 } // namespace Boom

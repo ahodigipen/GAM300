@@ -10,6 +10,10 @@ namespace GameScripts
         private const bool WORLD_FORWARD_IS_NEG_Z = false;
         private const bool LOCK_IN_PLACE = false;
 
+        // Freeze
+        private bool _isFrozen = false;
+        private Vec3 _frozenPosition;
+
         private float _rotationSpeedDeg = 360f;
         private float _minSpeedToRotate = 0.15f;
         private float _yaw;
@@ -80,6 +84,52 @@ namespace GameScripts
         {
             if (Entity == 0 || dt <= 0f) return;
 
+            // --- FREEZE CHECK (FIXED) ---
+            bool currentlyFrozen = FreezeManager.IsFrozen(API.GetPosition(Entity));
+
+            if (currentlyFrozen)
+            {
+                if (!_isFrozen)
+                {
+                    _isFrozen = true;
+
+                    // 1. Capture exact position the moment we freeze
+                    _frozenPosition = API.GetPosition(Entity);
+
+                    API.SetNavAgentActive(Entity, false);
+                    API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
+
+                    if (API.HasAnimator(Entity))
+                    {
+                        API.AnimatorSetFloat(Entity, "Speed", 0f);
+                    }
+                    _smoothedSpeed = 0.0;
+                }
+
+                // 2. THE NUCLEAR OPTION: Teleport to the frozen spot every frame.
+                // This overrides all physics, gravity, and sliding instantly.
+                API.TeleportRigidBody(Entity, _frozenPosition);
+                API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
+
+                return; // Stop Logic
+            }
+            else
+            {
+                // If we were frozen last frame but are not anymore (Transition: Frozen -> Active)
+                if (_isFrozen)
+                {
+                    _isFrozen = false;
+
+                    // 1. Re-enable the Brain
+                    API.SetNavAgentActive(Entity, true);
+
+                    // 2. Optional: Restore animator speed if you paused it
+                    // API.SetAnimatorSpeed(Entity, 1f);
+                }
+            }
+
+            // --- NORMAL LOGIC BELOW ---
+
             var v = API.GetLinearVelocity(Entity);
             float speedXZ = (float)Math.Sqrt(v.X * v.X + v.Z * v.Z);
 
@@ -90,13 +140,6 @@ namespace GameScripts
                 _smoothedSpeed += (speedXZ - _smoothedSpeed) * Min(1.0, SPEED_SMOOTH * dt);
                 API.AnimatorSetFloat(Entity, "Speed", (float)_smoothedSpeed);
             }
-
-            //if (LOCK_IN_PLACE)
-            //{
-            //    API.SetLinearVelocity(Entity, new Vec3(0f, v.Y, 0f));
-            //    var p = API.GetPosition(Entity);
-            //    API.SetPosition(Entity, new Vec3(_anchorPos.X, p.Y, _anchorPos.Z));
-            //}
 
             // ======= DISCRETE FOOTSTEPS =======
             bool grounded = API.IsColliding(Entity);              // your RB “grounded” flag
