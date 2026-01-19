@@ -35,6 +35,7 @@ namespace Boom {
     DECLARE_COMPONENT_PROPERTY_API(SceneNavmeshComponent);
     DECLARE_COMPONENT_PROPERTY_API(DeactivatedComponent);
     DECLARE_COMPONENT_PROPERTY_API(CharacterControllerComponent);
+    DECLARE_COMPONENT_PROPERTY_API(DeathMenuTagComponent);
     // Add more as needed - one line each
 #undef DECLARE_COMPONENT_PROPERTY_API
 } // namespace Boom

@@ -128,6 +128,20 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_ShowPauseMenu();
 
+        // Death
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_UnloadDeathMenu();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_ShowDeathMenu();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern bool Boom_API_IsDeathMenuLoaded();
+        // End Death
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetPlayerDead(bool isDead);
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_TogglePause();
 
@@ -590,6 +604,12 @@ namespace Boom
         public static void TogglePause() => Native.Boom_API_TogglePause();
         public static int GetApplicationState() => Native.Boom_API_GetApplicationState();
         public static bool IsPauseMenuLoaded() => Native.Boom_API_IsPauseMenuLoaded();
+
+        // Death
+        public static void UnloadDeathMenu() => Native.Boom_API_UnloadDeathMenu();
+        public static void ShowDeathMenu() => Native.Boom_API_ShowDeathMenu();
+        public static bool IsDeathMenuLoaded() => Native.Boom_API_IsDeathMenuLoaded();
+        public static void SetPlayerDead(bool isDead) => Native.Boom_API_SetPlayerDead(isDead);
 
         // ===== Animator =====
         public static void AnimatorSetFloat(ulong h, string n, float v) => Native.Boom_API_AnimatorSetFloat(h, n, v);

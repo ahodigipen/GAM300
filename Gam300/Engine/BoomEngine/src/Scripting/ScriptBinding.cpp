@@ -421,6 +421,7 @@ namespace Boom {
         }
     }
 
+    // Pause Menu
     static void ICALL_API_UnloadPauseMenu() {
         if (!s_Ctx || !s_Ctx->app) return;
         s_Ctx->app->UnloadAdditiveScene<PauseMenuTagComponent>();
@@ -431,15 +432,48 @@ namespace Boom {
         s_Ctx->app->ShowAdditiveScene<PauseMenuTagComponent>();
     }
 
-    static void ICALL_API_TogglePause() {
-        if (s_Ctx && s_Ctx->app) {
-            s_Ctx->app->TogglePause();
-        }
+    static bool ICALL_API_IsPauseMenuLoaded() {
+        if (!s_Ctx) return false;
+        // Check if any entity in the scene has the pause menu tag
+        auto view = s_Ctx->scene.view<PauseMenuTagComponent>();
+        return !view.empty();
     }
 
     static void ICALL_API_SetGameLogicPaused(bool isPaused) {
         if (s_Ctx && s_Ctx->app) {
             s_Ctx->app->SetGameLogicPaused(isPaused);
+        }
+    }
+    // End Pause Menu
+
+    // Death Menu
+    static void ICALL_API_UnloadDeathMenu() {
+        if (!s_Ctx || !s_Ctx->app) return;
+        s_Ctx->app->UnloadAdditiveScene<DeathMenuTagComponent>();
+    }
+
+    static void ICALL_API_ShowDeathMenu() {
+        if (!s_Ctx || !s_Ctx->app) return;
+        s_Ctx->app->ShowAdditiveScene<DeathMenuTagComponent>();
+    }
+
+    static bool ICALL_API_IsDeathMenuLoaded() {
+        if (!s_Ctx) return false;
+        // Check if any entity in the scene has the pause menu tag
+        auto view = s_Ctx->scene.view<DeathMenuTagComponent>();
+        return !view.empty();
+    }
+
+    static void ICALL_API_SetPlayerDead(bool isDead) {
+        if (s_Ctx && s_Ctx->app) {
+            s_Ctx->app->SetPlayerDead(isDead);
+        }
+    }
+    // End Death Menu
+
+    static void ICALL_API_TogglePause() {
+        if (s_Ctx && s_Ctx->app) {
+            s_Ctx->app->TogglePause();
         }
     }
 
@@ -464,12 +498,6 @@ namespace Boom {
         return (int)s_Ctx->app->GetState();
     }
 
-    static bool ICALL_API_IsPauseMenuLoaded() {
-        if (!s_Ctx) return false;
-        // Check if any entity in the scene has the pause menu tag
-        auto view = s_Ctx->scene.view<PauseMenuTagComponent>();
-        return !view.empty();
-    }
 	//AI Component functions
     static int ICALL_API_AI_GetPatrolPointCount(uint64_t entityHandle)
     {
@@ -1597,12 +1625,23 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_GetCurrentSceneName", (const void*)ICALL_API_GetCurrentSceneName);
         mono_add_internal_call("Boom.Native::Boom_API_QuitGame", (const void*)ICALL_API_QuitGame);
         mono_add_internal_call("Boom.Native::Boom_API_ShutdownApplication", (const void*)ICALL_API_ShutdownApplication); // CORRECT QUIT
+        
         mono_add_internal_call("Boom.Native::Boom_API_LoadSceneAdditive", (const void*)ICALL_API_LoadSceneAdditive);
+        // Pause
         mono_add_internal_call("Boom.Native::Boom_API_UnloadPauseMenu", (const void*)ICALL_API_UnloadPauseMenu);
         mono_add_internal_call("Boom.Native::Boom_API_ShowPauseMenu", (const void*)ICALL_API_ShowPauseMenu);
+        mono_add_internal_call("Boom.Native::Boom_API_IsPauseMenuLoaded", (const void*)ICALL_API_IsPauseMenuLoaded);
+        mono_add_internal_call("Boom.Native::Boom_API_SetGameLogicPaused", (const void*)ICALL_API_SetGameLogicPaused);
+
+        // Death
+        mono_add_internal_call("Boom.Native::Boom_API_UnloadDeathMenu", (const void*)ICALL_API_UnloadDeathMenu);
+        mono_add_internal_call("Boom.Native::Boom_API_ShowDeathMenu", (const void*)ICALL_API_ShowDeathMenu);
+        mono_add_internal_call("Boom.Native::Boom_API_IsDeathMenuLoaded", (const void*)ICALL_API_IsDeathMenuLoaded);
+        mono_add_internal_call("Boom.Native::Boom_API_SetPlayerDead", (const void*)ICALL_API_SetPlayerDead);
+
         mono_add_internal_call("Boom.Native::Boom_API_TogglePause", (const void*)ICALL_API_TogglePause);
         mono_add_internal_call("Boom.Native::Boom_API_GetApplicationState", (const void*)ICALL_API_GetApplicationState);
-        mono_add_internal_call("Boom.Native::Boom_API_IsPauseMenuLoaded", (const void*)ICALL_API_IsPauseMenuLoaded);
+        
         // Component checking functions
         mono_add_internal_call("Boom.Native::Boom_API_HasTransform", (const void*)ICALL_API_HasTransform);
         mono_add_internal_call("Boom.Native::Boom_API_HasScript", (const void*)ICALL_API_HasScript);
@@ -1673,7 +1712,6 @@ namespace Boom {
     
         mono_add_internal_call("Boom.Native::Boom_API_LinecastIgnoreBoth",(const void*)ICALL_API_LinecastIgnoreBoth);
 
-        mono_add_internal_call("Boom.Native::Boom_API_SetGameLogicPaused", (const void*)ICALL_API_SetGameLogicPaused);
         mono_add_internal_call("Boom.Native::Boom_API_EnableFileWatcher", (const void*)ICALL_API_EnableFileWatcher);
 
         mono_add_internal_call("Boom.Native::Boom_API_TeleportRigidBody", (void*)ICALL_API_TeleportRigidBody);

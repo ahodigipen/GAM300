@@ -432,6 +432,7 @@ namespace Boom
 		*/
 		BOOM_INLINE bool IsPaused() const { return m_IsInPlayMode && m_AppState == ApplicationState::PAUSED; }
 
+		// In game pause
 		BOOM_INLINE bool IsInGamePauseMenuLoaded() const
 		{
 			if (!m_Context) return false;
@@ -569,96 +570,157 @@ namespace Boom
 
 		BOOM_INLINE bool LoadSceneAdditive(const std::string& sceneName, const std::string& scenePath = "Scenes/")
 		{
-			// --- MODIFIED ---
-			// This function now *only* loads from file if objects aren't already in the scene.
-			// It *always* leaves the objects in a deactivated state.
-
 			BOOM_INFO("[Scene] Checking for existing objects for: {}", sceneName.c_str());
 			auto& reg = m_Context->scene;
 
 			// 1. Check if objects *already exist* (activated or deactivated)
-			// We assume PauseMenuTagComponent as that's what we're caching
-			auto existingView = reg.view<PauseMenuTagComponent>();
-			if (!existingView.empty())
+			// --- CHECK BOTH TAGS ---
+			bool pauseExists = !reg.view<PauseMenuTagComponent>().empty();
+			bool deathExists = !reg.view<DeathMenuTagComponent>().empty();
+
+			// If the specific menu we are asking for already exists, skip load
+			// (Simple heuristic: if sceneName contains "Pause" check pause tag, else check death tag)
+			bool alreadyLoaded = false;
+			if (sceneName.find("Pause") != std::string::npos && pauseExists) alreadyLoaded = true;
+			if (sceneName.find("Death") != std::string::npos && deathExists) alreadyLoaded = true;
+
+			if (alreadyLoaded)
 			{
-				BOOM_INFO("[Scene] Objects for '{}' already exist in scene. Load unnecessary.", sceneName.c_str());
-				// Ensure they are deactivated, just in case
-				for (auto e : existingView) {
-					if (!reg.all_of<DeactivatedComponent>(e)) {
-						reg.emplace_or_replace<DeactivatedComponent>(e);
-					}
+				BOOM_INFO("[Scene] Objects for '{}' already exist. Ensuring they are deactivated.", sceneName.c_str());
+
+				// Ensure Pause Menu is hidden
+				for (auto e : reg.view<PauseMenuTagComponent>()) {
+					if (!reg.all_of<DeactivatedComponent>(e)) reg.emplace_or_replace<DeactivatedComponent>(e);
 				}
-				return true; // Already "loaded"
+				// Ensure Death Menu is hidden
+				for (auto e : reg.view<DeathMenuTagComponent>()) {
+					if (!reg.all_of<DeactivatedComponent>(e)) reg.emplace_or_replace<DeactivatedComponent>(e);
+				}
+				return true;
 			}
 
-			// --- If we are here, no objects were found at all. ---
-			// --- Proceed with the ORIGINAL slow load (first time only). ---
-
-			BOOM_INFO("[Scene] No existing objects found. Performing full additive load for '{}'", sceneName.c_str());
-
+			// --- LOAD FROM FILE ---
+			BOOM_INFO("[Scene] Performing full additive load for '{}'", sceneName.c_str());
 			DataSerializer serializer;
 			const std::string sceneFilePath = scenePath + sceneName + ".yaml";
-			BOOM_INFO("[Scene] Additively loading scene '{}'", sceneName, sceneFilePath);
-
 			serializer.Deserialize(m_Context->scene, *m_Context->assets, sceneFilePath);
 
-			// --- !!! THIS IS THE FIX !!! ---
-			// After deserializing, we must *DEACTIVATE* all newly loaded objects
-			// so they are hidden by default.
-			BOOM_INFO("[Scene] Deactivating newly deserialized objects...");
-			auto newlyLoadedView = m_Context->scene.view<PauseMenuTagComponent>();
-			int deactivatedCount = 0;
-			for (auto e : newlyLoadedView)
+			// --- NEW: Destroy newly-added menu entities that contain CameraComponent
+			// Rationale: when additive scenes are UI/menu scenes we don't want their cameras at all.
+			// Collect entities first (do not destroy while iterating views).
 			{
-				// Add the tag to hide it
-				reg.emplace_or_replace<DeactivatedComponent>(e);
-				deactivatedCount++;
-			}
-			if (deactivatedCount > 0) {
-				BOOM_INFO("[Scene] Added 'DeactivatedComponent' to %d newly loaded objects.", deactivatedCount);
-			}
-			// --- !!! END OF FIX !!! ---
+				std::vector<entt::entity> toDestroy;
 
+				for (auto e : reg.view<PauseMenuTagComponent, CameraComponent>()) toDestroy.push_back(e);
+				for (auto e : reg.view<DeathMenuTagComponent, CameraComponent>()) toDestroy.push_back(e);
 
-			BOOM_INFO("[Scene] Initializing physics for additive objects...");
-			auto view = m_Context->scene.view<PauseMenuTagComponent, RigidBodyComponent>();
-			for (auto e : view) {
-				auto& rb = view.get<RigidBodyComponent>(e);
-				if (!rb.RigidBody.actor) {
-					Boom::Entity entity{ &m_Context->scene, e };
-					m_Context->physics->AddRigidBody(entity, *m_Context->assets);
+				if (!toDestroy.empty()) {
+					BOOM_INFO("[Scene] Found {} additive menu entities with CameraComponent - destroying them to avoid camera duplication", (int)toDestroy.size());
+				}
+
+				for (auto e : toDestroy)
+				{
+					// Safety checks and per-entity cleanup BEFORE destroy.
+					// Release any physics actors attached to the entity so PhysX doesn't hold stale pointers.
+					if (reg.all_of<RigidBodyComponent>(e)) {
+						auto& rb = reg.get<RigidBodyComponent>(e);
+						if (rb.RigidBody.actor) {
+							rb.RigidBody.actor->release();
+							rb.RigidBody.actor = nullptr;
+						}
+					}
+					if (reg.all_of<ColliderComponent>(e)) {
+						auto& col = reg.get<ColliderComponent>(e);
+						if (col.Collider.actor) {
+							col.Collider.actor->release();
+							col.Collider.actor = nullptr;
+						}
+					}
+
+					// If a script instance was (unexpectedly) created, destroy it.
+					if (m_Context->scriptingSystem && reg.all_of<ScriptComponent>(e)) {
+						auto& sc = reg.get<ScriptComponent>(e);
+						if (sc.InstanceId != 0) {
+							m_Context->scriptingSystem->DestroyForEntity(e, sc);
+						}
+					}
+
+					// Finally destroy the entity entirely.
+					BOOM_INFO("[Scene] Destroying additive menu entity ({}) that contained a CameraComponent", static_cast<uint32_t>(e));
+					reg.destroy(e);
 				}
 			}
 
-			// --- NEW: Also initialize and deactivate collider-only objects ---
-			auto colliderView = reg.view<PauseMenuTagComponent, ColliderComponent>();
-			for (auto e : colliderView)
-			{
-				if (reg.all_of<RigidBodyComponent>(e)) continue; // Handled above
+			// --- 2. DEACTIVATE (HIDE) NEW OBJECTS ---
+			BOOM_INFO("[Scene] Deactivating newly deserialized objects...");
 
-				auto& col = colliderView.get<ColliderComponent>(e);
+			// Pause Menu Deactivation
+			for (auto e : m_Context->scene.view<PauseMenuTagComponent>()) {
+				reg.emplace_or_replace<DeactivatedComponent>(e);
+			}
+			// Death Menu Deactivation (NEW)
+			for (auto e : m_Context->scene.view<DeathMenuTagComponent>()) {
+				reg.emplace_or_replace<DeactivatedComponent>(e);
+			}
+
+			// --- 3. INITIALIZE PHYSICS (RigidBody) ---
+			BOOM_INFO("[Scene] Initializing physics...");
+
+			auto initPhysics = [&](auto entity, auto& rb) {
+				if (!rb.RigidBody.actor) {
+					Boom::Entity ent{ &m_Context->scene, entity };
+					m_Context->physics->AddRigidBody(ent, *m_Context->assets);
+				}
+				};
+
+			// Pause Menu Physics
+			auto pauseRbView = m_Context->scene.view<PauseMenuTagComponent, RigidBodyComponent>();
+			for (auto e : pauseRbView) initPhysics(e, pauseRbView.get<RigidBodyComponent>(e));
+
+			// Death Menu Physics (NEW)
+			auto deathRbView = m_Context->scene.view<DeathMenuTagComponent, RigidBodyComponent>();
+			for (auto e : deathRbView) initPhysics(e, deathRbView.get<RigidBodyComponent>(e));
+
+
+			// --- 4. INITIALIZE PHYSICS (Collider Only) ---
+			auto initCollider = [&](auto entity, auto& col) {
+				if (reg.all_of<RigidBodyComponent>(entity)) return;
 				if (!col.Collider.actor) {
-					Boom::Entity entity{ &m_Context->scene, e };
-					m_Context->physics->AddColliderOnly(entity, *m_Context->assets);
+					Boom::Entity ent{ &m_Context->scene, entity };
+					m_Context->physics->AddColliderOnly(ent, *m_Context->assets);
 				}
 				if (col.Collider.actor) {
 					col.Collider.actor->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, true);
 				}
-			}
+				};
 
-			BOOM_INFO("[Scene] Initializing C# scripts for additive objects...");
+			// Pause Menu Colliders
+			auto pauseColView = reg.view<PauseMenuTagComponent, ColliderComponent>();
+			for (auto e : pauseColView) initCollider(e, pauseColView.get<ColliderComponent>(e));
+
+			// Death Menu Colliders (NEW)
+			auto deathColView = reg.view<DeathMenuTagComponent, ColliderComponent>();
+			for (auto e : deathColView) initCollider(e, deathColView.get<ColliderComponent>(e));
+
+
+			// --- 5. INITIALIZE SCRIPTS ---
+			BOOM_INFO("[Scene] Initializing C# scripts...");
 			if (m_Context->scriptingSystem)
 			{
-				auto scriptView = m_Context->scene.view<PauseMenuTagComponent, ScriptComponent>();
-				for (auto e : scriptView)
-				{
-					auto& sc = scriptView.get<ScriptComponent>(e);
-					m_Context->scriptingSystem->RecreateForEntity(e, sc);
-				}
+				auto initScript = [&](auto entity, auto& sc) {
+					m_Context->scriptingSystem->RecreateForEntity(entity, sc);
+					};
+
+				// Pause Menu Scripts
+				auto pauseScriptView = m_Context->scene.view<PauseMenuTagComponent, ScriptComponent>();
+				for (auto e : pauseScriptView) initScript(e, pauseScriptView.get<ScriptComponent>(e));
+
+				// Death Menu Scripts (NEW)
+				auto deathScriptView = m_Context->scene.view<DeathMenuTagComponent, ScriptComponent>();
+				for (auto e : deathScriptView) initScript(e, deathScriptView.get<ScriptComponent>(e));
 			}
 
 			BOOM_INFO("[Scene] Successfully added and deactivated scene '{}'", sceneName);
-
 			return true;
 		}
 
@@ -717,6 +779,7 @@ namespace Boom
 			}
 		}
 
+		BOOM_INLINE void SetPlayerDead(bool isDead) { m_IsPlayerDead = isDead; }
 
 
 		BOOM_INLINE void LightsUpdate() {
@@ -1137,6 +1200,7 @@ namespace Boom
 		std::string m_PrePlayScenePath = "";
 		std::string m_PrePlayScene_OriginalPath = "";
 		bool m_IsInPlayMode = true;
+		bool m_IsPlayerDead = false;
 
 		Boom::AISystem                         m_AIagents;
 		Boom::NavAgentSystem                   m_NavAgents;

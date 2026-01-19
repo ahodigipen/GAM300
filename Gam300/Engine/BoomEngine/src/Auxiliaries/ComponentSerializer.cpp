@@ -582,8 +582,11 @@ namespace Boom
         // === SPRITE COMPONENT ===
         RegisterPropertyComponent<SpriteComponent>("SpriteComponent");
 
-        // === PAUSE MEN TAG COMPONENT ===
+        // === PAUSE MENU TAG COMPONENT ===
         RegisterPropertyComponent<PauseMenuTagComponent>("PauseMenuTagComponent");
+
+        // === DEATH MENU TAG COMPONENT ===
+        RegisterPropertyComponent<DeathMenuTagComponent>("DeathMenuTagComponent");
 
         // === DEACTIVATED COMPONENT ===
         RegisterPropertyComponent<DeactivatedComponent>("DeactivatedComponent");
