@@ -17,12 +17,27 @@ namespace GameScripts
         public ulong Entity;
 
         // Config
+        [Boom.EditorExposed("Door Name", "Name of the door entity to move")]
         private string _doorName = "MoveDoor";
+
+        [Boom.EditorExposed("Slide Distance", "Distance the door slides in meters", 0.1f, 20f, true)]
         private float _slideDistance = 5.5f;   // meters
+
+        [Boom.EditorExposed("Move Speed", "Speed of door movement in m/s", 0.1f, 10f, true)]
         private float _moveSpeed = 2.0f;       // m/s
+
+        [Boom.EditorExposed("Consume Key", "Whether opening the door uses up a key")]
         private bool _consumeKey = true;
+
+        [Boom.EditorExposed("Auto Close On Exit", "Whether the door closes when player leaves")]
         private bool _autoCloseOnExit = false;
+
+        [Boom.EditorExposed("Close Delay", "Delay before auto-closing in seconds", 0f, 5f, true)]
         private float _closeDelay = 0f;
+
+        // Audio
+        [Boom.EditorExposed("Door Sound", "Sound played when door opens/closes")]
+        private string _doorSoundPath = "Resources/Audio/unlock.wav";
 
         // Resolved door
         private ulong _door = 0;
@@ -141,7 +156,7 @@ namespace GameScripts
                     {
                         // 3D positional version (subject to distance & mono asset rules)
                         var pos = API.GetPosition(_door);
-                        API.PlaySoundAt("sfx_door_slide_open_3d", "Resources/Audio/unlock.wav", pos, false);
+                        API.PlaySoundAt("sfx_door_slide_open_3d", _doorSoundPath, pos, false);
                         API.SetSoundVolume("sfx_door_slide_open_3d", 1.0f);
                         API.Set3DMinMaxDistance("sfx_door_slide_open_3d", 1.5f, 35.0f);  // Door sounds heard from good distance
                         API.Log("[DoorTriggerLeft] Shift+K: played 3D positional door SFX.");
@@ -149,7 +164,7 @@ namespace GameScripts
                     else
                     {
                         // 2D guaranteed-audible fallback (no attenuation)
-                        API.PlaySound("sfx_door_slide_open_2d", "Resources/Audio/unlock.wav", false);
+                        API.PlaySound("sfx_door_slide_open_2d", _doorSoundPath, false);
                         API.SetSoundVolume("sfx_door_slide_open_2d", 1.0f);
                         API.Log("[DoorTriggerLeft] K: played 2D door SFX (always audible).");
                     }
@@ -194,7 +209,7 @@ namespace GameScripts
             inst._closing = false;
 
             var pos = API.GetPosition(inst._door);
-            API.PlaySound("sfx_door_slide_open_2d", "Resources/Audio/unlock.wav", false);
+            API.PlaySound("sfx_door_slide_open_2d", inst._doorSoundPath, false);
             API.SetSoundVolume("sfx_door_slide_open_2d", 1.0f);
             API.Log("[DoorTriggerLeft] K: played 2D door SFX (always audible).");
         }

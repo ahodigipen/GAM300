@@ -16,7 +16,10 @@ namespace GameScripts
         private static readonly Dictionary<ulong, CrouchTriggerZone> s_instances = new Dictionary<ulong, CrouchTriggerZone>();
 
         // Optional: Play a sound when entering the zone
+        [Boom.EditorExposed("Play Sound On Enter", "Whether to play a sound when player enters the zone")]
         private bool _playSoundOnEnter = false;
+
+        [Boom.EditorExposed("Enter Sound", "Sound played when player enters the crouch zone")]
         private string _enterSound = "Resources/Audio/ambient_warning.wav";
 
         public void OnStart(string jsonParams)

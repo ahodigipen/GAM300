@@ -8,8 +8,48 @@ using System.Runtime.InteropServices;
 
 namespace Boom
 {
+    /// <summary>
+    /// Mark a field as exposed to the editor inspector.
+    /// Fields marked with this attribute will appear in the IMGUI inspector.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+    public class EditorExposedAttribute : Attribute
+    {
+        public string DisplayName { get; }
+        public string Tooltip { get; }
+        public float MinValue { get; }
+        public float MaxValue { get; }
+        public bool UseSlider { get; }
 
-    
+        public EditorExposedAttribute(
+            string displayName = null,
+            string tooltip = null,
+            float min = float.MinValue,
+            float max = float.MaxValue,
+            bool useSlider = false)
+        {
+            DisplayName = displayName;
+            Tooltip = tooltip;
+            MinValue = min;
+            MaxValue = max;
+            UseSlider = useSlider;
+        }
+    }
+
+    /// <summary>
+    /// Represents field information for editor exposure
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ScriptFieldInfo
+    {
+        public string FieldName;
+        public string DisplayName;
+        public string TypeName;
+        public string Tooltip;
+        public float MinValue;
+        public float MaxValue;
+        public bool UseSlider;
+    }
 
     // Internal calls implemented in C++ and registered with Mono
     internal static class Native
@@ -194,6 +234,55 @@ namespace Boom
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_SetSoundPosition(string name, ref Vec3 position);
+
+        // ========= SOUND COMPONENT MANIPULATION =========
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern bool Boom_API_HasSoundComponent(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_AddSoundComponent(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern int Boom_API_GetSoundEntryCount(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_AddSoundEntry(ulong handle, string name, string filePath);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_RemoveSoundEntry(ulong handle, string name);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetSoundEntryVolume(ulong handle, string name, float volume);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetSoundEntryPitch(ulong handle, string name, float pitch);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetSoundEntryLoop(ulong handle, string name, bool loop);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetSoundEntryMute(ulong handle, string name, bool mute);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetSoundEntryPan(ulong handle, string name, float pan);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetSoundEntrySpatialBlend(ulong handle, string name, float blend);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetSoundEntryPriority(ulong handle, string name, int priority);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetSoundEntry3DDistance(ulong handle, string name, float minDist, float maxDist);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetSoundEntryPlayOnStart(ulong handle, string name, bool playOnStart);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_PlaySoundEntry(ulong handle, string name);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_StopSoundEntry(ulong handle, string name);
 
         // Raycasting & Main Menu
         [MethodImpl(MethodImplOptions.InternalCall)] 
@@ -696,6 +785,138 @@ namespace Boom
             Native.Boom_API_SetSoundPosition(name, ref position);
         }
 
+        // ===== SOUND COMPONENT API =====
+        // These methods modify the SoundComponent on an entity, which is visible in the Inspector
+        // and processed by SoundSystem for playback
+
+        /// <summary>
+        /// Check if entity has a SoundComponent
+        /// </summary>
+        public static bool HasSoundComponent(ulong entityHandle)
+        {
+            return Native.Boom_API_HasSoundComponent(entityHandle);
+        }
+
+        /// <summary>
+        /// Add a SoundComponent to an entity (if it doesn't have one)
+        /// </summary>
+        public static void AddSoundComponent(ulong entityHandle)
+        {
+            Native.Boom_API_AddSoundComponent(entityHandle);
+        }
+
+        /// <summary>
+        /// Get the number of sound entries in an entity's SoundComponent
+        /// </summary>
+        public static int GetSoundEntryCount(ulong entityHandle)
+        {
+            return Native.Boom_API_GetSoundEntryCount(entityHandle);
+        }
+
+        /// <summary>
+        /// Add a new sound entry to an entity's SoundComponent
+        /// </summary>
+        public static void AddSoundEntry(ulong entityHandle, string name, string filePath)
+        {
+            Native.Boom_API_AddSoundEntry(entityHandle, name, filePath);
+        }
+
+        /// <summary>
+        /// Remove a sound entry from an entity's SoundComponent by name
+        /// </summary>
+        public static void RemoveSoundEntry(ulong entityHandle, string name)
+        {
+            Native.Boom_API_RemoveSoundEntry(entityHandle, name);
+        }
+
+        /// <summary>
+        /// Set the volume of a sound entry (0.0 - 1.0)
+        /// </summary>
+        public static void SetSoundEntryVolume(ulong entityHandle, string name, float volume)
+        {
+            Native.Boom_API_SetSoundEntryVolume(entityHandle, name, volume);
+        }
+
+        /// <summary>
+        /// Set the pitch of a sound entry (0.5 = half speed, 1.0 = normal, 2.0 = double)
+        /// </summary>
+        public static void SetSoundEntryPitch(ulong entityHandle, string name, float pitch)
+        {
+            Native.Boom_API_SetSoundEntryPitch(entityHandle, name, pitch);
+        }
+
+        /// <summary>
+        /// Set whether a sound entry loops
+        /// </summary>
+        public static void SetSoundEntryLoop(ulong entityHandle, string name, bool loop)
+        {
+            Native.Boom_API_SetSoundEntryLoop(entityHandle, name, loop);
+        }
+
+        /// <summary>
+        /// Mute/unmute a sound entry
+        /// </summary>
+        public static void SetSoundEntryMute(ulong entityHandle, string name, bool mute)
+        {
+            Native.Boom_API_SetSoundEntryMute(entityHandle, name, mute);
+        }
+
+        /// <summary>
+        /// Set stereo pan of a sound entry (-1.0 = left, 0.0 = center, 1.0 = right)
+        /// </summary>
+        public static void SetSoundEntryPan(ulong entityHandle, string name, float pan)
+        {
+            Native.Boom_API_SetSoundEntryPan(entityHandle, name, pan);
+        }
+
+        /// <summary>
+        /// Set spatial blend of a sound entry (0.0 = 2D, 1.0 = 3D)
+        /// </summary>
+        public static void SetSoundEntrySpatialBlend(ulong entityHandle, string name, float blend)
+        {
+            Native.Boom_API_SetSoundEntrySpatialBlend(entityHandle, name, blend);
+        }
+
+        /// <summary>
+        /// Set priority of a sound entry (0-256, lower = higher priority)
+        /// </summary>
+        public static void SetSoundEntryPriority(ulong entityHandle, string name, int priority)
+        {
+            Native.Boom_API_SetSoundEntryPriority(entityHandle, name, priority);
+        }
+
+        /// <summary>
+        /// Set 3D distance settings for a sound entry
+        /// </summary>
+        public static void SetSoundEntry3DDistance(ulong entityHandle, string name, float minDist, float maxDist)
+        {
+            Native.Boom_API_SetSoundEntry3DDistance(entityHandle, name, minDist, maxDist);
+        }
+
+        /// <summary>
+        /// Set whether a sound entry plays on start
+        /// </summary>
+        public static void SetSoundEntryPlayOnStart(ulong entityHandle, string name, bool playOnStart)
+        {
+            Native.Boom_API_SetSoundEntryPlayOnStart(entityHandle, name, playOnStart);
+        }
+
+        /// <summary>
+        /// Trigger playback of a sound entry (sets playOnStart = true)
+        /// </summary>
+        public static void PlaySoundEntry(ulong entityHandle, string name)
+        {
+            Native.Boom_API_PlaySoundEntry(entityHandle, name);
+        }
+
+        /// <summary>
+        /// Stop a sound entry
+        /// </summary>
+        public static void StopSoundEntry(ulong entityHandle, string name)
+        {
+            Native.Boom_API_StopSoundEntry(entityHandle, name);
+        }
+
         public static bool LinecastIgnoreBoth(Vec3 from, Vec3 to, ulong ignoreEntity1, ulong ignoreEntity2)
         {
             return Native.Boom_API_LinecastIgnoreBoth(from, to, ignoreEntity1, ignoreEntity2);
@@ -906,6 +1127,452 @@ namespace GameScripts
             return hasOnStart || hasOnUpdate || hasOnDestroy;
         }
 
-        
+        /// <summary>
+        /// Get all exposed fields for a script type.
+        /// Returns JSON array with field info.
+        /// </summary>
+        public static string GetExposedFieldsJson(string typeName)
+        {
+            try
+            {
+                Type type = FindType(typeName);
+                if (type == null)
+                {
+                    Boom.API.Log($"[ScriptRegistry] Type not found: {typeName}");
+                    return "[]";
+                }
+
+                var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                    .Where(f => f.GetCustomAttribute<Boom.EditorExposedAttribute>() != null)
+                    .Select(f =>
+                    {
+                        var attr = f.GetCustomAttribute<Boom.EditorExposedAttribute>();
+                        return new
+                        {
+                            fieldName = f.Name,
+                            displayName = attr.DisplayName ?? FormatFieldName(f.Name),
+                            typeName = GetSimpleTypeName(f.FieldType),
+                            tooltip = attr.Tooltip ?? "",
+                            minValue = attr.MinValue,
+                            maxValue = attr.MaxValue,
+                            useSlider = attr.UseSlider
+                        };
+                    })
+                    .ToArray();
+
+                // Simple JSON serialization
+                var json = "[" + string.Join(",", fields.Select(f =>
+                    $"{{\"fieldName\":\"{f.fieldName}\"," +
+                    $"\"displayName\":\"{EscapeJson(f.displayName)}\"," +
+                    $"\"typeName\":\"{f.typeName}\"," +
+                    $"\"tooltip\":\"{EscapeJson(f.tooltip)}\"," +
+                    $"\"minValue\":{f.minValue}," +
+                    $"\"maxValue\":{f.maxValue}," +
+                    $"\"useSlider\":{f.useSlider.ToString().ToLower()}}}"
+                )) + "]";
+
+                return json;
+            }
+            catch (Exception ex)
+            {
+                Boom.API.Log($"[ScriptRegistry] Error getting exposed fields: {ex.Message}");
+                return "[]";
+            }
+        }
+
+        /// <summary>
+        /// Get the value of a field from a script instance (by GC handle)
+        /// </summary>
+        public static string GetFieldValueJson(object instance, string fieldName)
+        {
+            try
+            {
+                if (instance == null) return "null";
+
+                Type type = instance.GetType();
+                FieldInfo field = type.GetField(fieldName,
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+                if (field == null) return "null";
+
+                object value = field.GetValue(instance);
+                return SerializeValue(value, field.FieldType);
+            }
+            catch (Exception ex)
+            {
+                Boom.API.Log($"[ScriptRegistry] Error getting field value: {ex.Message}");
+                return "null";
+            }
+        }
+
+        /// <summary>
+        /// Set the value of a field on a script instance
+        /// </summary>
+        public static bool SetFieldValue(object instance, string fieldName, string valueJson)
+        {
+            try
+            {
+                if (instance == null) return false;
+
+                Type type = instance.GetType();
+                FieldInfo field = type.GetField(fieldName,
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+                if (field == null)
+                {
+                    Boom.API.Log($"[ScriptRegistry] Field not found: {fieldName}");
+                    return false;
+                }
+
+                object value = DeserializeValue(valueJson, field.FieldType);
+                field.SetValue(instance, value);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Boom.API.Log($"[ScriptRegistry] Error setting field value: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Apply saved params from ScriptComponent.Params to exposed fields on an instance.
+        /// Called after instance creation to restore serialized field values.
+        /// </summary>
+        public static int ApplyParamsToExposedFields(object instance, string paramsJson)
+        {
+            if (instance == null || string.IsNullOrEmpty(paramsJson))
+                return 0;
+
+            try
+            {
+                Type type = instance.GetType();
+                int appliedCount = 0;
+
+                // Get all exposed fields for this type
+                var exposedFields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                    .Where(f => f.GetCustomAttribute<Boom.EditorExposedAttribute>() != null)
+                    .ToList();
+
+                if (exposedFields.Count == 0)
+                    return 0;
+
+                // Parse the params JSON
+                // Expected format: {"fieldName": value, "fieldName2": value2, ...}
+                var paramsDict = ParseParamsJson(paramsJson);
+
+                foreach (var field in exposedFields)
+                {
+                    if (paramsDict.TryGetValue(field.Name, out string valueJson))
+                    {
+                        try
+                        {
+                            object value = DeserializeValue(valueJson, field.FieldType);
+                            field.SetValue(instance, value);
+                            appliedCount++;
+                            Boom.API.Log($"[ScriptRegistry] Applied param {field.Name} = {valueJson}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Boom.API.Log($"[ScriptRegistry] Error applying param {field.Name}: {ex.Message}");
+                        }
+                    }
+                }
+
+                return appliedCount;
+            }
+            catch (Exception ex)
+            {
+                Boom.API.Log($"[ScriptRegistry] Error applying params: {ex.Message}");
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Parse a JSON object into a dictionary of field name -> JSON value strings
+        /// </summary>
+        private static System.Collections.Generic.Dictionary<string, string> ParseParamsJson(string json)
+        {
+            var result = new System.Collections.Generic.Dictionary<string, string>();
+
+            if (string.IsNullOrEmpty(json) || json == "{}" || json == "null")
+                return result;
+
+            json = json.Trim();
+            if (!json.StartsWith("{") || !json.EndsWith("}"))
+                return result;
+
+            // Remove outer braces
+            json = json.Substring(1, json.Length - 2).Trim();
+            if (string.IsNullOrEmpty(json))
+                return result;
+
+            // Simple JSON parsing - handle nested objects and strings properly
+            int i = 0;
+            while (i < json.Length)
+            {
+                // Skip whitespace
+                while (i < json.Length && char.IsWhiteSpace(json[i])) i++;
+                if (i >= json.Length) break;
+
+                // Expect a quoted key
+                if (json[i] != '"') { i++; continue; }
+                i++; // skip opening quote
+
+                // Read key
+                int keyStart = i;
+                while (i < json.Length && json[i] != '"') i++;
+                string key = json.Substring(keyStart, i - keyStart);
+                i++; // skip closing quote
+
+                // Skip to colon
+                while (i < json.Length && json[i] != ':') i++;
+                i++; // skip colon
+
+                // Skip whitespace
+                while (i < json.Length && char.IsWhiteSpace(json[i])) i++;
+
+                // Read value (could be string, number, bool, object, or array)
+                string value = ReadJsonValue(json, ref i);
+                if (!string.IsNullOrEmpty(key))
+                {
+                    result[key] = value;
+                }
+
+                // Skip to comma or end
+                while (i < json.Length && json[i] != ',' && json[i] != '}') i++;
+                if (i < json.Length && json[i] == ',') i++;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Read a JSON value starting at position i, advance i past the value
+        /// </summary>
+        private static string ReadJsonValue(string json, ref int i)
+        {
+            if (i >= json.Length) return "";
+
+            char c = json[i];
+
+            // String
+            if (c == '"')
+            {
+                int start = i;
+                i++; // skip opening quote
+                while (i < json.Length)
+                {
+                    if (json[i] == '"' && json[i - 1] != '\\')
+                    {
+                        i++; // skip closing quote
+                        break;
+                    }
+                    i++;
+                }
+                return json.Substring(start, i - start);
+            }
+
+            // Object
+            if (c == '{')
+            {
+                int start = i;
+                int depth = 0;
+                while (i < json.Length)
+                {
+                    if (json[i] == '{') depth++;
+                    else if (json[i] == '}') { depth--; if (depth == 0) { i++; break; } }
+                    i++;
+                }
+                return json.Substring(start, i - start);
+            }
+
+            // Array
+            if (c == '[')
+            {
+                int start = i;
+                int depth = 0;
+                while (i < json.Length)
+                {
+                    if (json[i] == '[') depth++;
+                    else if (json[i] == ']') { depth--; if (depth == 0) { i++; break; } }
+                    i++;
+                }
+                return json.Substring(start, i - start);
+            }
+
+            // Number, bool, or null
+            int valStart = i;
+            while (i < json.Length && json[i] != ',' && json[i] != '}' && json[i] != ']' && !char.IsWhiteSpace(json[i]))
+            {
+                i++;
+            }
+            return json.Substring(valStart, i - valStart);
+        }
+
+        private static Type FindType(string typeName)
+        {
+            // Try direct lookup first
+            Type type = Type.GetType(typeName);
+            if (type != null) return type;
+
+            // Search in all loaded assemblies
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                type = asm.GetType(typeName);
+                if (type != null) return type;
+            }
+
+            return null;
+        }
+
+        private static string FormatFieldName(string name)
+        {
+            // Convert _camelCase or m_camelCase to "Camel Case"
+            if (name.StartsWith("_")) name = name.Substring(1);
+            if (name.StartsWith("m_")) name = name.Substring(2);
+
+            var result = new System.Text.StringBuilder();
+            for (int i = 0; i < name.Length; i++)
+            {
+                char c = name[i];
+                if (i > 0 && char.IsUpper(c))
+                    result.Append(' ');
+                result.Append(i == 0 ? char.ToUpper(c) : c);
+            }
+            return result.ToString();
+        }
+
+        private static string GetSimpleTypeName(Type type)
+        {
+            if (type == typeof(int)) return "int";
+            if (type == typeof(float)) return "float";
+            if (type == typeof(double)) return "double";
+            if (type == typeof(bool)) return "bool";
+            if (type == typeof(string)) return "string";
+            if (type == typeof(Boom.Vec2)) return "Vec2";
+            if (type == typeof(Boom.Vec3)) return "Vec3";
+            if (type == typeof(Boom.Vec4)) return "Vec4";
+            if (type == typeof(ulong)) return "ulong";
+            if (type == typeof(long)) return "long";
+            return type.Name;
+        }
+
+        private static string EscapeJson(string s)
+        {
+            if (s == null) return "";
+            return s.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", "\\r");
+        }
+
+        private static string SerializeValue(object value, Type type)
+        {
+            if (value == null) return "null";
+
+            if (type == typeof(int) || type == typeof(long) || type == typeof(ulong))
+                return value.ToString();
+            if (type == typeof(float))
+                return ((float)value).ToString(System.Globalization.CultureInfo.InvariantCulture);
+            if (type == typeof(double))
+                return ((double)value).ToString(System.Globalization.CultureInfo.InvariantCulture);
+            if (type == typeof(bool))
+                return ((bool)value) ? "true" : "false";
+            if (type == typeof(string))
+                return $"\"{EscapeJson((string)value)}\"";
+            if (type == typeof(Boom.Vec2))
+            {
+                var v = (Boom.Vec2)value;
+                return $"{{\"X\":{v.X.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"Y\":{v.Y.ToString(System.Globalization.CultureInfo.InvariantCulture)}}}";
+            }
+            if (type == typeof(Boom.Vec3))
+            {
+                var v = (Boom.Vec3)value;
+                return $"{{\"X\":{v.X.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"Y\":{v.Y.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"Z\":{v.Z.ToString(System.Globalization.CultureInfo.InvariantCulture)}}}";
+            }
+            if (type == typeof(Boom.Vec4))
+            {
+                var v = (Boom.Vec4)value;
+                return $"{{\"X\":{v.X.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"Y\":{v.Y.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"Z\":{v.Z.ToString(System.Globalization.CultureInfo.InvariantCulture)},\"W\":{v.W.ToString(System.Globalization.CultureInfo.InvariantCulture)}}}";
+            }
+
+            return "null";
+        }
+
+        private static object DeserializeValue(string json, Type type)
+        {
+            if (json == null || json == "null") return null;
+
+            json = json.Trim();
+
+            if (type == typeof(int))
+                return int.Parse(json, System.Globalization.CultureInfo.InvariantCulture);
+            if (type == typeof(long))
+                return long.Parse(json, System.Globalization.CultureInfo.InvariantCulture);
+            if (type == typeof(ulong))
+                return ulong.Parse(json, System.Globalization.CultureInfo.InvariantCulture);
+            if (type == typeof(float))
+                return float.Parse(json, System.Globalization.CultureInfo.InvariantCulture);
+            if (type == typeof(double))
+                return double.Parse(json, System.Globalization.CultureInfo.InvariantCulture);
+            if (type == typeof(bool))
+                return json.ToLower() == "true";
+            if (type == typeof(string))
+            {
+                // Remove quotes
+                if (json.StartsWith("\"") && json.EndsWith("\""))
+                    json = json.Substring(1, json.Length - 2);
+                return json.Replace("\\\"", "\"").Replace("\\n", "\n").Replace("\\r", "\r").Replace("\\\\", "\\");
+            }
+            if (type == typeof(Boom.Vec2))
+            {
+                var parts = ParseJsonObject(json);
+                return new Boom.Vec2(
+                    float.Parse(parts["X"], System.Globalization.CultureInfo.InvariantCulture),
+                    float.Parse(parts["Y"], System.Globalization.CultureInfo.InvariantCulture)
+                );
+            }
+            if (type == typeof(Boom.Vec3))
+            {
+                var parts = ParseJsonObject(json);
+                return new Boom.Vec3(
+                    float.Parse(parts["X"], System.Globalization.CultureInfo.InvariantCulture),
+                    float.Parse(parts["Y"], System.Globalization.CultureInfo.InvariantCulture),
+                    float.Parse(parts["Z"], System.Globalization.CultureInfo.InvariantCulture)
+                );
+            }
+            if (type == typeof(Boom.Vec4))
+            {
+                var parts = ParseJsonObject(json);
+                return new Boom.Vec4(
+                    float.Parse(parts["X"], System.Globalization.CultureInfo.InvariantCulture),
+                    float.Parse(parts["Y"], System.Globalization.CultureInfo.InvariantCulture),
+                    float.Parse(parts["Z"], System.Globalization.CultureInfo.InvariantCulture),
+                    float.Parse(parts["W"], System.Globalization.CultureInfo.InvariantCulture)
+                );
+            }
+
+            return null;
+        }
+
+        private static System.Collections.Generic.Dictionary<string, string> ParseJsonObject(string json)
+        {
+            var result = new System.Collections.Generic.Dictionary<string, string>();
+            json = json.Trim();
+            if (json.StartsWith("{")) json = json.Substring(1);
+            if (json.EndsWith("}")) json = json.Substring(0, json.Length - 1);
+
+            // Simple parsing for {"X":1.0,"Y":2.0} style
+            var parts = json.Split(',');
+            foreach (var part in parts)
+            {
+                var kv = part.Split(':');
+                if (kv.Length == 2)
+                {
+                    string key = kv[0].Trim().Trim('"');
+                    string value = kv[1].Trim();
+                    result[key] = value;
+                }
+            }
+            return result;
+        }
     }
 }
