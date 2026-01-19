@@ -1723,18 +1723,12 @@ namespace EditorUI {
                     : nullptr;
                 entt::entity currentEntity = m_App->SelectedEntity();
 
-                // *** FIX: Detect and fix "dead" script instances ***
+                // *** AUTO-FIX: Automatically recreate dead script instances ***
                 bool needsRecreation = false;
-                if (sc.InstanceId == 0 && sc.Enabled && !sc.TypeName.empty()) {
-                    // Script should be alive but isn't - show warning
-                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.6f, 0.0f, 1.0f));
-                    ImGui::TextWrapped("WARNING: Script instance is missing (InstanceId=0)");
-                    ImGui::PopStyleColor();
-
-                    if (ImGui::Button("Fix: Recreate Instance", ImVec2(-1, 0))) {
-                        needsRecreation = true;
-                    }
-                    ImGui::Separator();
+                if (sc.InstanceId == 0 && sc.Enabled && !sc.TypeName.empty() && scripting && scripting->IsAlive()) {
+                    // Script should be alive but isn't - auto-recreate it
+                    needsRecreation = true;
+                    BOOM_INFO("[Inspector] Auto-recreating missing script instance for type: {}", sc.TypeName);
                 }
 
                 // Track if we need to recreate the instance this frame
@@ -1823,10 +1817,16 @@ namespace EditorUI {
 
                             // Helper lambda to update both live instance AND Params for serialization
                             auto updateFieldValue = [&](const std::string& fieldName, const nlohmann::json& jsonValue) {
-                                // Update live instance
-                                scripting->SetFieldValue(sc.InstanceId, fieldName, jsonValue.dump());
-                                // Update Params for serialization (scene save/load)
+                                // Update Params for serialization (scene save/load) - always do this
                                 sc.Params[fieldName] = jsonValue;
+
+                                // Update live instance if it exists
+                                if (sc.InstanceId != 0) {
+                                    bool success = scripting->SetFieldValue(sc.InstanceId, fieldName, jsonValue.dump());
+                                    if (!success) {
+                                        BOOM_WARN("[Inspector] Failed to set field '{}' on live instance", fieldName);
+                                    }
+                                }
                             };
 
                             // Type-specific widget
@@ -1903,22 +1903,34 @@ namespace EditorUI {
                                         }
                                     }
 
-                                    // Create new entry if not found - only sync script value on creation
+                                    // Create new entry if not found
                                     if (!audioEntry) {
                                         Boom::SoundComponent::Entry newEntry{};
                                         newEntry.name = field.fieldName;
-                                        newEntry.filePath = val; // Use current script value for initial setup
-                                        if (!val.empty()) {
-                                            newEntry.filePaths.push_back(val);
-                                        }
                                         soundComp.entries.push_back(std::move(newEntry));
                                         audioEntry = &soundComp.entries.back();
                                     }
 
-                                    // SoundComponent entry is the source of truth - sync entry TO script if different
-                                    // This allows the dropdown to change the audio and have it persist
-                                    if (audioEntry->filePath != val) {
-                                        updateFieldValue(field.fieldName, audioEntry->filePath);
+                                    // Script's Params is the source of truth for the file path
+                                    // Get the current value from Params (serialized) rather than live instance
+                                    std::string currentAudioPath = val; // Default to live instance value
+                                    if (sc.Params.contains(field.fieldName)) {
+                                        auto& paramVal = sc.Params[field.fieldName];
+                                        if (paramVal.is_string()) {
+                                            currentAudioPath = paramVal.get<std::string>();
+                                        }
+                                    }
+
+                                    // Sync SoundComponent entry FROM script Params (entry mirrors script)
+                                    if (audioEntry->filePath != currentAudioPath) {
+                                        audioEntry->filePath = currentAudioPath;
+                                        if (audioEntry->filePaths.empty()) {
+                                            if (!currentAudioPath.empty()) {
+                                                audioEntry->filePaths.push_back(currentAudioPath);
+                                            }
+                                        } else {
+                                            audioEntry->filePaths[0] = currentAudioPath;
+                                        }
                                     }
 
                                     // ===== Display full SoundComponent Entry UI =====
@@ -1931,8 +1943,8 @@ namespace EditorUI {
                                     uint64_t entityUid = static_cast<uint64_t>(static_cast<uint32_t>(currentEntity));
                                     std::string previewName = "preview_" + std::to_string(entityUid) + "_" + field.fieldName;
 
-                                    // Audio asset dropdown
-                                    std::string curLabel = audioEntry->filePath.empty() ? "Select Audio..." : std::filesystem::path(audioEntry->filePath).filename().string();
+                                    // Audio asset dropdown - use currentAudioPath (from Params) as the display value
+                                    std::string curLabel = currentAudioPath.empty() ? "Select Audio..." : std::filesystem::path(currentAudioPath).filename().string();
 
                                     // Track if file changed for real-time update
                                     std::string previousFilePath = s_previewFilePaths[previewName];
@@ -1942,11 +1954,17 @@ namespace EditorUI {
                                         auto& audioMap = m_App->GetAssetRegistry().GetMap<AudioAsset>();
 
                                         // Allow clearing
-                                        bool noneSel = audioEntry->filePath.empty();
+                                        bool noneSel = currentAudioPath.empty();
                                         if (ImGui::Selectable("None", noneSel)) {
+                                            // Update Params first (source of truth)
+                                            sc.Params[field.fieldName] = "";
+                                            // Then update entry to match
                                             audioEntry->filePath.clear();
                                             audioEntry->filePaths.clear();
-                                            updateFieldValue(field.fieldName, "");
+                                            // Try to update live instance (may fail, but Params is already updated)
+                                            if (sc.InstanceId != 0) {
+                                                scripting->SetFieldValue(sc.InstanceId, field.fieldName, "\"\"");
+                                            }
                                             fileChanged = true;
                                         }
                                         if (noneSel) ImGui::SetItemDefaultFocus();
@@ -1954,15 +1972,22 @@ namespace EditorUI {
                                         // List all audio assets
                                         for (auto& [uid, asset] : audioMap) {
                                             if (uid == EMPTY_ASSET) continue;
-                                            bool isSel = (audioEntry->filePath == asset->source);
+                                            bool isSel = (currentAudioPath == asset->source);
                                             if (ImGui::Selectable(asset->name.c_str(), isSel)) {
+                                                // Update Params first (source of truth)
+                                                sc.Params[field.fieldName] = asset->source;
+                                                // Then update entry to match
                                                 audioEntry->filePath = asset->source;
                                                 if (audioEntry->filePaths.empty()) {
                                                     audioEntry->filePaths.push_back(asset->source);
                                                 } else {
                                                     audioEntry->filePaths[0] = asset->source;
                                                 }
-                                                updateFieldValue(field.fieldName, asset->source);
+                                                // Try to update live instance (may fail, but Params is already updated)
+                                                if (sc.InstanceId != 0) {
+                                                    std::string jsonStr = "\"" + asset->source + "\"";
+                                                    scripting->SetFieldValue(sc.InstanceId, field.fieldName, jsonStr);
+                                                }
                                                 fileChanged = true;
                                             }
                                             if (isSel) ImGui::SetItemDefaultFocus();
@@ -2265,17 +2290,32 @@ namespace EditorUI {
                 ImGui::Separator();
                 ImGui::Spacing();
 
-                if (ImGui::Button("Reload This Script", ImVec2(-1, 0))) {
-                    if (scripting) {
-                        scripting->RecreateForEntity(currentEntity, sc);
-                        BOOM_INFO("[Inspector] Manually reloaded script instance");
+                // Show scripting system status
+                if (!scripting) {
+                    ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "Scripting system not available");
+                } else if (!scripting->IsAlive()) {
+                    ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), "Scripting system not alive");
+                    if (ImGui::Button("Initialize Scripting System", ImVec2(-1, 0))) {
+                        // Try to reinitialize
+                        BOOM_INFO("[Inspector] Attempting to reinitialize scripting system...");
                     }
-                }
+                } else {
+                    if (ImGui::Button("Reload This Script", ImVec2(-1, 0))) {
+                        bool success = scripting->RecreateForEntity(currentEntity, sc);
+                        if (success) {
+                            BOOM_INFO("[Inspector] Manually reloaded script instance (InstanceId={})", sc.InstanceId);
+                        } else {
+                            BOOM_ERROR("[Inspector] Failed to reload script instance");
+                        }
+                    }
 
-                if (ImGui::Button("Hot Reload All Scripts (DLL)", ImVec2(-1, 0))) {
-                    if (scripting) {
-                        scripting->ReloadScripts();
-                        BOOM_INFO("[Inspector] Hot reloaded all scripts from DLL!");
+                    if (ImGui::Button("Hot Reload All Scripts (DLL)", ImVec2(-1, 0))) {
+                        bool success = scripting->ReloadScripts();
+                        if (success) {
+                            BOOM_INFO("[Inspector] Hot reloaded all scripts from DLL!");
+                        } else {
+                            BOOM_ERROR("[Inspector] Hot reload failed!");
+                        }
                     }
                 }
 
