@@ -8,7 +8,9 @@
 #include "Panels/PropertiesImgui.h"
 #include"Physics/Context.h"
 #include "Commands/UndoRedo.h"  // for ComponentPropertyCommand
+#include "Audio/Audio.hpp"     // for SoundEngine (real-time audio preview)
 #include <GLFW/glfw3.h>
+#include <unordered_map>       // for audio preview tracking
 //#include "BoomProperties.h"
 using namespace EditorUI;
 
@@ -1901,11 +1903,11 @@ namespace EditorUI {
                                         }
                                     }
 
-                                    // Create new entry if not found
+                                    // Create new entry if not found - only sync script value on creation
                                     if (!audioEntry) {
                                         Boom::SoundComponent::Entry newEntry{};
                                         newEntry.name = field.fieldName;
-                                        newEntry.filePath = val; // Use current script value
+                                        newEntry.filePath = val; // Use current script value for initial setup
                                         if (!val.empty()) {
                                             newEntry.filePaths.push_back(val);
                                         }
@@ -1913,21 +1915,29 @@ namespace EditorUI {
                                         audioEntry = &soundComp.entries.back();
                                     }
 
-                                    // Sync script value to entry if different
-                                    if (!val.empty() && audioEntry->filePath != val) {
-                                        audioEntry->filePath = val;
-                                        if (audioEntry->filePaths.empty()) {
-                                            audioEntry->filePaths.push_back(val);
-                                        } else {
-                                            audioEntry->filePaths[0] = val;
-                                        }
+                                    // SoundComponent entry is the source of truth - sync entry TO script if different
+                                    // This allows the dropdown to change the audio and have it persist
+                                    if (audioEntry->filePath != val) {
+                                        updateFieldValue(field.fieldName, audioEntry->filePath);
                                     }
 
                                     // ===== Display full SoundComponent Entry UI =====
                                     ImGui::PushID(field.fieldName.c_str());
 
+                                    // Static map to track preview sounds and their file paths
+                                    static std::unordered_map<std::string, std::string> s_previewFilePaths;
+
+                                    // Generate unique preview instance name
+                                    uint64_t entityUid = static_cast<uint64_t>(static_cast<uint32_t>(currentEntity));
+                                    std::string previewName = "preview_" + std::to_string(entityUid) + "_" + field.fieldName;
+
                                     // Audio asset dropdown
                                     std::string curLabel = audioEntry->filePath.empty() ? "Select Audio..." : std::filesystem::path(audioEntry->filePath).filename().string();
+
+                                    // Track if file changed for real-time update
+                                    std::string previousFilePath = s_previewFilePaths[previewName];
+                                    bool fileChanged = false;
+
                                     if (ImGui::BeginCombo("##audioSelect", curLabel.c_str())) {
                                         auto& audioMap = m_App->GetAssetRegistry().GetMap<AudioAsset>();
 
@@ -1937,6 +1947,7 @@ namespace EditorUI {
                                             audioEntry->filePath.clear();
                                             audioEntry->filePaths.clear();
                                             updateFieldValue(field.fieldName, "");
+                                            fileChanged = true;
                                         }
                                         if (noneSel) ImGui::SetItemDefaultFocus();
 
@@ -1952,57 +1963,128 @@ namespace EditorUI {
                                                     audioEntry->filePaths[0] = asset->source;
                                                 }
                                                 updateFieldValue(field.fieldName, asset->source);
+                                                fileChanged = true;
                                             }
                                             if (isSel) ImGui::SetItemDefaultFocus();
                                         }
                                         ImGui::EndCombo();
                                     }
 
+                                    // If file changed while preview is playing, restart with new file
+                                    if (fileChanged && SoundEngine::Instance().IsPlaying(previewName)) {
+                                        SoundEngine::Instance().StopSound(previewName);
+                                        if (!audioEntry->filePath.empty()) {
+                                            SoundEngine::Instance().PlaySound(previewName, audioEntry->filePath, audioEntry->loop);
+                                            // Apply all current settings
+                                            SoundEngine::Instance().SetVolume(previewName, audioEntry->mute ? 0.0f : audioEntry->volume);
+                                            SoundEngine::Instance().SetPitch(previewName, audioEntry->pitch);
+                                            SoundEngine::Instance().SetPan(previewName, audioEntry->stereoPan);
+                                            SoundEngine::Instance().SetPriority(previewName, audioEntry->priority);
+                                            SoundEngine::Instance().SetMute(previewName, audioEntry->mute);
+                                        }
+                                    }
+                                    s_previewFilePaths[previewName] = audioEntry->filePath;
+
                                     // Show audio settings indented
                                     ImGui::Indent(10.0f);
 
+                                    // ===== Preview Play/Stop buttons =====
+                                    bool isPlaying = SoundEngine::Instance().IsPlaying(previewName);
+
+                                    if (!audioEntry->filePath.empty()) {
+                                        if (isPlaying) {
+                                            if (ImGui::Button("Stop##preview")) {
+                                                SoundEngine::Instance().StopSound(previewName);
+                                            }
+                                        } else {
+                                            if (ImGui::Button("Play##preview")) {
+                                                SoundEngine::Instance().PlaySound(previewName, audioEntry->filePath, audioEntry->loop);
+                                                // Apply all current settings immediately
+                                                SoundEngine::Instance().SetVolume(previewName, audioEntry->mute ? 0.0f : audioEntry->volume);
+                                                SoundEngine::Instance().SetPitch(previewName, audioEntry->pitch);
+                                                SoundEngine::Instance().SetPan(previewName, audioEntry->stereoPan);
+                                                SoundEngine::Instance().SetPriority(previewName, audioEntry->priority);
+                                                SoundEngine::Instance().SetMute(previewName, audioEntry->mute);
+                                            }
+                                        }
+                                        ImGui::SameLine();
+                                        if (isPlaying) {
+                                            ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Playing");
+                                        }
+                                    } else {
+                                        ImGui::TextDisabled("Select audio to preview");
+                                    }
+
+                                    ImGui::Spacing();
+
                                     // Loop, Play On Start, Mute checkboxes
-                                    ImGui::Checkbox("Loop##scriptAudio", &audioEntry->loop);
+                                    bool loopChanged = ImGui::Checkbox("Loop##scriptAudio", &audioEntry->loop);
                                     ImGui::SameLine();
                                     ImGui::Checkbox("Play On Start##scriptAudio", &audioEntry->playOnStart);
                                     ImGui::SameLine();
-                                    ImGui::Checkbox("Mute##scriptAudio", &audioEntry->mute);
+                                    bool muteChanged = ImGui::Checkbox("Mute##scriptAudio", &audioEntry->mute);
 
-                                    // Volume slider
-                                    ImGui::SliderFloat("Volume##scriptAudio", &audioEntry->volume, 0.0f, 1.0f);
+                                    // Volume slider - apply in real-time
+                                    bool volumeChanged = ImGui::SliderFloat("Volume##scriptAudio", &audioEntry->volume, 0.0f, 1.0f);
 
-                                    // Pitch slider
-                                    ImGui::SliderFloat("Pitch##scriptAudio", &audioEntry->pitch, 0.5f, 2.0f, "%.2f");
+                                    // Pitch slider - apply in real-time
+                                    bool pitchChanged = ImGui::SliderFloat("Pitch##scriptAudio", &audioEntry->pitch, 0.5f, 2.0f, "%.2f");
                                     if (ImGui::IsItemHovered()) {
                                         ImGui::SetTooltip("Playback speed: 0.5 = half speed, 1.0 = normal, 2.0 = double speed");
                                     }
 
-                                    // Priority slider
-                                    ImGui::SliderInt("Priority##scriptAudio", &audioEntry->priority, 0, 256);
+                                    // Priority slider - apply in real-time
+                                    bool priorityChanged = ImGui::SliderInt("Priority##scriptAudio", &audioEntry->priority, 0, 256);
                                     if (ImGui::IsItemHovered()) {
                                         ImGui::SetTooltip("Channel priority: 0 = highest, 256 = lowest (128 = default)");
                                     }
 
-                                    // Stereo Pan slider
-                                    ImGui::SliderFloat("Stereo Pan##scriptAudio", &audioEntry->stereoPan, -1.0f, 1.0f, "%.2f");
+                                    // Stereo Pan slider - apply in real-time
+                                    bool panChanged = ImGui::SliderFloat("Stereo Pan##scriptAudio", &audioEntry->stereoPan, -1.0f, 1.0f, "%.2f");
                                     if (ImGui::IsItemHovered()) {
                                         ImGui::SetTooltip("-1.0 = full left, 0.0 = center, 1.0 = full right");
                                     }
 
-                                    // Spatial Blend slider
-                                    ImGui::SliderFloat("Spatial Blend##scriptAudio", &audioEntry->spatialBlend, 0.0f, 1.0f, "%.2f");
+                                    // Spatial Blend slider - apply in real-time
+                                    bool spatialChanged = ImGui::SliderFloat("Spatial Blend##scriptAudio", &audioEntry->spatialBlend, 0.0f, 1.0f, "%.2f");
                                     if (ImGui::IsItemHovered()) {
                                         ImGui::SetTooltip("0.0 = fully 2D (no positional audio), 1.0 = fully 3D (positional)");
                                     }
 
+                                    // Apply real-time changes to preview if playing
+                                    if (isPlaying) {
+                                        if (volumeChanged || muteChanged) {
+                                            SoundEngine::Instance().SetVolume(previewName, audioEntry->mute ? 0.0f : audioEntry->volume);
+                                        }
+                                        if (pitchChanged) {
+                                            SoundEngine::Instance().SetPitch(previewName, audioEntry->pitch);
+                                        }
+                                        if (priorityChanged) {
+                                            SoundEngine::Instance().SetPriority(previewName, audioEntry->priority);
+                                        }
+                                        if (panChanged) {
+                                            SoundEngine::Instance().SetPan(previewName, audioEntry->stereoPan);
+                                        }
+                                        if (spatialChanged) {
+                                            SoundEngine::Instance().SetSpatialBlend(previewName, audioEntry->spatialBlend);
+                                        }
+                                        if (muteChanged) {
+                                            SoundEngine::Instance().SetMute(previewName, audioEntry->mute);
+                                        }
+                                        if (loopChanged) {
+                                            SoundEngine::Instance().SetLooping(previewName, audioEntry->loop);
+                                        }
+                                    }
+
                                     // 3D Audio Settings in collapsible section
+                                    bool minDistChanged = false, maxDistChanged = false;
                                     if (ImGui::TreeNode("3D Audio##scriptAudio")) {
-                                        ImGui::SliderFloat("Min Distance##scriptAudio", &audioEntry->minDistance, 0.1f, 100.0f, "%.1f");
+                                        minDistChanged = ImGui::SliderFloat("Min Distance##scriptAudio", &audioEntry->minDistance, 0.1f, 100.0f, "%.1f");
                                         if (ImGui::IsItemHovered()) {
                                             ImGui::SetTooltip("Distance at which sound is at full volume");
                                         }
 
-                                        ImGui::SliderFloat("Max Distance##scriptAudio", &audioEntry->maxDistance, 1.0f, 200.0f, "%.1f");
+                                        maxDistChanged = ImGui::SliderFloat("Max Distance##scriptAudio", &audioEntry->maxDistance, 1.0f, 200.0f, "%.1f");
                                         if (ImGui::IsItemHovered()) {
                                             ImGui::SetTooltip("Distance at which sound becomes silent");
                                         }
@@ -2012,21 +2094,35 @@ namespace EditorUI {
                                             audioEntry->minDistance = audioEntry->maxDistance - 0.1f;
                                         }
 
+                                        // Apply 3D distance changes in real-time
+                                        if (isPlaying && (minDistChanged || maxDistChanged)) {
+                                            SoundEngine::Instance().Set3DMinMaxDistance(previewName, audioEntry->minDistance, audioEntry->maxDistance);
+                                        }
+
                                         // Quick presets
                                         ImGui::Text("Presets:");
                                         if (ImGui::SmallButton("Footsteps##scriptAudio")) {
                                             audioEntry->minDistance = 0.5f;
                                             audioEntry->maxDistance = 10.0f;
+                                            if (isPlaying) {
+                                                SoundEngine::Instance().Set3DMinMaxDistance(previewName, audioEntry->minDistance, audioEntry->maxDistance);
+                                            }
                                         }
                                         ImGui::SameLine();
                                         if (ImGui::SmallButton("Dialogue##scriptAudio")) {
                                             audioEntry->minDistance = 1.0f;
                                             audioEntry->maxDistance = 30.0f;
+                                            if (isPlaying) {
+                                                SoundEngine::Instance().Set3DMinMaxDistance(previewName, audioEntry->minDistance, audioEntry->maxDistance);
+                                            }
                                         }
                                         ImGui::SameLine();
                                         if (ImGui::SmallButton("Environment##scriptAudio")) {
                                             audioEntry->minDistance = 2.0f;
                                             audioEntry->maxDistance = 100.0f;
+                                            if (isPlaying) {
+                                                SoundEngine::Instance().Set3DMinMaxDistance(previewName, audioEntry->minDistance, audioEntry->maxDistance);
+                                            }
                                         }
 
                                         ImGui::TreePop();
