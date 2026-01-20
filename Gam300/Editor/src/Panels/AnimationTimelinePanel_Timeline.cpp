@@ -307,6 +307,13 @@ void AnimationTimelinePanel::RenderTrackList()
         }
     }
 
+    // Clear keyframe screen positions for this frame (used for box selection)
+    m_KeyframeScreenPositions.clear();
+
+    // Reset hover state each frame (important for box selection detection)
+    m_HoveredKeyframeIndex = -1;
+    m_HoveredBoneName.clear();
+
     if (ImGui::BeginChild("TrackListScroll", ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar))
     {
         // Setup two columns: bone names (left) and timeline tracks (right)
@@ -330,6 +337,78 @@ void AnimationTimelinePanel::RenderTrackList()
 
         // End columns
         ImGui::Columns(1);
+
+        // === Box Selection Handling ===
+        ImGuiIO& io = ImGui::GetIO();
+        ImVec2 mousePos = ImGui::GetMousePos();
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+        // Get the child window bounds for clipping
+        ImVec2 childMin = ImGui::GetWindowPos();
+        ImVec2 childMax = ImVec2(childMin.x + ImGui::GetWindowSize().x, childMin.y + ImGui::GetWindowSize().y);
+
+        // Check if mouse is in the track list area and window is hovered
+        bool mouseInTrackArea = (mousePos.x >= childMin.x && mousePos.x <= childMax.x &&
+                                 mousePos.y >= childMin.y && mousePos.y <= childMax.y);
+        bool windowHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem);
+
+        // Start box selection on left-click in empty space (not on keyframe, not dragging)
+        if (mouseInTrackArea && windowHovered && !m_IsDraggingKeyframe && !m_IsBoxSelecting &&
+            ImGui::IsMouseClicked(ImGuiMouseButton_Left) && m_HoveredKeyframeIndex < 0)
+        {
+            m_IsBoxSelecting = true;
+            m_BoxSelectStart = mousePos;
+            m_BoxSelectEnd = mousePos;
+            m_BoxSelectAdditive = io.KeyCtrl;  // Ctrl = add to selection
+        }
+
+        // Update box selection during drag
+        if (m_IsBoxSelecting)
+        {
+            m_BoxSelectEnd = mousePos;
+
+            // Cancel box selection on Escape
+            if (ImGui::IsKeyPressed(ImGuiKey_Escape))
+            {
+                m_IsBoxSelecting = false;
+            }
+            else
+            {
+                // Calculate box bounds (handle any drag direction)
+                float minX = std::min(m_BoxSelectStart.x, m_BoxSelectEnd.x);
+                float maxX = std::max(m_BoxSelectStart.x, m_BoxSelectEnd.x);
+                float minY = std::min(m_BoxSelectStart.y, m_BoxSelectEnd.y);
+                float maxY = std::max(m_BoxSelectStart.y, m_BoxSelectEnd.y);
+
+                // Draw selection rectangle
+                ImU32 fillColor = IM_COL32(100, 150, 255, 50);    // Semi-transparent blue
+                ImU32 borderColor = IM_COL32(100, 150, 255, 200); // Blue border
+                drawList->AddRectFilled(ImVec2(minX, minY), ImVec2(maxX, maxY), fillColor);
+                drawList->AddRect(ImVec2(minX, minY), ImVec2(maxX, maxY), borderColor, 0.0f, 0, 1.5f);
+
+                // End box selection on mouse release
+                if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+                {
+                    // Select all keyframes within the box
+                    if (!m_BoxSelectAdditive)
+                    {
+                        ClearKeyframeSelection();
+                    }
+
+                    for (const auto& kfPos : m_KeyframeScreenPositions)
+                    {
+                        // Check if keyframe center is within the box
+                        if (kfPos.screenPos.x >= minX && kfPos.screenPos.x <= maxX &&
+                            kfPos.screenPos.y >= minY && kfPos.screenPos.y <= maxY)
+                        {
+                            SelectKeyframe(kfPos.boneName, kfPos.keyframeIndex, true);
+                        }
+                    }
+
+                    m_IsBoxSelecting = false;
+                }
+            }
+        }
     }
     ImGui::EndChild();
 
@@ -583,6 +662,13 @@ void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float dur
                     float size = 3.0f;
                     float hitTestSize = 6.0f; // Larger hit area for easier clicking
 
+                    // Store keyframe position for box selection
+                    KeyframeScreenPos kfScreenPos;
+                    kfScreenPos.boneName = joint.name;
+                    kfScreenPos.keyframeIndex = i;
+                    kfScreenPos.screenPos = center;
+                    m_KeyframeScreenPositions.push_back(kfScreenPos);
+
                     // Diamond vertices (rotated square)
                     ImVec2 top(center.x, center.y - size);
                     ImVec2 right(center.x + size, center.y);
@@ -777,23 +863,8 @@ void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float dur
                 // adding keyframes with identity transforms would break animations.
                 // TODO: Re-enable once we can capture actual bone transforms from 3D viewport
 
-                // Click on empty timeline space clears selection (Unity behavior)
-                // Only if we didn't hover any keyframe and mouse is in the timeline track area
-                if (!hoveredAnyKeyframe && !m_IsDraggingKeyframe)
-                {
-                    // Check if mouse is in this track's timeline area
-                    bool mouseInTrack = (mousePos.x >= timelineMin.x && mousePos.x <= timelineMin.x + timelineWidth &&
-                                        mousePos.y >= timelineMin.y && mousePos.y <= timelineMax.y);
-
-                    if (mouseInTrack && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-                    {
-                        ImGuiIO& clickIo = ImGui::GetIO();
-                        if (!clickIo.KeyCtrl)  // Don't clear on Ctrl+click (for additive selection)
-                        {
-                            ClearKeyframeSelection();
-                        }
-                    }
-                }
+                // NOTE: Click on empty space is now handled by box selection in RenderTrackList
+                // A click without drag creates a zero-size box that clears selection
             }
         }
     }

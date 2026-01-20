@@ -213,6 +213,20 @@ namespace EditorUI {
         float m_MultiDragStartTime = 0.0f;               // Original time of dragged keyframe (for delta calculation)
         std::map<SelectedKeyframe, float> m_SelectedKeyframeOriginalTimes;  // Store original times during drag
 
+        // Box/marquee selection state
+        bool m_IsBoxSelecting = false;           // Currently drawing a selection box?
+        ImVec2 m_BoxSelectStart = {0, 0};        // Start position of box selection (screen coords)
+        ImVec2 m_BoxSelectEnd = {0, 0};          // Current end position of box selection
+        bool m_BoxSelectAdditive = false;        // Ctrl held = add to selection instead of replace
+
+        // Keyframe screen positions (populated during rendering for box selection)
+        struct KeyframeScreenPos {
+            std::string boneName;
+            size_t keyframeIndex;
+            ImVec2 screenPos;  // Center of the keyframe diamond
+        };
+        std::vector<KeyframeScreenPos> m_KeyframeScreenPositions;  // Cleared each frame
+
         // Undo/Redo system
         std::vector<KeyframeCommand> m_UndoStack;
         std::vector<KeyframeCommand> m_RedoStack;
