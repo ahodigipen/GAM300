@@ -271,7 +271,7 @@ namespace EditorUI {
         if (!root->isDirectory) {
             std::string ext = root->fullPath.extension().string();
             std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-            if (ext == ".fbx" || ext == ".gltf" || ext == ".glb" || ext == ".dae") {
+            if (ext == ".fbx" || ext == ".gltf" || ext == ".glb" || ext == ".dae" || ext == ".anim") {
                 if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
                     std::string pathStr = root->fullPath.string();
                     ImGui::SetDragDropPayload(CONSTANTS::DND_PAYLOAD_ANIM_FILE.data(), pathStr.c_str(), pathStr.size() + 1);
@@ -350,6 +350,11 @@ namespace EditorUI {
             seen.insert(path);
             RegisterAsset<AudioAsset>(path, node->texId);
 		}
+        // --- ANIMATIONS ---
+        else if (!node->isDirectory && ext == ".anim") {
+            seen.insert(path);
+            RegisterAsset<AnimationAsset>(path, node->texId);
+        }
 
         // --- more stuff in future ---
 
@@ -383,12 +388,15 @@ namespace EditorUI {
             else if constexpr (std::is_same_v<T, AudioAsset>) {
                 m_App->GetAssetRegistry().AddAudio(uid, path.generic_string());
             }
+            else if constexpr (std::is_same_v<T, AnimationAsset>) {
+                m_App->GetAssetRegistry().AddAnimation(uid, path.generic_string());
+            }
             // --- more stuff in future ---
 
         }
     }
 
-    //should only remove .png/.dds and .fbx for now
+    //should only remove .png/.dds, .fbx, and .anim for now
     void DirectoryPanel::RemoveStaleAssets(const std::unordered_set<std::filesystem::path>& seen)
     {
         for (auto& [type, map] : m_App->GetAssetRegistry().GetAll()) {
@@ -396,7 +404,7 @@ namespace EditorUI {
                 for (auto it{ map.begin() }; it != map.end(); ) {
                     std::string ext{ GetExtension(it->second->source) };
                     //ignore empty asset
-                    if (ext == "" || (ext != "png" && ext != "dds" && ext != "fbx")) {
+                    if (ext == "" || (ext != "png" && ext != "dds" && ext != "fbx" && ext != "anim")) {
                         ++it;
                         continue; //ignore wrong types
                     }

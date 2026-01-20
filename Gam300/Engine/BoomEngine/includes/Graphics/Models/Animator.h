@@ -1,5 +1,6 @@
 #pragma once
 #include "Animation.h"
+#include "AnimationIO.h"
 #include <assimp/postprocess.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -306,6 +307,18 @@ namespace Boom
             if (index < m_Clips.size()) {
                 m_Clips.erase(m_Clips.begin() + index);
             }
+        }
+
+        // Replace clip at index with a new clip (for syncing between timeline and entity)
+        BOOM_INLINE void SetClip(size_t index, std::shared_ptr<AnimationClip> clip) {
+            if (index < m_Clips.size()) {
+                m_Clips[index] = clip;
+            }
+        }
+
+        // Get shared_ptr to clip (for sharing between animators)
+        BOOM_INLINE std::shared_ptr<AnimationClip> GetClipShared(size_t index) {
+            return (index < m_Clips.size()) ? m_Clips[index] : nullptr;
         }
 
         // === KEYFRAME EDITING API (for Animation Timeline) ===
@@ -955,69 +968,87 @@ namespace Boom
 
         BOOM_INLINE void LoadAnimationFromFile(const std::string& filepath, const std::string& clipName = "")
         {
-            // Use Assimp to load just the animation data
-            Assimp::Importer importer;
-            const aiScene* ai_scene = importer.ReadFile(
-                filepath.c_str(),
-                aiProcess_LimitBoneWeights
-            );
+            std::shared_ptr<AnimationClip> clip;
 
-            if (!ai_scene || !ai_scene->mAnimations || ai_scene->mNumAnimations == 0)
-            {
-                BOOM_ERROR("Failed to load animation from: {}", filepath);
+            // Check file extension
+            if (filepath.ends_with(".anim")) {
+                // Load from .anim file
+                clip = LoadAnimationClip(filepath);
+                if (clip && !clipName.empty()) {
+                    clip->name = clipName;  // Override name if specified
+                }
+            }
+            else if (filepath.ends_with(".fbx") || filepath.ends_with(".gltf")) {
+                // Load from model file using Assimp
+                Assimp::Importer importer;
+                const aiScene* ai_scene = importer.ReadFile(
+                    filepath.c_str(),
+                    aiProcess_LimitBoneWeights
+                );
+
+                if (!ai_scene || !ai_scene->mAnimations || ai_scene->mNumAnimations == 0)
+                {
+                    BOOM_ERROR("Failed to load animation from: {}", filepath);
+                    return;
+                }
+
+                // Load the first animation from the file
+                auto ai_anim = ai_scene->mAnimations[0];
+
+                clip = std::make_shared<AnimationClip>();
+                clip->name = clipName.empty() ? ai_anim->mName.C_Str() : clipName;
+                clip->duration = (float)ai_anim->mDuration;
+                clip->ticksPerSecond = (float)ai_anim->mTicksPerSecond;
+                clip->filePath = filepath; // Store source file path
+
+                // Parse animation channels
+                for (uint32_t j = 0; j < ai_anim->mNumChannels; j++)
+                {
+                    aiNodeAnim* ai_channel = ai_anim->mChannels[j];
+                    std::string jointName(ai_channel->mNodeName.C_Str());
+
+                    std::vector<KeyFrame>& track = clip->tracks[jointName];
+
+                    uint32_t maxKeys = std::max({
+                        ai_channel->mNumPositionKeys,
+                        ai_channel->mNumRotationKeys,
+                        ai_channel->mNumScalingKeys
+                        });
+
+                    track.reserve(maxKeys);
+
+                    for (uint32_t k = 0; k < maxKeys; k++)
+                    {
+                        KeyFrame key;
+
+                        if (k < ai_channel->mNumPositionKeys)
+                        {
+                            key.position = AssimpToVec3(ai_channel->mPositionKeys[k].mValue);
+                            key.timeStamp = (float)ai_channel->mPositionKeys[k].mTime;
+                        }
+                        if (k < ai_channel->mNumRotationKeys)
+                        {
+                            key.rotation = AssimpToQuat(ai_channel->mRotationKeys[k].mValue);
+                        }
+                        if (k < ai_channel->mNumScalingKeys)
+                        {
+                            key.scale = AssimpToVec3(ai_channel->mScalingKeys[k].mValue);
+                        }
+
+                        track.push_back(key);
+                    }
+                }
+            }
+            else {
+                BOOM_WARN("[Animator] Unsupported file format: {}", filepath);
                 return;
             }
 
-            // Load the first animation from the file
-            auto ai_anim = ai_scene->mAnimations[0];
-
-            auto clip = std::make_shared<AnimationClip>();
-            clip->name = clipName.empty() ? ai_anim->mName.C_Str() : clipName;
-            clip->duration = (float)ai_anim->mDuration;
-            clip->ticksPerSecond = (float)ai_anim->mTicksPerSecond;
-            clip->filePath = filepath; // Store source file path
-
-            // Parse animation channels
-            for (uint32_t j = 0; j < ai_anim->mNumChannels; j++)
-            {
-                aiNodeAnim* ai_channel = ai_anim->mChannels[j];
-                std::string jointName(ai_channel->mNodeName.C_Str());
-
-                std::vector<KeyFrame>& track = clip->tracks[jointName];
-
-                uint32_t maxKeys = std::max({
-                    ai_channel->mNumPositionKeys,
-                    ai_channel->mNumRotationKeys,
-                    ai_channel->mNumScalingKeys
-                    });
-
-                track.reserve(maxKeys);
-
-                for (uint32_t k = 0; k < maxKeys; k++)
-                {
-                    KeyFrame key;
-
-                    if (k < ai_channel->mNumPositionKeys)
-                    {
-                        key.position = AssimpToVec3(ai_channel->mPositionKeys[k].mValue);
-                        key.timeStamp = (float)ai_channel->mPositionKeys[k].mTime;
-                    }
-                    if (k < ai_channel->mNumRotationKeys)
-                    {
-                        key.rotation = AssimpToQuat(ai_channel->mRotationKeys[k].mValue);
-                    }
-                    if (k < ai_channel->mNumScalingKeys)
-                    {
-                        key.scale = AssimpToVec3(ai_channel->mScalingKeys[k].mValue);
-                    }
-
-                    track.push_back(key);
-                }
+            if (clip) {
+                m_Clips.push_back(clip);
+                BOOM_INFO("Loaded animation '{}' from {} - Duration: {:.2f}s",
+                    clip->name, filepath, clip->duration);
             }
-
-            m_Clips.push_back(clip);
-            BOOM_INFO("Loaded animation '{}' from {} - Duration: {:.2f}s",
-                clip->name, filepath, clip->duration);
         }
 
     private:

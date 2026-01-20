@@ -3,6 +3,7 @@
   <ItemGroup>
     <ClCompile Include="includes\Audio\Audio.cpp" />
     <ClCompile Include="src\Application\Context.cpp" />
+    <ClCompile Include="src\Auxiliaries\AnimationIO.cpp" />
     <ClCompile Include="src\Auxiliaries\AssetSerializer.cpp" />
     <ClCompile Include="src\Auxiliaries\ComponentSerializer.cpp" />
     <ClCompile Include="src\Auxiliaries\PropertyAPI.cpp" />
@@ -52,6 +53,7 @@
     <ClInclude Include="includes\Graphics\Buffers\Mesh.h" />
     <ClInclude Include="includes\Graphics\Buffers\Vertex.h" />
     <ClInclude Include="includes\Graphics\Models\Animation.h" />
+    <ClInclude Include="includes\Graphics\Models\AnimationIO.h" />
     <ClInclude Include="includes\Graphics\Models\Animator.h" />
     <ClInclude Include="includes\Graphics\Models\Helper.h" />
     <ClInclude Include="includes\Graphics\Models\Model.h" />
