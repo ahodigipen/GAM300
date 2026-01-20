@@ -76,22 +76,42 @@ namespace EditorUI {
                 ImGui::TextColored(ImVec4(0.7f, 0.7f, 1.0f, 1.0f), "Animation Clips");
                 ImGui::Spacing();
 
-                // Display loaded clips
+                // Display loaded clips with source indicators
                 std::vector<size_t> clipsToRemove;
                 for (size_t i = 0; i < clipCount; ++i) {
                     const auto* clip = animator->GetClip(i);
                     if (!clip) continue;
 
                     ImGui::PushID(static_cast<int>(i));
-                    ImGui::BulletText("%s (%.2fs)", clip->name.c_str(), clip->duration);
+
+                    // Color code by source type
+                    if (clip->filePath.ends_with(".anim")) {
+                        ImGui::TextColored(ImVec4(0.5f, 1.0f, 0.5f, 1.0f), "[.anim]");
+                    } else if (clip->filePath.ends_with(".fbx")) {
+                        ImGui::TextColored(ImVec4(0.5f, 0.5f, 1.0f, 1.0f), "[.fbx]");
+                    } else if (clip->filePath.ends_with(".gltf") || clip->filePath.ends_with(".glb")) {
+                        ImGui::TextColored(ImVec4(1.0f, 0.7f, 0.5f, 1.0f), "[.gltf]");
+                    } else if (clip->filePath.empty()) {
+                        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.5f, 1.0f), "[new]");
+                    } else {
+                        ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "[other]");
+                    }
+                    ImGui::SameLine();
+                    ImGui::Text("%s (%.2fs)", clip->name.c_str(), clip->duration);
                     ImGui::SameLine();
                     if (ImGui::SmallButton("Remove")) {
                         clipsToRemove.push_back(i);
                     }
-                    if (!clip->filePath.empty()) {
-                        ImGui::SameLine();
-                        ImGui::TextDisabled("- %s", clip->filePath.c_str());
+
+                    // Tooltip with full path
+                    if (ImGui::IsItemHovered() && !clip->filePath.empty()) {
+                        ImGui::BeginTooltip();
+                        ImGui::Text("Source: %s", clip->filePath.c_str());
+                        ImGui::Text("Duration: %.2fs", clip->duration);
+                        ImGui::Text("Tracks: %zu", clip->tracks.size());
+                        ImGui::EndTooltip();
                     }
+
                     ImGui::PopID();
                 }
 
@@ -116,9 +136,9 @@ namespace EditorUI {
                 ImU32 borderCol = ImGui::IsItemHovered() ? IM_COL32(100, 200, 100, 255) : IM_COL32(80, 80, 80, 255);
                 drawList->AddRect(cursorPos, ImVec2(cursorPos.x + dropZoneSize.x, cursorPos.y + dropZoneSize.y), borderCol, 4.0f, 0, 2.0f);
 
-                ImVec2 textSize = ImGui::CalcTextSize("Drag animation file here (.fbx, .gltf)");
+                ImVec2 textSize = ImGui::CalcTextSize("Drag animation file here (.fbx, .gltf, .anim)");
                 ImVec2 textPos(cursorPos.x + (dropZoneSize.x - textSize.x) * 0.5f, cursorPos.y + (dropZoneSize.y - textSize.y) * 0.5f);
-                drawList->AddText(textPos, IM_COL32(150, 150, 150, 255), "Drag animation file here (.fbx, .gltf)");
+                drawList->AddText(textPos, IM_COL32(150, 150, 150, 255), "Drag animation file here (.fbx, .gltf, .anim)");
 
                 // Accept drop
                 if (ImGui::BeginDragDropTarget()) {
@@ -145,7 +165,68 @@ namespace EditorUI {
                             BOOM_INFO("Loaded animation clip from asset: {}", modelAsset->source);
                         }
                     }
+                    // Accept animation asset (from resource panel)
+                    else if (const ImGuiPayload* animPayload = ImGui::AcceptDragDropPayload(CONSTANTS::DND_PAYLOAD_ANIMATION.data())) {
+                        Boom::AssetID assetID = *(Boom::AssetID*)animPayload->Data;
+                        auto& assetReg = m_App->GetAssetRegistry();
+                        auto* animAsset = assetReg.TryGet<Boom::AnimationAsset>(assetID);
+                        if (animAsset && animAsset->uid != EMPTY_ASSET) {
+                            std::filesystem::path p(animAsset->source);
+                            std::string defaultName = p.stem().string();
+                            animator->LoadAnimationFromFile(animAsset->source, defaultName);
+                            BOOM_INFO("Loaded animation clip from animation asset: {}", animAsset->source);
+                        }
+                    }
                     ImGui::EndDragDropTarget();
+                }
+
+                // Browse .anim assets button
+                ImGui::Spacing();
+                if (ImGui::Button("Browse Animation Assets...", ImVec2(-1, 0))) {
+                    ImGui::OpenPopup("BrowseAnimAssetsPopup");
+                }
+
+                if (ImGui::BeginPopup("BrowseAnimAssetsPopup")) {
+                    ImGui::Text("Available .anim Assets");
+                    ImGui::Separator();
+                    ImGui::Spacing();
+
+                    auto& assetReg = m_App->GetAssetRegistry();
+                    auto& animAssets = assetReg.GetMap<Boom::AnimationAsset>();
+
+                    bool hasAssets = false;
+                    for (auto& [id, asset] : animAssets) {
+                        if (id == EMPTY_ASSET) continue;
+                        hasAssets = true;
+
+                        auto* animAsset = static_cast<Boom::AnimationAsset*>(asset.get());
+                        if (ImGui::Selectable(animAsset->name.c_str())) {
+                            if (!animAsset->source.empty()) {
+                                std::filesystem::path p(animAsset->source);
+                                std::string defaultName = p.stem().string();
+                                animator->LoadAnimationFromFile(animAsset->source, defaultName);
+                                BOOM_INFO("[Inspector] Added clip '{}' from asset browser", animAsset->name);
+                            }
+                            ImGui::CloseCurrentPopup();
+                        }
+
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::BeginTooltip();
+                            ImGui::Text("Source: %s", animAsset->source.c_str());
+                            if (animAsset->data) {
+                                ImGui::Text("Duration: %.2fs", animAsset->data->duration);
+                                ImGui::Text("Tracks: %zu", animAsset->data->tracks.size());
+                            }
+                            ImGui::EndTooltip();
+                        }
+                    }
+
+                    if (!hasAssets) {
+                        ImGui::TextDisabled("No .anim assets found");
+                        ImGui::TextDisabled("Create them in the Animation Timeline editor");
+                    }
+
+                    ImGui::EndPopup();
                 }
 
                 ImGui::Spacing();
