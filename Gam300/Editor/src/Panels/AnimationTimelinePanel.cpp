@@ -536,8 +536,11 @@ void AnimationTimelinePanel::RenderControlBar()
     ImGui::SameLine();
     ImGui::Text("Speed:");
     ImGui::SameLine();
-    ImGui::SetNextItemWidth(80);
-    ImGui::SliderFloat("##PlaybackSpeed", &m_PlaybackSpeed, 0.1f, 3.0f, "%.2fx");
+    // Proportional width (6% of window, min 60, max 100)
+    float speedSliderWidth = ImGui::GetWindowWidth() * 0.06f;
+    speedSliderWidth = (speedSliderWidth < 60.0f) ? 60.0f : (speedSliderWidth > 100.0f) ? 100.0f : speedSliderWidth;
+    ImGui::SetNextItemWidth(speedSliderWidth);
+    ImGui::SliderFloat("##PlaybackSpeed", &m_PlaybackSpeed, 0.1f, 3.0f, "%.1fx");
     if (ImGui::IsItemHovered()) {
         ImGui::SetTooltip("Playback speed multiplier");
     }
@@ -593,6 +596,7 @@ void AnimationTimelinePanel::RenderControlBar()
     // Gizmo mode keyboard shortcuts (W/E/R/T/K) - only when viewport is focused
     if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
     {
+        ImGuiIO& io = ImGui::GetIO();
         if (ImGui::IsKeyPressed(ImGuiKey_W, false)) {
             // Only allow translate if not in rotation-only mode
             if (!m_RotationOnlyMode) {
@@ -655,6 +659,46 @@ void AnimationTimelinePanel::RenderControlBar()
             else if (m_SelectedClipIndex < 0)
             {
                 BOOM_WARN("[Keyframe Record] No clip selected");
+            }
+        }
+
+        // Delete key - Delete selected keyframes
+        if (ImGui::IsKeyPressed(ImGuiKey_Delete, false))
+        {
+            if (!m_SelectedKeyframes.empty())
+            {
+                DeleteSelectedKeyframes();
+            }
+        }
+
+        // Escape key - Clear keyframe selection
+        if (ImGui::IsKeyPressed(ImGuiKey_Escape, false))
+        {
+            if (!m_SelectedKeyframes.empty())
+            {
+                ClearKeyframeSelection();
+            }
+        }
+
+        // Ctrl+A - Select all keyframes in current clip
+        if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_A, false))
+        {
+            if (m_Animator && m_SelectedClipIndex >= 0)
+            {
+                const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
+                if (clip)
+                {
+                    ClearKeyframeSelection();
+                    // Iterate all tracks and select all keyframes
+                    for (const auto& [boneName, track] : clip->tracks)
+                    {
+                        for (size_t i = 0; i < track.size(); ++i)
+                        {
+                            SelectKeyframe(boneName, i, true);  // Add to selection
+                        }
+                    }
+                    BOOM_INFO("[Multiselect] Selected {} keyframes", m_SelectedKeyframes.size());
+                }
             }
         }
     }
@@ -726,6 +770,24 @@ void AnimationTimelinePanel::RenderControlBar()
         if (ImGui::IsItemHovered())
         {
             ImGui::SetTooltip("Select a bone first, then press K to add a keyframe");
+        }
+    }
+
+    // Show selected keyframes count (multiselect status)
+    ImGui::SameLine(0, 20);
+    if (!m_SelectedKeyframes.empty())
+    {
+        ImGui::TextColored(ImVec4(0.5f, 0.8f, 1.0f, 1.0f), "| %zu keyframe%s selected",
+                          m_SelectedKeyframes.size(),
+                          m_SelectedKeyframes.size() == 1 ? "" : "s");
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Multiselect shortcuts:\n"
+                             "  Ctrl+Click: Add/remove from selection\n"
+                             "  Ctrl+A: Select all keyframes\n"
+                             "  Delete: Delete selected keyframes\n"
+                             "  Escape: Clear selection\n"
+                             "  Drag: Move all selected together");
         }
     }
 
@@ -820,7 +882,10 @@ void AnimationTimelinePanel::RenderControlBar()
     {
         ImGui::Text("Preview Scale:");
         ImGui::SameLine();
-        ImGui::SetNextItemWidth(200);
+        // Use proportional width: 15% of window width (min 100, max 200)
+        float scaleSliderWidth = ImGui::GetWindowWidth() * 0.15f;
+        scaleSliderWidth = (scaleSliderWidth < 100.0f) ? 100.0f : (scaleSliderWidth > 200.0f) ? 200.0f : scaleSliderWidth;
+        ImGui::SetNextItemWidth(scaleSliderWidth);
 
         // Use logarithmic slider for better control at small values
         if (ImGui::SliderFloat("##ModelScale", &m_ModelScale, 0.001f, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic))
@@ -863,8 +928,10 @@ void AnimationTimelinePanel::RenderControlBar()
         ImGui::Text("Animation Clip:");
         ImGui::SameLine();
 
-        // Animation clip dropdown
-        ImGui::SetNextItemWidth(200);
+        // Animation clip dropdown - proportional width (15% of window, min 120, max 250)
+        float clipDropdownWidth = ImGui::GetWindowWidth() * 0.15f;
+        clipDropdownWidth = (clipDropdownWidth < 120.0f) ? 120.0f : (clipDropdownWidth > 250.0f) ? 250.0f : clipDropdownWidth;
+        ImGui::SetNextItemWidth(clipDropdownWidth);
         std::string clipDisplayName = "Select clip...";
         if (m_SelectedClipIndex >= 0)
         {
@@ -1377,37 +1444,55 @@ void AnimationTimelinePanel::RenderControlBar()
     ImGui::EndGroup();
 }
 
-void AnimationTimelinePanel::ExecuteCommand(const KeyframeCommand& cmd)
+// Helper: Find keyframe index by timestamp
+int AnimationTimelinePanel::FindKeyframeByTimestamp(const std::string& boneName, float timestamp, float tolerance)
+{
+    if (!m_Animator || m_SelectedClipIndex < 0) return -1;
+
+    auto* track = m_Animator->GetTrackMutable(m_SelectedClipIndex, boneName);
+    if (!track) return -1;
+
+    for (size_t i = 0; i < track->size(); ++i)
+    {
+        if (std::abs((*track)[i].timeStamp - timestamp) < tolerance)
+        {
+            return static_cast<int>(i);
+        }
+    }
+    return -1;
+}
+
+// Helper: Execute a single command (does NOT modify undo/redo stacks)
+void AnimationTimelinePanel::ExecuteSingleCommand(const KeyframeCommand& cmd)
 {
     if (!m_Animator || m_SelectedClipIndex < 0) return;
 
-    // Push to undo stack
-    m_UndoStack.push_back(cmd);
-    if (m_UndoStack.size() > MAX_UNDO_HISTORY)
-    {
-        m_UndoStack.erase(m_UndoStack.begin()); // Remove oldest
-    }
-
-    // Clear redo stack (new action invalidates redo history)
-    m_RedoStack.clear();
-
-    // Execute the command
     switch (cmd.type)
     {
     case KeyframeCommand::ADD:
         m_Animator->AddKeyframe(m_SelectedClipIndex, cmd.boneName, cmd.keyframe);
-        BOOM_INFO("[Keyframes] Added keyframe at {:.2f}s on bone '{}'", (double)cmd.keyframe.timeStamp, cmd.boneName.c_str());
         break;
 
     case KeyframeCommand::REMOVE:
-        m_Animator->RemoveKeyframe(m_SelectedClipIndex, cmd.boneName, cmd.keyframeIndex);
-        BOOM_INFO("[Keyframes] Removed keyframe at index {} on bone '{}'", (int)cmd.keyframeIndex, cmd.boneName.c_str());
+        {
+            // Find by timestamp, not index (index may be stale)
+            int idx = FindKeyframeByTimestamp(cmd.boneName, cmd.keyframe.timeStamp);
+            if (idx >= 0)
+            {
+                m_Animator->RemoveKeyframe(m_SelectedClipIndex, cmd.boneName, static_cast<size_t>(idx));
+            }
+        }
         break;
 
     case KeyframeCommand::MOVE:
-        m_Animator->UpdateKeyframeTime(m_SelectedClipIndex, cmd.boneName, cmd.keyframeIndex, cmd.newTime);
-        BOOM_INFO("[Keyframes] Moved keyframe on bone '{}' from {:.2f}s to {:.2f}s",
-                  cmd.boneName.c_str(), (double)cmd.oldTime, (double)cmd.newTime);
+        {
+            // Find by old timestamp
+            int idx = FindKeyframeByTimestamp(cmd.boneName, cmd.oldTime);
+            if (idx >= 0)
+            {
+                m_Animator->UpdateKeyframeTime(m_SelectedClipIndex, cmd.boneName, static_cast<size_t>(idx), cmd.newTime);
+            }
+        }
         break;
 
     case KeyframeCommand::BONE_POSE:
@@ -1417,13 +1502,99 @@ void AnimationTimelinePanel::ExecuteCommand(const KeyframeCommand& cmd)
             newPose.rotation = cmd.newRotation;
             newPose.scale = cmd.newScale;
             SetBonePose(cmd.boneName, newPose);
-            BOOM_INFO("[BonePose] Applied pose change to bone '{}'", cmd.boneName.c_str());
+        }
+        break;
+
+    case KeyframeCommand::BATCH:
+        // Execute all sub-commands in order
+        for (const auto& subCmd : cmd.batchCommands)
+        {
+            ExecuteSingleCommand(subCmd);
         }
         break;
     }
+}
 
-    // Mark clip as modified (unsaved changes)
+// Helper: Undo a single command
+void AnimationTimelinePanel::UndoSingleCommand(const KeyframeCommand& cmd)
+{
+    if (!m_Animator || m_SelectedClipIndex < 0) return;
+
+    switch (cmd.type)
+    {
+    case KeyframeCommand::ADD:
+        {
+            // Undo ADD = remove the keyframe (find by timestamp)
+            int idx = FindKeyframeByTimestamp(cmd.boneName, cmd.keyframe.timeStamp);
+            if (idx >= 0)
+            {
+                m_Animator->RemoveKeyframe(m_SelectedClipIndex, cmd.boneName, static_cast<size_t>(idx));
+            }
+        }
+        break;
+
+    case KeyframeCommand::REMOVE:
+        // Undo REMOVE = add it back
+        m_Animator->AddKeyframe(m_SelectedClipIndex, cmd.boneName, cmd.keyframe);
+        break;
+
+    case KeyframeCommand::MOVE:
+        {
+            // Undo MOVE = find by newTime and set back to oldTime
+            int idx = FindKeyframeByTimestamp(cmd.boneName, cmd.newTime);
+            if (idx >= 0)
+            {
+                m_Animator->UpdateKeyframeTime(m_SelectedClipIndex, cmd.boneName, static_cast<size_t>(idx), cmd.oldTime);
+            }
+        }
+        break;
+
+    case KeyframeCommand::BONE_POSE:
+        {
+            // Undo BONE_POSE = restore old pose
+            BonePose oldPose;
+            oldPose.position = cmd.oldPosition;
+            oldPose.rotation = cmd.oldRotation;
+            oldPose.scale = cmd.oldScale;
+            SetBonePose(cmd.boneName, oldPose);
+        }
+        break;
+
+    case KeyframeCommand::BATCH:
+        // Undo batch = undo all sub-commands in REVERSE order
+        for (auto it = cmd.batchCommands.rbegin(); it != cmd.batchCommands.rend(); ++it)
+        {
+            UndoSingleCommand(*it);
+        }
+        break;
+    }
+}
+
+void AnimationTimelinePanel::ExecuteCommand(const KeyframeCommand& cmd)
+{
+    if (!m_Animator || m_SelectedClipIndex < 0) return;
+
+    // Execute the command
+    ExecuteSingleCommand(cmd);
+
+    // Push to undo stack
+    m_UndoStack.push_back(cmd);
+    if (m_UndoStack.size() > MAX_UNDO_HISTORY)
+    {
+        m_UndoStack.erase(m_UndoStack.begin());
+    }
+
+    // Clear redo stack (new action invalidates redo history)
+    m_RedoStack.clear();
+
+    // Mark clip as modified
     m_ClipModified = true;
+
+    // Log
+    if (cmd.type == KeyframeCommand::BATCH)
+    {
+        BOOM_INFO("[Keyframes] Executed batch of {} commands", cmd.batchCommands.size());
+    }
 }
 
 void AnimationTimelinePanel::Undo()
@@ -1433,75 +1604,41 @@ void AnimationTimelinePanel::Undo()
     KeyframeCommand cmd = m_UndoStack.back();
     m_UndoStack.pop_back();
 
-    // Reverse the command
-    switch (cmd.type)
-    {
-    case KeyframeCommand::ADD:
-        // Undo add = remove the keyframe
-        {
-            auto* track = m_Animator->GetTrackMutable(m_SelectedClipIndex, cmd.boneName);
-            if (track)
-            {
-                // Find the keyframe we just added
-                for (size_t i = 0; i < track->size(); ++i)
-                {
-                    if (std::abs((*track)[i].timeStamp - cmd.keyframe.timeStamp) < 0.001f)
-                    {
-                        m_Animator->RemoveKeyframe(m_SelectedClipIndex, cmd.boneName, i);
-                        BOOM_INFO("[Undo] Removed added keyframe at {:.2f}s on bone '{}'",
-                                  (double)cmd.keyframe.timeStamp, cmd.boneName.c_str());
-                        break;
-                    }
-                }
-            }
-        }
-        break;
-
-    case KeyframeCommand::REMOVE:
-        // Undo remove = add it back
-        m_Animator->AddKeyframe(m_SelectedClipIndex, cmd.boneName, cmd.keyframe);
-        BOOM_INFO("[Undo] Restored removed keyframe at {:.2f}s on bone '{}'",
-                  (double)cmd.keyframe.timeStamp, cmd.boneName.c_str());
-        break;
-
-    case KeyframeCommand::MOVE:
-        // Undo move = move it back to old time
-        {
-            auto* track = m_Animator->GetTrackMutable(m_SelectedClipIndex, cmd.boneName);
-            if (track)
-            {
-                // Find the keyframe by timestamp
-                for (size_t i = 0; i < track->size(); ++i)
-                {
-                    if (std::abs((*track)[i].timeStamp - cmd.newTime) < 0.001f)
-                    {
-                        m_Animator->UpdateKeyframeTime(m_SelectedClipIndex, cmd.boneName, i, cmd.oldTime);
-                        BOOM_INFO("[Undo] Moved keyframe on bone '{}' back from {:.2f}s to {:.2f}s",
-                                  cmd.boneName.c_str(), (double)cmd.newTime, (double)cmd.oldTime);
-                        break;
-                    }
-                }
-            }
-        }
-        break;
-
-    case KeyframeCommand::BONE_POSE:
-        // Undo bone pose = restore old pose
-        {
-            BonePose oldPose;
-            oldPose.position = cmd.oldPosition;
-            oldPose.rotation = cmd.oldRotation;
-            oldPose.scale = cmd.oldScale;
-            SetBonePose(cmd.boneName, oldPose);
-            BOOM_INFO("[Undo] Restored bone '{}' pose", cmd.boneName.c_str());
-        }
-        break;
-    }
+    // Undo the command using helper
+    UndoSingleCommand(cmd);
 
     // Push to redo stack
     m_RedoStack.push_back(cmd);
 
-    // Mark clip as modified (unsaved changes)
+    // Update selection for BATCH operations (keyframe indices change after move/restore)
+    if (cmd.type == KeyframeCommand::BATCH)
+    {
+        ClearKeyframeSelection();
+        for (const auto& subCmd : cmd.batchCommands)
+        {
+            if (subCmd.type == KeyframeCommand::MOVE)
+            {
+                // After undo, keyframe is back at oldTime
+                int newIdx = FindKeyframeByTimestamp(subCmd.boneName, subCmd.oldTime);
+                if (newIdx >= 0)
+                {
+                    SelectKeyframe(subCmd.boneName, static_cast<size_t>(newIdx), true);
+                }
+            }
+            else if (subCmd.type == KeyframeCommand::REMOVE)
+            {
+                // After undo of REMOVE, keyframe is restored - select it
+                int newIdx = FindKeyframeByTimestamp(subCmd.boneName, subCmd.keyframe.timeStamp);
+                if (newIdx >= 0)
+                {
+                    SelectKeyframe(subCmd.boneName, static_cast<size_t>(newIdx), true);
+                }
+            }
+        }
+        BOOM_INFO("[Undo] Reverted batch of {} commands", cmd.batchCommands.size());
+    }
+
+    // Mark clip as modified
     m_ClipModified = true;
 }
 
@@ -1512,58 +1649,33 @@ void AnimationTimelinePanel::Redo()
     KeyframeCommand cmd = m_RedoStack.back();
     m_RedoStack.pop_back();
 
-    // Re-execute the command
-    switch (cmd.type)
-    {
-    case KeyframeCommand::ADD:
-        m_Animator->AddKeyframe(m_SelectedClipIndex, cmd.boneName, cmd.keyframe);
-        BOOM_INFO("[Redo] Re-added keyframe at {:.2f}s on bone '{}'",
-                  (double)cmd.keyframe.timeStamp, cmd.boneName.c_str());
-        break;
-
-    case KeyframeCommand::REMOVE:
-        m_Animator->RemoveKeyframe(m_SelectedClipIndex, cmd.boneName, cmd.keyframeIndex);
-        BOOM_INFO("[Redo] Re-removed keyframe at index {} on bone '{}'",
-                  (int)cmd.keyframeIndex, cmd.boneName.c_str());
-        break;
-
-    case KeyframeCommand::MOVE:
-        {
-            auto* track = m_Animator->GetTrackMutable(m_SelectedClipIndex, cmd.boneName);
-            if (track)
-            {
-                // Find the keyframe by old timestamp
-                for (size_t i = 0; i < track->size(); ++i)
-                {
-                    if (std::abs((*track)[i].timeStamp - cmd.oldTime) < 0.001f)
-                    {
-                        m_Animator->UpdateKeyframeTime(m_SelectedClipIndex, cmd.boneName, i, cmd.newTime);
-                        BOOM_INFO("[Redo] Re-moved keyframe on bone '{}' from {:.2f}s to {:.2f}s",
-                                  cmd.boneName.c_str(), (double)cmd.oldTime, (double)cmd.newTime);
-                        break;
-                    }
-                }
-            }
-        }
-        break;
-
-    case KeyframeCommand::BONE_POSE:
-        // Redo bone pose = apply new pose again
-        {
-            BonePose newPose;
-            newPose.position = cmd.newPosition;
-            newPose.rotation = cmd.newRotation;
-            newPose.scale = cmd.newScale;
-            SetBonePose(cmd.boneName, newPose);
-            BOOM_INFO("[Redo] Re-applied bone '{}' pose", cmd.boneName.c_str());
-        }
-        break;
-    }
+    // Re-execute the command using helper
+    ExecuteSingleCommand(cmd);
 
     // Push back to undo stack
     m_UndoStack.push_back(cmd);
 
-    // Mark clip as modified (unsaved changes)
+    // Update selection for BATCH operations (keyframe indices change after move)
+    if (cmd.type == KeyframeCommand::BATCH)
+    {
+        ClearKeyframeSelection();
+        for (const auto& subCmd : cmd.batchCommands)
+        {
+            if (subCmd.type == KeyframeCommand::MOVE)
+            {
+                // After redo, keyframe is at newTime
+                int newIdx = FindKeyframeByTimestamp(subCmd.boneName, subCmd.newTime);
+                if (newIdx >= 0)
+                {
+                    SelectKeyframe(subCmd.boneName, static_cast<size_t>(newIdx), true);
+                }
+            }
+            // For REMOVE redo, keyframes are deleted so don't select
+        }
+        BOOM_INFO("[Redo] Re-executed batch of {} commands", cmd.batchCommands.size());
+    }
+
+    // Mark clip as modified
     m_ClipModified = true;
 }
 

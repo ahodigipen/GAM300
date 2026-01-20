@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 #include "Vendors/imgui/imgui.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -25,7 +26,7 @@ namespace EditorUI {
 
     // Undo/Redo command for keyframe and bone pose operations
     struct KeyframeCommand {
-        enum Type { ADD, REMOVE, MOVE, BONE_POSE };
+        enum Type { ADD, REMOVE, MOVE, BONE_POSE, BATCH };
 
         Type type;
         std::string boneName;
@@ -41,6 +42,9 @@ namespace EditorUI {
         glm::vec3 newPosition = glm::vec3(0.0f);
         glm::quat newRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
         glm::vec3 newScale = glm::vec3(1.0f);
+
+        // For BATCH operations (groups multiple commands into one undo)
+        std::vector<KeyframeCommand> batchCommands;
     };
 
     // Bone pose for undo/redo
@@ -48,6 +52,22 @@ namespace EditorUI {
         glm::vec3 position;
         glm::quat rotation;
         glm::vec3 scale;
+    };
+
+    // Selected keyframe identifier (for multiselect)
+    struct SelectedKeyframe {
+        std::string boneName;
+        size_t keyframeIndex;
+
+        // Comparison operator for std::set ordering
+        bool operator<(const SelectedKeyframe& other) const {
+            if (boneName != other.boneName) return boneName < other.boneName;
+            return keyframeIndex < other.keyframeIndex;
+        }
+
+        bool operator==(const SelectedKeyframe& other) const {
+            return boneName == other.boneName && keyframeIndex == other.keyframeIndex;
+        }
     };
 
     /**
@@ -186,6 +206,13 @@ namespace EditorUI {
         int m_HoveredKeyframeIndex = -1;  // -1 = no hover
         std::string m_HoveredBoneName;
 
+        // Keyframe multiselect state (Unity-style)
+        std::set<SelectedKeyframe> m_SelectedKeyframes;  // Currently selected keyframes
+        SelectedKeyframe m_SelectionAnchor;              // Anchor for shift-click range selection
+        bool m_HasSelectionAnchor = false;               // Is anchor valid?
+        float m_MultiDragStartTime = 0.0f;               // Original time of dragged keyframe (for delta calculation)
+        std::map<SelectedKeyframe, float> m_SelectedKeyframeOriginalTimes;  // Store original times during drag
+
         // Undo/Redo system
         std::vector<KeyframeCommand> m_UndoStack;
         std::vector<KeyframeCommand> m_RedoStack;
@@ -194,6 +221,23 @@ namespace EditorUI {
         void ExecuteCommand(const KeyframeCommand& cmd);
         void Undo();
         void Redo();
+
+        // Helper: Find keyframe index by timestamp (returns -1 if not found)
+        int FindKeyframeByTimestamp(const std::string& boneName, float timestamp, float tolerance = 0.001f);
+
+        // Helper: Execute a single command (used internally, does NOT modify undo/redo stacks)
+        void ExecuteSingleCommand(const KeyframeCommand& cmd);
+
+        // Helper: Undo a single command (used internally)
+        void UndoSingleCommand(const KeyframeCommand& cmd);
+
+        // Keyframe multiselect helpers
+        bool IsKeyframeSelected(const std::string& boneName, size_t index) const;
+        void SelectKeyframe(const std::string& boneName, size_t index, bool addToSelection = false);
+        void DeselectKeyframe(const std::string& boneName, size_t index);
+        void ToggleKeyframeSelection(const std::string& boneName, size_t index);
+        void ClearKeyframeSelection();
+        void DeleteSelectedKeyframes();
     };
 
 } // namespace EditorUI

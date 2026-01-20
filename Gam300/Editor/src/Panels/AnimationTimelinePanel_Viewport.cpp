@@ -35,8 +35,14 @@ using namespace EditorUI;
 void AnimationTimelinePanel::RenderViewport()
 {
     ImVec2 availableSize = ImGui::GetContentRegionAvail();
-    // Take half of remaining space for viewport
-    ImVec2 viewportSize = ImVec2(availableSize.x, availableSize.y * 0.5f);
+    // Take portion of remaining space for viewport
+    // Use 45% for larger windows, but ensure minimum height of 200px
+    // and maximum of 60% to leave room for timeline
+    float viewportRatio = 0.45f;
+    float viewportHeight = availableSize.y * viewportRatio;
+    viewportHeight = (viewportHeight < 200.0f) ? 200.0f : viewportHeight;
+    viewportHeight = (viewportHeight > availableSize.y * 0.6f) ? availableSize.y * 0.6f : viewportHeight;
+    ImVec2 viewportSize = ImVec2(availableSize.x, viewportHeight);
 
     // Resize framebuffer if viewport size changed
     if (viewportSize.x != m_ViewportSize.x || viewportSize.y != m_ViewportSize.y)

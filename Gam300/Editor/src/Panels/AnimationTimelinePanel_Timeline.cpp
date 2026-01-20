@@ -310,7 +310,10 @@ void AnimationTimelinePanel::RenderTrackList()
     if (ImGui::BeginChild("TrackListScroll", ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar))
     {
         // Setup two columns: bone names (left) and timeline tracks (right)
-        const float boneNameWidth = 250.0f;
+        // Use proportional width: 25% for bone names (min 150px, max 300px) and 75% for timeline
+        float availWidth = ImGui::GetContentRegionAvail().x;
+        float boneNameWidth = availWidth * 0.25f;
+        boneNameWidth = (boneNameWidth < 150.0f) ? 150.0f : (boneNameWidth > 300.0f) ? 300.0f : boneNameWidth;
         ImGui::Columns(2, "BoneTrackColumns", true);
         ImGui::SetColumnWidth(0, boneNameWidth);
 
@@ -424,7 +427,6 @@ void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float dur
             // Truncate bone name and add ellipsis
             std::string truncated = joint.name;
             std::string suffix = "... [" + std::to_string(joint.index) + "]";
-            float suffixWidth = ImGui::CalcTextSize(suffix.c_str()).x;
 
             while (!truncated.empty() &&
                    ImGui::CalcTextSize((truncated + suffix).c_str()).x > availableWidth)
@@ -538,6 +540,7 @@ void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float dur
             if (keyframes && !keyframes->empty())
             {
                 ImVec2 mousePos = ImGui::GetMousePos();
+                ImGuiIO& io = ImGui::GetIO();
 
                 // Track if we're hovering any keyframe on THIS bone (local to this iteration)
                 bool hoveredAnyKeyframe = false;
@@ -551,11 +554,28 @@ void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float dur
                     float normalizedTime = kf.timeStamp / duration;
                     float x = timelineMin.x + normalizedTime * timelineWidth;
 
-                    // If we're dragging this keyframe, use mouse position for X
-                    if (m_IsDraggingKeyframe && m_DraggedBoneName == joint.name && m_DraggedKeyframeIndex == i)
+                    // Check if this keyframe is selected (for multiselect)
+                    bool isKeyframeSelected = IsKeyframeSelected(joint.name, i);
+
+                    // If we're dragging and this keyframe is selected, apply drag offset
+                    if (m_IsDraggingKeyframe && isKeyframeSelected && !m_SelectedKeyframeOriginalTimes.empty())
                     {
-                        x = mousePos.x;
-                        x = std::max(timelineMin.x, std::min(x, timelineMin.x + timelineWidth)); // Clamp to timeline bounds
+                        // Calculate time delta from the dragged keyframe
+                        float draggedNewTime = ((mousePos.x - timelineMin.x) / timelineWidth) * duration;
+                        draggedNewTime = std::max(0.0f, std::min(draggedNewTime, duration));
+                        float timeDelta = draggedNewTime - m_MultiDragStartTime;
+
+                        // Apply delta to this keyframe's original time
+                        SelectedKeyframe selKf;
+                        selKf.boneName = joint.name;
+                        selKf.keyframeIndex = i;
+                        auto it = m_SelectedKeyframeOriginalTimes.find(selKf);
+                        if (it != m_SelectedKeyframeOriginalTimes.end())
+                        {
+                            float newTime = it->second + timeDelta;
+                            newTime = std::max(0.0f, std::min(newTime, duration));
+                            x = timelineMin.x + (newTime / duration) * timelineWidth;
+                        }
                     }
 
                     // Diamond center (vertically centered in row)
@@ -573,16 +593,23 @@ void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float dur
                     bool isHovered = (mousePos.x >= center.x - hitTestSize && mousePos.x <= center.x + hitTestSize &&
                                       mousePos.y >= center.y - hitTestSize && mousePos.y <= center.y + hitTestSize);
 
-                    // Determine color based on state
+                    // Determine color based on state (priority: dragging > selected > hovered > default)
                     ImU32 fillColor = IM_COL32(255, 200, 0, 255);  // Default gold
                     ImU32 outlineColor = IM_COL32(200, 150, 0, 255);
 
-                    if (m_IsDraggingKeyframe && m_DraggedBoneName == joint.name && m_DraggedKeyframeIndex == i)
+                    if (m_IsDraggingKeyframe && isKeyframeSelected)
                     {
-                        // Being dragged - bright cyan
+                        // Being dragged (selected keyframes during drag) - bright cyan
                         fillColor = IM_COL32(0, 255, 255, 255);
                         outlineColor = IM_COL32(0, 200, 200, 255);
                         size = 4.0f; // Slightly larger when dragging
+                    }
+                    else if (isKeyframeSelected)
+                    {
+                        // Selected - bright blue
+                        fillColor = IM_COL32(100, 150, 255, 255);
+                        outlineColor = IM_COL32(50, 100, 200, 255);
+                        size = 4.0f; // Slightly larger when selected
                     }
                     else if (isHovered)
                     {
@@ -614,66 +641,159 @@ void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float dur
                         m_HoveredKeyframeIndex = (int)i;
                         m_HoveredBoneName = joint.name;
 
-                        // Show tooltip
-                        ImGui::SetTooltip("Keyframe at %.2fs\nLeft-click to drag\nRight-click to delete", kf.timeStamp);
-
-                        // Start dragging on left-click
-                        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                        // Show tooltip with selection info
+                        if (m_SelectedKeyframes.size() > 1 && isKeyframeSelected)
                         {
-                            m_IsDraggingKeyframe = true;
-                            m_DraggedBoneName = joint.name;
-                            m_DraggedKeyframeIndex = i;
+                            ImGui::SetTooltip("Keyframe at %.2fs\n%zu keyframes selected\nDrag to move all\nDel to delete all\nCtrl+Click to deselect",
+                                              kf.timeStamp, m_SelectedKeyframes.size());
+                        }
+                        else
+                        {
+                            ImGui::SetTooltip("Keyframe at %.2fs\nClick to select\nCtrl+Click to add to selection\nRight-click to delete", kf.timeStamp);
                         }
 
-                        // Delete on right-click
+                        // Handle left-click for selection and dragging
+                        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                        {
+                            if (io.KeyCtrl)
+                            {
+                                // Ctrl+Click: Toggle selection
+                                ToggleKeyframeSelection(joint.name, i);
+                            }
+                            else
+                            {
+                                // Regular click: Select this keyframe
+                                if (!isKeyframeSelected)
+                                {
+                                    // Not selected - select it (and clear others)
+                                    SelectKeyframe(joint.name, i, false);
+                                }
+                                // If already selected, keep selection for potential drag
+
+                                // Start dragging
+                                m_IsDraggingKeyframe = true;
+                                m_DraggedBoneName = joint.name;
+                                m_DraggedKeyframeIndex = i;
+                                m_MultiDragStartTime = kf.timeStamp;
+
+                                // Store original times of all selected keyframes for multi-drag
+                                m_SelectedKeyframeOriginalTimes.clear();
+                                for (const auto& sel : m_SelectedKeyframes)
+                                {
+                                    auto* selTrack = m_Animator->GetTrackMutable(m_SelectedClipIndex, sel.boneName);
+                                    if (selTrack && sel.keyframeIndex < selTrack->size())
+                                    {
+                                        m_SelectedKeyframeOriginalTimes[sel] = (*selTrack)[sel.keyframeIndex].timeStamp;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Delete on right-click (delete all selected if this is selected, otherwise just this one)
                         if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
                         {
-                            // Create and execute remove command
-                            KeyframeCommand cmd;
-                            cmd.type = KeyframeCommand::REMOVE;
-                            cmd.boneName = joint.name;
-                            cmd.keyframeIndex = i;
-                            cmd.keyframe = kf; // Store the keyframe data for undo
-                            ExecuteCommand(cmd);
+                            if (isKeyframeSelected && m_SelectedKeyframes.size() > 1)
+                            {
+                                // Delete all selected keyframes
+                                DeleteSelectedKeyframes();
+                            }
+                            else
+                            {
+                                // Delete just this keyframe
+                                KeyframeCommand cmd;
+                                cmd.type = KeyframeCommand::REMOVE;
+                                cmd.boneName = joint.name;
+                                cmd.keyframeIndex = i;
+                                cmd.keyframe = kf;
+                                ExecuteCommand(cmd);
+                            }
                             break; // Exit loop since we modified the array
                         }
                     }
                 }
 
-                // Handle drag release
+                // Handle drag release for multi-drag
                 if (m_IsDraggingKeyframe && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
                 {
-                    // Calculate new timestamp from mouse position
-                    float newTime = ((mousePos.x - timelineMin.x) / timelineWidth) * duration;
-                    newTime = std::max(0.0f, std::min(newTime, duration)); // Clamp to clip duration
+                    // Calculate time delta from the dragged keyframe
+                    float draggedNewTime = ((mousePos.x - timelineMin.x) / timelineWidth) * duration;
+                    draggedNewTime = std::max(0.0f, std::min(draggedNewTime, duration));
+                    float timeDelta = draggedNewTime - m_MultiDragStartTime;
 
-                    // Get the old timestamp before moving
-                    auto* track = m_Animator->GetTrackMutable(m_SelectedClipIndex, m_DraggedBoneName);
-                    if (track && m_DraggedKeyframeIndex < track->size())
+                    // Only move if there was actual movement
+                    if (std::abs(timeDelta) > 0.001f)
                     {
-                        float oldTime = (*track)[m_DraggedKeyframeIndex].timeStamp;
+                        // Create a BATCH command for multi-drag (single undo operation)
+                        KeyframeCommand batchCmd;
+                        batchCmd.type = KeyframeCommand::BATCH;
 
-                        // Only create command if time actually changed
-                        if (std::abs(oldTime - newTime) > 0.001f)
+                        // Track the new times for updating selection after move
+                        std::vector<std::pair<std::string, float>> movedKeyframeNewTimes;
+
+                        // Build batch of move commands directly from stored original times
+                        for (const auto& [selKf, originalTime] : m_SelectedKeyframeOriginalTimes)
                         {
-                            // Create and execute move command
-                            KeyframeCommand cmd;
-                            cmd.type = KeyframeCommand::MOVE;
-                            cmd.boneName = m_DraggedBoneName;
-                            cmd.keyframeIndex = m_DraggedKeyframeIndex;
-                            cmd.oldTime = oldTime;
-                            cmd.newTime = newTime;
-                            ExecuteCommand(cmd);
+                            float newTime = originalTime + timeDelta;
+                            newTime = std::max(0.0f, std::min(newTime, duration));
+
+                            if (std::abs(originalTime - newTime) > 0.001f)
+                            {
+                                KeyframeCommand cmd;
+                                cmd.type = KeyframeCommand::MOVE;
+                                cmd.boneName = selKf.boneName;
+                                cmd.oldTime = originalTime;  // Use stored original time
+                                cmd.newTime = newTime;
+
+                                batchCmd.batchCommands.push_back(cmd);
+                                movedKeyframeNewTimes.push_back({selKf.boneName, newTime});
+                            }
+                        }
+
+                        // Execute the batch (single undo entry)
+                        if (!batchCmd.batchCommands.empty())
+                        {
+                            ExecuteCommand(batchCmd);
+
+                            // Update selection to reflect new keyframe indices after move
+                            // (indices change because tracks are sorted by timestamp)
+                            ClearKeyframeSelection();
+                            for (const auto& [boneName, newTime] : movedKeyframeNewTimes)
+                            {
+                                int newIdx = FindKeyframeByTimestamp(boneName, newTime);
+                                if (newIdx >= 0)
+                                {
+                                    SelectKeyframe(boneName, static_cast<size_t>(newIdx), true);
+                                }
+                            }
                         }
                     }
 
                     m_IsDraggingKeyframe = false;
+                    m_SelectedKeyframeOriginalTimes.clear();
                 }
 
                 // NOTE: "Click to add keyframe" feature disabled
                 // This is not Unity-like, and without bone manipulation capability,
                 // adding keyframes with identity transforms would break animations.
                 // TODO: Re-enable once we can capture actual bone transforms from 3D viewport
+
+                // Click on empty timeline space clears selection (Unity behavior)
+                // Only if we didn't hover any keyframe and mouse is in the timeline track area
+                if (!hoveredAnyKeyframe && !m_IsDraggingKeyframe)
+                {
+                    // Check if mouse is in this track's timeline area
+                    bool mouseInTrack = (mousePos.x >= timelineMin.x && mousePos.x <= timelineMin.x + timelineWidth &&
+                                        mousePos.y >= timelineMin.y && mousePos.y <= timelineMax.y);
+
+                    if (mouseInTrack && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                    {
+                        ImGuiIO& clickIo = ImGui::GetIO();
+                        if (!clickIo.KeyCtrl)  // Don't clear on Ctrl+click (for additive selection)
+                        {
+                            ClearKeyframeSelection();
+                        }
+                    }
+                }
             }
         }
     }
@@ -693,4 +813,124 @@ void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float dur
         }
         ImGui::TreePop();
     }
+}
+
+// ========== Keyframe Multiselect Helper Functions ==========
+
+bool AnimationTimelinePanel::IsKeyframeSelected(const std::string& boneName, size_t index) const
+{
+    SelectedKeyframe kf;
+    kf.boneName = boneName;
+    kf.keyframeIndex = index;
+    return m_SelectedKeyframes.find(kf) != m_SelectedKeyframes.end();
+}
+
+void AnimationTimelinePanel::SelectKeyframe(const std::string& boneName, size_t index, bool addToSelection)
+{
+    if (!addToSelection)
+    {
+        m_SelectedKeyframes.clear();
+    }
+
+    SelectedKeyframe kf;
+    kf.boneName = boneName;
+    kf.keyframeIndex = index;
+    m_SelectedKeyframes.insert(kf);
+
+    // Set as selection anchor for shift-click range selection
+    m_SelectionAnchor = kf;
+    m_HasSelectionAnchor = true;
+}
+
+void AnimationTimelinePanel::DeselectKeyframe(const std::string& boneName, size_t index)
+{
+    SelectedKeyframe kf;
+    kf.boneName = boneName;
+    kf.keyframeIndex = index;
+    m_SelectedKeyframes.erase(kf);
+}
+
+void AnimationTimelinePanel::ToggleKeyframeSelection(const std::string& boneName, size_t index)
+{
+    SelectedKeyframe kf;
+    kf.boneName = boneName;
+    kf.keyframeIndex = index;
+
+    auto it = m_SelectedKeyframes.find(kf);
+    if (it != m_SelectedKeyframes.end())
+    {
+        m_SelectedKeyframes.erase(it);
+    }
+    else
+    {
+        m_SelectedKeyframes.insert(kf);
+        // Update anchor
+        m_SelectionAnchor = kf;
+        m_HasSelectionAnchor = true;
+    }
+}
+
+void AnimationTimelinePanel::ClearKeyframeSelection()
+{
+    m_SelectedKeyframes.clear();
+    m_HasSelectionAnchor = false;
+}
+
+void AnimationTimelinePanel::DeleteSelectedKeyframes()
+{
+    if (m_SelectedKeyframes.empty() || !m_Animator || m_SelectedClipIndex < 0)
+        return;
+
+    size_t deleteCount = m_SelectedKeyframes.size();
+
+    // Create a BATCH command for multi-delete (single undo operation)
+    KeyframeCommand batchCmd;
+    batchCmd.type = KeyframeCommand::BATCH;
+
+    // Delete in reverse order (highest index first) to avoid index shifting issues
+    // First, group by bone and sort by index descending
+    std::map<std::string, std::vector<size_t>> keyframesByBone;
+    for (const auto& sel : m_SelectedKeyframes)
+    {
+        keyframesByBone[sel.boneName].push_back(sel.keyframeIndex);
+    }
+
+    // Sort each bone's keyframes in descending order
+    for (auto& [boneName, indices] : keyframesByBone)
+    {
+        std::sort(indices.begin(), indices.end(), std::greater<size_t>());
+    }
+
+    // Build batch of remove commands
+    for (const auto& [boneName, indices] : keyframesByBone)
+    {
+        for (size_t idx : indices)
+        {
+            // Get keyframe data for undo before deleting
+            auto* track = m_Animator->GetTrackMutable(m_SelectedClipIndex, boneName);
+            if (track && idx < track->size())
+            {
+                // Create remove command
+                KeyframeCommand cmd;
+                cmd.type = KeyframeCommand::REMOVE;
+                cmd.boneName = boneName;
+                cmd.keyframeIndex = idx;
+                cmd.keyframe = (*track)[idx];
+
+                // Add to batch
+                batchCmd.batchCommands.push_back(cmd);
+            }
+        }
+    }
+
+    // Execute the batch (single undo entry)
+    if (!batchCmd.batchCommands.empty())
+    {
+        ExecuteCommand(batchCmd);
+    }
+
+    // Clear selection after deletion
+    ClearKeyframeSelection();
+
+    BOOM_INFO("[Multiselect] Deleted {} keyframes", deleteCount);
 }
