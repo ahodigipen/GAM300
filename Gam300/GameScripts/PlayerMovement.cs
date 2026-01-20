@@ -190,6 +190,10 @@ namespace GameScripts
             _invulnerabilityTimer = 0f;
             HUD.SetHealth(_health, _maxHealth);
             _isRespawning = false;
+
+            // NEW: Notify all enemies that player has respawned
+            PlayerManager.NotifyPlayerRespawned();
+            API.Log("[PlayerMovement] Player respawned - enemies notified");
         }
 
         public void UpdateCheckpoint(Vec3 newCheckpoint)
@@ -651,6 +655,17 @@ namespace GameScripts
         }
         public int GetHealth() => _health;
         public static ulong GetPlayerEntity() => s_playerEntity;
-        public static bool IsPlayerInvisibleToEnemies() => s_isStealthInvisible;
+        public static bool IsPlayerInvisibleToEnemies()
+        {
+            if (s_instance == null) return false;
+
+            // Check crouch stealth
+            if (s_isStealthInvisible) return true;
+
+            // NEW: Check invulnerability (respawn protection)
+            if (s_instance._isInvulnerable) return true;
+
+            return false;
+        }
     }
 }

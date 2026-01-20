@@ -3,7 +3,7 @@ using System;
 
 namespace GameScripts
 {
-    public class PatrolEnemyController
+    public class PatrolEnemyController :IEnemyController
     {
         public ulong Entity;
 
@@ -23,6 +23,10 @@ namespace GameScripts
         private double _smoothedSpeed = 0.0;
 
         private VisionComponent _vision;
+
+        // NEW: Proximity detection
+        private ProximityDetectionComponent _proximityDetection;
+
         private bool _isAlert;
         private bool _hasDealtDamage;
 
@@ -32,21 +36,25 @@ namespace GameScripts
         private const string SFX_FOOTSTEP_PATH = "Resources/Audio/playerRun_02.wav";
         private const string SFX_ALERT_PATH = "Resources/Audio/enemyHurt_2.wav";
 
-        private string _footBase;     // base id for steps (unique per entity)
+        private string _footBase;
         private string _alertName;
 
         // cadence settings
-        private const float MOVE_START_SPEED = 0.25f; // start stepping above this (m/s)
-        private const float MOVE_STOP_SPEED = 0.15f; // stop stepping below this
-        private const float STEP_LENGTH_M = 0.7f;  // meters per step at normal walk (tune!)
-        private const float MIN_INTERVAL_S = 0.5f; // clamp so it never gets machine-gun fast
-        private const float MAX_INTERVAL_S = 2.0f;  // clamp for slow shuffles
-        private const float VOL_BASE = 1.0f; // base volume
-        private const float VOL_JITTER = 0.07f; // ± random variance
+        private const float MOVE_START_SPEED = 0.25f;
+        private const float MOVE_STOP_SPEED = 0.15f;
+        private const float STEP_LENGTH_M = 0.7f;
+        private const float MIN_INTERVAL_S = 0.5f;
+        private const float MAX_INTERVAL_S = 2.0f;
+        private const float VOL_BASE = 1.0f;
+        private const float VOL_JITTER = 0.07f;
 
         private float _stepTimer = 0f;
         private bool _leftNext = true;
         private float _debugTimer;
+
+        // detection damage reset
+        private float _damageResetTimer = 0f;
+        private const float DAMAGE_RESET_DELAY = 3.0f; // 3 seconds after damage
 
         public void OnStart(string json)
         {
@@ -62,26 +70,37 @@ namespace GameScripts
 
             _anchorPos = API.GetPosition(Entity);
 
+            // Initialize vision system
             _vision = new VisionComponent { Entity = Entity };
             _vision.OnTargetDetected += OnPlayerDetected;
             _vision.OnTargetLost += OnPlayerLost;
             _vision.OnTargetUpdated += OnPlayerTracking;
             _vision.OnStart(json);
 
+            // NEW: Initialize proximity detection
+            _proximityDetection = new ProximityDetectionComponent { Entity = Entity };
+            _proximityDetection.OnProximityDetected += OnProximityDetected;
+            _proximityDetection.OnStart();
+            // Optional: Configure
+            // _proximityDetection.SetDetectionRadius(3.5f);
+            // _proximityDetection.SetDetectionDuration(2.0f);
+
             _footBase = "foot_" + Entity.ToString();
             _alertName = "alert_" + Entity.ToString();
 
-            // optional: preload step clip once (non-loop)
             API.PreloadSound(_footBase + "_L", SFX_FOOTSTEP_PATH, loop: false);
             API.PreloadSound(_footBase + "_R", SFX_FOOTSTEP_PATH, loop: false);
             API.PreloadSound(_alertName, SFX_ALERT_PATH, loop: false);
+
+            // NEW: Register with PlayerManager
+            PlayerManager.RegisterEnemy(this);
         }
 
         public void OnUpdate(float dt)
         {
             if (Entity == 0 || dt <= 0f) return;
 
-            // --- FREEZE CHECK (FIXED) ---
+            // --- FREEZE CHECK ---
             bool currentlyFrozen = FreezeManager.IsFrozen(API.GetPosition(Entity));
 
             if (currentlyFrozen)
@@ -89,8 +108,6 @@ namespace GameScripts
                 if (!_isFrozen)
                 {
                     _isFrozen = true;
-
-                    // 1. Capture exact position the moment we freeze
                     _frozenPosition = API.GetPosition(Entity);
 
                     API.SetNavAgentActive(Entity, false);
@@ -103,29 +120,21 @@ namespace GameScripts
                     _smoothedSpeed = 0.0;
                 }
 
-                // 2. THE NUCLEAR OPTION: Teleport to the frozen spot every frame.
-                // This overrides all physics, gravity, and sliding instantly.
                 API.TeleportRigidBody(Entity, _frozenPosition);
                 API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
 
-                return; // Stop Logic
+                return;
             }
             else
             {
-                // If we were frozen last frame but are not anymore (Transition: Frozen -> Active)
                 if (_isFrozen)
                 {
                     _isFrozen = false;
-
-                    // 1. Re-enable the Brain
                     API.SetNavAgentActive(Entity, true);
-
-                    // 2. Optional: Restore animator speed if you paused it
-                    // API.SetAnimatorSpeed(Entity, 1f);
                 }
             }
 
-            // --- NORMAL LOGIC BELOW ---
+            // --- NORMAL LOGIC ---
 
             var v = API.GetLinearVelocity(Entity);
             float speedXZ = (float)Math.Sqrt(v.X * v.X + v.Z * v.Z);
@@ -139,12 +148,11 @@ namespace GameScripts
             }
 
             // ======= DISCRETE FOOTSTEPS =======
-            bool grounded = API.IsColliding(Entity);              // your RB “grounded” flag
+            bool grounded = API.IsColliding(Entity);
             bool moving = speedXZ >= MOVE_START_SPEED;
 
             if (grounded && moving)
             {
-                // cadence: steps per second ≈ speed / stepLength
                 float cadence = Math.Max(0.0001f, speedXZ / STEP_LENGTH_M);
                 float interval = 1.0f / cadence;
                 if (interval < MIN_INTERVAL_S) interval = MIN_INTERVAL_S;
@@ -155,8 +163,6 @@ namespace GameScripts
                 {
                     var pos = API.GetPosition(Entity);
 
-                    // Check vertical distance to player (Y-axis)
-                    // Only play footsteps if on same floor (within 10 units vertically)
                     ulong playerEntity = PlayerMovement.GetPlayerEntity();
                     bool shouldPlayFootstep = true;
 
@@ -164,42 +170,33 @@ namespace GameScripts
                     {
                         var playerPos = API.GetPosition(playerEntity);
                         float verticalDistance = Math.Abs(pos.Y - playerPos.Y);
-
-                        // Floor separation is 12 units, so 10 units ensures same floor only
                         shouldPlayFootstep = verticalDistance < 10.0f;
                     }
 
                     if (shouldPlayFootstep)
                     {
-                        // choose L/R alternating channel names so overlapping clicks don't stomp each other
                         string chName = _footBase + (_leftNext ? "_L" : "_R");
                         _leftNext = !_leftNext;
 
-                        // play one-shot at position
                         API.PlaySoundAt(chName, SFX_FOOTSTEP_PATH, pos, loop: false);
 
-                        // subtle volume variance
-                        float jitter = (float)(Random01() * 2.0 - 1.0) * VOL_JITTER; // [-VOL_JITTER, +VOL_JITTER]
+                        float jitter = (float)(Random01() * 2.0 - 1.0) * VOL_JITTER;
                         float vol = Clamp01(VOL_BASE + jitter);
                         API.SetSoundVolume(chName, vol);
-
-                        // Set 3D distance: with vertical check, we can use larger max distance for horizontal range
-                        // Min 6.0 = full volume within 6 units
-                        // Max 30.0 = can hear across entire floor when visible
                         API.Set3DMinMaxDistance(chName, 6.0f, 30.0f);
                     }
 
-                    // restart timer regardless of whether we played the sound
                     _stepTimer += interval;
                 }
             }
             else
             {
-                // reset so the next move fires promptly, not after an old leftover remainder
                 _stepTimer = 0f;
             }
 
+            // Update vision and proximity
             _vision?.OnUpdate(dt);
+            _proximityDetection?.OnUpdate(dt);
 
             _debugTimer += dt;
             if (_debugTimer >= 1f)
@@ -208,9 +205,19 @@ namespace GameScripts
                 var r = API.GetRotation(Entity);
                 API.Log($"[PatrolEnemyController] yaw={_yaw:F1}°, rotY={r.Y:F1}°, speed={speedXZ:F2} m/s");
             }
+
+            if (_hasDealtDamage)
+            {
+                _damageResetTimer += dt;
+                if (_damageResetTimer >= DAMAGE_RESET_DELAY)
+                {
+                    _hasDealtDamage = false;
+                    _damageResetTimer = 0f;
+                    API.Log("[PatrolEnemyController] Damage flag reset - can damage again");
+                }
+            }
         }
 
-        // ---- Helpers (unchanged except we keep them here) ----
         private void FaceVelocity(float dt, float vx, float vz)
         {
             float speedXZ = (float)Math.Sqrt(vx * vx + vz * vz);
@@ -247,13 +254,25 @@ namespace GameScripts
 
             API.PlaySoundAt(_alertName, SFX_ALERT_PATH, self, loop: false);
             API.SetSoundVolume(_alertName, 0.5f);
-            // Set 3D distance for alert sound - should be heard from medium distance
             API.Set3DMinMaxDistance(_alertName, 1.0f, 25.0f);
 
-            if (!_hasDealtDamage) { _hasDealtDamage = true; PlayerManager.NotifyPlayerCaught(Entity); }
+            if (!_hasDealtDamage)
+            {
+                _hasDealtDamage = true;
+                _damageResetTimer = 0f;  // Start timer
+                API.Log($"[PatrolEnemyController] Dealing damage (vision detection)!");
+                PlayerManager.NotifyPlayerCaught(Entity);
+            }
         }
 
-        private void OnPlayerLost(ulong t, Vec3 lastPos) { _isAlert = false; _hasDealtDamage = false; }
+        private void OnPlayerLost(ulong t, Vec3 lastPos)
+        {
+            _isAlert = false;
+            _hasDealtDamage = false;
+
+            // NEW: Reset proximity when player lost
+            _proximityDetection?.ResetDetection();
+        }
 
         private void OnPlayerTracking(ulong t, Vec3 pos)
         {
@@ -266,10 +285,50 @@ namespace GameScripts
             API.SetRotationY(Entity, _yaw);
         }
 
+        // === NEW: PROXIMITY DETECTION HANDLER ===
+        private void OnProximityDetected(ulong target, Vec3 pos)
+        {
+            API.Log(">>> PATROL ENEMY ALERTED BY PROXIMITY! <<<");
+
+            _isAlert = true;
+            var self = API.GetPosition(Entity);
+            float dx = pos.X - self.X, dz = pos.Z - self.Z;
+            float baseYaw = WORLD_FORWARD_IS_NEG_Z
+                ? (float)(Math.Atan2(dx, -dz) * 180.0 / Math.PI)
+                : (float)(Math.Atan2(dx, dz) * 180.0 / Math.PI);
+            _yaw = Wrap360(baseYaw);
+            API.SetRotationY(Entity, _yaw);
+
+            if (!_hasDealtDamage)
+            {
+                _hasDealtDamage = true;
+                _damageResetTimer = 0f;  // Start timer
+                API.Log($"[PatrolEnemyController] Dealing damage (proximity detection)!");
+                PlayerManager.NotifyPlayerCaught(Entity);
+            }
+        }
+
+        // NEW: Implement interface method
+        public void OnPlayerRespawned()
+        {
+            // Force reset all states
+            _hasDealtDamage = false;
+            _damageResetTimer = 0f;
+            _isAlert = false;
+
+            // Reset proximity
+            _proximityDetection?.ResetDetection();
+
+            API.Log("[PatrolEnemyController] Player respawned - all states reset");
+        }
+
         public void OnDestroy()
         {
-            // no looping channels to stop now, but if a step is mid-play it will auto-stop
             _vision?.OnDestroy();
+            _proximityDetection?.OnDestroy();
+
+            // NEW: Unregister from PlayerManager
+            PlayerManager.UnregisterEnemy(this);
         }
 
         // utils

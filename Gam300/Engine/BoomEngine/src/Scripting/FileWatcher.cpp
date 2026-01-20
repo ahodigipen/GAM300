@@ -13,6 +13,11 @@ namespace Boom {
             return false;
         }
 
+        if (IsWatching(filepath)) {
+            BOOM_WARN("[FileWatcher] Already watching: {}, ignoring duplicate", filepath);
+            return false;  // Prevent duplicate watches
+        }
+
         WatchEntry entry;
         entry.filepath = filepath;
         entry.callback = callback;
@@ -39,6 +44,15 @@ namespace Boom {
     void FileWatcher::Update()
     {
         auto now = std::chrono::system_clock::now();
+
+        // GLOBAL COOLDOWN: Ignore all triggers within 3 seconds of last trigger
+        auto timeSinceLastGlobalTrigger = std::chrono::duration_cast<std::chrono::milliseconds>(
+            now - m_LastGlobalTrigger
+        );
+
+        if (timeSinceLastGlobalTrigger.count() < 3000) {  // 3 second cooldown
+            return;  // Skip all file checking during cooldown
+        }
 
         // Create a list of paths to process (avoid issues with corrupted strings during iteration)
         std::vector<std::string> pathsToCheck;
