@@ -146,6 +146,26 @@ namespace Boom {
             mono_field_set_value(obj, f, &h);
         }
 
+        // Apply saved params to exposed fields BEFORE OnStart
+        // This restores serialized field values from the scene
+        if (!params.empty() && params.is_object()) {
+            MonoImage* image = mono_assembly_get_image(m_Scripts);
+            MonoClass* registryClass = mono_class_from_name(image, "GameScripts", "ScriptRegistry");
+            if (registryClass) {
+                MonoMethod* applyMethod = mono_class_get_method_from_name(registryClass, "ApplyParamsToExposedFields", 2);
+                if (applyMethod) {
+                    std::string paramsJson = params.dump();
+                    MonoString* paramsStr = mono_string_new(mono_domain_get(), paramsJson.c_str());
+                    void* applyArgs[2] = { obj, paramsStr };
+                    MonoObject* applyExc = nullptr;
+                    mono_runtime_invoke(applyMethod, nullptr, applyArgs, &applyExc);
+                    if (applyExc) {
+                        m_Mono.LogException(applyExc, "[Scripting] ApplyParamsToExposedFields");
+                    }
+                }
+            }
+        }
+
         // Call OnStart with params
         if (mStart) {
             std::string js = params.dump();
@@ -434,5 +454,189 @@ namespace Boom {
         return types;
     }
 
+    std::vector<ScriptingSystem::ExposedFieldInfo> ScriptingSystem::GetExposedFields(const std::string& typeName) const
+    {
+        std::vector<ExposedFieldInfo> fields;
+
+        if (!m_Alive || !m_Scripts)
+            return fields;
+
+        MonoImage* image = mono_assembly_get_image(m_Scripts);
+        if (!image)
+            return fields;
+
+        // Find GameScripts.ScriptRegistry
+        MonoClass* registryClass = mono_class_from_name(image, "GameScripts", "ScriptRegistry");
+        if (!registryClass) {
+            BOOM_WARN("[Scripting] ScriptRegistry class not found");
+            return fields;
+        }
+
+        // Find static string GetExposedFieldsJson(string)
+        MonoMethod* getFieldsMethod =
+            mono_class_get_method_from_name(registryClass, "GetExposedFieldsJson", 1);
+        if (!getFieldsMethod) {
+            BOOM_WARN("[Scripting] GetExposedFieldsJson() method not found");
+            return fields;
+        }
+
+        // Call the method with typeName
+        MonoString* typeNameStr = mono_string_new(mono_domain_get(), typeName.c_str());
+        void* args[1] = { typeNameStr };
+        MonoObject* exc = nullptr;
+        MonoObject* result = mono_runtime_invoke(getFieldsMethod, nullptr, args, &exc);
+        if (exc) {
+            const_cast<MonoRuntime&>(m_Mono).LogException(exc, "[Scripting] GetExposedFieldsJson");
+            return fields;
+        }
+
+        if (!result)
+            return fields;
+
+        // Convert MonoString to std::string
+        MonoString* jsonStr = reinterpret_cast<MonoString*>(result);
+        char* utf8 = mono_string_to_utf8(jsonStr);
+        if (!utf8)
+            return fields;
+
+        std::string json(utf8);
+        mono_free(utf8);
+
+        // Parse JSON using nlohmann::json
+        try {
+            auto arr = nlohmann::json::parse(json);
+            for (const auto& item : arr) {
+                ExposedFieldInfo info;
+                info.fieldName = item.value("fieldName", "");
+                info.displayName = item.value("displayName", "");
+                info.typeName = item.value("typeName", "");
+                info.tooltip = item.value("tooltip", "");
+                info.minValue = item.value("minValue", -FLT_MAX);
+                info.maxValue = item.value("maxValue", FLT_MAX);
+                info.useSlider = item.value("useSlider", false);
+                fields.push_back(info);
+            }
+        }
+        catch (const std::exception& e) {
+            BOOM_ERROR("[Scripting] Failed to parse exposed fields JSON: {}", e.what());
+        }
+
+        return fields;
+    }
+
+    uint64_t ScriptingSystem::GetInstanceGCHandle(uint64_t instanceId) const
+    {
+        auto it = m_Instances.find(instanceId);
+        if (it == m_Instances.end())
+            return 0;
+        return it->second.gchandle;
+    }
+
+    std::string ScriptingSystem::GetFieldValue(uint64_t instanceId, const std::string& fieldName) const
+    {
+        if (!m_Alive || !m_Scripts)
+            return "null";
+
+        auto it = m_Instances.find(instanceId);
+        if (it == m_Instances.end())
+            return "null";
+
+        uint64_t gchandle = it->second.gchandle;
+        if (!gchandle)
+            return "null";
+
+        MonoObject* obj = mono_gchandle_get_target(static_cast<uint32_t>(gchandle));
+        if (!obj)
+            return "null";
+
+        MonoImage* image = mono_assembly_get_image(m_Scripts);
+        if (!image)
+            return "null";
+
+        // Find GameScripts.ScriptRegistry
+        MonoClass* registryClass = mono_class_from_name(image, "GameScripts", "ScriptRegistry");
+        if (!registryClass)
+            return "null";
+
+        // Find static string GetFieldValueJson(object, string)
+        MonoMethod* getValueMethod =
+            mono_class_get_method_from_name(registryClass, "GetFieldValueJson", 2);
+        if (!getValueMethod)
+            return "null";
+
+        // Call the method
+        MonoString* fieldNameStr = mono_string_new(mono_domain_get(), fieldName.c_str());
+        void* args[2] = { obj, fieldNameStr };
+        MonoObject* exc = nullptr;
+        MonoObject* result = mono_runtime_invoke(getValueMethod, nullptr, args, &exc);
+        if (exc) {
+            const_cast<MonoRuntime&>(m_Mono).LogException(exc, "[Scripting] GetFieldValueJson");
+            return "null";
+        }
+
+        if (!result)
+            return "null";
+
+        MonoString* jsonStr = reinterpret_cast<MonoString*>(result);
+        char* utf8 = mono_string_to_utf8(jsonStr);
+        if (!utf8)
+            return "null";
+
+        std::string json(utf8);
+        mono_free(utf8);
+        return json;
+    }
+
+    bool ScriptingSystem::SetFieldValue(uint64_t instanceId, const std::string& fieldName, const std::string& valueJson)
+    {
+        if (!m_Alive || !m_Scripts)
+            return false;
+
+        auto it = m_Instances.find(instanceId);
+        if (it == m_Instances.end())
+            return false;
+
+        uint64_t gchandle = it->second.gchandle;
+        if (!gchandle)
+            return false;
+
+        MonoObject* obj = mono_gchandle_get_target(static_cast<uint32_t>(gchandle));
+        if (!obj)
+            return false;
+
+        MonoImage* image = mono_assembly_get_image(m_Scripts);
+        if (!image)
+            return false;
+
+        // Find GameScripts.ScriptRegistry
+        MonoClass* registryClass = mono_class_from_name(image, "GameScripts", "ScriptRegistry");
+        if (!registryClass)
+            return false;
+
+        // Find static bool SetFieldValue(object, string, string)
+        MonoMethod* setValueMethod =
+            mono_class_get_method_from_name(registryClass, "SetFieldValue", 3);
+        if (!setValueMethod)
+            return false;
+
+        // Call the method
+        MonoString* fieldNameStr = mono_string_new(mono_domain_get(), fieldName.c_str());
+        MonoString* valueStr = mono_string_new(mono_domain_get(), valueJson.c_str());
+        void* args[3] = { obj, fieldNameStr, valueStr };
+        MonoObject* exc = nullptr;
+        MonoObject* result = mono_runtime_invoke(setValueMethod, nullptr, args, &exc);
+        if (exc) {
+            const_cast<MonoRuntime&>(m_Mono).LogException(exc, "[Scripting] SetFieldValue");
+            return false;
+        }
+
+        // Result is a boxed bool
+        if (result) {
+            bool success = *reinterpret_cast<bool*>(mono_object_unbox(result));
+            return success;
+        }
+
+        return false;
+    }
 
 } // namespace Boom

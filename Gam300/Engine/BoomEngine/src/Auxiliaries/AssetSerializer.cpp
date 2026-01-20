@@ -1,6 +1,7 @@
 #include "Core.h"
 #include "Auxiliaries/SerializationRegistry.h"
 #include "Auxiliaries/Assets.h"
+#include "Graphics/Models/AnimationIO.h"
 
 namespace Boom
 {
@@ -251,6 +252,18 @@ namespace Boom
             },
             [](AssetRegistry& reg, AssetID uid, const std::string& src, const YAML::Node&)->Asset* {
                 return static_cast<Asset*>(reg.AddAudio(uid, src).get());
+            }
+        );
+
+        // === ANIMATION ===
+        registry.RegisterAssetSerializer(
+            AssetType::ANIMATION,
+            [](YAML::Emitter&, Asset*) {
+                // No properties to serialize
+            },
+            [](AssetRegistry& reg, AssetID uid, const std::string& src, const YAML::Node&) -> Asset* {
+                // Just register the asset - actual .anim loading happens on-demand
+                return static_cast<Asset*>(reg.AddAnimation(uid, src).get());
             }
         );
 

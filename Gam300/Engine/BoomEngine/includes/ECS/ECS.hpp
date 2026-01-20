@@ -524,98 +524,116 @@ namespace Boom {
  // Chris I have no idea how your sound component works
  struct SoundComponent
  {
- struct Entry {
- std::string name;      // logical name ("bgm", "jump", etc.)
- // Backwards-compatible single file path
- std::string filePath;  // actual sound file path (legacy)
- // New: allow multiple alternate files for randomization
- std::vector<std::string> filePaths;
- bool loop = false;
- float volume = 1.0f;
- bool playOnStart = false;
+     struct Entry {
+         std::string name;      // logical name ("bgm", "jump", etc.)
+         // Backwards-compatible single file path
+         std::string filePath;  // actual sound file path (legacy)
+         // New: allow multiple alternate files for randomization
+         std::vector<std::string> filePaths;
 
- // New trigger options
- int triggerKey = -1; // GLFW key code to trigger this sound (-1 = none)
- bool playOnMove = false; // play while moving (uses rigidbody velocity)
- float moveThreshold = 0.1f; // minimum speed to consider "moving"
- float repeatInterval = 0.5f; // minimum seconds between automatic retriggers
+         // Core audio properties (Unity-style)
+         bool loop = false;
+         float volume = 1.0f;
+         int priority = 128;           // 0-256, lower = higher priority (128 = default)
+         float pitch = 1.0f;           // Playback speed/pitch (0.5 = half, 2.0 = double)
+         float stereoPan = 0.0f;       // Stereo panning (-1.0 = left, 0 = center, 1.0 = right)
+         float spatialBlend = 1.0f;    // 2D/3D blend (0.0 = fully 2D, 1.0 = fully 3D)
+         bool mute = false;            // Whether this sound is muted
 
- // Animation trigger name (e.g. "Footstep")
- std::string animTrigger;
+         bool playOnStart = false;
 
- // 3D Audio settings
- float minDistance = 1.0f;   // Distance at which sound is at full volume
- float maxDistance = 50.0f;  // Distance at which sound is silent
+         // New trigger options
+         int triggerKey = -1; // GLFW key code to trigger this sound (-1 = none)
+         bool playOnMove = false; // play while moving (uses rigidbody velocity)
+         float moveThreshold = 0.1f; // minimum speed to consider "moving"
+         float repeatInterval = 0.5f; // minimum seconds between automatic retriggers
 
- void serialize(nlohmann::json& j) const {
-    j["name"] = name;
- // If filePaths present, write as array; otherwise write legacy filePath
-    if (!filePaths.empty()) {
-    j["filePaths"] = filePaths;
-    }
-    else {
-        j["filePath"] = filePath;
+         // Animation trigger name (e.g. "Footstep")
+         std::string animTrigger;
+
+         // 3D Audio settings
+         float minDistance = 1.0f;   // Distance at which sound is at full volume
+         float maxDistance = 50.0f;  // Distance at which sound is silent
+
+         void serialize(nlohmann::json& j) const {
+             j["name"] = name;
+             // If filePaths present, write as array; otherwise write legacy filePath
+             if (!filePaths.empty()) {
+                 j["filePaths"] = filePaths;
+             }
+             else {
+                 j["filePath"] = filePath;
+             }
+             j["loop"] = loop;
+             j["volume"] = volume;
+             j["priority"] = priority;
+             j["pitch"] = pitch;
+             j["stereoPan"] = stereoPan;
+             j["spatialBlend"] = spatialBlend;
+             j["mute"] = mute;
+             j["playOnStart"] = playOnStart;
+             j["triggerKey"] = triggerKey;
+             j["playOnMove"] = playOnMove;
+             j["moveThreshold"] = moveThreshold;
+             j["repeatInterval"] = repeatInterval;
+             if (!animTrigger.empty()) j["animTrigger"] = animTrigger;
+             j["minDistance"] = minDistance;
+             j["maxDistance"] = maxDistance;
+         }
+         void deserialize(const nlohmann::json& j) {
+             if (j.contains("name")) j.at("name").get_to(name);
+             // Prefer filePaths if present
+             if (j.contains("filePaths") && j.at("filePaths").is_array()) {
+                 filePaths.clear();
+                 for (const auto& fp : j.at("filePaths")) {
+                     filePaths.push_back(fp.get<std::string>());
+                 }
+                 // keep filePath for legacy access (first element)
+                 filePath = filePaths.empty() ? std::string() : filePaths.front();
+             }
+             else if (j.contains("filePath")) {
+                 j.at("filePath").get_to(filePath);
+                 filePaths.clear();
+                 if (!filePath.empty()) filePaths.push_back(filePath);
+             }
+             if (j.contains("loop")) j.at("loop").get_to(loop);
+             if (j.contains("volume")) j.at("volume").get_to(volume);
+             if (j.contains("priority")) j.at("priority").get_to(priority);
+             if (j.contains("pitch")) j.at("pitch").get_to(pitch);
+             if (j.contains("stereoPan")) j.at("stereoPan").get_to(stereoPan);
+             if (j.contains("spatialBlend")) j.at("spatialBlend").get_to(spatialBlend);
+             if (j.contains("mute")) j.at("mute").get_to(mute);
+             if (j.contains("playOnStart")) j.at("playOnStart").get_to(playOnStart);
+             if (j.contains("triggerKey")) j.at("triggerKey").get_to(triggerKey);
+             if (j.contains("playOnMove")) j.at("playOnMove").get_to(playOnMove);
+             if (j.contains("moveThreshold")) j.at("moveThreshold").get_to(moveThreshold);
+             if (j.contains("repeatInterval")) j.at("repeatInterval").get_to(repeatInterval);
+             if (j.contains("animTrigger")) j.at("animTrigger").get_to(animTrigger);
+             if (j.contains("minDistance")) j.at("minDistance").get_to(minDistance);
+             if (j.contains("maxDistance")) j.at("maxDistance").get_to(maxDistance);
+         }
+     };
+
+     std::vector<Entry> entries; // timo was here
+
+     void serialize(nlohmann::json& j) const {
+         j = nlohmann::json::array();
+         for (const auto& e : entries) {
+             nlohmann::json ej;
+             e.serialize(ej);
+             j.push_back(ej);
+         }
      }
-        j["loop"] = loop;
-        j["volume"] = volume;
-        j["playOnStart"] = playOnStart;
-        j["triggerKey"] = triggerKey;
-        j["playOnMove"] = playOnMove;
-        j["moveThreshold"] = moveThreshold;
-        j["repeatInterval"] = repeatInterval;
-        if (!animTrigger.empty()) j["animTrigger"] = animTrigger;
-        j["minDistance"] = minDistance;
-        j["maxDistance"] = maxDistance;
- }
- void deserialize(const nlohmann::json& j) {
-        if (j.contains("name")) j.at("name").get_to(name);
- // Prefer filePaths if present
-        if (j.contains("filePaths") && j.at("filePaths").is_array()) {
-        filePaths.clear();
-        for (const auto& fp : j.at("filePaths")) {
-            filePaths.push_back(fp.get<std::string>());
-        }
- // keep filePath for legacy access (first element)
-        filePath = filePaths.empty() ? std::string() : filePaths.front();
-        }
-        else if (j.contains("filePath")) {
-            j.at("filePath").get_to(filePath);
-            filePaths.clear();
-        if (!filePath.empty()) filePaths.push_back(filePath);
-            }
- if (j.contains("loop")) j.at("loop").get_to(loop);
- if (j.contains("volume")) j.at("volume").get_to(volume);
- if (j.contains("playOnStart")) j.at("playOnStart").get_to(playOnStart);
- if (j.contains("triggerKey")) j.at("triggerKey").get_to(triggerKey);
- if (j.contains("playOnMove")) j.at("playOnMove").get_to(playOnMove);
- if (j.contains("moveThreshold")) j.at("moveThreshold").get_to(moveThreshold);
- if (j.contains("repeatInterval")) j.at("repeatInterval").get_to(repeatInterval);
- if (j.contains("animTrigger")) j.at("animTrigger").get_to(animTrigger);
- if (j.contains("minDistance")) j.at("minDistance").get_to(minDistance);
- if (j.contains("maxDistance")) j.at("maxDistance").get_to(maxDistance);
-    }
- };
-
- std::vector<Entry> entries; // timo was here
-
- void serialize(nlohmann::json& j) const {
-        j = nlohmann::json::array();
-        for (const auto& e : entries) {
-        nlohmann::json ej;
-        e.serialize(ej);
-        j.push_back(ej);
-    }
- }
- void deserialize(const nlohmann::json& j) {
-    entries.clear();
-    if (j.is_array()) {
-         for (const auto& ej : j) {
-            Entry e;
-            e.deserialize(ej);
-            entries.push_back(std::move(e));
-            }
-    }
-    }
+     void deserialize(const nlohmann::json& j) {
+         entries.clear();
+         if (j.is_array()) {
+             for (const auto& ej : j) {
+                 Entry e;
+                 e.deserialize(ej);
+                 entries.push_back(std::move(e));
+             }
+         }
+     }
  };
 
  struct ScriptComponent

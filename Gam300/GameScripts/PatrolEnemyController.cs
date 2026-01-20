@@ -33,8 +33,11 @@ namespace GameScripts
         private Vec3 _anchorPos;
 
         // ====== AUDIO ======
-        private const string SFX_FOOTSTEP_PATH = "Resources/Audio/playerRun_02.wav";
-        private const string SFX_ALERT_PATH = "Resources/Audio/enemyHurt_2.wav";
+        [Boom.EditorExposed("Footstep Sound", "Sound played for enemy footsteps")]
+        private string _footstepSoundPath = "Resources/Audio/playerRun_02.wav";
+
+        [Boom.EditorExposed("Alert Sound", "Sound played when enemy detects player")]
+        private string _alertSoundPath = "Resources/Audio/enemyHurt_2.wav";
 
         private string _footBase;
         private string _alertName;
@@ -88,12 +91,14 @@ namespace GameScripts
             _footBase = "foot_" + Entity.ToString();
             _alertName = "alert_" + Entity.ToString();
 
-            API.PreloadSound(_footBase + "_L", SFX_FOOTSTEP_PATH, loop: false);
-            API.PreloadSound(_footBase + "_R", SFX_FOOTSTEP_PATH, loop: false);
-            API.PreloadSound(_alertName, SFX_ALERT_PATH, loop: false);
+            // optional: preload step clip once (non-loop)
+            API.PreloadSound(_footBase + "_L", _footstepSoundPath, loop: false);
+            API.PreloadSound(_footBase + "_R", _footstepSoundPath, loop: false);
+            API.PreloadSound(_alertName, _alertSoundPath, loop: false);
 
             // NEW: Register with PlayerManager
             PlayerManager.RegisterEnemy(this);
+
         }
 
         public void OnUpdate(float dt)
@@ -178,7 +183,8 @@ namespace GameScripts
                         string chName = _footBase + (_leftNext ? "_L" : "_R");
                         _leftNext = !_leftNext;
 
-                        API.PlaySoundAt(chName, SFX_FOOTSTEP_PATH, pos, loop: false);
+                        // play one-shot at position
+                        API.PlaySoundAt(chName, _footstepSoundPath, pos, loop: false);
 
                         float jitter = (float)(Random01() * 2.0 - 1.0) * VOL_JITTER;
                         float vol = Clamp01(VOL_BASE + jitter);
@@ -252,7 +258,7 @@ namespace GameScripts
             _yaw = Wrap360(baseYaw);
             API.SetRotationY(Entity, _yaw);
 
-            API.PlaySoundAt(_alertName, SFX_ALERT_PATH, self, loop: false);
+            API.PlaySoundAt(_alertName, _alertSoundPath, self, loop: false);
             API.SetSoundVolume(_alertName, 0.5f);
             API.Set3DMinMaxDistance(_alertName, 1.0f, 25.0f);
 
