@@ -1,5 +1,62 @@
 Version: 1.0
 ENTITIES:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [10, 20, 5]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: Key 2
+      UID: 224910195110961121
+    TransformComponent:
+      Transform:
+        Translate: [-1.46687353, -100, 16.1057186]
+        Rotate: [26.1507797, 44.9088821, 52.15728]
+        Scale: [0.0800000653, 0.139999941, 0.230000183]
+    ModelComponent:
+      ModelID: 600481613562228247
+      MaterialID: 1773827607540986892
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _pickupSound
+          filePaths:
+            - Resources/Audio/pickup.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.KeyPickup
+      ParamsJSON: "{}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.828431368, 0.536043823, 0]
+        Intensity: 5.88999987
+        FallOff: 4.59600019
+        CutOff: -1.98099995
   - InfoComponent:
       Parent: 0
       Name: Death_ReturnButton
@@ -929,8 +986,8 @@ ENTITIES:
       UID: 9778697280815915040
     TransformComponent:
       Transform:
-        Translate: [19.144556, 13.4210176, -9.57754421]
-        Rotate: [180, 89.980217, 180]
+        Translate: [11.7087812, 13.5131865, -9.57754421]
+        Rotate: [0, 90, 0]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -970,7 +1027,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.14900732
+        Speed: 2.5
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -1013,8 +1070,8 @@ ENTITIES:
       UID: 3476234535713046263
     TransformComponent:
       Transform:
-        Translate: [-22.6304893, 13.4210186, 19.3370762]
-        Rotate: [0, -89.980217, 0]
+        Translate: [7.35583305, 13.5131855, 19.3370762]
+        Rotate: [0, 90, 0]
         Scale: [0.0200004801, 0.0199999996, 0.0200004801]
     RigidBodyComponent:
       RigidBody:
@@ -1054,7 +1111,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 6.93324509e-10
+        Speed: 2.5
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -1097,8 +1154,8 @@ ENTITIES:
       UID: 7568830222834310318
     TransformComponent:
       Transform:
-        Translate: [-8.98202515, 13.4210176, 4.68726301]
-        Rotate: [0, -0, 0]
+        Translate: [-8.98202515, 13.5131865, 1.51225793]
+        Rotate: [180, -5.00895612e-06, 180]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -1138,12 +1195,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.14900732
+        Speed: 2.5
       BoolParams:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-8.98202515, 13.2056856, 7.27203894]
+      Target: [-8.98202515, 13.2056856, -10.6896248]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -1159,7 +1216,7 @@ ENTITIES:
       PatrolPoints:
         - [-8.98202515, 13.2056856, -10.6896248]
         - [-8.98202515, 13.2056856, 7.27203894]
-      PatrolIndex: 1
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -1198,8 +1255,8 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-1.84919775, 22.8381386, 9.90445328]
-        Rotate: [27.5745621, 43.966671, 53.71064]
-        Scale: [0.0800000578, 0.139999941, 0.230000272]
+        Rotate: [26.1508236, 44.9088745, 52.15728]
+        Scale: [0.0800000653, 0.139999941, 0.230000257]
     ModelComponent:
       ModelID: 600481613562228247
       MaterialID: 1773827607540986892
@@ -1207,6 +1264,26 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _pickupSound
+          filePaths:
+            - Resources/Audio/pickup.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.KeyPickup
@@ -1452,7 +1529,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-14.5949755, 14.7237701, 22.6192093]
-        Rotate: [5.00895521e-06, 268.296722, 5.00895521e-06]
+        Rotate: [5.00895521e-06, 178.296722, 5.00895521e-06]
         Scale: [0.0144999903, 0.0145000005, 0.0144999903]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -1472,7 +1549,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [17.540493, 14.3824339, 3.31294298]
-        Rotate: [180, 268.296722, 180]
+        Rotate: [180, 178.296722, 180]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -1492,7 +1569,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [9.27553558, 2.17216253, -14.2555885]
-        Rotate: [5.00895612e-06, 247.659515, 5.00895612e-06]
+        Rotate: [5.00895612e-06, 157.659515, 5.00895612e-06]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -1512,7 +1589,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 2.17216253, -14.2555885]
-        Rotate: [0, 252.189667, 0]
+        Rotate: [0, 162.189667, 0]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -6567,8 +6644,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-14.5862141, 4.94404268, 16.3736839]
-        Rotate: [4.99999857, -81.0000763, 0]
+        Translate: [-1.92492533, 4.89865971, 15.0174923]
+        Rotate: [-128, 36.9999542, -180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -6581,8 +6658,8 @@ ENTITIES:
       Current Distance: 4
       Min Distance: 1
       Max Distance: 5
-      Current Yaw: -2061
-      Current Pitch: -5
+      Current Yaw: -1117
+      Current Pitch: -52
       Mouse Sensitivity: 1
       Scroll Sensitivity: 1
   - InfoComponent:
@@ -7858,8 +7935,8 @@ ENTITIES:
       UID: 2377197601835279376
     TransformComponent:
       Transform:
-        Translate: [-10.6604939, 1.14266515, 15.7503328]
-        Rotate: [0, 98.9999237, 0]
+        Translate: [-2.12018228, 1.14266491, 15.2633371]
+        Rotate: [0, 86.9999237, 0]
         Scale: [0.0164999887, 0.0164999999, 0.0164999887]
     CharacterControllerComponent:
       Radius: 0.800000012
@@ -8189,8 +8266,8 @@ ENTITIES:
       UID: 11344090768170482118
     TransformComponent:
       Transform:
-        Translate: [-22.2951069, 13.4210167, 7.3152585]
-        Rotate: [180, -5.00895612e-06, 180]
+        Translate: [-22.2951069, 13.5131283, -8.70763588]
+        Rotate: [0, -0, 0]
         Scale: [0.0199999977, 0.0199999996, 0.0199999977]
     RigidBodyComponent:
       RigidBody:
@@ -8230,12 +8307,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 3.02685663e-08
+        Speed: 2.5
       BoolParams:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-22.2951069, 13.404274, -14.4732275]
+      Target: [-22.2951069, 13.404274, 7.21938944]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -8251,7 +8328,7 @@ ENTITIES:
       PatrolPoints:
         - [-22.2951069, 13.404274, 7.21938944]
         - [-22.2951069, 13.404274, -14.4732275]
-      PatrolIndex: 1
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -8273,8 +8350,8 @@ ENTITIES:
       UID: 17902731174235545789
     TransformComponent:
       Transform:
-        Translate: [14.4720554, -92.4001541, 15.1495838]
-        Rotate: [180, 89.2563782, 180]
+        Translate: [14.4720554, -117.842659, 15.1495838]
+        Rotate: [180, 89.257431, 180]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -8314,7 +8391,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.5
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -8480,7 +8557,7 @@ ENTITIES:
         Scale: [0.125085667, 0.211915374, 0.0640320182]
     SpriteComponent:
       textureID: 327234960441928512
-      color: [1, 1, 1, 0]
+      color: [1, 1, 1, 1]
       uiOverlay: true
   - InfoComponent:
       Parent: 0
@@ -8687,9 +8764,49 @@ ENTITIES:
             - Resources/Audio/Kairos_Cave-Vuk_Loop.wav
           loop: true
           volume: 0.395999998
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
           playOnStart: true
           triggerKey: -1
           playOnMove: false
           moveThreshold: 0.100000001
           repeatInterval: 0.5
           animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+  - InfoComponent:
+      Parent: 0
+      Name: objective_collectkeys
+      UID: 718418516481173477
+    TransformComponent:
+      Transform:
+        Translate: [4.85510111, 2.59984207, 14.4737663]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    SoundComponent:
+      Entries:
+        - name: _enterSound
+          filePaths:
+            - Resources/Audio/ambient_warning.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.CollectObjective
+      ParamsJSON: "{\n  \"_displayName\": \"Collect 1 Keys\",\n  \"_objectiveId\": \"collect_keys\",\n  \"_targetCount\": 2\n}"

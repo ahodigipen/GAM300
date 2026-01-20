@@ -60,6 +60,9 @@ namespace GameScripts
             s_ActivePauseMenuInstance = null;
             s_ActiveDeathMenuInstance = null;
 
+            // Reset the objective system for new scene
+            ObjectiveManager.Reset();
+
             API.Log("[C#] Entry.Start() called for scene: " + _currentSceneName);
 
             if (_currentSceneName == LEVEL_SCENE_NAME)
@@ -125,6 +128,9 @@ namespace GameScripts
         private static void UpdateGame(float dt)
         {
             if (IsPlayerDead) return;
+
+            // Update the objective system
+            ObjectiveManager.Update(dt);
 
             bool p_KeyDown = API.IsKeyDown(API.KEY_P);
             bool escape_KeyDown = API.IsKeyDown(KEY_ESCAPE);

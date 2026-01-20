@@ -65,6 +65,11 @@ namespace GameScripts
             PlayerInventory.AddKey(1);
             UIManager.ShowKeyPickup();
 
+            // Broadcast event to objective system
+            API.Log("[KeyPickup] Broadcasting KeyCollected event to ObjectiveManager...");
+            ObjectiveManager.BroadcastEvent(ObjectiveEvents.KeyCollected, "Key", 1);
+            API.Log("[KeyPickup] Broadcast complete. Registered objectives: " + ObjectiveManager.GetTotalCount());
+
             // Play pickup SFX at key's position
             if (API.HasTransform(inst.Entity))
             {
