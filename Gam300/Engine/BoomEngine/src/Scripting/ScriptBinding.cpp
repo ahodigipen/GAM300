@@ -421,6 +421,7 @@ namespace Boom {
         }
     }
 
+    // Pause Menu
     static void ICALL_API_UnloadPauseMenu() {
         if (!s_Ctx || !s_Ctx->app) return;
         s_Ctx->app->UnloadAdditiveScene<PauseMenuTagComponent>();
@@ -431,15 +432,48 @@ namespace Boom {
         s_Ctx->app->ShowAdditiveScene<PauseMenuTagComponent>();
     }
 
-    static void ICALL_API_TogglePause() {
-        if (s_Ctx && s_Ctx->app) {
-            s_Ctx->app->TogglePause();
-        }
+    static bool ICALL_API_IsPauseMenuLoaded() {
+        if (!s_Ctx) return false;
+        // Check if any entity in the scene has the pause menu tag
+        auto view = s_Ctx->scene.view<PauseMenuTagComponent>();
+        return !view.empty();
     }
 
     static void ICALL_API_SetGameLogicPaused(bool isPaused) {
         if (s_Ctx && s_Ctx->app) {
             s_Ctx->app->SetGameLogicPaused(isPaused);
+        }
+    }
+    // End Pause Menu
+
+    // Death Menu
+    static void ICALL_API_UnloadDeathMenu() {
+        if (!s_Ctx || !s_Ctx->app) return;
+        s_Ctx->app->UnloadAdditiveScene<DeathMenuTagComponent>();
+    }
+
+    static void ICALL_API_ShowDeathMenu() {
+        if (!s_Ctx || !s_Ctx->app) return;
+        s_Ctx->app->ShowAdditiveScene<DeathMenuTagComponent>();
+    }
+
+    static bool ICALL_API_IsDeathMenuLoaded() {
+        if (!s_Ctx) return false;
+        // Check if any entity in the scene has the pause menu tag
+        auto view = s_Ctx->scene.view<DeathMenuTagComponent>();
+        return !view.empty();
+    }
+
+    static void ICALL_API_SetPlayerDead(bool isDead) {
+        if (s_Ctx && s_Ctx->app) {
+            s_Ctx->app->SetPlayerDead(isDead);
+        }
+    }
+    // End Death Menu
+
+    static void ICALL_API_TogglePause() {
+        if (s_Ctx && s_Ctx->app) {
+            s_Ctx->app->TogglePause();
         }
     }
 
@@ -464,12 +498,6 @@ namespace Boom {
         return (int)s_Ctx->app->GetState();
     }
 
-    static bool ICALL_API_IsPauseMenuLoaded() {
-        if (!s_Ctx) return false;
-        // Check if any entity in the scene has the pause menu tag
-        auto view = s_Ctx->scene.view<PauseMenuTagComponent>();
-        return !view.empty();
-    }
 	//AI Component functions
     static int ICALL_API_AI_GetPatrolPointCount(uint64_t entityHandle)
     {
@@ -1144,6 +1172,282 @@ namespace Boom {
         }
     }
 
+    // ========= SOUND COMPONENT MANIPULATION BINDINGS =========
+
+    // Helper to find entry by name in SoundComponent
+    static SoundComponent::Entry* FindSoundEntry(SoundComponent& sc, const std::string& name) {
+        for (auto& entry : sc.entries) {
+            if (entry.name == name) return &entry;
+        }
+        return nullptr;
+    }
+
+    static bool ICALL_API_HasSoundComponent(uint64_t handle) {
+        if (!s_Ctx) return false;
+        auto eid = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (!s_Ctx->scene.valid(eid)) return false;
+        return s_Ctx->scene.any_of<SoundComponent>(eid);
+    }
+
+    static void ICALL_API_AddSoundComponent(uint64_t handle) {
+        if (!s_Ctx) return;
+        auto eid = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (!s_Ctx->scene.valid(eid)) return;
+        if (!s_Ctx->scene.any_of<SoundComponent>(eid)) {
+            s_Ctx->scene.emplace<SoundComponent>(eid);
+        }
+    }
+
+    static int ICALL_API_GetSoundEntryCount(uint64_t handle) {
+        if (!s_Ctx) return 0;
+        auto eid = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (!s_Ctx->scene.valid(eid)) return 0;
+        if (!s_Ctx->scene.any_of<SoundComponent>(eid)) return 0;
+        auto& sc = s_Ctx->scene.get<SoundComponent>(eid);
+        return static_cast<int>(sc.entries.size());
+    }
+
+    static void ICALL_API_AddSoundEntry(uint64_t handle, MonoString* name, MonoString* filePath) {
+        if (!s_Ctx || !name || !filePath) return;
+        auto eid = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (!s_Ctx->scene.valid(eid)) return;
+
+        // Ensure component exists
+        if (!s_Ctx->scene.any_of<SoundComponent>(eid)) {
+            s_Ctx->scene.emplace<SoundComponent>(eid);
+        }
+
+        char* nameStr = mono_string_to_utf8(name);
+        char* pathStr = mono_string_to_utf8(filePath);
+
+        if (nameStr && pathStr) {
+            auto& sc = s_Ctx->scene.get<SoundComponent>(eid);
+
+            // Check if entry already exists
+            auto* existing = FindSoundEntry(sc, nameStr);
+            if (existing) {
+                // Update existing entry
+                existing->filePath = pathStr;
+                existing->filePaths.clear();
+                existing->filePaths.push_back(pathStr);
+            } else {
+                // Add new entry
+                SoundComponent::Entry entry;
+                entry.name = nameStr;
+                entry.filePath = pathStr;
+                entry.filePaths.push_back(pathStr);
+                sc.entries.push_back(std::move(entry));
+            }
+        }
+
+        if (nameStr) mono_free(nameStr);
+        if (pathStr) mono_free(pathStr);
+    }
+
+    static void ICALL_API_RemoveSoundEntry(uint64_t handle, MonoString* name) {
+        if (!s_Ctx || !name) return;
+        auto eid = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (!s_Ctx->scene.valid(eid)) return;
+        if (!s_Ctx->scene.any_of<SoundComponent>(eid)) return;
+
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& sc = s_Ctx->scene.get<SoundComponent>(eid);
+            sc.entries.erase(
+                std::remove_if(sc.entries.begin(), sc.entries.end(),
+                    [&](const SoundComponent::Entry& e) { return e.name == nameStr; }),
+                sc.entries.end()
+            );
+            mono_free(nameStr);
+        }
+    }
+
+    static void ICALL_API_SetSoundEntryVolume(uint64_t handle, MonoString* name, float volume) {
+        if (!s_Ctx || !name) return;
+        auto eid = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (!s_Ctx->scene.valid(eid)) return;
+        if (!s_Ctx->scene.any_of<SoundComponent>(eid)) return;
+
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& sc = s_Ctx->scene.get<SoundComponent>(eid);
+            if (auto* entry = FindSoundEntry(sc, nameStr)) {
+                entry->volume = volume;
+            }
+            mono_free(nameStr);
+        }
+    }
+
+    static void ICALL_API_SetSoundEntryPitch(uint64_t handle, MonoString* name, float pitch) {
+        if (!s_Ctx || !name) return;
+        auto eid = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (!s_Ctx->scene.valid(eid)) return;
+        if (!s_Ctx->scene.any_of<SoundComponent>(eid)) return;
+
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& sc = s_Ctx->scene.get<SoundComponent>(eid);
+            if (auto* entry = FindSoundEntry(sc, nameStr)) {
+                entry->pitch = pitch;
+            }
+            mono_free(nameStr);
+        }
+    }
+
+    static void ICALL_API_SetSoundEntryLoop(uint64_t handle, MonoString* name, bool loop) {
+        if (!s_Ctx || !name) return;
+        auto eid = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (!s_Ctx->scene.valid(eid)) return;
+        if (!s_Ctx->scene.any_of<SoundComponent>(eid)) return;
+
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& sc = s_Ctx->scene.get<SoundComponent>(eid);
+            if (auto* entry = FindSoundEntry(sc, nameStr)) {
+                entry->loop = loop;
+            }
+            mono_free(nameStr);
+        }
+    }
+
+    static void ICALL_API_SetSoundEntryMute(uint64_t handle, MonoString* name, bool mute) {
+        if (!s_Ctx || !name) return;
+        auto eid = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (!s_Ctx->scene.valid(eid)) return;
+        if (!s_Ctx->scene.any_of<SoundComponent>(eid)) return;
+
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& sc = s_Ctx->scene.get<SoundComponent>(eid);
+            if (auto* entry = FindSoundEntry(sc, nameStr)) {
+                entry->mute = mute;
+            }
+            mono_free(nameStr);
+        }
+    }
+
+    static void ICALL_API_SetSoundEntryPan(uint64_t handle, MonoString* name, float pan) {
+        if (!s_Ctx || !name) return;
+        auto eid = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (!s_Ctx->scene.valid(eid)) return;
+        if (!s_Ctx->scene.any_of<SoundComponent>(eid)) return;
+
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& sc = s_Ctx->scene.get<SoundComponent>(eid);
+            if (auto* entry = FindSoundEntry(sc, nameStr)) {
+                entry->stereoPan = pan;
+            }
+            mono_free(nameStr);
+        }
+    }
+
+    static void ICALL_API_SetSoundEntrySpatialBlend(uint64_t handle, MonoString* name, float blend) {
+        if (!s_Ctx || !name) return;
+        auto eid = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (!s_Ctx->scene.valid(eid)) return;
+        if (!s_Ctx->scene.any_of<SoundComponent>(eid)) return;
+
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& sc = s_Ctx->scene.get<SoundComponent>(eid);
+            if (auto* entry = FindSoundEntry(sc, nameStr)) {
+                entry->spatialBlend = blend;
+            }
+            mono_free(nameStr);
+        }
+    }
+
+    static void ICALL_API_SetSoundEntryPriority(uint64_t handle, MonoString* name, int priority) {
+        if (!s_Ctx || !name) return;
+        auto eid = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (!s_Ctx->scene.valid(eid)) return;
+        if (!s_Ctx->scene.any_of<SoundComponent>(eid)) return;
+
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& sc = s_Ctx->scene.get<SoundComponent>(eid);
+            if (auto* entry = FindSoundEntry(sc, nameStr)) {
+                entry->priority = priority;
+            }
+            mono_free(nameStr);
+        }
+    }
+
+    static void ICALL_API_SetSoundEntry3DDistance(uint64_t handle, MonoString* name, float minDist, float maxDist) {
+        if (!s_Ctx || !name) return;
+        auto eid = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (!s_Ctx->scene.valid(eid)) return;
+        if (!s_Ctx->scene.any_of<SoundComponent>(eid)) return;
+
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& sc = s_Ctx->scene.get<SoundComponent>(eid);
+            if (auto* entry = FindSoundEntry(sc, nameStr)) {
+                entry->minDistance = minDist;
+                entry->maxDistance = maxDist;
+            }
+            mono_free(nameStr);
+        }
+    }
+
+    static void ICALL_API_SetSoundEntryPlayOnStart(uint64_t handle, MonoString* name, bool playOnStart) {
+        if (!s_Ctx || !name) return;
+        auto eid = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (!s_Ctx->scene.valid(eid)) return;
+        if (!s_Ctx->scene.any_of<SoundComponent>(eid)) return;
+
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& sc = s_Ctx->scene.get<SoundComponent>(eid);
+            if (auto* entry = FindSoundEntry(sc, nameStr)) {
+                entry->playOnStart = playOnStart;
+            }
+            mono_free(nameStr);
+        }
+    }
+
+    static void ICALL_API_PlaySoundEntry(uint64_t handle, MonoString* name) {
+        if (!s_Ctx || !name) return;
+        auto eid = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (!s_Ctx->scene.valid(eid)) return;
+        if (!s_Ctx->scene.any_of<SoundComponent>(eid)) return;
+
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& sc = s_Ctx->scene.get<SoundComponent>(eid);
+            if (auto* entry = FindSoundEntry(sc, nameStr)) {
+                // Set playOnStart to true - SoundSystem will pick it up
+                entry->playOnStart = true;
+            }
+            mono_free(nameStr);
+        }
+    }
+
+    static void ICALL_API_StopSoundEntry(uint64_t handle, MonoString* name) {
+        if (!s_Ctx || !name) return;
+        auto eid = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (!s_Ctx->scene.valid(eid)) return;
+        if (!s_Ctx->scene.any_of<SoundComponent>(eid)) return;
+
+        char* nameStr = mono_string_to_utf8(name);
+        if (nameStr) {
+            auto& sc = s_Ctx->scene.get<SoundComponent>(eid);
+            if (auto* entry = FindSoundEntry(sc, nameStr)) {
+                entry->playOnStart = false;
+                // Also stop the actual sound instance
+                uint64_t uid = static_cast<uint64_t>(static_cast<uint32_t>(eid));
+                size_t idx = 0;
+                for (size_t i = 0; i < sc.entries.size(); ++i) {
+                    if (sc.entries[i].name == nameStr) { idx = i; break; }
+                }
+                std::string instanceName = "ent_" + std::to_string(uid) + "_" + std::to_string(idx) + "_" + nameStr;
+                SoundEngine::Instance().StopSound(instanceName);
+            }
+            mono_free(nameStr);
+        }
+    }
+
     // main menu
     static uint64_t ICALL_API_PickGameEntity() {
         if (!s_Ctx || !s_Ctx->app) return 0;
@@ -1546,12 +1850,23 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_GetCurrentSceneName", (const void*)ICALL_API_GetCurrentSceneName);
         mono_add_internal_call("Boom.Native::Boom_API_QuitGame", (const void*)ICALL_API_QuitGame);
         mono_add_internal_call("Boom.Native::Boom_API_ShutdownApplication", (const void*)ICALL_API_ShutdownApplication); // CORRECT QUIT
+        
         mono_add_internal_call("Boom.Native::Boom_API_LoadSceneAdditive", (const void*)ICALL_API_LoadSceneAdditive);
+        // Pause
         mono_add_internal_call("Boom.Native::Boom_API_UnloadPauseMenu", (const void*)ICALL_API_UnloadPauseMenu);
         mono_add_internal_call("Boom.Native::Boom_API_ShowPauseMenu", (const void*)ICALL_API_ShowPauseMenu);
+        mono_add_internal_call("Boom.Native::Boom_API_IsPauseMenuLoaded", (const void*)ICALL_API_IsPauseMenuLoaded);
+        mono_add_internal_call("Boom.Native::Boom_API_SetGameLogicPaused", (const void*)ICALL_API_SetGameLogicPaused);
+
+        // Death
+        mono_add_internal_call("Boom.Native::Boom_API_UnloadDeathMenu", (const void*)ICALL_API_UnloadDeathMenu);
+        mono_add_internal_call("Boom.Native::Boom_API_ShowDeathMenu", (const void*)ICALL_API_ShowDeathMenu);
+        mono_add_internal_call("Boom.Native::Boom_API_IsDeathMenuLoaded", (const void*)ICALL_API_IsDeathMenuLoaded);
+        mono_add_internal_call("Boom.Native::Boom_API_SetPlayerDead", (const void*)ICALL_API_SetPlayerDead);
+
         mono_add_internal_call("Boom.Native::Boom_API_TogglePause", (const void*)ICALL_API_TogglePause);
         mono_add_internal_call("Boom.Native::Boom_API_GetApplicationState", (const void*)ICALL_API_GetApplicationState);
-        mono_add_internal_call("Boom.Native::Boom_API_IsPauseMenuLoaded", (const void*)ICALL_API_IsPauseMenuLoaded);
+        
         // Component checking functions
         mono_add_internal_call("Boom.Native::Boom_API_HasTransform", (const void*)ICALL_API_HasTransform);
         mono_add_internal_call("Boom.Native::Boom_API_HasScript", (const void*)ICALL_API_HasScript);
@@ -1609,7 +1924,25 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_PreloadSound", (const void*)ICALL_API_PreloadSound);
         mono_add_internal_call("Boom.Native::Boom_API_SetSoundPosition", (const void*)ICALL_API_SetSoundPosition);
         mono_add_internal_call("Boom.Native::Boom_API_Set3DMinMaxDistance", (const void*)ICALL_API_Set3DMinMaxDistance);
-        
+
+        // Sound Component manipulation internal calls
+        mono_add_internal_call("Boom.Native::Boom_API_HasSoundComponent", (const void*)ICALL_API_HasSoundComponent);
+        mono_add_internal_call("Boom.Native::Boom_API_AddSoundComponent", (const void*)ICALL_API_AddSoundComponent);
+        mono_add_internal_call("Boom.Native::Boom_API_GetSoundEntryCount", (const void*)ICALL_API_GetSoundEntryCount);
+        mono_add_internal_call("Boom.Native::Boom_API_AddSoundEntry", (const void*)ICALL_API_AddSoundEntry);
+        mono_add_internal_call("Boom.Native::Boom_API_RemoveSoundEntry", (const void*)ICALL_API_RemoveSoundEntry);
+        mono_add_internal_call("Boom.Native::Boom_API_SetSoundEntryVolume", (const void*)ICALL_API_SetSoundEntryVolume);
+        mono_add_internal_call("Boom.Native::Boom_API_SetSoundEntryPitch", (const void*)ICALL_API_SetSoundEntryPitch);
+        mono_add_internal_call("Boom.Native::Boom_API_SetSoundEntryLoop", (const void*)ICALL_API_SetSoundEntryLoop);
+        mono_add_internal_call("Boom.Native::Boom_API_SetSoundEntryMute", (const void*)ICALL_API_SetSoundEntryMute);
+        mono_add_internal_call("Boom.Native::Boom_API_SetSoundEntryPan", (const void*)ICALL_API_SetSoundEntryPan);
+        mono_add_internal_call("Boom.Native::Boom_API_SetSoundEntrySpatialBlend", (const void*)ICALL_API_SetSoundEntrySpatialBlend);
+        mono_add_internal_call("Boom.Native::Boom_API_SetSoundEntryPriority", (const void*)ICALL_API_SetSoundEntryPriority);
+        mono_add_internal_call("Boom.Native::Boom_API_SetSoundEntry3DDistance", (const void*)ICALL_API_SetSoundEntry3DDistance);
+        mono_add_internal_call("Boom.Native::Boom_API_SetSoundEntryPlayOnStart", (const void*)ICALL_API_SetSoundEntryPlayOnStart);
+        mono_add_internal_call("Boom.Native::Boom_API_PlaySoundEntry", (const void*)ICALL_API_PlaySoundEntry);
+        mono_add_internal_call("Boom.Native::Boom_API_StopSoundEntry", (const void*)ICALL_API_StopSoundEntry);
+
 		//Raycasting internal call
         mono_add_internal_call("Boom.Native::Boom_API_PickGameEntity", (const void*)ICALL_API_PickGameEntity);
         mono_add_internal_call("Boom.Native::Boom_API_GetMousePosInViewport", (const void*)ICALL_API_GetMousePosInViewport);
@@ -1622,7 +1955,6 @@ namespace Boom {
     
         mono_add_internal_call("Boom.Native::Boom_API_LinecastIgnoreBoth",(const void*)ICALL_API_LinecastIgnoreBoth);
 
-        mono_add_internal_call("Boom.Native::Boom_API_SetGameLogicPaused", (const void*)ICALL_API_SetGameLogicPaused);
         mono_add_internal_call("Boom.Native::Boom_API_EnableFileWatcher", (const void*)ICALL_API_EnableFileWatcher);
 
         mono_add_internal_call("Boom.Native::Boom_API_TeleportRigidBody", (void*)ICALL_API_TeleportRigidBody);

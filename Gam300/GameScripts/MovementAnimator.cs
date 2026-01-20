@@ -14,10 +14,26 @@ namespace GameScripts
     public class MovementAnimator
     {
         // ===== Tunables =====
+        [Boom.EditorExposed("Walk Speed", "Walking speed in m/s", 0.5f, 10f, true)]
         private float _walkSpeed = 3.5f;
+
+        [Boom.EditorExposed("Run Speed", "Running/sprint speed in m/s", 1f, 20f, true)]
         private float _runSpeed = 6.0f;
+
+        [Boom.EditorExposed("Jump Speed", "Vertical jump velocity", 1f, 20f, true)]
         private float _jumpSpeed = 8.0f;
+
         private bool _gateRmbToPauseMove = true; // hold RMB to pause movement (useful in editor)
+
+        // ===== Audio =====
+        [Boom.EditorExposed("Jump Sound", "Sound played when jumping")]
+        private string _jumpSoundPath = "Resources/Audio/playerPunch_1.wav";
+
+        [Boom.EditorExposed("Trigger Sound", "Generic sound for trigger interactions")]
+        private string _triggerSoundPath = "Resources/Audio/playerPunch_1.wav";
+
+        [Boom.EditorExposed("Door Close Sound", "Sound for door closing")]
+        private string _doorCloseSoundPath = "Resources/Audio/playerPunch_1.wav";
 
         // Animator param names (MUST match your Animator graph)
         private const string PARAM_SPEED = "Speed";
@@ -34,6 +50,7 @@ namespace GameScripts
 
         private FootstepComponent _footstep;   // optional
         private static ulong s_playerEntity = 0; // for static trigger callbacks
+        private static MovementAnimator s_instance = null; // for accessing instance fields from static callbacks
 
         // -----------------------------
         // Lifecycle
@@ -42,6 +59,7 @@ namespace GameScripts
         {
             API.Log($"[MovementAnimator] OnStart - Entity={Entity}");
             s_playerEntity = Entity;
+            s_instance = this;
 
             if (!API.HasTransform(Entity))
             {
@@ -149,7 +167,7 @@ namespace GameScripts
                 try
                 {
                     Vec3 pos = API.GetPosition(Entity);
-                    API.PlaySoundAt("jump_sound", "Resources/Audio/playerPunch_1.wav", pos, false);
+                    API.PlaySoundAt("jump_sound", _jumpSoundPath, pos, false);
                     API.SetSoundVolume("jump_sound", 0.9f);
                 }
                 catch { }
@@ -221,7 +239,8 @@ namespace GameScripts
                 else if (triggerEntity == API.FindEntity("PowerUp")) soundId = "powerup";
                 else if (triggerEntity == API.FindEntity("DoorTrigger")) soundId = "door_open";
 
-                API.PlaySoundAt(soundId, "Resources/Audio/playerPunch_1.wav", pos, false);
+                string soundPath = s_instance != null ? s_instance._triggerSoundPath : "Resources/Audio/playerPunch_1.wav";
+                API.PlaySoundAt(soundId, soundPath, pos, false);
             }
             catch (Exception ex)
             {
@@ -241,7 +260,8 @@ namespace GameScripts
                 if (triggerEntity == API.FindEntity("DoorTrigger"))
                 {
                     Vec3 pos = API.HasTransform(triggerEntity) ? API.GetPosition(triggerEntity) : new Vec3(0, 0, 0);
-                    API.PlaySoundAt("door_close", "Resources/Audio/playerPunch_1.wav", pos, false);
+                    string doorSoundPath = s_instance != null ? s_instance._doorCloseSoundPath : "Resources/Audio/playerPunch_1.wav";
+                    API.PlaySoundAt("door_close", doorSoundPath, pos, false);
                 }
             }
             catch (Exception ex)

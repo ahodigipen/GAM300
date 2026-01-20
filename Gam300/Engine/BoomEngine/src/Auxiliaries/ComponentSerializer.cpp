@@ -582,8 +582,11 @@ namespace Boom
         // === SPRITE COMPONENT ===
         RegisterPropertyComponent<SpriteComponent>("SpriteComponent");
 
-        // === PAUSE MEN TAG COMPONENT ===
+        // === PAUSE MENU TAG COMPONENT ===
         RegisterPropertyComponent<PauseMenuTagComponent>("PauseMenuTagComponent");
+
+        // === DEATH MENU TAG COMPONENT ===
+        RegisterPropertyComponent<DeathMenuTagComponent>("DeathMenuTagComponent");
 
         // === DEACTIVATED COMPONENT ===
         RegisterPropertyComponent<DeactivatedComponent>("DeactivatedComponent");
@@ -611,12 +614,19 @@ namespace Boom
                     }
                     e << YAML::Key << "loop" << YAML::Value << entry.loop;
                     e << YAML::Key << "volume" << YAML::Value << entry.volume;
+                    e << YAML::Key << "priority" << YAML::Value << entry.priority;
+                    e << YAML::Key << "pitch" << YAML::Value << entry.pitch;
+                    e << YAML::Key << "stereoPan" << YAML::Value << entry.stereoPan;
+                    e << YAML::Key << "spatialBlend" << YAML::Value << entry.spatialBlend;
+                    e << YAML::Key << "mute" << YAML::Value << entry.mute;
                     e << YAML::Key << "playOnStart" << YAML::Value << entry.playOnStart;
                     e << YAML::Key << "triggerKey" << YAML::Value << entry.triggerKey;
                     e << YAML::Key << "playOnMove" << YAML::Value << entry.playOnMove;
                     e << YAML::Key << "moveThreshold" << YAML::Value << entry.moveThreshold;
                     e << YAML::Key << "repeatInterval" << YAML::Value << entry.repeatInterval;
                     e << YAML::Key << "animTrigger" << YAML::Value << entry.animTrigger;
+                    e << YAML::Key << "minDistance" << YAML::Value << entry.minDistance;
+                    e << YAML::Key << "maxDistance" << YAML::Value << entry.maxDistance;
                     e << YAML::EndMap;
                 }
                 e << YAML::EndSeq;
@@ -644,12 +654,19 @@ namespace Boom
                         }
                         if (en["loop"]) entry.loop = en["loop"].as<bool>(entry.loop);
                         if (en["volume"]) entry.volume = en["volume"].as<float>(entry.volume);
+                        if (en["priority"]) entry.priority = en["priority"].as<int>(entry.priority);
+                        if (en["pitch"]) entry.pitch = en["pitch"].as<float>(entry.pitch);
+                        if (en["stereoPan"]) entry.stereoPan = en["stereoPan"].as<float>(entry.stereoPan);
+                        if (en["spatialBlend"]) entry.spatialBlend = en["spatialBlend"].as<float>(entry.spatialBlend);
+                        if (en["mute"]) entry.mute = en["mute"].as<bool>(entry.mute);
                         if (en["playOnStart"]) entry.playOnStart = en["playOnStart"].as<bool>(entry.playOnStart);
                         if (en["triggerKey"]) entry.triggerKey = en["triggerKey"].as<int>(entry.triggerKey);
                         if (en["playOnMove"]) entry.playOnMove = en["playOnMove"].as<bool>(entry.playOnMove);
                         if (en["moveThreshold"]) entry.moveThreshold = en["moveThreshold"].as<float>(entry.moveThreshold);
                         if (en["repeatInterval"]) entry.repeatInterval = en["repeatInterval"].as<float>(entry.repeatInterval);
                         if (en["animTrigger"]) entry.animTrigger = en["animTrigger"].as<std::string>(entry.animTrigger);
+                        if (en["minDistance"]) entry.minDistance = en["minDistance"].as<float>(entry.minDistance);
+                        if (en["maxDistance"]) entry.maxDistance = en["maxDistance"].as<float>(entry.maxDistance);
                         sc.entries.push_back(std::move(entry));
                     }
                 }

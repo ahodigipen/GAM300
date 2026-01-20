@@ -274,15 +274,16 @@ namespace Boom
                 auto scriptView = registry.view<Boom::ScriptComponent>();
                 for (auto entity : scriptView) {
                     auto& sc = scriptView.get<Boom::ScriptComponent>(entity);
-                    bool isPauseMenuObject = registry.any_of<PauseMenuTagComponent>(entity);
-                    if (!m_IsGameLogicPaused || isPauseMenuObject)
+                    bool isMenuObject = registry.any_of<PauseMenuTagComponent>(entity) ||
+                        registry.any_of<DeathMenuTagComponent>(entity);
+                    if ((!m_IsGameLogicPaused && !m_IsPlayerDead) || isMenuObject)
                     {
                         m_Context->scriptingSystem->TickEntity(entity, sc, dt);
                     }
                 }
 
                 // --- RUN ALL GAME LOGIC ---
-                if (!m_IsGameLogicPaused) {
+                if (!m_IsGameLogicPaused && !m_IsPlayerDead) {
                     // AI Logic
                     m_AIagents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime));
                     if (m_Nav) {
@@ -604,8 +605,9 @@ namespace Boom
                     else {
                         // float dt = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) ? (float)m_Context->DeltaTime : 0.0f;
                         bool shouldAnimate = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING);
-                        bool isPauseMenuObj = entity.Has<PauseMenuTagComponent>();
-                        if (m_IsGameLogicPaused && !isPauseMenuObj) {
+                        bool isMenuObj = entity.Has<PauseMenuTagComponent>() ||
+                            entity.Has<DeathMenuTagComponent>();
+                        if ((m_IsGameLogicPaused || m_IsPlayerDead) && !isMenuObj) {
                             shouldAnimate = false;
                         }
 
