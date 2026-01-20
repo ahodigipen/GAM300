@@ -19,6 +19,7 @@ namespace GameScripts
         private UILocationController _locationUI;
         private UIHeartController _heartUI;  // *** NEW: Heart UI controller ***
         private UIFreezeController _freezeUI; // *** NEW ***
+        private UIObjectiveController _objectiveUI; // Objective system UI
 
         public void OnStart(string jsonParams)
         {
@@ -45,7 +46,10 @@ namespace GameScripts
             _freezeUI = new UIFreezeController { Entity = Entity };
             _freezeUI.OnStart(jsonParams);
 
-            API.Log("[UIManager] All UI systems initialized (including hearts)");
+            _objectiveUI = new UIObjectiveController { Entity = Entity };
+            _objectiveUI.OnStart(jsonParams);
+
+            API.Log("[UIManager] All UI systems initialized (including hearts and objectives)");
         }
 
         public void OnUpdate(float dt)
@@ -57,6 +61,7 @@ namespace GameScripts
             _locationUI?.OnUpdate(dt);
             _heartUI?.OnUpdate(dt);  // *** NEW: Update heart UI ***
             _freezeUI?.OnUpdate(dt);
+            _objectiveUI?.OnUpdate(dt);
         }
 
         public void OnDestroy()

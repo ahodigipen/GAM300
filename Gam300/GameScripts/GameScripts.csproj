@@ -72,6 +72,16 @@
     <Compile Include="UILocationController.cs" />
     <Compile Include="UIManager.cs" />
     <Compile Include="VisionComponent.cs" />
+    <Compile Include="ObjectiveData.cs" />
+    <Compile Include="ObjectiveManager.cs" />
+    <Compile Include="BaseObjective.cs" />
+    <Compile Include="CollectObjective.cs" />
+    <Compile Include="ReachZoneObjective.cs" />
+    <Compile Include="InteractObjective.cs" />
+    <Compile Include="DefeatEnemiesObjective.cs" />
+    <Compile Include="SurviveTimeObjective.cs" />
+    <Compile Include="ObjectiveTrigger.cs" />
+    <Compile Include="UIObjectiveController.cs" />
     <Compile Include="Entry.cs" />
     <Compile Include="MovementAnimator.cs" />
     <Compile Include="EnemyController.cs" />
