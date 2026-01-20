@@ -3,6 +3,7 @@
 #include "Graphics/Models/Model.h"
 #include "Graphics/Textures/Texture.h"
 #include "Graphics/Utilities/Data.h"
+#include "Graphics/Models/Animation.h"
 #include "BoomProperties.h"
 #include "AssetLoadContext.h"
 
@@ -25,6 +26,7 @@ namespace Boom {
 		PHYSICS_MESH,
 		PREFAB,
 		AUDIO,
+		ANIMATION,
 	};
 	constexpr char const* TYPE_NAMES[]{
 		"All",
@@ -37,6 +39,7 @@ namespace Boom {
 		"Physics Meshes (.pxm)",
 		"Prefab",
 		"Audio",
+		"Animations(.anim)",
 	};
 
 	struct Asset {
@@ -156,6 +159,17 @@ namespace Boom {
 		)
 	};
 
+	struct AnimationAsset : Asset {
+		std::shared_ptr<AnimationClip> data;
+
+		AnimationAsset() { type = AssetType::ANIMATION; }
+
+		XPROPERTY_DEF(
+			"AnimationAsset", AnimationAsset,
+			obj_member<"Data", &AnimationAsset::data>
+		)
+	};
+
 	//TODO(other uncompleted/custom types):
 	struct ScriptAsset : Asset { ScriptAsset() { type = AssetType::SCRIPT; } };
 	struct SceneAsset : Asset { SceneAsset() { type = AssetType::SCENE; } };
@@ -175,6 +189,7 @@ namespace Boom {
 			AddEmpty<SceneAsset>();
 			AddEmpty<PhysicsMeshAsset>();
 			AddEmpty<AudioAsset>();
+			AddEmpty<AnimationAsset>();
 		}
 
 		//tries to get asset by its defined type
@@ -327,6 +342,14 @@ namespace Boom {
 		BOOM_INLINE auto AddAudio(AssetID uid, std::string const& path) {
 			auto asset = std::make_shared<AudioAsset>();
 			asset->type = AssetType::AUDIO;
+			Add(uid, path, asset);
+			return asset;
+		}
+
+		BOOM_INLINE auto AddAnimation(AssetID uid, std::string const& path) {
+			auto asset = std::make_shared<AnimationAsset>();
+			asset->type = AssetType::ANIMATION;
+			// Note: actual animation data loaded on-demand when needed
 			Add(uid, path, asset);
 			return asset;
 		}
