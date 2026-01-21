@@ -20,10 +20,6 @@ namespace GameScripts
         /// </summary>
         public static void ClearInstances()
         {
-            foreach (var kvp in s_instances)
-            {
-                API.UnregisterTriggerCallbacks(kvp.Key);
-            }
             s_instances.Clear();
             API.Log("[CrouchTriggerZone] Cleared all instances");
         }

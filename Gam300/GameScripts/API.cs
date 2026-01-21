@@ -670,6 +670,17 @@ namespace Boom
             Native.Boom_API_UnregisterTriggerCallbacks(triggerEntity);
         }
 
+        /// <summary>
+        /// Clear all cached trigger callbacks without calling native unregister.
+        /// Call this during scene transitions to prevent stale callback invocations.
+        /// </summary>
+        public static void ClearAllTriggerCallbackCaches()
+        {
+            s_TriggerEnterCallbacks.Clear();
+            s_TriggerExitCallbacks.Clear();
+            Log("[API] Cleared all trigger callback caches");
+        }
+
         // ===== Debug Visualization =====
         public static void DrawDebugVisionCone(ulong entityHandle, float range, float halfAngle, Vec4 color)
         {

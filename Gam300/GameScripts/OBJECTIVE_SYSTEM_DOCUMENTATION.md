@@ -58,6 +58,14 @@ Collect N items of a specific type.
 - `ItemCollected` - When any item is collected
 - `KeyCollected` - Specifically for keys
 
+**Built-in Integration:**
+The `KeyPickup` script automatically broadcasts `KeyCollected` events:
+```csharp
+// This happens automatically in KeyPickup.cs when a key is collected
+PlayerInventory.AddKey(1);
+ObjectiveManager.BroadcastEvent(ObjectiveEvents.KeyCollected, "Key", 1);
+```
+
 **Example Usage:**
 ```csharp
 // In your collectible script
@@ -81,11 +89,23 @@ Reach a specific location or trigger zone.
 - `ZoneEntered` - When player enters the zone
 - `ZoneExited` - When player exits the zone
 
+**Built-in End Zone Integration:**
+The `EndZoneTrigger` script automatically broadcasts a `ZoneEntered` event:
+```csharp
+// This happens automatically in EndZoneTrigger.cs
+ObjectiveManager.BroadcastEvent(ObjectiveEvents.ZoneEntered, "EndZone", 1);
+```
+
 **Example Setup:**
 1. Add `ReachZoneObjective` script to an empty GameObject
 2. Set Zone Tag to "Checkpoint1"
 3. Add `ObjectiveTrigger` to a trigger collider
 4. Set the trigger's Zone Tag to "Checkpoint1"
+
+**Using EndZoneTrigger for Level End:**
+1. Add `EndZoneTrigger` script to a trigger collider at level end
+2. When player enters, it broadcasts "EndZone" event and loads MainMenu
+3. To track as objective, add `ReachZoneObjective` with Zone Tag = "EndZone"
 
 ---
 
@@ -104,6 +124,18 @@ Interact with specific objects.
 **Events Listened:**
 - `ObjectInteracted` - When player interacts with an object
 - `DoorOpened` - When a door is opened (if enabled)
+
+**Built-in Door Integration:**
+The `DoorTriggerLeft` script automatically broadcasts `DoorOpened` events when a door opens:
+```csharp
+// This happens automatically in DoorTriggerLeft.cs when door opens
+ObjectiveManager.BroadcastEvent(ObjectiveEvents.DoorOpened, _doorName, 1);
+```
+
+To track door opens:
+1. Add an `InteractObjective` to your scene
+2. Set **Interaction Tag** to the door's name (e.g., "MoveDoor")
+3. Enable **Accept Door Events** = true
 
 **Example Usage:**
 ```csharp
@@ -401,6 +433,74 @@ ObjectiveManager.ForceComplete("collect_keys");
 
 ---
 
+## Scene Transition Handling
+
+The objective system integrates with the game's scene transition system to ensure clean state management.
+
+### Automatic Reset on Scene Load
+
+When a new scene loads, `Entry.Start()` resets the scene transition flag:
+```csharp
+EndZoneTrigger.s_sceneTransitionInProgress = false;
+```
+
+### EndZoneTrigger Integration
+
+The `EndZoneTrigger` component handles level completion and scene transitions:
+
+1. When player enters the end zone, a scene load is queued
+2. A **100ms delay** is applied before loading (allows physics to settle)
+3. The `s_sceneTransitionInProgress` flag is set to block all trigger callbacks
+4. After the delay, the scene loads
+
+**Key Features:**
+- Broadcasts `ZoneEntered` event with "EndZone" as target ID
+- Uses deferred loading to prevent PhysX crashes
+- All trigger callbacks check `s_sceneTransitionInProgress` and return early if true
+
+### DoorTriggerLeft Integration
+
+Doors now broadcast events to the objective system:
+
+```csharp
+// When door opens successfully
+ObjectiveManager.BroadcastEvent(ObjectiveEvents.DoorOpened, doorName, 1);
+```
+
+**To track door opens with objectives:**
+1. Add an `InteractObjective` to your scene
+2. Set **Interaction Tag** to the door's name (e.g., "MoveDoor")
+3. Enable **Accept Door Events** = true
+
+### Trigger Callback Safety
+
+All trigger-based scripts check the scene transition flag at the start of their callbacks:
+
+```csharp
+private static void OnTriggerEnterCallback(ulong triggerEntity, ulong otherEntity)
+{
+    // Absolute first check - if scene transition in progress, do nothing
+    if (EndZoneTrigger.s_sceneTransitionInProgress) return;
+
+    // ... rest of callback
+}
+```
+
+This prevents crashes from stale entity access during scene cleanup.
+
+### Scripts with Scene Transition Protection
+
+The following scripts have scene transition checks in their trigger callbacks:
+- `EndZoneTrigger.cs`
+- `KeyPickup.cs`
+- `DoorTriggerLeft.cs`
+- `CrouchTriggerText.cs` (CrouchTriggerZone)
+- `ObjectiveTrigger.cs`
+- `PlayerMovement.cs`
+- `MovementAnimator.cs`
+
+---
+
 ## File Reference
 
 | File | Purpose |
@@ -415,3 +515,6 @@ ObjectiveManager.ForceComplete("collect_keys");
 | `SurviveTimeObjective.cs` | Survive time objective |
 | `ObjectiveTrigger.cs` | Trigger zone component |
 | `UIObjectiveController.cs` | UI display controller |
+| `EndZoneTrigger.cs` | Level end zone with scene transition |
+| `KeyPickup.cs` | Key collection with objective broadcast |
+| `DoorTriggerLeft.cs` | Door trigger with objective broadcast |

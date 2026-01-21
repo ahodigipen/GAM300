@@ -77,24 +77,8 @@ namespace GameScripts
             s_ActiveDeathMenuInstance = null;
             s_ActiveEndMenuInstance = null;
 
-            // Reset scene transition flag first
+            // Reset scene transition flag - cleanup was already done before LoadScene
             EndZoneTrigger.s_sceneTransitionInProgress = false;
-
-            // Clear all static instances from previous scene to prevent stale entity access
-            KeyPickup.ClearInstances();
-            DoorTriggerLeft.ClearInstances();
-            EndZoneTrigger.ClearInstances();
-            CrouchTriggerZone.ClearInstances();
-            ObjectiveTrigger.ClearInstances();
-
-            // Reset static state in player-related scripts
-            PlayerMovement.ResetStatic();
-            MovementAnimator.ResetStatic();
-            PlayerManager.Reset();
-
-            // Reset the objective system and player inventory for new scene
-            ObjectiveManager.Reset();
-            PlayerInventory.Reset();
 
             API.Log("[C#] Entry.Start() called for scene: " + _currentSceneName);
 

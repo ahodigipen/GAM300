@@ -22,10 +22,8 @@ namespace GameScripts
         /// </summary>
         public static void ClearInstances()
         {
-            foreach (var kvp in s_instances)
-            {
-                API.UnregisterTriggerCallbacks(kvp.Key);
-            }
+            // Just clear the dictionary - don't try to unregister callbacks
+            // as entities may already be destroyed
             s_instances.Clear();
             API.Log("[KeyPickup] Cleared all instances");
         }

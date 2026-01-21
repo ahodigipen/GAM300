@@ -172,5 +172,14 @@ namespace GameScripts
         {
             return s_instance != null;
         }
+
+        /// <summary>
+        /// Reset static state (call on scene change)
+        /// </summary>
+        public static void Reset()
+        {
+            s_instance = null;
+            API.Log("[UIManager] Reset");
+        }
     }
 }
