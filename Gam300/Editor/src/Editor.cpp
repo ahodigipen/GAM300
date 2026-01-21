@@ -21,6 +21,7 @@
 #include "Panels/AnimatorGraphPanel.h"
 #include "Panels/ModelPreviewPanel.h"
 #include "Panels/AnimationTimelinePanel.h"
+#include "Panels/CutsceneSequencerPanel.h" // Include Full Header
 #include "BoomEngine.h"
 
 // Undo/Redo
@@ -164,6 +165,8 @@ namespace EditorUI {
         m_AnimatorGraph = std::make_unique<AnimatorGraphPanel>(this);
         m_ModelPreview = std::make_unique<ModelPreviewPanel>(this);
         m_AnimationTimeline = std::make_unique<AnimationTimelinePanel>(this);
+        m_CutsceneSequencer = std::make_unique<CutsceneSequencerPanel>(this);
+
 
         // Initialize Undo/Redo system
         m_CommandHistory = std::make_unique<CommandHistory>(100); // Max 100 undo levels
@@ -226,6 +229,8 @@ namespace EditorUI {
         if (m_ShowAnimatorGraph && m_AnimatorGraph) m_AnimatorGraph->Render();
         if (m_ShowModelPreview && m_ModelPreview) m_ModelPreview->Render();
         if (m_ShowAnimationTimeline && m_AnimationTimeline) m_AnimationTimeline->Render();
+        if (m_ShowCutsceneSequencer && m_CutsceneSequencer) m_CutsceneSequencer->Render();
+
         // --- End frame / draw ---
         EndImguiFrame();
 
