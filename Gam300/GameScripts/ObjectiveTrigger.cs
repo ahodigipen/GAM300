@@ -21,6 +21,19 @@ namespace GameScripts
         // Static instances dictionary (following KeyPickup pattern)
         private static readonly Dictionary<ulong, ObjectiveTrigger> s_instances = new Dictionary<ulong, ObjectiveTrigger>();
 
+        /// <summary>
+        /// Clear all static instances (call on scene change to prevent stale entity access)
+        /// </summary>
+        public static void ClearInstances()
+        {
+            foreach (var kvp in s_instances)
+            {
+                API.UnregisterTriggerCallbacks(kvp.Key);
+            }
+            s_instances.Clear();
+            API.Log("[ObjectiveTrigger] Cleared all instances");
+        }
+
         [EditorExposed("Zone Tag", "Identifier for this trigger zone (e.g., 'ExitZone', 'Checkpoint1')")]
         private string _zoneTag = "Zone";
 
@@ -83,6 +96,9 @@ namespace GameScripts
 
         private static void OnTriggerEnter(ulong triggerEntity, ulong otherEntity)
         {
+            // Skip if scene transition is in progress
+            if (EndZoneTrigger.s_sceneTransitionInProgress) return;
+
             if (!s_instances.TryGetValue(triggerEntity, out var inst)) return;
 
             // Check one-shot
@@ -114,6 +130,9 @@ namespace GameScripts
 
         private static void OnTriggerExit(ulong triggerEntity, ulong otherEntity)
         {
+            // Skip if scene transition is in progress
+            if (EndZoneTrigger.s_sceneTransitionInProgress) return;
+
             if (!s_instances.TryGetValue(triggerEntity, out var inst)) return;
 
             // Check player-only

@@ -15,6 +15,19 @@ namespace GameScripts
 
         private static readonly Dictionary<ulong, CrouchTriggerZone> s_instances = new Dictionary<ulong, CrouchTriggerZone>();
 
+        /// <summary>
+        /// Clear all static instances (call on scene change to prevent stale entity access)
+        /// </summary>
+        public static void ClearInstances()
+        {
+            foreach (var kvp in s_instances)
+            {
+                API.UnregisterTriggerCallbacks(kvp.Key);
+            }
+            s_instances.Clear();
+            API.Log("[CrouchTriggerZone] Cleared all instances");
+        }
+
         // Optional: Play a sound when entering the zone
         [Boom.EditorExposed("Play Sound On Enter", "Whether to play a sound when player enters the zone")]
         private bool _playSoundOnEnter = false;
@@ -58,6 +71,9 @@ namespace GameScripts
 
         private static void OnTriggerEnter(ulong triggerEntity, ulong otherEntity)
         {
+            // Skip if scene transition is in progress
+            if (EndZoneTrigger.s_sceneTransitionInProgress) return;
+
             CrouchTriggerZone inst;
             if (!s_instances.TryGetValue(triggerEntity, out inst)) return;
 
@@ -81,6 +97,9 @@ namespace GameScripts
 
         private static void OnTriggerExit(ulong triggerEntity, ulong otherEntity)
         {
+            // Skip if scene transition is in progress
+            if (EndZoneTrigger.s_sceneTransitionInProgress) return;
+
             CrouchTriggerZone inst;
             if (!s_instances.TryGetValue(triggerEntity, out inst)) return;
 

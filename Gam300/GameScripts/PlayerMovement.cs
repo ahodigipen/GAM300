@@ -571,6 +571,9 @@ namespace GameScripts
 
         private static void OnTriggerEnter(ulong triggerEntity, ulong otherEntity)
         {
+            // Skip if scene transition is in progress
+            if (EndZoneTrigger.s_sceneTransitionInProgress) return;
+
             try
             {
                 if (otherEntity != s_playerEntity) return;
@@ -599,6 +602,9 @@ namespace GameScripts
 
         private static void OnTriggerExit(ulong triggerEntity, ulong otherEntity)
         {
+            // Skip if scene transition is in progress
+            if (EndZoneTrigger.s_sceneTransitionInProgress) return;
+
             try
             {
                 if (otherEntity != s_playerEntity) return;
@@ -659,5 +665,20 @@ namespace GameScripts
         public int GetHealth() => _health;
         public static ulong GetPlayerEntity() => s_playerEntity;
         public static bool IsPlayerInvisibleToEnemies() => s_isStealthInvisible;
+
+        /// <summary>
+        /// Reset static state (call on scene change to prevent stale entity access)
+        /// </summary>
+        public static void ResetStatic()
+        {
+            if (s_playerEntity != 0)
+            {
+                API.UnregisterTriggerCallbacks(s_playerEntity);
+            }
+            s_playerEntity = 0;
+            s_instance = null;
+            s_isStealthInvisible = false;
+            API.Log("[PlayerMovement] Reset static state");
+        }
     }
 }
