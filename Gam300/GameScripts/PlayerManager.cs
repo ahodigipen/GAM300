@@ -50,5 +50,14 @@ namespace GameScripts
         {
             return s_playerInstance != null;
         }
+
+        /// <summary>
+        /// Reset static state (call on scene change)
+        /// </summary>
+        public static void Reset()
+        {
+            s_playerInstance = null;
+            API.Log("[PlayerManager] Reset");
+        }
     }
 }

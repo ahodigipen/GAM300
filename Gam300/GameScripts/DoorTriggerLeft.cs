@@ -53,6 +53,19 @@ namespace GameScripts
 
         private bool _kWasDown = false;
 
+        /// <summary>
+        /// Clear all static instances (call on scene change to prevent stale entity access)
+        /// </summary>
+        public static void ClearInstances()
+        {
+            foreach (var kvp in s_instances)
+            {
+                API.UnregisterTriggerCallbacks(kvp.Key);
+            }
+            s_instances.Clear();
+            API.Log("[DoorTriggerLeft] Cleared all instances");
+        }
+
         // Constants (GLFW)
         private const int KEY_K = 75;          // GLFW_KEY_K
         private const int KEY_LEFT_SHIFT = 340;
@@ -185,6 +198,9 @@ namespace GameScripts
 
         private static void OnTriggerEnter(ulong triggerEntity, ulong otherEntity)
         {
+            // Skip if scene transition is in progress
+            if (EndZoneTrigger.s_sceneTransitionInProgress) return;
+
             DoorTriggerLeft inst;
             if (!s_instances.TryGetValue(triggerEntity, out inst)) return;
             if (inst._door == 0) return;
@@ -194,9 +210,10 @@ namespace GameScripts
 
             if (!PlayerInventory.HasKey())
             {
-                API.Log("[DoorTriggerLeft] Player has no key - door will not move.");
+                API.Log($"[DoorTriggerLeft] Player has no key (count: {PlayerInventory.GetKeyCount()}) - door will not move.");
                 return;
             }
+            API.Log($"[DoorTriggerLeft] Player has key! (count: {PlayerInventory.GetKeyCount()})");
 
             if (inst._consumeKey && !PlayerInventory.ConsumeKey())
             {
@@ -211,11 +228,18 @@ namespace GameScripts
             var pos = API.GetPosition(inst._door);
             API.PlaySound("sfx_door_slide_open_2d", inst._doorSoundPath, false);
             API.SetSoundVolume("sfx_door_slide_open_2d", 1.0f);
-            API.Log("[DoorTriggerLeft] K: played 2D door SFX (always audible).");
+            API.Log("[DoorTriggerLeft] Door opening, played 2D door SFX.");
+
+            // Broadcast DoorOpened event to the objective system
+            ObjectiveManager.BroadcastEvent(ObjectiveEvents.DoorOpened, inst._doorName, 1);
+            API.Log($"[DoorTriggerLeft] Broadcast DoorOpened event for door: {inst._doorName}");
         }
 
         private static void OnTriggerExit(ulong triggerEntity, ulong otherEntity)
         {
+            // Skip if scene transition is in progress
+            if (EndZoneTrigger.s_sceneTransitionInProgress) return;
+
             DoorTriggerLeft inst;
             if (!s_instances.TryGetValue(triggerEntity, out inst)) return;
             if (inst._door == 0) return;
