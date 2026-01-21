@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Boom;
 
 namespace GameScripts
@@ -16,6 +17,8 @@ namespace GameScripts
         // Deferred scene loading to avoid PhysX crash during trigger callback
         private static bool s_pendingSceneLoad = false;
         private static string s_pendingSceneName = "";
+        private static float s_sceneLoadDelay = 0f;
+        private const float SCENE_LOAD_DELAY_TIME = 0.1f; // 100ms delay like pause menu
 
         // Global flag to disable ALL trigger processing during scene transitions
         public static bool s_sceneTransitionInProgress = false;
@@ -28,10 +31,6 @@ namespace GameScripts
         /// </summary>
         public static void ClearInstances()
         {
-            foreach (var kvp in s_instances)
-            {
-                API.UnregisterTriggerCallbacks(kvp.Key);
-            }
             s_instances.Clear();
             s_pendingSceneLoad = false;
             s_pendingSceneName = "";
@@ -65,37 +64,32 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
-            // Handle deferred scene loading (outside of physics callback)
+            // Handle deferred scene loading with delay (like pause menu)
             if (s_pendingSceneLoad)
             {
+                // Set transition flag immediately to block all trigger callbacks
+                if (!s_sceneTransitionInProgress)
+                {
+                    s_sceneTransitionInProgress = true;
+                    s_sceneLoadDelay = SCENE_LOAD_DELAY_TIME;
+                    API.Log("[EndZoneTrigger] Scene transition started, waiting for delay...");
+                }
+
+                // Count down the delay
+                s_sceneLoadDelay -= dt;
+                if (s_sceneLoadDelay > 0f)
+                {
+                    return; // Wait for delay to complete
+                }
+
+                // Delay complete - now load the scene
                 s_pendingSceneLoad = false;
                 string sceneName = s_pendingSceneName;
                 s_pendingSceneName = "";
 
-                // Set global flag to disable ALL trigger processing during scene transition
-                s_sceneTransitionInProgress = true;
-
-                // CRITICAL: Clear ALL trigger instances BEFORE loading new scene
-                // to prevent callbacks firing during scene cleanup
-                API.Log("[EndZoneTrigger] Clearing all trigger instances before scene load...");
-                KeyPickup.ClearInstances();
-                DoorTriggerLeft.ClearInstances();
-                CrouchTriggerZone.ClearInstances();
-                ObjectiveTrigger.ClearInstances();
-                PlayerMovement.ResetStatic();
-                MovementAnimator.ResetStatic();
-                PlayerManager.Reset();
-
-                // Clear our own instances last
-                foreach (var kvp in s_instances)
-                {
-                    API.UnregisterTriggerCallbacks(kvp.Key);
-                }
-                s_instances.Clear();
-
-                API.Log($"[EndZoneTrigger] Deferred loading scene: {sceneName}");
+                API.Log($"[EndZoneTrigger] Delay complete, loading scene: {sceneName}");
                 API.LoadScene(sceneName);
-                return; // Don't process anything else after scene load
+                return;
             }
         }
 
@@ -108,44 +102,58 @@ namespace GameScripts
         // Static callback for trigger enter
         private static void OnTriggerEnterCallback(ulong triggerEntity, ulong otherEntity)
         {
-            // Early exit if scene load is pending (prevents stale entity access)
-            if (s_pendingSceneLoad) return;
+            // Absolute first check - if scene transition in progress, do nothing
+            if (s_sceneTransitionInProgress || s_pendingSceneLoad) return;
 
-            EndZoneTrigger inst;
-            if (!s_instances.TryGetValue(triggerEntity, out inst)) return;
+            try
+            {
+                EndZoneTrigger inst;
+                if (!s_instances.TryGetValue(triggerEntity, out inst)) return;
 
-            // Prevent multiple triggers
-            if (inst._hasTriggered) return;
+                // Prevent multiple triggers
+                if (inst._hasTriggered) return;
 
-            // Only player triggers this
-            ulong playerEntity = PlayerMovement.GetPlayerEntity();
-            if (playerEntity == 0 || otherEntity != playerEntity) return;
+                // Only player triggers this
+                ulong playerEntity = PlayerMovement.GetPlayerEntity();
+                if (playerEntity == 0 || otherEntity != playerEntity) return;
 
-            API.Log("[EndZoneTrigger] Player entered end zone! Queueing MainMenu load...");
-            inst._hasTriggered = true;
+                API.Log("[EndZoneTrigger] Player entered end zone! Queueing MainMenu load...");
+                inst._hasTriggered = true;
 
-            // Broadcast zone event for objective system
-            ObjectiveManager.BroadcastEvent(ObjectiveEvents.ZoneEntered, "EndZone", 1);
+                // Broadcast zone event for objective system
+                ObjectiveManager.BroadcastEvent(ObjectiveEvents.ZoneEntered, "EndZone", 1);
 
-            // Defer scene loading to next frame to avoid PhysX crash
-            s_pendingSceneLoad = true;
-            s_pendingSceneName = "MainMenu";
+                // Defer scene loading to next frame to avoid PhysX crash
+                s_pendingSceneLoad = true;
+                s_pendingSceneName = "MainMenu";
+            }
+            catch (Exception ex)
+            {
+                API.Log($"[EndZoneTrigger] OnTriggerEnterCallback error: {ex.Message}");
+            }
         }
 
         // Static callback for trigger exit
         private static void OnTriggerExitCallback(ulong triggerEntity, ulong otherEntity)
         {
-            // Early exit if scene load is pending (prevents stale entity access)
-            if (s_pendingSceneLoad) return;
+            // Absolute first check - if scene transition in progress, do nothing
+            if (s_sceneTransitionInProgress || s_pendingSceneLoad) return;
 
-            EndZoneTrigger inst;
-            if (!s_instances.TryGetValue(triggerEntity, out inst)) return;
+            try
+            {
+                EndZoneTrigger inst;
+                if (!s_instances.TryGetValue(triggerEntity, out inst)) return;
 
-            // Only react to player exiting
-            ulong playerEntity = PlayerMovement.GetPlayerEntity();
-            if (playerEntity == 0 || otherEntity != playerEntity) return;
+                // Only react to player exiting
+                ulong playerEntity = PlayerMovement.GetPlayerEntity();
+                if (playerEntity == 0 || otherEntity != playerEntity) return;
 
-            API.Log("[EndZoneTrigger] Player left end zone");
+                API.Log("[EndZoneTrigger] Player left end zone");
+            }
+            catch (Exception ex)
+            {
+                API.Log($"[EndZoneTrigger] OnTriggerExitCallback error: {ex.Message}");
+            }
         }
     }
 }

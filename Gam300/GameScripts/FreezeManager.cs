@@ -56,5 +56,15 @@ namespace GameScripts
         {
             return s_freezeTimer > 0f;
         }
+
+        /// <summary>
+        /// Reset static state (call on scene change)
+        /// </summary>
+        public static void Reset()
+        {
+            s_freezeTimer = 0f;
+            s_freezeRadius = 0f;
+            API.Log("[FreezeManager] Reset");
+        }
     }
 }

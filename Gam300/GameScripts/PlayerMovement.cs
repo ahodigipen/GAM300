@@ -671,10 +671,6 @@ namespace GameScripts
         /// </summary>
         public static void ResetStatic()
         {
-            if (s_playerEntity != 0)
-            {
-                API.UnregisterTriggerCallbacks(s_playerEntity);
-            }
             s_playerEntity = 0;
             s_instance = null;
             s_isStealthInvisible = false;
