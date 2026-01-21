@@ -16,6 +16,7 @@ namespace GameScripts
 
         // Deferred scene loading to avoid PhysX crash during trigger callback
         private static bool s_pendingSceneLoad = false;
+        private static bool s_pendingBroadcast = false;
         private static string s_pendingSceneName = "";
         private static float s_sceneLoadDelay = 0f;
         private const float SCENE_LOAD_DELAY_TIME = 0.1f; // 100ms delay like pause menu
@@ -33,6 +34,7 @@ namespace GameScripts
         {
             s_instances.Clear();
             s_pendingSceneLoad = false;
+            s_pendingBroadcast = false;
             s_pendingSceneName = "";
             API.Log("[EndZoneTrigger] Cleared all instances");
         }
@@ -41,6 +43,7 @@ namespace GameScripts
         {
             // Reset static state on scene start
             s_pendingSceneLoad = false;
+            s_pendingBroadcast = false;
             s_pendingSceneName = "";
 
             // Register this instance
@@ -64,6 +67,13 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
+            // Handle deferred objective broadcast
+            if (s_pendingBroadcast)
+            {
+                s_pendingBroadcast = false;
+                ObjectiveManager.BroadcastEvent(ObjectiveEvents.ZoneEntered, "EndZone", 1);
+            }
+
             // Handle deferred scene loading with delay (like pause menu)
             if (s_pendingSceneLoad)
             {
@@ -120,8 +130,9 @@ namespace GameScripts
                 API.Log("[EndZoneTrigger] Player entered end zone! Queueing MainMenu load...");
                 inst._hasTriggered = true;
 
-                // Broadcast zone event for objective system
-                ObjectiveManager.BroadcastEvent(ObjectiveEvents.ZoneEntered, "EndZone", 1);
+                // Broadcast zone event for objective system (deferred)
+                // ObjectiveManager.BroadcastEvent(ObjectiveEvents.ZoneEntered, "EndZone", 1);
+                s_pendingBroadcast = true;
 
                 // Defer scene loading to next frame to avoid PhysX crash
                 s_pendingSceneLoad = true;
