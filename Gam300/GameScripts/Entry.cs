@@ -6,9 +6,9 @@ namespace GameScripts
 
     public static class Entry
     {
+        // public const string LEVEL_SCENE_NAME = "FreezeTestPatrol";
         public const string LEVEL_SCENE_NAME = "M3 GAMEPLAY";
-        //public const string PAUSE_SCENE_NAME = "PauseMenu";
-        public const string PAUSE_SCENE_NAME = "PauseMenuNew";
+        public const string PAUSE_SCENE_NAME = "PauseMenu";
         public const string MAIN_MENU_SCENE_NAME = "MainMenu";
         public const string HOW_TO_PLAY_SCENE_NAME = "HowToPlay";
         public const string DEATH_SCENE_NAME = "DeathMenu";
@@ -130,31 +130,34 @@ namespace GameScripts
             bool escape_KeyDown = API.IsKeyDown(KEY_ESCAPE);
             bool ctrl_KeyDown = API.IsKeyDown(API.KEY_LEFT_CONTROL);
 
-            // Handle Escape key to pause
-            if (escape_KeyDown && !_escape_KeyWasDown)
+            if (_currentSceneName == LEVEL_SCENE_NAME)
             {
-                API.Log("Pausing game (Escape key)...");
-                IsGamePaused = true;
-                API.ShowPauseMenu();
-                API.EnableFileWatcher(false);
+                // Handle Escape key to pause
+                if (escape_KeyDown && !_escape_KeyWasDown)
+                {
+                    API.Log("Pausing game (Escape key)...");
+                    IsGamePaused = true;
+                    API.ShowPauseMenu();
+                    API.EnableFileWatcher(false);
 
+                    _escape_KeyWasDown = escape_KeyDown;
+                    return;
+                }
                 _escape_KeyWasDown = escape_KeyDown;
-                return;
-            }
-            _escape_KeyWasDown = escape_KeyDown;
 
-            // Handle P key to pause (legacy support)
-            if (p_KeyDown && !_p_KeyWasDown && !ctrl_KeyDown)
-            {
-                API.Log("Pausing game (P key)...");
-                IsGamePaused = true;
-                API.ShowPauseMenu();
-                API.EnableFileWatcher(false);
+                // Handle P key to pause (legacy support)
+                if (p_KeyDown && !_p_KeyWasDown && !ctrl_KeyDown)
+                {
+                    API.Log("Pausing game (P key)...");
+                    IsGamePaused = true;
+                    API.ShowPauseMenu();
+                    API.EnableFileWatcher(false);
 
+                    _p_KeyWasDown = p_KeyDown;
+                    return;
+                }
                 _p_KeyWasDown = p_KeyDown;
-                return;
             }
-            _p_KeyWasDown = p_KeyDown;
         }
 
         private static void UpdateDeathMenu(float dt)
