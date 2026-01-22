@@ -424,19 +424,25 @@ namespace Boom {
     // Pause Menu
     static void ICALL_API_UnloadPauseMenu() {
         if (!s_Ctx || !s_Ctx->app) return;
-        s_Ctx->app->UnloadAdditiveScene<PauseMenuTagComponent>();
+        // Pass the Enum as a parameter
+        s_Ctx->app->UnloadAdditiveScene(Boom::MenuType::Pause);
     }
 
     static void ICALL_API_ShowPauseMenu() {
         if (!s_Ctx || !s_Ctx->app) return;
-        s_Ctx->app->ShowAdditiveScene<PauseMenuTagComponent>();
+        // Pass the Enum as a parameter
+        s_Ctx->app->ShowAdditiveScene(Boom::MenuType::Pause);
     }
 
     static bool ICALL_API_IsPauseMenuLoaded() {
         if (!s_Ctx) return false;
-        // Check if any entity in the scene has the pause menu tag
-        auto view = s_Ctx->scene.view<PauseMenuTagComponent>();
-        return !view.empty();
+
+        auto view = s_Ctx->scene.view<Boom::MenuComponent>();
+        for (auto e : view) {
+            if (view.get<Boom::MenuComponent>(e).menuType == Boom::MenuType::Pause)
+                return true;
+        }
+        return false;
     }
 
     static void ICALL_API_SetGameLogicPaused(bool isPaused) {
@@ -449,19 +455,26 @@ namespace Boom {
     // Death Menu
     static void ICALL_API_UnloadDeathMenu() {
         if (!s_Ctx || !s_Ctx->app) return;
-        s_Ctx->app->UnloadAdditiveScene<DeathMenuTagComponent>();
+        // Pass the Enum as a parameter
+        s_Ctx->app->UnloadAdditiveScene(Boom::MenuType::Death);
     }
 
     static void ICALL_API_ShowDeathMenu() {
         if (!s_Ctx || !s_Ctx->app) return;
-        s_Ctx->app->ShowAdditiveScene<DeathMenuTagComponent>();
+        // Pass the Enum as a parameter
+        s_Ctx->app->ShowAdditiveScene(Boom::MenuType::Death);
     }
 
     static bool ICALL_API_IsDeathMenuLoaded() {
         if (!s_Ctx) return false;
-        // Check if any entity in the scene has the pause menu tag
-        auto view = s_Ctx->scene.view<DeathMenuTagComponent>();
-        return !view.empty();
+
+        // Iterate to check if any MenuComponent matches the Death type
+        auto view = s_Ctx->scene.view<Boom::MenuComponent>();
+        for (auto e : view) {
+            if (view.get<Boom::MenuComponent>(e).menuType == Boom::MenuType::Death)
+                return true;
+        }
+        return false;
     }
 
     static void ICALL_API_SetPlayerDead(bool isDead) {

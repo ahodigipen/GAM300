@@ -272,11 +272,19 @@ namespace Boom
                 // Individual Scripts Logic (TickEntity)
                 auto& registry = m_Context->scene;
                 auto scriptView = registry.view<Boom::ScriptComponent>();
+
+
                 for (auto entity : scriptView) {
                     auto& sc = scriptView.get<Boom::ScriptComponent>(entity);
-                    bool isMenuObject = registry.any_of<PauseMenuTagComponent>(entity) ||
-                        registry.any_of<DeathMenuTagComponent>(entity);
-                    if ((!m_IsGameLogicPaused && !m_IsPlayerDead) || isMenuObject)
+                    bool isMenuObject = registry.any_of<Boom::MenuComponent>(entity);
+                    bool shouldUpdate = (!m_IsGameLogicPaused && !m_IsPlayerDead) || isMenuObject;
+
+                    // 3. CRITICAL: Never update an object if it is Deactivated (Hidden)
+                    if (registry.any_of<DeactivatedComponent>(entity)) {
+                        shouldUpdate = false;
+                    }
+
+                    if (shouldUpdate)
                     {
                         m_Context->scriptingSystem->TickEntity(entity, sc, dt);
                     }
@@ -605,8 +613,7 @@ namespace Boom
                     else {
                         // float dt = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) ? (float)m_Context->DeltaTime : 0.0f;
                         bool shouldAnimate = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING);
-                        bool isMenuObj = entity.Has<PauseMenuTagComponent>() ||
-                            entity.Has<DeathMenuTagComponent>();
+                        bool isMenuObj = entity.Has<Boom::MenuComponent>();
                         if ((m_IsGameLogicPaused || m_IsPlayerDead) && !isMenuObj) {
                             shouldAnimate = false;
                         }

@@ -7,8 +7,8 @@ namespace GameScripts
     public static class Entry
     {
         public const string LEVEL_SCENE_NAME = "M3 GAMEPLAY";
-        //public const string LEVEL_SCENE_NAME = "FreezeTestPatrol";
-        public const string PAUSE_SCENE_NAME = "PauseMenu";
+        //public const string PAUSE_SCENE_NAME = "PauseMenu";
+        public const string PAUSE_SCENE_NAME = "PauseMenuNew";
         public const string MAIN_MENU_SCENE_NAME = "MainMenu";
         public const string HOW_TO_PLAY_SCENE_NAME = "HowToPlay";
         public const string DEATH_SCENE_NAME = "DeathMenu";
@@ -159,11 +159,6 @@ namespace GameScripts
 
         private static void UpdateDeathMenu(float dt)
         {
-            if (s_ActiveDeathMenuInstance != null)
-            {
-                s_ActiveDeathMenuInstance.OnUpdate(dt);
-            }
-
             switch (s_RequestedDeathAction)
             {
                 case DeathMenuAction.MainMenu:
@@ -199,11 +194,6 @@ namespace GameScripts
                 return;
             }
             _escape_KeyWasDown = escape_KeyDown;
-
-            if (s_ActivePauseMenuInstance != null)
-            {
-                s_ActivePauseMenuInstance.OnUpdate(dt);
-            }
 
             switch (s_RequestedAction)
             {

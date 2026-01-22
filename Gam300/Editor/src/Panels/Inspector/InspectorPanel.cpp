@@ -1866,11 +1866,43 @@ namespace EditorUI {
             ImGui::PopID();
         }
 
-        if (selected.Has<Boom::PauseMenuTagComponent>()) {
-            static Boom::PauseMenuTagComponent fakeTagInstance;
+        if (selected.Has<Boom::MenuComponent>())
+        {
+            // 1. Get the ACTUAL component from the selected entity
+            auto& realComp = selected.Get<Boom::MenuComponent>();
 
-            DrawComponentSection("Pause Menu Tag", &fakeTagInstance, [](void*) { return nullptr; }, true,
-                [&]() { ctx->scene.remove<Boom::PauseMenuTagComponent>(m_App->SelectedEntity()); });
+            DrawComponentSection(
+                "Menu Tag",
+                &realComp, // Pass the address of the REAL component
+
+                // 2. The Draw Function (The 'void*' is the pointer we just passed)
+                [](void* componentData)
+                {
+                    // Cast the generic pointer back to our component type
+                    auto* comp = static_cast<Boom::MenuComponent*>(componentData);
+
+                    // 3. Define the Enum Names for the Dropdown
+                    // These must match the order of your 'enum class MenuType'
+                    // Pause=0, Death=1, Settings=2, Main=3
+                    const char* menuTypeNames[] = { "Pause", "Death", "Settings", "Main" };
+
+                    // Convert current enum value to int for ImGui
+                    int currentSelection = (int)comp->menuType;
+
+                    // 4. Draw the Combo Box
+                    // "Menu Type" is the label. 
+                    // 'currentSelection' holds the index. 
+                    // IM_ARRAYSIZE calculates the count (4).
+                    if (ImGui::Combo("Menu Type", &currentSelection, menuTypeNames, IM_ARRAYSIZE(menuTypeNames)))
+                    {
+                        // If changed, cast the int back to the Enum and update the component
+                        comp->menuType = (Boom::MenuType)currentSelection;
+                    }
+                },
+
+                true, // Can remove?
+                [&]() { ctx->scene.remove<Boom::MenuComponent>(m_App->SelectedEntity()); } // Remove Callback
+            );
         }
 
         if (selected.Has<Boom::DeactivatedComponent>()) {
@@ -1878,13 +1910,6 @@ namespace EditorUI {
 
             DrawComponentSection("Deactivated Tag", &fakeTagInstance, [](void*) { return nullptr; }, true,
                 [&]() { ctx->scene.remove<Boom::DeactivatedComponent>(m_App->SelectedEntity()); });
-        }
-
-        if (selected.Has<Boom::DeathMenuTagComponent>()) {
-            static Boom::DeathMenuTagComponent fakeTagInstance;
-
-            DrawComponentSection("Death Menu Tag", &fakeTagInstance, [](void*) { return nullptr; }, true,
-                [&]() { ctx->scene.remove<Boom::DeathMenuTagComponent>(m_App->SelectedEntity()); });
         }
 
         if (selected.Has<Boom::ScriptComponent>()) {
@@ -2803,10 +2828,9 @@ namespace EditorUI {
                     UpdateComponent<Boom::AIComponent>(Boom::ComponentID::AI_COMPONENT, selected);
                     UpdateComponent<Boom::ThirdPersonCameraComponent>(Boom::ComponentID::THIRD_PERSON_CAMERA, selected);
 					UpdateComponent<Boom::SpriteComponent>(Boom::ComponentID::SPRITE, selected);
-                    UpdateComponent<Boom::PauseMenuTagComponent>(Boom::ComponentID::PAUSE_MENU_TAG, selected);
+                    UpdateComponent<Boom::MenuComponent>(Boom::ComponentID::MENU_COMPONENT, selected);
                     UpdateComponent<Boom::DeactivatedComponent>(Boom::ComponentID::DEACTIVATED_TAG, selected);
                     UpdateComponent<Boom::CharacterControllerComponent>(Boom::ComponentID::CHARACTER_CONTROLLER, selected);
-                    UpdateComponent<Boom::DeathMenuTagComponent>(Boom::ComponentID::DEATH_MENU_TAG, selected);
                     ImGui::EndTable();
                 }
             }

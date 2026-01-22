@@ -688,11 +688,14 @@ namespace Boom
         public static void QuitGame() => Native.Boom_API_QuitGame();
         public static void ShutdownApplication() => Native.Boom_API_ShutdownApplication(); // CORRECT QUIT 
         public static void LoadSceneAdditive(string name) => Native.Boom_API_LoadSceneAdditive(name);
-        public static void UnloadPauseMenu() => Native.Boom_API_UnloadPauseMenu();
-        public static void ShowPauseMenu() => Native.Boom_API_ShowPauseMenu();
         public static void TogglePause() => Native.Boom_API_TogglePause();
         public static int GetApplicationState() => Native.Boom_API_GetApplicationState();
+
+        // Pause
+        public static void UnloadPauseMenu() => Native.Boom_API_UnloadPauseMenu();
+        public static void ShowPauseMenu() => Native.Boom_API_ShowPauseMenu();
         public static bool IsPauseMenuLoaded() => Native.Boom_API_IsPauseMenuLoaded();
+        public static void SetGameLogicPaused(bool paused) => Native.Boom_API_SetGameLogicPaused(paused);
 
         // Death
         public static void UnloadDeathMenu() => Native.Boom_API_UnloadDeathMenu();
@@ -957,7 +960,6 @@ namespace Boom
             Native.Boom_API_SetRotationY(h, yawDegrees);
         }
 
-        public static void SetGameLogicPaused(bool paused) => Native.Boom_API_SetGameLogicPaused(paused);
 
         public static void EnableFileWatcher(bool enable)
         {
