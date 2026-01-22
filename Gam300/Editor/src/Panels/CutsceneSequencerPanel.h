@@ -13,6 +13,7 @@ namespace EditorUI
     {
         int frame;
         float valueX, valueY, valueZ, valueW; // Support up to Vec4
+        std::string valueStr; // For Animation names
     };
 
     struct SequenceTrack

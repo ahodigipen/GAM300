@@ -23,13 +23,14 @@ namespace GameScripts
             public int frame;
             public float time; // frame / 60.0f
             public float vX, vY, vZ, vW;
+            public string valStr = ""; // Animation Name
         }
 
         private class Track
         {
-            public string label; // "EntityName - Properties"
+            public string label; // "EntityName : Type"
             public string targetEntityName;
-            public int type; // 0=Pos, 1=Rot, 2=Scale, 3=Color
+            public int type; // 0=Pos, 1=Rot, 2=Scale, 3=Anim
             public List<KeyFrame> keyframes = new List<KeyFrame>();
             public ulong cachedEntityID = 0;
         }
@@ -38,16 +39,6 @@ namespace GameScripts
 
         public void OnStart(string jsonParams)
         {
-            // Parse JSON params for properties if needed
-            // For now, hardcode or assume set via Inspector if we had one
-            
-            // Simple param parsing if json provided (optional)
-            /*
-            if (!string.IsNullOrEmpty(jsonParams)) {
-                // simple json parser here or use what's available
-            }
-            */
-
              API.Log($"[Cutscene] Initializing for {CutsceneFile}");
              LoadCutscene(CutsceneFile);
 
@@ -88,13 +79,39 @@ namespace GameScripts
         {
             foreach (var track in _tracks)
             {
-                 if (track.keyframes.Count < 2) continue;
-
                  // Find entity (cache it)
                  if (track.cachedEntityID == 0) {
                      track.cachedEntityID = API.FindEntity(track.targetEntityName);
                      if (track.cachedEntityID == 0) continue;
                  }
+                 
+                 // ANIMATION TRACK (Type 3)
+                 if (track.type == 3)
+                 {
+                     if (track.keyframes.Count < 1) continue;
+
+                     // Find the active keyframe (the last one passed)
+                     KeyFrame activeKF = null;
+                     for (int i = 0; i < track.keyframes.Count; i++)
+                     {
+                         if (currentFrame >= track.keyframes[i].frame) {
+                             activeKF = track.keyframes[i];
+                         }
+                        else {
+                             break;
+                         }
+                     }
+                     
+                     if (activeKF != null && !string.IsNullOrEmpty(activeKF.valStr) && activeKF.valStr != "None")
+                     {
+                         API.AnimatorPlay(track.cachedEntityID, activeKF.valStr);
+                     }
+                     continue;
+                 }
+
+
+                 // TRANSFORM TRACKS (Need 2 frames)
+                 if (track.keyframes.Count < 2) continue;
 
                  // Find keyframes surrounding currentFrame
                  KeyFrame k1 = null, k2 = null;
@@ -110,16 +127,20 @@ namespace GameScripts
 
                  if (k1 != null && k2 != null)
                  {
-                     float t = (currentFrame - k1.frame) / (float)(k2.frame - k1.frame);
+                     float range = (float)(k2.frame - k1.frame);
+                     float t = 0.0f;
+                     if (range > 0.0001f) t = (currentFrame - k1.frame) / range;
+                     
+                     if (t < 0f) t = 0f;
+                     if (t > 1f) t = 1f;
+
                      // Lerp
                      float x = Lerp(k1.vX, k2.vX, t);
                      float y = Lerp(k1.vY, k2.vY, t);
                      float z = Lerp(k1.vZ, k2.vZ, t);
-                     // float w = Lerp(k1.vW, k2.vW, t);
 
                      if (track.type == 0) // Pos
                      {
-                         // API.SetPosition takes Vec3
                          API.SetPosition(track.cachedEntityID, new Vec3(x, y, z));
                      }
                      else if (track.type == 1) // Rot
@@ -141,14 +162,9 @@ namespace GameScripts
 
         private void LoadCutscene(string filename)
         {
-            // Assuming path relative to Resources or Root
-            // Let's try full path construction
             string path = "Resources/Cutscenes/" + filename;
-            
-            // Check file exist
             if (!File.Exists(path)) {
-                // Fallback to absolute if creating from editor
-                 path = filename; // Try direct path
+                 path = filename; 
                  if (!File.Exists(path)) {
                      API.Log($"[Cutscene] File not found: {filename}");
                      return;
@@ -167,7 +183,7 @@ namespace GameScripts
 
                 if (token == "DURATION")
                 {
-                    int.TryParse(parts[1], out _duration);
+                    if (parts.Length > 1) int.TryParse(parts[1], out _duration);
                 }
                 else if (token == "TRACK")
                 {
@@ -185,9 +201,11 @@ namespace GameScripts
                         currentTrack.label = label;
                         currentTrack.type = type;
                         
-                        // Split label to get entity name: "Entity - Type"
-                        string[] labelParts = label.Split(new string[]{" - "}, StringSplitOptions.None);
-                        if (labelParts.Length > 0) currentTrack.targetEntityName = labelParts[0];
+                        // Parse "Entity : Type" to get Entity
+                        // C++ saves as "Entity : Type"
+                        int sep = label.IndexOf(" : ");
+                        if (sep != -1) currentTrack.targetEntityName = label.Substring(0, sep);
+                        else currentTrack.targetEntityName = label; // Fallback
                         
                         _tracks.Add(currentTrack);
                     }
@@ -201,6 +219,15 @@ namespace GameScripts
                         float.TryParse(parts[3], out kf.vY);
                         float.TryParse(parts[4], out kf.vZ);
                         float.TryParse(parts[5], out kf.vW);
+                        
+                        // Parse String if present (Animation name)
+                        int firstQ = line.IndexOf('"');
+                        int lastQ = line.LastIndexOf('"');
+                        if (firstQ != -1 && lastQ > firstQ)
+                        {
+                            kf.valStr = line.Substring(firstQ + 1, lastQ - firstQ - 1);
+                        }
+                        
                         currentTrack.keyframes.Add(kf);
                     }
                 }
