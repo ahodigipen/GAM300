@@ -88,67 +88,63 @@ namespace EditorUI
         if (index >= 0 && index < m_Tracks.size())
         {
             auto& track = m_Tracks[index];
+
+            // 1. Capture current values from entity FIRST
+            float vX = 0.0f, vY = 0.0f, vZ = 0.0f;
+            float vW = 0.0f;
+            // Safe defaults for Scale
+            if (track.type == 2) { vX = 1.0f; vY = 1.0f; vZ = 1.0f; }
+
+            bool captured = false;
+            if (m_Owner && m_Owner->GetContext())
+            {
+                auto& reg = m_Owner->GetContext()->scene;
+                entt::entity e = Boom::FindEntityByName(reg, track.entityName);
+                if (reg.valid(e) && reg.all_of<Boom::TransformComponent>(e))
+                {
+                    const auto& tc = reg.get<Boom::TransformComponent>(e);
+                    if (track.type == 0) { // Position
+                        vX = tc.transform.translate.x; vY = tc.transform.translate.y; vZ = tc.transform.translate.z;
+                    }
+                    else if (track.type == 1) { // Rotation
+                        vX = tc.transform.rotate.x; vY = tc.transform.rotate.y; vZ = tc.transform.rotate.z;
+                    }
+                    else if (track.type == 2) { // Scale
+                        vX = tc.transform.scale.x; vY = tc.transform.scale.y; vZ = tc.transform.scale.z;
+                    }
+                    captured = true;
+                }
+                else {
+                    // Only warn if we really expected to find it
+                    BOOM_WARN("Could not find entity '{}' to capture!", track.entityName);
+                }
+            }
+
+            // 2. Check for existing keyframe to UPDATE
             bool found = false;
             for (auto& kf : track.keyFrames) {
                 if (kf.frame == m_CurrentFrame) {
+                    // Update existing
+                    if (captured) {
+                        kf.valueX = vX; kf.valueY = vY; kf.valueZ = vZ;
+                        BOOM_INFO("Keyframe UPDATED [{}]: ({:.2f}, {:.2f}, {:.2f})", m_CurrentFrame, vX, vY, vZ);
+                    }
                     ImGui::OpenPopup("EditKeyframeValue");
                     found = true;
                     break;
                 }
             }
-            
+
+            // 3. If not found, ADD new
             if (!found) {
-                // Add keyframe locally
                 track.keyFrameTimes.push_back(m_CurrentFrame);
-                
-                // Capture current values from entity
-                float vX = 0.0f, vY = 0.0f, vZ = 0.0f;
-                float vW = 0.0f;
-                
-                // Safe defaults for Scale to avoid crash
-                if (track.type == 2) { vX = 1.0f; vY = 1.0f; vZ = 1.0f; }
-
-                if (m_Owner && m_Owner->GetContext())
-                {
-                    // Use actual scene registry from Context (GetRegistry() is stale)
-                    auto& reg = m_Owner->GetContext()->scene;
-                if (m_Owner && m_Owner->GetContext())
-                {
-                    // Use actual scene registry from Context (GetRegistry() is stale)
-                    auto& reg = m_Owner->GetContext()->scene;
-                    // Use Boom namespace helper
-                    entt::entity e = Boom::FindEntityByName(reg, track.entityName);
-                    
-                    if (reg.valid(e) && reg.all_of<Boom::TransformComponent>(e))
-                    {
-                        const auto& tc = reg.get<Boom::TransformComponent>(e);
-                        
-                        if (track.type == 0) { // Position
-                            vX = tc.transform.translate.x;
-                            vY = tc.transform.translate.y;
-                            vZ = tc.transform.translate.z;
-                        }
-                        else if (track.type == 1) { // Rotation
-                            vX = tc.transform.rotate.x;
-                            vY = tc.transform.rotate.y;
-                            vZ = tc.transform.rotate.z;
-                        }
-                        else if (track.type == 2) { // Scale
-                            vX = tc.transform.scale.x;
-                            vY = tc.transform.scale.y;
-                            vZ = tc.transform.scale.z;
-                        }
-                    }
-                    else
-                    {
-                        BOOM_WARN("Could not find entity '{}' or it has no TransformComponent to capture!", track.entityName);
-                    }
+                if (captured) {
+                     BOOM_INFO("Keyframe ADD [{}]: ({:.2f}, {:.2f}, {:.2f})", m_CurrentFrame, vX, vY, vZ);
                 }
-
                 track.keyFrames.push_back({ m_CurrentFrame, vX, vY, vZ, vW });
 
                 std::sort(track.keyFrameTimes.begin(), track.keyFrameTimes.end());
-                std::sort(track.keyFrames.begin(), track.keyFrames.end(), [](const auto& a, const auto& b){ return a.frame < b.frame; });
+                std::sort(track.keyFrames.begin(), track.keyFrames.end(), [](const auto& a, const auto& b) { return a.frame < b.frame; });
             }
         }
     }
@@ -298,10 +294,51 @@ namespace EditorUI
         if (ImGui::Button(">|")) m_CurrentFrame = m_FrameMax;
         
         ImGui::SameLine();
-        ImGui::Text("Time: %.2fs (%d)", m_CurrentFrame / 60.0f, m_CurrentFrame);
+        
+        // Allow typing the frame number directly (easier than dragging)
+        ImGui::SetNextItemWidth(120);
+        if (ImGui::InputInt("Frame", &m_CurrentFrame)) {
+            // Clamp if typed manually
+            if (m_CurrentFrame < m_FrameMin) m_CurrentFrame = m_FrameMin;
+            if (m_CurrentFrame > m_FrameMax) m_CurrentFrame = m_FrameMax;
+        }
+        ImGui::SameLine();
+        ImGui::Text("(%.2fs)", m_CurrentFrame / 60.0f);
         
         ImGui::SameLine();
         ImGui::Checkbox("Preview", &m_PreviewIndex);
+
+        ImGui::SameLine();
+        ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+        ImGui::SameLine();
+
+        // New Explicit Controls
+        if (ImGui::Button("[+] Snapshot Key"))
+        {
+            if (m_SelectedTrack >= 0 && m_SelectedTrack < m_Tracks.size()) {
+                DoubleClick(m_SelectedTrack); // Re-uses the robust capture logic
+                BOOM_INFO("Snapshot taken for track {}", m_Tracks[m_SelectedTrack].label);
+            } else {
+                BOOM_WARN("Please select a track (click its name) to add a keyframe.");
+            }
+        }
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Save the entity's CURRENT transform to the CURRENT frame.");
+
+        ImGui::SameLine();
+        if (ImGui::Button("[?] Debug"))
+        {
+            BOOM_INFO("--- SEQUENCER DEBUG DUMP ---");
+            BOOM_INFO("Total Tracks: {}", m_Tracks.size());
+            for (size_t i = 0; i < m_Tracks.size(); i++) {
+                const auto& t = m_Tracks[i];
+                BOOM_INFO("Track {}: '{}' (Entity: {})", i, t.label, t.entityName);
+                BOOM_INFO("  Keyframes: {}", t.keyFrames.size());
+                for (const auto& kf : t.keyFrames) {
+                    BOOM_INFO("    Frame {}: ({:.2f}, {:.2f}, {:.2f})", kf.frame, kf.valueX, kf.valueY, kf.valueZ);
+                }
+            }
+            BOOM_INFO("------------------------------");
+        }
 
         ImGui::Separator();
     }
@@ -360,7 +397,14 @@ namespace EditorUI
 
         for (const auto& track : m_Tracks)
         {
-            if (track.keyFrames.size() < 2) continue;
+            if (track.keyFrames.size() < 2) 
+            {
+                // Warn user if trying to play with insufficient data
+                static int kfWarn = 0;
+                if (frame % 60 == 0 && kfWarn++ % 30 == 0) // Throttle
+                    BOOM_WARN("Track '{}' has only {} Keyframe(s). Need at least 2 to animate.", track.entityName, track.keyFrames.size());
+                continue;
+            }
 
             // 1. Find Entity
             entt::entity e = Boom::FindEntityByName(reg, track.entityName);
