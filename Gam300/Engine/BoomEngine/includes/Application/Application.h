@@ -488,6 +488,8 @@ namespace Boom
 			BOOM_INFO("[Scene] Saving scene '{}'. Saving Menus: {}",
 				sceneName, isMenuFile ? "YES" : "NO (Filtered)");
 
+			// 3. Run: Serialize runs with the flag set to FALSE.
+			// Result: It deletes any Menu entities from the save file.
 			serializer.Serialize(m_Context->scene, sceneFilePath);
 
 			BOOM_INFO("[Scene] Successfully saved scene '{}'", sceneName);
