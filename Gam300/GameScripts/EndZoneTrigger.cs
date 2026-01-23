@@ -71,7 +71,14 @@ namespace GameScripts
             if (s_pendingBroadcast)
             {
                 s_pendingBroadcast = false;
-                ObjectiveManager.BroadcastEvent(ObjectiveEvents.ZoneEntered, "EndZone", 1);
+                try
+                {
+                    ObjectiveManager.BroadcastEvent(ObjectiveEvents.ZoneEntered, "EndZone", 1);
+                }
+                catch (Exception ex)
+                {
+                    API.Log($"[EndZoneTrigger] Error broadcasting ZoneEntered event: {ex.Message}");
+                }
             }
 
             // Handle deferred scene loading with delay (like pause menu)

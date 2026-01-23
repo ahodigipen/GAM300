@@ -75,59 +75,7 @@ namespace GameScripts
             }
         }
 
-        /// <summary>
-        /// Broadcast an event to all active objectives
-        /// </summary>
-        public static void BroadcastEvent(string eventType, string targetId, int count = 1)
-        {
-            var args = new ObjectiveEventArgs(eventType, targetId, count);
-            BroadcastEvent(args);
-        }
 
-        /// <summary>
-        /// Broadcast an event with full event args to all active objectives
-        /// </summary>
-        public static void BroadcastEvent(ObjectiveEventArgs args)
-        {
-            if (args == null) return;
-
-            API.Log($"[ObjectiveManager] Broadcasting event: {args.EventType} (target: {args.TargetId}, count: {args.Count})");
-
-            foreach (var kvp in s_objectives)
-            {
-                var objective = kvp.Value;
-                if (objective.State == ObjectiveState.Active)
-                {
-                    objective.HandleEvent(args);
-                }
-            }
-
-            CheckAllRequiredComplete();
-        }
-
-        /// <summary>
-        /// Update all objectives (call from Entry.Update)
-        /// </summary>
-        public static void Update(float dt)
-        {
-            // Check for prerequisites and activate locked objectives if ready
-            foreach (var kvp in s_objectives)
-            {
-                var objective = kvp.Value;
-
-                if (objective.State == ObjectiveState.Locked)
-                {
-                    if (CheckPrerequisites(objective))
-                    {
-                        objective.Activate();
-                    }
-                }
-                else if (objective.State == ObjectiveState.Active)
-                {
-                    objective.Update(dt);
-                }
-            }
-        }
 
         /// <summary>
         /// Check if an objective's prerequisites are met
@@ -146,6 +94,83 @@ namespace GameScripts
 
             // Prerequisite objective not found, assume met
             return true;
+        }
+
+        /// <summary>
+        /// Update all objectives (call from Entry.Update)
+        /// </summary>
+        public static void Update(float dt)
+        {
+            // Create a safe copy of the collection to iterate
+            // This prevents crashes if objectives are registered/unregistered during updates
+            var activeObjectives = new List<BaseObjective>(s_objectives.Values);
+
+            foreach (var objective in activeObjectives)
+            {
+                try
+                {
+                    // Double check if it's still registered (might have been removed by another objective this frame)
+                    if (!s_objectives.ContainsKey(objective.ObjectiveId)) continue;
+
+                    if (objective.State == ObjectiveState.Locked)
+                    {
+                        if (CheckPrerequisites(objective))
+                        {
+                            objective.Activate();
+                        }
+                    }
+                    else if (objective.State == ObjectiveState.Active)
+                    {
+                        objective.Update(dt);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    API.Log($"[ObjectiveManager] Error updating objective '{objective.ObjectiveId}': {ex.Message}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Broadcast an event to all active objectives
+        /// </summary>
+        public static void BroadcastEvent(string eventType, string targetId, int count = 1)
+        {
+            var args = new ObjectiveEventArgs(eventType, targetId, count);
+            BroadcastEvent(args);
+        }
+
+        /// <summary>
+        /// Broadcast an event with full event args to all active objectives
+        /// </summary>
+        public static void BroadcastEvent(ObjectiveEventArgs args)
+        {
+            if (args == null) return;
+
+            API.Log($"[ObjectiveManager] Broadcasting event: {args.EventType} (target: {args.TargetId}, count: {args.Count})");
+
+            // Create a safe copy of the collection to iterate
+            var currentObjectives = new List<BaseObjective>(s_objectives.Values);
+
+            foreach (var objective in currentObjectives)
+            {
+                try
+                {
+                    // Double check if it's still registered
+                    if (!s_objectives.ContainsKey(objective.ObjectiveId)) continue;
+
+                    if (objective.State == ObjectiveState.Active)
+                    {
+                        objective.HandleEvent(args);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    API.Log($"[ObjectiveManager] Error handling event for objective '{objective.ObjectiveId}': {ex.Message}");
+                }
+            }
+
+            CheckAllRequiredComplete();
         }
 
         /// <summary>
