@@ -8,13 +8,10 @@ namespace GameScripts
         private const int MOUSE_LEFT = 0;
 
         // --- Texture Constants ---
-        private const string RESTART_TEX_NORMAL = "Resources/Textures/PauseMenu/RestartButton.png";
         private const string MAINMENU_TEX_NORMAL = "Resources/Textures/PauseMenu/ReturnMenuButton.png";
 
-        private const string RESTART_TEX_CLICKED = "Resources/Textures/PauseMenu/RestartButton_Clicked.png";
         private const string MAINMENU_TEX_CLICKED = "Resources/Textures/PauseMenu/ReturnMenuButton_Clicked.png";
 
-        private ulong _restartButtonID;
         private ulong _mainMenuButtonID;
         private ulong _backgroundID;
 
@@ -37,7 +34,6 @@ namespace GameScripts
             API.Log("EndMenu OnStart Running...");
             Entry.s_ActiveEndMenuInstance = this; 
 
-            _restartButtonID = API.FindEntity("End_RestartButton");
             _mainMenuButtonID = API.FindEntity("End_ReturnButton");
             _backgroundID = API.FindEntity("End_Background");
 
@@ -88,8 +84,6 @@ namespace GameScripts
             _clickedButtonID = 0;
             _buttonDelayTimer = 0.0f;
 
-            if (_restartButtonID != 0)
-                API.SetSpriteTexture(_restartButtonID, RESTART_TEX_NORMAL);
             if (_mainMenuButtonID != 0)
                 API.SetSpriteTexture(_mainMenuButtonID, MAINMENU_TEX_NORMAL);
         }
@@ -102,8 +96,6 @@ namespace GameScripts
 
                 if (API.Check2DViewportClick(_mainMenuButtonID, mousePos.X, mousePos.Y))
                     StartClickDelay(_mainMenuButtonID);
-                else if (API.Check2DViewportClick(_restartButtonID, mousePos.X, mousePos.Y))
-                    StartClickDelay(_restartButtonID);
             }
         }
 
@@ -125,8 +117,6 @@ namespace GameScripts
 
             if (buttonID == _mainMenuButtonID)
                 API.SetSpriteTexture(buttonID, MAINMENU_TEX_CLICKED);
-            else if (buttonID == _restartButtonID)
-                API.SetSpriteTexture(buttonID, RESTART_TEX_CLICKED);
         }
 
         private void ExecuteClickAction()
@@ -137,11 +127,6 @@ namespace GameScripts
             if (_clickedButtonID == _mainMenuButtonID)
             {
                 Entry.s_RequestedEndAction = Entry.EndMenuAction.MainMenu;
-
-            }
-            else if (_clickedButtonID == _restartButtonID)
-            {
-                Entry.s_RequestedEndAction = Entry.EndMenuAction.Restart;
 
             }
         }
