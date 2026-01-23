@@ -683,18 +683,19 @@ namespace Boom
                 SpriteComponent& comp{ entity.Get<SpriteComponent>() };
                 if (comp.textureID == EMPTY_ASSET) return;
 
-                if (!comp.uiOverlay) {
+                if (comp.renderAs3D) {
+                    // 3D world space rendering - uses world transform for parent attachment
                     TextureAsset& texture{ m_Context->assets->Get<TextureAsset>(comp.textureID) };
-                    if (isPicking) {
-                        glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
-                        Transform3D worldTransform;
-                        DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
+                    glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+                    Transform3D worldTransform;
+                    DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
 
+                    if (isPicking) {
                         m_Context->renderer->SetPickUniform(entt::to_integral(entity.ID())); //entity should be of type uint32_t
                         m_Context->renderer->DrawPick(worldTransform);
                     }
                     else
-                        m_Context->renderer->DrawQuad(texture.data, t.transform, comp.color);
+                        m_Context->renderer->DrawQuad(texture.data, worldTransform, comp.color);
                 }
                 else {
                     // Calculate world transform for GUI sprites (respects parent hierarchy)

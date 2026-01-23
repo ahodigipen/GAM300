@@ -762,13 +762,13 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
  struct SpriteComponent {
  AssetID textureID{ EMPTY_ASSET };
  glm::vec4 color{ 1.0f };
- bool uiOverlay{ true };
+ bool renderAs3D{ false };  // false = 2D UI overlay, true = 3D world space (attachable to objects)
 
  XPROPERTY_DEF(
  "SpriteComponent", SpriteComponent,
  obj_member<"textureID", &SpriteComponent::textureID>,
  obj_member<"color", &SpriteComponent::color>,
- obj_member<"uiOverlay", &SpriteComponent::uiOverlay>
+ obj_member<"renderAs3D", &SpriteComponent::renderAs3D>
  )
  };
 

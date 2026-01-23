@@ -532,23 +532,23 @@ namespace EditorUI {
                 // Capture state before any changes this frame
                 Boom::SpriteComponent spriteBeforeFrame = q;
 
-                // GUI Overlay Checkbox
-                bool oldUiOverlay = q.uiOverlay;
-                if (ImGui::Checkbox("GUI", &q.uiOverlay)) {
+                // Render As 3D Checkbox
+                bool oldRenderAs3D = q.renderAs3D;
+                if (ImGui::Checkbox("Render as 3D", &q.renderAs3D)) {
                     // Checkbox was toggled - create undo command immediately
                     auto* history = m_Owner->GetCommandHistory();
                     if (history) {
                         Boom::SpriteComponent before = spriteBeforeFrame;
-                        before.uiOverlay = oldUiOverlay;
+                        before.renderAs3D = oldRenderAs3D;
                         auto command = std::make_unique<ComponentPropertyCommand<Boom::SpriteComponent>>(
                             &ctx->scene,
                             m_App->SelectedEntity(),
                             before,
                             q,
-                            "Toggle Sprite GUI Overlay"
+                            "Toggle Sprite Render Mode"
                         );
                         history->Execute(std::move(command));
-                        BOOM_INFO("[Undo] Created command: Toggle Sprite GUI Overlay");
+                        BOOM_INFO("[Undo] Created command: Toggle Sprite Render Mode");
                     } else {
                         BOOM_WARN("[Undo] CommandHistory is null!");
                     }

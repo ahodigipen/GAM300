@@ -213,7 +213,7 @@ namespace EditorUI {
         bool hasSprite = false;
         Boom::AssetID spriteTextureID = 0;
         glm::vec4 spriteColor = glm::vec4(1.0f);
-        bool spriteUIOverlay = true;
+        bool spriteRenderAs3D = false;
 
         // Add more component snapshots as needed
         std::vector<EntitySnapshot> children;
@@ -289,7 +289,7 @@ namespace EditorUI {
                 const auto& sprite = m_Registry->get<Boom::SpriteComponent>(entity);
                 snapshot.spriteTextureID = sprite.textureID;
                 snapshot.spriteColor = sprite.color;
-                snapshot.spriteUIOverlay = sprite.uiOverlay;
+                snapshot.spriteRenderAs3D = sprite.renderAs3D;
             }
 
             // Capture children recursively
@@ -339,7 +339,7 @@ namespace EditorUI {
                 auto& sprite = m_Registry->emplace<Boom::SpriteComponent>(entity);
                 sprite.textureID = snapshot.spriteTextureID;
                 sprite.color = snapshot.spriteColor;
-                sprite.uiOverlay = snapshot.spriteUIOverlay;
+                sprite.renderAs3D = snapshot.spriteRenderAs3D;
             }
 
             // Restore children recursively
