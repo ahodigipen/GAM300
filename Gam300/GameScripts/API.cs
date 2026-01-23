@@ -348,6 +348,22 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static ulong[] Boom_API_GetControllerTriggerOverlaps(ulong handle);
 
+        // ========= SPOTLIGHT COMPONENT INTERNAL CALLS =========
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Boom_API_HasSpotLight(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_GetSpotLightColor(ulong handle, out Vec3 color);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetSpotLightColor(ulong handle, ref Vec3 color);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static float Boom_API_GetSpotLightIntensity(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetSpotLightIntensity(ulong handle, float intensity);
+
     }
 
     // ========= DELEGATES =========
@@ -672,11 +688,14 @@ namespace Boom
         public static void QuitGame() => Native.Boom_API_QuitGame();
         public static void ShutdownApplication() => Native.Boom_API_ShutdownApplication(); // CORRECT QUIT 
         public static void LoadSceneAdditive(string name) => Native.Boom_API_LoadSceneAdditive(name);
-        public static void UnloadPauseMenu() => Native.Boom_API_UnloadPauseMenu();
-        public static void ShowPauseMenu() => Native.Boom_API_ShowPauseMenu();
         public static void TogglePause() => Native.Boom_API_TogglePause();
         public static int GetApplicationState() => Native.Boom_API_GetApplicationState();
+
+        // Pause
+        public static void UnloadPauseMenu() => Native.Boom_API_UnloadPauseMenu();
+        public static void ShowPauseMenu() => Native.Boom_API_ShowPauseMenu();
         public static bool IsPauseMenuLoaded() => Native.Boom_API_IsPauseMenuLoaded();
+        public static void SetGameLogicPaused(bool paused) => Native.Boom_API_SetGameLogicPaused(paused);
 
         // Death
         public static void UnloadDeathMenu() => Native.Boom_API_UnloadDeathMenu();
@@ -941,7 +960,6 @@ namespace Boom
             Native.Boom_API_SetRotationY(h, yawDegrees);
         }
 
-        public static void SetGameLogicPaused(bool paused) => Native.Boom_API_SetGameLogicPaused(paused);
 
         public static void EnableFileWatcher(bool enable)
         {
@@ -1008,6 +1026,28 @@ namespace Boom
         {
             return Native.Boom_API_GetControllerTriggerOverlaps(entity) ?? new ulong[0];
         }
+
+        // ========= SPOTLIGHT COMPONENT METHODS =========
+        public static bool HasSpotLight(ulong entity) => Native.Boom_API_HasSpotLight(entity);
+
+        public static Vec3 GetSpotLightColor(ulong entity)
+        {
+            Native.Boom_API_GetSpotLightColor(entity, out Vec3 color);
+            return color;
+        }
+
+        public static void SetSpotLightColor(ulong entity, Vec3 color)
+        {
+            Native.Boom_API_SetSpotLightColor(entity, ref color);
+        }
+
+        public static float GetSpotLightIntensity(ulong entity) => Native.Boom_API_GetSpotLightIntensity(entity);
+
+        public static void SetSpotLightIntensity(ulong entity, float intensity)
+        {
+            Native.Boom_API_SetSpotLightIntensity(entity, intensity);
+        }
+
 
         // ===== GLFW key codes =====
         public const int KEY_LEFT = 263;

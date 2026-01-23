@@ -32,18 +32,20 @@ namespace GameScripts
 
         private MenuState _currentState = MenuState.Idle;
         private ulong _clickedButtonID = 0;
-
         private bool _wasPausedLastFrame = false;
+
+        private float _buttonDelayTimer = 0.0f;
+        private const float CLICK_DELAY_DURATION = 0.1f;
 
         public void OnStart(string jsonParams)
         {
             API.Log("PauseMenu OnStart Running...");
             Entry.s_ActivePauseMenuInstance = this;
 
-            _resumeButtonID = API.FindEntity("ResumeButton");
-            _restartButtonID = API.FindEntity("RestartButton");
-            _mainMenuButtonID = API.FindEntity("ReturnButton");
-            _quitButtonID = API.FindEntity("QuitButton");
+            _resumeButtonID = API.FindEntity("Pause_ResumeButton");
+            _restartButtonID = API.FindEntity("Pause_RestartButton");
+            _mainMenuButtonID = API.FindEntity("Pause_ReturnButton");
+            _quitButtonID = API.FindEntity("Pause_QuitButton");
 
             ResetButtonState();
         }
@@ -87,6 +89,7 @@ namespace GameScripts
         {
             _currentState = MenuState.WaitingForMouseUp;
             _clickedButtonID = 0;
+            _buttonDelayTimer = 0.0f;
 
             if (_resumeButtonID != 0)
                 API.SetSpriteTexture(_resumeButtonID, RESUME_TEX_NORMAL);
@@ -117,13 +120,19 @@ namespace GameScripts
 
         private void Update_ButtonDelay(float dt)
         {
-            ExecuteClickAction();
+            _buttonDelayTimer += dt;
+
+            if (_buttonDelayTimer >= CLICK_DELAY_DURATION)
+            {
+                ExecuteClickAction();
+            }
         }
 
         private void StartClickDelay(ulong buttonID)
         {
             _currentState = MenuState.ButtonDelay;
             _clickedButtonID = buttonID;
+            _buttonDelayTimer = 0.0f;
 
             if (buttonID == _resumeButtonID)
                 API.SetSpriteTexture(buttonID, RESUME_TEX_CLICKED);

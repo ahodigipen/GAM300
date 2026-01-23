@@ -582,11 +582,35 @@ namespace Boom
         // === SPRITE COMPONENT ===
         RegisterPropertyComponent<SpriteComponent>("SpriteComponent");
 
-        // === PAUSE MENU TAG COMPONENT ===
-        RegisterPropertyComponent<PauseMenuTagComponent>("PauseMenuTagComponent");
+        // === MENU COMPONENT ===
+        registry.RegisterComponentSerializer(
+            "MenuComponent",
+            // ----- SERIALIZE -----
+            [](YAML::Emitter& e, EntityRegistry& reg, EntityID ent)
+            {
+                if (!reg.all_of<MenuComponent>(ent)) return;
 
-        // === DEATH MENU TAG COMPONENT ===
-        RegisterPropertyComponent<DeathMenuTagComponent>("DeathMenuTagComponent");
+                auto& mc = reg.get<MenuComponent>(ent);
+
+                e << YAML::Key << "MenuComponent" << YAML::Value << YAML::BeginMap;
+                // Explicitly cast the Enum to int for saving
+                e << YAML::Key << "MenuType" << YAML::Value << static_cast<int>(mc.menuType);
+                e << YAML::EndMap;
+            },
+            // ----- DESERIALIZE -----
+            [](const YAML::Node& data, EntityRegistry& reg, EntityID ent, AssetRegistry&)
+            {
+                if (!data || !data.IsMap()) return;
+
+                auto& mc = reg.get_or_emplace<MenuComponent>(ent);
+
+                // Load the int and cast it back to the Enum
+                if (auto v = data["MenuType"]) {
+                    int typeVal = v.as<int>(0);
+                    mc.menuType = static_cast<MenuType>(typeVal);
+                }
+            }
+        );
 
         // === DEACTIVATED COMPONENT ===
         RegisterPropertyComponent<DeactivatedComponent>("DeactivatedComponent");

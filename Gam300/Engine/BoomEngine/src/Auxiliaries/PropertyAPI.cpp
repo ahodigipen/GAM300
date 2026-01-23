@@ -29,11 +29,10 @@ namespace Boom {
         IMPLEMENT_COMPONENT_PROPERTY_API(NavAgentComponent);
         IMPLEMENT_COMPONENT_PROPERTY_API(AIComponent);
         IMPLEMENT_COMPONENT_PROPERTY_API(SpriteComponent);
-        IMPLEMENT_COMPONENT_PROPERTY_API(PauseMenuTagComponent);
+        IMPLEMENT_COMPONENT_PROPERTY_API(MenuComponent);
         IMPLEMENT_COMPONENT_PROPERTY_API(SceneNavmeshComponent);
         IMPLEMENT_COMPONENT_PROPERTY_API(DeactivatedComponent);
         IMPLEMENT_COMPONENT_PROPERTY_API(CharacterControllerComponent)
-        IMPLEMENT_COMPONENT_PROPERTY_API(DeathMenuTagComponent);
 
         // Add more as needed - one line each
 

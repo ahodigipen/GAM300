@@ -27,8 +27,10 @@ namespace GameScripts
 
         private DeathMenuState _currentState = DeathMenuState.Idle;
         private ulong _clickedButtonID = 0;
-
         private bool _wasDeadLastFrame = false;
+
+        private float _buttonDelayTimer = 0.0f;
+        private const float CLICK_DELAY_DURATION = 0.1f;
 
         public void OnStart(string jsonParams)
         {
@@ -81,6 +83,7 @@ namespace GameScripts
         {
             _currentState = DeathMenuState.WaitingForMouseUp;
             _clickedButtonID = 0;
+            _buttonDelayTimer = 0.0f;
 
             if (_restartButtonID != 0)
                 API.SetSpriteTexture(_restartButtonID, RESTART_TEX_NORMAL);
@@ -103,13 +106,19 @@ namespace GameScripts
 
         private void Update_ButtonDelay(float dt)
         {
-            ExecuteClickAction();
+            _buttonDelayTimer += dt;
+
+            if (_buttonDelayTimer >= CLICK_DELAY_DURATION)
+            {
+                ExecuteClickAction();
+            }
         }
 
         private void StartClickDelay(ulong buttonID)
         {
             _currentState = DeathMenuState.ButtonDelay;
             _clickedButtonID = buttonID;
+            _buttonDelayTimer = 0.0f;
 
             if (buttonID == _mainMenuButtonID)
                 API.SetSpriteTexture(buttonID, MAINMENU_TEX_CLICKED);
