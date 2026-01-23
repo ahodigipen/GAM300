@@ -2027,7 +2027,7 @@ namespace Boom {
 
 		// Physics Controller internal calls
         mono_add_internal_call("Boom.Native::Boom_API_CreateController", (const void*)ICALL_API_CreateController);
-        mono_add_internal_call("Native::Boom_API_TeleportController", (void*)ICALL_API_TeleportController);
+        mono_add_internal_call("Boom.Native::Boom_API_TeleportController", (void*)ICALL_API_TeleportController);
         mono_add_internal_call("Boom.Native::Boom_API_GetControllerTriggerOverlaps", (const void*)ICALL_API_GetControllerTriggerOverlaps);
 
         // Sprite component internal calls

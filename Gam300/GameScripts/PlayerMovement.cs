@@ -165,7 +165,7 @@ namespace GameScripts
             _isRespawning = true;
             _verticalVelocity = 0f;
             // Set spawn point to the desired respawn location
-            _spawnPoint = new Vec3(0.914043128f, 1.14266515f, 13.9171219f);
+            _spawnPoint = new Vec3(0.914043128f, 1.5f, 13.9171219f);
             // Stop movement by applying zero displacement
             API.MoveController(Entity, new Vec3(0, 0, 0), 0.001f, 0.016f);
             _fadeState = FadeState.FadingOut;
@@ -183,17 +183,20 @@ namespace GameScripts
 
         private void RespawnAtCheckpoint()
         {
-            API.TeleportRigidBody(Entity, _spawnPoint);
             _verticalVelocity = 0f;
-            // Stop movement by applying zero displacement
-            API.MoveController(Entity, new Vec3(0, 0, 0), 0.001f, 0.016f);
+
+            // This will now work since the binding is fixed
+            API.TeleportController(Entity, _spawnPoint);
+            API.SetPosition(Entity, _spawnPoint);
+
             _isInvulnerable = true;
             _invulnerabilityTimer = 0f;
             HUD.SetHealth(_health, _maxHealth);
             _isRespawning = false;
 
-            // Reset all spotlight colors back to original
             SpotlightFollower.ResetAllSpotlights();
+
+            API.Log($"[PlayerMovement] Respawned at ({_spawnPoint.X}, {_spawnPoint.Y}, {_spawnPoint.Z})");
         }
 
         public void UpdateCheckpoint(Vec3 newCheckpoint)
