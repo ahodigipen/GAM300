@@ -149,6 +149,13 @@ namespace EditorUI {
         GLuint m_DepthBufferID = 0;
         ImVec2 m_ViewportSize = { 800.0f, 400.0f };
 
+        // Viewport splitter (resizable viewport/timeline split)
+        float m_ViewportHeightRatio = 0.45f;  // User-adjustable ratio (0.2 to 0.8)
+        bool m_IsDraggingSplitter = false;     // Is user dragging the splitter bar?
+
+        // Compact mode (hides less-used controls for smaller screens)
+        bool m_CompactMode = false;
+
         // Orbit camera
         glm::vec3 m_CameraPosition = glm::vec3(0.0f, 1.5f, 3.0f);
         glm::vec3 m_CameraTarget = glm::vec3(0.0f, 1.0f, 0.0f);
