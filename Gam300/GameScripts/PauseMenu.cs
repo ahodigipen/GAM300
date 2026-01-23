@@ -23,14 +23,14 @@ namespace GameScripts
         private ulong _mainMenuButtonID;
         private ulong _quitButtonID;
 
-        private enum MenuState
+        private enum PauseMenuState
         {
             Idle,
             ButtonDelay,
             WaitingForMouseUp
         }
 
-        private MenuState _currentState = MenuState.Idle;
+        private PauseMenuState _currentState = PauseMenuState.Idle;
         private ulong _clickedButtonID = 0;
         private bool _wasPausedLastFrame = false;
 
@@ -64,22 +64,22 @@ namespace GameScripts
             _wasPausedLastFrame = Entry.IsGamePaused;
 
             if (!Entry.IsGamePaused) return;
-            if (Entry.s_RequestedAction != Entry.PauseMenuAction.None) return;
+            if (Entry.s_RequestedPauseAction != Entry.PauseMenuAction.None) return;
 
             switch (_currentState)
             {
-                case MenuState.WaitingForMouseUp:
+                case PauseMenuState.WaitingForMouseUp:
                     if (!API.IsMouseDown(MOUSE_LEFT))
                     {
-                        _currentState = MenuState.Idle;
+                        _currentState = PauseMenuState.Idle;
                     }
                     break;
 
-                case MenuState.Idle:
+                case PauseMenuState.Idle:
                     Update_Idle();
                     break;
 
-                case MenuState.ButtonDelay:
+                case PauseMenuState.ButtonDelay:
                     Update_ButtonDelay(dt);
                     break;
             }
@@ -87,7 +87,7 @@ namespace GameScripts
 
         public void ResetButtonState()
         {
-            _currentState = MenuState.WaitingForMouseUp;
+            _currentState = PauseMenuState.WaitingForMouseUp;
             _clickedButtonID = 0;
             _buttonDelayTimer = 0.0f;
 
@@ -130,7 +130,7 @@ namespace GameScripts
 
         private void StartClickDelay(ulong buttonID)
         {
-            _currentState = MenuState.ButtonDelay;
+            _currentState = PauseMenuState.ButtonDelay;
             _clickedButtonID = buttonID;
             _buttonDelayTimer = 0.0f;
 
@@ -146,23 +146,23 @@ namespace GameScripts
 
         private void ExecuteClickAction()
         {
-            _currentState = MenuState.Idle;
+            _currentState = PauseMenuState.Idle;
 
             if (_clickedButtonID == _resumeButtonID)
             {
-                Entry.s_RequestedAction = Entry.PauseMenuAction.Resume;
+                Entry.s_RequestedPauseAction = Entry.PauseMenuAction.Resume;
             }
             else if (_clickedButtonID == _mainMenuButtonID)
             {
-                Entry.s_RequestedAction = Entry.PauseMenuAction.MainMenu;
+                Entry.s_RequestedPauseAction = Entry.PauseMenuAction.MainMenu;
             }
             else if (_clickedButtonID == _restartButtonID)
             {
-                Entry.s_RequestedAction = Entry.PauseMenuAction.Restart;
+                Entry.s_RequestedPauseAction = Entry.PauseMenuAction.Restart;
             }
             else if (_clickedButtonID == _quitButtonID)
             {
-                Entry.s_RequestedAction = Entry.PauseMenuAction.Quit;
+                Entry.s_RequestedPauseAction = Entry.PauseMenuAction.Quit;
             }
         }
     }
