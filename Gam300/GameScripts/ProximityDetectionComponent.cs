@@ -13,7 +13,7 @@ namespace GameScripts
 
         // Detection settings
         private float _detectionRadius = 2.5f;           // How close player must be
-        private float _detectionDuration = 2.0f;         // How long player must stay close
+        private float _detectionDuration = 5.0f;         // How long player must stay close
         private float _verticalTolerance = 2.5f;         // Vertical range (same floor)
 
         // State tracking
