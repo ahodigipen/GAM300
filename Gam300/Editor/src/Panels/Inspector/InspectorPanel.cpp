@@ -1884,7 +1884,7 @@ namespace EditorUI {
                     // 3. Define the Enum Names for the Dropdown
                     // These must match the order of your 'enum class MenuType'
                     // Pause=0, Death=1, Settings=2, Main=3
-                    const char* menuTypeNames[] = { "Pause", "Death", "Settings", "Main" };
+                    const char* menuTypeNames[] = { "Pause", "Death", "Settings", "Main", "End" };
 
                     // Convert current enum value to int for ImGui
                     int currentSelection = (int)comp->menuType;
@@ -1892,7 +1892,7 @@ namespace EditorUI {
                     // 4. Draw the Combo Box
                     // "Menu Type" is the label. 
                     // 'currentSelection' holds the index. 
-                    // IM_ARRAYSIZE calculates the count (4).
+                    // IM_ARRAYSIZE calculates the count
                     if (ImGui::Combo("Menu Type", &currentSelection, menuTypeNames, IM_ARRAYSIZE(menuTypeNames)))
                     {
                         // If changed, cast the int back to the Enum and update the component

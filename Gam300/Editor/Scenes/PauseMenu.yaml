@@ -2,89 +2,20 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
-      Name: Pause_ResumeButton
-      UID: 6722159140985515173
+      Name: Pause_Camera
+      UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [0, 0.300000012, 0.100000001]
-        Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.100000001, 0.00999999978]
-    SpriteComponent:
-      textureID: 16990764436776752376
-      color: [1, 1, 1, 1]
-      uiOverlay: true
-    MenuComponent:
-      MenuType: 0
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: Pause_QuitButton
-      UID: 8948746535193059584
-    TransformComponent:
-      Transform:
-        Translate: [0, -0.449999988, 0.100000001]
-        Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.100000001, 1]
-    SpriteComponent:
-      textureID: 7730071964959495492
-      color: [1, 1, 1, 1]
-      uiOverlay: true
-    MenuComponent:
-      MenuType: 0
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: Pause_RestartButton
-      UID: 5904394800213603709
-    TransformComponent:
-      Transform:
-        Translate: [0, 0.0500000007, 0.100000001]
-        Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.100000001, 1]
-    SpriteComponent:
-      textureID: 12846627940444493632
-      color: [1, 1, 1, 1]
-      uiOverlay: true
-    MenuComponent:
-      MenuType: 0
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: Pause_ReturnButton
-      UID: 5566590049786588666
-    TransformComponent:
-      Transform:
-        Translate: [0, -0.200000003, 0.100000001]
-        Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.100000001, 1]
-    SpriteComponent:
-      textureID: 10830320094205736326
-      color: [1, 1, 1, 1]
-      uiOverlay: true
-    MenuComponent:
-      MenuType: 0
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: Pause Menu Script
-      UID: 12608398802596728943
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
+        Translate: [0.0277804472, 0.581749558, 0.942958355]
+        Rotate: [-19.375, 1.6875, 0]
         Scale: [1, 1, 1]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PauseMenu
-      ParamsJSON: "{}"
+    CameraComponent:
+      Camera:
+        NearPlane: 0.300000012
+        FarPlane: 1000
+        FOV: 91
     MenuComponent:
       MenuType: 0
-    DeactivatedComponent:
-      {}
   - InfoComponent:
       Parent: 0
       Name: Pause_Scroll
@@ -100,21 +31,78 @@ ENTITIES:
       uiOverlay: true
     MenuComponent:
       MenuType: 0
-    DeactivatedComponent:
-      {}
   - InfoComponent:
       Parent: 0
-      Name: Pause_Camera
-      UID: 9201024860084647067
+      Name: Pause Menu Script
+      UID: 12608398802596728943
     TransformComponent:
       Transform:
-        Translate: [0.0277804472, 0.581749558, 0.942958355]
-        Rotate: [-19.375, 1.6875, 0]
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
-    CameraComponent:
-      Camera:
-        NearPlane: 0.300000012
-        FarPlane: 1000
-        FOV: 91
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PauseMenu
+      ParamsJSON: "{}"
+    MenuComponent:
+      MenuType: 0
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_ReturnButton
+      UID: 5566590049786588666
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.200000003, 0.100000001]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.100000001, 1]
+    SpriteComponent:
+      textureID: 10830320094205736326
+      color: [1, 1, 1, 1]
+      uiOverlay: true
+    MenuComponent:
+      MenuType: 0
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_RestartButton
+      UID: 5904394800213603709
+    TransformComponent:
+      Transform:
+        Translate: [0, 0.0500000007, 0.100000001]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.100000001, 1]
+    SpriteComponent:
+      textureID: 12846627940444493632
+      color: [1, 1, 1, 1]
+      uiOverlay: true
+    MenuComponent:
+      MenuType: 0
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_QuitButton
+      UID: 8948746535193059584
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.449999988, 0.100000001]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.100000001, 1]
+    SpriteComponent:
+      textureID: 7730071964959495492
+      color: [1, 1, 1, 1]
+      uiOverlay: true
+    MenuComponent:
+      MenuType: 0
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_ResumeButton
+      UID: 6722159140985515173
+    TransformComponent:
+      Transform:
+        Translate: [0, 0.300000012, 0.100000001]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.100000001, 0.00999999978]
+    SpriteComponent:
+      textureID: 16990764436776752376
+      color: [1, 1, 1, 1]
+      uiOverlay: true
     MenuComponent:
       MenuType: 0
