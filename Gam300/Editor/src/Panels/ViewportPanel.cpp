@@ -152,7 +152,7 @@ namespace EditorUI {
                             if (m_Ctx->scene.all_of<Boom::TransformComponent>(selectedEntity))
                             {
                                 if (m_Ctx->scene.all_of<Boom::SpriteComponent>(selectedEntity) &&
-                                    m_Ctx->scene.get<Boom::SpriteComponent>(selectedEntity).uiOverlay)
+                                    !m_Ctx->scene.get<Boom::SpriteComponent>(selectedEntity).renderAs3D)
                                     DrawGuizmo2D(itemMin, rectSz, gizmoWantsInput);
                                 else DrawGuizmo3D(itemMin, rectSz, view, proj, gizmoWantsInput);
                             }

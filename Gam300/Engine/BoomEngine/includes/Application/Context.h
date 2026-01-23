@@ -3,6 +3,7 @@
 #define CONTEXT_H
 #include "AppWindow.h"
 #include "Graphics/Renderer.h"
+#include "Graphics/Video/VideoSystem.h"
 #include "GlobalConstants.h"
 #include "Auxiliaries/Assets.h"
 #include "ECS/ECS.hpp"
@@ -45,6 +46,7 @@ namespace Boom
 		std::unique_ptr<PhysicsContext> physics;
 		std::unique_ptr<AssetRegistry> assets;
 		std::unique_ptr<ScriptingSystem> scriptingSystem;
+		std::unique_ptr<VideoSystem> videoSystem;
 		Boom::Profiler profiler;
 		double DeltaTime{};
 		EntityRegistry scene;
@@ -78,9 +80,11 @@ namespace Boom
 		, assets{ std::make_unique<AssetRegistry>() }
 		, physics{ std::make_unique<PhysicsContext>() }
 		, scriptingSystem{ std::make_unique<ScriptingSystem>() }
+		, videoSystem{ std::make_unique<VideoSystem>() }
 		, scene{}
 	{
 		SoundEngine::Instance().Init();
+		videoSystem->Initialize();
 	}
 }
 

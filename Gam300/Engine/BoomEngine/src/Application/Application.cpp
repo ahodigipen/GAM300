@@ -305,6 +305,11 @@ namespace Boom
                     UpdateThirdPersonCameras();
                     SoundSystem::Update(m_Context->scene, static_cast<float>(m_Context->DeltaTime));
                 }
+
+                // Video System Update (always update, even when paused - for cutscenes)
+                if (m_Context->videoSystem) {
+                    m_Context->videoSystem->Update(m_Context->scene, m_Context->DeltaTime);
+                }
             }
 
             SoundEngine::Instance().Update();
@@ -685,18 +690,19 @@ namespace Boom
                 SpriteComponent& comp{ entity.Get<SpriteComponent>() };
                 if (comp.textureID == EMPTY_ASSET) return;
 
-                if (!comp.uiOverlay) {
+                if (comp.renderAs3D) {
+                    // 3D world space rendering - uses world transform for parent attachment
                     TextureAsset& texture{ m_Context->assets->Get<TextureAsset>(comp.textureID) };
-                    if (isPicking) {
-                        glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
-                        Transform3D worldTransform;
-                        DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
+                    glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+                    Transform3D worldTransform;
+                    DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
 
+                    if (isPicking) {
                         m_Context->renderer->SetPickUniform(entt::to_integral(entity.ID())); //entity should be of type uint32_t
                         m_Context->renderer->DrawPick(worldTransform);
                     }
                     else
-                        m_Context->renderer->DrawQuad(texture.data, t.transform, comp.color);
+                        m_Context->renderer->DrawQuad(texture.data, worldTransform, comp.color);
                 }
                 else {
                     // Calculate world transform for GUI sprites (respects parent hierarchy)
@@ -712,6 +718,42 @@ namespace Boom
                     };
 
                     guiList.push_back({ comp, guiTransform, entt::to_integral(entity.ID()) });
+                }
+            }
+            // VideoComponent rendering
+            else if (entity.Has<VideoComponent>()) {
+                VideoComponent& comp{ entity.Get<VideoComponent>() };
+                if (comp.videoPath.empty()) return;
+
+                // Get the video player from the video system
+                VideoPlayer* player = m_Context->videoSystem ? m_Context->videoSystem->GetPlayer(entity.ID()) : nullptr;
+                if (!player || !player->IsLoaded()) return;
+
+                uint32_t textureId = player->GetTextureID();
+                if (textureId == 0) return;
+
+                glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+                Transform3D worldTransform;
+                DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
+
+                if (isPicking) {
+                    m_Context->renderer->SetPickUniform(entt::to_integral(entity.ID()));
+                    m_Context->renderer->DrawPick(worldTransform);
+                }
+                else {
+                    if (comp.renderAs3D) {
+                        // Render as 3D quad in world space
+                        m_Context->renderer->DrawQuadRaw(textureId, worldTransform, comp.tintColor);
+                    }
+                    else {
+                        // Render as 2D UI overlay
+                        Transform2D transform2D{
+                            worldTransform.translate,
+                            worldTransform.rotate.z,
+                            glm::vec2(worldTransform.scale.x, worldTransform.scale.y)
+                        };
+                        m_Context->renderer->DrawQuadRaw(textureId, transform2D, comp.tintColor);
+                    }
                 }
             }
             });

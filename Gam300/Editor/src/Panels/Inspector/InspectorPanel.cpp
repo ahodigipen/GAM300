@@ -8,6 +8,7 @@
 #include "Panels/PropertiesImgui.h"
 #include"Physics/Context.h"
 #include "Commands/UndoRedo.h"  // for ComponentPropertyCommand
+#include "Graphics/Video/VideoSystem.h"  // for VideoComponent UI
 #include "Audio/Audio.hpp"     // for SoundEngine (real-time audio preview)
 #include <GLFW/glfw3.h>
 #include <unordered_map>       // for audio preview tracking
@@ -531,23 +532,23 @@ namespace EditorUI {
                 // Capture state before any changes this frame
                 Boom::SpriteComponent spriteBeforeFrame = q;
 
-                // GUI Overlay Checkbox
-                bool oldUiOverlay = q.uiOverlay;
-                if (ImGui::Checkbox("GUI", &q.uiOverlay)) {
+                // Render As 3D Checkbox
+                bool oldRenderAs3D = q.renderAs3D;
+                if (ImGui::Checkbox("Render as 3D", &q.renderAs3D)) {
                     // Checkbox was toggled - create undo command immediately
                     auto* history = m_Owner->GetCommandHistory();
                     if (history) {
                         Boom::SpriteComponent before = spriteBeforeFrame;
-                        before.uiOverlay = oldUiOverlay;
+                        before.renderAs3D = oldRenderAs3D;
                         auto command = std::make_unique<ComponentPropertyCommand<Boom::SpriteComponent>>(
                             &ctx->scene,
                             m_App->SelectedEntity(),
                             before,
                             q,
-                            "Toggle Sprite GUI Overlay"
+                            "Toggle Sprite Render Mode"
                         );
                         history->Execute(std::move(command));
-                        BOOM_INFO("[Undo] Created command: Toggle Sprite GUI Overlay");
+                        BOOM_INFO("[Undo] Created command: Toggle Sprite Render Mode");
                     } else {
                         BOOM_WARN("[Undo] CommandHistory is null!");
                     }
@@ -1077,6 +1078,568 @@ namespace EditorUI {
 
             if (compRemoved) {
                 ctx->scene.remove<Boom::SoundComponent>(m_App->SelectedEntity());
+            }
+        }
+
+        // --- Video Component UI ---
+        if (selected.Has<Boom::VideoComponent>()) {
+            ImGui::PushID("Video");
+            auto& vc = selected.Get<Boom::VideoComponent>();
+
+            bool videoCompRemoved = false;
+            bool isOpen = ImGui::CollapsingHeader("Video", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap);
+
+            // ========================================
+            // Settings Button (Top Right)
+            // ========================================
+            const ImVec2 vhMin = ImGui::GetItemRectMin();
+            const ImVec2 vhMax = ImGui::GetItemRectMax();
+            const float vhLineH = ImGui::GetFrameHeight();
+            const float vhY = vhMin.y + (vhMax.y - vhMin.y - vhLineH) * 0.5f;
+            ImGui::SetCursorScreenPos(ImVec2(vhMax.x - vhLineH, vhY));
+
+            if (ImGui::Button("...", ImVec2(vhLineH, vhLineH))) {
+                ImGui::OpenPopup("VideoSettings");
+            }
+
+            if (ImGui::BeginPopup("VideoSettings")) {
+                if (ImGui::MenuItem("Remove Component")) {
+                    videoCompRemoved = true;
+                }
+                if (ImGui::MenuItem("View Code")) {
+                    ImGui::OpenPopup("VideoCodeViewer");
+                }
+                if (ImGui::MenuItem("Refresh Video List")) {
+                    // Will trigger rescan
+                }
+                ImGui::Separator();
+                if (ImGui::MenuItem("Export Settings")) {
+                    // TODO: Export VideoComponent settings to JSON
+                }
+                if (ImGui::MenuItem("Import Settings")) {
+                    // TODO: Import VideoComponent settings from JSON
+                }
+                ImGui::EndPopup();
+            }
+
+            // ========================================
+            // Code Viewer Modal Window
+            // ========================================
+            if (ImGui::BeginPopupModal("VideoCodeViewer", nullptr,
+                ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse)) {
+
+                ImGui::Text("Video System Source Code Viewer");
+                ImGui::Separator();
+
+                static int selectedTab = 0;
+                static bool codeLoaded = false;
+
+                const char* tabs[] = {
+                    "VideoPlayer.h",
+                    "VideoPlayer.cpp",
+                    "VideoSystem.h",
+                    "VideoSystem.cpp",
+                    "pl_mpeg.h (Library)",
+                    "Component UI"
+                };
+
+                // Tab bar
+                if (ImGui::BeginTabBar("CodeTabs")) {
+                    for (int i = 0; i < 6; i++) {
+                        if (ImGui::BeginTabItem(tabs[i])) {
+                            if (selectedTab != i) {
+                                selectedTab = i;
+                                codeLoaded = false;
+                            }
+                            ImGui::EndTabItem();
+                        }
+                    }
+                    ImGui::EndTabBar();
+                }
+
+                ImGui::Spacing();
+
+                // Search bar
+                static char searchBuffer[256] = "";
+                ImGui::SetNextItemWidth(600);
+                ImGui::InputTextWithHint("##Search", "Search in code...", searchBuffer, sizeof(searchBuffer));
+                ImGui::SameLine();
+                if (ImGui::Button("Find Next")) {
+                    // TODO: Implement search
+                }
+
+                ImGui::Spacing();
+                ImGui::Separator();
+
+                // Code display area
+                ImGui::BeginChild("CodeContent", ImVec2(900, 600), true,
+                    ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_AlwaysVerticalScrollbar);
+
+                // Use monospace font if available
+                ImGuiIO& io = ImGui::GetIO();
+                if (io.Fonts->Fonts.Size > 1) {
+                    ImGui::PushFont(io.Fonts->Fonts[1]); // Assume index 1 is monospace
+                }
+
+                // Display code based on selected tab
+                // In a real implementation, you would load these from files
+                const char* codeContent = nullptr;
+
+                switch (selectedTab) {
+                case 0: // VideoPlayer.h
+                    codeContent =
+                        "// VideoPlayer.h - Header\n"
+                        "#pragma once\n\n"
+                        "#include \"BoomProperties.h\"\n"
+                        "#include <string>\n"
+                        "#include <memory>\n\n"
+                        "struct plm_t;\n\n"
+                        "namespace Boom {\n"
+                        "    enum class VideoState { Stopped, Playing, Paused };\n\n"
+                        "    class BOOM_API VideoPlayer {\n"
+                        "    public:\n"
+                        "        VideoPlayer();\n"
+                        "        ~VideoPlayer();\n"
+                        "        // ... (see actual file for full content)\n"
+                        "    };\n"
+                        "}\n";
+                    break;
+
+                case 1: // VideoPlayer.cpp
+                    codeContent =
+                        "// VideoPlayer.cpp - Implementation\n"
+                        "#include \"Core.h\"\n"
+                        "#define PL_MPEG_IMPLEMENTATION\n"
+                        "#include \"Graphics/Video/pl_mpeg.h\"\n"
+                        "#include \"Graphics/Video/VideoPlayer.h\"\n\n"
+                        "namespace Boom {\n"
+                        "    bool VideoPlayer::Load(const std::string& filePath) {\n"
+                        "        Unload();\n"
+                        "        m_PLM = plm_create_with_filename(filePath.c_str());\n"
+                        "        // ... (see actual file for full content)\n"
+                        "    }\n"
+                        "}\n";
+                    break;
+
+                case 2: // VideoSystem.h
+                    codeContent =
+                        "// VideoSystem.h - Header\n"
+                        "#pragma once\n\n"
+                        "#include \"VideoPlayer.h\"\n"
+                        "#include \"ECS/ECS.hpp\"\n\n"
+                        "namespace Boom {\n"
+                        "    class BOOM_API VideoSystem {\n"
+                        "    public:\n"
+                        "        void Update(EntityRegistry& scene, double deltaTime);\n"
+                        "        VideoPlayer* GetPlayer(EntityID entity);\n"
+                        "        // ... (see actual file for full content)\n"
+                        "    };\n"
+                        "}\n";
+                    break;
+
+                case 3: // VideoSystem.cpp
+                    codeContent =
+                        "// VideoSystem.cpp - Implementation\n"
+                        "#include \"Core.h\"\n"
+                        "#include \"Graphics/Video/VideoSystem.h\"\n\n"
+                        "namespace Boom {\n"
+                        "    void VideoSystem::Update(EntityRegistry& scene, double dt) {\n"
+                        "        SyncWithScene(scene);\n"
+                        "        // ... (see actual file for full content)\n"
+                        "    }\n"
+                        "}\n";
+                    break;
+
+                case 4: // pl_mpeg.h
+                    codeContent =
+                        "// pl_mpeg.h - MPEG1 Video Decoder Library\n"
+                        "// Download from: https://github.com/phoboslab/pl_mpeg\n\n"
+                        "// This is a single-header library for decoding MPEG1 video\n"
+                        "// Place it in Graphics/Video/pl_mpeg.h\n\n"
+                        "// Key functions used:\n"
+                        "// - plm_create_with_filename()\n"
+                        "// - plm_decode_video()\n"
+                        "// - plm_frame_to_rgb()\n"
+                        "// - plm_destroy()\n";
+                    break;
+
+                case 5: // Component UI (this file!)
+                    codeContent =
+                        "// VideoComponent ImGui UI Code\n"
+                        "// This is the current file you're editing!\n\n"
+                        "if (selected.Has<Boom::VideoComponent>()) {\n"
+                        "    auto& vc = selected.Get<Boom::VideoComponent>();\n"
+                        "    // MPG dropdown, playback controls, etc.\n"
+                        "    // ... (see this file for full content)\n"
+                        "}\n";
+                    break;
+                }
+
+                if (codeContent) {
+                    ImGui::TextUnformatted(codeContent);
+                }
+
+                if (io.Fonts->Fonts.Size > 1) {
+                    ImGui::PopFont();
+                }
+
+                ImGui::EndChild();
+
+                ImGui::Spacing();
+
+                // Bottom buttons
+                if (ImGui::Button("Copy to Clipboard", ImVec2(150, 0))) {
+                    if (codeContent) {
+                        ImGui::SetClipboardText(codeContent);
+                    }
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Open in Editor", ImVec2(150, 0))) {
+                    // TODO: Open file in external editor
+                }
+                ImGui::SameLine(ImGui::GetWindowWidth() - 130);
+                if (ImGui::Button("Close", ImVec2(120, 0))) {
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::EndPopup();
+            }
+
+            ImGui::SetCursorScreenPos(ImVec2(vhMin.x, vhMax.y + ImGui::GetStyle().ItemSpacing.y));
+
+            // ========================================
+            // Main Content Area
+            // ========================================
+            if (isOpen) {
+                ImGui::Indent(12.0f);
+                ImGui::Spacing();
+
+                // ========================================
+                // VIDEO FILE SELECTION
+                // ========================================
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Video File");
+                ImGui::SameLine(120);
+                ImGui::SetNextItemWidth(-50);
+
+                // Scan for MPG files
+                static std::vector<std::string> mpgFiles;
+                static bool filesScanned = false;
+                static std::string currentSelection;
+
+                if (!filesScanned) {
+                    mpgFiles.clear();
+                    std::string videosPath = "Resources/Videos/";
+
+                    if (std::filesystem::exists(videosPath)) {
+                        try {
+                            for (const auto& entry : std::filesystem::directory_iterator(videosPath)) {
+                                if (entry.is_regular_file()) {
+                                    std::string filename = entry.path().filename().string();
+                                    std::string ext = entry.path().extension().string();
+
+                                    // Convert to lowercase for comparison
+                                    std::transform(ext.begin(), ext.end(), ext.begin(),
+                                        [](unsigned char c) { return std::tolower(c); });
+
+                                    if (ext == ".mpg" || ext == ".mpeg") {
+                                        mpgFiles.push_back(filename);
+                                    }
+                                }
+                            }
+                            std::sort(mpgFiles.begin(), mpgFiles.end());
+                        }
+                        catch (const std::filesystem::filesystem_error& e) {
+                            BOOM_ERROR("Failed to scan video directory: {}", e.what());
+                        }
+                    }
+                    filesScanned = true;
+                }
+
+                // Sync current selection with component
+                if (currentSelection != vc.videoPath) {
+                    currentSelection = vc.videoPath;
+                }
+
+                // Dropdown
+                if (ImGui::BeginCombo("##VideoDropdown",
+                    currentSelection.empty() ? "Select video..." : currentSelection.c_str())) {
+
+                    // None option
+                    if (ImGui::Selectable("< None >", currentSelection.empty())) {
+                        currentSelection = "";
+                        vc.videoPath = "";
+                    }
+
+                    // File list
+                    for (const auto& file : mpgFiles) {
+                        bool isSelected = (currentSelection == file);
+                        if (ImGui::Selectable(file.c_str(), isSelected)) {
+                            currentSelection = file;
+                            vc.videoPath = file;
+                        }
+                        if (isSelected) {
+                            ImGui::SetItemDefaultFocus();
+                        }
+                    }
+
+                    ImGui::EndCombo();
+                }
+
+                // Refresh button
+                ImGui::SameLine();
+                if (ImGui::Button("R", ImVec2(40, 0))) {
+                    filesScanned = false;
+                }
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Refresh video file list");
+                }
+
+                // Manual path input (advanced)
+                if (ImGui::TreeNode("Advanced##ManualPath")) {
+                    ImGui::AlignTextToFramePadding();
+                    ImGui::Text("Manual Path");
+                    ImGui::SameLine(120);
+                    ImGui::SetNextItemWidth(-1);
+
+                    char pathBuf[512];
+#ifdef _MSC_VER
+                    strncpy_s(pathBuf, sizeof(pathBuf), vc.videoPath.c_str(), sizeof(pathBuf) - 1);
+#else
+                    std::snprintf(pathBuf, sizeof(pathBuf), "%s", vc.videoPath.c_str());
+#endif
+
+                    if (ImGui::InputText("##VideoPathManual", pathBuf, sizeof(pathBuf))) {
+                        vc.videoPath = std::string(pathBuf);
+                        currentSelection = vc.videoPath;
+                    }
+
+                    ImGui::TreePop();
+                }
+
+                // Drag-drop target
+                if (ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE")) {
+                        const char* droppedPath = static_cast<const char*>(payload->Data);
+                        std::string pathStr(droppedPath);
+
+                        std::string ext = std::filesystem::path(pathStr).extension().string();
+                        std::transform(ext.begin(), ext.end(), ext.begin(),
+                            [](unsigned char c) { return std::tolower(c); });
+
+                        if (ext == ".mpg" || ext == ".mpeg") {
+                            size_t videosPos = pathStr.find("Videos/");
+                            if (videosPos != std::string::npos) {
+                                vc.videoPath = pathStr.substr(videosPos + 7);
+                            }
+                            else {
+                                vc.videoPath = std::filesystem::path(pathStr).filename().string();
+                            }
+                            currentSelection = vc.videoPath;
+                            filesScanned = false;
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+
+                ImGui::Spacing();
+                ImGui::Separator();
+                ImGui::Spacing();
+
+                // ========================================
+                // VIDEO PLAYER CONTROLS
+                // ========================================
+                Boom::VideoPlayer* player = nullptr;
+                if (ctx->videoSystem) {
+                    player = ctx->videoSystem->GetPlayer(selected.ID());
+                }
+
+                if (player && player->IsLoaded()) {
+                    // Video Info Panel
+                    ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.15f, 0.15f, 0.2f, 0.6f));
+                    ImGui::BeginChild("VideoInfo", ImVec2(0, 90), true);
+
+                    ImGui::Columns(3, "InfoColumns", false);
+                    ImGui::SetColumnWidth(0, 80);
+                    ImGui::SetColumnWidth(1, 120);
+
+                    // Column 1
+                    ImGui::Text("Duration:");
+                    ImGui::Text("Size:");
+                    ImGui::Text("FPS:");
+
+                    // Column 2
+                    ImGui::NextColumn();
+                    ImGui::Text("%.2f s", player->GetDuration());
+                    ImGui::Text("%d x %d", player->GetWidth(), player->GetHeight());
+                    ImGui::Text("%.2f", player->GetFramerate());
+
+                    // Column 3
+                    ImGui::NextColumn();
+                    ImGui::Text("Current:");
+                    ImGui::Text("State:");
+                    ImGui::Text("Texture:");
+
+                    ImGui::NextColumn();
+                    ImGui::Text("%.2f s", player->GetTickCount());
+                    const char* stateStr = player->IsPlaying() ? "Playing" :
+                        (player->IsPaused() ? "Paused" : "Stopped");
+                    ImGui::Text("%s", stateStr);
+                    ImGui::Text("ID: %u", player->GetTextureID());
+
+                    ImGui::Columns(1);
+                    ImGui::EndChild();
+                    ImGui::PopStyleColor();
+
+                    ImGui::Spacing();
+
+                    // Playback controls
+                    float buttonWidth = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x * 3) / 4.0f;
+
+                    if (player->IsPlaying()) {
+                        if (ImGui::Button("⏸ Pause", ImVec2(buttonWidth, 0))) {
+                            player->Pause();
+                        }
+                    }
+                    else {
+                        if (ImGui::Button("▶ Play", ImVec2(buttonWidth, 0))) {
+                            player->Play();
+                        }
+                    }
+
+                    ImGui::SameLine();
+                    if (ImGui::Button("⏹ Stop", ImVec2(buttonWidth, 0))) {
+                        player->Stop();
+                    }
+
+                    ImGui::SameLine();
+                    if (ImGui::Button("⏮ Rewind", ImVec2(buttonWidth, 0))) {
+                        player->Rewind();
+                    }
+
+                    ImGui::SameLine();
+                    if (ImGui::Button("🔄 Reload", ImVec2(buttonWidth, 0))) {
+                        if (ctx->videoSystem) {
+                            ctx->videoSystem->UnloadVideo(selected.ID());
+                            ctx->videoSystem->LoadVideo(selected.ID(), vc.videoPath);
+                        }
+                    }
+
+                    // Progress bar
+                    float progress = player->GetDuration() > 0.0
+                        ? static_cast<float>(player->GetTickCount() / player->GetDuration())
+                        : 0.0f;
+
+                    char progressLabel[64];
+                    std::snprintf(progressLabel, sizeof(progressLabel), "%.1f%% (%.2fs / %.2fs)",
+                        progress * 100.0f, player->GetTickCount(), player->GetDuration());
+
+                    ImGui::ProgressBar(progress, ImVec2(-1, 0), progressLabel);
+
+                }
+                else if (!vc.videoPath.empty()) {
+                    ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.0f, 1.0f),
+                        "⚠ Video not loaded: %s", vc.videoPath.c_str());
+                    ImGui::Spacing();
+
+                    if (ImGui::Button("Load Video", ImVec2(-1, 30))) {
+                        if (ctx->videoSystem) {
+                            bool success = ctx->videoSystem->LoadVideo(selected.ID(), vc.videoPath);
+                            if (!success) {
+                                BOOM_ERROR("Failed to load video: {}", vc.videoPath);
+                            }
+                        }
+                    }
+                }
+                else {
+                    ImGui::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f),
+                        "No video selected. Choose a file from the dropdown above.");
+                }
+
+                ImGui::Spacing();
+                ImGui::Separator();
+                ImGui::Spacing();
+
+                // ========================================
+                // PLAYBACK SETTINGS
+                // ========================================
+                if (ImGui::CollapsingHeader("Playback Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    ImGui::Indent(12.0f);
+
+                    ImGui::Checkbox("Play On Start", &vc.playOnStart);
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip("Automatically play video when scene loads");
+                    }
+
+                    ImGui::Checkbox("Loop", &vc.loop);
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip("Restart video when it reaches the end");
+                    }
+
+                    ImGui::Spacing();
+
+                    ImGui::AlignTextToFramePadding();
+                    ImGui::Text("Volume");
+                    ImGui::SameLine(120);
+                    ImGui::SetNextItemWidth(-1);
+                    ImGui::SliderFloat("##Volume", &vc.volume, 0.0f, 1.0f, "%.2f");
+
+                    ImGui::AlignTextToFramePadding();
+                    ImGui::Text("Speed");
+                    ImGui::SameLine(120);
+                    ImGui::SetNextItemWidth(-1);
+                    ImGui::SliderFloat("##Speed", &vc.playbackSpeed, 0.1f, 4.0f, "%.2fx");
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip("Playback speed multiplier (1.0 = normal)");
+                    }
+
+                    ImGui::Unindent(12.0f);
+                }
+
+                ImGui::Spacing();
+                ImGui::Separator();
+                ImGui::Spacing();
+
+                // ========================================
+                // DISPLAY SETTINGS
+                // ========================================
+                if (ImGui::CollapsingHeader("Display Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    ImGui::Indent(12.0f);
+
+                    ImGui::Checkbox("Render as 3D", &vc.renderAs3D);
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip(
+                            "3D Mode: Renders as a quad in world space with transform\n"
+                            "2D Mode: Renders as UI overlay"
+                        );
+                    }
+
+                    ImGui::Spacing();
+
+                    ImGui::AlignTextToFramePadding();
+                    ImGui::Text("Tint Color");
+                    ImGui::SameLine(120);
+                    ImGui::SetNextItemWidth(-1);
+                    ImGui::ColorEdit4("##TintColor", &vc.tintColor.r,
+                        ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreview);
+
+                    ImGui::Unindent(12.0f);
+                }
+
+                ImGui::Spacing();
+                ImGui::Unindent(12.0f);
+            }
+
+            ImGui::PopID();
+
+            // ========================================
+            // COMPONENT REMOVAL
+            // ========================================
+            if (videoCompRemoved) {
+                if (ctx->videoSystem) {
+                    ctx->videoSystem->UnloadVideo(m_App->SelectedEntity());
+                }
+                ctx->scene.remove<Boom::VideoComponent>(m_App->SelectedEntity());
             }
         }
 
@@ -2830,6 +3393,7 @@ namespace EditorUI {
 					UpdateComponent<Boom::SpriteComponent>(Boom::ComponentID::SPRITE, selected);
                     UpdateComponent<Boom::MenuComponent>(Boom::ComponentID::MENU_COMPONENT, selected);
                     UpdateComponent<Boom::DeactivatedComponent>(Boom::ComponentID::DEACTIVATED_TAG, selected);
+                    UpdateComponent<Boom::VideoComponent>(Boom::ComponentID::VIDEO, selected);
                     UpdateComponent<Boom::CharacterControllerComponent>(Boom::ComponentID::CHARACTER_CONTROLLER, selected);
                     ImGui::EndTable();
                 }
