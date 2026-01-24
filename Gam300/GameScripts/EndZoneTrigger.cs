@@ -112,36 +112,17 @@ namespace GameScripts
         // Static callback for trigger enter
         private static void OnTriggerEnterCallback(ulong triggerEntity, ulong otherEntity)
         {
-            // Absolute first check - if scene transition in progress, do nothing
-            if (s_sceneTransitionInProgress || s_pendingSceneLoad) return;
+            EndZoneTrigger inst;
+            if (!s_instances.TryGetValue(triggerEntity, out inst)) return;
 
-            try
-            {
-                EndZoneTrigger inst;
-                if (!s_instances.TryGetValue(triggerEntity, out inst)) return;
+            // Only player triggers this
+            if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
+            // Prevent multiple triggers
+            if (inst._hasTriggered) return;
 
-                // Prevent multiple triggers
-                if (inst._hasTriggered) return;
-
-                // Only player triggers this
-                ulong playerEntity = PlayerMovement.GetPlayerEntity();
-                if (playerEntity == 0 || otherEntity != playerEntity) return;
-
-                API.Log("[EndZoneTrigger] Player entered end zone! Queueing MainMenu load...");
-                inst._hasTriggered = true;
-
-                // Broadcast zone event for objective system (deferred)
-                // ObjectiveManager.BroadcastEvent(ObjectiveEvents.ZoneEntered, "EndZone", 1);
-                s_pendingBroadcast = true;
-
-                // Defer scene loading to next frame to avoid PhysX crash
-                s_pendingSceneLoad = true;
-                s_pendingSceneName = "MainMenu";
-            }
-            catch (Exception ex)
-            {
-                API.Log($"[EndZoneTrigger] OnTriggerEnterCallback error: {ex.Message}");
-            }
+            API.Log("[EndZoneTrigger] Player entered end zone! Loading MainMenu...");
+            inst._hasTriggered = true;
+            Entry.TriggerGameEnd();
         }
 
         // Static callback for trigger exit
