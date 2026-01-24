@@ -1,6 +1,59 @@
 Version: 1.0
 ENTITIES:
   - InfoComponent:
+      Parent: 0
+      Name: 2nd_Level_Door (Copy)
+      UID: 2036230071031837327
+    TransformComponent:
+      Transform:
+        Translate: [-30.1772041, 27.4181995, -22.4433556]
+        Rotate: [89.9999847, -3.25688803e-12, -180]
+        Scale: [0.544274747, 0.999924064, 1.69030869]
+    ModelComponent:
+      ModelID: 5963078964798272625
+      MaterialID: 12207453972742617529
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
+      Parent: 0
+      Name: Big Wall
+      UID: 2102239511598691624
+    TransformComponent:
+      Transform:
+        Translate: [-26.1500111, 26.0529957, 10.4736261]
+        Rotate: [0, 90, 0]
+        Scale: [2.02823019, 2.48813438, 0.238284156]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.02823019, 2.48813438, 0.238284156]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 1441742420851203854
+      MaterialID: 6104124486273075758
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_5
       UID: 5351145407601607575
@@ -12,7 +65,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 9683671951523272381
       color: [1, 1, 1, 1]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_4
@@ -25,7 +78,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 9683671951523272381
       color: [1, 1, 1, 1]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_3
@@ -38,7 +91,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 9683671951523272381
       color: [1, 1, 1, 1]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_2
@@ -51,7 +104,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 9683671951523272381
       color: [1, 1, 1, 1]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_1
@@ -64,7 +117,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 9683671951523272381
       color: [1, 1, 1, 1]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_Dead
@@ -77,7 +130,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 947084306896258002
       color: [0.196078435, 0.196078435, 0.196078435, 1]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_Dead
@@ -90,7 +143,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 947084306896258002
       color: [0.196078435, 0.196078435, 0.196078435, 1]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_Dead
@@ -103,7 +156,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 947084306896258002
       color: [0.196078435, 0.196078435, 0.196078435, 1]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_Dead
@@ -116,7 +169,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 947084306896258002
       color: [0.196078435, 0.196078435, 0.196078435, 1]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_Dead
@@ -129,7 +182,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 947084306896258002
       color: [0.19607842, 0.19607842, 0.19607842, 1]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 0
       Name: PlayerUI
@@ -155,20 +208,20 @@ ENTITIES:
     SpriteComponent:
       textureID: 327234960441928512
       color: [1, 1, 1, 0]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 15030438282683852635
       Name: UI_Hold
       UID: 9281200604267375397
     TransformComponent:
       Transform:
-        Translate: [0.41831243, 0.0975608826, 0]
+        Translate: [0.41831243, 0.114021778, 0]
         Rotate: [0, -0, 0]
-        Scale: [0.215664938, 0.110400021, 0.110400021]
+        Scale: [0.215664938, 0.25, 0.110400021]
     SpriteComponent:
       textureID: 13937156857161099910
       color: [1, 1, 1, 0]
-      uiOverlay: true
+      renderAs3D: false
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -199,9 +252,9 @@ ENTITIES:
       UID: 14289988556037673843
     TransformComponent:
       Transform:
-        Translate: [23.6000004, 18.9769993, -6.09399986]
-        Rotate: [0, -89.980217, 0]
-        Scale: [0.99999994, 1, 0.99999994]
+        Translate: [23.6000004, 17.7707634, -6.16177082]
+        Rotate: [-40.186451, -90, 0]
+        Scale: [0.999999762, 0.99999994, 0.999999583]
     SpotLightComponent:
       Light:
         Radiance: [0.823529422, 0.572549045, 0.101960786]
@@ -214,9 +267,9 @@ ENTITIES:
       UID: 10457751199884690735
     TransformComponent:
       Transform:
-        Translate: [-24.1159992, 20.3570004, -6.0539999]
-        Rotate: [0, -89.980217, 0]
-        Scale: [0.99999994, 1, 0.99999994]
+        Translate: [-24.1159992, 20.0450325, -6.18858433]
+        Rotate: [-82.0746155, -90, 0]
+        Scale: [1.00000012, 1, 0.999999821]
     SpotLightComponent:
       Light:
         Radiance: [0.823529422, 0.572549045, 0.101960786]
@@ -230,7 +283,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [12.5880003, 5.04699993, -14.6719999]
-        Rotate: [0, -89.980217, 0]
+        Rotate: [0, -89.980217, -90.3509979]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -245,7 +298,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-18.2141724, 5.70800018, -2.28500009]
-        Rotate: [0, -89.980217, 0]
+        Rotate: [0, -89.980217, -94.2600021]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -473,6 +526,26 @@ ENTITIES:
         Translate: [0.272120237, 16.5778847, 26.3222256]
         Rotate: [0, 180, 0]
         Scale: [2.55416727, 1.88259518, 1.83383286]
+    SoundComponent:
+      Entries:
+        - name: _doorSoundPath
+          filePaths:
+            - Resources/Audio/unlock.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.DoorTriggerLeft
@@ -503,7 +576,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
-        Rotate: [0, 0, -90]
+        Rotate: [0, 0, -7.85500002]
         Scale: [1, 1, 1]
     DirectLightComponent:
       Light:
@@ -589,9 +662,9 @@ ENTITIES:
       UID: 12637237387574263659
     TransformComponent:
       Transform:
-        Translate: [-7.24297285, 10.7255249, 4.4982152]
-        Rotate: [0, -90, 0]
-        Scale: [1, 1, 1]
+        Translate: [-4.91607666, 10.3404379, 4.4982152]
+        Rotate: [267.50766, -90, 0]
+        Scale: [0.999999881, 0.999992549, 0.999992549]
     SpotLightComponent:
       Light:
         Radiance: [0.823529422, 0.572549045, 0.101960786]
@@ -604,9 +677,9 @@ ENTITIES:
       UID: 3106835252756117780
     TransformComponent:
       Transform:
-        Translate: [-0.361999989, 10.6809559, 4.49459839]
-        Rotate: [0, -89.980217, 0]
-        Scale: [0.99999994, 1, 0.99999994]
+        Translate: [0.649902821, 10.5524969, 4.49459839]
+        Rotate: [267.50766, -90, 0]
+        Scale: [0.999999881, 0.999986231, 0.999986231]
     SpotLightComponent:
       Light:
         Radiance: [0.823529422, 0.572549045, 0.101960786]
@@ -632,8 +705,8 @@ ENTITIES:
       UID: 2377197601835279376
     TransformComponent:
       Transform:
-        Translate: [-0.706916392, 1.14266515, 15.3023272]
-        Rotate: [0, 112.000084, 0]
+        Translate: [2.65329027, 19.240366, 31.5288506]
+        Rotate: [0, 67.9999084, 0]
         Scale: [0.0164999887, 0.0164999999, 0.0164999887]
     CharacterControllerComponent:
       Radius: 0.800000012
@@ -653,7 +726,7 @@ ENTITIES:
         FreezeRotationZ: true
         Type: DYNAMIC
     ModelComponent:
-      ModelID: 17415887327955155372
+      ModelID: 17129197088641895711
       MaterialID: 13160241162385617845
       ModelName: ""
       MaterialName: ""
@@ -1143,7 +1216,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-31.7399521, 30.2462902, -39.9961624]
-        Rotate: [89.9999847, -0, 0]
+        Rotate: [89.9999847, -0, 180]
         Scale: [1.29999995, 0.999964356, 0.999964356]
     RigidBodyComponent:
       RigidBody:
@@ -1253,15 +1326,15 @@ ENTITIES:
       UID: 12818118575085889591
     TransformComponent:
       Transform:
-        Translate: [-37.2073898, 37.1134758, -35.4818497]
-        Rotate: [-90, -180, 0]
-        Scale: [1.89999998, 1.32000005, 1]
+        Translate: [-36.9092903, 37.1134758, -35.4818497]
+        Rotate: [90, 5.00895612e-06, -180]
+        Scale: [1.74521029, 1.31997108, 0.999985516]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.89999998, 1.32000005, 1]
+        Previous Scale: [1.74521029, 1.31997108, 0.999985516]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -1291,7 +1364,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [3.08807731, 20.6351547, 26.9646854]
-        Rotate: [89.9999847, -0, 0]
+        Rotate: [89.9999847, -0, 180]
         Scale: [1.20635819, 0.999850988, 1.67030871]
     RigidBodyComponent:
       RigidBody:
@@ -1364,8 +1437,8 @@ ENTITIES:
       UID: 16800634043632137629
     TransformComponent:
       Transform:
-        Translate: [-59.498291, 25.5212288, -20.5396595]
-        Rotate: [0, 0, 0]
+        Translate: [-59.498291, 25.2593002, -20.5396595]
+        Rotate: [0, -0, 0]
         Scale: [0.150000006, 0.159999996, 0.140000001]
     RigidBodyComponent:
       RigidBody:
@@ -1401,15 +1474,15 @@ ENTITIES:
       UID: 3718808117625100366
     TransformComponent:
       Transform:
-        Translate: [-64.5262833, 27.1949787, -0.0265043974]
-        Rotate: [90, 90, 0]
-        Scale: [4.2750001, 2.5, 1.5]
+        Translate: [-64.5262833, 27.1949787, -2.79239726]
+        Rotate: [89.9650269, 89.9515457, -0.0349748358]
+        Scale: [4.27499914, 2.49999976, 1.49999344]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [4.2750001, 2.5, 1.5]
+        Previous Scale: [4.27499914, 2.49999976, 1.49999344]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -2020,7 +2093,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [17.6849995, 6.14599991, -2.5]
-        Rotate: [0, -89.980217, 0]
+        Rotate: [0, -89.980217, -89.5469971]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -2035,7 +2108,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-13.5860004, 5.51599979, -5.90700006]
-        Rotate: [0, -89.980217, 0]
+        Rotate: [0, -89.980217, -90.8040009]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -2049,14 +2122,14 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-4.31717539, 5.08332157, 16.99049]
-        Rotate: [3.00000119, -64.9999008, 0]
+        Translate: [-1.05352211, 23.5553894, 35.2640648]
+        Rotate: [-210.75, 2036.4375, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.00100000005
         FarPlane: 935.47998
-        FOV: 68.0083313
+        FOV: 74.0083313
     ThirdPersonCameraComponent:
       Target UID: 2377197601835279376
       Offset: [0.00999999978, 4.1500001, 0]
@@ -2305,15 +2378,15 @@ ENTITIES:
       UID: 3774918408726337557
     TransformComponent:
       Transform:
-        Translate: [-13.6322012, 4.7383337, 1.75]
-        Rotate: [-89.9999847, 4.07111004e-13, -180]
-        Scale: [1.32306433, 2.49989581, 2.31160927]
+        Translate: [-14.2747307, 4.7383337, 1.75]
+        Rotate: [-89.9999847, 4.07111004e-13, 0]
+        Scale: [1.46750236, 2.49984741, 2.31156039]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.32306433, 2.49989581, 2.31160927]
+        Previous Scale: [1.46750236, 2.49984741, 2.31156039]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -2343,7 +2416,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [15.0547104, 4.72641563, 1.75]
-        Rotate: [-90, -0, -180]
+        Rotate: [-90, -0, 0]
         Scale: [1.24997723, 2.49995446, 2.44120407]
     RigidBodyComponent:
       RigidBody:
@@ -2421,9 +2494,9 @@ ENTITIES:
       UID: 15313398657113075594
     TransformComponent:
       Transform:
-        Translate: [1.09874463, 11.1888933, 2.23153758]
-        Rotate: [0, -0, 0]
-        Scale: [1.25, 0.425000012, 0.324999988]
+        Translate: [-4.76421309, 11.1515064, 2.4115274]
+        Rotate: [-90, 3.30999422, 1.03693037e-05]
+        Scale: [2.5, 0.249964848, 0.41916427]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 16257091296667891899
@@ -2485,7 +2558,7 @@ ENTITIES:
       UID: 16568992521348852646
     TransformComponent:
       Transform:
-        Translate: [-22.110651, 6.63590956, 3.09660268]
+        Translate: [-22.110651, 6.51090288, 3.09660268]
         Rotate: [0, -0, 0]
         Scale: [0.200000003, 1.375, 4.67500019]
     RigidBodyComponent:
@@ -2558,6 +2631,44 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _footstepSoundPath
+          filePaths:
+            - Resources/Audio/playerRun_02.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/enemyHurt_2.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -2870,7 +2981,7 @@ ENTITIES:
       UID: 9853635101962824744
     TransformComponent:
       Transform:
-        Translate: [-2.80950379, 18.7372131, -22.2343197]
+        Translate: [-2.80950379, 18.2329731, -22.0168877]
         Rotate: [180, -0, 0]
         Scale: [1.97171724, 1.15727019, 0.36048156]
     RigidBodyComponent:
@@ -3420,15 +3531,15 @@ ENTITIES:
       UID: 16900605180980820779
     TransformComponent:
       Transform:
-        Translate: [-9.64566612, 15.7404327, 23.0938225]
-        Rotate: [-90.0074234, 90, -0.00742077222]
-        Scale: [2.15000129, 2.00000072, 1.4000001]
+        Translate: [-7.01244068, 15.7404327, 24.2598057]
+        Rotate: [-89.9555817, 89.944046, 0.0423971936]
+        Scale: [2.15000105, 1.99999988, 1.39999163]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [2.15000129, 2.00000072, 1.4000001]
+        Previous Scale: [2.15000105, 1.99999988, 1.39999163]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -3643,7 +3754,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-8.17185974, 22.17132, 27.9622288]
-        Rotate: [0, -89.980217, 0]
+        Rotate: [0, -89.980217, 180]
         Scale: [0.0749999955, 0.949999988, 0.224999979]
     RigidBodyComponent:
       RigidBody:
@@ -3679,7 +3790,7 @@ ENTITIES:
       UID: 13337176872369800048
     TransformComponent:
       Transform:
-        Translate: [-9.43455887, 22.1983395, 40.3395691]
+        Translate: [-9.43455887, 22.1983395, 47.9132614]
         Rotate: [0, -89.980217, 0]
         Scale: [0.799999833, 0.975000024, 0.0249999948]
     RigidBodyComponent:
@@ -3702,28 +3813,12 @@ ENTITIES:
   - InfoComponent:
       Parent: 0
       Name: Interior_Decor_RIght_Of_Hut
-      UID: 8732369213151081285
-    TransformComponent:
-      Transform:
-        Translate: [6.80372, 20.1691303, 32.2403717]
-        Rotate: [90, 90, 0]
-        Scale: [1.22500002, 2.5, 1.07500005]
-    ModelComponent:
-      ModelID: 5963078964798272625
-      MaterialID: 12207453972742617529
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Interior_Decor_RIght_Of_Hut
       UID: 13900569791274339863
     TransformComponent:
       Transform:
-        Translate: [-8.9846096, 19.8081818, 33.4638329]
-        Rotate: [90, -90, 0]
-        Scale: [1.22500074, 2.50000334, 1.07500005]
+        Translate: [-8.9846096, 20.7383347, 40.2095222]
+        Rotate: [-45.0171318, -89.9030914, -44.9828682]
+        Scale: [1.22500086, 2.50000143, 1.76626515]
     ModelComponent:
       ModelID: 5963078964798272625
       MaterialID: 12207453972742617529
@@ -4130,7 +4225,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [0.818903089, 4.77786446, 1.91003978]
-        Rotate: [89.9999847, -0, 0]
+        Rotate: [89.9999847, -0, 180]
         Scale: [2.23337317, 2.49990129, 2.36198664]
     RigidBodyComponent:
       RigidBody:
@@ -4342,7 +4437,7 @@ ENTITIES:
       Transform:
         Translate: [0.546659589, 10.462203, 4.34645557]
         Rotate: [-89.9999847, 0, 0]
-        Scale: [2.5, 2.49997067, 2.49997067]
+        Scale: [2.5, 2.5, 2.49997067]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 9126702018428758169
@@ -4358,7 +4453,7 @@ ENTITIES:
       Transform:
         Translate: [-4.76421309, 10.306119, 4.38749981]
         Rotate: [-90, 3.30999422, 1.03693037e-05]
-        Scale: [2.5, 0.249997765, 2.49998212]
+        Scale: [2.5, 2.5, 2.49998212]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 9126702018428758169
@@ -4944,15 +5039,15 @@ ENTITIES:
       UID: 10281552342571521286
     TransformComponent:
       Transform:
-        Translate: [-16.9721165, 18.8007908, 27.7949505]
-        Rotate: [0, 0, 0]
-        Scale: [0.550000012, 1.07500005, 0.174999997]
+        Translate: [-16.9721165, 20.0402336, 27.7949505]
+        Rotate: [0, -0, 0]
+        Scale: [0.550000012, 1.31348503, 0.174999997]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.550000012, 1.07500005, 0.174999997]
+        Previous Scale: [0.550000012, 1.31348503, 0.174999997]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -5192,7 +5287,7 @@ ENTITIES:
       UID: 3125007874419280460
     TransformComponent:
       Transform:
-        Translate: [-56.2917709, 39.0058556, -23.8743973]
+        Translate: [-56.0659904, 39.0058556, -23.8117065]
         Rotate: [0, -0, 0]
         Scale: [0.694999993, 3.125, 0.275000006]
     ModelComponent:
@@ -5293,15 +5388,15 @@ ENTITIES:
       UID: 12984771949456142781
     TransformComponent:
       Transform:
-        Translate: [-47.5552635, 19.2154694, 2.4862411]
-        Rotate: [0, 0, 0]
-        Scale: [1.33000004, 1.10000002, 5]
+        Translate: [-296.401001, 18.9319916, -87.1347504]
+        Rotate: [0, -0, 0]
+        Scale: [17.5822792, 1.10000002, 23.2370358]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.33000004, 1.10000002, 5]
+        Previous Scale: [17.5822792, 1.10000002, 23.2370358]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -6504,9 +6599,9 @@ ENTITIES:
       UID: 7663837736192417177
     TransformComponent:
       Transform:
-        Translate: [-27.9699993, 33.2314072, -20.1140766]
-        Rotate: [-90.0001678, -5.96686602, 6.07335278e-05]
-        Scale: [1.99998891, 1.99998891, 1.99999642]
+        Translate: [-27.9699993, 33.2314072, -19.653017]
+        Rotate: [-90.0002823, -84.0602646, 0.000247512973]
+        Scale: [1.99998677, 1.99998581, 1.99999511]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 9126702018428758169
@@ -7094,9 +7189,9 @@ ENTITIES:
       UID: 4728347423512424990
     TransformComponent:
       Transform:
-        Translate: [7.18900013, 10.4619999, 4.44299984]
-        Rotate: [0, -90, -62.8400002]
-        Scale: [1.00000072, 1.50000036, 1.00000036]
+        Translate: [6.39900017, 10.4619999, 4.44299984]
+        Rotate: [-2.51399994, -79.6309967, -88.2900009]
+        Scale: [1.00000072, 0.829999983, 1.00000036]
     SpotLightComponent:
       Light:
         Radiance: [0.823529422, 0.572549045, 0.101960786]
@@ -7109,16 +7204,90 @@ ENTITIES:
       UID: 13685181942599758823
     TransformComponent:
       Transform:
-        Translate: [-7.15782738, 2.17216253, -14.2555885]
-        Rotate: [0, 180.937592, 0]
-        Scale: [0.0144999959, 0.0145000005, 0.0144999959]
+        Translate: [-7.15782738, 0.530518472, -14.2555885]
+        Rotate: [0, -0.937598228, 0]
+        Scale: [0.0144997435, 0.0145000005, 0.0144997435]
     ModelComponent:
-      ModelID: 7908732753073902064
+      ModelID: 12373711864448078618
       MaterialID: 1781146247448718189
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _turnSoundPath1
+          filePaths:
+            - Resources/Audio/StatueTurn_01.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath2
+          filePaths:
+            - Resources/Audio/StatueTurn_02.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath3
+          filePaths:
+            - Resources/Audio/StatueTurn_03.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/playerPunch_1.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.EnemyController
@@ -7129,16 +7298,90 @@ ENTITIES:
       UID: 15156590934559075775
     TransformComponent:
       Transform:
-        Translate: [9.27553558, 2.17216253, -14.2555885]
-        Rotate: [5.00895612e-06, 176.40744, 5.00895612e-06]
-        Scale: [0.0144999959, 0.0145000005, 0.0144999959]
+        Translate: [9.27553558, 0.550991118, -14.2555885]
+        Rotate: [0, 3.59251904, 0]
+        Scale: [0.0145000955, 0.0145000005, 0.0145000955]
     ModelComponent:
-      ModelID: 7908732753073902064
+      ModelID: 12373711864448078618
       MaterialID: 1781146247448718189
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _turnSoundPath1
+          filePaths:
+            - Resources/Audio/StatueTurn_01.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath2
+          filePaths:
+            - Resources/Audio/StatueTurn_02.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath3
+          filePaths:
+            - Resources/Audio/StatueTurn_03.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/playerPunch_1.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.EnemyController
@@ -7149,16 +7392,90 @@ ENTITIES:
       UID: 5830254891821542999
     TransformComponent:
       Transform:
-        Translate: [17.540493, 14.3824339, 3.31294298]
-        Rotate: [180, 197.044678, 180]
+        Translate: [17.540493, 13.4146328, 3.31294298]
+        Rotate: [5.00895476e-06, -17.0446739, 5.00895476e-06]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
-      ModelID: 7908732753073902064
+      ModelID: 12373711864448078618
       MaterialID: 1781146247448718189
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _turnSoundPath1
+          filePaths:
+            - Resources/Audio/StatueTurn_01.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath2
+          filePaths:
+            - Resources/Audio/StatueTurn_02.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath3
+          filePaths:
+            - Resources/Audio/StatueTurn_03.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/playerPunch_1.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.EnemyController
@@ -7169,16 +7486,90 @@ ENTITIES:
       UID: 14023949945871365441
     TransformComponent:
       Transform:
-        Translate: [-14.5949755, 14.7237701, 22.6192093]
-        Rotate: [5.00895521e-06, 197.044678, 5.00895521e-06]
-        Scale: [0.0144999903, 0.0145000005, 0.0144999903]
+        Translate: [-14.5949755, 13.3514919, 22.6192093]
+        Rotate: [0, -17.0446568, 0]
+        Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
-      ModelID: 7908732753073902064
+      ModelID: 12373711864448078618
       MaterialID: 1781146247448718189
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _turnSoundPath1
+          filePaths:
+            - Resources/Audio/StatueTurn_01.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath2
+          filePaths:
+            - Resources/Audio/StatueTurn_02.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath3
+          filePaths:
+            - Resources/Audio/StatueTurn_03.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/playerPunch_1.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.EnemyController
@@ -7229,9 +7620,9 @@ ENTITIES:
       UID: 10535824334705980376
     TransformComponent:
       Transform:
-        Translate: [3.21199989, 8.71700001, -19.3789997]
-        Rotate: [0, -89.980217, 0]
-        Scale: [0.99999994, 1, 0.99999994]
+        Translate: [3.07651925, 5.97091579, -19.3789997]
+        Rotate: [269.826874, -90, 0]
+        Scale: [0.999964952, 0.999964952, 0.999964952]
     SpotLightComponent:
       Light:
         Radiance: [8.27450943, 0.572549045, 0.101960786]
@@ -7244,9 +7635,9 @@ ENTITIES:
       UID: 14060339449485077574
     TransformComponent:
       Transform:
-        Translate: [-3.26099992, 8.71500015, -19.2849998]
-        Rotate: [0, -89.980217, 0]
-        Scale: [0.99999994, 1, 0.99999994]
+        Translate: [-2.87905788, 5.70368195, -19.2849998]
+        Rotate: [265.725861, -90, 0]
+        Scale: [1, 0.999993563, 0.999993563]
     SpotLightComponent:
       Light:
         Radiance: [0.823529422, 0.572549045, 0.101960786]
@@ -7259,8 +7650,8 @@ ENTITIES:
       UID: 4992289060001264530
     TransformComponent:
       Transform:
-        Translate: [-12.7180004, 5.11552048, -15.0600004]
-        Rotate: [0, -89.980217, 0]
+        Translate: [-12.703826, 5.11552048, -15.0600004]
+        Rotate: [0, -89.980217, -90.8040009]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -7274,8 +7665,8 @@ ENTITIES:
       UID: 2250221566052664554
     TransformComponent:
       Transform:
-        Translate: [0, 0, 0]
-        Rotate: [90, 0, 0]
+        Translate: [0, 0, -0.560000002]
+        Rotate: [90, 0, 79.8069992]
         Scale: [1, 1, 1]
     DirectLightComponent:
       Light:
@@ -7288,7 +7679,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
-        Rotate: [0, 0, -90]
+        Rotate: [0, 0, -45.3829994]
         Scale: [1, 1, 1]
     DirectLightComponent:
       Light:
@@ -7351,7 +7742,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-4.11876011, 20.6671619, 26.970089]
-        Rotate: [-90.0000305, -5.00895476e-06, -180]
+        Rotate: [-90.0000305, -5.00895476e-06, 0]
         Scale: [1.20635819, 0.99970907, 1.60119605]
     RigidBodyComponent:
       RigidBody:
@@ -7428,8 +7819,8 @@ ENTITIES:
       UID: 1377313242926581139
     TransformComponent:
       Transform:
-        Translate: [-1.84919775, 22.8381386, 9.90445328]
-        Rotate: [27.5745621, 43.966671, 53.71064]
+        Translate: [1.9321723, 22.1576824, 34.0135422]
+        Rotate: [27.5745659, 43.9666748, 53.7106476]
         Scale: [0.0800000578, 0.139999941, 0.230000272]
     ModelComponent:
       ModelID: 600481613562228247
@@ -7438,6 +7829,26 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _pickupSound
+          filePaths:
+            - Resources/Audio/pickup.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.KeyPickup
@@ -7669,6 +8080,44 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _footstepSoundPath
+          filePaths:
+            - Resources/Audio/playerRun_02.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/enemyHurt_2.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
     AnimatorComponent:
       Clips:
         - name: Samurai Idle
@@ -7728,7 +8177,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 9978758564026709928
       color: [1, 0, 0, 0]
-      uiOverlay: true
+      renderAs3D: true
   - InfoComponent:
       Parent: 2888197353573082632
       Name: Blood2
@@ -7741,7 +8190,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 14611654011234671873
       color: [1, 0, 0, 0]
-      uiOverlay: true
+      renderAs3D: true
   - InfoComponent:
       Parent: 2888197353573082632
       Name: Blood3
@@ -7754,7 +8203,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 8078124372590329184
       color: [1, 0, 0, 0]
-      uiOverlay: true
+      renderAs3D: true
   - InfoComponent:
       Parent: 2888197353573082632
       Name: Blood4
@@ -7767,7 +8216,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 15398575817850185585
       color: [1, 0, 0, 0]
-      uiOverlay: true
+      renderAs3D: true
   - InfoComponent:
       Parent: 0
       Name: BloodUI
@@ -7787,9 +8236,9 @@ ENTITIES:
       UID: 4532714360149301912
     TransformComponent:
       Transform:
-        Translate: [23.9899998, 21.177, 20.7859993]
-        Rotate: [0, -89.980217, 0]
-        Scale: [0.99999994, 1, 0.99999994]
+        Translate: [23.6205177, 21.1906948, 20.7859993]
+        Rotate: [-45, -89.960434, -45]
+        Scale: [0.999999821, 0.99999994, 0.999999881]
     SpotLightComponent:
       Light:
         Radiance: [0.823529422, 0.572549045, 0.101960786]
@@ -7803,7 +8252,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [20.3999996, 21.177, 25.316]
-        Rotate: [0, -89.980217, 0]
+        Rotate: [0, -89.980217, -88.2900009]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -7818,7 +8267,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [15.0600004, 21.4069996, 25.316]
-        Rotate: [0, -89.980217, 0]
+        Rotate: [0, -89.980217, -92.375]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -7832,8 +8281,8 @@ ENTITIES:
       UID: 17028468870716020309
     TransformComponent:
       Transform:
-        Translate: [-24.0900002, 20.2369995, 19.566]
-        Rotate: [0, -89.980217, 0]
+        Translate: [-24.0900002, 19.8610249, 19.566]
+        Rotate: [0, -89.980217, -90.4899979]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -7847,8 +8296,8 @@ ENTITIES:
       UID: 11683562074028956539
     TransformComponent:
       Transform:
-        Translate: [-24.0900002, 20.2369995, 32.105999]
-        Rotate: [0, -89.980217, 0]
+        Translate: [-24.0900002, 20.0124874, 32.105999]
+        Rotate: [0, -89.980217, -90.8040009]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -7863,7 +8312,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-9.82999992, 15.6070004, 39.4360008]
-        Rotate: [0, -89.980217, 0]
+        Rotate: [0, -89.980217, -108.399002]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -7878,7 +8327,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-10.1700001, 15.7770004, 53.7960014]
-        Rotate: [0, -89.980217, 0]
+        Rotate: [0, -89.980217, -123.481003]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -7893,7 +8342,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-9.93999958, 15.6269999, 67.0059967]
-        Rotate: [0, -89.980217, 0]
+        Rotate: [0, -89.980217, -112.168999]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -7908,7 +8357,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-36.7299995, 27.5769997, 49.3959999]
-        Rotate: [18.2240009, -89.980217, 0]
+        Rotate: [18.2240009, -89.980217, -115.940002]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -7922,9 +8371,9 @@ ENTITIES:
       UID: 36333361852423351
     TransformComponent:
       Transform:
-        Translate: [-36.5600014, 33.3769989, 40.0760002]
-        Rotate: [18.2240009, -89.980217, 0]
-        Scale: [0.99999994, 1, 0.99999994]
+        Translate: [-35.5390739, 33.3769989, 40.0760002]
+        Rotate: [255.377792, -90, 0]
+        Scale: [0.999985278, 0.999982834, 0.999999046]
     SpotLightComponent:
       Light:
         Radiance: [0.823529422, 0.572549045, 0.101960786]
@@ -7937,9 +8386,9 @@ ENTITIES:
       UID: 9692417583021519804
     TransformComponent:
       Transform:
-        Translate: [5.80999994, 22.5569992, 29.7560005]
-        Rotate: [0, -89.980217, 0]
-        Scale: [0.99999994, 1, 0.99999994]
+        Translate: [5.71571589, 22.8471375, 29.7560005]
+        Rotate: [258.509674, -90, 0]
+        Scale: [0.999999702, 0.999999702, 0.999999642]
     SpotLightComponent:
       Light:
         Radiance: [0.823529422, 0.572549045, 0.101960786]
@@ -7952,9 +8401,9 @@ ENTITIES:
       UID: 5058029286475433775
     TransformComponent:
       Transform:
-        Translate: [-8.35999966, 22.7770004, 50.1860008]
-        Rotate: [0, -89.980217, 0]
-        Scale: [0.99999994, 1, 0.99999994]
+        Translate: [-7.63273478, 22.7770004, 50.1860008]
+        Rotate: [-44.9929352, -89.972023, -45.0080757]
+        Scale: [0.99999994, 0.999999702, 0.999999404]
     SpotLightComponent:
       Light:
         Radiance: [0.823529422, 0.572549045, 0.101960786]
@@ -7968,7 +8417,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-27.9599991, 28.6170006, 4.58599997]
-        Rotate: [0, -89.980217, 0]
+        Rotate: [0, -89.980217, -106.199997]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -7983,7 +8432,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-27.9300003, 31.0370007, -4.63399982]
-        Rotate: [0, -89.980217, 0]
+        Rotate: [0, -89.980217, -109.655998]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -7998,7 +8447,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-65.7399979, 33.7270012, -6.09399986]
-        Rotate: [0, -89.980217, 0]
+        Rotate: [0, -89.980217, -70.6949997]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -8013,7 +8462,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-65.4700012, 33.7270012, -16.4239998]
-        Rotate: [0, -89.980217, 0]
+        Rotate: [0, -89.980217, -83.2630005]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -8028,7 +8477,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-65.5, 33.7270012, 7.65600014]
-        Rotate: [0, -89.980217, 0]
+        Rotate: [0, -89.980217, -86.0910034]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -8043,7 +8492,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-65.5, 33.6269989, 14.7659998]
-        Rotate: [0, -89.980217, 0]
+        Rotate: [0, -89.980217, -90.4899979]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -8073,9 +8522,9 @@ ENTITIES:
       UID: 4176041017015991512
     TransformComponent:
       Transform:
-        Translate: [-44.6599998, 31.6870003, -27.8640003]
-        Rotate: [0, -89.980217, 0]
-        Scale: [0.99999994, 1, 0.99999994]
+        Translate: [-44.6599998, 31.3968868, -27.8640003]
+        Rotate: [-80.3184357, -90, -2.82800007]
+        Scale: [1.00000012, 1.00000012, 0.99999994]
     SpotLightComponent:
       Light:
         Radiance: [0.823529422, 0.572549045, 0.101960786]
@@ -8134,7 +8583,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-26.1100006, 34.0569992, -46.7540016]
-        Rotate: [0, -89.980217, 0]
+        Rotate: [0, -89.980217, -91.4319992]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -8179,7 +8628,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [3.70000005, 38.5569992, -46.9640007]
-        Rotate: [0, -89.980217, 0]
+        Rotate: [0, -89.980217, -93.9459991]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -8209,7 +8658,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-5.69000006, 33.9469986, -53.4140015]
-        Rotate: [0, -89.980217, 0]
+        Rotate: [0, -89.980217, -83.8909988]
         Scale: [0.99999994, 1, 0.99999994]
     SpotLightComponent:
       Light:
@@ -8311,7 +8760,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 7730071964959495492
       color: [0.470588237, 0.419607848, 0.419607848, 1]
-      uiOverlay: true
+      renderAs3D: false
     DeactivatedComponent:
       {}
   - InfoComponent:
@@ -8326,7 +8775,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 10830320094205736326
       color: [0.470588237, 0.419607848, 0.419607848, 1]
-      uiOverlay: true
+      renderAs3D: false
     DeactivatedComponent:
       {}
   - InfoComponent:
@@ -8341,7 +8790,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 12846627940444493632
       color: [0.470588237, 0.419607848, 0.419607848, 1]
-      uiOverlay: true
+      renderAs3D: false
     DeactivatedComponent:
       {}
   - InfoComponent:
@@ -8356,7 +8805,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 16990764436776752376
       color: [0.470588207, 0.419838488, 0.419838488, 1]
-      uiOverlay: true
+      renderAs3D: false
     DeactivatedComponent:
       {}
   - ColliderComponent:
@@ -8548,7 +8997,7 @@ ENTITIES:
       UID: 2484585604236038765
     TransformComponent:
       Transform:
-        Translate: [-2.77596498, 20.9644814, 30.6143227]
+        Translate: [-36.2288208, 26.898428, -25.3672867]
         Rotate: [0, -0, 0]
         Scale: [7.26999998, 4.63000011, 5.05000019]
     ScriptComponent:
@@ -8593,3 +9042,109 @@ ENTITIES:
           animTrigger: ""
           minDistance: 1
           maxDistance: 50
+  - InfoComponent:
+      Parent: 0
+      Name: 2nd_Level_Door
+      UID: 35976896518982433
+    TransformComponent:
+      Transform:
+        Translate: [-43.7162399, 27.4181995, -22.4433556]
+        Rotate: [89.9999847, -3.66399923e-12, 180]
+        Scale: [0.544274747, 0.999901354, 1.69026327]
+    ModelComponent:
+      ModelID: 5963078964798272625
+      MaterialID: 12207453972742617529
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 10218476581140508616
+        Type: TRIANGLE_MESH
+    InfoComponent:
+      Parent: 0
+      Name: 2ndFloorPlatform
+      UID: 3772334925194879998
+    TransformComponent:
+      Transform:
+        Translate: [-35.61483, 24.1844692, 20.3332367]
+        Rotate: [-180, -5.00895567e-06, -180]
+        Scale: [0.022100836, 0.019929938, 0.0158881806]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.022100836, 0.019929938, 0.0158881806]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 13196777273589981794
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 745832861092578866
+        Type: TRIANGLE_MESH
+    InfoComponent:
+      Parent: 0
+      Name: 2ndFloorPlatform (Copy)
+      UID: 11219956585080537341
+    TransformComponent:
+      Transform:
+        Translate: [-41.0712051, 34.4977417, 9.00165939]
+        Rotate: [-180, -5.00895567e-06, -180]
+        Scale: [0.022100836, 0.019929938, 0.0158881806]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.022100836, 0.019929938, 0.0158881806]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 9363644534041975679
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hut_Base (Copy)
+      UID: 13039769697529503876
+    TransformComponent:
+      Transform:
+        Translate: [-0.153001994, 23.6992722, 48.5304146]
+        Rotate: [0, -0, 0]
+        Scale: [0.474999994, 0.0227834657, 4.25]
+    ModelComponent:
+      ModelID: 1441742420851203854
+      MaterialID: 5692762562094318330
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
