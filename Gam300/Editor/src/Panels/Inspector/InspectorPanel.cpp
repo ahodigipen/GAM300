@@ -1210,9 +1210,8 @@ namespace EditorUI {
             ImGui::PopID();
 
             if (removed) {
-                m_App->GetPhysicsContext().ForceRemoveActor(static_cast<uint32_t>(m_App->SelectedEntity()));
-
-                // ACTUAL FIX: Remove the RIGIDBODY component
+                // Destroy physics controller if exists
+                m_App->GetPhysicsContext().DestroyController(static_cast<uint32_t>(m_App->SelectedEntity()));
                 ctx->scene.remove<Boom::RigidBodyComponent>(m_App->SelectedEntity());
                 return;
             }
@@ -2839,100 +2838,220 @@ namespace EditorUI {
         }
     }
 
-    void InspectorPanel::SnapEntity(Boom::Entity& entity, glm::vec3 direction) {
-        if (!entity.Has<Boom::TransformComponent>() || !entity.Has<Boom::ColliderComponent>()) {
-            BOOM_WARN("Cannot snap: Entity needs both Transform and Collider");
-            return;
-        }
+    void InspectorPanel::SnapEntity(Boom::Entity& entity, glm::vec3 direction)
+    {
+        Boom::AppContext* ctx = GetContext();
+        if (!ctx || !entity.Has<Boom::TransformComponent>()) return;
 
         auto& tc = entity.Get<Boom::TransformComponent>();
-        auto& col = entity.Get<Boom::ColliderComponent>().Collider;
-        auto& phys = m_App->GetPhysicsContext();
+        const float maxDistance = 100.0f;
 
-        // 1. Calculate the half-extent in the snap direction based on collider type
-        glm::vec3 worldScale = tc.transform.scale * col.localScale;
-        float halfExtent = 0.0f;
+        // Get entity's current world position
+        glm::mat4 worldMatrix = Boom::GetWorldMatrix(ctx->scene, entity.ID());
+        glm::vec3 entityWorldPos;
+        glm::vec3 unused1, unused2;
+        Boom::DecomposeMatrix(worldMatrix, entityWorldPos, unused1, unused2);
 
-        if (col.type == Boom::Collider3D::BOX) {
-            // For box: project the half-size onto the snap direction
-            glm::vec3 halfSize = worldScale * 0.5f;
-            halfExtent = glm::abs(glm::dot(direction, halfSize));
+        // Calculate ray origin - start from entity center, offset slightly in opposite direction
+        // to avoid self-intersection
+        glm::vec3 rayOrigin = entityWorldPos - direction * 0.1f;
+        glm::vec3 rayDir = glm::normalize(direction);
+
+        // Get entity's own AABB for offset calculation
+        glm::vec3 entityAABBMin, entityAABBMax;
+        GetEntityAABB(entity, entityAABBMin, entityAABBMax);
+
+        // Calculate entity half-size in the snap direction
+        glm::vec3 entityHalfSize = (entityAABBMax - entityAABBMin) * 0.5f;
+        float entityOffset = glm::abs(glm::dot(entityHalfSize, rayDir));
+
+        // Try physics raycast first (works if actors exist)
+        auto physResult = ctx->physics->Raycast(rayOrigin, rayDir, maxDistance);
+
+        bool hitFound = false;
+        glm::vec3 hitPoint;
+        glm::vec3 hitNormal;
+        entt::entity hitEntity = entt::null;
+
+        if (physResult.hitFound && physResult.hitEntity != entity.ID()) {
+            hitFound = true;
+            hitPoint = physResult.position;
+            hitNormal = physResult.normal;
+            hitEntity = physResult.hitEntity;
         }
-        else if (col.type == Boom::Collider3D::SPHERE) {
-            // For sphere: use the radius
-            halfExtent = glm::max(worldScale.x, glm::max(worldScale.y, worldScale.z)) * 0.5f;
-        }
-        else if (col.type == Boom::Collider3D::CAPSULE || col.type == Boom::Collider3D::CYLINDER) {
-            // For capsule/cylinder: use height/2 for Y direction, radius for X/Z
-            if (glm::abs(direction.y) > 0.5f) {
-                halfExtent = worldScale.y * 0.5f;
-            }
-            else {
-                halfExtent = glm::max(worldScale.x, worldScale.z) * 0.5f;
-            }
-        }
-        else {
-            // Fallback for mesh colliders
-            halfExtent = glm::abs(glm::dot(direction, worldScale * 0.5f));
-        }
 
-        // Ensure minimum extent to prevent issues with very small objects
-        halfExtent = glm::max(halfExtent, 0.01f);
+        // Fallback: Check against all entities with models or colliders (for edit mode)
+        if (!hitFound) {
+            float closestDist = maxDistance;
 
-        // 2. Start the raycast from OUTSIDE the object in the snap direction
-        // Move the ray origin opposite to the snap direction by the half-extent + small offset
-        float rayOffset = halfExtent + 0.1f; // Small buffer to ensure we're outside the collider
-        glm::vec3 rayOrigin = tc.transform.translate - (direction * rayOffset);
+            auto view = ctx->scene.view<Boom::TransformComponent>();
+            for (auto e : view) {
+                if (e == entity.ID()) continue; // Skip self
 
-        // 3. Perform the raycast - increase distance to account for the offset
-        float maxDistance = 100.0f + rayOffset;
-        auto hit = phys.Raycast(rayOrigin, direction, maxDistance);
+                bool hasModel = ctx->scene.any_of<Boom::ModelComponent>(e);
+                bool hasCollider = ctx->scene.any_of<Boom::ColliderComponent>(e);
+                if (!hasModel && !hasCollider) continue;
 
-        if (hit.hitFound) {
-            // 4. Don't snap to self - check if hit entity is this entity
-            if (hit.hitEntity == entity.ID()) {
-                // Try again with a longer ray, starting further out
-                rayOrigin = tc.transform.translate - (direction * (halfExtent + 1.0f));
-                hit = phys.Raycast(rayOrigin, direction, maxDistance + 1.0f);
+                // Get target entity's AABB
+                glm::vec3 targetMin, targetMax;
+                GetEntityAABBForSnap(ctx, e, targetMin, targetMax);
 
-                if (!hit.hitFound || hit.hitEntity == entity.ID()) {
-                    BOOM_WARN("Snap failed: No valid surface found");
-                    return;
+                // Ray-AABB intersection
+                float t;
+                if (RayAABBIntersection(rayOrigin, rayDir, targetMin, targetMax, t)) {
+                    if (t > 0.0f && t < closestDist) {
+                        closestDist = t;
+                        hitFound = true;
+                        hitPoint = rayOrigin + rayDir * t;
+                        hitEntity = e;
+
+                        // Calculate approximate normal based on which face was hit
+                        hitNormal = CalculateAABBHitNormal(hitPoint, targetMin, targetMax);
+                    }
                 }
             }
+        }
 
-            // 5. Calculate new position: hit point offset by half-extent in opposite direction
-            glm::vec3 newPos = hit.position - (direction * halfExtent);
+        if (hitFound) {
+            // Calculate new position: hit point + offset so entity sits on surface
+            glm::vec3 newWorldPos = hitPoint - rayDir * entityOffset;
 
-            // Use an undo command so you can revert the snap
-            auto* history = m_Owner->GetCommandHistory();
-            if (history) {
-                Boom::Transform3D oldTransform = tc.transform;
-                tc.transform.translate = newPos;
-
-                auto command = std::make_unique<TransformCommand>(
-                    &GetContext()->scene,
-                    entity.ID(),
-                    oldTransform,
-                    tc.transform,
-                    "Snap to Surface"
-                );
-                history->Execute(std::move(command));
+            // If entity has a parent, convert world position to local
+            entt::entity parent = Boom::GetParentEntity(ctx->scene, entity.ID());
+            if (parent != entt::null) {
+                glm::mat4 parentWorld = Boom::GetWorldMatrix(ctx->scene, parent);
+                glm::mat4 parentInverse = glm::inverse(parentWorld);
+                glm::vec4 localPos = parentInverse * glm::vec4(newWorldPos, 1.0f);
+                tc.transform.translate = glm::vec3(localPos);
             }
             else {
-                tc.transform.translate = newPos;
+                tc.transform.translate = newWorldPos;
             }
 
-            // 6. Sync physics actor immediately
-            phys.UpdateRigidBodyTransform(entity, tc.transform);
+            // Get hit entity name for logging
+            std::string hitName = "Unknown";
+            if (hitEntity != entt::null && ctx->scene.all_of<Boom::InfoComponent>(hitEntity)) {
+                hitName = ctx->scene.get<Boom::InfoComponent>(hitEntity).name;
+            }
 
-            BOOM_INFO("Snapped entity to surface at distance {:.2f}", hit.distance);
+            BOOM_INFO("[Snap] Snapped entity to '{}' (distance: {:.2f})", hitName, glm::distance(entityWorldPos, newWorldPos));
         }
         else {
-            BOOM_WARN("Snap failed: No surface found in direction ({:.1f}, {:.1f}, {:.1f})",
-                direction.x, direction.y, direction.z);
+            BOOM_WARN("[Snap] No surface found in direction ({:.1f}, {:.1f}, {:.1f})", direction.x, direction.y, direction.z);
         }
     }
+
+    // Helper: Get AABB for any entity (model or collider)
+    void InspectorPanel::GetEntityAABBForSnap(Boom::AppContext* ctx, entt::entity entity, glm::vec3& outMin, glm::vec3& outMax)
+    {
+        auto& tc = ctx->scene.get<Boom::TransformComponent>(entity);
+        glm::mat4 worldMatrix = Boom::GetWorldMatrix(ctx->scene, entity);
+
+        glm::vec3 localMin(-0.5f), localMax(0.5f); // Default 1x1x1 box
+
+        // Try to get model bounds
+        if (ctx->scene.any_of<Boom::ModelComponent>(entity)) {
+            auto& mc = ctx->scene.get<Boom::ModelComponent>(entity);
+            if (mc.modelID != EMPTY_ASSET) {
+                auto* modelAsset = ctx->assets->TryGet<ModelAsset>(mc.modelID);
+                if (modelAsset && modelAsset->data) {
+                    auto staticModel = std::dynamic_pointer_cast<Boom::StaticModel>(modelAsset->data);
+                    if (staticModel) {
+                        const auto& meshData = staticModel->GetMeshData();
+                        if (!meshData.empty()) {
+                            localMin = glm::vec3(FLT_MAX);
+                            localMax = glm::vec3(-FLT_MAX);
+                            for (const auto& mesh : meshData) {
+                                for (const auto& vertex : mesh.vtx) {
+                                    localMin = glm::min(localMin, vertex.pos);
+                                    localMax = glm::max(localMax, vertex.pos);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // Or use collider bounds
+        else if (ctx->scene.any_of<Boom::ColliderComponent>(entity)) {
+            auto& cc = ctx->scene.get<Boom::ColliderComponent>(entity);
+            glm::vec3 halfSize = cc.Collider.localScale * 0.5f;
+            localMin = cc.Collider.localPosition - halfSize;
+            localMax = cc.Collider.localPosition + halfSize;
+        }
+
+        // Transform corners to world space and find AABB
+        std::vector<glm::vec3> corners = {
+            glm::vec3(localMin.x, localMin.y, localMin.z),
+            glm::vec3(localMax.x, localMin.y, localMin.z),
+            glm::vec3(localMin.x, localMax.y, localMin.z),
+            glm::vec3(localMax.x, localMax.y, localMin.z),
+            glm::vec3(localMin.x, localMin.y, localMax.z),
+            glm::vec3(localMax.x, localMin.y, localMax.z),
+            glm::vec3(localMin.x, localMax.y, localMax.z),
+            glm::vec3(localMax.x, localMax.y, localMax.z)
+        };
+
+        outMin = glm::vec3(FLT_MAX);
+        outMax = glm::vec3(-FLT_MAX);
+        for (const auto& corner : corners) {
+            glm::vec3 worldCorner = glm::vec3(worldMatrix * glm::vec4(corner, 1.0f));
+            outMin = glm::min(outMin, worldCorner);
+            outMax = glm::max(outMax, worldCorner);
+        }
+    }
+
+    void InspectorPanel::GetEntityAABB(Boom::Entity& entity, glm::vec3& outMin, glm::vec3& outMax)
+    {
+        Boom::AppContext* ctx = GetContext();
+        if (!ctx) {
+            outMin = outMax = glm::vec3(0.0f);
+            return;
+        }
+        GetEntityAABBForSnap(ctx, entity.ID(), outMin, outMax);
+    }
+
+    bool InspectorPanel::RayAABBIntersection(const glm::vec3& rayOrigin, const glm::vec3& rayDir,
+        const glm::vec3& aabbMin, const glm::vec3& aabbMax, float& t)
+    {
+        glm::vec3 invDir = 1.0f / rayDir;
+        glm::vec3 t1 = (aabbMin - rayOrigin) * invDir;
+        glm::vec3 t2 = (aabbMax - rayOrigin) * invDir;
+
+        glm::vec3 tmin = glm::min(t1, t2);
+        glm::vec3 tmax = glm::max(t1, t2);
+
+        float tmin_val = glm::max(glm::max(tmin.x, tmin.y), tmin.z);
+        float tmax_val = glm::min(glm::min(tmax.x, tmax.y), tmax.z);
+
+        if (tmax_val >= tmin_val && tmax_val >= 0) {
+            t = tmin_val > 0 ? tmin_val : tmax_val;
+            return true;
+        }
+        return false;
+    }
+
+    glm::vec3 InspectorPanel::CalculateAABBHitNormal(const glm::vec3& hitPoint, const glm::vec3& aabbMin, const glm::vec3& aabbMax)
+    {
+        const float epsilon = 0.001f;
+        glm::vec3 center = (aabbMin + aabbMax) * 0.5f;
+        glm::vec3 halfSize = (aabbMax - aabbMin) * 0.5f;
+        glm::vec3 localHit = hitPoint - center;
+
+        // Find which face the hit is closest to
+        glm::vec3 d = glm::abs(localHit) - halfSize;
+
+        if (d.x > d.y && d.x > d.z) {
+            return glm::vec3(localHit.x > 0 ? 1.0f : -1.0f, 0.0f, 0.0f);
+        }
+        else if (d.y > d.z) {
+            return glm::vec3(0.0f, localHit.y > 0 ? 1.0f : -1.0f, 0.0f);
+        }
+        else {
+            return glm::vec3(0.0f, 0.0f, localHit.z > 0 ? 1.0f : -1.0f);
+        }
+    }
+
 
     template <class Type>
     void InspectorPanel::UpdateComponent(Boom::ComponentID id, Boom::Entity& selected) {
