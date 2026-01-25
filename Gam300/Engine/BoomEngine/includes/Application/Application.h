@@ -420,8 +420,14 @@ namespace Boom
 		*/
 		BOOM_INLINE ApplicationState GetState() const { return m_AppState; }
 
-		// Set application state to pause
+		// Set game to pause
 		BOOM_INLINE void SetGameLogicPaused(bool paused) { m_IsGameLogicPaused = paused; }
+
+		// Set player dead
+		BOOM_INLINE void SetPlayerDead(bool isDead) { m_IsPlayerDead = isDead; }
+
+		// Set game end
+		BOOM_INLINE void SetGameEnd(bool isEnd) { m_IsEnd = isEnd; }
 
 		/**
 		* @brief Checks if the application is currently in play mode
@@ -586,7 +592,7 @@ namespace Boom
 
 		BOOM_INLINE bool LoadSceneAdditive(const std::string& sceneName, const std::string& scenePath = "Scenes/")
 		{
-			BOOM_INFO("[Scene] Checking for existing objects for: {}", sceneName.c_str());
+			BOOM_INFO("[Scene] Checking for existing objects for: {}", sceneName);
 			auto& reg = m_Context->scene;
 
 			// 1. Determine which MenuType we are trying to load based on the string
@@ -596,6 +602,7 @@ namespace Boom
 			else if (sceneName.find("Death") != std::string::npos) targetType = MenuType::Death;
 			else if (sceneName.find("Settings") != std::string::npos) targetType = MenuType::Settings;
 			else if (sceneName.find("Main") != std::string::npos) targetType = MenuType::Main;
+			else if (sceneName.find("End") != std::string::npos) targetType = MenuType::End;
 
 			// 2. Check if objects of this MenuType *already exist*
 			bool alreadyLoaded = false;
@@ -614,12 +621,12 @@ namespace Boom
 
 			if (alreadyLoaded)
 			{
-				BOOM_INFO("[Scene] Objects for '{}' already exist. Ensuring they are deactivated.", sceneName.c_str());
+				BOOM_INFO("[Scene] Objects for '{}' already exist. Ensuring they are deactivated.", sceneName);
 				return true;
 			}
 
 			// --- LOAD FROM FILE ---
-			BOOM_INFO("[Scene] Performing full additive load for '{}'", sceneName.c_str());
+			BOOM_INFO("[Scene] Performing full additive load for '{}'", sceneName);
 			DataSerializer serializer;
 			const std::string sceneFilePath = scenePath + sceneName + ".yaml";
 			serializer.Deserialize(m_Context->scene, *m_Context->assets, sceneFilePath);
@@ -782,7 +789,6 @@ namespace Boom
 			}
 		}
 
-		BOOM_INLINE void SetPlayerDead(bool isDead) { m_IsPlayerDead = isDead; }
 
 
 		BOOM_INLINE void LightsUpdate() {
@@ -1203,7 +1209,8 @@ namespace Boom
 		std::string m_PrePlayScenePath = "";
 		std::string m_PrePlayScene_OriginalPath = "";
 		bool m_IsInPlayMode = true;
-		bool m_IsPlayerDead = false;
+		bool m_IsPlayerDead = false;	// For Death Menu
+		bool m_IsEnd = false;			// For End Menu
 
 		Boom::AISystem                         m_AIagents;
 		Boom::NavAgentSystem                   m_NavAgents;

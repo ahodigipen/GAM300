@@ -277,7 +277,7 @@ namespace Boom
                 for (auto entity : scriptView) {
                     auto& sc = scriptView.get<Boom::ScriptComponent>(entity);
                     bool isMenuObject = registry.any_of<Boom::MenuComponent>(entity);
-                    bool shouldUpdate = (!m_IsGameLogicPaused && !m_IsPlayerDead) || isMenuObject;
+                    bool shouldUpdate = (!m_IsGameLogicPaused && !m_IsPlayerDead && !m_IsEnd) || isMenuObject;
 
                     // 3. CRITICAL: Never update an object if it is Deactivated (Hidden)
                     if (registry.any_of<DeactivatedComponent>(entity)) {
@@ -291,7 +291,7 @@ namespace Boom
                 }
 
                 // --- RUN ALL GAME LOGIC ---
-                if (!m_IsGameLogicPaused && !m_IsPlayerDead) {
+                if (!m_IsGameLogicPaused && !m_IsPlayerDead && !m_IsEnd) {
                     // AI Logic
                     m_AIagents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime));
                     if (m_Nav) {
@@ -619,7 +619,7 @@ namespace Boom
                         // float dt = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) ? (float)m_Context->DeltaTime : 0.0f;
                         bool shouldAnimate = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING);
                         bool isMenuObj = entity.Has<Boom::MenuComponent>();
-                        if ((m_IsGameLogicPaused || m_IsPlayerDead) && !isMenuObj) {
+                        if ((m_IsGameLogicPaused || m_IsPlayerDead || m_IsEnd) && !isMenuObj) {
                             shouldAnimate = false;
                         }
 

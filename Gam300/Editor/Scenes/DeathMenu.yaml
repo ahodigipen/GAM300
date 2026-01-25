@@ -2,38 +2,34 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
-      Name: Death_Background
-      UID: 6565047407581518351
+      Name: Death_RestartButton
+      UID: 3023727914892643418
     TransformComponent:
       Transform:
-        Translate: [0, 0.200000003, 0]
+        Translate: [0, -0.400000006, 0]
         Rotate: [0, 0, 0]
-        Scale: [1, 0.699999988, 1]
+        Scale: [0.200000003, 0.100000001, 1]
     SpriteComponent:
-      textureID: 11757656334676127170
+      textureID: 12846627940444493632
       color: [1, 1, 1, 1]
       uiOverlay: true
     MenuComponent:
       MenuType: 1
-    DeactivatedComponent:
-      {}
   - InfoComponent:
       Parent: 0
-      Name: Death Menu Script
-      UID: 12489556233822804325
+      Name: Death_ReturnButton
+      UID: 15993560601461334781
     TransformComponent:
       Transform:
-        Translate: [0, 0, 0]
+        Translate: [0, -0.600000024, 0]
         Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.DeathMenu
-      ParamsJSON: "{}"
+        Scale: [0.200000003, 0.100000001, 1]
+    SpriteComponent:
+      textureID: 10830320094205736326
+      color: [1, 1, 1, 1]
+      uiOverlay: true
     MenuComponent:
       MenuType: 1
-    DeactivatedComponent:
-      {}
   - InfoComponent:
       Parent: 0
       Name: Death_Camera
@@ -52,35 +48,31 @@ ENTITIES:
       MenuType: 1
   - InfoComponent:
       Parent: 0
-      Name: Death_ReturnButton
-      UID: 15993560601461334781
+      Name: Death Menu Script
+      UID: 12489556233822804325
     TransformComponent:
       Transform:
-        Translate: [0, -0.600000024, 0]
+        Translate: [0, 0, 0]
         Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.100000001, 1]
-    SpriteComponent:
-      textureID: 10830320094205736326
-      color: [1, 1, 1, 1]
-      uiOverlay: true
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.DeathMenu
+      ParamsJSON: "{}"
     MenuComponent:
       MenuType: 1
-    DeactivatedComponent:
-      {}
   - InfoComponent:
       Parent: 0
-      Name: Death_RestartButton
-      UID: 3023727914892643418
+      Name: Death_Background
+      UID: 6565047407581518351
     TransformComponent:
       Transform:
-        Translate: [0, -0.400000006, 0]
+        Translate: [0, 0.200000003, 0]
         Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.100000001, 1]
+        Scale: [1, 0.699999988, 1]
     SpriteComponent:
-      textureID: 12846627940444493632
+      textureID: 11757656334676127170
       color: [1, 1, 1, 1]
       uiOverlay: true
     MenuComponent:
       MenuType: 1
-    DeactivatedComponent:
-      {}
