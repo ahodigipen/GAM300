@@ -222,15 +222,36 @@ ENTITIES:
       Enabled: true
       TypeName: GameScripts.EnemyController
       ParamsJSON: "{}"
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 2, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [100, 200, 100]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: CAPSULE
+    InfoComponent:
       Parent: 0
       Name: Level2_PatrolEnemy_6
       UID: 14450237795829985322
     TransformComponent:
       Transform:
-        Translate: [-64.7831268, 31.8782978, 20.773016]
-        Rotate: [0, 89.980217, 0]
+        Translate: [-46.5436516, 31.8782978, 10.7598639]
+        Rotate: [0, -31.6149998, 0]
         Scale: [0.0200004745, 0.0199999996, 0.0200004745]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0200004745, 0.0199999996, 0.0200004745]
+        FreezeRotationX: true
+        FreezeRotationY: true
+        FreezeRotationZ: true
+        Type: DYNAMIC
     ModelComponent:
       ModelID: 4710766639830257905
       MaterialID: 14920165367361296626
@@ -316,21 +337,43 @@ ENTITIES:
       LoseRadius: 12
       IdleWait: 1
       PatrolPoints:
-        []
+        - [-64.7831268, 31.8782978, 20.773016]
+        - [-46.5436516, 31.8782978, 10.7598639]
       PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
       ParamsJSON: "{}"
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 1.98000002, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [100, 200, 100]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: CAPSULE
+    InfoComponent:
       Parent: 0
       Name: Level2_PatrolEnemy_5
       UID: 263206634475258297
     TransformComponent:
       Transform:
-        Translate: [-62.5423012, 24.596777, -9.54350471]
+        Translate: [-31.1600056, 24.8474388, -9.79262638]
         Rotate: [0, 89.980217, 0]
         Scale: [0.0200004745, 0.0199999996, 0.0200004745]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0200004745, 0.0199999996, 0.0200004745]
+        FreezeRotationX: true
+        FreezeRotationY: true
+        FreezeRotationZ: true
+        Type: DYNAMIC
     ModelComponent:
       ModelID: 4710766639830257905
       MaterialID: 14920165367361296626
@@ -416,21 +459,43 @@ ENTITIES:
       LoseRadius: 12
       IdleWait: 1
       PatrolPoints:
-        []
+        - [-62.5423012, 24.8474388, -9.79262638]
+        - [-31.1600056, 24.8474388, -9.79262638]
       PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
       ParamsJSON: "{}"
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 2, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [100, 200, 100]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: CAPSULE
+    InfoComponent:
       Parent: 0
       Name: Level2_PatrolEnemy_4
       UID: 9730896463395262189
     TransformComponent:
       Transform:
-        Translate: [-31.8510666, 24.596777, 24.0069332]
+        Translate: [-31.8510666, 24.596777, 0.315589666]
         Rotate: [0, -0, 0]
         Scale: [0.0200004764, 0.0199999996, 0.0200004764]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0200004764, 0.0199999996, 0.0200004764]
+        FreezeRotationX: true
+        FreezeRotationY: true
+        FreezeRotationZ: true
+        Type: DYNAMIC
     ModelComponent:
       ModelID: 4710766639830257905
       MaterialID: 14920165367361296626
@@ -516,21 +581,43 @@ ENTITIES:
       LoseRadius: 12
       IdleWait: 1
       PatrolPoints:
-        []
+        - [-31.8510666, 24.596777, 24.0069332]
+        - [-31.8510666, 24.596777, 0.315589666]
       PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
       ParamsJSON: "{}"
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 2, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [100, 200, 100]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: CAPSULE
+    InfoComponent:
       Parent: 0
       Name: Level2_PatrolEnemy_3
       UID: 7103488143176582610
     TransformComponent:
       Transform:
-        Translate: [-13.3622103, 13.4397764, 62.1609154]
-        Rotate: [0, -90, 0]
-        Scale: [0.0200004783, 0.0199999996, 0.0200004783]
+        Translate: [-34.7096901, 13.4397764, 62.1609154]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.0200004764, 0.0199999996, 0.0200004764]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0200004764, 0.0199999996, 0.0200004764]
+        FreezeRotationX: true
+        FreezeRotationY: true
+        FreezeRotationZ: true
+        Type: DYNAMIC
     ModelComponent:
       ModelID: 4710766639830257905
       MaterialID: 14920165367361296626
@@ -616,21 +703,44 @@ ENTITIES:
       LoseRadius: 12
       IdleWait: 1
       PatrolPoints:
-        []
+        - [-13.3622103, 13.4397764, 62.1609154]
+        - [-28.2320347, 13.4397764, 62.1609154]
+        - [-34.7096901, 13.4397764, 62.1609154]
       PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
       ParamsJSON: "{}"
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 2, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [100, 200, 100]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: CAPSULE
+    InfoComponent:
       Parent: 0
       Name: Level2_PatrolEnemy_1
       UID: 11377284783086712530
     TransformComponent:
       Transform:
-        Translate: [-23.7347622, 13.4397764, 30.1638565]
+        Translate: [-12.0609379, 13.4397764, 31.8400135]
         Rotate: [0, 89.980217, 0]
         Scale: [0.0200004783, 0.0199999996, 0.0200004783]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0200004783, 0.0199999996, 0.0200004783]
+        FreezeRotationX: true
+        FreezeRotationY: true
+        FreezeRotationZ: true
+        Type: DYNAMIC
     ModelComponent:
       ModelID: 4710766639830257905
       MaterialID: 14920165367361296626
@@ -716,21 +826,43 @@ ENTITIES:
       LoseRadius: 12
       IdleWait: 1
       PatrolPoints:
-        []
+        - [-23.0942459, 13.4397764, 31.8400135]
+        - [-12.0609379, 13.4397764, 31.8400135]
       PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
       ParamsJSON: "{}"
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 2, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [100, 200, 100]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: CAPSULE
+    InfoComponent:
       Parent: 0
       Name: Level2_PatrolEnemy_2
       UID: 4350822310922817577
     TransformComponent:
       Transform:
-        Translate: [-13.3622103, 13.4397764, 39.6917191]
+        Translate: [-13.3622103, 13.4397764, 58.4554634]
         Rotate: [0, -0, 0]
         Scale: [0.0200004783, 0.0199999996, 0.0200004783]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0200004783, 0.0199999996, 0.0200004783]
+        FreezeRotationX: true
+        FreezeRotationY: true
+        FreezeRotationZ: true
+        Type: DYNAMIC
     ModelComponent:
       ModelID: 4710766639830257905
       MaterialID: 14920165367361296626
@@ -816,7 +948,8 @@ ENTITIES:
       LoseRadius: 12
       IdleWait: 1
       PatrolPoints:
-        []
+        - [-13.3622103, 13.4397764, 39.6917191]
+        - [-13.3622103, 13.4397764, 58.4554634]
       PatrolIndex: 0
     ScriptComponent:
       Enabled: true
@@ -2180,6 +2313,44 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _footstepSoundPath
+          filePaths:
+            - Resources/Audio/playerRun_02.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/enemyHurt_2.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
     AnimatorComponent:
       Clips:
         - name: Samurai Idle
@@ -4703,8 +4874,8 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
-        PhysicsMesh: 13244744886219103757
-        Type: CONVEX_MESH
+        PhysicsMesh: 799933234689450045
+        Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
       Name: Floor_3_Ground
@@ -4786,7 +4957,7 @@ ENTITIES:
       MaterialSource: ""
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 0, 0]
+        LocalPosition: [0, 1.98000002, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
         DynamicFriction: 0.5
@@ -7433,13 +7604,13 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [10, 1, 1]
-        DynamicFriction: 0
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
-        PhysicsMesh: 13244744886219103757
-        Type: CONVEX_MESH
+        PhysicsMesh: 799933234689450045
+        Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
       Name: FLOOR2
@@ -7968,8 +8139,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-25.8479481, 52.3842354, 46.0151939]
-        Rotate: [-210.4375, 1599.125, 180]
+        Translate: [-28.5599213, 47.3293228, 57.4305115]
+        Rotate: [-248.4375, 1350, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
