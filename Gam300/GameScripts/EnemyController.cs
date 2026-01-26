@@ -20,7 +20,7 @@ namespace GameScripts
         [Boom.EditorExposed("Rotation Speed", "Degrees per second for smooth rotation", 10f, 360f, true)]
         private float _rotationSpeed = 90f; // Degrees per second for smooth rotation
 
-        [Boom.EditorExposed("Rotation Angle", "Degrees to rotate each turn", 1f, 360f, true)]
+        [Boom.EditorExposed("Rotation Angle", "Degrees to rotate each turn", 10f, 360f, true)]
         private float _rotationAngle = 90f; // Degrees to rotate per turn (configurable per sentry)
 
         private bool _isRotating = false;
