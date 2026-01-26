@@ -70,14 +70,11 @@ namespace GameScripts
         private static bool s_isStealthInvisible = false;
 
         // ==== Freeze Ability Fields ====
-        private const int PICKUP_KEY = API.KEY_F;
-        private const int USE_KEY = API.KEY_G;
+        private const int USE_FREEZE = API.KEY_E;
+        private bool _wasUseFreezeDown = false;
 
         private bool _canPickupFreeze = false;
         private ulong _currentPickupEntity = 0;
-
-        private bool _wasPickupKeyDown = false;
-        private bool _wasUseKeyDown = false;
 
         private HashSet<ulong> _freezePickupIDs = new HashSet<ulong>();
         private const int MAX_PICKUPS_TO_CHECK = 10;
@@ -299,39 +296,13 @@ namespace GameScripts
 
             FreezeManager.Update(dt);
 
-            bool isPickupDown = API.IsKeyDown(PICKUP_KEY);
-            bool isPickupPressed = isPickupDown && !_wasPickupKeyDown;
-            _wasPickupKeyDown = isPickupDown;
-
-            bool isUseDown = API.IsKeyDown(USE_KEY);
-            bool isUsePressed = isUseDown && !_wasUseKeyDown;
-            _wasUseKeyDown = isUseDown;
+            bool isUseFreeze = API.IsKeyDown(USE_FREEZE);
+            bool isFreezePressed = isUseFreeze && !_wasUseFreezeDown;
+            _wasUseFreezeDown = isUseFreeze;
 
             if (API.GetApplicationState() != API.APP_STATE_PAUSED)
             {
-                if (isPickupPressed && _canPickupFreeze)
-                {
-                    if (!PlayerInventory.HasFreezePower())
-                    {
-                        if (PlayerInventory.TryAddFreezeCharge())
-                        {
-                            API.Log("[PlayerMovement] Picked up Freeze Ability!");
-
-                            if (_currentPickupEntity != 0)
-                            {
-                                API.SetPosition(_currentPickupEntity, new Vec3(0, -5000, 0));
-                                _canPickupFreeze = false;
-                                _currentPickupEntity = 0;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        API.Log("[PlayerMovement] Cannot pickup: You already have a Freeze Charge!");
-                    }
-                }
-
-                if (isUsePressed)
+                if (isFreezePressed)
                 {
                     if (PlayerInventory.HasFreezePower())
                     {
@@ -353,6 +324,7 @@ namespace GameScripts
                         API.Log("[PlayerMovement] No Freeze Charge available!");
                     }
                 }
+
             }
 
             _footstepComponent?.OnUpdate(dt);
@@ -589,9 +561,18 @@ namespace GameScripts
 
                 if (s_instance != null && s_instance._freezePickupIDs.Contains(triggerEntity))
                 {
-                    s_instance._canPickupFreeze = true;
-                    s_instance._currentPickupEntity = triggerEntity;
-                    API.Log($"[PlayerMovement] Standing on Freeze Powerup (ID: {triggerEntity}). Press F to pickup.");
+                    if (!PlayerInventory.HasFreezePower())
+                    {
+                        if (PlayerInventory.TryAddFreezeCharge())
+                        {
+                            API.Log($"[PlayerMovement] Instant Pickup: Freeze Powerup (ID: {triggerEntity})");
+                            API.DestroyEntity(triggerEntity);
+                        }
+                    }
+                    else
+                    {
+                        API.Log("[PlayerMovement] Inventory Full: Cannot pick up freeze.");
+                    }
                     return;
                 }
             }
