@@ -44,6 +44,11 @@ namespace EditorUI {
 
 		void AnimatorComponentUI(Boom::Entity& selected);
 		void SoundComponentUI(Boom::Entity& selected);
+        void GetEntityAABB(Boom::Entity& entity, glm::vec3& outMin, glm::vec3& outMax);
+        void GetEntityAABBForSnap(Boom::AppContext* ctx, entt::entity entity, glm::vec3& outMin, glm::vec3& outMax);
+        bool RayAABBIntersection(const glm::vec3& rayOrigin, const glm::vec3& rayDir,
+            const glm::vec3& aabbMin, const glm::vec3& aabbMax, float& t);
+        glm::vec3 CalculateAABBHitNormal(const glm::vec3& hitPoint, const glm::vec3& aabbMin, const glm::vec3& aabbMax);
 		void VideoComponentUI(Boom::Entity& selected);
 
     private:
