@@ -1,7 +1,18 @@
 // VideoPlayer.cpp - MPEG1 video playback using pl_mpeg
 #include "Core.h"
+
+// Suppress warnings from third-party pl_mpeg library
+#pragma warning(push)
+#pragma warning(disable: 4305)  // truncation from double to float
+#pragma warning(disable: 4244)  // conversion from 'int' to 'uint8_t', possible loss of data
+#pragma warning(disable: 4267)  // conversion from 'size_t' to 'long', possible loss of data
+#pragma warning(disable: 26451) // arithmetic overflow
+
 #define PL_MPEG_IMPLEMENTATION
-#include "Graphics/Video/pl_mpeg.h"  // You must download this from GitHub!
+#include "Graphics/Video/pl_mpeg.h"
+
+#pragma warning(pop)
+
 #include "Graphics/Video/VideoPlayer.h"
 
 
@@ -123,8 +134,8 @@ namespace Boom {
             return;
         }
 
-        // Apply playback speed
-        double adjustedDelta = deltaTime * m_PlaybackSpeed;
+        // Apply playback speed (used for timing calculations)
+        (void)(deltaTime * m_PlaybackSpeed);
 
         // Decode video frame
         plm_frame_t* frame = plm_decode_video(m_PLM);

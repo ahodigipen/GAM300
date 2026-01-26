@@ -6,6 +6,13 @@
 #include <unordered_set>
 #include <memory>
 
+// Suppress C4251 warnings for STL types in DLL interface
+// These are internal implementation details and are safe to ignore
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+
 namespace Boom {
 
     // Forward declarations
@@ -121,3 +128,7 @@ namespace Boom {
     };
 
 } // namespace Boom
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
