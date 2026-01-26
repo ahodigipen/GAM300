@@ -19,6 +19,10 @@ namespace GameScripts
 
         [Boom.EditorExposed("Rotation Speed", "Degrees per second for smooth rotation", 10f, 360f, true)]
         private float _rotationSpeed = 90f; // Degrees per second for smooth rotation
+
+        [Boom.EditorExposed("Rotation Angle", "Degrees to rotate each turn", 1f, 360f, true)]
+        private float _rotationAngle = 90f; // Degrees to rotate per turn (configurable per sentry)
+
         private bool _isRotating = false;
         private const string TURN_SOUND_ID = "enemy_turn";
 
@@ -155,7 +159,7 @@ namespace GameScripts
                 if (_rotationTimer >= _rotationInterval)
                 {
                     _rotationTimer = 0f;
-                    _targetYRotation += 90f;
+                    _targetYRotation += _rotationAngle;
 
                     if (_targetYRotation >= 360f)
                         _targetYRotation -= 360f;
@@ -390,6 +394,12 @@ namespace GameScripts
         {
             _rotationInterval = seconds;
             API.Log($"[EnemyController] Rotation interval set to {_rotationInterval}s");
+        }
+
+        public void SetRotationAngle(float degrees)
+        {
+            _rotationAngle = degrees;
+            API.Log($"[EnemyController] Rotation angle set to {_rotationAngle}°");
         }
 
         // NEW: Proximity configuration
