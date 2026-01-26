@@ -40,6 +40,9 @@ namespace GameScripts
         // Detection tracking (prevent multiple damage per detection)
         private bool _hasDealtDamage = false;
 
+        // Entity name for spotlight lookup (matches SpotlightFollower's targetName)
+        private string _entityName = "Sentry_1";  // Default name, can be overridden via jsonParams
+
         public void OnStart(string jsonParams)
         {
             API.Log($"[EnemyController] OnStart() - Entity: {Entity}");
@@ -49,6 +52,25 @@ namespace GameScripts
                 API.Log("[EnemyController] ERROR: Entity missing TransformComponent!");
                 return;
             }
+
+            // Parse entityName from jsonParams if provided
+            if (!string.IsNullOrEmpty(jsonParams) && jsonParams != "{}")
+            {
+                try
+                {
+                    if (jsonParams.Contains("entityName"))
+                    {
+                        int start = jsonParams.IndexOf("entityName") + 13;
+                        int end = jsonParams.IndexOf("\"", start);
+                        if (end > start)
+                        {
+                            _entityName = jsonParams.Substring(start, end - start);
+                        }
+                    }
+                }
+                catch { }
+            }
+            API.Log($"[EnemyController] Entity name: {_entityName}");
 
             // Initialize vision system
             _vision = new VisionComponent { Entity = Entity };
@@ -189,6 +211,13 @@ namespace GameScripts
         {
             API.Log(">>> ENEMY ALERTED! STOPPING PATROL! <<<");
 
+            // Set spotlight to alert (red) color
+            var spotlight = SpotlightFollower.GetByTargetName(_entityName);
+            if (spotlight != null)
+            {
+                spotlight.SetAlert(true);
+            }
+
             // Instantly rotate to face the player
             Vec3 enemyPos = API.GetPosition(Entity);
             Vec3 directionToPlayer = new Vec3(
@@ -237,6 +266,13 @@ namespace GameScripts
         private void OnPlayerLost(ulong target, Vec3 lastKnownPosition)
         {
             API.Log("[EnemyController] Lost sight of player, searching...");
+
+            // Reset spotlight to original color
+            var spotlight = SpotlightFollower.GetByTargetName(_entityName);
+            if (spotlight != null)
+            {
+                spotlight.SetAlert(false);
+            }
 
             // Reset damage flag so player can be caught again
             _hasDealtDamage = false;

@@ -163,12 +163,22 @@ namespace Boom
         internal static extern void Boom_API_LoadSceneAdditive(string name);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_EnableFileWatcher(bool enable);
+        
+        // Pause Menu
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_UnloadPauseMenu();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_ShowPauseMenu();
 
-        // Death
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern bool Boom_API_IsPauseMenuLoaded();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetGameLogicPaused(bool paused);
+
+        // Death Menu
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_UnloadDeathMenu();
 
@@ -177,19 +187,29 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern bool Boom_API_IsDeathMenuLoaded();
-        // End Death
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_SetPlayerDead(bool isDead);
+
+        // End Menu
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_UnloadEndMenu();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_ShowEndMenu();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern bool Boom_API_IsEndMenuLoaded();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetGameEnd(bool isEnd);
+
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_TogglePause();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern int Boom_API_GetApplicationState();
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern bool Boom_API_IsPauseMenuLoaded();
 
         //AI STUFF
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -311,12 +331,6 @@ namespace Boom
         internal static extern bool Boom_API_LinecastIgnoreBoth(Vec3 from, Vec3 to, ulong ignoreEntity1, ulong ignoreEntity2);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void Boom_API_SetGameLogicPaused(bool paused);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void Boom_API_EnableFileWatcher(bool enable);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_TeleportRigidBody(ulong handle, ref Vec3 pos);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -347,6 +361,22 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static ulong[] Boom_API_GetControllerTriggerOverlaps(ulong handle);
+
+        // ========= SPOTLIGHT COMPONENT INTERNAL CALLS =========
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Boom_API_HasSpotLight(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_GetSpotLightColor(ulong handle, out Vec3 color);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetSpotLightColor(ulong handle, ref Vec3 color);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static float Boom_API_GetSpotLightIntensity(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetSpotLightIntensity(ulong handle, float intensity);
 
     }
 
@@ -672,17 +702,26 @@ namespace Boom
         public static void QuitGame() => Native.Boom_API_QuitGame();
         public static void ShutdownApplication() => Native.Boom_API_ShutdownApplication(); // CORRECT QUIT 
         public static void LoadSceneAdditive(string name) => Native.Boom_API_LoadSceneAdditive(name);
-        public static void UnloadPauseMenu() => Native.Boom_API_UnloadPauseMenu();
-        public static void ShowPauseMenu() => Native.Boom_API_ShowPauseMenu();
         public static void TogglePause() => Native.Boom_API_TogglePause();
         public static int GetApplicationState() => Native.Boom_API_GetApplicationState();
-        public static bool IsPauseMenuLoaded() => Native.Boom_API_IsPauseMenuLoaded();
 
-        // Death
+        // Pause Menu
+        public static void UnloadPauseMenu() => Native.Boom_API_UnloadPauseMenu();
+        public static void ShowPauseMenu() => Native.Boom_API_ShowPauseMenu();
+        public static bool IsPauseMenuLoaded() => Native.Boom_API_IsPauseMenuLoaded();
+        public static void SetGameLogicPaused(bool paused) => Native.Boom_API_SetGameLogicPaused(paused);
+
+        // Death Menu
         public static void UnloadDeathMenu() => Native.Boom_API_UnloadDeathMenu();
         public static void ShowDeathMenu() => Native.Boom_API_ShowDeathMenu();
         public static bool IsDeathMenuLoaded() => Native.Boom_API_IsDeathMenuLoaded();
         public static void SetPlayerDead(bool isDead) => Native.Boom_API_SetPlayerDead(isDead);
+
+        // End Menu
+        public static void UnloadEndMenu() => Native.Boom_API_UnloadEndMenu();
+        public static void ShowEndMenu() => Native.Boom_API_ShowEndMenu();
+        public static bool IsEndMenuLoaded() => Native.Boom_API_IsEndMenuLoaded();
+        public static void SetGameEnd(bool isEnd) => Native.Boom_API_SetGameEnd(isEnd);
 
         // ===== Animator =====
         public static void AnimatorSetFloat(ulong h, string n, float v) => Native.Boom_API_AnimatorSetFloat(h, n, v);
@@ -941,7 +980,6 @@ namespace Boom
             Native.Boom_API_SetRotationY(h, yawDegrees);
         }
 
-        public static void SetGameLogicPaused(bool paused) => Native.Boom_API_SetGameLogicPaused(paused);
 
         public static void EnableFileWatcher(bool enable)
         {
@@ -1008,6 +1046,28 @@ namespace Boom
         {
             return Native.Boom_API_GetControllerTriggerOverlaps(entity) ?? new ulong[0];
         }
+
+        // ========= SPOTLIGHT COMPONENT METHODS =========
+        public static bool HasSpotLight(ulong entity) => Native.Boom_API_HasSpotLight(entity);
+
+        public static Vec3 GetSpotLightColor(ulong entity)
+        {
+            Native.Boom_API_GetSpotLightColor(entity, out Vec3 color);
+            return color;
+        }
+
+        public static void SetSpotLightColor(ulong entity, Vec3 color)
+        {
+            Native.Boom_API_SetSpotLightColor(entity, ref color);
+        }
+
+        public static float GetSpotLightIntensity(ulong entity) => Native.Boom_API_GetSpotLightIntensity(entity);
+
+        public static void SetSpotLightIntensity(ulong entity, float intensity)
+        {
+            Native.Boom_API_SetSpotLightIntensity(entity, intensity);
+        }
+
 
         // ===== GLFW key codes =====
         public const int KEY_LEFT = 263;

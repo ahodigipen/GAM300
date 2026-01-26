@@ -23,27 +23,29 @@ namespace GameScripts
         private ulong _mainMenuButtonID;
         private ulong _quitButtonID;
 
-        private enum MenuState
+        private enum PauseMenuState
         {
             Idle,
             ButtonDelay,
             WaitingForMouseUp
         }
 
-        private MenuState _currentState = MenuState.Idle;
+        private PauseMenuState _currentState = PauseMenuState.Idle;
         private ulong _clickedButtonID = 0;
-
         private bool _wasPausedLastFrame = false;
+
+        private float _buttonDelayTimer = 0.0f;
+        private const float CLICK_DELAY_DURATION = 0.1f;
 
         public void OnStart(string jsonParams)
         {
             API.Log("PauseMenu OnStart Running...");
             Entry.s_ActivePauseMenuInstance = this;
 
-            _resumeButtonID = API.FindEntity("ResumeButton");
-            _restartButtonID = API.FindEntity("RestartButton");
-            _mainMenuButtonID = API.FindEntity("ReturnButton");
-            _quitButtonID = API.FindEntity("QuitButton");
+            _resumeButtonID = API.FindEntity("Pause_ResumeButton");
+            _restartButtonID = API.FindEntity("Pause_RestartButton");
+            _mainMenuButtonID = API.FindEntity("Pause_ReturnButton");
+            _quitButtonID = API.FindEntity("Pause_QuitButton");
 
             ResetButtonState();
         }
@@ -62,22 +64,22 @@ namespace GameScripts
             _wasPausedLastFrame = Entry.IsGamePaused;
 
             if (!Entry.IsGamePaused) return;
-            if (Entry.s_RequestedAction != Entry.PauseMenuAction.None) return;
+            if (Entry.s_RequestedPauseAction != Entry.PauseMenuAction.None) return;
 
             switch (_currentState)
             {
-                case MenuState.WaitingForMouseUp:
+                case PauseMenuState.WaitingForMouseUp:
                     if (!API.IsMouseDown(MOUSE_LEFT))
                     {
-                        _currentState = MenuState.Idle;
+                        _currentState = PauseMenuState.Idle;
                     }
                     break;
 
-                case MenuState.Idle:
+                case PauseMenuState.Idle:
                     Update_Idle();
                     break;
 
-                case MenuState.ButtonDelay:
+                case PauseMenuState.ButtonDelay:
                     Update_ButtonDelay(dt);
                     break;
             }
@@ -85,8 +87,9 @@ namespace GameScripts
 
         public void ResetButtonState()
         {
-            _currentState = MenuState.WaitingForMouseUp;
+            _currentState = PauseMenuState.WaitingForMouseUp;
             _clickedButtonID = 0;
+            _buttonDelayTimer = 0.0f;
 
             if (_resumeButtonID != 0)
                 API.SetSpriteTexture(_resumeButtonID, RESUME_TEX_NORMAL);
@@ -117,13 +120,19 @@ namespace GameScripts
 
         private void Update_ButtonDelay(float dt)
         {
-            ExecuteClickAction();
+            _buttonDelayTimer += dt;
+
+            if (_buttonDelayTimer >= CLICK_DELAY_DURATION)
+            {
+                ExecuteClickAction();
+            }
         }
 
         private void StartClickDelay(ulong buttonID)
         {
-            _currentState = MenuState.ButtonDelay;
+            _currentState = PauseMenuState.ButtonDelay;
             _clickedButtonID = buttonID;
+            _buttonDelayTimer = 0.0f;
 
             if (buttonID == _resumeButtonID)
                 API.SetSpriteTexture(buttonID, RESUME_TEX_CLICKED);
@@ -137,23 +146,23 @@ namespace GameScripts
 
         private void ExecuteClickAction()
         {
-            _currentState = MenuState.Idle;
+            _currentState = PauseMenuState.Idle;
 
             if (_clickedButtonID == _resumeButtonID)
             {
-                Entry.s_RequestedAction = Entry.PauseMenuAction.Resume;
+                Entry.s_RequestedPauseAction = Entry.PauseMenuAction.Resume;
             }
             else if (_clickedButtonID == _mainMenuButtonID)
             {
-                Entry.s_RequestedAction = Entry.PauseMenuAction.MainMenu;
+                Entry.s_RequestedPauseAction = Entry.PauseMenuAction.MainMenu;
             }
             else if (_clickedButtonID == _restartButtonID)
             {
-                Entry.s_RequestedAction = Entry.PauseMenuAction.Restart;
+                Entry.s_RequestedPauseAction = Entry.PauseMenuAction.Restart;
             }
             else if (_clickedButtonID == _quitButtonID)
             {
-                Entry.s_RequestedAction = Entry.PauseMenuAction.Quit;
+                Entry.s_RequestedPauseAction = Entry.PauseMenuAction.Quit;
             }
         }
     }

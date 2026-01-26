@@ -424,19 +424,23 @@ namespace Boom {
     // Pause Menu
     static void ICALL_API_UnloadPauseMenu() {
         if (!s_Ctx || !s_Ctx->app) return;
-        s_Ctx->app->UnloadAdditiveScene<PauseMenuTagComponent>();
+        s_Ctx->app->UnloadAdditiveScene(Boom::MenuType::Pause);
     }
 
     static void ICALL_API_ShowPauseMenu() {
         if (!s_Ctx || !s_Ctx->app) return;
-        s_Ctx->app->ShowAdditiveScene<PauseMenuTagComponent>();
+        s_Ctx->app->ShowAdditiveScene(Boom::MenuType::Pause);
     }
 
     static bool ICALL_API_IsPauseMenuLoaded() {
         if (!s_Ctx) return false;
-        // Check if any entity in the scene has the pause menu tag
-        auto view = s_Ctx->scene.view<PauseMenuTagComponent>();
-        return !view.empty();
+
+        auto view = s_Ctx->scene.view<Boom::MenuComponent>();
+        for (auto e : view) {
+            if (view.get<Boom::MenuComponent>(e).menuType == Boom::MenuType::Pause)
+                return true;
+        }
+        return false;
     }
 
     static void ICALL_API_SetGameLogicPaused(bool isPaused) {
@@ -449,19 +453,23 @@ namespace Boom {
     // Death Menu
     static void ICALL_API_UnloadDeathMenu() {
         if (!s_Ctx || !s_Ctx->app) return;
-        s_Ctx->app->UnloadAdditiveScene<DeathMenuTagComponent>();
+        s_Ctx->app->UnloadAdditiveScene(Boom::MenuType::Death);
     }
 
     static void ICALL_API_ShowDeathMenu() {
         if (!s_Ctx || !s_Ctx->app) return;
-        s_Ctx->app->ShowAdditiveScene<DeathMenuTagComponent>();
+        s_Ctx->app->ShowAdditiveScene(Boom::MenuType::Death);
     }
 
     static bool ICALL_API_IsDeathMenuLoaded() {
         if (!s_Ctx) return false;
-        // Check if any entity in the scene has the pause menu tag
-        auto view = s_Ctx->scene.view<DeathMenuTagComponent>();
-        return !view.empty();
+
+        auto view = s_Ctx->scene.view<Boom::MenuComponent>();
+        for (auto e : view) {
+            if (view.get<Boom::MenuComponent>(e).menuType == Boom::MenuType::Death)
+                return true;
+        }
+        return false;
     }
 
     static void ICALL_API_SetPlayerDead(bool isDead) {
@@ -469,7 +477,36 @@ namespace Boom {
             s_Ctx->app->SetPlayerDead(isDead);
         }
     }
-    // End Death Menu
+
+    // End Menu
+    static void ICALL_API_UnloadEndMenu() {
+        if (!s_Ctx || !s_Ctx->app) return;
+        s_Ctx->app->UnloadAdditiveScene(Boom::MenuType::End);
+    }
+
+    static void ICALL_API_ShowEndMenu() {
+        if (!s_Ctx || !s_Ctx->app) return;
+        s_Ctx->app->ShowAdditiveScene(Boom::MenuType::End);
+    }
+
+    static bool ICALL_API_IsEndMenuLoaded() {
+        if (!s_Ctx) return false;
+
+        auto view = s_Ctx->scene.view<Boom::MenuComponent>();
+        for (auto e : view) {
+            if (view.get<Boom::MenuComponent>(e).menuType == Boom::MenuType::End)
+                return true;
+        }
+        return false;
+    }
+
+    static void ICALL_API_SetGameEnd(bool isEnd) {
+        if (s_Ctx && s_Ctx->app) {
+            s_Ctx->app->SetGameEnd(isEnd);
+        }
+    }
+
+
 
     static void ICALL_API_TogglePause() {
         if (s_Ctx && s_Ctx->app) {
@@ -920,6 +957,57 @@ namespace Boom {
             return;
         }
         s_Ctx->scene.get<SpriteComponent>(e).color.a = glm::clamp(alpha, 0.0f, 1.0f);
+    }
+
+    // ========= SPOTLIGHT COMPONENT INTERNAL CALLS =========
+    static bool ICALL_API_HasSpotLight(uint64_t handle)
+    {
+        if (!s_Ctx) return false;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        return (e != entt::null && s_Ctx->scene.valid(e) && s_Ctx->scene.any_of<SpotLightComponent>(e));
+    }
+
+    static void ICALL_API_GetSpotLightColor(uint64_t handle, glm::vec3* outColor)
+    {
+        if (!outColor || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<SpotLightComponent>(e)) {
+            *outColor = glm::vec3(1.0f);
+            return;
+        }
+        *outColor = s_Ctx->scene.get<SpotLightComponent>(e).light.radiance;
+    }
+
+    static void ICALL_API_SetSpotLightColor(uint64_t handle, glm::vec3* color)
+    {
+        if (!color || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<SpotLightComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetSpotLightColor: Entity doesn't have SpotLightComponent");
+            return;
+        }
+        s_Ctx->scene.get<SpotLightComponent>(e).light.radiance = *color;
+    }
+
+    static float ICALL_API_GetSpotLightIntensity(uint64_t handle)
+    {
+        if (!s_Ctx) return 1.0f;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<SpotLightComponent>(e)) {
+            return 1.0f;
+        }
+        return s_Ctx->scene.get<SpotLightComponent>(e).light.intensity;
+    }
+
+    static void ICALL_API_SetSpotLightIntensity(uint64_t handle, float intensity)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<SpotLightComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetSpotLightIntensity: Entity doesn't have SpotLightComponent");
+            return;
+        }
+        s_Ctx->scene.get<SpotLightComponent>(e).light.intensity = intensity;
     }
 
     struct ScriptTransform {
@@ -1852,17 +1940,23 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_ShutdownApplication", (const void*)ICALL_API_ShutdownApplication); // CORRECT QUIT
         
         mono_add_internal_call("Boom.Native::Boom_API_LoadSceneAdditive", (const void*)ICALL_API_LoadSceneAdditive);
-        // Pause
+        // Pause Menu
         mono_add_internal_call("Boom.Native::Boom_API_UnloadPauseMenu", (const void*)ICALL_API_UnloadPauseMenu);
         mono_add_internal_call("Boom.Native::Boom_API_ShowPauseMenu", (const void*)ICALL_API_ShowPauseMenu);
         mono_add_internal_call("Boom.Native::Boom_API_IsPauseMenuLoaded", (const void*)ICALL_API_IsPauseMenuLoaded);
         mono_add_internal_call("Boom.Native::Boom_API_SetGameLogicPaused", (const void*)ICALL_API_SetGameLogicPaused);
 
-        // Death
+        // Death Menu
         mono_add_internal_call("Boom.Native::Boom_API_UnloadDeathMenu", (const void*)ICALL_API_UnloadDeathMenu);
         mono_add_internal_call("Boom.Native::Boom_API_ShowDeathMenu", (const void*)ICALL_API_ShowDeathMenu);
         mono_add_internal_call("Boom.Native::Boom_API_IsDeathMenuLoaded", (const void*)ICALL_API_IsDeathMenuLoaded);
         mono_add_internal_call("Boom.Native::Boom_API_SetPlayerDead", (const void*)ICALL_API_SetPlayerDead);
+
+        // End Menu
+        mono_add_internal_call("Boom.Native::Boom_API_UnloadEndMenu", (const void*)ICALL_API_UnloadEndMenu);
+        mono_add_internal_call("Boom.Native::Boom_API_ShowEndMenu", (const void*)ICALL_API_ShowEndMenu);
+        mono_add_internal_call("Boom.Native::Boom_API_IsEndMenuLoaded", (const void*)ICALL_API_IsEndMenuLoaded);
+        mono_add_internal_call("Boom.Native::Boom_API_SetGameEnd", (const void*)ICALL_API_SetGameEnd);
 
         mono_add_internal_call("Boom.Native::Boom_API_TogglePause", (const void*)ICALL_API_TogglePause);
         mono_add_internal_call("Boom.Native::Boom_API_GetApplicationState", (const void*)ICALL_API_GetApplicationState);
@@ -1963,7 +2057,7 @@ namespace Boom {
 
 		// Physics Controller internal calls
         mono_add_internal_call("Boom.Native::Boom_API_CreateController", (const void*)ICALL_API_CreateController);
-        mono_add_internal_call("Native::Boom_API_TeleportController", (void*)ICALL_API_TeleportController);
+        mono_add_internal_call("Boom.Native::Boom_API_TeleportController", (void*)ICALL_API_TeleportController);
         mono_add_internal_call("Boom.Native::Boom_API_GetControllerTriggerOverlaps", (const void*)ICALL_API_GetControllerTriggerOverlaps);
 
         // Sprite component internal calls
@@ -1973,5 +2067,12 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_GetSpriteAlpha", (const void*)ICALL_API_GetSpriteAlpha);
         mono_add_internal_call("Boom.Native::Boom_API_SetSpriteAlpha", (const void*)ICALL_API_SetSpriteAlpha);
         mono_add_internal_call("Boom.Native::Boom_API_SetSpriteTexture", (const void*)ICALL_API_SetSpriteTexture);
+
+        // SpotLight component internal calls
+        mono_add_internal_call("Boom.Native::Boom_API_HasSpotLight", (const void*)ICALL_API_HasSpotLight);
+        mono_add_internal_call("Boom.Native::Boom_API_GetSpotLightColor", (const void*)ICALL_API_GetSpotLightColor);
+        mono_add_internal_call("Boom.Native::Boom_API_SetSpotLightColor", (const void*)ICALL_API_SetSpotLightColor);
+        mono_add_internal_call("Boom.Native::Boom_API_GetSpotLightIntensity", (const void*)ICALL_API_GetSpotLightIntensity);
+        mono_add_internal_call("Boom.Native::Boom_API_SetSpotLightIntensity", (const void*)ICALL_API_SetSpotLightIntensity);
     }
 }

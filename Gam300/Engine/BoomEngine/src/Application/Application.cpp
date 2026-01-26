@@ -272,18 +272,26 @@ namespace Boom
                 // Individual Scripts Logic (TickEntity)
                 auto& registry = m_Context->scene;
                 auto scriptView = registry.view<Boom::ScriptComponent>();
+
+
                 for (auto entity : scriptView) {
                     auto& sc = scriptView.get<Boom::ScriptComponent>(entity);
-                    bool isMenuObject = registry.any_of<PauseMenuTagComponent>(entity) ||
-                        registry.any_of<DeathMenuTagComponent>(entity);
-                    if ((!m_IsGameLogicPaused && !m_IsPlayerDead) || isMenuObject)
+                    bool isMenuObject = registry.any_of<Boom::MenuComponent>(entity);
+                    bool shouldUpdate = (!m_IsGameLogicPaused && !m_IsPlayerDead && !m_IsEnd) || isMenuObject;
+
+                    // 3. CRITICAL: Never update an object if it is Deactivated (Hidden)
+                    if (registry.any_of<DeactivatedComponent>(entity)) {
+                        shouldUpdate = false;
+                    }
+
+                    if (shouldUpdate)
                     {
                         m_Context->scriptingSystem->TickEntity(entity, sc, dt);
                     }
                 }
 
                 // --- RUN ALL GAME LOGIC ---
-                if (!m_IsGameLogicPaused && !m_IsPlayerDead) {
+                if (!m_IsGameLogicPaused && !m_IsPlayerDead && !m_IsEnd) {
                     // AI Logic
                     m_AIagents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime));
                     if (m_Nav) {
@@ -307,7 +315,7 @@ namespace Boom
             SoundEngine::Instance().Update();
 
             // Update 3D audio listener to follow the third-person camera
-            EnttView<Entity, ThirdPersonCameraComponent, TransformComponent>([this](auto entity, ThirdPersonCameraComponent& tpCam, TransformComponent& transform) {
+            EnttView<Entity, ThirdPersonCameraComponent, TransformComponent>([this](auto /*entity*/, ThirdPersonCameraComponent& /*tpCam*/, TransformComponent& transform) {
                 Transform3D& camTransform = transform.transform;
 
                 // Calculate forward and up vectors from camera rotation
@@ -610,9 +618,8 @@ namespace Boom
                     else {
                         // float dt = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) ? (float)m_Context->DeltaTime : 0.0f;
                         bool shouldAnimate = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING);
-                        bool isMenuObj = entity.Has<PauseMenuTagComponent>() ||
-                            entity.Has<DeathMenuTagComponent>();
-                        if ((m_IsGameLogicPaused || m_IsPlayerDead) && !isMenuObj) {
+                        bool isMenuObj = entity.Has<Boom::MenuComponent>();
+                        if ((m_IsGameLogicPaused || m_IsPlayerDead || m_IsEnd) && !isMenuObj) {
                             shouldAnimate = false;
                         }
 

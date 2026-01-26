@@ -23,11 +23,10 @@ namespace Boom {
  NAV_AGENT_COMPONENT,
  AI_COMPONENT,
  SPRITE,
- PAUSE_MENU_TAG,
+ MENU_COMPONENT,
  DEACTIVATED_TAG,
  VIDEO,
  CHARACTER_CONTROLLER,
- DEATH_MENU_TAG,
  COUNT
  };
  constexpr std::string_view COMPONENT_NAMES[]{
@@ -47,12 +46,10 @@ namespace Boom {
  "Nav Agent Component",  //13
  "AI Component",         //14
  "Sprite",               //15
- "Pause Menu Tag",       //16
- "Deactived Tag",        //17
- "Video"          ,      //18
- "Deactivated Tag",      //19
- "Character Controller", //20
- "Death Menu Tag"        //21
+ "Menu Component",       //16
+ "Deactivated Tag",      //17
+ "Character Controller", //18
+ "Video"
  };
 
  // transform component
@@ -772,26 +769,15 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
  )
  };
 
- struct PauseMenuTagComponent {
- BOOM_INLINE PauseMenuTagComponent(const PauseMenuTagComponent&) = default;
- BOOM_INLINE PauseMenuTagComponent() = default;
 
- bool isTag = true;
+enum class MenuType { Pause = 0, Death = 1, Settings = 2, Main = 3, End = 4 };
+struct MenuComponent {
+     BOOM_INLINE MenuComponent(const MenuComponent&) = default;
+     BOOM_INLINE MenuComponent() = default;
 
-        XPROPERTY_DEF(
-            "PauseMenuTagComponent", PauseMenuTagComponent
-        )
-    };
+     MenuType menuType = MenuType::Pause;
 
- struct DeathMenuTagComponent {
-     BOOM_INLINE DeathMenuTagComponent(const DeathMenuTagComponent&) = default;
-     BOOM_INLINE DeathMenuTagComponent() = default;
-
-     bool isTag = true;
-
-     XPROPERTY_DEF(
-         "DeathMenuTagComponent", DeathMenuTagComponent
-     )
+     XPROPERTY_DEF("MenuComponent", MenuComponent)
  };
 
     struct SceneNavmeshComponent {
@@ -1150,14 +1136,9 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
             reg.emplace<SkyboxComponent>(duplicate, srcSky);
         }
 
-        // Copy PauseMenuTagComponent
-        if (reg.all_of<PauseMenuTagComponent>(source)) {
-            reg.emplace<PauseMenuTagComponent>(duplicate);
-        }
-
-        // Copy DeathMenuTagComponent
-        if (reg.all_of<DeathMenuTagComponent>(source)) {
-            reg.emplace<DeathMenuTagComponent>(duplicate);
+        // Copy Menu Component
+        if (reg.all_of<MenuComponent>(source)) {
+            reg.emplace<MenuComponent>(duplicate);
         }
 
         // Copy DeactivatedComponent
