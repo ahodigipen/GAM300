@@ -55,7 +55,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [0.174391776, 1.21255684, 2.76835418]
-        Rotate: [-21.125, 3.6875, 0]
+        Rotate: [-26.875, -44.3125, 0]
         Scale: [1, 1, 1]
     CameraComponent:
       Camera:

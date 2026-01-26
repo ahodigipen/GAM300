@@ -181,6 +181,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\Downloads\pl_mpeg-master\pl_mpeg-master\pl_mpeg.h" />
     <ClInclude Include="includes\AI\Actions.h" />
     <ClInclude Include="includes\AI\AIComponent.h" />
     <ClInclude Include="includes\AI\AISystem.h" />
@@ -240,6 +241,9 @@
     <ClInclude Include="includes\Graphics\Utilities\Data.h" />
     <ClInclude Include="includes\Graphics\Utilities\Quad.h" />
     <ClInclude Include="includes\Graphics\Utilities\Skybox.h" />
+    <ClInclude Include="includes\Graphics\Video\pl_mpeg.h" />
+    <ClInclude Include="includes\Graphics\Video\VideoPlayer.h" />
+    <ClInclude Include="includes\Graphics\Video\VideoSystem.h" />
     <ClInclude Include="includes\Input\CameraManager.h" />
     <ClInclude Include="includes\Input\InputHandler.h" />
     <ClInclude Include="includes\Input\RayCast.h" />
@@ -293,6 +297,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Graphics\Video\VideoPlayer.cpp" />
+    <ClCompile Include="src\Graphics\Video\VideoSystem.cpp" />
     <ClCompile Include="src\Models\ModelLoader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>

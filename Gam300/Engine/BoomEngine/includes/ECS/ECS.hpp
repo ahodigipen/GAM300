@@ -25,6 +25,7 @@ namespace Boom {
  SPRITE,
  MENU_COMPONENT,
  DEACTIVATED_TAG,
+ VIDEO,
  CHARACTER_CONTROLLER,
  COUNT
  };
@@ -48,6 +49,7 @@ namespace Boom {
  "Menu Component",       //16
  "Deactivated Tag",      //17
  "Character Controller", //18
+ "Video"
  };
 
  // transform component
@@ -757,13 +759,13 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
  struct SpriteComponent {
  AssetID textureID{ EMPTY_ASSET };
  glm::vec4 color{ 1.0f };
- bool uiOverlay{ true };
+ bool renderAs3D{ false };  // false = 2D UI overlay, true = 3D world space (attachable to objects)
 
  XPROPERTY_DEF(
  "SpriteComponent", SpriteComponent,
  obj_member<"textureID", &SpriteComponent::textureID>,
  obj_member<"color", &SpriteComponent::color>,
- obj_member<"uiOverlay", &SpriteComponent::uiOverlay>
+ obj_member<"renderAs3D", &SpriteComponent::renderAs3D>
  )
  };
 
@@ -796,6 +798,71 @@ struct MenuComponent {
             "DeactivatedComponent", DeactivatedComponent
         )
     };
+
+    // Video Component - for playing MPEG1 videos on entities
+    struct VideoComponent {
+        BOOM_INLINE VideoComponent(const VideoComponent&) = default;
+        BOOM_INLINE VideoComponent() = default;
+
+        // Video file path (relative to Resources/Videos/)
+        std::string videoPath;
+
+        // Playback settings
+        bool playOnStart = false;
+        bool loop = false;
+        float volume = 1.0f;
+        float playbackSpeed = 1.0f;
+
+        // Display settings
+        glm::vec4 tintColor = glm::vec4(1.0f);  // Tint/multiply color
+        bool renderAs3D = false;                 // true = 3D quad in world, false = 2D UI overlay
+
+        // Runtime state (not serialized)
+        bool isPlaying = false;
+        double currentTime = 0.0;
+
+        // Serialization
+        void serialize(nlohmann::json& j) const {
+            j["videoPath"] = videoPath;
+            j["playOnStart"] = playOnStart;
+            j["loop"] = loop;
+            j["volume"] = volume;
+            j["playbackSpeed"] = playbackSpeed;
+            j["tintColor"] = { tintColor.r, tintColor.g, tintColor.b, tintColor.a };
+            j["renderAs3D"] = renderAs3D;
+        }
+
+        void deserialize(const nlohmann::json& j) {
+            if (j.contains("videoPath")) j.at("videoPath").get_to(videoPath);
+            if (j.contains("playOnStart")) j.at("playOnStart").get_to(playOnStart);
+            if (j.contains("loop")) j.at("loop").get_to(loop);
+            if (j.contains("volume")) j.at("volume").get_to(volume);
+            if (j.contains("playbackSpeed")) j.at("playbackSpeed").get_to(playbackSpeed);
+            if (j.contains("tintColor") && j.at("tintColor").is_array() && j.at("tintColor").size() == 4) {
+                tintColor.r = j.at("tintColor")[0];
+                tintColor.g = j.at("tintColor")[1];
+                tintColor.b = j.at("tintColor")[2];
+                tintColor.a = j.at("tintColor")[3];
+            }
+            if (j.contains("renderAs3D")) j.at("renderAs3D").get_to(renderAs3D);
+
+            // Reset runtime state
+            isPlaying = false;
+            currentTime = 0.0;
+        }
+
+        XPROPERTY_DEF(
+            "VideoComponent", VideoComponent,
+            obj_member<"VideoPath", &VideoComponent::videoPath>,
+            obj_member<"PlayOnStart", &VideoComponent::playOnStart>,
+            obj_member<"Loop", &VideoComponent::loop>,
+            obj_member<"Volume", &VideoComponent::volume>,
+            obj_member<"PlaybackSpeed", &VideoComponent::playbackSpeed>,
+            obj_member<"TintColor", &VideoComponent::tintColor>,
+            obj_member<"RenderAs3D", &VideoComponent::renderAs3D>
+            )
+    };
+
 
     // Character Controller Component (PxController wrapper)
     struct CharacterControllerComponent {
@@ -1077,6 +1144,20 @@ struct MenuComponent {
         // Copy DeactivatedComponent
         if (reg.all_of<DeactivatedComponent>(source)) {
             reg.emplace<DeactivatedComponent>(duplicate);
+        }
+
+        // Copy VideoComponent
+        if (reg.all_of<VideoComponent>(source)) {
+            auto& srcVideo = reg.get<VideoComponent>(source);
+            auto& dstVideo = reg.emplace<VideoComponent>(duplicate);
+            dstVideo.videoPath = srcVideo.videoPath;
+            dstVideo.playOnStart = srcVideo.playOnStart;
+            dstVideo.loop = srcVideo.loop;
+            dstVideo.volume = srcVideo.volume;
+            dstVideo.playbackSpeed = srcVideo.playbackSpeed;
+            dstVideo.tintColor = srcVideo.tintColor;
+            dstVideo.renderAs3D = srcVideo.renderAs3D;
+            // Runtime state is not copied (starts fresh)
         }
 
         BOOM_INFO("[DuplicateEntity] Duplicated '{}' -> '{}'",

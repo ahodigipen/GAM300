@@ -34,6 +34,7 @@
 #include "AI/NavAgent.h"
 #include "AI/AISystem.h"
 #include "Input/RayCast.h"
+#include "Graphics/Video/VideoPlayer.h"
 
 namespace std {
 	template<>
