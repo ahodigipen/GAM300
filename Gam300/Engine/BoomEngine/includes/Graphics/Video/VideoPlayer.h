@@ -7,6 +7,9 @@
 #include <string>
 #include <memory>
 #include <functional>
+#include <vector>
+#include <mutex>
+#include <atomic>
 
 // Suppress C4251 warnings for STL types in DLL interface
 // These are internal implementation details and are safe to ignore
@@ -18,6 +21,13 @@
 // Forward declare pl_mpeg main type (actual header included in .cpp)
 // Only plm_t is needed in the header; other types are only used internally
 struct plm_t;
+
+// Forward declare FMOD types (don't redefine - just forward declare)
+namespace FMOD {
+    class System;
+    class Sound;
+    class Channel;
+}
 
 namespace Boom {
 
@@ -92,17 +102,34 @@ namespace Boom {
         void SetAudioCallback(AudioCallback callback) { m_AudioCallback = std::move(callback); }
 
         // Volume control (0.0 - 1.0)
-        void SetVolume(float volume) { m_Volume = glm::clamp(volume, 0.0f, 1.0f); }
+        void SetVolume(float volume);
         float GetVolume() const { return m_Volume; }
+
+        // Audio enable/disable
+        void SetAudioEnabled(bool enabled);
+        bool IsAudioEnabled() const { return m_AudioEnabled; }
 
         // Playback speed (1.0 = normal)
         void SetPlaybackSpeed(float speed) { m_PlaybackSpeed = glm::clamp(speed, 0.1f, 4.0f); }
         float GetPlaybackSpeed() const { return m_PlaybackSpeed; }
 
+        // Check if video has audio track
+        bool HasAudio() const { return m_HasAudioTrack; }
+
+        // Called by pl_mpeg audio callback - public for callback access
+        void OnAudioDecoded(const float* samples, size_t count);
+
+        // Audio buffer access for FMOD callback (returns samples read)
+        size_t ReadAudioSamples(float* outBuffer, size_t samplesRequested);
+
     private:
         void CreateTexture();
         void DestroyTexture();
         void DecodeFrame();
+
+        // Audio system
+        void InitAudio();
+        void ShutdownAudio();
 
         // pl_mpeg context
         plm_t* m_PLM = nullptr;
@@ -130,11 +157,35 @@ namespace Boom {
         uint32_t m_TextureID = 0;
         bool m_TextureCreated = false;
 
-        // Audio callback
+        // Audio callback (legacy - for external use)
         AudioCallback m_AudioCallback;
 
         // File path for reload
         std::string m_FilePath;
+
+        // ===== Audio System =====
+        bool m_AudioEnabled = true;
+        bool m_HasAudioTrack = false;
+
+        // FMOD audio
+        FMOD::Sound* m_FMODSound = nullptr;
+        FMOD::Channel* m_FMODChannel = nullptr;
+
+        // Audio ring buffer for distortion-free playback
+        // Uses a lock-free circular buffer to decouple video decode from audio playback
+        static constexpr size_t AUDIO_BUFFER_SIZE = 48000 * 2 * 4; // ~4 seconds of stereo audio at 48kHz
+        std::vector<float> m_AudioBuffer;
+        std::atomic<size_t> m_AudioWritePos{0};
+        std::atomic<size_t> m_AudioReadPos{0};
+        std::atomic<bool> m_AudioBufferReady{false};
+        mutable std::mutex m_AudioMutex;
+
+        // Track audio state
+        int m_AudioChannels = 2; // Stereo
+
+        // Video timing - accumulate time and decode at proper framerate
+        double m_AccumulatedTime = 0.0;
+        double m_SecondsPerFrame = 0.0;  // 1.0 / framerate
     };
 
 } // namespace Boom
