@@ -48,8 +48,10 @@ namespace Boom {
  "Sprite",               //15
  "Menu Component",       //16
  "Deactivated Tag",      //17
- "Character Controller", //18
- "Video"
+ "Video",
+ "Character Controller", 
+ "Count"
+ 
  };
 
  // transform component

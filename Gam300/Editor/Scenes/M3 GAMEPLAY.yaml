@@ -1,6 +1,17 @@
 Version: 1.0
 ENTITIES:
   - InfoComponent:
+      Parent: 0
+      Name: video test
+      UID: 8919245940805331464
+    TransformComponent:
+      Transform:
+        Translate: [0.659446836, 5.70517015, 7.30786371]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    VideoComponent:
+      {}
+  - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_5
       UID: 5351145407601607575
@@ -12,7 +23,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 9683671951523272381
       color: [1, 1, 1, 1]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_4
@@ -25,7 +36,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 9683671951523272381
       color: [1, 1, 1, 1]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_3
@@ -38,7 +49,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 9683671951523272381
       color: [1, 1, 1, 1]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_2
@@ -51,7 +62,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 9683671951523272381
       color: [1, 1, 1, 1]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_1
@@ -64,7 +75,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 9683671951523272381
       color: [1, 1, 1, 1]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_Dead
@@ -77,7 +88,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 947084306896258002
       color: [0.196078435, 0.196078435, 0.196078435, 1]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_Dead
@@ -90,7 +101,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 947084306896258002
       color: [0.196078435, 0.196078435, 0.196078435, 1]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_Dead
@@ -103,7 +114,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 947084306896258002
       color: [0.196078435, 0.196078435, 0.196078435, 1]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_Dead
@@ -116,7 +127,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 947084306896258002
       color: [0.196078435, 0.196078435, 0.196078435, 1]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_Dead
@@ -129,7 +140,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 947084306896258002
       color: [0.19607842, 0.19607842, 0.19607842, 1]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 0
       Name: PlayerUI
@@ -155,7 +166,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 327234960441928512
       color: [1, 1, 1, 0]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 15030438282683852635
       Name: UI_Hold
@@ -168,7 +179,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 13937156857161099910
       color: [1, 1, 1, 0]
-      uiOverlay: true
+      renderAs3D: false
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -302,8 +313,8 @@ ENTITIES:
       UID: 17902731174235545789
     TransformComponent:
       Transform:
-        Translate: [14.4720554, -239.572937, 15.1495838]
-        Rotate: [180, 89.257431, 180]
+        Translate: [14.4720554, -3518.63257, 15.1495838]
+        Rotate: [-180, 89.257431, -180]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -386,8 +397,8 @@ ENTITIES:
       UID: 11344090768170482118
     TransformComponent:
       Transform:
-        Translate: [-22.2951069, 13.4210167, 3.94351292]
-        Rotate: [0, -0, 0]
+        Translate: [-22.2951069, 91.629158, -14.3687468]
+        Rotate: [-180, -5.00895612e-06, -180]
         Scale: [0.0199999977, 0.0199999996, 0.0199999977]
     RigidBodyComponent:
       RigidBody:
@@ -484,7 +495,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 4.17216253, -14.2555885]
-        Rotate: [0, 360.937592, 0]
+        Rotate: [0, 270.937592, 0]
         Scale: [136.157349, 68.9649124, 68.9648361]
     ScriptComponent:
       Enabled: true
@@ -632,8 +643,8 @@ ENTITIES:
       UID: 2377197601835279376
     TransformComponent:
       Transform:
-        Translate: [-0.706916392, 1.14266515, 15.3023272]
-        Rotate: [0, 112.000084, 0]
+        Translate: [1.04619038, 1.14266491, 12.6372538]
+        Rotate: [0, -163.999954, 0]
         Scale: [0.0164999887, 0.0164999999, 0.0164999887]
     CharacterControllerComponent:
       Radius: 0.800000012
@@ -653,7 +664,7 @@ ENTITIES:
         FreezeRotationZ: true
         Type: DYNAMIC
     ModelComponent:
-      ModelID: 17415887327955155372
+      ModelID: 11078247182346188058
       MaterialID: 13160241162385617845
       ModelName: ""
       MaterialName: ""
@@ -764,7 +775,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 5.47263603e-08
       BoolParams:
         IsMoving: false
         IsCrouching: false
@@ -2049,8 +2060,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-4.31717539, 5.08332157, 16.99049]
-        Rotate: [3.00000119, -64.9999008, 0]
+        Translate: [-0.897168159, 5.20540285, 17.2390766]
+        Rotate: [1.00000131, -23.0000038, 2.8984557e-08]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -2060,11 +2071,11 @@ ENTITIES:
     ThirdPersonCameraComponent:
       Target UID: 2377197601835279376
       Offset: [0.00999999978, 4.1500001, 0]
-      Current Distance: 4
+      Current Distance: 5
       Min Distance: 1
       Max Distance: 5
-      Current Yaw: -3485
-      Current Pitch: -3
+      Current Yaw: -3443
+      Current Pitch: -1
       Mouse Sensitivity: 1
       Scroll Sensitivity: 1
   - InfoComponent:
@@ -7110,7 +7121,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 2.17216253, -14.2555885]
-        Rotate: [0, 180.937592, 0]
+        Rotate: [0, 90.9375916, 0]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -7130,7 +7141,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [9.27553558, 2.17216253, -14.2555885]
-        Rotate: [5.00895612e-06, 176.40744, 5.00895612e-06]
+        Rotate: [5.00895612e-06, 86.4074402, 5.00895612e-06]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -7150,7 +7161,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [17.540493, 14.3824339, 3.31294298]
-        Rotate: [180, 197.044678, 180]
+        Rotate: [180, 107.044678, 180]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -7170,7 +7181,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-14.5949755, 14.7237701, 22.6192093]
-        Rotate: [5.00895521e-06, 197.044678, 5.00895521e-06]
+        Rotate: [5.00895521e-06, 107.044678, 5.00895521e-06]
         Scale: [0.0144999903, 0.0145000005, 0.0144999903]
     ModelComponent:
       ModelID: 7908732753073902064
@@ -7222,7 +7233,7 @@ ENTITIES:
       MaterialSource: ""
   - SceneNavmeshComponent:
       NavmeshFile: Resources/NavData/solo_navmesh.bin
-      AmbientStrength: 0.0939999968
+      AmbientStrength: 0
   - InfoComponent:
       Parent: 0
       Name: Light Lamp 5
@@ -7481,8 +7492,8 @@ ENTITIES:
       UID: 7568830222834310318
     TransformComponent:
       Transform:
-        Translate: [-8.98202515, 13.4210176, -10.7552118]
-        Rotate: [180, -5.00895612e-06, 180]
+        Translate: [-8.98202515, 91.6291504, -10.5659666]
+        Rotate: [-180, -5.00895612e-06, -180]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -7527,7 +7538,7 @@ ENTITIES:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-8.98202515, 13.2056856, -10.6896248]
+      Target: [-8.98202515, 13.2056856, 7.27203894]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -7565,8 +7576,8 @@ ENTITIES:
       UID: 3476234535713046263
     TransformComponent:
       Transform:
-        Translate: [10.8292084, 13.4210176, 19.3370762]
-        Rotate: [180, 90, 180]
+        Translate: [-22.8520317, 91.629158, 19.3370762]
+        Rotate: [0, 90, 0]
         Scale: [0.0200004801, 0.0199999996, 0.0200004801]
     RigidBodyComponent:
       RigidBody:
@@ -7627,7 +7638,7 @@ ENTITIES:
       PatrolPoints:
         - [-22.7366295, 13.404274, 19.3370762]
         - [10.9044418, 13.404274, 19.3370762]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -7649,8 +7660,8 @@ ENTITIES:
       UID: 9778697280815915040
     TransformComponent:
       Transform:
-        Translate: [-3.45757794, 13.4210176, -9.57754421]
-        Rotate: [360, -90, 0]
+        Translate: [-4.64689875, 91.629158, -9.57754421]
+        Rotate: [-360, -90, 0]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -7695,7 +7706,7 @@ ENTITIES:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-4.79301453, 13.4210176, -9.57754421]
+      Target: [23.1396694, 13.4210176, -9.57754421]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -7711,7 +7722,7 @@ ENTITIES:
       PatrolPoints:
         - [-4.79301453, 13.4210176, -9.57754421]
         - [23.1396694, 13.4210176, -9.57754421]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -7728,7 +7739,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 9978758564026709928
       color: [1, 0, 0, 0]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 2888197353573082632
       Name: Blood2
@@ -7741,7 +7752,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 14611654011234671873
       color: [1, 0, 0, 0]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 2888197353573082632
       Name: Blood3
@@ -7754,7 +7765,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 8078124372590329184
       color: [1, 0, 0, 0]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 2888197353573082632
       Name: Blood4
@@ -7767,7 +7778,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 15398575817850185585
       color: [1, 0, 0, 0]
-      uiOverlay: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 0
       Name: BloodUI
@@ -8311,7 +8322,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 7730071964959495492
       color: [0.470588237, 0.419607848, 0.419607848, 1]
-      uiOverlay: true
+      renderAs3D: false
     DeactivatedComponent:
       {}
   - InfoComponent:
@@ -8326,7 +8337,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 10830320094205736326
       color: [0.470588237, 0.419607848, 0.419607848, 1]
-      uiOverlay: true
+      renderAs3D: false
     DeactivatedComponent:
       {}
   - InfoComponent:
@@ -8341,7 +8352,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 12846627940444493632
       color: [0.470588237, 0.419607848, 0.419607848, 1]
-      uiOverlay: true
+      renderAs3D: false
     DeactivatedComponent:
       {}
   - InfoComponent:
@@ -8356,7 +8367,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 16990764436776752376
       color: [0.470588207, 0.419838488, 0.419838488, 1]
-      uiOverlay: true
+      renderAs3D: false
     DeactivatedComponent:
       {}
   - ColliderComponent:
