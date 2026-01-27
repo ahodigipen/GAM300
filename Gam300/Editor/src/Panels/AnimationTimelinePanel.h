@@ -104,6 +104,9 @@ namespace EditorUI {
         // Bone track helpers
         void RenderBoneTrack(const Boom::Joint& joint, float duration);
 
+        // Audio track helper
+        void RenderAudioTrack(float duration);
+
         // 3D Viewport Rendering
         void UpdateCamera();
         void HandleCameraControls();
@@ -233,6 +236,19 @@ namespace EditorUI {
             ImVec2 screenPos;  // Center of the keyframe diamond
         };
         std::vector<KeyframeScreenPos> m_KeyframeScreenPositions;  // Cleared each frame
+
+        // Audio event interaction state
+        int m_SelectedAudioEventIndex = -1;  // -1 = no selection
+        int m_HoveredAudioEventIndex = -1;   // -1 = no hover
+        bool m_IsDraggingAudioEvent = false;
+        float m_DraggedAudioEventOriginalTime = 0.0f;
+
+        // Audio marker screen positions (for click detection)
+        struct AudioMarkerScreenPos {
+            size_t eventIndex;
+            ImVec2 screenPos;  // Center of the marker
+        };
+        std::vector<AudioMarkerScreenPos> m_AudioMarkerScreenPositions;  // Cleared each frame
 
         // Undo/Redo system
         std::vector<KeyframeCommand> m_UndoStack;

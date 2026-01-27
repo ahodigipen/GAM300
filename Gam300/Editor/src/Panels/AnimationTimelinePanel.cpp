@@ -683,21 +683,41 @@ void AnimationTimelinePanel::RenderControlBar()
             }
         }
 
-        // Delete key - Delete selected keyframes
+        // Delete key - Delete selected keyframes OR audio events
         if (ImGui::IsKeyPressed(ImGuiKey_Delete, false))
         {
             if (!m_SelectedKeyframes.empty())
             {
                 DeleteSelectedKeyframes();
             }
+            else if (m_SelectedAudioEventIndex >= 0)
+            {
+                // Delete selected audio event
+                if (m_Animator && m_SelectedClipIndex >= 0)
+                {
+                    auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+                    if (clip && m_SelectedAudioEventIndex < (int)clip->audioEvents.size())
+                    {
+                        BOOM_INFO("[AudioEvent] Deleted audio event '{}' at {:.2f}s",
+                                  clip->audioEvents[m_SelectedAudioEventIndex].eventName,
+                                  clip->audioEvents[m_SelectedAudioEventIndex].timeStamp);
+                        clip->audioEvents.erase(clip->audioEvents.begin() + m_SelectedAudioEventIndex);
+                        m_SelectedAudioEventIndex = -1;
+                    }
+                }
+            }
         }
 
-        // Escape key - Clear keyframe selection
+        // Escape key - Clear keyframe selection or audio event selection
         if (ImGui::IsKeyPressed(ImGuiKey_Escape, false))
         {
             if (!m_SelectedKeyframes.empty())
             {
                 ClearKeyframeSelection();
+            }
+            else if (m_SelectedAudioEventIndex >= 0)
+            {
+                m_SelectedAudioEventIndex = -1;
             }
         }
 
