@@ -64,7 +64,7 @@ namespace GameScripts
         private Vec3 _rollDir = new Vec3(0, 0, 0);
 
         // ==== Crouch / Stealth Fields ====
-        private const int CROUCH_KEY = API.KEY_Q;
+        private const int CROUCH_KEY = API.KEY_LEFT_CONTROL;
         private bool _inCrouchZone = false;
         private bool _isCrouching = false;
         private static bool s_isStealthInvisible = false;
@@ -339,30 +339,28 @@ namespace GameScripts
 
             bool isGrounded = IsPlayerGrounded();
 
-            // Crouch logic
-            if (_inCrouchZone)
+            // Crouch logic - Q key works anywhere, stealth invisibility only in crouch zones
+            bool crouchDown = API.IsKeyDown(CROUCH_KEY);
+            if (crouchDown && !_isCrouching)
             {
-                bool crouchDown = API.IsKeyDown(CROUCH_KEY);
-                if (crouchDown && !_isCrouching)
-                {
-                    _isCrouching = true;
-                    s_isStealthInvisible = true;
-                    if (_hasAnimator) API.AnimatorSetBool(Entity, "IsCrouching", true);
-                    API.Log("[PlayerMovement] Player entered crouch state");
-                }
-                else if (!crouchDown && _isCrouching)
-                {
-                    _isCrouching = false;
-                    s_isStealthInvisible = false;
-                    if (_hasAnimator) API.AnimatorSetBool(Entity, "IsCrouching", false);
-                    API.Log("[PlayerMovement] Player exited crouch state");
-                }
+                _isCrouching = true;
+                // Only become invisible to enemies when in a crouch zone
+                if (_inCrouchZone) s_isStealthInvisible = true;
+                if (_hasAnimator) API.AnimatorSetBool(Entity, "IsCrouching", true);
+                API.Log("[PlayerMovement] Player entered crouch state");
             }
-            else if (_isCrouching)
+            else if (!crouchDown && _isCrouching)
             {
                 _isCrouching = false;
                 s_isStealthInvisible = false;
                 if (_hasAnimator) API.AnimatorSetBool(Entity, "IsCrouching", false);
+                API.Log("[PlayerMovement] Player exited crouch state");
+            }
+
+            // Update stealth visibility based on crouch zone while crouching
+            if (_isCrouching)
+            {
+                s_isStealthInvisible = _inCrouchZone;
             }
 
             if (_isCrouching)
