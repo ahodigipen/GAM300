@@ -1497,28 +1497,28 @@ namespace EditorUI {
                     float buttonWidth = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x * 3) / 4.0f;
 
                     if (player->IsPlaying()) {
-                        if (ImGui::Button("⏸ Pause", ImVec2(buttonWidth, 0))) {
+                        if (ImGui::Button("Pause", ImVec2(buttonWidth, 0))) {
                             player->Pause();
                         }
                     }
                     else {
-                        if (ImGui::Button("▶ Play", ImVec2(buttonWidth, 0))) {
+                        if (ImGui::Button("Play", ImVec2(buttonWidth, 0))) {
                             player->Play();
                         }
                     }
 
                     ImGui::SameLine();
-                    if (ImGui::Button("⏹ Stop", ImVec2(buttonWidth, 0))) {
+                    if (ImGui::Button("Stop", ImVec2(buttonWidth, 0))) {
                         player->Stop();
                     }
 
                     ImGui::SameLine();
-                    if (ImGui::Button("⏮ Rewind", ImVec2(buttonWidth, 0))) {
+                    if (ImGui::Button("Rewind", ImVec2(buttonWidth, 0))) {
                         player->Rewind();
                     }
 
                     ImGui::SameLine();
-                    if (ImGui::Button("🔄 Reload", ImVec2(buttonWidth, 0))) {
+                    if (ImGui::Button("Reload", ImVec2(buttonWidth, 0))) {
                         if (ctx->videoSystem) {
                             ctx->videoSystem->UnloadVideo(selected.ID());
                             ctx->videoSystem->LoadVideo(selected.ID(), vc.videoPath);

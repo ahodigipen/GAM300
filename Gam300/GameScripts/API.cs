@@ -204,6 +204,9 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_SetGameEnd(bool isEnd);
 
+        // Freeze
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        public static extern void Boom_API_DestroyEntity(ulong entity);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_TogglePause();
@@ -723,6 +726,9 @@ namespace Boom
         public static bool IsEndMenuLoaded() => Native.Boom_API_IsEndMenuLoaded();
         public static void SetGameEnd(bool isEnd) => Native.Boom_API_SetGameEnd(isEnd);
 
+        // Freeze
+        public static void DestroyEntity(ulong entity) => Native.Boom_API_DestroyEntity(entity);
+
         // ===== Animator =====
         public static void AnimatorSetFloat(ulong h, string n, float v) => Native.Boom_API_AnimatorSetFloat(h, n, v);
         public static void AnimatorSetFloat(ulong h, string n, double v) => Native.Boom_API_AnimatorSetFloat(h, n, v);
@@ -1087,8 +1093,9 @@ namespace Boom
         public const int KEY_Q = 81;
         public const int KEY_LEFT_CONTROL = 341;
         public const int KEY_LEFT_SHIFT = 340;
-        public const int KEY_F = 70; // Freeze / Pickup
-        public const int KEY_G = 71; // Use Ability
+        public const int KEY_E = 69; // Use Freeze
+        public const int KEY_F = 70;
+        public const int KEY_G = 71;
 
         public const int MOUSE_LEFT = 0;
         public const int MOUSE_RIGHT = 1;

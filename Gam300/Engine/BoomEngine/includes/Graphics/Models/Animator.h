@@ -283,6 +283,10 @@ namespace Boom
             return m_Triggers.count(name) > 0;
         }
 
+        // Root motion control
+        BOOM_INLINE void SetStripRootMotion(bool strip) { m_StripRootMotion = strip; }
+        BOOM_INLINE bool GetStripRootMotion() const { return m_StripRootMotion; }
+
         // Access to all parameters (for editor UI)
         // Floats
         BOOM_INLINE const auto& GetFloatParams() const { return m_FloatParams; }
@@ -618,6 +622,13 @@ namespace Boom
              glm::quat blendedRot = glm::slerp(fromRot, toRot, weight);
              glm::vec3 blendedScale = glm::mix(fromScale, toScale, weight);
 
+             // Strip root motion if enabled
+             if (m_StripRootMotion && joint.name == m_Root.name)
+             {
+                 blendedPos.x = 0.0f;
+                 blendedPos.z = 0.0f;
+             }
+
              glm::mat4 localTransform = glm::translate(glm::mat4(1.0f), blendedPos) *
                  glm::toMat4(blendedRot) *
                  glm::scale(glm::mat4(1.0f), blendedScale);
@@ -691,6 +702,13 @@ namespace Boom
              glm::vec3 blendedPos = glm::mix(pos1, pos2, weight);
              glm::quat blendedRot = glm::slerp(rot1, rot2, weight);
              glm::vec3 blendedScale = glm::mix(scale1, scale2, weight);
+
+             // Strip root motion if enabled
+             if (m_StripRootMotion && joint.name == m_Root.name)
+             {
+                 blendedPos.x = 0.0f;
+                 blendedPos.z = 0.0f;
+             }
 
              glm::mat4 localTransform = glm::translate(glm::mat4(1.0f), blendedPos) *
                  glm::toMat4(blendedRot) *
@@ -801,6 +819,20 @@ namespace Boom
                         glm::toMat4(key.rotation) *
                         glm::scale(glm::mat4(1.0f), key.scale);
                 }
+            }
+
+            // Strip root motion if enabled (zero out XZ translation on root bone)
+            if (m_StripRootMotion && joint.name == m_Root.name)
+            {
+                glm::vec3 pos, scale;
+                glm::quat rot;
+                DecomposeMatrix(localTransform, pos, rot, scale);
+                pos.x = 0.0f;  // Strip X movement
+                pos.z = 0.0f;  // Strip Z movement
+                // Keep Y for crouching/jumping animations
+                localTransform = glm::translate(glm::mat4(1.0f), pos) *
+                    glm::toMat4(rot) *
+                    glm::scale(glm::mat4(1.0f), scale);
             }
 
             // Combine with parent transform
@@ -937,6 +969,9 @@ namespace Boom
             clone->m_BoolParams = m_BoolParams;
             clone->m_Triggers = m_Triggers;
 
+            // Root motion
+            clone->m_StripRootMotion = m_StripRootMotion;
+
             return clone;
         }
 
@@ -1067,6 +1102,9 @@ namespace Boom
         std::unordered_map<std::string, float> m_FloatParams;
         std::unordered_map<std::string, bool> m_BoolParams;
         std::unordered_set<std::string> m_Triggers;
+
+        // Root motion control - when true, strips XZ translation from root bone
+        bool m_StripRootMotion = true;
 
         std::vector<std::shared_ptr<AnimationClip>> m_Clips{}; // Now we store clips, not raw Animation structs
         std::vector<glm::mat4> m_Transforms{};

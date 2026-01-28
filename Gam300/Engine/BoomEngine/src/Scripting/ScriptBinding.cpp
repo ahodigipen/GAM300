@@ -506,6 +506,13 @@ namespace Boom {
         }
     }
 
+    // For freeze
+    static void ICALL_API_DestroyEntity(uint64_t entityID)
+    {
+        if (!s_Ctx || !s_Ctx->scene.valid((entt::entity)entityID)) return;
+        s_Ctx->scene.destroy((entt::entity)entityID);
+    }
+
 
 
     static void ICALL_API_TogglePause() {
@@ -1957,6 +1964,9 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_ShowEndMenu", (const void*)ICALL_API_ShowEndMenu);
         mono_add_internal_call("Boom.Native::Boom_API_IsEndMenuLoaded", (const void*)ICALL_API_IsEndMenuLoaded);
         mono_add_internal_call("Boom.Native::Boom_API_SetGameEnd", (const void*)ICALL_API_SetGameEnd);
+
+        // Freeze
+        mono_add_internal_call("Boom.Native::Boom_API_DestroyEntity", (const void*)ICALL_API_DestroyEntity);
 
         mono_add_internal_call("Boom.Native::Boom_API_TogglePause", (const void*)ICALL_API_TogglePause);
         mono_add_internal_call("Boom.Native::Boom_API_GetApplicationState", (const void*)ICALL_API_GetApplicationState);
