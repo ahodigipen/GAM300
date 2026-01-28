@@ -58,6 +58,7 @@ namespace EditorUI {
         ImVec2 GetViewportSize() const;
         void RenderSceneDialogs();
         ViewportPanel* GetViewportPanel() const { return m_Viewport.get(); }
+        DirectoryPanel* GetDirectoryPanel() const { return m_Directory.get(); }
         AppInterface* GetAppInterface() const { return m_App; }
 
         // Undo/Redo system

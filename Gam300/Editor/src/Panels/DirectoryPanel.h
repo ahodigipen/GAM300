@@ -21,6 +21,7 @@ namespace EditorUI {
         void Init();
         void OnShow();
         void Render() { OnShow(); }
+        void ForceRefresh();  // Immediately refresh asset registry (for audio picker, etc.)
 
     private:
         // Helpers

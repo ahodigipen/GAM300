@@ -10,6 +10,7 @@
 #include "Commands/UndoRedo.h"  // for ComponentPropertyCommand
 #include "Graphics/Video/VideoSystem.h"  // for VideoComponent UI
 #include "Audio/Audio.hpp"     // for SoundEngine (real-time audio preview)
+#include "Panels/DirectoryPanel.h"  // for ForceRefresh() on audio assets
 #include <GLFW/glfw3.h>
 #include <unordered_map>       // for audio preview tracking
 //#include "BoomProperties.h"
@@ -842,6 +843,14 @@ namespace EditorUI {
                     e.name = "NewSound";
                     sc.entries.push_back(std::move(e));
                 }
+                ImGui::SameLine();
+                if (ImGui::Button("Refresh Audio")) {
+                    // Force refresh directory panel to pick up newly added audio files
+                    if (auto* dirPanel = m_Owner->GetDirectoryPanel()) {
+                        dirPanel->ForceRefresh();
+                    }
+                }
+               
 
                 ImGui::Spacing();
 
