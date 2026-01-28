@@ -8,9 +8,8 @@ namespace GameScripts
         private const int MOUSE_LEFT = 0;
 
         // --- Texture Constants ---
-        private const string MAINMENU_TEX_NORMAL = "Resources/Textures/PauseMenu/ReturnMenuButton.png";
-
-        private const string MAINMENU_TEX_CLICKED = "Resources/Textures/PauseMenu/ReturnMenuButton_Clicked.png";
+        private const string MAINMENU_TEX_NORMAL = "Resources/Textures/MenusUI/ReturnMenuButton.png";
+        private const string MAINMENU_TEX_CLICKED = "Resources/Textures/MenusUI/ReturnMenuButton_Clicked.png";
 
         private ulong _mainMenuButtonID;
         private ulong _backgroundID;

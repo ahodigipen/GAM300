@@ -8,15 +8,15 @@ namespace GameScripts
         private const int MOUSE_LEFT = 0;
 
         // --- Texture Constants ---
-        private const string RESUME_TEX_NORMAL = "Resources/Textures/PauseMenu/ResumeButton.png";
-        private const string RESTART_TEX_NORMAL = "Resources/Textures/PauseMenu/RestartButton.png";
-        private const string MAINMENU_TEX_NORMAL = "Resources/Textures/PauseMenu/ReturnMenuButton.png";
-        private const string QUIT_TEX_NORMAL = "Resources/Textures/PauseMenu/QuitButton.png";
+        private const string RESUME_TEX_NORMAL = "Resources/Textures/MenusUI/ResumeButton.png";
+        private const string RESTART_TEX_NORMAL = "Resources/Textures/MenusUI/RestartButton.png";
+        private const string MAINMENU_TEX_NORMAL = "Resources/Textures/MenusUI/ReturnMenuButton.png";
+        private const string QUIT_TEX_NORMAL = "Resources/Textures/MenusUI/QuitButton.png";
 
-        private const string RESUME_TEX_CLICKED = "Resources/Textures/PauseMenu/ResumeButton_Clicked.png";
-        private const string RESTART_TEX_CLICKED = "Resources/Textures/PauseMenu/RestartButton_Clicked.png";
-        private const string MAINMENU_TEX_CLICKED = "Resources/Textures/PauseMenu/ReturnMenuButton_Clicked.png";
-        private const string QUIT_TEX_CLICKED = "Resources/Textures/PauseMenu/QuitButton_Clicked.png";
+        private const string RESUME_TEX_CLICKED = "Resources/Textures/MenusUI/ResumeButton_Clicked.png";
+        private const string RESTART_TEX_CLICKED = "Resources/Textures/MenusUI/RestartButton_Clicked.png";
+        private const string MAINMENU_TEX_CLICKED = "Resources/Textures/MenusUI/ReturnMenuButton_Clicked.png";
+        private const string QUIT_TEX_CLICKED = "Resources/Textures/MenusUI/QuitButton_Clicked.png";
 
         private ulong _resumeButtonID;
         private ulong _restartButtonID;
