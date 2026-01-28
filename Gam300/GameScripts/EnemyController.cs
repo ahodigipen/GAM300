@@ -34,6 +34,10 @@ namespace GameScripts
 
         [Boom.EditorExposed("Alert Sound", "Sound played when enemy detects player")]
         private string _alertSoundPath = "Resources/Audio/playerPunch_1.wav";
+
+        [Boom.EditorExposed("Proximity Detection", "Enable/Disable proximity detection")]
+        private bool EnemyDetection = true;
+
         // Vision system
         private VisionComponent _vision;
 
@@ -116,15 +120,21 @@ namespace GameScripts
             {
                 // When frozen, still allow proximity detection (player can sneak close)
                 // but disable rotation and vision
-                _proximityDetection?.OnUpdate(dt);
+                if (EnemyDetection)
+                {
+                    _proximityDetection?.OnUpdate(dt);
+                }
                 return;
             }
 
-            // Update vision system
+            // Update vision system (always active)
             _vision?.OnUpdate(dt);
 
-            // Update proximity detection (always active, even when not frozen)
-            _proximityDetection?.OnUpdate(dt);
+            // Update proximity detection (only if enabled)
+            if (EnemyDetection)
+            {
+                _proximityDetection?.OnUpdate(dt);
+            }
 
             // Handle rotation (only when not alert)
             if (_vision?.GetState() != VisionComponent.VisionState.Alert)
@@ -338,6 +348,13 @@ namespace GameScripts
         // === NEW: PROXIMITY DETECTION HANDLER ===
         private void OnProximityDetected(ulong target, Vec3 position)
         {
+            // Check if proximity detection is enabled
+            if (!EnemyDetection)
+            {
+                API.Log("[EnemyController] Proximity detection disabled - ignoring detection event");
+                return;
+            }
+
             API.Log(">>> ENEMY ALERTED BY PROXIMITY! PLAYER TOO CLOSE! <<<");
 
             // Similar to vision detection, but don't rotate immediately

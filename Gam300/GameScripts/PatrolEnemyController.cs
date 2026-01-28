@@ -39,6 +39,9 @@ namespace GameScripts
         [Boom.EditorExposed("Alert Sound", "Sound played when enemy detects player")]
         private string _alertSoundPath = "Resources/Audio/enemyHurt_2.wav";
 
+        [Boom.EditorExposed("Detection", "For Enemy detection")]
+        private bool EnemyDetection = true;
+
         private string _footBase;
         private string _alertName;
 
@@ -200,9 +203,12 @@ namespace GameScripts
                 _stepTimer = 0f;
             }
 
-            // Update vision and proximity
+            // Update vision (always active) and proximity (only if detection enabled)
             _vision?.OnUpdate(dt);
-            _proximityDetection?.OnUpdate(dt);
+            if (EnemyDetection)
+            {
+                _proximityDetection?.OnUpdate(dt);
+            }
 
             _debugTimer += dt;
             if (_debugTimer >= 1f)
@@ -294,6 +300,13 @@ namespace GameScripts
         // === NEW: PROXIMITY DETECTION HANDLER ===
         private void OnProximityDetected(ulong target, Vec3 pos)
         {
+            // Check if detection is enabled
+            if (!EnemyDetection)
+            {
+                API.Log("[PatrolEnemyController] Proximity detection disabled - ignoring detection event");
+                return;
+            }
+
             API.Log(">>> PATROL ENEMY ALERTED BY PROXIMITY! <<<");
 
             _isAlert = true;
