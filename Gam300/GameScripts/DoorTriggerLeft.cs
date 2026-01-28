@@ -1,24 +1,27 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Boom;
 
 namespace GameScripts
 {
-    // Attach to a small trigger volume located just outside the door.
-    // Params format (semicolon or comma separated, case-insensitive keys):
-    //   door=MyDoorName; distance=1.5; movespeed=2.0; consumekey=true; autoclose=false; closedelay=0.5
+    // Attach to a trigger volume positioned near the door.
+    // Set the door entity name in the inspector.
+    // IMPORTANT: Do NOT parent the door to the trigger - keep them as separate entities.
     //
     // Behavior:
-    // - When the player with a key enters the trigger, the door slides to the left (relative to its yaw)
+    // - When the player with a key enters the trigger, both the trigger and door slide left
     //   by 'distance' meters at 'movespeed' m/s. Optionally consumes a key.
-    // - If autoclose=true, when the player exits the trigger the door slides back after 'closedelay' seconds.
+    // - If autoclose=true, when the player exits they slide back after 'closedelay' seconds.
     public class DoorTriggerLeft
     {
         public ulong Entity;
 
         // Config
-        [Boom.EditorExposed("Door Name", "Name of the door entity to move")]
-        private string _doorName = "MoveDoor";
+        [Boom.EditorExposed("Door Name", "Name of the door entity (leave empty to use first child)")]
+        private string _doorName = "";
+
+        [Boom.EditorExposed("Required Key Type", "Key type required to open this door (e.g., 'key1', 'key2')")]
+        private string _requiredKeyType = "key1";
 
         [Boom.EditorExposed("Slide Distance", "Distance the door slides in meters", 0.1f, 20f, true)]
         private float _slideDistance = 5.5f;   // meters
@@ -39,11 +42,14 @@ namespace GameScripts
         [Boom.EditorExposed("Door Sound", "Sound played when door opens/closes")]
         private string _doorSoundPath = "Resources/Audio/unlock.wav";
 
-        // Resolved door
-        private ulong _door = 0;
+        // Cached positions and direction
         private Vec3 _basePos;
         private Vec3 _targetPos;
         private Vec3 _leftDir; // unit vector
+
+        // Door entity (found as child)
+        private ulong _doorEntity = 0;
+        private Vec3 _doorOffset; // Offset from trigger to door
 
         // State
         private static readonly Dictionary<ulong, DoorTriggerLeft> s_instances = new Dictionary<ulong, DoorTriggerLeft>();
@@ -72,33 +78,51 @@ namespace GameScripts
                 API.SetTrigger(Entity, true);
             }
 
-            // Resolve door by name
-            _door = API.FindEntity(_doorName);
-            if (_door == 0)
+            // Find the door entity (by name or as child)
+            if (!string.IsNullOrEmpty(_doorName))
             {
-                API.Log($"[DoorTriggerLeft] ERROR: Could not find door entity by name '{_doorName}'.");
+                _doorEntity = API.FindEntity(_doorName);
+                if (_doorEntity == 0)
+                {
+                    API.Log($"[DoorTriggerLeft] ERROR: Could not find door entity '{_doorName}'");
+                    return;
+                }
             }
             else
             {
-                // Cache base position and compute left direction from yaw
-                _basePos = API.GetPosition(_door);
-                float yawDeg = API.GetRotation(_door).Y;
-                float yawRad = yawDeg * (float)Math.PI / 180f;
-
-                // Forward = (sin(yaw), cos(yaw)); Left (CCW) = (-cos(yaw), sin(yaw))
-                float fx = (float)Math.Sin(yawRad);
-                float fz = (float)Math.Cos(yawRad);
-                _leftDir = new Vec3(fz, 0f, -fx); // unit left vector in XZ
-
-                // Target position = base + left * distance
-                _targetPos = new Vec3(
-                    _basePos.X + _leftDir.X * _slideDistance,
-                    _basePos.Y,
-                    _basePos.Z + _leftDir.Z * _slideDistance
-                );
-
-                API.Log($"[DoorTriggerLeft] Door='{_doorName}' basePos=({_basePos.X:F2},{_basePos.Y:F2},{_basePos.Z:F2}) targetPos=({_targetPos.X:F2},{_targetPos.Y:F2},{_targetPos.Z:F2}) leftDir=({_leftDir.X:F2},{_leftDir.Z:F2})");
+                // Try to find first child
+                // Note: If API doesn't support getting children, you must set the door name manually
+                API.Log("[DoorTriggerLeft] WARNING: No door name specified. Please set the door entity name.");
+                return;
             }
+
+            // Cache base position and compute left direction from yaw
+            _basePos = API.GetPosition(Entity);
+            float yawDeg = API.GetRotation(Entity).Y;
+            float yawRad = yawDeg * (float)Math.PI / 180f;
+
+            // Forward = (sin(yaw), cos(yaw)); Left (CCW) = (-cos(yaw), sin(yaw))
+            float fx = (float)Math.Sin(yawRad);
+            float fz = (float)Math.Cos(yawRad);
+            _leftDir = new Vec3(fz, 0f, -fx); // unit left vector in XZ
+
+            // Target position = base + left * distance
+            _targetPos = new Vec3(
+                _basePos.X + _leftDir.X * _slideDistance,
+                _basePos.Y,
+                _basePos.Z + _leftDir.Z * _slideDistance
+            );
+
+            // Calculate and store offset from trigger to door
+            Vec3 doorPos = API.GetPosition(_doorEntity);
+            _doorOffset = new Vec3(
+                doorPos.X - _basePos.X,
+                doorPos.Y - _basePos.Y,
+                doorPos.Z - _basePos.Z
+            );
+
+            API.Log($"[DoorTriggerLeft] Trigger basePos=({_basePos.X:F2},{_basePos.Y:F2},{_basePos.Z:F2}) targetPos=({_targetPos.X:F2},{_targetPos.Y:F2},{_targetPos.Z:F2})");
+            API.Log($"[DoorTriggerLeft] Door offset=({_doorOffset.X:F2},{_doorOffset.Y:F2},{_doorOffset.Z:F2})");
 
             API.RegisterTriggerEnterCallback(Entity, OnTriggerEnter);
             API.RegisterTriggerExitCallback(Entity, OnTriggerExit);
@@ -107,7 +131,7 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
-            if (_door == 0) return;
+            if (_doorEntity == 0) return;
 
             // Handle delayed close
             if (_autoCloseOnExit && _closeDelay > 0f && !_opening && _closing)
@@ -118,16 +142,32 @@ namespace GameScripts
             }
 
             // Current position
-            Vec3 cur = API.GetPosition(_door);
+            Vec3 cur = API.GetPosition(Entity);
 
             if (_opening)
             {
                 Vec3 next = MoveTowards(cur, _targetPos, _moveSpeed * dt);
-                API.TeleportRigidBody(_door, next);
+
+                // Move trigger
+                API.TeleportRigidBody(Entity, next);
+
+                // Move door with offset
+                Vec3 doorNext = new Vec3(
+                    next.X + _doorOffset.X,
+                    next.Y + _doorOffset.Y,
+                    next.Z + _doorOffset.Z
+                );
+                API.TeleportRigidBody(_doorEntity, doorNext);
 
                 if (NearlyEqual(next, _targetPos))
                 {
-                    API.TeleportRigidBody(_door, _targetPos);
+                    API.TeleportRigidBody(Entity, _targetPos);
+                    Vec3 doorTarget = new Vec3(
+                        _targetPos.X + _doorOffset.X,
+                        _targetPos.Y + _doorOffset.Y,
+                        _targetPos.Z + _doorOffset.Z
+                    );
+                    API.TeleportRigidBody(_doorEntity, doorTarget);
                     _opening = false;
                     _closing = false;
                     API.Log("[DoorTriggerLeft] Door moved left (opened).");
@@ -136,42 +176,52 @@ namespace GameScripts
             else if (_closing)
             {
                 Vec3 next = MoveTowards(cur, _basePos, _moveSpeed * dt);
-                API.TeleportRigidBody(_door, next);
+
+                // Move trigger
+                API.TeleportRigidBody(Entity, next);
+
+                // Move door with offset
+                Vec3 doorNext = new Vec3(
+                    next.X + _doorOffset.X,
+                    next.Y + _doorOffset.Y,
+                    next.Z + _doorOffset.Z
+                );
+                API.TeleportRigidBody(_doorEntity, doorNext);
 
                 if (NearlyEqual(next, _basePos))
                 {
-                    API.TeleportRigidBody(_door, _basePos);
+                    API.TeleportRigidBody(Entity, _basePos);
+                    Vec3 doorBase = new Vec3(
+                        _basePos.X + _doorOffset.X,
+                        _basePos.Y + _doorOffset.Y,
+                        _basePos.Z + _doorOffset.Z
+                    );
+                    API.TeleportRigidBody(_doorEntity, doorBase);
                     _closing = false;
                     API.Log("[DoorTriggerLeft] Door returned (closed).");
                 }
             }
 
+            // Debug key testing
             bool kDown = API.IsKeyDown(KEY_K);
             if (kDown && !_kWasDown)
             {
-                if (_door != 0)
+                bool shift = API.IsKeyDown(KEY_LEFT_SHIFT);
+                if (shift)
                 {
-                    bool shift = API.IsKeyDown(KEY_LEFT_SHIFT);
-                    if (shift)
-                    {
-                        // 3D positional version (subject to distance & mono asset rules)
-                        var pos = API.GetPosition(_door);
-                        API.PlaySoundAt("sfx_door_slide_open_3d", _doorSoundPath, pos, false);
-                        API.SetSoundVolume("sfx_door_slide_open_3d", 1.0f);
-                        API.Set3DMinMaxDistance("sfx_door_slide_open_3d", 1.5f, 35.0f);  // Door sounds heard from good distance
-                        API.Log("[DoorTriggerLeft] Shift+K: played 3D positional door SFX.");
-                    }
-                    else
-                    {
-                        // 2D guaranteed-audible fallback (no attenuation)
-                        API.PlaySound("sfx_door_slide_open_2d", _doorSoundPath, false);
-                        API.SetSoundVolume("sfx_door_slide_open_2d", 1.0f);
-                        API.Log("[DoorTriggerLeft] K: played 2D door SFX (always audible).");
-                    }
+                    // 3D positional version (subject to distance & mono asset rules)
+                    var pos = API.GetPosition(_doorEntity);
+                    API.PlaySoundAt("sfx_door_slide_open_3d", _doorSoundPath, pos, false);
+                    API.SetSoundVolume("sfx_door_slide_open_3d", 1.0f);
+                    API.Set3DMinMaxDistance("sfx_door_slide_open_3d", 1.5f, 35.0f);
+                    API.Log("[DoorTriggerLeft] Shift+K: played 3D positional door SFX.");
                 }
                 else
                 {
-                    API.Log("[DoorTriggerLeft] K pressed but door not resolved.");
+                    // 2D guaranteed-audible fallback (no attenuation)
+                    API.PlaySound("sfx_door_slide_open_2d", _doorSoundPath, false);
+                    API.SetSoundVolume("sfx_door_slide_open_2d", 1.0f);
+                    API.Log("[DoorTriggerLeft] K: played 2D door SFX (always audible).");
                 }
             }
             _kWasDown = kDown;
@@ -187,20 +237,19 @@ namespace GameScripts
         {
             DoorTriggerLeft inst;
             if (!s_instances.TryGetValue(triggerEntity, out inst)) return;
-            if (inst._door == 0) return;
 
             // Only player triggers this
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
 
-            if (!PlayerInventory.HasKey())
+            if (!PlayerInventory.HasKey(inst._requiredKeyType))
             {
-                API.Log("[DoorTriggerLeft] Player has no key - door will not move.");
+                API.Log($"[DoorTriggerLeft] Player does not have required key type '{inst._requiredKeyType}' - door will not move.");
                 return;
             }
 
-            if (inst._consumeKey && !PlayerInventory.ConsumeKey())
+            if (inst._consumeKey && !PlayerInventory.ConsumeKey(inst._requiredKeyType))
             {
-                API.Log("[DoorTriggerLeft] Failed to consume key.");
+                API.Log($"[DoorTriggerLeft] Failed to consume key type '{inst._requiredKeyType}'.");
                 return;
             }
 
@@ -208,17 +257,16 @@ namespace GameScripts
             inst._opening = true;
             inst._closing = false;
 
-            var pos = API.GetPosition(inst._door);
+            var pos = API.GetPosition(inst._doorEntity);
             API.PlaySound("sfx_door_slide_open_2d", inst._doorSoundPath, false);
             API.SetSoundVolume("sfx_door_slide_open_2d", 1.0f);
-            API.Log("[DoorTriggerLeft] K: played 2D door SFX (always audible).");
+            API.Log("[DoorTriggerLeft] Playing door open sound.");
         }
 
         private static void OnTriggerExit(ulong triggerEntity, ulong otherEntity)
         {
             DoorTriggerLeft inst;
             if (!s_instances.TryGetValue(triggerEntity, out inst)) return;
-            if (inst._door == 0) return;
 
             // Only react to player exiting
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
@@ -250,9 +298,10 @@ namespace GameScripts
 
                 switch (key)
                 {
-                    case "door":
-                    case "doorname":
-                        _doorName = val;
+                    case "keytype":
+                    case "requiredkey":
+                    case "requiredkeytype":
+                        _requiredKeyType = val;
                         break;
 
                     case "distance":
