@@ -33,6 +33,8 @@ namespace EditorUI {
         , m_App(dynamic_cast<Boom::AppInterface*>(owner))
     {
         DEBUG_POINTER(m_App, "AppInterface");
+        ctx = m_Owner->GetContext();
+        DEBUG_POINTER(ctx, "AppContext");
         // Initialize asset picker icons
         if (m_App) {
             m_AssetIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/asset.png");
@@ -3274,7 +3276,19 @@ namespace EditorUI {
                 // Material preview sphere
                 RenderMaterialPreview(mat);
 
+                // Track if any property changed to invalidate cache
+                bool materialChanged = false;
+
                 if (ImGui::CollapsingHeader("Maps", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    // Store previous IDs to detect changes
+                    auto prevAlbedo = mat->albedoMapID;
+                    auto prevNormal = mat->normalMapID;
+                    auto prevRoughness = mat->roughnessMapID;
+                    auto prevMetallic = mat->metallicMapID;
+                    auto prevOcclusion = mat->occlusionMapID;
+                    auto prevEmissive = mat->emissiveMapID;
+                    auto prevOpacity = mat->opacityMapID;
+
                     ImGui::BeginTable("##maps", 6, ImGuiTableFlags_SizingFixedFit);
                     ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
                     ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch);
@@ -3286,28 +3300,41 @@ namespace EditorUI {
                     InputAssetWidget<CONSTANTS::DND_PAYLOAD_TEXTURE>("emissive map", mat->emissiveMapID);
                     InputAssetWidget<CONSTANTS::DND_PAYLOAD_TEXTURE>("opacity map", mat->opacityMapID);
                     ImGui::EndTable();
+
+                    // Check if any texture map changed
+                    if (prevAlbedo != mat->albedoMapID || prevNormal != mat->normalMapID ||
+                        prevRoughness != mat->roughnessMapID || prevMetallic != mat->metallicMapID ||
+                        prevOcclusion != mat->occlusionMapID || prevEmissive != mat->emissiveMapID ||
+                        prevOpacity != mat->opacityMapID) {
+                        materialChanged = true;
+                    }
                 }
 
                 if (ImGui::CollapsingHeader("Variables", ImGuiTreeNodeFlags_DefaultOpen)) {
-                    ImGui::DragFloat3("albedo", &mat->data.albedo[0], 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-                    ImGui::DragFloat3("emissive", &mat->data.emissive[0], 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-                    ImGui::DragFloat("roughness", &mat->data.roughness, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-                    ImGui::DragFloat("metallic", &mat->data.metallic, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-                    ImGui::DragFloat("occlusion", &mat->data.occlusion, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-                    ImGui::DragFloat("opacity", &mat->data.opacity, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat3("albedo", &mat->data.albedo[0], 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat3("emissive", &mat->data.emissive[0], 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat("roughness", &mat->data.roughness, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat("metallic", &mat->data.metallic, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat("occlusion", &mat->data.occlusion, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat("opacity", &mat->data.opacity, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
                 }
 
                 if (ImGui::CollapsingHeader("UV Mapping", ImGuiTreeNodeFlags_DefaultOpen)) {
-                    ImGui::Checkbox("Use World Space UV", &mat->data.useWorldSpaceUV);
+                    materialChanged |= ImGui::Checkbox("Use World Space UV", &mat->data.useWorldSpaceUV);
                     if (ImGui::IsItemHovered()) {
                         ImGui::SetTooltip("When enabled, textures tile based on world position\ninstead of mesh UVs. Useful for walls and floors\nto prevent stretching on scaled surfaces.");
                     }
                     if (mat->data.useWorldSpaceUV) {
-                        ImGui::DragFloat("Texture Scale", &mat->data.textureScale, 0.1f, 0.01f, 100.f, "%.2f");
+                        materialChanged |= ImGui::DragFloat("Texture Scale", &mat->data.textureScale, 0.1f, 0.01f, 100.f, "%.2f");
                         if (ImGui::IsItemHovered()) {
                             ImGui::SetTooltip("World units per texture repeat.\nHigher values = larger texture appearance.");
                         }
                     }
+                }
+
+                // Invalidate the cached preview if material was modified
+                if (materialChanged && ctx->renderer) {
+                    ctx->renderer->InvalidateMaterialPreview(mat->uid);
                 }
             }
             else if (asset->type == AssetType::TEXTURE) {
