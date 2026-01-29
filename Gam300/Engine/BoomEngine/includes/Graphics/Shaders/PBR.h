@@ -66,6 +66,8 @@ namespace Boom {
 			, u_LightSpace{ GetUniformVar("u_lightSpace") }
 			, u_DepthMap{ GetUniformVar("u_depthMap") }
 			, u_EnableShadows{ GetUniformVar("u_enableShadows") }
+			, useWorldSpaceUVLoc{ GetUniformVar("useWorldSpaceUV") }
+			, textureScaleLoc{ GetUniformVar("textureScale") }
 		{
 			GLuint prog = shaderId; 
 
@@ -151,6 +153,14 @@ namespace Boom {
 			SetUniform(u_EnableShadows, enabled);
 		}
 
+		// World-space UV mapping - when enabled, textures tile based on world position
+		// instead of mesh UVs, preventing stretching on scaled surfaces
+		BOOM_INLINE void SetWorldSpaceUV(bool useWorldSpace, float scale = 1.0f)
+		{
+			SetUniform(useWorldSpaceUVLoc, useWorldSpace);
+			SetUniform(textureScaleLoc, scale);
+		}
+
 		// === Spot Light Shadow Functions ===
 		BOOM_INLINE void SetSpotShadowCount(int count)
 		{
@@ -191,10 +201,11 @@ namespace Boom {
 			SetUniform(viewPosLoc, transform.translate);
 		}
 		BOOM_INLINE void Draw(Mesh3D const& mesh, Transform3D const& transform) {
-			SetUniform(isDebugModeLoc, false); 
+			SetUniform(isDebugModeLoc, false);
 			SetUniform(ditherThresholdLoc, showDither ? ditherThreshold : 0.f);
 			SetUniform(showNormalTextureLoc, false);
 			SetUniform(modelMatLoc, transform.Matrix());
+			SetWorldSpaceUV(false, 1.0f); // Default to mesh UVs for raw mesh draws
 			mesh->Draw(GL_TRIANGLES);
 		}
 
@@ -260,7 +271,10 @@ namespace Boom {
 			SetUniform(ambientStrengthLoc, ambientStrength);
 			//world transformation * model transformation
 			SetUniform(modelMatLoc, transform.Matrix() * model->modelTransform.Matrix());
-			
+
+			// World-space UV settings
+			SetWorldSpaceUV(material.useWorldSpaceUV, material.textureScale);
+
 			//material texture maps
 			SetMaterial(material, 1);
 
@@ -276,6 +290,7 @@ namespace Boom {
 			SetUniform(modelMatLoc, transform.Matrix() * model->modelTransform.Matrix());
 			SetUniform(albedoLoc, albedo);
 			SetUniform(ambientStrengthLoc, ambientStrength);
+			SetWorldSpaceUV(false, 1.0f); // Debug mode uses mesh UVs
 			SetUniform(jointsLoc, model->HasJoint());
 			model->Draw(GL_LINES);
 		}
@@ -335,5 +350,9 @@ namespace Boom {
 		int32_t u_EnableShadows = 0;
 
 		int32_t ambientStrengthLoc;
+
+		// World-space UV mapping
+		int32_t useWorldSpaceUVLoc;
+		int32_t textureScaleLoc;
 	};
 }

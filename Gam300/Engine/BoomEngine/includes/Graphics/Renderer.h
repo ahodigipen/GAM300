@@ -14,6 +14,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <unordered_map>
 
 namespace Boom {
 
@@ -560,6 +561,24 @@ namespace Boom {
         BOOM_INLINE void ResetMaterialPreview() {
             m_MatPreviewFrame.reset();
             m_PreviewSphere = nullptr;
+            // Clean up cached preview textures
+            for (auto& [id, texId] : m_MaterialPreviewCache) {
+                if (texId != 0) {
+                    glDeleteTextures(1, &texId);
+                }
+            }
+            m_MaterialPreviewCache.clear();
+        }
+
+        // Invalidate a specific material's cached preview (call when material changes)
+        BOOM_INLINE void InvalidateMaterialPreview(uint64_t assetId) {
+            auto it = m_MaterialPreviewCache.find(assetId);
+            if (it != m_MaterialPreviewCache.end()) {
+                if (it->second != 0) {
+                    glDeleteTextures(1, &it->second);
+                }
+                m_MaterialPreviewCache.erase(it);
+            }
         }
 
         BOOM_INLINE void InitMaterialPreview(Model3D sphereModel) {
@@ -695,6 +714,71 @@ namespace Boom {
             return m_MatPreviewFrame->GetTexture();
         }
 
+        // Cached version - renders once per material and returns cached texture
+        // Use this for ResourcePanel thumbnails to avoid re-rendering every frame
+        BOOM_INLINE uint32_t RenderMaterialPreviewCached(uint64_t assetId,
+                                                          PbrMaterial const& material,
+                                                          float cameraYaw = 0.0f,
+                                                          float cameraPitch = 0.3f,
+                                                          float cameraDistance = 2.5f) {
+            if (!m_MatPreviewFrame || !m_PreviewSphere) {
+                return 0;
+            }
+
+            // Check if already cached
+            auto it = m_MaterialPreviewCache.find(assetId);
+            if (it != m_MaterialPreviewCache.end() && it->second != 0) {
+                return it->second;
+            }
+
+            // Render to the shared FBO first
+            uint32_t tempTex = RenderMaterialPreview(material, cameraYaw, cameraPitch, cameraDistance);
+            if (tempTex == 0) return 0;
+
+            // Create a new texture to store this material's preview
+            uint32_t cachedTex = 0;
+            glGenTextures(1, &cachedTex);
+            glBindTexture(GL_TEXTURE_2D, cachedTex);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_MatPreviewSize, m_MatPreviewSize, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+            // Copy from the shared FBO texture to the cached texture
+            GLint prevFBO;
+            glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
+
+            // Create temporary FBOs for the copy operation
+            GLuint readFBO, drawFBO;
+            glGenFramebuffers(1, &readFBO);
+            glGenFramebuffers(1, &drawFBO);
+
+            // Bind source texture to read FBO
+            glBindFramebuffer(GL_READ_FRAMEBUFFER, readFBO);
+            glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tempTex, 0);
+
+            // Bind destination texture to draw FBO
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, drawFBO);
+            glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, cachedTex, 0);
+
+            // Blit (copy) the texture
+            glBlitFramebuffer(0, 0, m_MatPreviewSize, m_MatPreviewSize,
+                              0, 0, m_MatPreviewSize, m_MatPreviewSize,
+                              GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+            // Cleanup temporary FBOs
+            glDeleteFramebuffers(1, &readFBO);
+            glDeleteFramebuffers(1, &drawFBO);
+
+            // Restore previous FBO
+            glBindFramebuffer(GL_FRAMEBUFFER, prevFBO);
+
+            // Cache and return
+            m_MaterialPreviewCache[assetId] = cachedTex;
+            return cachedTex;
+        }
+
         BOOM_INLINE bool IsMaterialPreviewInitialized() const { return m_MatPreviewFrame != nullptr && m_PreviewSphere != nullptr; }
         BOOM_INLINE int32_t GetMaterialPreviewSize() const { return m_MatPreviewSize; }
 
@@ -702,6 +786,7 @@ namespace Boom {
         std::unique_ptr<FrameBuffer> m_MatPreviewFrame;
         Model3D m_PreviewSphere;
         int32_t m_MatPreviewSize = 200;
+        std::unordered_map<uint64_t, uint32_t> m_MaterialPreviewCache; // AssetID -> Cached texture ID
     };
 
 } // namespace Boom
