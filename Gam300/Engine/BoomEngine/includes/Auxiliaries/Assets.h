@@ -51,13 +51,14 @@ namespace Boom {
 	};
 
 	struct MaterialAsset : Asset {
-		PbrMaterial data{}; //Already has XPROPERTY_DEF defined
+		PbrMaterial data{}; //Already has XPROPERTY_DEF defined (includes useWorldSpaceUV and textureScale)
 		AssetID albedoMapID{ EMPTY_ASSET };
 		AssetID normalMapID{ EMPTY_ASSET };
 		AssetID roughnessMapID{ EMPTY_ASSET };
 		AssetID metallicMapID{ EMPTY_ASSET };
 		AssetID occlusionMapID{ EMPTY_ASSET };
 		AssetID emissiveMapID{ EMPTY_ASSET };
+		AssetID opacityMapID{ EMPTY_ASSET };
 
 		MaterialAsset() { type = AssetType::MATERIAL; }
 
@@ -69,7 +70,8 @@ namespace Boom {
 			obj_member<"RoughnessMapID", &MaterialAsset::roughnessMapID>,
 			obj_member<"MetallicMapID", &MaterialAsset::metallicMapID>,
 			obj_member<"OcclusionMapID", &MaterialAsset::occlusionMapID>,
-			obj_member<"EmissiveMapID", &MaterialAsset::emissiveMapID>
+			obj_member<"EmissiveMapID", &MaterialAsset::emissiveMapID>,
+			obj_member<"OpacityMapID", &MaterialAsset::opacityMapID>
 		)
 	};
 
@@ -387,6 +389,29 @@ namespace Boom {
 				}
 			}
 			return EMPTY_ASSET;
+		}
+
+		// Resolves all texture map IDs in a MaterialAsset to actual texture pointers
+		// Call this before rendering with the material to ensure textures are bound
+		BOOM_INLINE void ResolveMaterialTextures(MaterialAsset* mat) {
+			if (!mat) return;
+
+			auto resolveTexture = [this](AssetID id, Texture& outTex) {
+				if (id != EMPTY_ASSET) {
+					auto* tex = TryGet<TextureAsset>(id);
+					outTex = (tex && tex->data) ? tex->data : nullptr;
+				} else {
+					outTex = nullptr;
+				}
+			};
+
+			resolveTexture(mat->albedoMapID, mat->data.albedoMap);
+			resolveTexture(mat->normalMapID, mat->data.normalMap);
+			resolveTexture(mat->roughnessMapID, mat->data.roughnessMap);
+			resolveTexture(mat->metallicMapID, mat->data.metallicMap);
+			resolveTexture(mat->occlusionMapID, mat->data.occlusionMap);
+			resolveTexture(mat->emissiveMapID, mat->data.emissiveMap);
+			resolveTexture(mat->opacityMapID, mat->data.opacityMap);
 		}
 
 		BOOM_INLINE PhysicsMeshAsset* FindPhysicsMeshByPath(const std::string& path) {

@@ -10,8 +10,15 @@
 #include "Commands/UndoRedo.h"  // for ComponentPropertyCommand
 #include "Graphics/Video/VideoSystem.h"  // for VideoComponent UI
 #include "Audio/Audio.hpp"     // for SoundEngine (real-time audio preview)
+#include "Panels/DirectoryPanel.h"  // for ForceRefresh() on audio assets
+#include "Graphics/Renderer.h" // for material preview
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 #include <unordered_map>       // for audio preview tracking
+#include <algorithm>           // for std::transform (asset picker search)
+#include <cctype>              // for std::tolower
+#include <type_traits>         // for std::is_same_v
+#include "Context/Helpers.h"   // for ASSET_SIZE
 //#include "BoomProperties.h"
 using namespace EditorUI;
 
@@ -27,6 +34,90 @@ namespace EditorUI {
         , m_App(dynamic_cast<Boom::AppInterface*>(owner))
     {
         DEBUG_POINTER(m_App, "AppInterface");
+        ctx = m_Owner->GetContext();
+        DEBUG_POINTER(ctx, "AppContext");
+        // Initialize asset picker icons
+        if (m_App) {
+            m_AssetIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/asset.png");
+            m_ModelIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/model.png");
+            m_MaterialIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/material.png");
+            m_ScriptIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/script.png");
+        }
+    }
+
+    void InspectorPanel::RenderMaterialPreview(Boom::MaterialAsset* mat) {
+        if (!mat || !m_App) return;
+
+        auto* ctx = m_App->GetContext();
+        if (!ctx || !ctx->renderer || !ctx->assets) return;
+
+        // Initialize or reinitialize material preview in renderer if needed
+        if (!ctx->renderer->IsMaterialPreviewInitialized()) {
+            // Find sphere model in assets (need to re-find after scene changes)
+            Boom::Model3D sphereModel;
+            auto& modelMap = ctx->assets->GetMap<Boom::ModelAsset>();
+            for (auto& [assetID, assetPtr] : modelMap) {
+                auto* modelAsset = dynamic_cast<Boom::ModelAsset*>(assetPtr.get());
+                if (modelAsset && modelAsset->source.find("sphere.fbx") != std::string::npos) {
+                    sphereModel = modelAsset->data;
+                    BOOM_INFO("[MaterialPreview] Found sphere model: {}", modelAsset->source);
+                    break;
+                }
+            }
+            if (sphereModel) {
+                ctx->renderer->InitMaterialPreview(sphereModel);
+                BOOM_INFO("[MaterialPreview] Initialized with sphere model");
+            } else {
+                BOOM_WARN("[MaterialPreview] Sphere model not found in assets!");
+            }
+        }
+
+        if (!ctx->renderer->IsMaterialPreviewInitialized()) {
+            ImGui::TextDisabled("Sphere model not found for preview");
+            ImGui::TextDisabled("(Load a scene with sphere.fbx asset)");
+            return;
+        }
+
+        // Resolve texture IDs to actual texture pointers
+        ctx->assets->ResolveMaterialTextures(mat);
+
+        // Render preview using the renderer
+        uint32_t previewTexture = ctx->renderer->RenderMaterialPreview(
+            mat->data, m_MatPreviewYaw, m_MatPreviewPitch, m_MatPreviewDistance);
+
+        if (previewTexture == 0) {
+            ImGui::TextDisabled("Initializing preview...");
+            return;
+        }
+
+        // Display the preview
+        ImGui::Text("Material Preview");
+
+        float previewSize = (float)ctx->renderer->GetMaterialPreviewSize();
+        float availWidth = ImGui::GetContentRegionAvail().x;
+        float offsetX = (availWidth - previewSize) * 0.5f;
+        if (offsetX > 0) ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offsetX);
+
+        ImGui::Image((ImTextureID)(intptr_t)previewTexture,
+            ImVec2(previewSize, previewSize),
+            ImVec2(0, 1), ImVec2(1, 0)); // Flip Y
+
+        // Handle mouse interaction for rotation
+        if (ImGui::IsItemHovered()) {
+            ImGuiIO& io = ImGui::GetIO();
+            if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
+                m_MatPreviewYaw -= io.MouseDelta.x * 0.01f; 
+                m_MatPreviewPitch += io.MouseDelta.y * 0.01f;
+                m_MatPreviewPitch = glm::clamp(m_MatPreviewPitch, -1.5f, 1.5f);
+            }
+            if (io.MouseWheel != 0.0f) {
+                m_MatPreviewDistance -= io.MouseWheel * 0.5f;
+                m_MatPreviewDistance = glm::clamp(m_MatPreviewDistance, 0.5f, 20.0f); // Wider range for different model sizes
+            }
+        }
+
+        ImGui::TextDisabled("Drag to rotate, scroll to zoom");
+        ImGui::Separator();
     }
 
     // ---- templated section drawer ----
@@ -842,6 +933,14 @@ namespace EditorUI {
                     e.name = "NewSound";
                     sc.entries.push_back(std::move(e));
                 }
+                ImGui::SameLine();
+                if (ImGui::Button("Refresh Audio")) {
+                    // Force refresh directory panel to pick up newly added audio files
+                    if (auto* dirPanel = m_Owner->GetDirectoryPanel()) {
+                        dirPanel->ForceRefresh();
+                    }
+                }
+               
 
                 ImGui::Spacing();
 
@@ -3142,11 +3241,22 @@ namespace EditorUI {
             if (asset->type == AssetType::MATERIAL) {
                 MaterialAsset* mat{ dynamic_cast<MaterialAsset*>(asset) };
 
-                //TODO: showcase material as textured sphere
-                //data variables (showcase texture name instead of map id)
-                // toggle between mapID and standard slider (vec3/float)
+                // Material preview sphere
+                RenderMaterialPreview(mat);
+
+                // Track if any property changed to invalidate cache
+                bool materialChanged = false;
 
                 if (ImGui::CollapsingHeader("Maps", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    // Store previous IDs to detect changes
+                    auto prevAlbedo = mat->albedoMapID;
+                    auto prevNormal = mat->normalMapID;
+                    auto prevRoughness = mat->roughnessMapID;
+                    auto prevMetallic = mat->metallicMapID;
+                    auto prevOcclusion = mat->occlusionMapID;
+                    auto prevEmissive = mat->emissiveMapID;
+                    auto prevOpacity = mat->opacityMapID;
+
                     ImGui::BeginTable("##maps", 6, ImGuiTableFlags_SizingFixedFit);
                     ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
                     ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch);
@@ -3156,15 +3266,43 @@ namespace EditorUI {
                     InputAssetWidget<CONSTANTS::DND_PAYLOAD_TEXTURE>("metallic map", mat->metallicMapID);
                     InputAssetWidget<CONSTANTS::DND_PAYLOAD_TEXTURE>("occlusion map", mat->occlusionMapID);
                     InputAssetWidget<CONSTANTS::DND_PAYLOAD_TEXTURE>("emissive map", mat->emissiveMapID);
+                    InputAssetWidget<CONSTANTS::DND_PAYLOAD_TEXTURE>("opacity map", mat->opacityMapID);
                     ImGui::EndTable();
+
+                    // Check if any texture map changed
+                    if (prevAlbedo != mat->albedoMapID || prevNormal != mat->normalMapID ||
+                        prevRoughness != mat->roughnessMapID || prevMetallic != mat->metallicMapID ||
+                        prevOcclusion != mat->occlusionMapID || prevEmissive != mat->emissiveMapID ||
+                        prevOpacity != mat->opacityMapID) {
+                        materialChanged = true;
+                    }
                 }
 
                 if (ImGui::CollapsingHeader("Variables", ImGuiTreeNodeFlags_DefaultOpen)) {
-                    ImGui::DragFloat3("albedo", &mat->data.albedo[0], 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-                    ImGui::DragFloat3("emissive", &mat->data.emissive[0], 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-                    ImGui::DragFloat("roughness", &mat->data.roughness, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-                    ImGui::DragFloat("metallic", &mat->data.metallic, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-                    ImGui::DragFloat("occlusion", &mat->data.occlusion, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat3("albedo", &mat->data.albedo[0], 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat3("emissive", &mat->data.emissive[0], 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat("roughness", &mat->data.roughness, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat("metallic", &mat->data.metallic, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat("occlusion", &mat->data.occlusion, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat("opacity", &mat->data.opacity, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                }
+
+                if (ImGui::CollapsingHeader("UV Mapping", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    materialChanged |= ImGui::Checkbox("Use World Space UV", &mat->data.useWorldSpaceUV);
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip("When enabled, textures tile based on world position\ninstead of mesh UVs. Useful for walls and floors\nto prevent stretching on scaled surfaces.");
+                    }
+                    if (mat->data.useWorldSpaceUV) {
+                        materialChanged |= ImGui::DragFloat("Texture Scale", &mat->data.textureScale, 0.1f, 0.01f, 100.f, "%.2f");
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("World units per texture repeat.\nHigher values = larger texture appearance.");
+                        }
+                    }
+                }
+
+                // Invalidate the cached preview if material was modified
+                if (materialChanged && ctx->renderer) {
+                    ctx->renderer->InvalidateMaterialPreview(mat->uid);
                 }
             }
             else if (asset->type == AssetType::TEXTURE) {
@@ -3693,15 +3831,149 @@ namespace EditorUI {
         ImGui::SameLine();
 
         ImGui::TableSetColumnIndex(1);
-        ImVec2 const fieldSize{ ImGui::GetContentRegionAvail().x, ImGui::GetFrameHeight() };
         ImGui::PushID(label);
 
         using AssetType = typename PayloadToType<Payload>::Type;
-        if (ImGui::Button(m_App->GetAssetName<AssetType>(data).data(), fieldSize)) {
-            //TODO: clicking button opens asset picker window
-        }
+
+        // Calculate button width, leaving space for remove button if asset is set
+        float removeButtonWidth = ImGui::GetFrameHeight(); // Square button
+        float spacing = ImGui::GetStyle().ItemSpacing.x;
+        float availWidth = ImGui::GetContentRegionAvail().x;
+        float fieldWidth = (data != 0) ? (availWidth - removeButtonWidth - spacing) : availWidth;
+
+        ImVec2 const fieldSize{ fieldWidth, ImGui::GetFrameHeight() };
+        bool buttonClicked = ImGui::Button(m_App->GetAssetName<AssetType>(data).data(), fieldSize);
         AcceptIDDrop(data, Payload.data());
+
+        // Show remove button only if an asset is set
+        if (data != 0) {
+            ImGui::SameLine();
+            if (ImGui::Button("X", ImVec2(removeButtonWidth, ImGui::GetFrameHeight()))) {
+                data = 0;
+            }
+            if (ImGui::IsItemHovered()) {
+                ImGui::SetTooltip("Remove asset");
+            }
+        }
+
         ImGui::PopID();
+
+        // Handle button click AFTER PopID to ensure consistent popup ID
+        if (buttonClicked) {
+            m_AssetPickerOpen = true;
+            m_AssetPickerLabel = label;
+            m_AssetPickerTarget = &data;
+            m_AssetPickerPayload = std::string(Payload);
+            memset(m_AssetPickerSearch, 0, sizeof(m_AssetPickerSearch));
+        }
+
+        // Asset Picker Popup Modal - rendered outside of PushID block for consistent ID
+        // Only the widget that owns the picker target should open/render the popup
+        if (m_AssetPickerOpen && m_AssetPickerTarget == &data) {
+            ImGui::OpenPopup("##AssetPickerPopup");
+        }
+
+        ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
+        if (ImGui::BeginPopupModal("##AssetPickerPopup", &m_AssetPickerOpen, ImGuiWindowFlags_NoScrollbar)) {
+            if (m_AssetPickerTarget == &data) {
+                ImGui::Text("Select %s", m_AssetPickerLabel.c_str());
+                ImGui::Separator();
+
+                // Search bar
+                ImGui::InputTextWithHint("##search", "Search...", m_AssetPickerSearch, sizeof(m_AssetPickerSearch));
+                ImGui::Separator();
+
+                // Asset grid
+                ImGui::BeginChild("AssetGrid", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()), true);
+
+                constexpr float PICKER_ASSET_SIZE = 70.0f;
+                int32_t colNo = (int32_t)((ImGui::GetContentRegionAvail().x) / (PICKER_ASSET_SIZE + ImGui::GetStyle().ItemSpacing.x));
+                colNo = glm::max(1, colNo);
+
+                ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedSame | ImGuiTableFlags_NoHostExtendX;
+                if (ImGui::BeginTable("##assetPickerGrid", colNo, flags)) {
+                    for (int i = 0; i < colNo; ++i) {
+                        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, PICKER_ASSET_SIZE);
+                    }
+
+                    // Prepare search string (case-insensitive)
+                    std::string searchLower(m_AssetPickerSearch);
+                    std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(),
+                        [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+
+                    m_App->AssetTypeView<AssetType>([&](AssetType* asset) {
+                        if (!asset || asset->uid == 0) return;
+
+                        // Search filter (case-insensitive)
+                        std::string nameLower = asset->name;
+                        std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(),
+                            [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+                        if (!searchLower.empty() && nameLower.find(searchLower) == std::string::npos)
+                            return;
+
+                        ImGui::TableNextColumn();
+
+                        // Determine icon based on asset type
+                        ImTextureID texid = m_AssetIcon;
+                        if constexpr (std::is_same_v<AssetType, MaterialAsset>) {
+                            texid = m_MaterialIcon;
+                        }
+                        else if constexpr (std::is_same_v<AssetType, ModelAsset>) {
+                            texid = m_ModelIcon;
+                        }
+                        else if constexpr (std::is_same_v<AssetType, TextureAsset>) {
+                            TextureAsset* tex = dynamic_cast<TextureAsset*>(asset);
+                            if (tex && tex->data) texid = *tex->data.get();
+                        }
+
+                        ImGui::PushID((int)asset->uid);
+                        bool isSelected = (*m_AssetPickerTarget == asset->uid);
+                        if (isSelected) {
+                            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.5f, 0.8f, 1.0f));
+                        }
+
+                        if (ImGui::ImageButton("##thumb", texid, ImVec2(PICKER_ASSET_SIZE, PICKER_ASSET_SIZE),
+                            ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 1), ImVec4(1, 1, 1, 1))) {
+                            *m_AssetPickerTarget = asset->uid;
+                            m_AssetPickerOpen = false;
+                            ImGui::CloseCurrentPopup();
+                        }
+
+                        if (isSelected) {
+                            ImGui::PopStyleColor();
+                        }
+
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("%s", asset->name.c_str());
+                        }
+                        ImGui::PopID();
+
+                        // Show truncated name below the icon
+                        std::string displayName = asset->name;
+                        if (displayName.length() > 10) {
+                            displayName = displayName.substr(0, 8) + "..";
+                        }
+                        ImGui::TextWrapped("%s", displayName.c_str());
+                    });
+
+                    ImGui::EndTable();
+                }
+                ImGui::EndChild();
+
+                // Bottom buttons
+                if (ImGui::Button("Clear", ImVec2(80, 0))) {
+                    *m_AssetPickerTarget = 0;
+                    m_AssetPickerOpen = false;
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Cancel", ImVec2(80, 0))) {
+                    m_AssetPickerOpen = false;
+                    ImGui::CloseCurrentPopup();
+                }
+            }
+            ImGui::EndPopup();
+        }
     }
 
 } // namespace EditorUI

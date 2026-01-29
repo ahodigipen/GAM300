@@ -42,6 +42,9 @@ namespace GameScripts
         [Boom.EditorExposed("Proximity Detection", "Enable/Disable proximity detection")]
         private bool EnemyDetection = true;
 
+        [Boom.EditorExposed("Rotation: Clockwise/Anti-clockwise", "Change Rotation")]
+        private bool _rotation  = true;
+
         // Vision system
         private VisionComponent _vision;
 
@@ -169,10 +172,24 @@ namespace GameScripts
                 if (_rotationTimer >= _rotationInterval)
                 {
                     _rotationTimer = 0f;
-                    _targetYRotation += _rotationAngle;
 
+                    // Apply rotation based on direction
+                    if (_rotation)
+                    {
+                        // Clockwise
+                        _targetYRotation += _rotationAngle;
+                    }
+                    else
+                    {
+                        // Anti-clockwise
+                        _targetYRotation -= _rotationAngle;
+                    }
+
+                    // Normalize angle
                     if (_targetYRotation >= 360f)
                         _targetYRotation -= 360f;
+                    if (_targetYRotation < 0f)
+                        _targetYRotation += 360f;
 
                     _isRotating = true;
                     API.Log($"[EnemyController] Starting rotation to {_targetYRotation}°");

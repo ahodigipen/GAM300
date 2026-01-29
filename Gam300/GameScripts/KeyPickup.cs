@@ -10,6 +10,10 @@ namespace GameScripts
     {
         public ulong Entity;
 
+        // Key type identifier (e.g., "key1", "key2", "red_key", "blue_key")
+        [Boom.EditorExposed("Key Type", "Unique identifier for this key (e.g., 'key1', 'key2')")]
+        private string _keyType = "key1";
+
         // Optional: sound to play on pickup
         [Boom.EditorExposed("Pickup Sound", "Sound played when the key is collected")]
         private string _pickupSound = "Resources/Audio/pickup.wav";
@@ -62,7 +66,7 @@ namespace GameScripts
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
 
             inst._collected = true;
-            PlayerInventory.AddKey(1);
+            PlayerInventory.AddKey(inst._keyType);
             UIManager.ShowKeyPickup();
 
             // Play pickup SFX at key's position
@@ -80,7 +84,7 @@ namespace GameScripts
             var currentPos = API.GetPosition(inst.Entity);
             API.SetPosition(inst.Entity, new Vec3(currentPos.X, -100f, currentPos.Z));
 
-            API.Log("[KeyPickup] Key collected! Total keys: " + PlayerInventory.GetKeyCount());
+            API.Log($"[KeyPickup] Key '{inst._keyType}' collected! Total keys: {PlayerInventory.GetKeyCount()}");
         }
 
         private static void OnTriggerExit(ulong triggerEntity, ulong otherEntity)
