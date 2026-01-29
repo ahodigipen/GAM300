@@ -125,6 +125,8 @@ namespace GameScripts
                     API.SetGroupVolume(_audioGroup, _currentValue);
                     UpdateVisuals(_currentValue);
 
+                    API.Log($"[Slider] {_audioGroup} volume set to: {_currentValue:P0}");
+
                     _lastMouseX = mouseScreenPos.X;
                 }
             }
