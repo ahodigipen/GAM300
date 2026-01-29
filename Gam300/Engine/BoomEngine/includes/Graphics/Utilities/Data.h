@@ -136,17 +136,19 @@ namespace Boom {
 			, roughness{ 0.4f }
 			, metallic{ 0.5f }
 			, occlusion{ 1.f }
-			, occlusionMap{}, roughnessMap{}, metallicMap{}, emissiveMap{}, albedoMap{}, normalMap{}
+			, opacity{ 1.f }
+			, occlusionMap{}, roughnessMap{}, metallicMap{}, emissiveMap{}, albedoMap{}, normalMap{}, opacityMap{}
 		{
 		}
 		BOOM_INLINE PbrMaterial(PbrMaterial const&) = default;
-		BOOM_INLINE PbrMaterial(glm::vec3 em, glm::vec3 alb, float rough, float metal, float occlu)
+		BOOM_INLINE PbrMaterial(glm::vec3 em, glm::vec3 alb, float rough, float metal, float occlu, float opac = 1.f)
 			: emissive{ em }
 			, albedo{ alb }
 			, roughness{ rough }
 			, metallic{ metal }
 			, occlusion{ occlu }
-			, occlusionMap{}, roughnessMap{}, metallicMap{}, emissiveMap{}, albedoMap{}, normalMap{}
+			, opacity{ opac }
+			, occlusionMap{}, roughnessMap{}, metallicMap{}, emissiveMap{}, albedoMap{}, normalMap{}, opacityMap{}
 		{
 		}
 		glm::vec3 emissive;
@@ -154,6 +156,7 @@ namespace Boom {
 		float roughness;
 		float metallic;
 		float occlusion;
+		float opacity;
 
 		Texture occlusionMap;
 		Texture roughnessMap;
@@ -161,6 +164,7 @@ namespace Boom {
 		Texture emissiveMap;
 		Texture albedoMap;
 		Texture normalMap;
+		Texture opacityMap;
 
 		// ===== PbrMaterial =====
 		XPROPERTY_DEF(
@@ -169,7 +173,8 @@ namespace Boom {
 			obj_member<"albedo", &PbrMaterial::albedo>,
 			obj_member<"roughness", &PbrMaterial::roughness>,
 			obj_member<"metallic", &PbrMaterial::metallic>,
-			obj_member<"occlusion", &PbrMaterial::occlusion>
+			obj_member<"occlusion", &PbrMaterial::occlusion>,
+			obj_member<"opacity", &PbrMaterial::opacity>
 		)
 
 
