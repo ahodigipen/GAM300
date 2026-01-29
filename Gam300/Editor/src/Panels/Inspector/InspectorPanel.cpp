@@ -10,7 +10,9 @@
 #include "Commands/UndoRedo.h"  // for ComponentPropertyCommand
 #include "Graphics/Video/VideoSystem.h"  // for VideoComponent UI
 #include "Audio/Audio.hpp"     // for SoundEngine (real-time audio preview)
+#include "Graphics/Renderer.h" // for material preview
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 #include <unordered_map>       // for audio preview tracking
 #include <algorithm>           // for std::transform (asset picker search)
 #include <cctype>              // for std::tolower
@@ -38,6 +40,122 @@ namespace EditorUI {
             m_MaterialIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/material.png");
             m_ScriptIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/script.png");
         }
+    }
+
+    void InspectorPanel::RenderMaterialPreview(Boom::MaterialAsset* mat) {
+        if (!mat || !m_App) return;
+
+        auto* ctx = m_App->GetContext();
+        if (!ctx || !ctx->renderer || !ctx->assets) return;
+
+        // Initialize or reinitialize material preview in renderer if needed
+        if (!ctx->renderer->IsMaterialPreviewInitialized()) {
+            // Find sphere model in assets (need to re-find after scene changes)
+            Boom::Model3D sphereModel;
+            auto& modelMap = ctx->assets->GetMap<Boom::ModelAsset>();
+            for (auto& [assetID, assetPtr] : modelMap) {
+                auto* modelAsset = dynamic_cast<Boom::ModelAsset*>(assetPtr.get());
+                if (modelAsset && modelAsset->source.find("sphere.fbx") != std::string::npos) {
+                    sphereModel = modelAsset->data;
+                    BOOM_INFO("[MaterialPreview] Found sphere model: {}", modelAsset->source);
+                    break;
+                }
+            }
+            if (sphereModel) {
+                ctx->renderer->InitMaterialPreview(sphereModel);
+                BOOM_INFO("[MaterialPreview] Initialized with sphere model");
+            } else {
+                BOOM_WARN("[MaterialPreview] Sphere model not found in assets!");
+            }
+        }
+
+        if (!ctx->renderer->IsMaterialPreviewInitialized()) {
+            ImGui::TextDisabled("Sphere model not found for preview");
+            ImGui::TextDisabled("(Load a scene with sphere.fbx asset)");
+            return;
+        }
+
+        // Resolve texture IDs to actual textures (same pattern as Application.cpp)
+        if (mat->albedoMapID != Boom::EMPTY_ASSET) {
+            auto* albedoTex = ctx->assets->TryGet<Boom::TextureAsset>(mat->albedoMapID);
+            if (albedoTex && albedoTex->data) mat->data.albedoMap = albedoTex->data;
+        } else {
+            mat->data.albedoMap = nullptr;
+        }
+        if (mat->normalMapID != Boom::EMPTY_ASSET) {
+            auto* normalTex = ctx->assets->TryGet<Boom::TextureAsset>(mat->normalMapID);
+            if (normalTex && normalTex->data) mat->data.normalMap = normalTex->data;
+        } else {
+            mat->data.normalMap = nullptr;
+        }
+        if (mat->roughnessMapID != Boom::EMPTY_ASSET) {
+            auto* roughnessTex = ctx->assets->TryGet<Boom::TextureAsset>(mat->roughnessMapID);
+            if (roughnessTex && roughnessTex->data) mat->data.roughnessMap = roughnessTex->data;
+        } else {
+            mat->data.roughnessMap = nullptr;
+        }
+        if (mat->metallicMapID != Boom::EMPTY_ASSET) {
+            auto* metallicTex = ctx->assets->TryGet<Boom::TextureAsset>(mat->metallicMapID);
+            if (metallicTex && metallicTex->data) mat->data.metallicMap = metallicTex->data;
+        } else {
+            mat->data.metallicMap = nullptr;
+        }
+        if (mat->occlusionMapID != Boom::EMPTY_ASSET) {
+            auto* occlusionTex = ctx->assets->TryGet<Boom::TextureAsset>(mat->occlusionMapID);
+            if (occlusionTex && occlusionTex->data) mat->data.occlusionMap = occlusionTex->data;
+        } else {
+            mat->data.occlusionMap = nullptr;
+        }
+        if (mat->emissiveMapID != Boom::EMPTY_ASSET) {
+            auto* emissiveTex = ctx->assets->TryGet<Boom::TextureAsset>(mat->emissiveMapID);
+            if (emissiveTex && emissiveTex->data) mat->data.emissiveMap = emissiveTex->data;
+        } else {
+            mat->data.emissiveMap = nullptr;
+        }
+        if (mat->opacityMapID != Boom::EMPTY_ASSET) {
+            auto* opacityTex = ctx->assets->TryGet<Boom::TextureAsset>(mat->opacityMapID);
+            if (opacityTex && opacityTex->data) mat->data.opacityMap = opacityTex->data;
+        } else {
+            mat->data.opacityMap = nullptr;
+        }
+
+        // Render preview using the renderer
+        uint32_t previewTexture = ctx->renderer->RenderMaterialPreview(
+            mat->data, m_MatPreviewYaw, m_MatPreviewPitch, m_MatPreviewDistance);
+
+        if (previewTexture == 0) {
+            ImGui::TextDisabled("Initializing preview...");
+            return;
+        }
+
+        // Display the preview
+        ImGui::Text("Material Preview");
+
+        float previewSize = (float)ctx->renderer->GetMaterialPreviewSize();
+        float availWidth = ImGui::GetContentRegionAvail().x;
+        float offsetX = (availWidth - previewSize) * 0.5f;
+        if (offsetX > 0) ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offsetX);
+
+        ImGui::Image((ImTextureID)(intptr_t)previewTexture,
+            ImVec2(previewSize, previewSize),
+            ImVec2(0, 1), ImVec2(1, 0)); // Flip Y
+
+        // Handle mouse interaction for rotation
+        if (ImGui::IsItemHovered()) {
+            ImGuiIO& io = ImGui::GetIO();
+            if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
+                m_MatPreviewYaw += io.MouseDelta.x * 0.01f;  // Fixed: was inverted
+                m_MatPreviewPitch += io.MouseDelta.y * 0.01f; // Fixed: was inverted
+                m_MatPreviewPitch = glm::clamp(m_MatPreviewPitch, -1.5f, 1.5f);
+            }
+            if (io.MouseWheel != 0.0f) {
+                m_MatPreviewDistance -= io.MouseWheel * 0.5f;
+                m_MatPreviewDistance = glm::clamp(m_MatPreviewDistance, 0.5f, 20.0f); // Wider range for different model sizes
+            }
+        }
+
+        ImGui::TextDisabled("Drag to rotate, scroll to zoom");
+        ImGui::Separator();
     }
 
     // ---- templated section drawer ----
@@ -3153,9 +3271,8 @@ namespace EditorUI {
             if (asset->type == AssetType::MATERIAL) {
                 MaterialAsset* mat{ dynamic_cast<MaterialAsset*>(asset) };
 
-                //TODO: showcase material as textured sphere
-                //data variables (showcase texture name instead of map id)
-                // toggle between mapID and standard slider (vec3/float)
+                // Material preview sphere
+                RenderMaterialPreview(mat);
 
                 if (ImGui::CollapsingHeader("Maps", ImGuiTreeNodeFlags_DefaultOpen)) {
                     ImGui::BeginTable("##maps", 6, ImGuiTableFlags_SizingFixedFit);

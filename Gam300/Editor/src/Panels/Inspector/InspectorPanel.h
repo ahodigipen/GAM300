@@ -97,6 +97,13 @@ namespace EditorUI {
         ImTextureID    m_MaterialIcon = {};
         ImTextureID    m_ScriptIcon = {};
 
+        // Material preview camera state
+        float          m_MatPreviewYaw = 0.0f;
+        float          m_MatPreviewPitch = 0.3f;
+        float          m_MatPreviewDistance = 5.0f; // Increased for larger models
+
+        void RenderMaterialPreview(Boom::MaterialAsset* mat);
+
         template<typename TComponent, typename GetPropsFn>
         void DrawComponentSection(const char* title,
             TComponent* comp,
