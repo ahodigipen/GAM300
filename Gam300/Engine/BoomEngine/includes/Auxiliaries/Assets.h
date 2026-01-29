@@ -391,6 +391,29 @@ namespace Boom {
 			return EMPTY_ASSET;
 		}
 
+		// Resolves all texture map IDs in a MaterialAsset to actual texture pointers
+		// Call this before rendering with the material to ensure textures are bound
+		BOOM_INLINE void ResolveMaterialTextures(MaterialAsset* mat) {
+			if (!mat) return;
+
+			auto resolveTexture = [this](AssetID id, Texture& outTex) {
+				if (id != EMPTY_ASSET) {
+					auto* tex = TryGet<TextureAsset>(id);
+					outTex = (tex && tex->data) ? tex->data : nullptr;
+				} else {
+					outTex = nullptr;
+				}
+			};
+
+			resolveTexture(mat->albedoMapID, mat->data.albedoMap);
+			resolveTexture(mat->normalMapID, mat->data.normalMap);
+			resolveTexture(mat->roughnessMapID, mat->data.roughnessMap);
+			resolveTexture(mat->metallicMapID, mat->data.metallicMap);
+			resolveTexture(mat->occlusionMapID, mat->data.occlusionMap);
+			resolveTexture(mat->emissiveMapID, mat->data.emissiveMap);
+			resolveTexture(mat->opacityMapID, mat->data.opacityMap);
+		}
+
 		BOOM_INLINE PhysicsMeshAsset* FindPhysicsMeshByPath(const std::string& path) {
 			auto& map = GetMap<PhysicsMeshAsset>();
 

@@ -657,63 +657,8 @@ namespace Boom
                     if (comp.materialID != EMPTY_ASSET) {
                         auto& material{ m_Context->assets->Get<MaterialAsset>(comp.materialID) };
 
-                        // Assign textures if they exist and are valid, otherwise clear them
-                        if (material.albedoMapID != EMPTY_ASSET) {
-                            auto& albedoTex = m_Context->assets->Get<TextureAsset>(material.albedoMapID);
-                            if (albedoTex.data) {
-                                material.data.albedoMap = albedoTex.data;
-                            }
-                        } else {
-                            material.data.albedoMap = nullptr;
-                        }
-                        if (material.normalMapID != EMPTY_ASSET) {
-                            auto& normalTex = m_Context->assets->Get<TextureAsset>(material.normalMapID);
-                            if (normalTex.data) {
-                                material.data.normalMap = normalTex.data;
-                            }
-                        } else {
-                            material.data.normalMap = nullptr;
-                        }
-                        if (material.roughnessMapID != EMPTY_ASSET) {
-                            auto& roughnessTex = m_Context->assets->Get<TextureAsset>(material.roughnessMapID);
-                            if (roughnessTex.data) {
-                                material.data.roughnessMap = roughnessTex.data;
-                            }
-                        } else {
-                            material.data.roughnessMap = nullptr;
-                        }
-                        if (material.metallicMapID != EMPTY_ASSET) {
-                            auto& metallicTex = m_Context->assets->Get<TextureAsset>(material.metallicMapID);
-                            if (metallicTex.data) {
-                                material.data.metallicMap = metallicTex.data;
-                            }
-                        } else {
-                            material.data.metallicMap = nullptr;
-                        }
-                        if (material.occlusionMapID != EMPTY_ASSET) {
-                            auto& occlusionTex = m_Context->assets->Get<TextureAsset>(material.occlusionMapID);
-                            if (occlusionTex.data) {
-                                material.data.occlusionMap = occlusionTex.data;
-                            }
-                        } else {
-                            material.data.occlusionMap = nullptr;
-                        }
-                        if (material.emissiveMapID != EMPTY_ASSET) {
-                            auto& emissiveTex = m_Context->assets->Get<TextureAsset>(material.emissiveMapID);
-                            if (emissiveTex.data) {
-                                material.data.emissiveMap = emissiveTex.data;
-                            }
-                        } else {
-                            material.data.emissiveMap = nullptr;
-                        }
-                        if (material.opacityMapID != EMPTY_ASSET) {
-                            auto& opacityTex = m_Context->assets->Get<TextureAsset>(material.opacityMapID);
-                            if (opacityTex.data) {
-                                material.data.opacityMap = opacityTex.data;
-                            }
-                        } else {
-                            material.data.opacityMap = nullptr;
-                        }
+                        // Resolve texture IDs to actual texture pointers
+                        m_Context->assets->ResolveMaterialTextures(&material);
 
                         // Check if material is transparent (has opacity map or opacity < 1.0)
                         bool isTransparent = (material.data.opacity < 1.0f) || (material.opacityMapID != EMPTY_ASSET);

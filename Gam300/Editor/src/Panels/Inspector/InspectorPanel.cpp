@@ -77,49 +77,8 @@ namespace EditorUI {
             return;
         }
 
-        // Resolve texture IDs to actual textures (same pattern as Application.cpp)
-        if (mat->albedoMapID != Boom::EMPTY_ASSET) {
-            auto* albedoTex = ctx->assets->TryGet<Boom::TextureAsset>(mat->albedoMapID);
-            if (albedoTex && albedoTex->data) mat->data.albedoMap = albedoTex->data;
-        } else {
-            mat->data.albedoMap = nullptr;
-        }
-        if (mat->normalMapID != Boom::EMPTY_ASSET) {
-            auto* normalTex = ctx->assets->TryGet<Boom::TextureAsset>(mat->normalMapID);
-            if (normalTex && normalTex->data) mat->data.normalMap = normalTex->data;
-        } else {
-            mat->data.normalMap = nullptr;
-        }
-        if (mat->roughnessMapID != Boom::EMPTY_ASSET) {
-            auto* roughnessTex = ctx->assets->TryGet<Boom::TextureAsset>(mat->roughnessMapID);
-            if (roughnessTex && roughnessTex->data) mat->data.roughnessMap = roughnessTex->data;
-        } else {
-            mat->data.roughnessMap = nullptr;
-        }
-        if (mat->metallicMapID != Boom::EMPTY_ASSET) {
-            auto* metallicTex = ctx->assets->TryGet<Boom::TextureAsset>(mat->metallicMapID);
-            if (metallicTex && metallicTex->data) mat->data.metallicMap = metallicTex->data;
-        } else {
-            mat->data.metallicMap = nullptr;
-        }
-        if (mat->occlusionMapID != Boom::EMPTY_ASSET) {
-            auto* occlusionTex = ctx->assets->TryGet<Boom::TextureAsset>(mat->occlusionMapID);
-            if (occlusionTex && occlusionTex->data) mat->data.occlusionMap = occlusionTex->data;
-        } else {
-            mat->data.occlusionMap = nullptr;
-        }
-        if (mat->emissiveMapID != Boom::EMPTY_ASSET) {
-            auto* emissiveTex = ctx->assets->TryGet<Boom::TextureAsset>(mat->emissiveMapID);
-            if (emissiveTex && emissiveTex->data) mat->data.emissiveMap = emissiveTex->data;
-        } else {
-            mat->data.emissiveMap = nullptr;
-        }
-        if (mat->opacityMapID != Boom::EMPTY_ASSET) {
-            auto* opacityTex = ctx->assets->TryGet<Boom::TextureAsset>(mat->opacityMapID);
-            if (opacityTex && opacityTex->data) mat->data.opacityMap = opacityTex->data;
-        } else {
-            mat->data.opacityMap = nullptr;
-        }
+        // Resolve texture IDs to actual texture pointers
+        ctx->assets->ResolveMaterialTextures(mat);
 
         // Render preview using the renderer
         uint32_t previewTexture = ctx->renderer->RenderMaterialPreview(

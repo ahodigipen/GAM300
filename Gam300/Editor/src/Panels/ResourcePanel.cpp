@@ -249,49 +249,8 @@ namespace EditorUI {
 			}
 		}
 
-		// Resolve texture IDs to actual texture pointers (same as InspectorPanel)
-		if (mat->albedoMapID != Boom::EMPTY_ASSET) {
-			auto* tex = m_Ctx->assets->TryGet<Boom::TextureAsset>(mat->albedoMapID);
-			if (tex && tex->data) mat->data.albedoMap = tex->data;
-		} else {
-			mat->data.albedoMap = nullptr;
-		}
-		if (mat->normalMapID != Boom::EMPTY_ASSET) {
-			auto* tex = m_Ctx->assets->TryGet<Boom::TextureAsset>(mat->normalMapID);
-			if (tex && tex->data) mat->data.normalMap = tex->data;
-		} else {
-			mat->data.normalMap = nullptr;
-		}
-		if (mat->roughnessMapID != Boom::EMPTY_ASSET) {
-			auto* tex = m_Ctx->assets->TryGet<Boom::TextureAsset>(mat->roughnessMapID);
-			if (tex && tex->data) mat->data.roughnessMap = tex->data;
-		} else {
-			mat->data.roughnessMap = nullptr;
-		}
-		if (mat->metallicMapID != Boom::EMPTY_ASSET) {
-			auto* tex = m_Ctx->assets->TryGet<Boom::TextureAsset>(mat->metallicMapID);
-			if (tex && tex->data) mat->data.metallicMap = tex->data;
-		} else {
-			mat->data.metallicMap = nullptr;
-		}
-		if (mat->occlusionMapID != Boom::EMPTY_ASSET) {
-			auto* tex = m_Ctx->assets->TryGet<Boom::TextureAsset>(mat->occlusionMapID);
-			if (tex && tex->data) mat->data.occlusionMap = tex->data;
-		} else {
-			mat->data.occlusionMap = nullptr;
-		}
-		if (mat->emissiveMapID != Boom::EMPTY_ASSET) {
-			auto* tex = m_Ctx->assets->TryGet<Boom::TextureAsset>(mat->emissiveMapID);
-			if (tex && tex->data) mat->data.emissiveMap = tex->data;
-		} else {
-			mat->data.emissiveMap = nullptr;
-		}
-		if (mat->opacityMapID != Boom::EMPTY_ASSET) {
-			auto* tex = m_Ctx->assets->TryGet<Boom::TextureAsset>(mat->opacityMapID);
-			if (tex && tex->data) mat->data.opacityMap = tex->data;
-		} else {
-			mat->data.opacityMap = nullptr;
-		}
+		// Resolve texture IDs to actual texture pointers
+		m_Ctx->assets->ResolveMaterialTextures(mat);
 
 		// Render and return the cached preview texture
 		return m_Ctx->renderer->RenderMaterialPreviewCached(
