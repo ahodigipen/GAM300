@@ -1,6 +1,7 @@
 ﻿#pragma once
 #pragma once
 #include <functional>
+#include <string>
 #include <entt/entt.hpp>
 #include "Vendors/imgui/imgui.h"
 #include "GlobalConstants.h"
@@ -82,6 +83,19 @@ namespace EditorUI {
         // Transform component undo tracking
         bool           m_IsTransformBeingEdited = false;
         Boom::Transform3D m_TransformBeforeEdit;
+
+        // Asset picker popup state
+        bool           m_AssetPickerOpen = false;
+        std::string    m_AssetPickerLabel;
+        char           m_AssetPickerSearch[128]{};
+        uint64_t*      m_AssetPickerTarget = nullptr;
+        std::string    m_AssetPickerPayload;
+
+        // Asset picker icon textures
+        ImTextureID    m_AssetIcon = {};
+        ImTextureID    m_ModelIcon = {};
+        ImTextureID    m_MaterialIcon = {};
+        ImTextureID    m_ScriptIcon = {};
 
         template<typename TComponent, typename GetPropsFn>
         void DrawComponentSection(const char* title,

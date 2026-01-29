@@ -12,6 +12,10 @@
 #include "Audio/Audio.hpp"     // for SoundEngine (real-time audio preview)
 #include <GLFW/glfw3.h>
 #include <unordered_map>       // for audio preview tracking
+#include <algorithm>           // for std::transform (asset picker search)
+#include <cctype>              // for std::tolower
+#include <type_traits>         // for std::is_same_v
+#include "Context/Helpers.h"   // for ASSET_SIZE
 //#include "BoomProperties.h"
 using namespace EditorUI;
 
@@ -27,6 +31,13 @@ namespace EditorUI {
         , m_App(dynamic_cast<Boom::AppInterface*>(owner))
     {
         DEBUG_POINTER(m_App, "AppInterface");
+        // Initialize asset picker icons
+        if (m_App) {
+            m_AssetIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/asset.png");
+            m_ModelIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/model.png");
+            m_MaterialIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/material.png");
+            m_ScriptIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/script.png");
+        }
     }
 
     // ---- templated section drawer ----
@@ -3706,9 +3717,7 @@ namespace EditorUI {
         float fieldWidth = (data != 0) ? (availWidth - removeButtonWidth - spacing) : availWidth;
 
         ImVec2 const fieldSize{ fieldWidth, ImGui::GetFrameHeight() };
-        if (ImGui::Button(m_App->GetAssetName<AssetType>(data).data(), fieldSize)) {
-            //TODO: clicking button opens asset picker window
-        }
+        bool buttonClicked = ImGui::Button(m_App->GetAssetName<AssetType>(data).data(), fieldSize);
         AcceptIDDrop(data, Payload.data());
 
         // Show remove button only if an asset is set
@@ -3718,11 +3727,128 @@ namespace EditorUI {
                 data = 0;
             }
             if (ImGui::IsItemHovered()) {
-                ImGui::SetTooltip("Remove texture map");
+                ImGui::SetTooltip("Remove asset");
             }
         }
 
         ImGui::PopID();
+
+        // Handle button click AFTER PopID to ensure consistent popup ID
+        if (buttonClicked) {
+            m_AssetPickerOpen = true;
+            m_AssetPickerLabel = label;
+            m_AssetPickerTarget = &data;
+            m_AssetPickerPayload = std::string(Payload);
+            memset(m_AssetPickerSearch, 0, sizeof(m_AssetPickerSearch));
+        }
+
+        // Asset Picker Popup Modal - rendered outside of PushID block for consistent ID
+        // Only the widget that owns the picker target should open/render the popup
+        if (m_AssetPickerOpen && m_AssetPickerTarget == &data) {
+            ImGui::OpenPopup("##AssetPickerPopup");
+        }
+
+        ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
+        if (ImGui::BeginPopupModal("##AssetPickerPopup", &m_AssetPickerOpen, ImGuiWindowFlags_NoScrollbar)) {
+            if (m_AssetPickerTarget == &data) {
+                ImGui::Text("Select %s", m_AssetPickerLabel.c_str());
+                ImGui::Separator();
+
+                // Search bar
+                ImGui::InputTextWithHint("##search", "Search...", m_AssetPickerSearch, sizeof(m_AssetPickerSearch));
+                ImGui::Separator();
+
+                // Asset grid
+                ImGui::BeginChild("AssetGrid", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()), true);
+
+                constexpr float PICKER_ASSET_SIZE = 70.0f;
+                int32_t colNo = (int32_t)((ImGui::GetContentRegionAvail().x) / (PICKER_ASSET_SIZE + ImGui::GetStyle().ItemSpacing.x));
+                colNo = glm::max(1, colNo);
+
+                ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedSame | ImGuiTableFlags_NoHostExtendX;
+                if (ImGui::BeginTable("##assetPickerGrid", colNo, flags)) {
+                    for (int i = 0; i < colNo; ++i) {
+                        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, PICKER_ASSET_SIZE);
+                    }
+
+                    // Prepare search string (case-insensitive)
+                    std::string searchLower(m_AssetPickerSearch);
+                    std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(),
+                        [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+
+                    m_App->AssetTypeView<AssetType>([&](AssetType* asset) {
+                        if (!asset || asset->uid == 0) return;
+
+                        // Search filter (case-insensitive)
+                        std::string nameLower = asset->name;
+                        std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(),
+                            [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+                        if (!searchLower.empty() && nameLower.find(searchLower) == std::string::npos)
+                            return;
+
+                        ImGui::TableNextColumn();
+
+                        // Determine icon based on asset type
+                        ImTextureID texid = m_AssetIcon;
+                        if constexpr (std::is_same_v<AssetType, MaterialAsset>) {
+                            texid = m_MaterialIcon;
+                        }
+                        else if constexpr (std::is_same_v<AssetType, ModelAsset>) {
+                            texid = m_ModelIcon;
+                        }
+                        else if constexpr (std::is_same_v<AssetType, TextureAsset>) {
+                            TextureAsset* tex = dynamic_cast<TextureAsset*>(asset);
+                            if (tex && tex->data) texid = *tex->data.get();
+                        }
+
+                        ImGui::PushID((int)asset->uid);
+                        bool isSelected = (*m_AssetPickerTarget == asset->uid);
+                        if (isSelected) {
+                            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.5f, 0.8f, 1.0f));
+                        }
+
+                        if (ImGui::ImageButton("##thumb", texid, ImVec2(PICKER_ASSET_SIZE, PICKER_ASSET_SIZE),
+                            ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 1), ImVec4(1, 1, 1, 1))) {
+                            *m_AssetPickerTarget = asset->uid;
+                            m_AssetPickerOpen = false;
+                            ImGui::CloseCurrentPopup();
+                        }
+
+                        if (isSelected) {
+                            ImGui::PopStyleColor();
+                        }
+
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("%s", asset->name.c_str());
+                        }
+                        ImGui::PopID();
+
+                        // Show truncated name below the icon
+                        std::string displayName = asset->name;
+                        if (displayName.length() > 10) {
+                            displayName = displayName.substr(0, 8) + "..";
+                        }
+                        ImGui::TextWrapped("%s", displayName.c_str());
+                    });
+
+                    ImGui::EndTable();
+                }
+                ImGui::EndChild();
+
+                // Bottom buttons
+                if (ImGui::Button("Clear", ImVec2(80, 0))) {
+                    *m_AssetPickerTarget = 0;
+                    m_AssetPickerOpen = false;
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Cancel", ImVec2(80, 0))) {
+                    m_AssetPickerOpen = false;
+                    ImGui::CloseCurrentPopup();
+                }
+            }
+            ImGui::EndPopup();
+        }
     }
 
 } // namespace EditorUI
