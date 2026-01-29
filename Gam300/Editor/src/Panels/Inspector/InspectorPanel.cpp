@@ -144,8 +144,8 @@ namespace EditorUI {
         if (ImGui::IsItemHovered()) {
             ImGuiIO& io = ImGui::GetIO();
             if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
-                m_MatPreviewYaw += io.MouseDelta.x * 0.01f;  // Fixed: was inverted
-                m_MatPreviewPitch += io.MouseDelta.y * 0.01f; // Fixed: was inverted
+                m_MatPreviewYaw -= io.MouseDelta.x * 0.01f; 
+                m_MatPreviewPitch += io.MouseDelta.y * 0.01f;
                 m_MatPreviewPitch = glm::clamp(m_MatPreviewPitch, -1.5f, 1.5f);
             }
             if (io.MouseWheel != 0.0f) {

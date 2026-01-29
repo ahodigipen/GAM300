@@ -100,7 +100,7 @@ namespace EditorUI {
         // Material preview camera state
         float          m_MatPreviewYaw = 0.0f;
         float          m_MatPreviewPitch = 0.3f;
-        float          m_MatPreviewDistance = 5.0f; // Increased for larger models
+        float          m_MatPreviewDistance = 1.5f;
 
         void RenderMaterialPreview(Boom::MaterialAsset* mat);
 

@@ -556,9 +556,13 @@ namespace Boom {
         bool enableTransparentBackfaceCulling{ true };
 
     public: // ---------------------- Material Preview ----------------------
-        BOOM_INLINE void InitMaterialPreview(Model3D sphereModel) {
-            if (m_MatPreviewInitialized) return;
+        // Call this to reset the material preview (e.g., after scene change)
+        BOOM_INLINE void ResetMaterialPreview() {
+            m_MatPreviewFrame.reset();
+            m_PreviewSphere = nullptr;
+        }
 
+        BOOM_INLINE void InitMaterialPreview(Model3D sphereModel) {
             m_PreviewSphere = sphereModel;
 
             // Debug: check if model has meshes
@@ -576,31 +580,11 @@ namespace Boom {
             GLint prevFBO;
             glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
 
-            // Create framebuffer for material preview
-            glGenFramebuffers(1, &m_MatPreviewFBO);
-            glBindFramebuffer(GL_FRAMEBUFFER, m_MatPreviewFBO);
+            // Create framebuffer using the existing FrameBuffer class
+            m_MatPreviewFrame = std::make_unique<FrameBuffer>(m_MatPreviewSize, m_MatPreviewSize, false, GL_RGB, GL_RGB);
 
-            // Create color texture
-            glGenTextures(1, &m_MatPreviewTexture);
-            glBindTexture(GL_TEXTURE_2D, m_MatPreviewTexture);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_MatPreviewSize, m_MatPreviewSize, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_MatPreviewTexture, 0);
-
-            // Create depth buffer
-            glGenRenderbuffers(1, &m_MatPreviewDepth);
-            glBindRenderbuffer(GL_RENDERBUFFER, m_MatPreviewDepth);
-            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_MatPreviewSize, m_MatPreviewSize);
-            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_MatPreviewDepth);
-
-            if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-                BOOM_ERROR("[Renderer] Material preview framebuffer is not complete!");
-            }
-
-            // Restore previous FBO (not just 0, which corrupts ImGui state)
+            // Restore previous FBO (FrameBuffer constructor binds to 0)
             glBindFramebuffer(GL_FRAMEBUFFER, prevFBO);
-            m_MatPreviewInitialized = true;
             BOOM_INFO("[MaterialPreview] Initialized successfully");
         }
 
@@ -611,7 +595,7 @@ namespace Boom {
                                                     float cameraYaw = 0.0f,
                                                     float cameraPitch = 0.3f,
                                                     float cameraDistance = 2.5f) {
-            if (!m_MatPreviewInitialized || !m_PreviewSphere) {
+            if (!m_MatPreviewFrame || !m_PreviewSphere) {
                 return 0;
             }
 
@@ -624,15 +608,8 @@ namespace Boom {
             GLint prevViewport[4];
             glGetIntegerv(GL_VIEWPORT, prevViewport);
 
-            // Check if our FBO is still valid (might be invalidated after scene changes)
-            glBindFramebuffer(GL_FRAMEBUFFER, m_MatPreviewFBO);
-            if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-                // FBO is invalid, restore state and return
-                glBindFramebuffer(GL_FRAMEBUFFER, prevFBO);
-                return 0;
-            }
-
-            glViewport(0, 0, m_MatPreviewSize, m_MatPreviewSize);
+            // Bind preview framebuffer using SBind (doesn't clear automatically)
+            m_MatPreviewFrame->SBind();
 
             // Clear with background color
             glClearColor(0.15f, 0.15f, 0.18f, 1.0f);
@@ -708,24 +685,22 @@ namespace Boom {
             // Draw sphere with material
             pbrShader->Draw(m_PreviewSphere, modelTransform, material, false);
 
-            // Restore state
+            // Restore state (don't use End() as it binds to FBO 0)
             pbrShader->ambientStrength = savedAmbient;
+            glDisable(GL_DEPTH_TEST);
             glEnable(GL_BLEND);
             glBindFramebuffer(GL_FRAMEBUFFER, prevFBO);
             glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
 
-            return m_MatPreviewTexture;
+            return m_MatPreviewFrame->GetTexture();
         }
 
-        BOOM_INLINE bool IsMaterialPreviewInitialized() const { return m_MatPreviewInitialized; }
+        BOOM_INLINE bool IsMaterialPreviewInitialized() const { return m_MatPreviewFrame != nullptr && m_PreviewSphere != nullptr; }
         BOOM_INLINE int32_t GetMaterialPreviewSize() const { return m_MatPreviewSize; }
 
     private: // ---------------------- Material Preview State ----------------
-        bool m_MatPreviewInitialized = false;
+        std::unique_ptr<FrameBuffer> m_MatPreviewFrame;
         Model3D m_PreviewSphere;
-        GLuint m_MatPreviewFBO = 0;
-        GLuint m_MatPreviewTexture = 0;
-        GLuint m_MatPreviewDepth = 0;
         int32_t m_MatPreviewSize = 200;
     };
 

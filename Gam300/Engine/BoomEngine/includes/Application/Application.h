@@ -1367,6 +1367,11 @@ namespace Boom
 			// Clear the ECS scene
 			m_Context->scene.clear();
 
+			// Reset material preview (sphere model will be invalid after scene change)
+			if (m_Context->renderer) {
+				m_Context->renderer->ResetMaterialPreview();
+			}
+
 			// PRESERVE PREFABS - but only those that exist on disk
 			std::unordered_map<AssetID, std::shared_ptr<Asset>> savedPrefabs;
 			auto& prefabMap = m_Context->assets->GetMap<PrefabAsset>();
