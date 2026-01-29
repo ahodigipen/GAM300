@@ -178,6 +178,8 @@ namespace Boom
 
         BOOM_INLINE size_t GetSequence() const { return GetCurrentClip(); }
         BOOM_INLINE void SetSequence(size_t index) { PlayClip(index); }
+        
+
 
         // === STATE MACHINE API ===
 

@@ -1,3 +1,4 @@
 DURATION 600
-TRACK "Samurai" 0
-KEY 60 -6.52044 0.732665 8.564 0
+TRACK "Samurai" 3
+KEY 0 0 0 0 0 "Samurai New Walk"
+KEY 60 0 0 0 0 "Samurai New Walk"
