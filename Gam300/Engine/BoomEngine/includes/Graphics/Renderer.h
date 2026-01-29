@@ -149,9 +149,12 @@ namespace Boom {
 
         BOOM_INLINE void DrawShadow(Model3D& model, Transform3D& transform, std::vector<glm::mat4>& joints) {
             if (!joints.empty()) shadowShader->SetJoints(joints);
-            //glCullFace(GL_FRONT);
             shadowShader->Draw(model, transform);
-            //glCullFace(GL_BACK);
+        }
+
+        BOOM_INLINE void DrawShadow(Model3D& model, Transform3D& transform, std::vector<glm::mat4>& joints, const PbrMaterial& material) {
+            if (!joints.empty()) shadowShader->SetJoints(joints);
+            shadowShader->Draw(model, transform, material);
         }
         BOOM_INLINE void BeginShadowPass(const glm::vec3& LightRotation, bool enableShadows = true)
         {
@@ -550,6 +553,7 @@ namespace Boom {
         bool enabledBloom{};
         bool isPickIgnoreGUI{};
         bool isDepthBufferView{};
+        bool enableTransparentBackfaceCulling{ true };
     };
 
 } // namespace Boom

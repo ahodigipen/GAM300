@@ -3695,14 +3695,33 @@ namespace EditorUI {
         ImGui::SameLine();
 
         ImGui::TableSetColumnIndex(1);
-        ImVec2 const fieldSize{ ImGui::GetContentRegionAvail().x, ImGui::GetFrameHeight() };
         ImGui::PushID(label);
 
         using AssetType = typename PayloadToType<Payload>::Type;
+
+        // Calculate button width, leaving space for remove button if asset is set
+        float removeButtonWidth = ImGui::GetFrameHeight(); // Square button
+        float spacing = ImGui::GetStyle().ItemSpacing.x;
+        float availWidth = ImGui::GetContentRegionAvail().x;
+        float fieldWidth = (data != 0) ? (availWidth - removeButtonWidth - spacing) : availWidth;
+
+        ImVec2 const fieldSize{ fieldWidth, ImGui::GetFrameHeight() };
         if (ImGui::Button(m_App->GetAssetName<AssetType>(data).data(), fieldSize)) {
             //TODO: clicking button opens asset picker window
         }
         AcceptIDDrop(data, Payload.data());
+
+        // Show remove button only if an asset is set
+        if (data != 0) {
+            ImGui::SameLine();
+            if (ImGui::Button("X", ImVec2(removeButtonWidth, ImGui::GetFrameHeight()))) {
+                data = 0;
+            }
+            if (ImGui::IsItemHovered()) {
+                ImGui::SetTooltip("Remove texture map");
+            }
+        }
+
         ImGui::PopID();
     }
 
