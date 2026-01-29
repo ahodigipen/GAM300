@@ -77,7 +77,7 @@ namespace Boom
             float timeBeforeUpdate = m_Time;
 
             // State machine mode
-            if (!m_States.empty() && m_CurrentStateIndex < m_States.size())
+            if (m_EnableStateMachine && !m_States.empty() && m_CurrentStateIndex < m_States.size())
             {
                 EvaluateTransitions(deltaTime);
 
@@ -324,6 +324,8 @@ namespace Boom
         BOOM_INLINE void AddClip(std::shared_ptr<AnimationClip> clip) {
             m_Clips.push_back(clip);
         }
+        BOOM_INLINE void SetStateMachineEnabled(bool enabled) { m_EnableStateMachine = enabled; }
+        BOOM_INLINE bool IsStateMachineEnabled() const { return m_EnableStateMachine; }
 
         BOOM_INLINE void RemoveClip(size_t index) {
             if (index < m_Clips.size()) {
@@ -911,7 +913,7 @@ namespace Boom
             size_t clipIndex = m_CurrentClip;
 
             // If in state machine mode, use the current state's clip
-            if (!m_States.empty() && m_CurrentStateIndex < m_States.size())
+            if (m_EnableStateMachine && !m_States.empty() && m_CurrentStateIndex < m_States.size())
             {
                 clipIndex = m_States[m_CurrentStateIndex].clipIndex;
             }
@@ -1225,6 +1227,7 @@ namespace Boom
         Joint m_Root;
         size_t m_CurrentClip = 0;
         float m_Time = 0.0f;
+        bool m_EnableStateMachine = true; // New Flag
 
         // === AUDIO EVENT TRACKING ===
         float m_LastProcessedTime = 0.0f;           // Previous frame's time (for detecting crossings)
