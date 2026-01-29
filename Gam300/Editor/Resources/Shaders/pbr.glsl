@@ -69,6 +69,7 @@ struct Material {
     float roughness;
     float metallic;
     float occlusion;
+    float opacity;
 
     sampler2D occlusionMap;
     sampler2D roughnessMap;
@@ -76,6 +77,7 @@ struct Material {
     sampler2D metallicMap;
     sampler2D albedoMap;
     sampler2D normalMap;
+    sampler2D opacityMap;
 
     bool isOcclusionMap;
     bool isRoughnessMap;
@@ -83,6 +85,7 @@ struct Material {
     bool isMetallicMap;
     bool isAlbedoMap;
     bool isNormalMap;
+    bool isOpacityMap;
 };
 uniform Material material;
 
@@ -286,6 +289,7 @@ void main() {
     float metallic = ComputeMapOrMatF(material.isMetallicMap, material.metallicMap, material.metallic);
     vec3 emissive = ComputeMapOrMatV3(material.isEmissiveMap, material.emissiveMap, material.emissive);
     float occlusion = ComputeMapOrMatF(material.isOcclusionMap, material.occlusionMap, material.occlusion);
+    float opacity = ComputeMapOrMatF(material.isOpacityMap, material.opacityMap, material.opacity);
 
     //fresnel reflectivity
     vec3 f0 = mix(vec3(0.04), albedo, metallic);
@@ -329,7 +333,7 @@ void main() {
     float threshold = float(bayer64[col + 8 * row]) / 64.0;
     if (length(color - quanColor) <= threshold * ditherThreshold) color = quanColor;
 
-    out_fragment = vec4(color, 1.0);
+    out_fragment = vec4(color, opacity);
 }
 
 vec3 FresnelSchlick(float cosTheta, vec3 f0) {

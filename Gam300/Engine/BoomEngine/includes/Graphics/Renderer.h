@@ -307,7 +307,10 @@ namespace Boom {
             skyBoxShader->SetCamera(cam, transform, aspect);
             color3DShader->SetCamera(cam, transform, aspect);
             pbrShader->Use();
+            m_CameraPosition = transform.translate;
         }
+
+        BOOM_INLINE glm::vec3 GetCameraPosition() const { return m_CameraPosition; }
 
         BOOM_INLINE void Draw(Mesh3D const& mesh, Transform3D const& transform) {
             pbrShader->Draw(mesh, transform);
@@ -539,6 +542,7 @@ namespace Boom {
         GLuint m_PointLightUBO = 0;
         GLuint m_DirLightUBO = 0;
         GLuint m_SpotLightUBO = 0;
+        glm::vec3 m_CameraPosition{};
     public:  // ---------------------- ImGui-exposed toggles ----------------
         bool isDrawDebugMode{};
         bool showLowPoly{};
