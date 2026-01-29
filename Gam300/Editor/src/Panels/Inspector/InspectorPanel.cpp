@@ -3296,6 +3296,19 @@ namespace EditorUI {
                     ImGui::DragFloat("occlusion", &mat->data.occlusion, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
                     ImGui::DragFloat("opacity", &mat->data.opacity, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
                 }
+
+                if (ImGui::CollapsingHeader("UV Mapping", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    ImGui::Checkbox("Use World Space UV", &mat->data.useWorldSpaceUV);
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip("When enabled, textures tile based on world position\ninstead of mesh UVs. Useful for walls and floors\nto prevent stretching on scaled surfaces.");
+                    }
+                    if (mat->data.useWorldSpaceUV) {
+                        ImGui::DragFloat("Texture Scale", &mat->data.textureScale, 0.1f, 0.01f, 100.f, "%.2f");
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("World units per texture repeat.\nHigher values = larger texture appearance.");
+                        }
+                    }
+                }
             }
             else if (asset->type == AssetType::TEXTURE) {
                 TextureAsset* tex{ dynamic_cast<TextureAsset*>(asset) };

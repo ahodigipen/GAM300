@@ -89,6 +89,10 @@ struct Material {
 };
 uniform Material material;
 
+// World-space UV mapping settings
+uniform bool useWorldSpaceUV = false;
+uniform float textureScale = 1.0;
+
 const float PI = 3.14159265358979323846;
 layout (location=0) out vec4 out_fragment;
 layout(location=1) out vec4 out_brightness; //for bloom
@@ -190,6 +194,38 @@ float ComputeShadow()
 }
 
 // Compute shadow for a specific spot light
+// Compute triplanar UVs based on world position and normal
+// This projects the texture from 3 axes and blends based on normal direction
+vec2 ComputeWorldSpaceUV(vec3 worldPos, vec3 worldNormal) {
+    vec3 absNormal = abs(worldNormal);
+
+    // Determine dominant axis for simpler planar projection
+    // This gives a cleaner result than full triplanar blending for architectural surfaces
+    vec2 uv;
+    if (absNormal.y > absNormal.x && absNormal.y > absNormal.z) {
+        // Top/bottom face - project from Y axis (floor/ceiling)
+        uv = worldPos.xz;
+    } else if (absNormal.x > absNormal.z) {
+        // Left/right face - project from X axis
+        uv = worldPos.zy;
+    } else {
+        // Front/back face - project from Z axis
+        uv = worldPos.xy;
+    }
+
+    // Prevent division by zero
+    float scale = max(textureScale, 0.001);
+    return uv / scale;
+}
+
+// Get the appropriate UV coordinates based on useWorldSpaceUV setting
+vec2 GetTextureUV() {
+    if (useWorldSpaceUV) {
+        return ComputeWorldSpaceUV(vertex.position, vertex.normal);
+    }
+    return vertex.uv;
+}
+
 float ComputeSpotShadow(int lightIndex)
 {
   // Check if this light has shadow mapping enabled
@@ -239,17 +275,17 @@ vec3 ComputePointLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, f
 vec3 ComputeDirLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, float metallic);
 vec3 ComputeSpotLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, float metallic);
 
-vec3 ComputeMapOrMatV3(bool isMap, sampler2D map, vec3 mat) {
+vec3 ComputeMapOrMatV3(bool isMap, sampler2D map, vec3 mat, vec2 texUV) {
     vec3 res = mat;
     if (isMap) {
-        res = texture(map, vertex.uv).rgb;
+        res = texture(map, texUV).rgb;
     }
     return res;
 }
-float ComputeMapOrMatF(bool isMap, sampler2D map, float mat) {
+float ComputeMapOrMatF(bool isMap, sampler2D map, float mat, vec2 texUV) {
     float res = mat;
     if (isMap) {
-        res = texture(map, vertex.uv).r;
+        res = texture(map, texUV).r;
     }
     return res;
 }
@@ -278,18 +314,21 @@ void main() {
     }
     vec3 V = normalize(viewPos - vertex.position);
 
+    // Get texture coordinates (world-space or mesh UV based on setting)
+    vec2 texUV = GetTextureUV();
+
     //material or texture maps
     vec3 N = normalize(vertex.normal);
     if (material.isNormalMap) {
-        N = 2.0 * texture(material.normalMap, vertex.uv).rgb - 1.0;
+        N = 2.0 * texture(material.normalMap, texUV).rgb - 1.0;
         N = normalize(vertex.TBN * N);
     }
-    vec3 albedo = ComputeMapOrMatV3(material.isAlbedoMap, material.albedoMap, material.albedo);
-    float roughness = ComputeMapOrMatF(material.isRoughnessMap, material.roughnessMap, material.roughness);
-    float metallic = ComputeMapOrMatF(material.isMetallicMap, material.metallicMap, material.metallic);
-    vec3 emissive = ComputeMapOrMatV3(material.isEmissiveMap, material.emissiveMap, material.emissive);
-    float occlusion = ComputeMapOrMatF(material.isOcclusionMap, material.occlusionMap, material.occlusion);
-    float opacity = ComputeMapOrMatF(material.isOpacityMap, material.opacityMap, material.opacity);
+    vec3 albedo = ComputeMapOrMatV3(material.isAlbedoMap, material.albedoMap, material.albedo, texUV);
+    float roughness = ComputeMapOrMatF(material.isRoughnessMap, material.roughnessMap, material.roughness, texUV);
+    float metallic = ComputeMapOrMatF(material.isMetallicMap, material.metallicMap, material.metallic, texUV);
+    vec3 emissive = ComputeMapOrMatV3(material.isEmissiveMap, material.emissiveMap, material.emissive, texUV);
+    float occlusion = ComputeMapOrMatF(material.isOcclusionMap, material.occlusionMap, material.occlusion, texUV);
+    float opacity = ComputeMapOrMatF(material.isOpacityMap, material.opacityMap, material.opacity, texUV);
 
     //fresnel reflectivity
     vec3 f0 = mix(vec3(0.04), albedo, metallic);

@@ -137,6 +137,8 @@ namespace Boom {
 			, metallic{ 0.5f }
 			, occlusion{ 1.f }
 			, opacity{ 1.f }
+			, useWorldSpaceUV{ false }
+			, textureScale{ 1.0f }
 			, occlusionMap{}, roughnessMap{}, metallicMap{}, emissiveMap{}, albedoMap{}, normalMap{}, opacityMap{}
 		{
 		}
@@ -148,6 +150,8 @@ namespace Boom {
 			, metallic{ metal }
 			, occlusion{ occlu }
 			, opacity{ opac }
+			, useWorldSpaceUV{ false }
+			, textureScale{ 1.0f }
 			, occlusionMap{}, roughnessMap{}, metallicMap{}, emissiveMap{}, albedoMap{}, normalMap{}, opacityMap{}
 		{
 		}
@@ -157,6 +161,11 @@ namespace Boom {
 		float metallic;
 		float occlusion;
 		float opacity;
+
+		// World-space UV mapping settings
+		// When true, textures tile based on world position instead of mesh UVs
+		bool useWorldSpaceUV;
+		float textureScale; // World units per texture repeat
 
 		Texture occlusionMap;
 		Texture roughnessMap;
@@ -174,7 +183,9 @@ namespace Boom {
 			obj_member<"roughness", &PbrMaterial::roughness>,
 			obj_member<"metallic", &PbrMaterial::metallic>,
 			obj_member<"occlusion", &PbrMaterial::occlusion>,
-			obj_member<"opacity", &PbrMaterial::opacity>
+			obj_member<"opacity", &PbrMaterial::opacity>,
+			obj_member<"useWorldSpaceUV", &PbrMaterial::useWorldSpaceUV>,
+			obj_member<"textureScale", &PbrMaterial::textureScale>
 		)
 
 

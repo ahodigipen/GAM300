@@ -51,7 +51,7 @@ namespace Boom {
 	};
 
 	struct MaterialAsset : Asset {
-		PbrMaterial data{}; //Already has XPROPERTY_DEF defined
+		PbrMaterial data{}; //Already has XPROPERTY_DEF defined (includes useWorldSpaceUV and textureScale)
 		AssetID albedoMapID{ EMPTY_ASSET };
 		AssetID normalMapID{ EMPTY_ASSET };
 		AssetID roughnessMapID{ EMPTY_ASSET };
