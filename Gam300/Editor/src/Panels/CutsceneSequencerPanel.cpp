@@ -107,7 +107,8 @@ namespace EditorUI
         if (index >= 0 && index < m_Tracks.size())
         {
             auto& track = m_Tracks[index];
-
+            m_SelectedTrack = index; // FIX: Ensure we select the track on double click
+            
             // 1. Capture current values from entity FIRST
             float vX = 0.0f, vY = 0.0f, vZ = 0.0f;
             float vW = 0.0f;
@@ -148,7 +149,7 @@ namespace EditorUI
                         kf.valueX = vX; kf.valueY = vY; kf.valueZ = vZ;
                         BOOM_INFO("Keyframe UPDATED [{}]: ({:.2f}, {:.2f}, {:.2f})", m_CurrentFrame, vX, vY, vZ);
                     }
-                    ImGui::OpenPopup("EditKeyframeValue");
+                    ImGui::OpenPopup("Edit Keyframe");
                     found = true;
                     break;
                 }
@@ -166,7 +167,7 @@ namespace EditorUI
                 std::sort(track.keyFrames.begin(), track.keyFrames.end(), [](const auto& a, const auto& b) { return a.frame < b.frame; });
                 
                 // FIX: Open popup immediately on creation
-                ImGui::OpenPopup("EditKeyframeValue");
+                ImGui::OpenPopup("Edit Keyframe");
             }
         }
     }
@@ -239,7 +240,8 @@ namespace EditorUI
         }
 
         // Edit Keyframe Popup (Model)
-        if (ImGui::BeginPopup("EditKeyframeValue"))
+        ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+        if (ImGui::BeginPopupModal("Edit Keyframe", NULL, ImGuiWindowFlags_AlwaysAutoResize))
         {
             if (m_SelectedTrack >= 0 && m_SelectedTrack < m_Tracks.size())
             {
@@ -289,7 +291,8 @@ namespace EditorUI
                         }
 
                         // 2. Combo Box
-                        if (ImGui::BeginCombo("Animation Name", kf_data->valueStr.c_str()))
+                        const char* preview = kf_data->valueStr.empty() ? "None" : kf_data->valueStr.c_str();
+                        if (ImGui::BeginCombo("Animation Name", preview))
                         {
                             for (const auto& name : animNames)
                             {
@@ -305,6 +308,8 @@ namespace EditorUI
                     }
                 }
             }
+            ImGui::Separator();
+            if (ImGui::Button("Close", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
             ImGui::EndPopup();
         }
 
@@ -529,6 +534,9 @@ namespace EditorUI
 
                                   if (clipIndex != -1)
                                   {
+                                      // FIX: Disable State Machine to force manual clip playback
+                                      ac.animator->SetStateMachineEnabled(false);
+                                      
                                       // If switched, play it
                                       if (ac.animator->GetCurrentClip() != clipIndex) {
                                           ac.animator->PlayClip(clipIndex);
@@ -536,9 +544,15 @@ namespace EditorUI
                                       
                                       // SYNC TIME precisely for scrubbing
                                       // Frame difference / 60.0f = seconds elapsed
-                                      float timeInClip = (float)(frame - activeKF->frame) / 60.0f;
+                                      float timeInSeconds = (float)(frame - activeKF->frame) / 60.0f;
                                       
-                                      ac.animator->SetTime(timeInClip);
+                                      // Animator uses TICKS, not Seconds
+                                      // Time (Ticks) = Seconds * TicksPerSecond
+                                      const auto* clip = ac.animator->GetClip(clipIndex);
+                                      float tps = clip ? clip->ticksPerSecond : 25.0f;
+                                      if (tps <= 0.0f) tps = 25.0f; 
+
+                                      ac.animator->SetTime(timeInSeconds * tps);
                                       ac.animator->UpdateJointsFromCurrentTime();
                                   }
                              }
