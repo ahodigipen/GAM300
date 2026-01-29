@@ -830,6 +830,10 @@ namespace Boom
             // Disable depth writing but keep depth testing
             glDepthMask(GL_FALSE);
 
+            // Enable backface culling for transparent objects to avoid rendering back faces
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_BACK);
+
             for (auto& obj : transparentObjects) {
                 // Set joints if the model has them
                 if (obj.hasJoints && !obj.joints.empty()) {
@@ -838,7 +842,8 @@ namespace Boom
                 m_Context->renderer->Draw(obj.model, obj.transform, obj.material);
             }
 
-            // Re-enable depth writing
+            // Restore state
+            glDisable(GL_CULL_FACE);
             glDepthMask(GL_TRUE);
         }
 
