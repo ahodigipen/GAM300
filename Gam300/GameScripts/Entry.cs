@@ -3,10 +3,8 @@ using Boom;
 
 namespace GameScripts
 {
-
     public static class Entry
     {
-        // public const string LEVEL_SCENE_NAME = "FreezeTestPatrol";
         public const string LEVEL_SCENE_NAME = "M3 GAMEPLAY";
         public const string PAUSE_SCENE_NAME = "PauseMenu";
         public const string MAIN_MENU_SCENE_NAME = "MainMenu";
@@ -51,6 +49,7 @@ namespace GameScripts
 
         private static bool _p_KeyWasDown = false;
         private static bool _escape_KeyWasDown = false;
+
         public static PauseMenu s_ActivePauseMenuInstance = null;
         public static DeathMenu s_ActiveDeathMenuInstance = null;
         public static EndMenu s_ActiveEndMenuInstance = null;
@@ -76,6 +75,8 @@ namespace GameScripts
             s_ActivePauseMenuInstance = null;
             s_ActiveDeathMenuInstance = null;
             s_ActiveEndMenuInstance = null;
+
+            SettingsManager.LoadSettings();
 
             API.Log("[C#] Entry.Start() called for scene: " + _currentSceneName);
 

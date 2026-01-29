@@ -23,6 +23,10 @@ namespace GameScripts
         private ulong _mainMenuButtonID;
         private ulong _quitButtonID;
 
+        private VolumeSlider _masterSlider;
+        private VolumeSlider _bgmSlider;
+        private VolumeSlider _sfxSlider;
+
         private enum PauseMenuState
         {
             Idle,
@@ -42,10 +46,17 @@ namespace GameScripts
             API.Log("PauseMenu OnStart Running...");
             Entry.s_ActivePauseMenuInstance = this;
 
+            // Load saved settings on start
+            SettingsManager.LoadSettings();
+
             _resumeButtonID = API.FindEntity("Pause_ResumeButton");
             _restartButtonID = API.FindEntity("Pause_RestartButton");
             _mainMenuButtonID = API.FindEntity("Pause_ReturnButton");
             _quitButtonID = API.FindEntity("Pause_QuitButton");
+
+            _masterSlider = new VolumeSlider("Pause_Master_BG", "Pause_Master_Fill", "Pause_Master_Handle", "Master");
+            _bgmSlider = new VolumeSlider("Pause_BGM_BG", "Pause_BGM_Fill", "Pause_BGM_Handle", "Music");
+            _sfxSlider = new VolumeSlider("Pause_SFX_BG", "Pause_SFX_Fill", "Pause_SFX_Handle", "SFX");
 
             ResetButtonState();
         }
@@ -65,6 +76,43 @@ namespace GameScripts
 
             if (!Entry.IsGamePaused) return;
             if (Entry.s_RequestedPauseAction != Entry.PauseMenuAction.None) return;
+
+            bool isAnyDragging = false;
+
+            if (_masterSlider != null && _masterSlider.IsDragging)
+            {
+                _masterSlider.Update();
+                isAnyDragging = true;
+            }
+            else if (_bgmSlider != null && _bgmSlider.IsDragging)
+            {
+                _bgmSlider.Update();
+                isAnyDragging = true;
+            }
+            else if (_sfxSlider != null && _sfxSlider.IsDragging)
+            {
+                _sfxSlider.Update();
+                isAnyDragging = true;
+            }
+            else
+            {
+                if (_masterSlider != null)
+                {
+                    _masterSlider.Update();
+                    if (_masterSlider.IsDragging) isAnyDragging = true;
+                }
+
+                if (!isAnyDragging && _bgmSlider != null)
+                {
+                    _bgmSlider.Update();
+                    if (_bgmSlider.IsDragging) isAnyDragging = true;
+                }
+
+                if (!isAnyDragging && _sfxSlider != null)
+                {
+                    _sfxSlider.Update();
+                }
+            }
 
             switch (_currentState)
             {
@@ -103,6 +151,12 @@ namespace GameScripts
 
         private void Update_Idle()
         {
+            bool isAnySliderDragging = (_masterSlider != null && _masterSlider.IsDragging) ||
+                                       (_bgmSlider != null && _bgmSlider.IsDragging) ||
+                                       (_sfxSlider != null && _sfxSlider.IsDragging);
+
+            if (isAnySliderDragging) return;
+
             if (API.IsMouseDown(MOUSE_LEFT))
             {
                 if (!API.GetMousePosInViewport(out Vec2 mousePos)) { return; }

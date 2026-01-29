@@ -448,6 +448,28 @@ namespace Boom {
             s_Ctx->app->SetGameLogicPaused(isPaused);
         }
     }
+
+    static void ICALL_API_SetGroupVolume(MonoString* groupName, float volume) {
+        if (!groupName) return;
+        char* nameStr = mono_string_to_utf8(groupName);
+        if (nameStr) {
+            // Clamp volume 0.0 to 1.0
+            float v = volume < 0.0f ? 0.0f : (volume > 1.0f ? 1.0f : volume);
+            SoundEngine::Instance().SetGroupVolume(std::string(nameStr), v);
+            mono_free(nameStr);
+        }
+    }
+
+    static float ICALL_API_GetGroupVolume(MonoString* groupName) {
+        if (!groupName) return 1.0f;
+        char* nameStr = mono_string_to_utf8(groupName);
+        float vol = 1.0f;
+        if (nameStr) {
+            vol = SoundEngine::Instance().GetGroupVolume(std::string(nameStr));
+            mono_free(nameStr);
+        }
+        return vol;
+    }
     // End Pause Menu
 
     // Death Menu
@@ -1952,6 +1974,8 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_ShowPauseMenu", (const void*)ICALL_API_ShowPauseMenu);
         mono_add_internal_call("Boom.Native::Boom_API_IsPauseMenuLoaded", (const void*)ICALL_API_IsPauseMenuLoaded);
         mono_add_internal_call("Boom.Native::Boom_API_SetGameLogicPaused", (const void*)ICALL_API_SetGameLogicPaused);
+        mono_add_internal_call("Boom.Native::Boom_API_SetGroupVolume", (const void*)ICALL_API_SetGroupVolume);
+        mono_add_internal_call("Boom.Native::Boom_API_GetGroupVolume", (const void*)ICALL_API_GetGroupVolume);
 
         // Death Menu
         mono_add_internal_call("Boom.Native::Boom_API_UnloadDeathMenu", (const void*)ICALL_API_UnloadDeathMenu);
