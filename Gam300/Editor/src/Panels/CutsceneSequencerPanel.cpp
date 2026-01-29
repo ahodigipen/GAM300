@@ -5,10 +5,11 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include "Graphics/Models/Animator.h"
 
 namespace EditorUI
 {
-    static const char* SequencerItemTypeNames[] = { "Position", "Rotation", "Scale", "Color/Alpha", "Animation Slot" };
+    static const char* SequencerItemTypeNames[] = { "Position", "Rotation", "Scale", "Animation Slot" };
 
     CutsceneSequencerPanel::CutsceneSequencerPanel(Editor* owner)
         : m_Owner(owner)
@@ -27,7 +28,7 @@ namespace EditorUI
     const char* CutsceneSequencerPanel::GetItemTypeName(int typeIndex) const
     {
         // FIX: Return valid name for each type
-        if (typeIndex >= 0 && typeIndex < 5)
+        if (typeIndex >= 0 && typeIndex < 4)
             return SequencerItemTypeNames[typeIndex];
         return "Unknown";
     }
@@ -59,6 +60,7 @@ namespace EditorUI
                     case 0: *color = 0xFFAA8080; break; // Pos - Reddish
                     case 1: *color = 0xFF80AA80; break; // Rot - Greenish
                     case 2: *color = 0xFF8080AA; break; // Scale - Blueish
+                    case 3: *color = 0xFFAAAA55; break; // Anim - Yellow/Gold
                     default: *color = 0xFFCCCCCC; break;
                 }
             }
@@ -67,7 +69,24 @@ namespace EditorUI
 
     void CutsceneSequencerPanel::Add(int type)
     {
-        // Not used, we use our own UI
+        // FIX: Implemented to use the currently selected entity
+        if (m_Owner)
+        {
+            entt::entity selected = m_Owner->SelectedEntity();
+            if (m_Owner->GetContext()->scene.valid(selected))
+            {
+                 // Get Name
+                 std::string name = "Entity";
+                 if (m_Owner->GetContext()->scene.any_of<Boom::InfoComponent>(selected)) {
+                     name = m_Owner->GetContext()->scene.get<Boom::InfoComponent>(selected).name;
+                 }
+                 AddTrack(name, type);
+            }
+            else
+            {
+                 BOOM_WARN("No entity selected! Please select an entity to add a track.");
+            }
+        }
     }
 
     void CutsceneSequencerPanel::Del(int index)
@@ -145,6 +164,9 @@ namespace EditorUI
 
                 std::sort(track.keyFrameTimes.begin(), track.keyFrameTimes.end());
                 std::sort(track.keyFrames.begin(), track.keyFrames.end(), [](const auto& a, const auto& b) { return a.frame < b.frame; });
+                
+                // FIX: Open popup immediately on creation
+                ImGui::OpenPopup("EditKeyframeValue");
             }
         }
     }
@@ -239,6 +261,47 @@ namespace EditorUI
                         ImGui::DragFloat("X", &kf_data->valueX, 0.1f);
                         ImGui::DragFloat("Y", &kf_data->valueY, 0.1f);
                         ImGui::DragFloat("Z", &kf_data->valueZ, 0.1f);
+                    }
+
+
+                    else if (track.type == 3) // Animation
+                    {
+                        // 1. Collect available animation names
+                        std::vector<std::string> animNames;
+                        animNames.push_back("None");
+
+                        if (m_Owner && m_Owner->GetContext())
+                        {
+                            auto& reg = m_Owner->GetContext()->scene;
+                            entt::entity e = Boom::FindEntityByName(reg, track.entityName);
+                            if (reg.valid(e) && reg.all_of<Boom::AnimatorComponent>(e))
+                            {
+                                 const auto& ac = reg.get<Boom::AnimatorComponent>(e);
+                                 if (ac.animator)
+                                 {
+                                     for(size_t i=0; i < ac.animator->GetClipCount(); ++i)
+                                     {
+                                         const auto* clip = ac.animator->GetClip(i);
+                                         if(clip) animNames.push_back(clip->name);
+                                     }
+                                 }
+                            }
+                        }
+
+                        // 2. Combo Box
+                        if (ImGui::BeginCombo("Animation Name", kf_data->valueStr.c_str()))
+                        {
+                            for (const auto& name : animNames)
+                            {
+                                bool is_selected = (kf_data->valueStr == name);
+                                if (ImGui::Selectable(name.c_str(), is_selected))
+                                {
+                                    kf_data->valueStr = name;
+                                }
+                                if (is_selected) ImGui::SetItemDefaultFocus();
+                            }
+                            ImGui::EndCombo();
+                        }
                     }
                 }
             }
@@ -379,7 +442,7 @@ namespace EditorUI
             ImGui::Text("Property:");
             ImGui::Separator();
             // Only allow Position (0), Rotation (1), Scale (2)
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 4; i++)
             {
                 if (ImGui::Selectable(SequencerItemTypeNames[i]))
                 {
@@ -435,6 +498,56 @@ namespace EditorUI
 
             if (k1 && k2)
             {
+                // Animation Track (Type 3) - Trigger on Keyframe
+                if (track.type == 3) // Animation
+                {
+                     // Find active keyframe (step function)
+                     const SerializedKeyframe* activeKF = nullptr;
+                     for(auto& kf : track.keyFrames) {
+                         if (frame >= kf.frame) activeKF = &kf;
+                         else break;
+                     }
+                     
+                     if (activeKF && !activeKF->valueStr.empty() && activeKF->valueStr != "None")
+                     {
+                         if (reg.all_of<Boom::AnimatorComponent>(e))
+                         {
+                             auto& ac = reg.get<Boom::AnimatorComponent>(e);
+                             if (ac.animator) {
+                                  // Ensure we are playing the right clip
+                                  std::string clipName = activeKF->valueStr;
+                                  
+                                  // Find the clip index
+                                  int clipIndex = -1;
+                                  for (size_t i = 0; i < ac.animator->GetClipCount(); ++i) {
+                                      const auto* c = ac.animator->GetClip(i);
+                                      if (c && c->name == clipName) {
+                                          clipIndex = (int)i;
+                                          break;
+                                      }
+                                  }
+
+                                  if (clipIndex != -1)
+                                  {
+                                      // If switched, play it
+                                      if (ac.animator->GetCurrentClip() != clipIndex) {
+                                          ac.animator->PlayClip(clipIndex);
+                                      }
+                                      
+                                      // SYNC TIME precisely for scrubbing
+                                      // Frame difference / 60.0f = seconds elapsed
+                                      float timeInClip = (float)(frame - activeKF->frame) / 60.0f;
+                                      
+                                      ac.animator->SetTime(timeInClip);
+                                      ac.animator->UpdateJointsFromCurrentTime();
+                                  }
+                             }
+                         }
+                     }
+                     // Continue to next track (don't do transform lerp)
+                     continue; 
+                }
+
                 float range = (float)(k2->frame - k1->frame);
                 float t = 0.0f;
                 if (range > 0.0001f) t = (frame - k1->frame) / range;
@@ -490,7 +603,11 @@ namespace EditorUI
             out << "TRACK \"" << track.entityName << "\" " << track.type << "\n";
             for (const auto& kf : track.keyFrames)
             {
-                out << "KEY " << kf.frame << " " << kf.valueX << " " << kf.valueY << " " << kf.valueZ << " " << kf.valueW << "\n";
+                out << "KEY " << kf.frame << " " << kf.valueX << " " << kf.valueY << " " << kf.valueZ << " " << kf.valueW;
+                if (track.type == 3 && !kf.valueStr.empty()) {
+                    out << " \"" << kf.valueStr << "\"";
+                }
+                out << "\n";
             }
         }
         out.close();
@@ -547,6 +664,20 @@ namespace EditorUI
             {
                 SerializedKeyframe kf;
                 ss >> kf.frame >> kf.valueX >> kf.valueY >> kf.valueZ >> kf.valueW;
+                
+                // Try reading string if present
+                if (currentTrack->type == 3)
+                {
+                    // Rest of line might be "AnimName"
+                    std::string rest;
+                    std::getline(ss, rest);
+                    size_t q1 = rest.find('"');
+                    size_t q2 = rest.rfind('"');
+                    if (q1 != std::string::npos && q2 != std::string::npos && q2 > q1) {
+                        kf.valueStr = rest.substr(q1 + 1, q2 - q1 - 1);
+                    }
+                }
+
                 currentTrack->keyFrames.push_back(kf);
                 currentTrack->keyFrameTimes.push_back(kf.frame);
             }

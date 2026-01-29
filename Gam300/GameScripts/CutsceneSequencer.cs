@@ -33,6 +33,7 @@ namespace GameScripts
             public int type; // 0=Pos, 1=Rot, 2=Scale, 3=Anim
             public List<KeyFrame> keyframes = new List<KeyFrame>();
             public ulong cachedEntityID = 0;
+            public string lastAnim = ""; // Cache to prevent spamming Play
         }
 
         private List<Track> _tracks = new List<Track>();
@@ -49,6 +50,8 @@ namespace GameScripts
         {
             _isPlaying = true;
             _currentTime = 0f;
+            // Reset animation cache on play
+            foreach(var t in _tracks) t.lastAnim = "";
         }
 
         public void Stop()
@@ -65,7 +68,10 @@ namespace GameScripts
 
             if (_currentTime >= _duration)
             {
-                if (Loop) _currentTime = 0f;
+                if (Loop) {
+                    _currentTime = 0f;
+                    foreach(var t in _tracks) t.lastAnim = ""; // Reset cache on loop
+                }
                 else {
                     _currentTime = _duration;
                     _isPlaying = false;
@@ -104,16 +110,41 @@ namespace GameScripts
                      
                      if (activeKF != null && !string.IsNullOrEmpty(activeKF.valStr) && activeKF.valStr != "None")
                      {
-                         API.AnimatorPlay(track.cachedEntityID, activeKF.valStr);
+                         // Only play if changed
+                         if (track.lastAnim != activeKF.valStr)
+                         {
+                             API.AnimatorPlay(track.cachedEntityID, activeKF.valStr);
+                             track.lastAnim = activeKF.valStr;
+                         }
                      }
                      continue;
                  }
 
 
-                 // TRANSFORM TRACKS (Need 2 frames)
-                 if (track.keyframes.Count < 2) continue;
+                 // TRANSFORM TRACKS (Need at least 1 keyframe)
+                 if (track.keyframes.Count == 0) continue;
 
-                 // Find keyframes surrounding currentFrame
+                 // 1. Handle "Before Start" -> Hold First Keyframe
+                 if (currentFrame <= track.keyframes[0].frame)
+                 {
+                     KeyFrame k = track.keyframes[0];
+                     if (track.type == 0) API.SetPosition(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
+                     else if (track.type == 1) API.SetRotation(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
+                     else if (track.type == 2) API.SetScale(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
+                     continue;
+                 }
+
+                 // 2. Handle "After End" -> Hold Last Keyframe
+                 if (currentFrame >= track.keyframes[track.keyframes.Count - 1].frame)
+                 {
+                     KeyFrame k = track.keyframes[track.keyframes.Count - 1];
+                     if (track.type == 0) API.SetPosition(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
+                     else if (track.type == 1) API.SetRotation(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
+                     else if (track.type == 2) API.SetScale(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
+                     continue;
+                 }
+
+                 // 3. Interpolate between Keyframes
                  KeyFrame k1 = null, k2 = null;
                  for (int i = 0; i < track.keyframes.Count - 1; i++)
                  {
@@ -131,6 +162,7 @@ namespace GameScripts
                      float t = 0.0f;
                      if (range > 0.0001f) t = (currentFrame - k1.frame) / range;
                      
+                     // Clamp t just in case
                      if (t < 0f) t = 0f;
                      if (t > 1f) t = 1f;
 

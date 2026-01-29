@@ -45,7 +45,7 @@ namespace EditorUI
         virtual int GetFrameMax() const override { return m_FrameMax; }
         virtual int GetItemCount() const override { return (int)m_Tracks.size(); }
 
-        virtual int GetItemTypeCount() const override { return 5; } // FIX: Return actual count (Position, Rotation, Scale, Color, Anim)
+        virtual int GetItemTypeCount() const override { return 4; } // FIX: Return actual count (Position, Rotation, Scale, Animation)
         virtual const char* GetItemTypeName(int typeIndex) const override; // FIX: Return actual names
         virtual const char* GetItemLabel(int index) const override;
         virtual const char* GetCollapseFmt() const override { return "%d Frames / %d tracks"; }
