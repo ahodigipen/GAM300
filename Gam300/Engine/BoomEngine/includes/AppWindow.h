@@ -4,6 +4,11 @@
 #include "GlobalConstants.h"
 #include "Input/InputHandler.h"
 #include "Graphics/Shaders/LoadingShader.h"
+#include "Graphics/Shaders/LoadingVideoShader.h"
+#include "Graphics/Video/VideoPlayer.h"
+#include <filesystem>
+#include <vector>
+#include <iostream>
 
 namespace Boom {
 	struct AppWindow {
@@ -283,33 +288,191 @@ namespace Boom {
 		BOOM_INLINE EventDispatcher* GetDispatcher() const { return dispatcher; }
 		BOOM_INLINE InputSystem& GetInputSystem() { return input; }
 
+		/**
+		 * Set the video to play during loading screens
+		 * @param videoPath Path to MPEG1 video file (relative to Resources/Videos/)
+		 * @param loop Whether the video should loop
+		 * @return true if video loaded successfully
+		 */
+		BOOM_INLINE static bool SetLoadingVideo(const std::string& videoPath, bool loop = true) {
+			// Create video player if not exists
+			if (!s_LoadingVideoPlayer) {
+				s_LoadingVideoPlayer = std::make_unique<VideoPlayer>();
+			}
+
+			// Try multiple possible paths
+			std::vector<std::string> possiblePaths = {
+				"Resources/Videos/" + videoPath,
+				"../Resources/Videos/" + videoPath,
+				"../../Resources/Videos/" + videoPath,
+				"../Editor/Resources/Videos/" + videoPath,
+				videoPath  // Try direct path as fallback
+			};
+
+			std::string fullPath;
+			bool found = false;
+
+			// Log current working directory for debugging
+			std::string cwd = std::filesystem::current_path().string();
+			BOOM_INFO("[LoadingScreen] Current working directory: {}", cwd);
+
+			for (const auto& path : possiblePaths) {
+				if (std::filesystem::exists(path)) {
+					fullPath = path;
+					found = true;
+					BOOM_INFO("[LoadingScreen] Found video at: {}", fullPath);
+					break;
+				}
+			}
+
+			if (!found) {
+				BOOM_ERROR("[LoadingScreen] Video file not found. Tried paths:");
+				for (const auto& path : possiblePaths) {
+					BOOM_ERROR("[LoadingScreen]   - {}", path);
+				}
+				return false;
+			}
+
+			// Load the video
+			if (!s_LoadingVideoPlayer->Load(fullPath)) {
+				BOOM_ERROR("[LoadingScreen] Failed to load video: {}", fullPath);
+				return false;
+			}
+
+			s_LoadingVideoPlayer->SetLoop(loop);
+			s_LoadingVideoPlayer->SetVolume(1.0f);
+			s_LoadingVideoEnabled = true;
+
+			BOOM_INFO("[LoadingScreen] Loading video successfully loaded: {}", fullPath);
+			return true;
+		}
+
+		/**
+		 * Enable or disable the loading video
+		 */
+		BOOM_INLINE static void EnableLoadingVideo(bool enable) {
+			s_LoadingVideoEnabled = enable;
+		}
+
+		/**
+		 * Clear the loading video and free resources
+		 */
+		BOOM_INLINE static void ClearLoadingVideo() {
+			if (s_LoadingVideoPlayer) {
+				s_LoadingVideoPlayer->Stop();
+				s_LoadingVideoPlayer->Unload();
+				s_LoadingVideoPlayer.reset();
+			}
+			s_LoadingVideoEnabled = false;
+		}
+
+		/**
+		 * Set whether to show the loading bar on top of the video
+		 */
+		BOOM_INLINE static void SetShowLoadingBar(bool show) {
+			s_ShowLoadingBar = show;
+		}
+
 		BOOM_INLINE static void RenderLoading(GLFWwindow* win, float percentProgress) {
-			static auto loadingShader{ std::make_unique<LoadingShader>("loading.glsl") };
+			(void)percentProgress; // Unused - video only, no progress bar
+
+			// Static resources - initialized once on first call
+			static std::unique_ptr<LoadingVideoShader> videoShader{ nullptr };
+			static std::unique_ptr<VideoPlayer> videoPlayer{ nullptr };
+			static bool videoInitialized = false;
+			static double lastTime = glfwGetTime();
+
+			// Initialize video shader on first call
+			if (!videoShader) {
+				videoShader = std::make_unique<LoadingVideoShader>("loading_video.glsl");
+			}
+
+			// Try to load video on first call
+			if (!videoInitialized) {
+				videoInitialized = true;
+				videoPlayer = std::make_unique<VideoPlayer>();
+
+				// Use the correct path
+				std::string videoPath = "Resources/Videos/Deathless_LoadingScreen.mpeg";
+
+				std::cout << "[LoadingVideo] Loading video: " << videoPath << std::endl;
+				std::cout.flush();
+
+				if (std::filesystem::exists(videoPath) && videoPlayer->Load(videoPath)) {
+					videoPlayer->SetLoop(true);  // Loop until loading completes
+					videoPlayer->SetVolume(1.0f);
+					videoPlayer->Play();
+					std::cout << "[LoadingVideo] Video loaded and looping until resources are ready!" << std::endl;
+					std::cout.flush();
+				} else {
+					std::cout << "[LoadingVideo] Failed to load video - check file format (must be MPEG1)" << std::endl;
+					std::cout.flush();
+					videoPlayer.reset();
+				}
+			}
+
+			// Calculate delta time
+			double currentTime = glfwGetTime();
+			double deltaTime = currentTime - lastTime;
+			lastTime = currentTime;
+
+			// Setup rendering
 			int w, h;
 			glfwGetFramebufferSize(win, &w, &h);
-			auto proj = glm::ortho(0.0f, (float)w, (float)h, 0.0f, -1.0f, 1.0f);
-			std::apply(glClearColor, CONSTANTS::DEFAULT_BACKGROUND_COLOR);
-			glClear(GL_COLOR_BUFFER_BIT);
+			glViewport(0, 0, w, h);
 
-			// track (dark background)
-			const float barY = h * 0.45f;
-			const float barH = h * 0.10f;
-			const float trackX = w * 0.5f;
-			const float trackW = w * 0.4f;
-			loadingShader->SetColor({ 0.12f, 0.12f, 0.12f, 1.f });
-			loadingShader->SetTransform({trackX, barY + barH * 0.5f}, { trackW, barH }, 0.f);
-			loadingShader->Show(proj);
+			// Clear to black
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glDisable(GL_DEPTH_TEST);
 
-			// fill (bright color)
-			const float fillW = trackW * percentProgress;
-			loadingShader->SetColor({ 0.0f, 0.7f, 1.f, 1.f });
-			loadingShader->SetTransform({trackX - trackW + fillW, barY + barH * 0.5f }, { fillW, barH }, 0.f);
-			loadingShader->Show(proj);
+			// Render video if loaded
+			if (videoPlayer && videoPlayer->IsLoaded()) {
+				videoPlayer->Update(deltaTime);
 
+				if (videoPlayer->HasNewFrame()) {
+					videoPlayer->UpdateTexture();
+				}
+
+				uint32_t textureId = videoPlayer->GetTextureID();
+				if (textureId != 0) {
+					auto proj = glm::ortho(0.0f, (float)w, (float)h, 0.0f, -1.0f, 1.0f);
+
+					// Scale to fit window while maintaining aspect ratio
+					// Note: Quad vertices go from -1 to 1, so actual size = scale * 2
+					// We divide by 2 to get the correct pixel dimensions
+					float videoAspect = (float)videoPlayer->GetWidth() / (float)videoPlayer->GetHeight();
+					float screenAspect = (float)w / (float)h;
+
+					float scaleX, scaleY;
+					if (screenAspect > videoAspect) {
+						// Screen is wider than video - fit to height
+						scaleY = (float)h / 2.0f;
+						scaleX = ((float)h * videoAspect) / 2.0f;
+					} else {
+						// Screen is taller than video - fit to width
+						scaleX = (float)w / 2.0f;
+						scaleY = ((float)w / videoAspect) / 2.0f;
+					}
+
+					videoShader->SetTintColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+					videoShader->SetTransform({ w * 0.5f, h * 0.5f }, { scaleX, scaleY }, 0.f);
+					videoShader->Show(proj, textureId);
+				}
+			}
+			// If no video, just shows black screen (no loading bar)
+
+			glEnable(GL_DEPTH_TEST);
 			glfwSwapBuffers(win);
 			glfwPollEvents();
 		}
+
 	private:
+		// Static members for loading video
+		inline static std::unique_ptr<VideoPlayer> s_LoadingVideoPlayer{ nullptr };
+		inline static bool s_LoadingVideoEnabled{ false };
+		inline static bool s_ShowLoadingBar{ true };
+
 		int32_t width{};
 		int32_t height{};
 		int32_t refreshRate;
