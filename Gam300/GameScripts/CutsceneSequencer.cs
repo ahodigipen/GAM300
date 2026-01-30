@@ -9,13 +9,34 @@ namespace GameScripts
     {
         public ulong Entity;
 
+        // Static Registry by ID
+        public static System.Collections.Generic.Dictionary<ulong, CutsceneSequencer> InstancesById = new System.Collections.Generic.Dictionary<ulong, CutsceneSequencer>();
+        
+        public static void PlayCutscene(string entityName)
+        {
+            ulong id = API.FindEntity(entityName);
+            if (id != 0 && InstancesById.ContainsKey(id))
+            {
+                InstancesById[id].Play();
+            }
+            else
+            {
+                API.Log($"[Cutscene] Could not find cutscene script on '{entityName}'");
+            }
+        }
+
         // Properties
         public string CutsceneFile = "Test.seq";
         public bool PlayOnStart = false;
         public bool Loop = false;
+        public bool BlockInput = true; // Default to TRUE for cinematic feel
+
+        public float StartDelay = 0.0f;
 
         private float _currentTime = 0f;
         private bool _isPlaying = false;
+        private bool _pendingPlay = false;
+        private float _delayTimer = 0f;
         private int _duration = 600;
 
         private class KeyFrame
@@ -38,18 +59,143 @@ namespace GameScripts
 
         private List<Track> _tracks = new List<Track>();
 
+
+
         public void OnStart(string jsonParams)
         {
-             API.Log($"[Cutscene] Initializing for {CutsceneFile}");
+             // Register self
+             string myName = "Unknown";
+             // We don't have GetName in API directly exposed for Entity ID? 
+             // We can assume the user passes unique names or we use Entity ID registry.
+             // For now, let's use the Entity Name searching.
+             
+             // WORKAROUND: We can't easily get our own name if not provided.
+             // But the user usually searches by name.
+             // Let's rely on finding our own name or registering by ID if needed.
+             // Actually, we can just register by the cutscene file name or require a name param.
+             
+             // Simplification: Register by Entity ID as string? Or just assume the user knows the name.
+             // Let's try to find our own name via reverse lookup if possible, or just expect the user to ensure distinct names.
+             
+             // Better: User provides "MyName" in jsonParams? 
+             // Or we just don't register by name yet.
+             
+             // Wait, API.FindEntity("Name") returns ID. We have ID.
+             // We can register via a hack: The user calls Play("EntityName"). 
+             // Use FindEntity to get ID -> Look up in ID-based registry.
+             
+             RegisterInstance();
+             
+             API.Log($"[CutsceneDebug] OnStart Called. Raw Params: '{jsonParams}'");
+
+             // Parse JSON Params
+             if (!string.IsNullOrEmpty(jsonParams) && jsonParams != "{}")
+             {
+                 try {
+                     // Simple manual parsing since we lack a JSON lib
+                     // Expect: { "CutsceneFile": "Name.seq", "PlayOnStart": true }
+                     
+                     // 1. CutsceneFile
+                     if (jsonParams.Contains("\"CutsceneFile\"")) {
+                         int keyIdx = jsonParams.IndexOf("\"CutsceneFile\"");
+                         int valStart = jsonParams.IndexOf(":", keyIdx) + 1;
+                         int valQuote1 = jsonParams.IndexOf("\"", valStart);
+                         int valQuote2 = jsonParams.IndexOf("\"", valQuote1 + 1);
+                         if (valQuote1 != -1 && valQuote2 != -1) {
+                             CutsceneFile = jsonParams.Substring(valQuote1 + 1, valQuote2 - valQuote1 - 1);
+                             API.Log($"[CutsceneDebug] Parsed CutsceneFile: '{CutsceneFile}'");
+                         }
+                     }
+
+                     // 2. PlayOnStart
+                     if (jsonParams.Contains("\"PlayOnStart\"")) {
+                         // Simplify: Just check if "PlayOnStart" is followed by "true" (ignoring strict structure)
+                         int keyIdx = jsonParams.IndexOf("\"PlayOnStart\"");
+                         string afterKey = jsonParams.Substring(keyIdx); 
+                         if (afterKey.Contains("true")) {
+                             PlayOnStart = true;
+                             API.Log("[CutsceneDebug] Parsed PlayOnStart: TRUE");
+                         }
+                         else if (afterKey.Contains("false")) {
+                             PlayOnStart = false; 
+                             API.Log("[CutsceneDebug] Parsed PlayOnStart: FALSE");
+                         }
+                     }
+
+                     // 3. StartDelay (New)
+                     if (jsonParams.Contains("\"StartDelay\"")) {
+                         int keyIdx = jsonParams.IndexOf("\"StartDelay\"");
+                         int valStart = jsonParams.IndexOf(":", keyIdx) + 1;
+                         // Find number
+                         // This is a rough parser, assumes delay is a number
+                         string after = jsonParams.Substring(valStart);
+                         string numStr = "";
+                         foreach(char c in after) {
+                             if (char.IsDigit(c) || c == '.') numStr += c;
+                             else if (numStr.Length > 0 && (c == ',' || c == '}' || char.IsWhiteSpace(c))) break;
+                             else if (char.IsWhiteSpace(c)) continue;
+                             else break; 
+                         }
+                         float.TryParse(numStr, out StartDelay);
+                         API.Log($"[CutsceneDebug] Parsed StartDelay: {StartDelay}");
+                     }
+
+                     // 4. BlockInput (New)
+                     if (jsonParams.Contains("\"BlockInput\"")) {
+                         int keyIdx = jsonParams.IndexOf("\"BlockInput\"");
+                         string afterKey = jsonParams.Substring(keyIdx);
+                         if (afterKey.Contains("false")) {
+                             BlockInput = false;
+                             API.Log("[CutsceneDebug] Parsed BlockInput: FALSE");
+                         }
+                         else {
+                             BlockInput = true; // Default or explicit true
+                             API.Log("[CutsceneDebug] Parsed BlockInput: TRUE");
+                         }
+                     }
+                 }
+                 catch(Exception e) { API.Log("[Cutscene] JSON Parse Error: " + e.Message); }
+             }
+
+             API.Log($"[Cutscene] Initializing... File: '{CutsceneFile}', BlockInput: {BlockInput}, Delay: {StartDelay}");
              LoadCutscene(CutsceneFile);
 
-             if (PlayOnStart) Play();
+             if (PlayOnStart) 
+             {
+                 if (StartDelay > 0f) {
+                     _pendingPlay = true;
+                     _delayTimer = StartDelay;
+                     API.Log($"[Cutscene] Playing deferred by {StartDelay}s...");
+                 }
+                 else {
+                     Play();
+                 }
+             }
+        }
+
+        private void RegisterInstance()
+        {
+             // Static registry by Entity ID is safer
+             if (!InstancesById.ContainsKey(Entity)) InstancesById.Add(Entity, this);
+        }
+
+        public void OnDestroy()
+        {
+             if (InstancesById.ContainsKey(Entity)) InstancesById.Remove(Entity);
+             PlayerMovement.CutsceneMode = false;
         }
 
         public void Play()
         {
             _isPlaying = true;
             _currentTime = 0f;
+            
+            // Explicit Blocking
+            if (BlockInput) {
+                PlayerMovement.CutsceneMode = true;
+                API.Log("[Cutscene] Player Input BLOCKED.");
+            }
+
             // Reset animation cache on play
             foreach(var t in _tracks) t.lastAnim = "";
         }
@@ -58,37 +204,87 @@ namespace GameScripts
         {
             _isPlaying = false;
             _currentTime = 0f;
+            
+            PlayerMovement.CutsceneMode = false;
+
+            // Re-enable state machines for all affected entities
+            foreach(var t in _tracks)
+            {
+                if (t.cachedEntityID != 0 && t.type == 3) // Anim Track
+                {
+                   if (API.HasAnimator(t.cachedEntityID)) {
+                       // Force reset to empty or Idle before re-enabling SM
+                       // otherwise the old clip might keep looping
+                       API.AnimatorPlay(t.cachedEntityID, ""); 
+                       API.AnimatorSetStateMachineEnabled(t.cachedEntityID, true);
+                   }
+                }
+            }
         }
 
         public void OnUpdate(float dt)
         {
+            try {
+            if (_pendingPlay)
+            {
+                _delayTimer -= dt;
+                if (_delayTimer <= 0f)
+                {
+                    _pendingPlay = false;
+                    Play();
+                }
+                return;
+            }
+
             if (!_isPlaying) return;
 
             _currentTime += dt * 60.0f; // Convert time to frames (60fps base)
 
             if (_currentTime >= _duration)
             {
+                API.Log($"[CutsceneDebug] Reached End! Time: {_currentTime}, Duration: {_duration}");
                 if (Loop) {
                     _currentTime = 0f;
                     foreach(var t in _tracks) t.lastAnim = ""; // Reset cache on loop
                 }
                 else {
                     _currentTime = _duration;
-                    _isPlaying = false;
+                    Stop(); 
+                    return; // EXIT IMMEDIATELY to prevent ApplyTracks
                 }
             }
 
-            ApplyTracks(_currentTime);
+            try 
+            {
+                ApplyTracks(_currentTime);
+            }
+            catch (Exception ex)
+            {
+                API.Log($"[CutsceneDebug] CRITICAL ERROR in ApplyTracks: {ex.Message}\n{ex.StackTrace}");
+                _isPlaying = false; // Stop playing on error
+            }
+        }
+        catch (Exception ex) {
+             API.Log($"[CutsceneDebug] CRITICAL ERROR in OnUpdate: {ex.Message}");
+        }
         }
 
         private void ApplyTracks(float currentFrame)
         {
+            // API.Log($"[CutsceneDebug] ApplyTracks Frame: {currentFrame}, TrackCount: {_tracks.Count}");
             foreach (var track in _tracks)
             {
                  // Find entity (cache it)
                  if (track.cachedEntityID == 0) {
                      track.cachedEntityID = API.FindEntity(track.targetEntityName);
-                     if (track.cachedEntityID == 0) continue;
+                     if (track.cachedEntityID == 0) {
+                         // Throttle error
+                         if ((int)currentFrame % 60 == 0) API.Log($"[CutsceneDebug] FAIL: Could not find entity '{track.targetEntityName}' for track '{track.label}'");
+                         continue;
+                     }
+                     else {
+                         API.Log($"[CutsceneDebug] SUCCESS: Found entity '{track.targetEntityName}' (ID: {track.cachedEntityID})");
+                     }
                  }
                  
                  // ANIMATION TRACK (Type 3)
@@ -113,6 +309,7 @@ namespace GameScripts
                          // Only play if changed
                          if (track.lastAnim != activeKF.valStr)
                          {
+                             API.AnimatorSetStateMachineEnabled(track.cachedEntityID, false);
                              API.AnimatorPlay(track.cachedEntityID, activeKF.valStr);
                              track.lastAnim = activeKF.valStr;
                          }
@@ -128,7 +325,7 @@ namespace GameScripts
                  if (currentFrame <= track.keyframes[0].frame)
                  {
                      KeyFrame k = track.keyframes[0];
-                     if (track.type == 0) API.SetPosition(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
+                     if (track.type == 0) API.TeleportRigidBody(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
                      else if (track.type == 1) API.SetRotation(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
                      else if (track.type == 2) API.SetScale(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
                      continue;
@@ -138,7 +335,7 @@ namespace GameScripts
                  if (currentFrame >= track.keyframes[track.keyframes.Count - 1].frame)
                  {
                      KeyFrame k = track.keyframes[track.keyframes.Count - 1];
-                     if (track.type == 0) API.SetPosition(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
+                     if (track.type == 0) API.TeleportRigidBody(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
                      else if (track.type == 1) API.SetRotation(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
                      else if (track.type == 2) API.SetScale(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
                      continue;
@@ -173,7 +370,11 @@ namespace GameScripts
 
                      if (track.type == 0) // Pos
                      {
-                         API.SetPosition(track.cachedEntityID, new Vec3(x, y, z));
+                         // DEBUG: Log the position we are forcibly setting
+                         // if (((int)currentFrame) % 60 == 0) API.Log($"[CutsceneDebug] Applying Pos to {track.targetEntityName}: {x:F2}, {y:F2}, {z:F2}");
+                         
+                         // Use Teleport for Physics objects (Player)
+                         API.TeleportRigidBody(track.cachedEntityID, new Vec3(x, y, z));
                      }
                      else if (track.type == 1) // Rot
                      {
@@ -194,17 +395,27 @@ namespace GameScripts
 
         private void LoadCutscene(string filename)
         {
-            string path = "Resources/Cutscenes/" + filename;
-            if (!File.Exists(path)) {
-                 path = filename; 
-                 if (!File.Exists(path)) {
-                     API.Log($"[Cutscene] File not found: {filename}");
-                     return;
-                 }
-            }
+            try {
+                // 1. Try Resources path
+                string path = "Resources/Cutscenes/" + filename;
+                if (!File.Exists(path)) {
+                     API.Log($"[CutsceneDebug] Not found at: {path}");
+                     // 2. Try direct path
+                     path = filename; 
+                     if (!File.Exists(path)) {
+                         API.Log($"[Cutscene] FATAL: File not found: {filename}");
+                         return;
+                     }
+                }
+                
+                API.Log($"[CutsceneDebug] Loading from: {path}");
+                
+                string content = File.ReadAllText(path);
+                if (string.IsNullOrEmpty(content)) API.Log("[Cutscene] File was empty!");
 
-            _tracks.Clear();
-            string[] lines = File.ReadAllLines(path);
+                _tracks.Clear();
+                string[] lines = content.Split('\n'); 
+                // ... rest of loading ...
             Track currentTrack = null;
 
             foreach (string line in lines)
@@ -264,7 +475,29 @@ namespace GameScripts
                     }
                 }
             }
-            API.Log($"[Cutscene] Loaded {_tracks.Count} tracks");
+
+            	// Auto-Calculate Duration to match the last keyframe
+                int lastKeyFrame = 0;
+                foreach(var t in _tracks) {
+                    foreach(var k in t.keyframes) {
+                        if (k.frame > lastKeyFrame) lastKeyFrame = k.frame;
+                    }
+                }
+                
+                // If we found keys, update duration to avoid dead air
+                if (lastKeyFrame > 0) {
+                     _duration = lastKeyFrame;
+                }
+
+            	API.Log($"[Cutscene] Loaded {_tracks.Count} tracks. Duration: {_duration} (Auto-Trimmed)");
+                foreach (var t in _tracks) {
+                    API.Log($"[CutsceneDebug] Track: '{t.label}' -> Target: '{t.targetEntityName}' (Type: {t.type}, KFs: {t.keyframes.Count})");
+                }
+            }
+            catch (Exception ex)
+            {
+            	API.Log($"[Cutscene] Error loading file: {ex.Message}");
+            }
         }
     }
 }

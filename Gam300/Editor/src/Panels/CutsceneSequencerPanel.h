@@ -95,5 +95,11 @@ namespace EditorUI
         // Popup States
         bool m_ShowAddTrackPopup = false;
         std::string m_PendingEntityName;
+        
+        // Save/Load State
+        char m_SaveFilename[128] = "NewCutscene"; 
+        
+        std::vector<std::string> m_AvailableFiles;
+        void RefreshFileList();
     };
 }

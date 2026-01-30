@@ -97,6 +97,9 @@ namespace Boom
         internal extern static void Boom_API_AnimatorPlay(ulong h, string state);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_AnimatorSetStateMachineEnabled(ulong h, bool enabled);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Boom_API_HasAnimator(ulong handle);
 
         // ========= TRANSFORM STRUCT INTERNAL CALLS =========
@@ -553,6 +556,7 @@ namespace Boom
         public static void AnimatorSetBool(ulong h, string n, bool v) => Native.Boom_API_AnimatorSetBool(h, n, v);
         public static void AnimatorSetTrigger(ulong h, string n) => Native.Boom_API_AnimatorSetTrigger(h, n);
         public static void AnimatorPlay(ulong h, string state) => Native.Boom_API_AnimatorPlay(h, state);
+        public static void AnimatorSetStateMachineEnabled(ulong h, bool enabled) => Native.Boom_API_AnimatorSetStateMachineEnabled(h, enabled);
 
         // ===== Input Constants =====
         // ===== SOUND / AUDIO API =====

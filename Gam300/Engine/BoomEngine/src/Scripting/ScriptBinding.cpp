@@ -283,6 +283,10 @@ namespace Boom {
         auto* anim = GetAnimator((entt::entity)(uint32_t)h); if (!anim) return;
         char* n = mono_string_to_utf8(stateName); if (!n) return; anim->PlayClip(n); mono_free(n);
     }
+    static void ICALL_API_AnimatorSetStateMachineEnabled(uint64_t h, bool enabled) {
+        auto* anim = GetAnimator((entt::entity)(uint32_t)h); if (!anim) return;
+        anim->SetStateMachineEnabled(enabled);
+    }
 
 
     static void ICALL_API_LoadScene(MonoString* sceneName) {
@@ -1425,6 +1429,7 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_AnimatorSetBool", (const void*)ICALL_API_AnimatorSetBool);
         mono_add_internal_call("Boom.Native::Boom_API_AnimatorSetTrigger", (const void*)ICALL_API_AnimatorSetTrigger);
         mono_add_internal_call("Boom.Native::Boom_API_AnimatorPlay", (const void*)ICALL_API_AnimatorPlay);
+        mono_add_internal_call("Boom.Native::Boom_API_AnimatorSetStateMachineEnabled", (const void*)ICALL_API_AnimatorSetStateMachineEnabled);
         mono_add_internal_call("Boom.Native::Boom_API_GetThirdPersonCameraYaw", (const void*)ICALL_API_GetThirdPersonCameraYaw);
 
         mono_add_internal_call("Boom.Native::Boom_API_HasCollider", (const void*)ICALL_API_HasCollider);

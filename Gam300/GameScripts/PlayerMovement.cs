@@ -20,6 +20,8 @@ namespace GameScripts
     public class PlayerMovement
     {
         public ulong Entity;
+        
+        public static bool CutsceneMode = false;
 
         private float _walkSpeed = 3f;
         private float _sprintSpeed = 8f;
@@ -246,6 +248,13 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
+            if (CutsceneMode)
+            {
+               // Ensure we don't drift
+               if (API.HasTransform(Entity)) API.SetLinearVelocity(Entity, new Vec3(0,0,0));
+               return; 
+            }
+
             UpdateFade(dt);
             if (!API.HasTransform(Entity) || !API.HasScript(Entity)) return;
             _footstepComponent?.OnUpdate(dt);
