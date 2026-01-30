@@ -20,12 +20,22 @@ out Vertex {
 layout (location = 1) out vec3 viewPos;
 layout (location = 2) out vec4 fragPosLight;
 
+// Standard per-object model matrix (used for non-instanced rendering)
 uniform mat4 modelMat;
 uniform mat4 frustumMat; // proj * view
 
 uniform mat4 jointsMat[MAX_JOINTS];
 uniform bool hasJoints = false;
 uniform mat4 u_lightSpace;
+
+// Instancing support - SSBO containing per-instance model matrices
+layout(std430, binding = 3) buffer InstanceBuffer {
+    mat4 instanceMatrices[];
+};
+
+// Instancing uniforms
+uniform bool u_useInstancing = false;
+uniform uint u_baseInstance = 0;
 
 out vec4 fragPosLightSpace;
 
@@ -41,8 +51,16 @@ void main() {
         }
     }
 
+    // Choose model matrix: from SSBO for instanced rendering, from uniform otherwise
+    mat4 worldMatrix;
+    if (u_useInstancing) {
+        worldMatrix = instanceMatrices[gl_InstanceID + u_baseInstance];
+    } else {
+        worldMatrix = modelMat;
+    }
+
     vertex.uv = vec2(uv.x, uv.y); //flip vertically due to opengl rendering logic
-    transform = modelMat * transform;
+    transform = worldMatrix * transform;
     vertex.normal = mat3(transform) * normal;
     vertex.position = (transform * vec4(position, 1.0)).xyz;
     gl_Position = frustumMat * transform * vec4(position, 1.0);
