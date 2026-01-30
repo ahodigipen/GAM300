@@ -163,6 +163,7 @@ namespace EditorUI {
             if (m.ctx && m.ctx->renderer) {
                 ImGui::MenuItem("Debug Draw", nullptr, &m.ctx->renderer->isDrawDebugMode);
                 ImGui::MenuItem("Normal View", nullptr, &m.ctx->renderer->showNormalTexture);
+                ImGui::MenuItem("Transparent Backface Culling", nullptr, &m.ctx->renderer->enableTransparentBackfaceCulling);
                 if (ImGui::BeginMenu("Low Poly Mode")) {
                     ImGui::Checkbox("Enabled", &m.ctx->renderer->showLowPoly);
                     if (m.ctx->renderer->showLowPoly) {
@@ -196,9 +197,10 @@ namespace EditorUI {
                     bool physDebugViz = m_Owner->GetApp()->m_PhysDebugViz;
 
                     if (ImGui::MenuItem("Collision Lines", "F9", &physDebugViz)) {
-                        // Toggle when clicked
+                        // Toggle when clicked - update both flags for sync
                         m.ctx->physics->EnableDebugVisualization(physDebugViz, 1.0f);
                         m_Owner->GetApp()->m_PhysDebugViz = physDebugViz;
+                        m.ctx->ShowPhysicsDebug = physDebugViz;  // Keep context in sync
                         BOOM_INFO("[Options] Physics Debug Visualization (Collision Lines): {}", physDebugViz ? "ON" : "OFF");
                     }
                 }				

@@ -7,9 +7,9 @@ namespace GameScripts
     {
         private const int MOUSE_LEFT = 0;
 
-        private const string NEWGAME_TEX_CLICKED = "Resources/Textures/MainMenu/NewGameButton_Clicked.png";
-        private const string HOWTOPLAY_TEX_CLICKED = "Resources/Textures/MainMenu/HowToPlayButton_Clicked.png";
-        private const string QUIT_TEX_CLICKED = "Resources/Textures/MainMenu/ExitButton_Clicked.png";
+        private const string NEWGAME_TEX_CLICKED = "Resources/Textures/MenusUI/NewGameButton_Clicked.png";
+        private const string HOWTOPLAY_TEX_CLICKED = "Resources/Textures/MenusUI/HowToPlayButton_Clicked.png";
+        private const string QUIT_TEX_CLICKED = "Resources/Textures/MenusUI/ExitButton_Clicked.png";
 
         private ulong _newGameButtonID;
         private ulong _howToPlayButtonID;

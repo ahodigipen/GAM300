@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 #include "Vendors/imgui/imgui.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -23,9 +24,9 @@ namespace EditorUI {
     class Editor;
     class CommandHistory;  // Forward declaration
 
-    // Undo/Redo command for keyframe operations
+    // Undo/Redo command for keyframe, bone pose, and audio event operations
     struct KeyframeCommand {
-        enum Type { ADD, REMOVE, MOVE };
+        enum Type { ADD, REMOVE, MOVE, BONE_POSE, BATCH, AUDIO_ADD, AUDIO_EDIT, AUDIO_REMOVE };
 
         Type type;
         std::string boneName;
@@ -33,6 +34,22 @@ namespace EditorUI {
         Boom::KeyFrame keyframe;  // The keyframe data
         float oldTime = 0.0f;     // For move operations
         float newTime = 0.0f;     // For move operations
+
+        // For BONE_POSE operations
+        glm::vec3 oldPosition = glm::vec3(0.0f);
+        glm::quat oldRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+        glm::vec3 oldScale = glm::vec3(1.0f);
+        glm::vec3 newPosition = glm::vec3(0.0f);
+        glm::quat newRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+        glm::vec3 newScale = glm::vec3(1.0f);
+
+        // For BATCH operations (groups multiple commands into one undo)
+        std::vector<KeyframeCommand> batchCommands;
+
+        // For AUDIO_ADD, AUDIO_EDIT, AUDIO_REMOVE operations
+        Boom::AudioEventMarker audioEvent;      // The audio event data (for ADD/REMOVE, or new state for EDIT)
+        Boom::AudioEventMarker oldAudioEvent;   // Previous state (for EDIT undo)
+        size_t audioEventIndex = 0;             // Index in audioEvents vector (for EDIT/REMOVE)
     };
 
     // Bone pose for undo/redo
@@ -40,6 +57,22 @@ namespace EditorUI {
         glm::vec3 position;
         glm::quat rotation;
         glm::vec3 scale;
+    };
+
+    // Selected keyframe identifier (for multiselect)
+    struct SelectedKeyframe {
+        std::string boneName;
+        size_t keyframeIndex;
+
+        // Comparison operator for std::set ordering
+        bool operator<(const SelectedKeyframe& other) const {
+            if (boneName != other.boneName) return boneName < other.boneName;
+            return keyframeIndex < other.keyframeIndex;
+        }
+
+        bool operator==(const SelectedKeyframe& other) const {
+            return boneName == other.boneName && keyframeIndex == other.keyframeIndex;
+        }
     };
 
     /**
@@ -63,6 +96,9 @@ namespace EditorUI {
         void ClearBonePose(const std::string& boneName);  // Clear bone pose override
         void ClearAllBonePoses();  // Clear all bone pose overrides
 
+        // Record bone pose change for undo/redo (called from viewport gizmo manipulation)
+        void RecordBonePoseChange(const std::string& boneName, const BonePose& oldPose, const BonePose& newPose);
+
     private:
         // UI Sections
         void RenderControlBar();      // Model selection, clip selection, playback controls
@@ -72,6 +108,9 @@ namespace EditorUI {
 
         // Bone track helpers
         void RenderBoneTrack(const Boom::Joint& joint, float duration);
+
+        // Audio track helper
+        void RenderAudioTrack(float duration);
 
         // 3D Viewport Rendering
         void UpdateCamera();
@@ -118,6 +157,13 @@ namespace EditorUI {
         GLuint m_DepthBufferID = 0;
         ImVec2 m_ViewportSize = { 800.0f, 400.0f };
 
+        // Viewport splitter (resizable viewport/timeline split)
+        float m_ViewportHeightRatio = 0.45f;  // User-adjustable ratio (0.2 to 0.8)
+        bool m_IsDraggingSplitter = false;     // Is user dragging the splitter bar?
+
+        // Compact mode (hides less-used controls for smaller screens)
+        bool m_CompactMode = false;
+
         // Orbit camera
         glm::vec3 m_CameraPosition = glm::vec3(0.0f, 1.5f, 3.0f);
         glm::vec3 m_CameraTarget = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -142,6 +188,7 @@ namespace EditorUI {
         int m_SelectedClipIndex = -1;  // Currently selected animation clip (-1 = none)
         float m_LastFrameTime = 0.0f;  // For delta time calculation
         bool m_IsDraggingTimeline = false;  // Is user scrubbing the timeline?
+        bool m_ClipModified = false;  // Track unsaved changes to current clip
 
         // Selected bone (for keyframe editing later)
         std::string m_SelectedBoneName;
@@ -151,7 +198,7 @@ namespace EditorUI {
         ImVec2 m_ViewportMousePos = { 0.0f, 0.0f };  // Mouse position relative to viewport
 
         // Transform gizmo state
-        int m_GizmoOperation = 7;  // ImGuizmo::TRANSLATE (7 = translate)
+        int m_GizmoOperation = 120;  // ImGuizmo::ROTATE (120 = rotate, default for animation editing)
         int m_GizmoMode = 1;       // ImGuizmo::WORLD (1 = world space, 0 = local space)
         bool m_GizmoWasUsing = false;  // Track if gizmo was being used last frame
         bool m_UseSnap = false;    // Snap to grid
@@ -174,6 +221,40 @@ namespace EditorUI {
         int m_HoveredKeyframeIndex = -1;  // -1 = no hover
         std::string m_HoveredBoneName;
 
+        // Keyframe multiselect state (Unity-style)
+        std::set<SelectedKeyframe> m_SelectedKeyframes;  // Currently selected keyframes
+        SelectedKeyframe m_SelectionAnchor;              // Anchor for shift-click range selection
+        bool m_HasSelectionAnchor = false;               // Is anchor valid?
+        float m_MultiDragStartTime = 0.0f;               // Original time of dragged keyframe (for delta calculation)
+        std::map<SelectedKeyframe, float> m_SelectedKeyframeOriginalTimes;  // Store original times during drag
+
+        // Box/marquee selection state
+        bool m_IsBoxSelecting = false;           // Currently drawing a selection box?
+        ImVec2 m_BoxSelectStart = {0, 0};        // Start position of box selection (screen coords)
+        ImVec2 m_BoxSelectEnd = {0, 0};          // Current end position of box selection
+        bool m_BoxSelectAdditive = false;        // Ctrl held = add to selection instead of replace
+
+        // Keyframe screen positions (populated during rendering for box selection)
+        struct KeyframeScreenPos {
+            std::string boneName;
+            size_t keyframeIndex;
+            ImVec2 screenPos;  // Center of the keyframe diamond
+        };
+        std::vector<KeyframeScreenPos> m_KeyframeScreenPositions;  // Cleared each frame
+
+        // Audio event interaction state
+        int m_SelectedAudioEventIndex = -1;  // -1 = no selection
+        int m_HoveredAudioEventIndex = -1;   // -1 = no hover
+        bool m_IsDraggingAudioEvent = false;
+        float m_DraggedAudioEventOriginalTime = 0.0f;
+
+        // Audio marker screen positions (for click detection)
+        struct AudioMarkerScreenPos {
+            size_t eventIndex;
+            ImVec2 screenPos;  // Center of the marker
+        };
+        std::vector<AudioMarkerScreenPos> m_AudioMarkerScreenPositions;  // Cleared each frame
+
         // Undo/Redo system
         std::vector<KeyframeCommand> m_UndoStack;
         std::vector<KeyframeCommand> m_RedoStack;
@@ -182,6 +263,23 @@ namespace EditorUI {
         void ExecuteCommand(const KeyframeCommand& cmd);
         void Undo();
         void Redo();
+
+        // Helper: Find keyframe index by timestamp (returns -1 if not found)
+        int FindKeyframeByTimestamp(const std::string& boneName, float timestamp, float tolerance = 0.001f);
+
+        // Helper: Execute a single command (used internally, does NOT modify undo/redo stacks)
+        void ExecuteSingleCommand(const KeyframeCommand& cmd);
+
+        // Helper: Undo a single command (used internally)
+        void UndoSingleCommand(const KeyframeCommand& cmd);
+
+        // Keyframe multiselect helpers
+        bool IsKeyframeSelected(const std::string& boneName, size_t index) const;
+        void SelectKeyframe(const std::string& boneName, size_t index, bool addToSelection = false);
+        void DeselectKeyframe(const std::string& boneName, size_t index);
+        void ToggleKeyframeSelection(const std::string& boneName, size_t index);
+        void ClearKeyframeSelection();
+        void DeleteSelectedKeyframes();
     };
 
 } // namespace EditorUI

@@ -9,11 +9,13 @@
 #include "Shaders/Shadow.h"
 #include "Shaders/Color.h"
 #include "Shaders/PickingShader.h"
+#include "Graphics/Instancing/InstanceManager.h"
 #include "GlobalConstants.h"
 
 #include <memory>
 #include <string>
 #include <utility>
+#include <unordered_map>
 
 namespace Boom {
 
@@ -65,6 +67,9 @@ namespace Boom {
 
             // --- Meshes ---
             skyboxMesh = CreateSkyboxMesh();
+
+            // --- Instancing ---
+            m_InstanceManager = std::make_unique<InstanceManager>();
 
             // --- Internal bookkeeping ---
             m_Width = w;
@@ -149,9 +154,12 @@ namespace Boom {
 
         BOOM_INLINE void DrawShadow(Model3D& model, Transform3D& transform, std::vector<glm::mat4>& joints) {
             if (!joints.empty()) shadowShader->SetJoints(joints);
-            //glCullFace(GL_FRONT);
             shadowShader->Draw(model, transform);
-            //glCullFace(GL_BACK);
+        }
+
+        BOOM_INLINE void DrawShadow(Model3D& model, Transform3D& transform, std::vector<glm::mat4>& joints, const PbrMaterial& material) {
+            if (!joints.empty()) shadowShader->SetJoints(joints);
+            shadowShader->Draw(model, transform, material);
         }
         BOOM_INLINE void BeginShadowPass(const glm::vec3& LightRotation, bool enableShadows = true)
         {
@@ -307,7 +315,10 @@ namespace Boom {
             skyBoxShader->SetCamera(cam, transform, aspect);
             color3DShader->SetCamera(cam, transform, aspect);
             pbrShader->Use();
+            m_CameraPosition = transform.translate;
         }
+
+        BOOM_INLINE glm::vec3 GetCameraPosition() const { return m_CameraPosition; }
 
         BOOM_INLINE void Draw(Mesh3D const& mesh, Transform3D const& transform) {
             pbrShader->Draw(mesh, transform);
@@ -342,7 +353,219 @@ namespace Boom {
             colorShader->Show(*tex.get(), transform);
         }
 
+        // Raw texture ID overloads (for video playback, dynamic textures, etc.)
+        BOOM_INLINE void DrawQuadRaw(uint32_t textureId, Transform3D const& transform, glm::vec4 col = glm::vec4{ 1.f }) {
+            color3DShader->ChangeColor(col);
+            color3DShader->Show(textureId, transform);
+        }
+        BOOM_INLINE void DrawQuadRaw(uint32_t textureId, Transform2D const& transform, glm::vec4 col = glm::vec4{ 1.f }) {
+            colorShader->ChangeColor(col);
+            colorShader->Show(textureId, transform);
+        }
+
         BOOM_INLINE float Aspect() const { return frame->Ratio(); } // kept for backward compatibility
+
+    public: // ---------------------- Instanced Rendering ----------------------
+        /**
+         * @brief Begin collecting instances for this frame.
+         * Call at start of render phase, before adding any instances.
+         */
+        BOOM_INLINE void BeginInstanceCollection() {
+            m_InstanceManager->BeginFrame();
+        }
+
+        /**
+         * @brief Add a static instance to be rendered this frame.
+         *
+         * @param modelID Asset ID of the model
+         * @param materialID Asset ID of the material
+         * @param worldMatrix Pre-computed world transform matrix
+         * @param isAnimated If true, use AddAnimatedInstance instead (returns false)
+         * @return true if batched, false if should use immediate draw
+         */
+        BOOM_INLINE bool AddInstance(AssetID modelID, AssetID materialID,
+                                    const glm::mat4& worldMatrix, bool isAnimated) {
+            return m_InstanceManager->AddInstance(modelID, materialID, worldMatrix, isAnimated);
+        }
+
+        /**
+         * @brief Add an animated instance to be rendered this frame.
+         *
+         * @param modelID Asset ID of the model
+         * @param materialID Asset ID of the material
+         * @param worldMatrix Pre-computed world transform matrix
+         * @param jointMatrices Current frame's joint matrices
+         * @return true if batched
+         */
+        BOOM_INLINE bool AddAnimatedInstance(AssetID modelID, AssetID materialID,
+                                            const glm::mat4& worldMatrix,
+                                            const std::vector<glm::mat4>& jointMatrices) {
+            return m_InstanceManager->AddAnimatedInstance(modelID, materialID, worldMatrix, jointMatrices);
+        }
+
+        /**
+         * @brief Add a transparent instance to be rendered this frame.
+         *
+         * Transparent instances are batched by model+material and sorted by distance.
+         * Within a batch, instances are rendered together (not individually sorted).
+         *
+         * @param modelID Asset ID of the model
+         * @param materialID Asset ID of the material
+         * @param worldMatrix Pre-computed world transform matrix
+         * @param distanceToCamera Distance from camera for batch sorting
+         * @return true if batched
+         */
+        BOOM_INLINE bool AddTransparentInstance(AssetID modelID, AssetID materialID,
+                                               const glm::mat4& worldMatrix, float distanceToCamera) {
+            return m_InstanceManager->AddTransparentInstance(modelID, materialID, worldMatrix, distanceToCamera);
+        }
+
+        /**
+         * @brief Render all collected instance batches (static and animated).
+         *
+         * @param assets Asset registry to look up models and materials
+         */
+        template<typename AssetRegistryT>
+        BOOM_INLINE void RenderInstancedBatches(AssetRegistryT& assets) {
+            // Upload all instance transforms and joint matrices to GPU
+            m_InstanceManager->UploadBatches();
+
+            size_t totalStatic = m_InstanceManager->GetTotalInstances();
+            size_t totalAnimated = m_InstanceManager->GetTotalAnimatedInstances();
+
+            if (totalStatic == 0 && totalAnimated == 0) return;
+
+            // Bind both SSBOs (transform and joint)
+            m_InstanceManager->BindAllSSBOs();
+
+            // === Render Static Batches ===
+            if (totalStatic > 0) {
+                for (const auto& [key, batch] : m_InstanceManager->GetBatches()) {
+                    if (batch.IsEmpty()) continue;
+
+                    // Get model
+                    auto* modelAsset = assets.template TryGet<ModelAsset>(batch.modelID);
+                    if (!modelAsset || !modelAsset->data) continue;
+
+                    // Get material
+                    PbrMaterial material{};
+                    if (batch.materialID != EMPTY_ASSET) {
+                        auto* matAsset = assets.template TryGet<MaterialAsset>(batch.materialID);
+                        if (matAsset) {
+                            assets.ResolveMaterialTextures(matAsset);
+                            material = matAsset->data;
+                        }
+                    }
+
+                    // Draw all static instances in this batch (mode 1)
+                    pbrShader->DrawInstanced(modelAsset->data, material,
+                                            static_cast<uint32_t>(batch.Count()),
+                                            static_cast<uint32_t>(batch.ssboOffset),
+                                            showNormalTexture);
+                }
+            }
+
+            // === Render Animated Batches ===
+            if (totalAnimated > 0) {
+                for (const auto& [key, batch] : m_InstanceManager->GetAnimatedBatches()) {
+                    if (batch.IsEmpty()) continue;
+
+                    // Get model
+                    auto* modelAsset = assets.template TryGet<ModelAsset>(batch.modelID);
+                    if (!modelAsset || !modelAsset->data) continue;
+
+                    // Get material
+                    PbrMaterial material{};
+                    if (batch.materialID != EMPTY_ASSET) {
+                        auto* matAsset = assets.template TryGet<MaterialAsset>(batch.materialID);
+                        if (matAsset) {
+                            assets.ResolveMaterialTextures(matAsset);
+                            material = matAsset->data;
+                        }
+                    }
+
+                    // Draw all animated instances in this batch (mode 2)
+                    // baseInstance = transform SSBO offset, jointBaseInstance = joint SSBO offset / joints per instance
+                    pbrShader->DrawAnimatedInstanced(modelAsset->data, material,
+                                                     static_cast<uint32_t>(batch.Count()),
+                                                     static_cast<uint32_t>(batch.transformSsboOffset),
+                                                     static_cast<uint32_t>(batch.jointSsboOffset / MAX_ANIMATED_JOINTS),
+                                                     showNormalTexture);
+                }
+            }
+        }
+
+        /**
+         * @brief Render all collected transparent instance batches.
+         *
+         * Call this AFTER RenderInstancedBatches() and with blending enabled.
+         * Batches are rendered in back-to-front order (sorted during UploadBatches).
+         *
+         * @param assets Asset registry to look up models and materials
+         */
+        template<typename AssetRegistryT>
+        BOOM_INLINE void RenderTransparentBatches(AssetRegistryT& assets) {
+            size_t totalTransparent = m_InstanceManager->GetTotalTransparentInstances();
+            if (totalTransparent == 0) return;
+
+            // SSBO should already be bound from RenderInstancedBatches
+            // Just ensure it's bound in case this is called standalone
+            m_InstanceManager->BindSSBO(3);
+
+            // Get sorted batches (back-to-front order)
+            const auto& sortedBatches = m_InstanceManager->GetSortedTransparentBatches();
+
+            for (const auto* batch : sortedBatches) {
+                if (batch->IsEmpty()) continue;
+
+                // Get model
+                auto* modelAsset = assets.template TryGet<ModelAsset>(batch->modelID);
+                if (!modelAsset || !modelAsset->data) continue;
+
+                // Get material
+                PbrMaterial material{};
+                if (batch->materialID != EMPTY_ASSET) {
+                    auto* matAsset = assets.template TryGet<MaterialAsset>(batch->materialID);
+                    if (matAsset) {
+                        assets.ResolveMaterialTextures(matAsset);
+                        material = matAsset->data;
+                    }
+                }
+
+                // Draw all transparent instances in this batch
+                pbrShader->DrawTransparentInstanced(modelAsset->data, material,
+                                                    static_cast<uint32_t>(batch->Count()),
+                                                    static_cast<uint32_t>(batch->ssboOffset),
+                                                    showNormalTexture);
+            }
+        }
+
+        /**
+         * @brief Get instancing statistics for debugging/profiling.
+         */
+        BOOM_INLINE size_t GetInstanceBatchCount() const {
+            return m_InstanceManager->GetActiveBatchCount();
+        }
+
+        BOOM_INLINE size_t GetAnimatedInstanceBatchCount() const {
+            return m_InstanceManager->GetActiveAnimatedBatchCount();
+        }
+
+        BOOM_INLINE size_t GetTransparentInstanceBatchCount() const {
+            return m_InstanceManager->GetActiveTransparentBatchCount();
+        }
+
+        BOOM_INLINE size_t GetTotalInstanceCount() const {
+            return m_InstanceManager->GetTotalInstances();
+        }
+
+        BOOM_INLINE size_t GetTotalAnimatedInstanceCount() const {
+            return m_InstanceManager->GetTotalAnimatedInstances();
+        }
+
+        BOOM_INLINE size_t GetTotalTransparentInstanceCount() const {
+            return m_InstanceManager->GetTotalTransparentInstances();
+        }
 
     public: // ---------------------- Frame lifecycle ----------------------
         BOOM_INLINE void NewFrame() {
@@ -519,6 +742,7 @@ namespace Boom {
         std::unique_ptr<BloomShader>   bloom;
         std::unique_ptr<ColorShader>   colorShader;
         std::unique_ptr<Color3DShader> color3DShader;
+        std::unique_ptr<InstanceManager> m_InstanceManager;
         SkyboxMesh                     skyboxMesh;
 
     private: // ---------------------- Internal state -----------------------
@@ -529,6 +753,7 @@ namespace Boom {
         GLuint m_PointLightUBO = 0;
         GLuint m_DirLightUBO = 0;
         GLuint m_SpotLightUBO = 0;
+        glm::vec3 m_CameraPosition{};
     public:  // ---------------------- ImGui-exposed toggles ----------------
         bool isDrawDebugMode{};
         bool showLowPoly{};
@@ -536,6 +761,239 @@ namespace Boom {
         bool enabledBloom{};
         bool isPickIgnoreGUI{};
         bool isDepthBufferView{};
+        bool enableTransparentBackfaceCulling{ true };
+
+    public: // ---------------------- Material Preview ----------------------
+        // Call this to reset the material preview (e.g., after scene change)
+        BOOM_INLINE void ResetMaterialPreview() {
+            m_MatPreviewFrame.reset();
+            m_PreviewSphere = nullptr;
+            // Clean up cached preview textures
+            for (auto& [id, texId] : m_MaterialPreviewCache) {
+                if (texId != 0) {
+                    glDeleteTextures(1, &texId);
+                }
+            }
+            m_MaterialPreviewCache.clear();
+        }
+
+        // Invalidate a specific material's cached preview (call when material changes)
+        BOOM_INLINE void InvalidateMaterialPreview(uint64_t assetId) {
+            auto it = m_MaterialPreviewCache.find(assetId);
+            if (it != m_MaterialPreviewCache.end()) {
+                if (it->second != 0) {
+                    glDeleteTextures(1, &it->second);
+                }
+                m_MaterialPreviewCache.erase(it);
+            }
+        }
+
+        BOOM_INLINE void InitMaterialPreview(Model3D sphereModel) {
+            m_PreviewSphere = sphereModel;
+
+            // Debug: check if model has meshes
+            if (m_PreviewSphere) {
+                BOOM_INFO("[Renderer] Sphere modelTransform: translate({},{},{}), scale({},{},{})",
+                    m_PreviewSphere->modelTransform.translate.x,
+                    m_PreviewSphere->modelTransform.translate.y,
+                    m_PreviewSphere->modelTransform.translate.z,
+                    m_PreviewSphere->modelTransform.scale.x,
+                    m_PreviewSphere->modelTransform.scale.y,
+                    m_PreviewSphere->modelTransform.scale.z);
+            }
+
+            // Save current FBO to restore later (important for ImGui compatibility)
+            GLint prevFBO;
+            glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
+
+            // Create framebuffer using the existing FrameBuffer class
+            m_MatPreviewFrame = std::make_unique<FrameBuffer>(m_MatPreviewSize, m_MatPreviewSize, false, GL_RGB, GL_RGB);
+
+            // Restore previous FBO (FrameBuffer constructor binds to 0)
+            glBindFramebuffer(GL_FRAMEBUFFER, prevFBO);
+            BOOM_INFO("[MaterialPreview] Initialized successfully");
+        }
+
+        // Renders a sphere with the given material and returns the texture ID for ImGui
+        // cameraYaw, cameraPitch: orbit camera angles (radians)
+        // cameraDistance: distance from center
+        BOOM_INLINE uint32_t RenderMaterialPreview(PbrMaterial const& material,
+                                                    float cameraYaw = 0.0f,
+                                                    float cameraPitch = 0.3f,
+                                                    float cameraDistance = 2.5f) {
+            if (!m_MatPreviewFrame || !m_PreviewSphere) {
+                return 0;
+            }
+
+            // Clear any stale GL errors before we start
+            while (glGetError() != GL_NO_ERROR) {}
+
+            // Save current state FIRST before any GL calls
+            GLint prevFBO;
+            glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
+            GLint prevViewport[4];
+            glGetIntegerv(GL_VIEWPORT, prevViewport);
+
+            // Bind preview framebuffer using SBind (doesn't clear automatically)
+            m_MatPreviewFrame->SBind();
+
+            // Clear with background color
+            glClearColor(0.15f, 0.15f, 0.18f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glEnable(GL_DEPTH_TEST);
+            glDepthFunc(GL_LESS);
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_BACK);
+
+            // Activate shader before setting uniforms
+            pbrShader->Use();
+
+            // Bind light UBOs
+            glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_PointLightUBO);
+            glBindBufferBase(GL_UNIFORM_BUFFER, 1, m_DirLightUBO);
+            glBindBufferBase(GL_UNIFORM_BUFFER, 2, m_SpotLightUBO);
+
+            // Disable shadows for preview
+            pbrShader->SetShadowsEnabled(false);
+
+            // Set up lighting for preview - use local UBO updates to avoid affecting main scene
+            std::vector<GPUDirLight> dirLights(1);
+            dirLights[0].dir_intensity = glm::vec4(glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)), 1.0f);
+            dirLights[0].radiance = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+            glBindBuffer(GL_UNIFORM_BUFFER, m_DirLightUBO);
+            glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GPUDirLight), dirLights.data());
+            glBindBuffer(GL_UNIFORM_BUFFER, 0);
+            pbrShader->SetUniform(pbrShader->GetUniformVar("noDirLight"), 1);
+
+            // Clear point and spot lights for preview
+            pbrShader->SetUniform(pbrShader->GetUniformVar("noPointLight"), 0);
+            pbrShader->SetUniform(pbrShader->GetUniformVar("noSpotLight"), 0);
+
+            float savedAmbient = pbrShader->ambientStrength;
+            pbrShader->ambientStrength = 0.4f;
+
+            // Calculate camera position (spherical coordinates)
+            float camX = cameraDistance * cos(cameraPitch) * sin(cameraYaw);
+            float camY = cameraDistance * sin(cameraPitch);
+            float camZ = cameraDistance * cos(cameraPitch) * cos(cameraYaw);
+            glm::vec3 cameraPos = glm::vec3(camX, camY, camZ);
+            glm::vec3 cameraTarget = glm::vec3(0.0f);
+
+            // Set up camera matrices directly on PBR shader only (avoid touching other shaders)
+            Camera3D camera{};
+            camera.FOV = 45.0f;
+            camera.nearPlane = 0.01f;
+            camera.farPlane = 100.0f;
+
+            glm::vec3 direction = glm::normalize(cameraTarget - cameraPos);
+            float yaw = atan2(-direction.x, -direction.z);
+            float pitch = asin(direction.y);
+
+            Transform3D cameraTransform{};
+            cameraTransform.translate = cameraPos;
+            cameraTransform.rotate = glm::vec3(glm::degrees(pitch), glm::degrees(yaw), 0.0f);
+            cameraTransform.scale = glm::vec3(1.0f);
+
+            // Set camera directly on pbr shader with 1:1 aspect ratio
+            pbrShader->SetCamera(camera, cameraTransform, 1.0f);
+            pbrShader->Use(); // Ensure shader is active after SetCamera
+
+            // Simple approach: just use identity transform and let the model's built-in transform work
+            Transform3D modelTransform{};
+            modelTransform.translate = glm::vec3(0.0f);
+            modelTransform.rotate = glm::vec3(0.0f);
+            modelTransform.scale = glm::vec3(1.0f);
+
+            // Clear any existing joint transforms (for static models)
+            std::vector<glm::mat4> emptyJoints;
+            pbrShader->SetJoints(emptyJoints);
+
+            // Draw sphere with material
+            pbrShader->Draw(m_PreviewSphere, modelTransform, material, false);
+
+            // Restore state (don't use End() as it binds to FBO 0)
+            pbrShader->ambientStrength = savedAmbient;
+            glDisable(GL_DEPTH_TEST);
+            glEnable(GL_BLEND);
+            glBindFramebuffer(GL_FRAMEBUFFER, prevFBO);
+            glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
+
+            return m_MatPreviewFrame->GetTexture();
+        }
+
+        // Cached version - renders once per material and returns cached texture
+        // Use this for ResourcePanel thumbnails to avoid re-rendering every frame
+        BOOM_INLINE uint32_t RenderMaterialPreviewCached(uint64_t assetId,
+                                                          PbrMaterial const& material,
+                                                          float cameraYaw = 0.0f,
+                                                          float cameraPitch = 0.3f,
+                                                          float cameraDistance = 2.5f) {
+            if (!m_MatPreviewFrame || !m_PreviewSphere) {
+                return 0;
+            }
+
+            // Check if already cached
+            auto it = m_MaterialPreviewCache.find(assetId);
+            if (it != m_MaterialPreviewCache.end() && it->second != 0) {
+                return it->second;
+            }
+
+            // Render to the shared FBO first
+            uint32_t tempTex = RenderMaterialPreview(material, cameraYaw, cameraPitch, cameraDistance);
+            if (tempTex == 0) return 0;
+
+            // Create a new texture to store this material's preview
+            uint32_t cachedTex = 0;
+            glGenTextures(1, &cachedTex);
+            glBindTexture(GL_TEXTURE_2D, cachedTex);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_MatPreviewSize, m_MatPreviewSize, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+            // Copy from the shared FBO texture to the cached texture
+            GLint prevFBO;
+            glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
+
+            // Create temporary FBOs for the copy operation
+            GLuint readFBO, drawFBO;
+            glGenFramebuffers(1, &readFBO);
+            glGenFramebuffers(1, &drawFBO);
+
+            // Bind source texture to read FBO
+            glBindFramebuffer(GL_READ_FRAMEBUFFER, readFBO);
+            glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tempTex, 0);
+
+            // Bind destination texture to draw FBO
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, drawFBO);
+            glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, cachedTex, 0);
+
+            // Blit (copy) the texture
+            glBlitFramebuffer(0, 0, m_MatPreviewSize, m_MatPreviewSize,
+                              0, 0, m_MatPreviewSize, m_MatPreviewSize,
+                              GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+            // Cleanup temporary FBOs
+            glDeleteFramebuffers(1, &readFBO);
+            glDeleteFramebuffers(1, &drawFBO);
+
+            // Restore previous FBO
+            glBindFramebuffer(GL_FRAMEBUFFER, prevFBO);
+
+            // Cache and return
+            m_MaterialPreviewCache[assetId] = cachedTex;
+            return cachedTex;
+        }
+
+        BOOM_INLINE bool IsMaterialPreviewInitialized() const { return m_MatPreviewFrame != nullptr && m_PreviewSphere != nullptr; }
+        BOOM_INLINE int32_t GetMaterialPreviewSize() const { return m_MatPreviewSize; }
+
+    private: // ---------------------- Material Preview State ----------------
+        std::unique_ptr<FrameBuffer> m_MatPreviewFrame;
+        Model3D m_PreviewSphere;
+        int32_t m_MatPreviewSize = 200;
+        std::unordered_map<uint64_t, uint32_t> m_MaterialPreviewCache; // AssetID -> Cached texture ID
     };
 
 } // namespace Boom

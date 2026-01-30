@@ -8,9 +8,17 @@
 #include "Panels/PropertiesImgui.h"
 #include"Physics/Context.h"
 #include "Commands/UndoRedo.h"  // for ComponentPropertyCommand
+#include "Graphics/Video/VideoSystem.h"  // for VideoComponent UI
 #include "Audio/Audio.hpp"     // for SoundEngine (real-time audio preview)
+#include "Panels/DirectoryPanel.h"  // for ForceRefresh() on audio assets
+#include "Graphics/Renderer.h" // for material preview
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 #include <unordered_map>       // for audio preview tracking
+#include <algorithm>           // for std::transform (asset picker search)
+#include <cctype>              // for std::tolower
+#include <type_traits>         // for std::is_same_v
+#include "Context/Helpers.h"   // for ASSET_SIZE
 //#include "BoomProperties.h"
 using namespace EditorUI;
 
@@ -24,8 +32,92 @@ namespace EditorUI {
         : m_Owner(owner)
         , m_ShowInspector(showFlag)
         , m_App(dynamic_cast<Boom::AppInterface*>(owner))
+        , ctx(m_Owner->GetContext())
     {
         DEBUG_POINTER(m_App, "AppInterface");
+        DEBUG_POINTER(ctx, "AppContext");
+        // Initialize asset picker icons
+        if (m_App) {
+            m_AssetIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/asset.png");
+            m_ModelIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/model.png");
+            m_MaterialIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/material.png");
+            m_ScriptIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/script.png");
+        }
+    }
+
+    void InspectorPanel::RenderMaterialPreview(Boom::MaterialAsset* mat) {
+        if (!mat || !m_App) return;
+
+        auto* ctx = m_App->GetContext();
+        if (!ctx || !ctx->renderer || !ctx->assets) return;
+
+        // Initialize or reinitialize material preview in renderer if needed
+        if (!ctx->renderer->IsMaterialPreviewInitialized()) {
+            // Find sphere model in assets (need to re-find after scene changes)
+            Boom::Model3D sphereModel;
+            auto& modelMap = ctx->assets->GetMap<Boom::ModelAsset>();
+            for (auto& [assetID, assetPtr] : modelMap) {
+                auto* modelAsset = dynamic_cast<Boom::ModelAsset*>(assetPtr.get());
+                if (modelAsset && modelAsset->source.find("sphere.fbx") != std::string::npos) {
+                    sphereModel = modelAsset->data;
+                    BOOM_INFO("[MaterialPreview] Found sphere model: {}", modelAsset->source);
+                    break;
+                }
+            }
+            if (sphereModel) {
+                ctx->renderer->InitMaterialPreview(sphereModel);
+                BOOM_INFO("[MaterialPreview] Initialized with sphere model");
+            } else {
+                BOOM_WARN("[MaterialPreview] Sphere model not found in assets!");
+            }
+        }
+
+        if (!ctx->renderer->IsMaterialPreviewInitialized()) {
+            ImGui::TextDisabled("Sphere model not found for preview");
+            ImGui::TextDisabled("(Load a scene with sphere.fbx asset)");
+            return;
+        }
+
+        // Resolve texture IDs to actual texture pointers
+        ctx->assets->ResolveMaterialTextures(mat);
+
+        // Render preview using the renderer
+        uint32_t previewTexture = ctx->renderer->RenderMaterialPreview(
+            mat->data, m_MatPreviewYaw, m_MatPreviewPitch, m_MatPreviewDistance);
+
+        if (previewTexture == 0) {
+            ImGui::TextDisabled("Initializing preview...");
+            return;
+        }
+
+        // Display the preview
+        ImGui::Text("Material Preview");
+
+        float previewSize = (float)ctx->renderer->GetMaterialPreviewSize();
+        float availWidth = ImGui::GetContentRegionAvail().x;
+        float offsetX = (availWidth - previewSize) * 0.5f;
+        if (offsetX > 0) ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offsetX);
+
+        ImGui::Image((ImTextureID)(intptr_t)previewTexture,
+            ImVec2(previewSize, previewSize),
+            ImVec2(0, 1), ImVec2(1, 0)); // Flip Y
+
+        // Handle mouse interaction for rotation
+        if (ImGui::IsItemHovered()) {
+            ImGuiIO& io = ImGui::GetIO();
+            if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
+                m_MatPreviewYaw -= io.MouseDelta.x * 0.01f; 
+                m_MatPreviewPitch += io.MouseDelta.y * 0.01f;
+                m_MatPreviewPitch = glm::clamp(m_MatPreviewPitch, -1.5f, 1.5f);
+            }
+            if (io.MouseWheel != 0.0f) {
+                m_MatPreviewDistance -= io.MouseWheel * 0.5f;
+                m_MatPreviewDistance = glm::clamp(m_MatPreviewDistance, 0.5f, 20.0f); // Wider range for different model sizes
+            }
+        }
+
+        ImGui::TextDisabled("Drag to rotate, scroll to zoom");
+        ImGui::Separator();
     }
 
     // ---- templated section drawer ----
@@ -113,7 +205,6 @@ namespace EditorUI {
     {
         if (m_ShowInspector && !*m_ShowInspector) return;
 
-        Boom::AppContext* ctx = GetContext();
         if (!ctx) return;
 
         ImGui::Begin("Inspector", m_ShowInspector);
@@ -136,10 +227,12 @@ namespace EditorUI {
     }
 
     void InspectorPanel::EntityUpdate() {
-        Boom::AppContext* ctx = GetContext();
         // NOTE: adjust Entity wrapper to your real type/ctor signature
             // Assuming: Entity(Boom::Scene*, entt::entity)
         Boom::Entity selected{ &ctx->scene, m_App->SelectedEntity() };
+
+        // Push ID to prevent field edit state leaking to other entities when selection changes
+        ImGui::PushID((int)m_App->SelectedEntity());
 
         // ===== ENTITY NAME =====
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
@@ -531,23 +624,23 @@ namespace EditorUI {
                 // Capture state before any changes this frame
                 Boom::SpriteComponent spriteBeforeFrame = q;
 
-                // GUI Overlay Checkbox
-                bool oldUiOverlay = q.uiOverlay;
-                if (ImGui::Checkbox("GUI", &q.uiOverlay)) {
+                // Render As 3D Checkbox
+                bool oldRenderAs3D = q.renderAs3D;
+                if (ImGui::Checkbox("Render as 3D", &q.renderAs3D)) {
                     // Checkbox was toggled - create undo command immediately
                     auto* history = m_Owner->GetCommandHistory();
                     if (history) {
                         Boom::SpriteComponent before = spriteBeforeFrame;
-                        before.uiOverlay = oldUiOverlay;
+                        before.renderAs3D = oldRenderAs3D;
                         auto command = std::make_unique<ComponentPropertyCommand<Boom::SpriteComponent>>(
                             &ctx->scene,
                             m_App->SelectedEntity(),
                             before,
                             q,
-                            "Toggle Sprite GUI Overlay"
+                            "Toggle Sprite Render Mode"
                         );
                         history->Execute(std::move(command));
-                        BOOM_INFO("[Undo] Created command: Toggle Sprite GUI Overlay");
+                        BOOM_INFO("[Undo] Created command: Toggle Sprite Render Mode");
                     } else {
                         BOOM_WARN("[Undo] CommandHistory is null!");
                     }
@@ -841,6 +934,14 @@ namespace EditorUI {
                     e.name = "NewSound";
                     sc.entries.push_back(std::move(e));
                 }
+                ImGui::SameLine();
+                if (ImGui::Button("Refresh Audio")) {
+                    // Force refresh directory panel to pick up newly added audio files
+                    if (auto* dirPanel = m_Owner->GetDirectoryPanel()) {
+                        dirPanel->ForceRefresh();
+                    }
+                }
+               
 
                 ImGui::Spacing();
 
@@ -1080,6 +1181,569 @@ namespace EditorUI {
             }
         }
 
+        // --- Video Component UI ---
+        if (selected.Has<Boom::VideoComponent>()) {
+            ImGui::PushID("Video");
+            auto& vc = selected.Get<Boom::VideoComponent>();
+
+            bool videoCompRemoved = false;
+            bool isOpen = ImGui::CollapsingHeader("Video", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap);
+
+            // ========================================
+            // Settings Button (Top Right)
+            // ========================================
+            const ImVec2 vhMin = ImGui::GetItemRectMin();
+            const ImVec2 vhMax = ImGui::GetItemRectMax();
+            const float vhLineH = ImGui::GetFrameHeight();
+            const float vhY = vhMin.y + (vhMax.y - vhMin.y - vhLineH) * 0.5f;
+            ImGui::SetCursorScreenPos(ImVec2(vhMax.x - vhLineH, vhY));
+
+            if (ImGui::Button("...", ImVec2(vhLineH, vhLineH))) {
+                ImGui::OpenPopup("VideoSettings");
+            }
+
+            if (ImGui::BeginPopup("VideoSettings")) {
+                if (ImGui::MenuItem("Remove Component")) {
+                    videoCompRemoved = true;
+                }
+                if (ImGui::MenuItem("View Code")) {
+                    ImGui::OpenPopup("VideoCodeViewer");
+                }
+                if (ImGui::MenuItem("Refresh Video List")) {
+                    // Will trigger rescan
+                }
+                ImGui::Separator();
+                if (ImGui::MenuItem("Export Settings")) {
+                    // TODO: Export VideoComponent settings to JSON
+                }
+                if (ImGui::MenuItem("Import Settings")) {
+                    // TODO: Import VideoComponent settings from JSON
+                }
+                ImGui::EndPopup();
+            }
+
+            // ========================================
+            // Code Viewer Modal Window
+            // ========================================
+            if (ImGui::BeginPopupModal("VideoCodeViewer", nullptr,
+                ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse)) {
+
+                ImGui::Text("Video System Source Code Viewer");
+                ImGui::Separator();
+
+                static int selectedTab = 0;
+                static bool codeLoaded = false;
+
+                const char* tabs[] = {
+                    "VideoPlayer.h",
+                    "VideoPlayer.cpp",
+                    "VideoSystem.h",
+                    "VideoSystem.cpp",
+                    "pl_mpeg.h (Library)",
+                    "Component UI"
+                };
+
+                // Tab bar
+                if (ImGui::BeginTabBar("CodeTabs")) {
+                    for (int i = 0; i < 6; i++) {
+                        if (ImGui::BeginTabItem(tabs[i])) {
+                            if (selectedTab != i) {
+                                selectedTab = i;
+                                codeLoaded = false;
+                            }
+                            ImGui::EndTabItem();
+                        }
+                    }
+                    ImGui::EndTabBar();
+                }
+
+                ImGui::Spacing();
+
+                // Search bar
+                static char searchBuffer[256] = "";
+                ImGui::SetNextItemWidth(600);
+                ImGui::InputTextWithHint("##Search", "Search in code...", searchBuffer, sizeof(searchBuffer));
+                ImGui::SameLine();
+                if (ImGui::Button("Find Next")) {
+                    // TODO: Implement search
+                }
+
+                ImGui::Spacing();
+                ImGui::Separator();
+
+                // Code display area
+                ImGui::BeginChild("CodeContent", ImVec2(900, 600), true,
+                    ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_AlwaysVerticalScrollbar);
+
+                // Use monospace font if available
+                ImGuiIO& io = ImGui::GetIO();
+                if (io.Fonts->Fonts.Size > 1) {
+                    ImGui::PushFont(io.Fonts->Fonts[1]); // Assume index 1 is monospace
+                }
+
+                // Display code based on selected tab
+                // In a real implementation, you would load these from files
+                const char* codeContent = nullptr;
+
+                switch (selectedTab) {
+                case 0: // VideoPlayer.h
+                    codeContent =
+                        "// VideoPlayer.h - Header\n"
+                        "#pragma once\n\n"
+                        "#include \"BoomProperties.h\"\n"
+                        "#include <string>\n"
+                        "#include <memory>\n\n"
+                        "struct plm_t;\n\n"
+                        "namespace Boom {\n"
+                        "    enum class VideoState { Stopped, Playing, Paused };\n\n"
+                        "    class BOOM_API VideoPlayer {\n"
+                        "    public:\n"
+                        "        VideoPlayer();\n"
+                        "        ~VideoPlayer();\n"
+                        "        // ... (see actual file for full content)\n"
+                        "    };\n"
+                        "}\n";
+                    break;
+
+                case 1: // VideoPlayer.cpp
+                    codeContent =
+                        "// VideoPlayer.cpp - Implementation\n"
+                        "#include \"Core.h\"\n"
+                        "#define PL_MPEG_IMPLEMENTATION\n"
+                        "#include \"Graphics/Video/pl_mpeg.h\"\n"
+                        "#include \"Graphics/Video/VideoPlayer.h\"\n\n"
+                        "namespace Boom {\n"
+                        "    bool VideoPlayer::Load(const std::string& filePath) {\n"
+                        "        Unload();\n"
+                        "        m_PLM = plm_create_with_filename(filePath.c_str());\n"
+                        "        // ... (see actual file for full content)\n"
+                        "    }\n"
+                        "}\n";
+                    break;
+
+                case 2: // VideoSystem.h
+                    codeContent =
+                        "// VideoSystem.h - Header\n"
+                        "#pragma once\n\n"
+                        "#include \"VideoPlayer.h\"\n"
+                        "#include \"ECS/ECS.hpp\"\n\n"
+                        "namespace Boom {\n"
+                        "    class BOOM_API VideoSystem {\n"
+                        "    public:\n"
+                        "        void Update(EntityRegistry& scene, double deltaTime);\n"
+                        "        VideoPlayer* GetPlayer(EntityID entity);\n"
+                        "        // ... (see actual file for full content)\n"
+                        "    };\n"
+                        "}\n";
+                    break;
+
+                case 3: // VideoSystem.cpp
+                    codeContent =
+                        "// VideoSystem.cpp - Implementation\n"
+                        "#include \"Core.h\"\n"
+                        "#include \"Graphics/Video/VideoSystem.h\"\n\n"
+                        "namespace Boom {\n"
+                        "    void VideoSystem::Update(EntityRegistry& scene, double dt) {\n"
+                        "        SyncWithScene(scene);\n"
+                        "        // ... (see actual file for full content)\n"
+                        "    }\n"
+                        "}\n";
+                    break;
+
+                case 4: // pl_mpeg.h
+                    codeContent =
+                        "// pl_mpeg.h - MPEG1 Video Decoder Library\n"
+                        "// Download from: https://github.com/phoboslab/pl_mpeg\n\n"
+                        "// This is a single-header library for decoding MPEG1 video\n"
+                        "// Place it in Graphics/Video/pl_mpeg.h\n\n"
+                        "// Key functions used:\n"
+                        "// - plm_create_with_filename()\n"
+                        "// - plm_decode_video()\n"
+                        "// - plm_frame_to_rgb()\n"
+                        "// - plm_destroy()\n";
+                    break;
+
+                case 5: // Component UI (this file!)
+                    codeContent =
+                        "// VideoComponent ImGui UI Code\n"
+                        "// This is the current file you're editing!\n\n"
+                        "if (selected.Has<Boom::VideoComponent>()) {\n"
+                        "    auto& vc = selected.Get<Boom::VideoComponent>();\n"
+                        "    // MPG dropdown, playback controls, etc.\n"
+                        "    // ... (see this file for full content)\n"
+                        "}\n";
+                    break;
+                }
+
+                if (codeContent) {
+                    ImGui::TextUnformatted(codeContent);
+                }
+
+                if (io.Fonts->Fonts.Size > 1) {
+                    ImGui::PopFont();
+                }
+
+                ImGui::EndChild();
+
+                ImGui::Spacing();
+
+                // Bottom buttons
+                if (ImGui::Button("Copy to Clipboard", ImVec2(150, 0))) {
+                    if (codeContent) {
+                        ImGui::SetClipboardText(codeContent);
+                    }
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Open in Editor", ImVec2(150, 0))) {
+                    // TODO: Open file in external editor
+                }
+                ImGui::SameLine(ImGui::GetWindowWidth() - 130);
+                if (ImGui::Button("Close", ImVec2(120, 0))) {
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::EndPopup();
+            }
+
+            ImGui::SetCursorScreenPos(ImVec2(vhMin.x, vhMax.y + ImGui::GetStyle().ItemSpacing.y));
+
+            // ========================================
+            // Main Content Area
+            // ========================================
+            if (isOpen) {
+                ImGui::Indent(12.0f);
+                ImGui::Spacing();
+
+                // ========================================
+                // VIDEO FILE SELECTION
+                // ========================================
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Video File");
+                ImGui::SameLine(120);
+                ImGui::SetNextItemWidth(-50);
+
+                // Scan for MPG files
+                static std::vector<std::string> mpgFiles;
+                static bool filesScanned = false;
+                static std::string currentSelection;
+
+                if (!filesScanned) {
+                    mpgFiles.clear();
+                    std::string videosPath = "Resources/Videos/";
+
+                    if (std::filesystem::exists(videosPath)) {
+                        try {
+                            for (const auto& entry : std::filesystem::directory_iterator(videosPath)) {
+                                if (entry.is_regular_file()) {
+                                    std::string filename = entry.path().filename().string();
+                                    std::string ext = entry.path().extension().string();
+
+                                    // Convert to lowercase for comparison
+                                    std::transform(ext.begin(), ext.end(), ext.begin(),
+                                        [](unsigned char c) { return std::tolower(c); });
+
+                                    if (ext == ".mpg" || ext == ".mpeg") {
+                                        mpgFiles.push_back(filename);
+                                    }
+                                }
+                            }
+                            std::sort(mpgFiles.begin(), mpgFiles.end());
+                        }
+                        catch (const std::filesystem::filesystem_error& e) {
+                            auto w = e.what();
+                            BOOM_ERROR("Failed to scan video directory: {}", w);
+                        }
+                    }
+                    filesScanned = true;
+                }
+
+                // Sync current selection with component
+                if (currentSelection != vc.videoPath) {
+                    currentSelection = vc.videoPath;
+                }
+
+                // Dropdown
+                if (ImGui::BeginCombo("##VideoDropdown",
+                    currentSelection.empty() ? "Select video..." : currentSelection.c_str())) {
+
+                    // None option
+                    if (ImGui::Selectable("< None >", currentSelection.empty())) {
+                        currentSelection = "";
+                        vc.videoPath = "";
+                    }
+
+                    // File list
+                    for (const auto& file : mpgFiles) {
+                        bool isSelected = (currentSelection == file);
+                        if (ImGui::Selectable(file.c_str(), isSelected)) {
+                            currentSelection = file;
+                            vc.videoPath = file;
+                        }
+                        if (isSelected) {
+                            ImGui::SetItemDefaultFocus();
+                        }
+                    }
+
+                    ImGui::EndCombo();
+                }
+
+                // Refresh button
+                ImGui::SameLine();
+                if (ImGui::Button("R", ImVec2(40, 0))) {
+                    filesScanned = false;
+                }
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Refresh video file list");
+                }
+
+                // Manual path input (advanced)
+                if (ImGui::TreeNode("Advanced##ManualPath")) {
+                    ImGui::AlignTextToFramePadding();
+                    ImGui::Text("Manual Path");
+                    ImGui::SameLine(120);
+                    ImGui::SetNextItemWidth(-1);
+
+                    char pathBuf[512];
+#ifdef _MSC_VER
+                    strncpy_s(pathBuf, sizeof(pathBuf), vc.videoPath.c_str(), sizeof(pathBuf) - 1);
+#else
+                    std::snprintf(pathBuf, sizeof(pathBuf), "%s", vc.videoPath.c_str());
+#endif
+
+                    if (ImGui::InputText("##VideoPathManual", pathBuf, sizeof(pathBuf))) {
+                        vc.videoPath = std::string(pathBuf);
+                        currentSelection = vc.videoPath;
+                    }
+
+                    ImGui::TreePop();
+                }
+
+                // Drag-drop target
+                if (ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("RESOURCE_FILE")) {
+                        const char* droppedPath = static_cast<const char*>(payload->Data);
+                        std::string pathStr(droppedPath);
+
+                        std::string ext = std::filesystem::path(pathStr).extension().string();
+                        std::transform(ext.begin(), ext.end(), ext.begin(),
+                            [](unsigned char c) { return std::tolower(c); });
+
+                        if (ext == ".mpg" || ext == ".mpeg") {
+                            size_t videosPos = pathStr.find("Videos/");
+                            if (videosPos != std::string::npos) {
+                                vc.videoPath = pathStr.substr(videosPos + 7);
+                            }
+                            else {
+                                vc.videoPath = std::filesystem::path(pathStr).filename().string();
+                            }
+                            currentSelection = vc.videoPath;
+                            filesScanned = false;
+                        }
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+
+                ImGui::Spacing();
+                ImGui::Separator();
+                ImGui::Spacing();
+
+                // ========================================
+                // VIDEO PLAYER CONTROLS
+                // ========================================
+                Boom::VideoPlayer* player = nullptr;
+                if (ctx->videoSystem) {
+                    player = ctx->videoSystem->GetPlayer(selected.ID());
+                }
+
+                if (player && player->IsLoaded()) {
+                    // Video Info Panel
+                    ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.15f, 0.15f, 0.2f, 0.6f));
+                    ImGui::BeginChild("VideoInfo", ImVec2(0, 90), true);
+
+                    ImGui::Columns(3, "InfoColumns", false);
+                    ImGui::SetColumnWidth(0, 80);
+                    ImGui::SetColumnWidth(1, 120);
+
+                    // Column 1
+                    ImGui::Text("Duration:");
+                    ImGui::Text("Size:");
+                    ImGui::Text("FPS:");
+
+                    // Column 2
+                    ImGui::NextColumn();
+                    ImGui::Text("%.2f s", player->GetDuration());
+                    ImGui::Text("%d x %d", player->GetWidth(), player->GetHeight());
+                    ImGui::Text("%.2f", player->GetFramerate());
+
+                    // Column 3
+                    ImGui::NextColumn();
+                    ImGui::Text("Current:");
+                    ImGui::Text("State:");
+                    ImGui::Text("Texture:");
+
+                    ImGui::NextColumn();
+                    ImGui::Text("%.2f s", player->GetTickCount());
+                    const char* stateStr = player->IsPlaying() ? "Playing" :
+                        (player->IsPaused() ? "Paused" : "Stopped");
+                    ImGui::Text("%s", stateStr);
+                    ImGui::Text("ID: %u", player->GetTextureID());
+
+                    ImGui::Columns(1);
+                    ImGui::EndChild();
+                    ImGui::PopStyleColor();
+
+                    ImGui::Spacing();
+
+                    // Playback controls
+                    float buttonWidth = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x * 3) / 4.0f;
+
+                    if (player->IsPlaying()) {
+                        if (ImGui::Button("Pause", ImVec2(buttonWidth, 0))) {
+                            player->Pause();
+                        }
+                    }
+                    else {
+                        if (ImGui::Button("Play", ImVec2(buttonWidth, 0))) {
+                            player->Play();
+                        }
+                    }
+
+                    ImGui::SameLine();
+                    if (ImGui::Button("Stop", ImVec2(buttonWidth, 0))) {
+                        player->Stop();
+                    }
+
+                    ImGui::SameLine();
+                    if (ImGui::Button("Rewind", ImVec2(buttonWidth, 0))) {
+                        player->Rewind();
+                    }
+
+                    ImGui::SameLine();
+                    if (ImGui::Button("Reload", ImVec2(buttonWidth, 0))) {
+                        if (ctx->videoSystem) {
+                            ctx->videoSystem->UnloadVideo(selected.ID());
+                            ctx->videoSystem->LoadVideo(selected.ID(), vc.videoPath);
+                        }
+                    }
+
+                    // Progress bar
+                    float progress = player->GetDuration() > 0.0
+                        ? static_cast<float>(player->GetTickCount() / player->GetDuration())
+                        : 0.0f;
+
+                    char progressLabel[64];
+                    std::snprintf(progressLabel, sizeof(progressLabel), "%.1f%% (%.2fs / %.2fs)",
+                        progress * 100.0f, player->GetTickCount(), player->GetDuration());
+
+                    ImGui::ProgressBar(progress, ImVec2(-1, 0), progressLabel);
+
+                }
+                else if (!vc.videoPath.empty()) {
+                    ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.0f, 1.0f),
+                        "⚠ Video not loaded: %s", vc.videoPath.c_str());
+                    ImGui::Spacing();
+
+                    if (ImGui::Button("Load Video", ImVec2(-1, 30))) {
+                        if (ctx->videoSystem) {
+                            bool success = ctx->videoSystem->LoadVideo(selected.ID(), vc.videoPath);
+                            if (!success) {
+                                BOOM_ERROR("Failed to load video: {}", vc.videoPath);
+                            }
+                        }
+                    }
+                }
+                else {
+                    ImGui::TextColored(ImVec4(0.6f, 0.6f, 0.6f, 1.0f),
+                        "No video selected. Choose a file from the dropdown above.");
+                }
+
+                ImGui::Spacing();
+                ImGui::Separator();
+                ImGui::Spacing();
+
+                // ========================================
+                // PLAYBACK SETTINGS
+                // ========================================
+                if (ImGui::CollapsingHeader("Playback Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    ImGui::Indent(12.0f);
+
+                    ImGui::Checkbox("Play On Start", &vc.playOnStart);
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip("Automatically play video when scene loads");
+                    }
+
+                    ImGui::Checkbox("Loop", &vc.loop);
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip("Restart video when it reaches the end");
+                    }
+
+                    ImGui::Spacing();
+
+                    ImGui::AlignTextToFramePadding();
+                    ImGui::Text("Volume");
+                    ImGui::SameLine(120);
+                    ImGui::SetNextItemWidth(-1);
+                    ImGui::SliderFloat("##Volume", &vc.volume, 0.0f, 1.0f, "%.2f");
+
+                    ImGui::AlignTextToFramePadding();
+                    ImGui::Text("Speed");
+                    ImGui::SameLine(120);
+                    ImGui::SetNextItemWidth(-1);
+                    ImGui::SliderFloat("##Speed", &vc.playbackSpeed, 0.1f, 4.0f, "%.2fx");
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip("Playback speed multiplier (1.0 = normal)");
+                    }
+
+                    ImGui::Unindent(12.0f);
+                }
+
+                ImGui::Spacing();
+                ImGui::Separator();
+                ImGui::Spacing();
+
+                // ========================================
+                // DISPLAY SETTINGS
+                // ========================================
+                if (ImGui::CollapsingHeader("Display Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    ImGui::Indent(12.0f);
+
+                    ImGui::Checkbox("Render as 3D", &vc.renderAs3D);
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip(
+                            "3D Mode: Renders as a quad in world space with transform\n"
+                            "2D Mode: Renders as UI overlay"
+                        );
+                    }
+
+                    ImGui::Spacing();
+
+                    ImGui::AlignTextToFramePadding();
+                    ImGui::Text("Tint Color");
+                    ImGui::SameLine(120);
+                    ImGui::SetNextItemWidth(-1);
+                    ImGui::ColorEdit4("##TintColor", &vc.tintColor.r,
+                        ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreview);
+
+                    ImGui::Unindent(12.0f);
+                }
+
+                ImGui::Spacing();
+                ImGui::Unindent(12.0f);
+            }
+
+            ImGui::PopID();
+
+            // ========================================
+            // COMPONENT REMOVAL
+            // ========================================
+            if (videoCompRemoved) {
+                if (ctx->videoSystem) {
+                    ctx->videoSystem->UnloadVideo(m_App->SelectedEntity());
+                }
+                ctx->scene.remove<Boom::VideoComponent>(m_App->SelectedEntity());
+            }
+        }
+
         if (selected.Has<Boom::RigidBodyComponent>()) {
             ImGui::PushID("Rigid Body");
 
@@ -1210,9 +1874,8 @@ namespace EditorUI {
             ImGui::PopID();
 
             if (removed) {
-                m_App->GetPhysicsContext().ForceRemoveActor(static_cast<uint32_t>(m_App->SelectedEntity()));
-
-                // ACTUAL FIX: Remove the RIGIDBODY component
+                // Destroy physics controller if exists
+                m_App->GetPhysicsContext().DestroyController(static_cast<uint32_t>(m_App->SelectedEntity()));
                 ctx->scene.remove<Boom::RigidBodyComponent>(m_App->SelectedEntity());
                 return;
             }
@@ -1545,6 +2208,8 @@ namespace EditorUI {
                 ImGui::EndPopup();
             }
 
+
+
             // 3. Reset cursor
             ImGui::SetCursorScreenPos(ImVec2(headerMin.x, headerMax.y + ImGui::GetStyle().ItemSpacing.y));
 
@@ -1569,6 +2234,12 @@ namespace EditorUI {
                 ImGui::Spacing();
                 ImGui::SeparatorText("Behavior");
                 ImGui::Spacing();
+
+                // Per-entity physics debug toggle
+                ImGui::Checkbox("Show Physics Debug", &col.Collider.showPhysicsDebug);
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Show physics collision debug lines for THIS entity only");
+                }
 
                 bool isTrigger = collider->isTrigger;
                 if (ImGui::Checkbox("Is Trigger", &isTrigger)) {
@@ -1866,11 +2537,43 @@ namespace EditorUI {
             ImGui::PopID();
         }
 
-        if (selected.Has<Boom::PauseMenuTagComponent>()) {
-            static Boom::PauseMenuTagComponent fakeTagInstance;
+        if (selected.Has<Boom::MenuComponent>())
+        {
+            // 1. Get the ACTUAL component from the selected entity
+            auto& realComp = selected.Get<Boom::MenuComponent>();
 
-            DrawComponentSection("Pause Menu Tag", &fakeTagInstance, [](void*) { return nullptr; }, true,
-                [&]() { ctx->scene.remove<Boom::PauseMenuTagComponent>(m_App->SelectedEntity()); });
+            DrawComponentSection(
+                "Menu Tag",
+                &realComp, // Pass the address of the REAL component
+
+                // 2. The Draw Function (The 'void*' is the pointer we just passed)
+                [](void* componentData)
+                {
+                    // Cast the generic pointer back to our component type
+                    auto* comp = static_cast<Boom::MenuComponent*>(componentData);
+
+                    // 3. Define the Enum Names for the Dropdown
+                    // These must match the order of your 'enum class MenuType'
+                    // Pause=0, Death=1, Settings=2, Main=3
+                    const char* menuTypeNames[] = { "Pause", "Death", "Settings", "Main", "End" };
+
+                    // Convert current enum value to int for ImGui
+                    int currentSelection = (int)comp->menuType;
+
+                    // 4. Draw the Combo Box
+                    // "Menu Type" is the label. 
+                    // 'currentSelection' holds the index. 
+                    // IM_ARRAYSIZE calculates the count
+                    if (ImGui::Combo("Menu Type", &currentSelection, menuTypeNames, IM_ARRAYSIZE(menuTypeNames)))
+                    {
+                        // If changed, cast the int back to the Enum and update the component
+                        comp->menuType = (Boom::MenuType)currentSelection;
+                    }
+                },
+
+                true, // Can remove?
+                [&]() { ctx->scene.remove<Boom::MenuComponent>(m_App->SelectedEntity()); } // Remove Callback
+            );
         }
 
         if (selected.Has<Boom::DeactivatedComponent>()) {
@@ -1878,13 +2581,6 @@ namespace EditorUI {
 
             DrawComponentSection("Deactivated Tag", &fakeTagInstance, [](void*) { return nullptr; }, true,
                 [&]() { ctx->scene.remove<Boom::DeactivatedComponent>(m_App->SelectedEntity()); });
-        }
-
-        if (selected.Has<Boom::DeathMenuTagComponent>()) {
-            static Boom::DeathMenuTagComponent fakeTagInstance;
-
-            DrawComponentSection("Death Menu Tag", &fakeTagInstance, [](void*) { return nullptr; }, true,
-                [&]() { ctx->scene.remove<Boom::DeathMenuTagComponent>(m_App->SelectedEntity()); });
         }
 
         if (selected.Has<Boom::ScriptComponent>()) {
@@ -2547,6 +3243,8 @@ namespace EditorUI {
             ImGui::OpenPopup("AddComponentPopup");
         }
         ComponentSelector(selected);
+
+        ImGui::PopID();
     }
 
     void InspectorPanel::AssetUpdate() {
@@ -2555,11 +3253,22 @@ namespace EditorUI {
             if (asset->type == AssetType::MATERIAL) {
                 MaterialAsset* mat{ dynamic_cast<MaterialAsset*>(asset) };
 
-                //TODO: showcase material as textured sphere
-                //data variables (showcase texture name instead of map id)
-                // toggle between mapID and standard slider (vec3/float)
+                // Material preview sphere
+                RenderMaterialPreview(mat);
+
+                // Track if any property changed to invalidate cache
+                bool materialChanged = false;
 
                 if (ImGui::CollapsingHeader("Maps", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    // Store previous IDs to detect changes
+                    auto prevAlbedo = mat->albedoMapID;
+                    auto prevNormal = mat->normalMapID;
+                    auto prevRoughness = mat->roughnessMapID;
+                    auto prevMetallic = mat->metallicMapID;
+                    auto prevOcclusion = mat->occlusionMapID;
+                    auto prevEmissive = mat->emissiveMapID;
+                    auto prevOpacity = mat->opacityMapID;
+
                     ImGui::BeginTable("##maps", 6, ImGuiTableFlags_SizingFixedFit);
                     ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
                     ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch);
@@ -2569,15 +3278,43 @@ namespace EditorUI {
                     InputAssetWidget<CONSTANTS::DND_PAYLOAD_TEXTURE>("metallic map", mat->metallicMapID);
                     InputAssetWidget<CONSTANTS::DND_PAYLOAD_TEXTURE>("occlusion map", mat->occlusionMapID);
                     InputAssetWidget<CONSTANTS::DND_PAYLOAD_TEXTURE>("emissive map", mat->emissiveMapID);
+                    InputAssetWidget<CONSTANTS::DND_PAYLOAD_TEXTURE>("opacity map", mat->opacityMapID);
                     ImGui::EndTable();
+
+                    // Check if any texture map changed
+                    if (prevAlbedo != mat->albedoMapID || prevNormal != mat->normalMapID ||
+                        prevRoughness != mat->roughnessMapID || prevMetallic != mat->metallicMapID ||
+                        prevOcclusion != mat->occlusionMapID || prevEmissive != mat->emissiveMapID ||
+                        prevOpacity != mat->opacityMapID) {
+                        materialChanged = true;
+                    }
                 }
 
                 if (ImGui::CollapsingHeader("Variables", ImGuiTreeNodeFlags_DefaultOpen)) {
-                    ImGui::DragFloat3("albedo", &mat->data.albedo[0], 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-                    ImGui::DragFloat3("emissive", &mat->data.emissive[0], 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-                    ImGui::DragFloat("roughness", &mat->data.roughness, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-                    ImGui::DragFloat("metallic", &mat->data.metallic, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-                    ImGui::DragFloat("occlusion", &mat->data.occlusion, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat3("albedo", &mat->data.albedo[0], 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat3("emissive", &mat->data.emissive[0], 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat("roughness", &mat->data.roughness, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat("metallic", &mat->data.metallic, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat("occlusion", &mat->data.occlusion, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat("opacity", &mat->data.opacity, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                }
+
+                if (ImGui::CollapsingHeader("UV Mapping", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    materialChanged |= ImGui::Checkbox("Use World Space UV", &mat->data.useWorldSpaceUV);
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip("When enabled, textures tile based on world position\ninstead of mesh UVs. Useful for walls and floors\nto prevent stretching on scaled surfaces.");
+                    }
+                    if (mat->data.useWorldSpaceUV) {
+                        materialChanged |= ImGui::DragFloat("Texture Scale", &mat->data.textureScale, 0.1f, 0.01f, 100.f, "%.2f");
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("World units per texture repeat.\nHigher values = larger texture appearance.");
+                        }
+                    }
+                }
+
+                // Invalidate the cached preview if material was modified
+                if (materialChanged && ctx->renderer) {
+                    ctx->renderer->InvalidateMaterialPreview(mat->uid);
                 }
             }
             else if (asset->type == AssetType::TEXTURE) {
@@ -2803,10 +3540,10 @@ namespace EditorUI {
                     UpdateComponent<Boom::AIComponent>(Boom::ComponentID::AI_COMPONENT, selected);
                     UpdateComponent<Boom::ThirdPersonCameraComponent>(Boom::ComponentID::THIRD_PERSON_CAMERA, selected);
 					UpdateComponent<Boom::SpriteComponent>(Boom::ComponentID::SPRITE, selected);
-                    UpdateComponent<Boom::PauseMenuTagComponent>(Boom::ComponentID::PAUSE_MENU_TAG, selected);
+                    UpdateComponent<Boom::MenuComponent>(Boom::ComponentID::MENU_COMPONENT, selected);
                     UpdateComponent<Boom::DeactivatedComponent>(Boom::ComponentID::DEACTIVATED_TAG, selected);
+                    UpdateComponent<Boom::VideoComponent>(Boom::ComponentID::VIDEO, selected);
                     UpdateComponent<Boom::CharacterControllerComponent>(Boom::ComponentID::CHARACTER_CONTROLLER, selected);
-                    UpdateComponent<Boom::DeathMenuTagComponent>(Boom::ComponentID::DEATH_MENU_TAG, selected);
                     ImGui::EndTable();
                 }
             }
@@ -2815,100 +3552,218 @@ namespace EditorUI {
         }
     }
 
-    void InspectorPanel::SnapEntity(Boom::Entity& entity, glm::vec3 direction) {
-        if (!entity.Has<Boom::TransformComponent>() || !entity.Has<Boom::ColliderComponent>()) {
-            BOOM_WARN("Cannot snap: Entity needs both Transform and Collider");
-            return;
-        }
+    void InspectorPanel::SnapEntity(Boom::Entity& entity, glm::vec3 direction)
+    {
+        if (!ctx || !entity.Has<Boom::TransformComponent>()) return;
 
         auto& tc = entity.Get<Boom::TransformComponent>();
-        auto& col = entity.Get<Boom::ColliderComponent>().Collider;
-        auto& phys = m_App->GetPhysicsContext();
+        const float maxDistance = 100.0f;
 
-        // 1. Calculate the half-extent in the snap direction based on collider type
-        glm::vec3 worldScale = tc.transform.scale * col.localScale;
-        float halfExtent = 0.0f;
+        // Get entity's current world position
+        glm::mat4 worldMatrix = Boom::GetWorldMatrix(ctx->scene, entity.ID());
+        glm::vec3 entityWorldPos;
+        glm::vec3 unused1, unused2;
+        Boom::DecomposeMatrix(worldMatrix, entityWorldPos, unused1, unused2);
 
-        if (col.type == Boom::Collider3D::BOX) {
-            // For box: project the half-size onto the snap direction
-            glm::vec3 halfSize = worldScale * 0.5f;
-            halfExtent = glm::abs(glm::dot(direction, halfSize));
+        // Calculate ray origin - start from entity center, offset slightly in opposite direction
+        // to avoid self-intersection
+        glm::vec3 rayOrigin = entityWorldPos - direction * 0.1f;
+        glm::vec3 rayDir = glm::normalize(direction);
+
+        // Get entity's own AABB for offset calculation
+        glm::vec3 entityAABBMin, entityAABBMax;
+        GetEntityAABB(entity, entityAABBMin, entityAABBMax);
+
+        // Calculate entity half-size in the snap direction
+        glm::vec3 entityHalfSize = (entityAABBMax - entityAABBMin) * 0.5f;
+        float entityOffset = glm::abs(glm::dot(entityHalfSize, rayDir));
+
+        // Try physics raycast first (works if actors exist)
+        auto physResult = ctx->physics->Raycast(rayOrigin, rayDir, maxDistance);
+
+        bool hitFound = false;
+        glm::vec3 hitPoint;
+        glm::vec3 hitNormal;
+        entt::entity hitEntity = entt::null;
+
+        if (physResult.hitFound && physResult.hitEntity != entity.ID()) {
+            hitFound = true;
+            hitPoint = physResult.position;
+            hitNormal = physResult.normal;
+            hitEntity = physResult.hitEntity;
         }
-        else if (col.type == Boom::Collider3D::SPHERE) {
-            // For sphere: use the radius
-            halfExtent = glm::max(worldScale.x, glm::max(worldScale.y, worldScale.z)) * 0.5f;
-        }
-        else if (col.type == Boom::Collider3D::CAPSULE || col.type == Boom::Collider3D::CYLINDER) {
-            // For capsule/cylinder: use height/2 for Y direction, radius for X/Z
-            if (glm::abs(direction.y) > 0.5f) {
-                halfExtent = worldScale.y * 0.5f;
-            }
-            else {
-                halfExtent = glm::max(worldScale.x, worldScale.z) * 0.5f;
-            }
-        }
-        else {
-            // Fallback for mesh colliders
-            halfExtent = glm::abs(glm::dot(direction, worldScale * 0.5f));
-        }
 
-        // Ensure minimum extent to prevent issues with very small objects
-        halfExtent = glm::max(halfExtent, 0.01f);
+        // Fallback: Check against all entities with models or colliders (for edit mode)
+        if (!hitFound) {
+            float closestDist = maxDistance;
 
-        // 2. Start the raycast from OUTSIDE the object in the snap direction
-        // Move the ray origin opposite to the snap direction by the half-extent + small offset
-        float rayOffset = halfExtent + 0.1f; // Small buffer to ensure we're outside the collider
-        glm::vec3 rayOrigin = tc.transform.translate - (direction * rayOffset);
+            auto view = ctx->scene.view<Boom::TransformComponent>();
+            for (auto e : view) {
+                if (e == entity.ID()) continue; // Skip self
 
-        // 3. Perform the raycast - increase distance to account for the offset
-        float maxDistance = 100.0f + rayOffset;
-        auto hit = phys.Raycast(rayOrigin, direction, maxDistance);
+                bool hasModel = ctx->scene.any_of<Boom::ModelComponent>(e);
+                bool hasCollider = ctx->scene.any_of<Boom::ColliderComponent>(e);
+                if (!hasModel && !hasCollider) continue;
 
-        if (hit.hitFound) {
-            // 4. Don't snap to self - check if hit entity is this entity
-            if (hit.hitEntity == entity.ID()) {
-                // Try again with a longer ray, starting further out
-                rayOrigin = tc.transform.translate - (direction * (halfExtent + 1.0f));
-                hit = phys.Raycast(rayOrigin, direction, maxDistance + 1.0f);
+                // Get target entity's AABB
+                glm::vec3 targetMin, targetMax;
+                GetEntityAABBForSnap(ctx, e, targetMin, targetMax);
 
-                if (!hit.hitFound || hit.hitEntity == entity.ID()) {
-                    BOOM_WARN("Snap failed: No valid surface found");
-                    return;
+                // Ray-AABB intersection
+                float t;
+                if (RayAABBIntersection(rayOrigin, rayDir, targetMin, targetMax, t)) {
+                    if (t > 0.0f && t < closestDist) {
+                        closestDist = t;
+                        hitFound = true;
+                        hitPoint = rayOrigin + rayDir * t;
+                        hitEntity = e;
+
+                        // Calculate approximate normal based on which face was hit
+                        hitNormal = CalculateAABBHitNormal(hitPoint, targetMin, targetMax);
+                    }
                 }
             }
+        }
 
-            // 5. Calculate new position: hit point offset by half-extent in opposite direction
-            glm::vec3 newPos = hit.position - (direction * halfExtent);
+        if (hitFound) {
+            // Calculate new position: hit point + offset so entity sits on surface
+            glm::vec3 newWorldPos = hitPoint - rayDir * entityOffset;
 
-            // Use an undo command so you can revert the snap
-            auto* history = m_Owner->GetCommandHistory();
-            if (history) {
-                Boom::Transform3D oldTransform = tc.transform;
-                tc.transform.translate = newPos;
-
-                auto command = std::make_unique<TransformCommand>(
-                    &GetContext()->scene,
-                    entity.ID(),
-                    oldTransform,
-                    tc.transform,
-                    "Snap to Surface"
-                );
-                history->Execute(std::move(command));
+            // If entity has a parent, convert world position to local
+            entt::entity parent = Boom::GetParentEntity(ctx->scene, entity.ID());
+            if (parent != entt::null) {
+                glm::mat4 parentWorld = Boom::GetWorldMatrix(ctx->scene, parent);
+                glm::mat4 parentInverse = glm::inverse(parentWorld);
+                glm::vec4 localPos = parentInverse * glm::vec4(newWorldPos, 1.0f);
+                tc.transform.translate = glm::vec3(localPos);
             }
             else {
-                tc.transform.translate = newPos;
+                tc.transform.translate = newWorldPos;
             }
 
-            // 6. Sync physics actor immediately
-            phys.UpdateRigidBodyTransform(entity, tc.transform);
+            // Get hit entity name for logging
+            std::string hitName = "Unknown";
+            if (hitEntity != entt::null && ctx->scene.all_of<Boom::InfoComponent>(hitEntity)) {
+                hitName = ctx->scene.get<Boom::InfoComponent>(hitEntity).name;
+            }
 
-            BOOM_INFO("Snapped entity to surface at distance {:.2f}", hit.distance);
+            auto dout = glm::distance(entityWorldPos, newWorldPos);
+            BOOM_INFO("[Snap] Snapped entity to '{}' (distance: {:.2f})", hitName, dout);
         }
         else {
-            BOOM_WARN("Snap failed: No surface found in direction ({:.1f}, {:.1f}, {:.1f})",
-                direction.x, direction.y, direction.z);
+            BOOM_WARN("[Snap] No surface found in direction ({:.1f}, {:.1f}, {:.1f})", direction.x, direction.y, direction.z);
         }
     }
+
+    // Helper: Get AABB for any entity (model or collider)
+    void InspectorPanel::GetEntityAABBForSnap(Boom::AppContext* context, entt::entity entity, glm::vec3& outMin, glm::vec3& outMax)
+    {
+        //auto& tc = context->scene.get<Boom::TransformComponent>(entity);
+        glm::mat4 worldMatrix = Boom::GetWorldMatrix(context->scene, entity);
+
+        glm::vec3 localMin(-0.5f), localMax(0.5f); // Default 1x1x1 box
+
+        // Try to get model bounds
+        if (context->scene.any_of<Boom::ModelComponent>(entity)) {
+            auto& mc = context->scene.get<Boom::ModelComponent>(entity);
+            if (mc.modelID != EMPTY_ASSET) {
+                auto* modelAsset = context->assets->TryGet<ModelAsset>(mc.modelID);
+                if (modelAsset && modelAsset->data) {
+                    auto staticModel = std::dynamic_pointer_cast<Boom::StaticModel>(modelAsset->data);
+                    if (staticModel) {
+                        const auto& meshData = staticModel->GetMeshData();
+                        if (!meshData.empty()) {
+                            localMin = glm::vec3(FLT_MAX);
+                            localMax = glm::vec3(-FLT_MAX);
+                            for (const auto& mesh : meshData) {
+                                for (const auto& vertex : mesh.vtx) {
+                                    localMin = glm::min(localMin, vertex.pos);
+                                    localMax = glm::max(localMax, vertex.pos);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // Or use collider bounds
+        else if (context->scene.any_of<Boom::ColliderComponent>(entity)) {
+            auto& cc = context->scene.get<Boom::ColliderComponent>(entity);
+            glm::vec3 halfSize = cc.Collider.localScale * 0.5f;
+            localMin = cc.Collider.localPosition - halfSize;
+            localMax = cc.Collider.localPosition + halfSize;
+        }
+
+        // Transform corners to world space and find AABB
+        std::vector<glm::vec3> corners = {
+            glm::vec3(localMin.x, localMin.y, localMin.z),
+            glm::vec3(localMax.x, localMin.y, localMin.z),
+            glm::vec3(localMin.x, localMax.y, localMin.z),
+            glm::vec3(localMax.x, localMax.y, localMin.z),
+            glm::vec3(localMin.x, localMin.y, localMax.z),
+            glm::vec3(localMax.x, localMin.y, localMax.z),
+            glm::vec3(localMin.x, localMax.y, localMax.z),
+            glm::vec3(localMax.x, localMax.y, localMax.z)
+        };
+
+        outMin = glm::vec3(FLT_MAX);
+        outMax = glm::vec3(-FLT_MAX);
+        for (const auto& corner : corners) {
+            glm::vec3 worldCorner = glm::vec3(worldMatrix * glm::vec4(corner, 1.0f));
+            outMin = glm::min(outMin, worldCorner);
+            outMax = glm::max(outMax, worldCorner);
+        }
+    }
+
+    void InspectorPanel::GetEntityAABB(Boom::Entity& entity, glm::vec3& outMin, glm::vec3& outMax)
+    {
+        if (!ctx) {
+            outMin = outMax = glm::vec3(0.0f);
+            return;
+        }
+        GetEntityAABBForSnap(ctx, entity.ID(), outMin, outMax);
+    }
+
+    bool InspectorPanel::RayAABBIntersection(const glm::vec3& rayOrigin, const glm::vec3& rayDir,
+        const glm::vec3& aabbMin, const glm::vec3& aabbMax, float& t)
+    {
+        glm::vec3 invDir = 1.0f / rayDir;
+        glm::vec3 t1 = (aabbMin - rayOrigin) * invDir;
+        glm::vec3 t2 = (aabbMax - rayOrigin) * invDir;
+
+        glm::vec3 tmin = glm::min(t1, t2);
+        glm::vec3 tmax = glm::max(t1, t2);
+
+        float tmin_val = glm::max(glm::max(tmin.x, tmin.y), tmin.z);
+        float tmax_val = glm::min(glm::min(tmax.x, tmax.y), tmax.z);
+
+        if (tmax_val >= tmin_val && tmax_val >= 0) {
+            t = tmin_val > 0 ? tmin_val : tmax_val;
+            return true;
+        }
+        return false;
+    }
+
+    glm::vec3 InspectorPanel::CalculateAABBHitNormal(const glm::vec3& hitPoint, const glm::vec3& aabbMin, const glm::vec3& aabbMax)
+    {
+        glm::vec3 center = (aabbMin + aabbMax) * 0.5f;
+        glm::vec3 halfSize = (aabbMax - aabbMin) * 0.5f;
+        glm::vec3 localHit = hitPoint - center;
+
+        // Find which face the hit is closest to
+        glm::vec3 d = glm::abs(localHit) - halfSize;
+
+        if (d.x > d.y && d.x > d.z) {
+            return glm::vec3(localHit.x > 0 ? 1.0f : -1.0f, 0.0f, 0.0f);
+        }
+        else if (d.y > d.z) {
+            return glm::vec3(0.0f, localHit.y > 0 ? 1.0f : -1.0f, 0.0f);
+        }
+        else {
+            return glm::vec3(0.0f, 0.0f, localHit.z > 0 ? 1.0f : -1.0f);
+        }
+    }
+
 
     template <class Type>
     void InspectorPanel::UpdateComponent(Boom::ComponentID id, Boom::Entity& selected) {
@@ -2986,15 +3841,149 @@ namespace EditorUI {
         ImGui::SameLine();
 
         ImGui::TableSetColumnIndex(1);
-        ImVec2 const fieldSize{ ImGui::GetContentRegionAvail().x, ImGui::GetFrameHeight() };
         ImGui::PushID(label);
 
         using AssetType = typename PayloadToType<Payload>::Type;
-        if (ImGui::Button(m_App->GetAssetName<AssetType>(data).data(), fieldSize)) {
-            //TODO: clicking button opens asset picker window
-        }
+
+        // Calculate button width, leaving space for remove button if asset is set
+        float removeButtonWidth = ImGui::GetFrameHeight(); // Square button
+        float spacing = ImGui::GetStyle().ItemSpacing.x;
+        float availWidth = ImGui::GetContentRegionAvail().x;
+        float fieldWidth = (data != 0) ? (availWidth - removeButtonWidth - spacing) : availWidth;
+
+        ImVec2 const fieldSize{ fieldWidth, ImGui::GetFrameHeight() };
+        bool buttonClicked = ImGui::Button(m_App->GetAssetName<AssetType>(data).data(), fieldSize);
         AcceptIDDrop(data, Payload.data());
+
+        // Show remove button only if an asset is set
+        if (data != 0) {
+            ImGui::SameLine();
+            if (ImGui::Button("X", ImVec2(removeButtonWidth, ImGui::GetFrameHeight()))) {
+                data = 0;
+            }
+            if (ImGui::IsItemHovered()) {
+                ImGui::SetTooltip("Remove asset");
+            }
+        }
+
         ImGui::PopID();
+
+        // Handle button click AFTER PopID to ensure consistent popup ID
+        if (buttonClicked) {
+            m_AssetPickerOpen = true;
+            m_AssetPickerLabel = label;
+            m_AssetPickerTarget = &data;
+            m_AssetPickerPayload = std::string(Payload);
+            memset(m_AssetPickerSearch, 0, sizeof(m_AssetPickerSearch));
+        }
+
+        // Asset Picker Popup Modal - rendered outside of PushID block for consistent ID
+        // Only the widget that owns the picker target should open/render the popup
+        if (m_AssetPickerOpen && m_AssetPickerTarget == &data) {
+            ImGui::OpenPopup("##AssetPickerPopup");
+        }
+
+        ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
+        if (ImGui::BeginPopupModal("##AssetPickerPopup", &m_AssetPickerOpen, ImGuiWindowFlags_NoScrollbar)) {
+            if (m_AssetPickerTarget == &data) {
+                ImGui::Text("Select %s", m_AssetPickerLabel.c_str());
+                ImGui::Separator();
+
+                // Search bar
+                ImGui::InputTextWithHint("##search", "Search...", m_AssetPickerSearch, sizeof(m_AssetPickerSearch));
+                ImGui::Separator();
+
+                // Asset grid
+                ImGui::BeginChild("AssetGrid", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()), true);
+
+                constexpr float PICKER_ASSET_SIZE = 70.0f;
+                int32_t colNo = (int32_t)((ImGui::GetContentRegionAvail().x) / (PICKER_ASSET_SIZE + ImGui::GetStyle().ItemSpacing.x));
+                colNo = glm::max(1, colNo);
+
+                ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedSame | ImGuiTableFlags_NoHostExtendX;
+                if (ImGui::BeginTable("##assetPickerGrid", colNo, flags)) {
+                    for (int i = 0; i < colNo; ++i) {
+                        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, PICKER_ASSET_SIZE);
+                    }
+
+                    // Prepare search string (case-insensitive)
+                    std::string searchLower(m_AssetPickerSearch);
+                    std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(),
+                        [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+
+                    m_App->AssetTypeView<AssetType>([&](AssetType* asset) {
+                        if (!asset || asset->uid == 0) return;
+
+                        // Search filter (case-insensitive)
+                        std::string nameLower = asset->name;
+                        std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(),
+                            [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+                        if (!searchLower.empty() && nameLower.find(searchLower) == std::string::npos)
+                            return;
+
+                        ImGui::TableNextColumn();
+
+                        // Determine icon based on asset type
+                        ImTextureID texid = m_AssetIcon;
+                        if constexpr (std::is_same_v<AssetType, MaterialAsset>) {
+                            texid = m_MaterialIcon;
+                        }
+                        else if constexpr (std::is_same_v<AssetType, ModelAsset>) {
+                            texid = m_ModelIcon;
+                        }
+                        else if constexpr (std::is_same_v<AssetType, TextureAsset>) {
+                            TextureAsset* tex = dynamic_cast<TextureAsset*>(asset);
+                            if (tex && tex->data) texid = *tex->data.get();
+                        }
+
+                        ImGui::PushID((int)asset->uid);
+                        bool isSelected = (*m_AssetPickerTarget == asset->uid);
+                        if (isSelected) {
+                            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.5f, 0.8f, 1.0f));
+                        }
+
+                        if (ImGui::ImageButton("##thumb", texid, ImVec2(PICKER_ASSET_SIZE, PICKER_ASSET_SIZE),
+                            ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 1), ImVec4(1, 1, 1, 1))) {
+                            *m_AssetPickerTarget = asset->uid;
+                            m_AssetPickerOpen = false;
+                            ImGui::CloseCurrentPopup();
+                        }
+
+                        if (isSelected) {
+                            ImGui::PopStyleColor();
+                        }
+
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("%s", asset->name.c_str());
+                        }
+                        ImGui::PopID();
+
+                        // Show truncated name below the icon
+                        std::string displayName = asset->name;
+                        if (displayName.length() > 10) {
+                            displayName = displayName.substr(0, 8) + "..";
+                        }
+                        ImGui::TextWrapped("%s", displayName.c_str());
+                    });
+
+                    ImGui::EndTable();
+                }
+                ImGui::EndChild();
+
+                // Bottom buttons
+                if (ImGui::Button("Clear", ImVec2(80, 0))) {
+                    *m_AssetPickerTarget = 0;
+                    m_AssetPickerOpen = false;
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Cancel", ImVec2(80, 0))) {
+                    m_AssetPickerOpen = false;
+                    ImGui::CloseCurrentPopup();
+                }
+            }
+            ImGui::EndPopup();
+        }
     }
 
 } // namespace EditorUI

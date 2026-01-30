@@ -1,8 +1,11 @@
 #pragma once
 #include "Animation.h"
+#include "AnimationIO.h"
+#include "Audio/Audio.hpp"  // For audio event playback
 #include <assimp/postprocess.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
+#include <set>
 
 namespace Boom
 {
@@ -70,6 +73,9 @@ namespace Boom
 
         BOOM_INLINE auto& Animate(float deltaTime)
         {
+            // Store time before update for audio event processing
+            float timeBeforeUpdate = m_Time;
+
             // State machine mode
             if (!m_States.empty() && m_CurrentStateIndex < m_States.size())
             {
@@ -106,16 +112,21 @@ namespace Boom
                     {
                         // Single clip mode
                         auto& clip = m_Clips[currentState.clipIndex];
-                        m_Time += clip->ticksPerSecond * currentState.speed * deltaTime;
+                        float timeAfterAdvance = m_Time + clip->ticksPerSecond * currentState.speed * deltaTime;
+                        bool looped = false;
 
                         if (currentState.loop)
                         {
-                            m_Time = fmod(m_Time, clip->duration);
+                            looped = (timeAfterAdvance >= clip->duration);
+                            m_Time = fmod(timeAfterAdvance, clip->duration);
                         }
                         else
                         {
-                            m_Time = std::min(m_Time, clip->duration);
+                            m_Time = std::min(timeAfterAdvance, clip->duration);
                         }
+
+                        // Process audio events for this clip
+                        ProcessAudioEvents(clip.get(), timeBeforeUpdate, m_Time, looped);
 
                         UpdateJoints(m_Root, glm::identity<glm::mat4>());
                     }
@@ -124,10 +135,20 @@ namespace Boom
             // Legacy clip-based mode (fallback)
             else if (m_CurrentClip < m_Clips.size())
             {
-                m_Time += m_Clips[m_CurrentClip]->ticksPerSecond * deltaTime;
-                m_Time = fmod(m_Time, m_Clips[m_CurrentClip]->duration);
+                auto& clip = m_Clips[m_CurrentClip];
+                float timeAfterAdvance = m_Time + clip->ticksPerSecond * deltaTime;
+                bool looped = (timeAfterAdvance >= clip->duration);
+
+                m_Time = fmod(timeAfterAdvance, clip->duration);
+
+                // Process audio events for this clip
+                ProcessAudioEvents(clip.get(), timeBeforeUpdate, m_Time, looped);
+
                 UpdateJoints(m_Root, glm::identity<glm::mat4>());
             }
+
+            // Update last processed time
+            m_LastProcessedTime = m_Time;
 
             // Clear triggers after each frame
             m_Triggers.clear();
@@ -308,6 +329,18 @@ namespace Boom
             }
         }
 
+        // Replace clip at index with a new clip (for syncing between timeline and entity)
+        BOOM_INLINE void SetClip(size_t index, std::shared_ptr<AnimationClip> clip) {
+            if (index < m_Clips.size()) {
+                m_Clips[index] = clip;
+            }
+        }
+
+        // Get shared_ptr to clip (for sharing between animators)
+        BOOM_INLINE std::shared_ptr<AnimationClip> GetClipShared(size_t index) {
+            return (index < m_Clips.size()) ? m_Clips[index] : nullptr;
+        }
+
         // === KEYFRAME EDITING API (for Animation Timeline) ===
 
         // Get mutable track for editing
@@ -367,7 +400,121 @@ namespace Boom
             return true;
         }
 
+        // === AUDIO EVENT API ===
+
+        // Enable/disable audio event triggering (useful when scrubbing timeline)
+        BOOM_INLINE void SetAudioEventsEnabled(bool enabled)
+        {
+            m_AudioEventsEnabled = enabled;
+            if (!enabled)
+            {
+                m_TriggeredAudioEvents.clear();  // Reset when disabling
+            }
+        }
+
+        BOOM_INLINE bool GetAudioEventsEnabled() const { return m_AudioEventsEnabled; }
+
+        // Set position for 3D audio events (call from entity's transform update)
+        BOOM_INLINE void SetAudioSourcePosition(const glm::vec3& position)
+        {
+            m_AudioSourcePosition = position;
+        }
+
+        BOOM_INLINE const glm::vec3& GetAudioSourcePosition() const { return m_AudioSourcePosition; }
+
+        // Process audio events for a time range (for editor use when not calling Animate())
+        // Call this when manually advancing time (e.g., in editor timeline playback)
+        BOOM_INLINE void ProcessAudioEventsForClip(size_t clipIndex, float lastTime, float currentTime, bool looped)
+        {
+            if (clipIndex < m_Clips.size())
+            {
+                ProcessAudioEvents(m_Clips[clipIndex].get(), lastTime, currentTime, looped);
+            }
+        }
+
+        // Reset triggered events (call when restarting animation or seeking)
+        BOOM_INLINE void ResetAudioEventTriggers()
+        {
+            m_TriggeredAudioEvents.clear();
+            m_LastProcessedTime = m_Time;
+        }
+
     private:
+        // === AUDIO EVENT PROCESSING ===
+
+        BOOM_INLINE void ProcessAudioEvents(const AnimationClip* clip, float lastTime, float currentTime, bool looped)
+        {
+            if (!m_AudioEventsEnabled || !clip || clip->audioEvents.empty())
+                return;
+
+            // Generate a unique prefix for this animator's sounds to avoid conflicts
+            // Use pointer address as unique ID
+            std::string soundPrefix = "anim_" + std::to_string(reinterpret_cast<uintptr_t>(this)) + "_";
+
+            for (size_t i = 0; i < clip->audioEvents.size(); ++i)
+            {
+                const AudioEventMarker& event = clip->audioEvents[i];
+
+                // Check if this event should trigger
+                bool shouldTrigger = false;
+
+                if (looped)
+                {
+                    // Animation looped - reset triggers and check if we crossed this event
+                    // Event triggers if: (lastTime <= duration AND event.timeStamp > lastTime) OR event.timeStamp <= currentTime
+                    if (event.timeStamp > lastTime || event.timeStamp <= currentTime)
+                    {
+                        shouldTrigger = true;
+                    }
+                }
+                else
+                {
+                    // Normal playback - event triggers if we crossed its timestamp
+                    // Forward: lastTime < event.timeStamp <= currentTime
+                    if (lastTime < event.timeStamp && event.timeStamp <= currentTime)
+                    {
+                        shouldTrigger = true;
+                    }
+                }
+
+                // Skip if already triggered this cycle (prevents double-triggering)
+                if (shouldTrigger && m_TriggeredAudioEvents.find(i) == m_TriggeredAudioEvents.end())
+                {
+                    // Mark as triggered
+                    m_TriggeredAudioEvents.insert(i);
+
+                    // Generate unique sound name for this event
+                    std::string soundName = soundPrefix + (event.eventName.empty() ? std::to_string(i) : event.eventName);
+
+                    // Play the sound
+                    if (event.is3D)
+                    {
+                        // PlaySoundAt signature: (name, filePath, position, loop)
+                        SoundEngine::Instance().PlaySoundAt(soundName, event.soundFile, m_AudioSourcePosition, event.loop);
+                    }
+                    else
+                    {
+                        SoundEngine::Instance().PlaySound(soundName, event.soundFile, event.loop, event.groupName);
+                    }
+
+                    // Apply volume and pitch
+                    SoundEngine::Instance().SetVolume(soundName, event.volume);
+                    SoundEngine::Instance().SetPitch(soundName, event.pitch);
+
+                    BOOM_INFO("[AudioEvent] Triggered '{}' at {:.2f}s (sound: {})",
+                              event.eventName.empty() ? "Unnamed" : event.eventName,
+                              event.timeStamp,
+                              event.soundFile);
+                }
+            }
+
+            // If looped, clear triggered events for next cycle
+            if (looped)
+            {
+                m_TriggeredAudioEvents.clear();
+            }
+        }
+
          // === STATE MACHINE HELPERS ===
 
          BOOM_INLINE void EvaluateTransitions([[maybe_unused]] float deltaTime)
@@ -492,16 +639,25 @@ namespace Boom
              auto& lowerClip = m_Clips[lowerClipIdx];
              auto& upperClip = m_Clips[upperClipIdx];
 
+             // Store time before advance for audio events
+             float timeBeforeAdvance = m_Time;
+
              // Advance time
-             m_Time += lowerClip->ticksPerSecond * state.speed * deltaTime;
+             float timeAfterAdvance = m_Time + lowerClip->ticksPerSecond * state.speed * deltaTime;
+             bool looped = false;
+
              if (state.loop)
              {
-                 m_Time = fmod(m_Time, lowerClip->duration);
+                 looped = (timeAfterAdvance >= lowerClip->duration);
+                 m_Time = fmod(timeAfterAdvance, lowerClip->duration);
              }
              else
              {
-                 m_Time = std::min(m_Time, lowerClip->duration);
+                 m_Time = std::min(timeAfterAdvance, lowerClip->duration);
              }
+
+             // Process audio events from the primary (lower) clip
+             ProcessAudioEvents(lowerClip.get(), timeBeforeAdvance, m_Time, looped);
 
              // Blend the two animations
              if (blendWeight < 0.001f)
@@ -924,6 +1080,12 @@ namespace Boom
             clone->m_BoolParams = m_BoolParams;
             clone->m_Triggers = m_Triggers;
 
+            // Audio event state
+            clone->m_LastProcessedTime = m_LastProcessedTime;
+            clone->m_TriggeredAudioEvents = m_TriggeredAudioEvents;
+            clone->m_AudioEventsEnabled = m_AudioEventsEnabled;
+            clone->m_AudioSourcePosition = m_AudioSourcePosition;
+
             return clone;
         }
 
@@ -955,69 +1117,87 @@ namespace Boom
 
         BOOM_INLINE void LoadAnimationFromFile(const std::string& filepath, const std::string& clipName = "")
         {
-            // Use Assimp to load just the animation data
-            Assimp::Importer importer;
-            const aiScene* ai_scene = importer.ReadFile(
-                filepath.c_str(),
-                aiProcess_LimitBoneWeights
-            );
+            std::shared_ptr<AnimationClip> clip;
 
-            if (!ai_scene || !ai_scene->mAnimations || ai_scene->mNumAnimations == 0)
-            {
-                BOOM_ERROR("Failed to load animation from: {}", filepath);
+            // Check file extension
+            if (filepath.ends_with(".anim")) {
+                // Load from .anim file
+                clip = LoadAnimationClip(filepath);
+                if (clip && !clipName.empty()) {
+                    clip->name = clipName;  // Override name if specified
+                }
+            }
+            else if (filepath.ends_with(".fbx") || filepath.ends_with(".gltf")) {
+                // Load from model file using Assimp
+                Assimp::Importer importer;
+                const aiScene* ai_scene = importer.ReadFile(
+                    filepath.c_str(),
+                    aiProcess_LimitBoneWeights
+                );
+
+                if (!ai_scene || !ai_scene->mAnimations || ai_scene->mNumAnimations == 0)
+                {
+                    BOOM_ERROR("Failed to load animation from: {}", filepath);
+                    return;
+                }
+
+                // Load the first animation from the file
+                auto ai_anim = ai_scene->mAnimations[0];
+
+                clip = std::make_shared<AnimationClip>();
+                clip->name = clipName.empty() ? ai_anim->mName.C_Str() : clipName;
+                clip->duration = (float)ai_anim->mDuration;
+                clip->ticksPerSecond = (float)ai_anim->mTicksPerSecond;
+                clip->filePath = filepath; // Store source file path
+
+                // Parse animation channels
+                for (uint32_t j = 0; j < ai_anim->mNumChannels; j++)
+                {
+                    aiNodeAnim* ai_channel = ai_anim->mChannels[j];
+                    std::string jointName(ai_channel->mNodeName.C_Str());
+
+                    std::vector<KeyFrame>& track = clip->tracks[jointName];
+
+                    uint32_t maxKeys = std::max({
+                        ai_channel->mNumPositionKeys,
+                        ai_channel->mNumRotationKeys,
+                        ai_channel->mNumScalingKeys
+                        });
+
+                    track.reserve(maxKeys);
+
+                    for (uint32_t k = 0; k < maxKeys; k++)
+                    {
+                        KeyFrame key;
+
+                        if (k < ai_channel->mNumPositionKeys)
+                        {
+                            key.position = AssimpToVec3(ai_channel->mPositionKeys[k].mValue);
+                            key.timeStamp = (float)ai_channel->mPositionKeys[k].mTime;
+                        }
+                        if (k < ai_channel->mNumRotationKeys)
+                        {
+                            key.rotation = AssimpToQuat(ai_channel->mRotationKeys[k].mValue);
+                        }
+                        if (k < ai_channel->mNumScalingKeys)
+                        {
+                            key.scale = AssimpToVec3(ai_channel->mScalingKeys[k].mValue);
+                        }
+
+                        track.push_back(key);
+                    }
+                }
+            }
+            else {
+                BOOM_WARN("[Animator] Unsupported file format: {}", filepath);
                 return;
             }
 
-            // Load the first animation from the file
-            auto ai_anim = ai_scene->mAnimations[0];
-
-            auto clip = std::make_shared<AnimationClip>();
-            clip->name = clipName.empty() ? ai_anim->mName.C_Str() : clipName;
-            clip->duration = (float)ai_anim->mDuration;
-            clip->ticksPerSecond = (float)ai_anim->mTicksPerSecond;
-            clip->filePath = filepath; // Store source file path
-
-            // Parse animation channels
-            for (uint32_t j = 0; j < ai_anim->mNumChannels; j++)
-            {
-                aiNodeAnim* ai_channel = ai_anim->mChannels[j];
-                std::string jointName(ai_channel->mNodeName.C_Str());
-
-                std::vector<KeyFrame>& track = clip->tracks[jointName];
-
-                uint32_t maxKeys = std::max({
-                    ai_channel->mNumPositionKeys,
-                    ai_channel->mNumRotationKeys,
-                    ai_channel->mNumScalingKeys
-                    });
-
-                track.reserve(maxKeys);
-
-                for (uint32_t k = 0; k < maxKeys; k++)
-                {
-                    KeyFrame key;
-
-                    if (k < ai_channel->mNumPositionKeys)
-                    {
-                        key.position = AssimpToVec3(ai_channel->mPositionKeys[k].mValue);
-                        key.timeStamp = (float)ai_channel->mPositionKeys[k].mTime;
-                    }
-                    if (k < ai_channel->mNumRotationKeys)
-                    {
-                        key.rotation = AssimpToQuat(ai_channel->mRotationKeys[k].mValue);
-                    }
-                    if (k < ai_channel->mNumScalingKeys)
-                    {
-                        key.scale = AssimpToVec3(ai_channel->mScalingKeys[k].mValue);
-                    }
-
-                    track.push_back(key);
-                }
+            if (clip) {
+                m_Clips.push_back(clip);
+                BOOM_INFO("Loaded animation '{}' from {} - Duration: {:.2f}s",
+                    clip->name, filepath, clip->duration);
             }
-
-            m_Clips.push_back(clip);
-            BOOM_INFO("Loaded animation '{}' from {} - Duration: {:.2f}s",
-                clip->name, filepath, clip->duration);
         }
 
     private:
@@ -1043,6 +1223,12 @@ namespace Boom
         Joint m_Root;
         size_t m_CurrentClip = 0;
         float m_Time = 0.0f;
+
+        // === AUDIO EVENT TRACKING ===
+        float m_LastProcessedTime = 0.0f;           // Previous frame's time (for detecting crossings)
+        std::set<size_t> m_TriggeredAudioEvents;    // Events already triggered this loop cycle
+        bool m_AudioEventsEnabled = true;           // Allow disabling audio during scrubbing
+        glm::vec3 m_AudioSourcePosition = glm::vec3(0.0f);  // Position for 3D sounds
 
         friend struct SkeletalModel;
     };

@@ -31,11 +31,10 @@ namespace Boom {
     DECLARE_COMPONENT_PROPERTY_API(NavAgentComponent);
     DECLARE_COMPONENT_PROPERTY_API(AIComponent);
     DECLARE_COMPONENT_PROPERTY_API(SpriteComponent);
-    DECLARE_COMPONENT_PROPERTY_API(PauseMenuTagComponent);
+    DECLARE_COMPONENT_PROPERTY_API(MenuComponent);
     DECLARE_COMPONENT_PROPERTY_API(SceneNavmeshComponent);
     DECLARE_COMPONENT_PROPERTY_API(DeactivatedComponent);
     DECLARE_COMPONENT_PROPERTY_API(CharacterControllerComponent);
-    DECLARE_COMPONENT_PROPERTY_API(DeathMenuTagComponent);
     // Add more as needed - one line each
 #undef DECLARE_COMPONENT_PROPERTY_API
 } // namespace Boom

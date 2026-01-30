@@ -37,6 +37,7 @@ namespace Boom {
 			, metallicMapLoc{ GetUniformVar("material.metallicMap") }
 			, albedoMapLoc{ GetUniformVar("material.albedoMap") }
 			, normalMapLoc{ GetUniformVar("material.normalMap") }
+			, opacityMapLoc{ GetUniformVar("material.opacityMap") }
 
 			, isRoughnessMapLoc{ GetUniformVar("material.isRoughnessMap") }
 			, isOcclusionMapLoc{ GetUniformVar("material.isOcclusionMap") }
@@ -44,12 +45,14 @@ namespace Boom {
 			, isMetallicMapLoc{ GetUniformVar("material.isMetallicMap") }
 			, isAlbedoMapLoc{ GetUniformVar("material.isAlbedoMap") }
 			, isNormalMapLoc{ GetUniformVar("material.isNormalMap") }
+			, isOpacityMapLoc{ GetUniformVar("material.isOpacityMap") }
 
 			, albedoLoc{ GetUniformVar("material.albedo") }
 			, roughLoc{ GetUniformVar("material.roughness") }
 			, metalLoc{ GetUniformVar("material.metallic") }
 			, occlusionLoc{ GetUniformVar("material.occlusion") }
 			, emissiveLoc{ GetUniformVar("material.emissive") }
+			, opacityLoc{ GetUniformVar("material.opacity") }
 
 			, frustumMatLoc{ GetUniformVar("frustumMat") }
 			, modelMatLoc{ GetUniformVar("modelMat") }
@@ -63,6 +66,11 @@ namespace Boom {
 			, u_LightSpace{ GetUniformVar("u_lightSpace") }
 			, u_DepthMap{ GetUniformVar("u_depthMap") }
 			, u_EnableShadows{ GetUniformVar("u_enableShadows") }
+			, useWorldSpaceUVLoc{ GetUniformVar("useWorldSpaceUV") }
+			, textureScaleLoc{ GetUniformVar("textureScale") }
+			, instancingModeLoc{ GetUniformVar("u_instancingMode") }
+			, baseInstanceLoc{ GetUniformVar("u_baseInstance") }
+			, jointBaseInstanceLoc{ GetUniformVar("u_jointBaseInstance") }
 		{
 			GLuint prog = shaderId; 
 
@@ -148,6 +156,14 @@ namespace Boom {
 			SetUniform(u_EnableShadows, enabled);
 		}
 
+		// World-space UV mapping - when enabled, textures tile based on world position
+		// instead of mesh UVs, preventing stretching on scaled surfaces
+		BOOM_INLINE void SetWorldSpaceUV(bool useWorldSpace, float scale = 1.0f)
+		{
+			SetUniform(useWorldSpaceUVLoc, useWorldSpace);
+			SetUniform(textureScaleLoc, scale);
+		}
+
 		// === Spot Light Shadow Functions ===
 		BOOM_INLINE void SetSpotShadowCount(int count)
 		{
@@ -188,10 +204,11 @@ namespace Boom {
 			SetUniform(viewPosLoc, transform.translate);
 		}
 		BOOM_INLINE void Draw(Mesh3D const& mesh, Transform3D const& transform) {
-			SetUniform(isDebugModeLoc, false); 
+			SetUniform(isDebugModeLoc, false);
 			SetUniform(ditherThresholdLoc, showDither ? ditherThreshold : 0.f);
 			SetUniform(showNormalTextureLoc, false);
 			SetUniform(modelMatLoc, transform.Matrix());
+			SetWorldSpaceUV(false, 1.0f); // Default to mesh UVs for raw mesh draws
 			mesh->Draw(GL_TRIANGLES);
 		}
 
@@ -203,6 +220,7 @@ namespace Boom {
 			SetUniform(metalLoc, material.metallic);
 			SetUniform(emissiveLoc, material.emissive);
 			SetUniform(occlusionLoc, material.occlusion);
+			SetUniform(opacityLoc, material.opacity);
 
 			bool isMap{};
 			isMap = material.albedoMap != nullptr;
@@ -240,6 +258,12 @@ namespace Boom {
 			if (isMap) {
 				material.roughnessMap->Use(roughnessMapLoc, unit++);
 			}
+
+			isMap = material.opacityMap != nullptr;
+			SetUniform(isOpacityMapLoc, isMap);
+			if (isMap) {
+				material.opacityMap->Use(opacityMapLoc, unit++);
+			}
 		}
 
 		BOOM_INLINE void Draw(Model3D const& model, Transform3D const& transform, PbrMaterial const& material, bool showNormal = false) {
@@ -250,7 +274,10 @@ namespace Boom {
 			SetUniform(ambientStrengthLoc, ambientStrength);
 			//world transformation * model transformation
 			SetUniform(modelMatLoc, transform.Matrix() * model->modelTransform.Matrix());
-			
+
+			// World-space UV settings
+			SetWorldSpaceUV(material.useWorldSpaceUV, material.textureScale);
+
 			//material texture maps
 			SetMaterial(material, 1);
 
@@ -266,11 +293,121 @@ namespace Boom {
 			SetUniform(modelMatLoc, transform.Matrix() * model->modelTransform.Matrix());
 			SetUniform(albedoLoc, albedo);
 			SetUniform(ambientStrengthLoc, ambientStrength);
+			SetWorldSpaceUV(false, 1.0f); // Debug mode uses mesh UVs
 			SetUniform(jointsLoc, model->HasJoint());
 			model->Draw(GL_LINES);
 		}
 
-		//Animation 
+		// Instanced rendering methods
+		// Mode: 0 = none, 1 = static, 2 = animated
+		BOOM_INLINE void SetInstancingMode(int mode, uint32_t baseInstance = 0, uint32_t jointBaseInstance = 0) {
+			SetUniform(instancingModeLoc, mode);
+			SetUniform(baseInstanceLoc, baseInstance);
+			SetUniform(jointBaseInstanceLoc, jointBaseInstance);
+		}
+
+		// Draw multiple instances of a static model with the same material
+		// Assumes transform SSBO (binding 3) is already bound
+		BOOM_INLINE void DrawInstanced(Model3D const& model, PbrMaterial const& material,
+									   uint32_t instanceCount, uint32_t baseInstance, bool showNormal = false) {
+			Use();
+			SetUniform(isDebugModeLoc, false);
+			SetUniform(ditherThresholdLoc, showDither ? ditherThreshold : 0.f);
+			SetUniform(showNormalTextureLoc, showNormal);
+			SetUniform(ambientStrengthLoc, ambientStrength);
+
+			// For instancing, we only use the model's internal transform as a base
+			// The world transform comes from the SSBO
+			SetUniform(modelMatLoc, model->modelTransform.Matrix());
+
+			// World-space UV settings
+			SetWorldSpaceUV(material.useWorldSpaceUV, material.textureScale);
+
+			// Material texture maps (start at unit 1 to avoid depth map at unit 0)
+			SetMaterial(material, 1);
+
+			// Static models only - no joints in static instanced mode
+			SetUniform(jointsLoc, false);
+
+			// Enable static instancing (mode 1) and set base instance offset
+			SetInstancingMode(1, baseInstance, 0);
+
+			// Draw all instances
+			model->DrawInstanced(GL_TRIANGLES, instanceCount);
+
+			// Disable instancing after draw
+			SetInstancingMode(0, 0, 0);
+		}
+
+		// Draw multiple instances of an animated model with the same material
+		// Assumes both SSBOs are bound: transform SSBO (binding 3) and joint SSBO (binding 4)
+		// baseInstance: offset into transform SSBO
+		// jointBaseInstance: offset into joint SSBO (in terms of instance count, not matrix count)
+		BOOM_INLINE void DrawAnimatedInstanced(Model3D const& model, PbrMaterial const& material,
+											   uint32_t instanceCount, uint32_t baseInstance,
+											   uint32_t jointBaseInstance, bool showNormal = false) {
+			Use();
+			SetUniform(isDebugModeLoc, false);
+			SetUniform(ditherThresholdLoc, showDither ? ditherThreshold : 0.f);
+			SetUniform(showNormalTextureLoc, showNormal);
+			SetUniform(ambientStrengthLoc, ambientStrength);
+
+			// For instancing, model transform is identity (baked into world matrices)
+			SetUniform(modelMatLoc, model->modelTransform.Matrix());
+
+			// World-space UV settings
+			SetWorldSpaceUV(material.useWorldSpaceUV, material.textureScale);
+
+			// Material texture maps (start at unit 1 to avoid depth map at unit 0)
+			SetMaterial(material, 1);
+
+			// Animated models have joints - shader reads from joint SSBO
+			SetUniform(jointsLoc, true);
+
+			// Enable animated instancing (mode 2) with separate transform and joint base offsets
+			SetInstancingMode(2, baseInstance, jointBaseInstance);
+
+			// Draw all instances
+			model->DrawInstanced(GL_TRIANGLES, instanceCount);
+
+			// Disable instancing after draw
+			SetInstancingMode(0, 0, 0);
+		}
+
+		// Draw multiple instances of a transparent static model with the same material
+		// Assumes transform SSBO (binding 3) is already bound
+		// Uses static instancing mode (mode 1) but called separately for transparent objects
+		BOOM_INLINE void DrawTransparentInstanced(Model3D const& model, PbrMaterial const& material,
+												  uint32_t instanceCount, uint32_t baseInstance, bool showNormal = false) {
+			Use();
+			SetUniform(isDebugModeLoc, false);
+			SetUniform(ditherThresholdLoc, showDither ? ditherThreshold : 0.f);
+			SetUniform(showNormalTextureLoc, showNormal);
+			SetUniform(ambientStrengthLoc, ambientStrength);
+
+			// For instancing, model transform is identity (baked into world matrices)
+			SetUniform(modelMatLoc, model->modelTransform.Matrix());
+
+			// World-space UV settings
+			SetWorldSpaceUV(material.useWorldSpaceUV, material.textureScale);
+
+			// Material texture maps (start at unit 1 to avoid depth map at unit 0)
+			SetMaterial(material, 1);
+
+			// Static models have no joints
+			SetUniform(jointsLoc, false);
+
+			// Enable static instancing (mode 1) - same as opaque static instancing
+			SetInstancingMode(1, baseInstance, 0);
+
+			// Draw all instances
+			model->DrawInstanced(GL_TRIANGLES, instanceCount);
+
+			// Disable instancing after draw
+			SetInstancingMode(0, 0, 0);
+		}
+
+		//Animation
 		BOOM_INLINE void SetJoints(std::vector<glm::mat4>& transforms)
 		{
 			for (size_t i = 0; i < transforms.size() && i < 100; ++i)
@@ -294,6 +431,7 @@ namespace Boom {
 		int32_t metallicMapLoc;
 		int32_t albedoMapLoc;
 		int32_t normalMapLoc;
+		int32_t opacityMapLoc;
 
 		int32_t isRoughnessMapLoc;
 		int32_t isOcclusionMapLoc;
@@ -301,12 +439,14 @@ namespace Boom {
 		int32_t isMetallicMapLoc;
 		int32_t isAlbedoMapLoc;
 		int32_t isNormalMapLoc;
+		int32_t isOpacityMapLoc;
 
 		int32_t albedoLoc;
 		int32_t roughLoc;
 		int32_t metalLoc;
 		int32_t occlusionLoc;
 		int32_t emissiveLoc;
+		int32_t opacityLoc;
 
 		int32_t frustumMatLoc;
 		int32_t modelMatLoc;
@@ -322,5 +462,14 @@ namespace Boom {
 		int32_t u_EnableShadows = 0;
 
 		int32_t ambientStrengthLoc;
+
+		// World-space UV mapping
+		int32_t useWorldSpaceUVLoc;
+		int32_t textureScaleLoc;
+
+		// Instancing support (mode: 0=none, 1=static, 2=animated)
+		int32_t instancingModeLoc;
+		int32_t baseInstanceLoc;
+		int32_t jointBaseInstanceLoc;
 	};
 }

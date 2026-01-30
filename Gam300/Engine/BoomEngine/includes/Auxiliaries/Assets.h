@@ -3,6 +3,7 @@
 #include "Graphics/Models/Model.h"
 #include "Graphics/Textures/Texture.h"
 #include "Graphics/Utilities/Data.h"
+#include "Graphics/Models/Animation.h"
 #include "BoomProperties.h"
 #include "AssetLoadContext.h"
 
@@ -25,6 +26,7 @@ namespace Boom {
 		PHYSICS_MESH,
 		PREFAB,
 		AUDIO,
+		ANIMATION,
 	};
 	constexpr char const* TYPE_NAMES[]{
 		"All",
@@ -37,6 +39,7 @@ namespace Boom {
 		"Physics Meshes (.pxm)",
 		"Prefab",
 		"Audio",
+		"Animations(.anim)",
 	};
 
 	struct Asset {
@@ -48,13 +51,14 @@ namespace Boom {
 	};
 
 	struct MaterialAsset : Asset {
-		PbrMaterial data{}; //Already has XPROPERTY_DEF defined
+		PbrMaterial data{}; //Already has XPROPERTY_DEF defined (includes useWorldSpaceUV and textureScale)
 		AssetID albedoMapID{ EMPTY_ASSET };
 		AssetID normalMapID{ EMPTY_ASSET };
 		AssetID roughnessMapID{ EMPTY_ASSET };
 		AssetID metallicMapID{ EMPTY_ASSET };
 		AssetID occlusionMapID{ EMPTY_ASSET };
 		AssetID emissiveMapID{ EMPTY_ASSET };
+		AssetID opacityMapID{ EMPTY_ASSET };
 
 		MaterialAsset() { type = AssetType::MATERIAL; }
 
@@ -66,7 +70,8 @@ namespace Boom {
 			obj_member<"RoughnessMapID", &MaterialAsset::roughnessMapID>,
 			obj_member<"MetallicMapID", &MaterialAsset::metallicMapID>,
 			obj_member<"OcclusionMapID", &MaterialAsset::occlusionMapID>,
-			obj_member<"EmissiveMapID", &MaterialAsset::emissiveMapID>
+			obj_member<"EmissiveMapID", &MaterialAsset::emissiveMapID>,
+			obj_member<"OpacityMapID", &MaterialAsset::opacityMapID>
 		)
 	};
 
@@ -156,6 +161,17 @@ namespace Boom {
 		)
 	};
 
+	struct AnimationAsset : Asset {
+		std::shared_ptr<AnimationClip> data;
+
+		AnimationAsset() { type = AssetType::ANIMATION; }
+
+		XPROPERTY_DEF(
+			"AnimationAsset", AnimationAsset,
+			obj_member<"Data", &AnimationAsset::data>
+		)
+	};
+
 	//TODO(other uncompleted/custom types):
 	struct ScriptAsset : Asset { ScriptAsset() { type = AssetType::SCRIPT; } };
 	struct SceneAsset : Asset { SceneAsset() { type = AssetType::SCENE; } };
@@ -175,6 +191,7 @@ namespace Boom {
 			AddEmpty<SceneAsset>();
 			AddEmpty<PhysicsMeshAsset>();
 			AddEmpty<AudioAsset>();
+			AddEmpty<AnimationAsset>();
 		}
 
 		//tries to get asset by its defined type
@@ -331,6 +348,14 @@ namespace Boom {
 			return asset;
 		}
 
+		BOOM_INLINE auto AddAnimation(AssetID uid, std::string const& path) {
+			auto asset = std::make_shared<AnimationAsset>();
+			asset->type = AssetType::ANIMATION;
+			// Note: actual animation data loaded on-demand when needed
+			Add(uid, path, asset);
+			return asset;
+		}
+
 		BOOM_INLINE auto AddScene(AssetID uid, std::string const& path) {
 			auto asset = std::make_shared<SceneAsset>();
 			asset->type = AssetType::SCENE;
@@ -364,6 +389,29 @@ namespace Boom {
 				}
 			}
 			return EMPTY_ASSET;
+		}
+
+		// Resolves all texture map IDs in a MaterialAsset to actual texture pointers
+		// Call this before rendering with the material to ensure textures are bound
+		BOOM_INLINE void ResolveMaterialTextures(MaterialAsset* mat) {
+			if (!mat) return;
+
+			auto resolveTexture = [this](AssetID id, Texture& outTex) {
+				if (id != EMPTY_ASSET) {
+					auto* tex = TryGet<TextureAsset>(id);
+					outTex = (tex && tex->data) ? tex->data : nullptr;
+				} else {
+					outTex = nullptr;
+				}
+			};
+
+			resolveTexture(mat->albedoMapID, mat->data.albedoMap);
+			resolveTexture(mat->normalMapID, mat->data.normalMap);
+			resolveTexture(mat->roughnessMapID, mat->data.roughnessMap);
+			resolveTexture(mat->metallicMapID, mat->data.metallicMap);
+			resolveTexture(mat->occlusionMapID, mat->data.occlusionMap);
+			resolveTexture(mat->emissiveMapID, mat->data.emissiveMap);
+			resolveTexture(mat->opacityMapID, mat->data.opacityMap);
 		}
 
 		BOOM_INLINE PhysicsMeshAsset* FindPhysicsMeshByPath(const std::string& path) {

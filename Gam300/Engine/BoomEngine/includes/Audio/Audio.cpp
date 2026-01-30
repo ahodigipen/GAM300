@@ -4,6 +4,11 @@
 #include <filesystem>
 #include <mutex>
 
+// Global FMOD system pointer for VideoPlayer access
+namespace Boom {
+    extern FMOD::System* g_FMODSystem;
+}
+
 static FMOD::ChannelGroup* sMasterGroup = nullptr;
 static FMOD::ChannelGroup* sMusicGroup = nullptr;
 static FMOD::ChannelGroup* sSFXGroup = nullptr;
@@ -72,6 +77,9 @@ BOOM_API bool SoundEngine::Init() {
         mChannelGroups["Music"] = sMusicGroup;
         mChannelGroups["SFX"] = sSFXGroup;
     }
+
+    // Set global FMOD system pointer for VideoPlayer audio
+    Boom::g_FMODSystem = mSystem;
 
     return true;
 }
@@ -315,6 +323,8 @@ BOOM_API void SoundEngine::Shutdown() {
     sSFXGroup = nullptr;
     sMasterGroup = nullptr;
 
+    // Clear global FMOD system pointer for VideoPlayer
+    Boom::g_FMODSystem = nullptr;
 
     if (mSystem)
     {
@@ -551,7 +561,7 @@ BOOM_API void SoundEngine::PlaySoundAt(const std::string& name, const std::strin
         return;
     }
 
-  /*  std::cout << "[SoundEngine] PlaySoundAt: " << name << " -> " << filePath << " pos(" << position.x << "," << position.y << "," << position.z << ")\n";*/
+    //std::cout << "[SoundEngine] PlaySoundAt: " << name << " -> " << filePath << " pos(" << position.x << "," << position.y << "," << position.z << ")\n";
 
     // For looped audio (BGM/ambient), play as 2D so it's always audible
     // For one-shot audio (SFX), play as 3D with positional attenuation

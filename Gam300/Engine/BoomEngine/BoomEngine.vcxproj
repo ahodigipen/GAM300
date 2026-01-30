@@ -181,6 +181,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\Downloads\pl_mpeg-master\pl_mpeg-master\pl_mpeg.h" />
     <ClInclude Include="includes\AI\Actions.h" />
     <ClInclude Include="includes\AI\AIComponent.h" />
     <ClInclude Include="includes\AI\AISystem.h" />
@@ -219,6 +220,9 @@
     <ClInclude Include="includes\Graphics\Buffers\Frame.h" />
     <ClInclude Include="includes\Graphics\Buffers\Mesh.h" />
     <ClInclude Include="includes\Graphics\Buffers\Vertex.h" />
+    <ClInclude Include="includes\Graphics\Instancing\InstanceBatch.h" />
+    <ClInclude Include="includes\Graphics\Instancing\AnimatedInstanceBatch.h" />
+    <ClInclude Include="includes\Graphics\Instancing\InstanceManager.h" />
     <ClInclude Include="includes\Graphics\Models\Animation.h" />
     <ClInclude Include="includes\Graphics\Models\Animator.h" />
     <ClInclude Include="includes\Graphics\Models\Helper.h" />
@@ -240,6 +244,9 @@
     <ClInclude Include="includes\Graphics\Utilities\Data.h" />
     <ClInclude Include="includes\Graphics\Utilities\Quad.h" />
     <ClInclude Include="includes\Graphics\Utilities\Skybox.h" />
+    <ClInclude Include="includes\Graphics\Video\pl_mpeg.h" />
+    <ClInclude Include="includes\Graphics\Video\VideoPlayer.h" />
+    <ClInclude Include="includes\Graphics\Video\VideoSystem.h" />
     <ClInclude Include="includes\Input\CameraManager.h" />
     <ClInclude Include="includes\Input\InputHandler.h" />
     <ClInclude Include="includes\Input\RayCast.h" />
@@ -269,6 +276,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Auxiliaries\AnimationIO.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\Auxiliaries\AssetSerializer.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
@@ -289,6 +300,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Graphics\Instancing\InstanceManager.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Video\VideoPlayer.cpp" />
+    <ClCompile Include="src\Graphics\Video\VideoSystem.cpp" />
     <ClCompile Include="src\Models\ModelLoader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>

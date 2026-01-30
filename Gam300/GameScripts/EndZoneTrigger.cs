@@ -56,15 +56,12 @@ namespace GameScripts
 
             // Only player triggers this
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
-
             // Prevent multiple triggers
             if (inst._hasTriggered) return;
 
             API.Log("[EndZoneTrigger] Player entered end zone! Loading MainMenu...");
             inst._hasTriggered = true;
-
-            // Load the main menu scene immediately
-            API.LoadScene("MainMenu");
+            Entry.TriggerGameEnd();
         }
 
         // Static callback for trigger exit

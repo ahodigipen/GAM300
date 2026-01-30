@@ -4,7 +4,7 @@ using Boom;
 
 namespace GameScripts
 {
-    public class EnemyController
+    public class EnemyController : IEnemyController
     {
         public ulong Entity;
 
@@ -19,6 +19,10 @@ namespace GameScripts
 
         [Boom.EditorExposed("Rotation Speed", "Degrees per second for smooth rotation", 10f, 360f, true)]
         private float _rotationSpeed = 90f; // Degrees per second for smooth rotation
+
+        [Boom.EditorExposed("Rotation Angle", "Degrees to rotate each turn", 10f, 360f, true)]
+        private float _rotationAngle = 90f; // Degrees to rotate per turn (configurable per sentry)
+
         private bool _isRotating = false;
         private const string TURN_SOUND_ID = "enemy_turn";
 
@@ -34,11 +38,27 @@ namespace GameScripts
 
         [Boom.EditorExposed("Alert Sound", "Sound played when enemy detects player")]
         private string _alertSoundPath = "Resources/Audio/playerPunch_1.wav";
+
+        [Boom.EditorExposed("Proximity Detection", "Enable/Disable proximity detection")]
+        private bool EnemyDetection = true;
+
+        [Boom.EditorExposed("Rotation: Clockwise/Anti-clockwise", "Change Rotation")]
+        private bool _rotation  = true;
+
         // Vision system
         private VisionComponent _vision;
 
+        // NEW: Proximity detection system
+        private ProximityDetectionComponent _proximityDetection;
+
         // Detection tracking (prevent multiple damage per detection)
         private bool _hasDealtDamage = false;
+
+        // NEW: Auto-reset timer for damage flag
+        private float _damageResetTimer = 0f;
+        private const float DAMAGE_RESET_DELAY = 3.0f;
+        // Entity name for spotlight lookup (matches SpotlightFollower's targetName)
+        private string _entityName = "Sentry_1";  // Default name, can be overridden via jsonParams
 
         public void OnStart(string jsonParams)
         {
@@ -50,6 +70,25 @@ namespace GameScripts
                 return;
             }
 
+            // Parse entityName from jsonParams if provided
+            if (!string.IsNullOrEmpty(jsonParams) && jsonParams != "{}")
+            {
+                try
+                {
+                    if (jsonParams.Contains("entityName"))
+                    {
+                        int start = jsonParams.IndexOf("entityName") + 13;
+                        int end = jsonParams.IndexOf("\"", start);
+                        if (end > start)
+                        {
+                            _entityName = jsonParams.Substring(start, end - start);
+                        }
+                    }
+                }
+                catch { }
+            }
+            API.Log($"[EnemyController] Entity name: {_entityName}");
+
             // Initialize vision system
             _vision = new VisionComponent { Entity = Entity };
             _vision.OnTargetDetected += OnPlayerDetected;
@@ -57,14 +96,26 @@ namespace GameScripts
             _vision.OnTargetUpdated += OnPlayerTracking;
             _vision.OnStart(jsonParams);
 
+            // NEW: Initialize proximity detection
+            _proximityDetection = new ProximityDetectionComponent { Entity = Entity };
+            _proximityDetection.OnProximityDetected += OnProximityDetected;
+            _proximityDetection.OnStart();
+            // Optional: Configure settings
+            // _proximityDetection.SetDetectionRadius(3.5f);
+            // _proximityDetection.SetDetectionDuration(2.0f);
+            // _proximityDetection.EnableDebugLog(true);
+
             // Initialize rotation from current entity rotation
             _currentYRotation = API.GetRotation(Entity).Y;
             _targetYRotation = _currentYRotation;
 
-            API.Log("[EnemyController] Controller initialized with vision system and smooth rotation");
+            // NEW: Register with PlayerManager
+            PlayerManager.RegisterEnemy(this);
 
-            _vision.EnableDebugReasons(true);  // See why targets are rejected
-            _vision.EnableDebugLOS(true);      // See LOS results
+            API.Log("[EnemyController] Controller initialized with vision and proximity systems");
+
+            _vision.EnableDebugReasons(true);
+            _vision.EnableDebugLOS(true);
         }
 
         public void OnUpdate(float dt)
@@ -74,17 +125,40 @@ namespace GameScripts
             // --- FREEZE CHECK ---
             if (FreezeManager.IsFrozen(API.GetPosition(Entity)))
             {
-                // Return early to disable rotation and vision detection
+                // When frozen, still allow proximity detection (player can sneak close)
+                // but disable rotation and vision
+                if (EnemyDetection)
+                {
+                    _proximityDetection?.OnUpdate(dt);
+                }
                 return;
             }
 
-            // Update vision system
+            // Update vision system (always active)
             _vision?.OnUpdate(dt);
+
+            // Update proximity detection (only if enabled)
+            if (EnemyDetection)
+            {
+                _proximityDetection?.OnUpdate(dt);
+            }
 
             // Handle rotation (only when not alert)
             if (_vision?.GetState() != VisionComponent.VisionState.Alert)
             {
                 UpdateRotation(dt);
+            }
+
+            // NEW: Auto-reset damage flag after delay
+            if (_hasDealtDamage)
+            {
+                _damageResetTimer += dt;
+                if (_damageResetTimer >= DAMAGE_RESET_DELAY)
+                {
+                    _hasDealtDamage = false;
+                    _damageResetTimer = 0f;
+                    API.Log("[EnemyController] Damage flag auto-reset - can damage again");
+                }
             }
         }
 
@@ -99,22 +173,31 @@ namespace GameScripts
                 {
                     _rotationTimer = 0f;
 
-                    // Set new target rotation (90 degrees from current target)
-                    _targetYRotation += 90f;
+                    // Apply rotation based on direction
+                    if (_rotation)
+                    {
+                        // Clockwise
+                        _targetYRotation += _rotationAngle;
+                    }
+                    else
+                    {
+                        // Anti-clockwise
+                        _targetYRotation -= _rotationAngle;
+                    }
 
-                    // Normalize to [0, 360) range
+                    // Normalize angle
                     if (_targetYRotation >= 360f)
                         _targetYRotation -= 360f;
+                    if (_targetYRotation < 0f)
+                        _targetYRotation += 360f;
 
                     _isRotating = true;
                     API.Log($"[EnemyController] Starting rotation to {_targetYRotation}°");
 
                     try
                     {
-                        // --- Pick a pseudo-random index based on time ---
-                        // Ticks changes every frame, so this will bounce between 0,1,2
                         long ticks = DateTime.UtcNow.Ticks;
-                        int index = (int)(ticks % 3); // 0,1,2
+                        int index = (int)(ticks % 3);
 
                         string clipPath;
                         string soundId;
@@ -141,7 +224,6 @@ namespace GameScripts
 
                         API.PlaySoundAt(soundId, clipPath, enemyPos, false);
                         API.SetSoundVolume(soundId, 0.5f);
-                        // Set 3D audio distance - enemy sounds shouldn't travel through floors
                         API.Set3DMinMaxDistance(soundId, 1.0f, 25.0f);
                     }
                     catch (Exception ex)
@@ -154,10 +236,8 @@ namespace GameScripts
             // Smoothly interpolate toward target rotation
             if (_isRotating)
             {
-                // Calculate shortest angle difference
                 float angleDifference = _targetYRotation - _currentYRotation;
 
-                // Normalize angle difference to [-180, 180] range for shortest path
                 while (angleDifference > 180f) angleDifference -= 360f;
                 while (angleDifference < -180f) angleDifference += 360f;
 
@@ -183,11 +263,17 @@ namespace GameScripts
             }
         }
 
-
         // === VISION EVENT HANDLERS ===
         private void OnPlayerDetected(ulong target, Vec3 position)
         {
-            API.Log(">>> ENEMY ALERTED! STOPPING PATROL! <<<");
+            API.Log(">>> ENEMY ALERTED BY VISION! STOPPING PATROL! <<<");
+
+            // Set spotlight to alert (red) color
+            var spotlight = SpotlightFollower.GetByTargetName(_entityName);
+            if (spotlight != null)
+            {
+                spotlight.SetAlert(true);
+            }
 
             // Instantly rotate to face the player
             Vec3 enemyPos = API.GetPosition(Entity);
@@ -204,10 +290,7 @@ namespace GameScripts
 
             if (distToPlayer > 0f)
             {
-                // Calculate angle to player
                 float lookAtYaw = (float)(Math.Atan2(directionToPlayer.X, directionToPlayer.Z) * 180.0 / Math.PI);
-
-                // Set target and current to face player immediately
                 _targetYRotation = lookAtYaw;
                 _currentYRotation = lookAtYaw;
                 _isRotating = false;
@@ -222,15 +305,15 @@ namespace GameScripts
             // Play alert sound
             API.PlaySoundAt("enemy_alert", _alertSoundPath, enemyPos, false);
             API.SetSoundVolume("enemy_alert", 0.8f);
-            // Set 3D audio distance - alert should be heard from medium distance
             API.Set3DMinMaxDistance("enemy_alert", 1.0f, 25.0f);
 
             // Damage player (only once per detection)
             if (!_hasDealtDamage)
             {
                 _hasDealtDamage = true;
-                API.Log($"[EnemyController] Dealing damage to player!");
-                PlayerManager.NotifyPlayerCaught(Entity); // Comment out to test freeze
+                _damageResetTimer = 0f;  // Start timer
+                API.Log($"[EnemyController] Dealing damage to player (vision detection)!");
+                PlayerManager.NotifyPlayerCaught(Entity);
             }
         }
 
@@ -238,13 +321,22 @@ namespace GameScripts
         {
             API.Log("[EnemyController] Lost sight of player, searching...");
 
+            // Reset spotlight to original color
+            var spotlight = SpotlightFollower.GetByTargetName(_entityName);
+            if (spotlight != null)
+            {
+                spotlight.SetAlert(false);
+            }
+
             // Reset damage flag so player can be caught again
             _hasDealtDamage = false;
+
+            // NEW: Reset proximity detection when player is lost
+            _proximityDetection?.ResetDetection();
 
             // Resume rotation patrol
             _rotationTimer = 0f;
             _isRotating = false;
-            // TODO: Search behavior, investigate last known position
         }
 
         private void OnPlayerTracking(ulong target, Vec3 position)
@@ -265,8 +357,6 @@ namespace GameScripts
             if (distToPlayer > 0f)
             {
                 float lookAtYaw = (float)(Math.Atan2(directionToPlayer.X, directionToPlayer.Z) * 180.0 / Math.PI);
-
-                // Update target to follow player
                 _targetYRotation = lookAtYaw;
                 _currentYRotation = lookAtYaw;
 
@@ -276,29 +366,107 @@ namespace GameScripts
             }
         }
 
-        // === PUBLIC CONFIGURATION ===
+        // === NEW: PROXIMITY DETECTION HANDLER ===
+        private void OnProximityDetected(ulong target, Vec3 position)
+        {
+            // Check if proximity detection is enabled
+            if (!EnemyDetection)
+            {
+                API.Log("[EnemyController] Proximity detection disabled - ignoring detection event");
+                return;
+            }
 
-        /// <summary>
-        /// Set how fast the enemy rotates (degrees per second)
-        /// </summary>
+            API.Log(">>> ENEMY ALERTED BY PROXIMITY! PLAYER TOO CLOSE! <<<");
+
+            // Similar to vision detection, but don't rotate immediately
+            // Enemy "senses" player behind them and turns to attack
+
+            Vec3 enemyPos = API.GetPosition(Entity);
+            Vec3 directionToPlayer = new Vec3(
+                position.X - enemyPos.X,
+                0f,
+                position.Z - enemyPos.Z
+            );
+
+            float distToPlayer = (float)Math.Sqrt(
+                directionToPlayer.X * directionToPlayer.X +
+                directionToPlayer.Z * directionToPlayer.Z
+            );
+
+            if (distToPlayer > 0f)
+            {
+                float lookAtYaw = (float)(Math.Atan2(directionToPlayer.X, directionToPlayer.Z) * 180.0 / Math.PI);
+                _targetYRotation = lookAtYaw;
+                _currentYRotation = lookAtYaw;
+                _isRotating = false;
+
+                Vec3 rot = API.GetRotation(Entity);
+                rot.Y = _currentYRotation;
+                API.SetRotation(Entity, rot);
+
+                API.Log($"[EnemyController] Turned to face player (proximity) at {_currentYRotation:F1}°");
+            }
+
+            // Damage player (only once per detection)
+            if (!_hasDealtDamage)
+            {
+                _hasDealtDamage = true;
+                _damageResetTimer = 0f;  // Start timer
+                API.Log($"[EnemyController] Dealing damage to player (proximity detection)!");
+                PlayerManager.NotifyPlayerCaught(Entity);
+            }
+        }
+
+        // === PUBLIC CONFIGURATION ===
         public void SetRotationSpeed(float degreesPerSecond)
         {
             _rotationSpeed = degreesPerSecond;
             API.Log($"[EnemyController] Rotation speed set to {_rotationSpeed}°/s");
         }
 
-        /// <summary>
-        /// Set interval between rotation changes
-        /// </summary>
         public void SetRotationInterval(float seconds)
         {
             _rotationInterval = seconds;
             API.Log($"[EnemyController] Rotation interval set to {_rotationInterval}s");
         }
 
+        public void SetRotationAngle(float degrees)
+        {
+            _rotationAngle = degrees;
+            API.Log($"[EnemyController] Rotation angle set to {_rotationAngle}°");
+        }
+
+        // NEW: Proximity configuration
+        public void SetProximityRadius(float radius)
+        {
+            _proximityDetection?.SetDetectionRadius(radius);
+        }
+
+        public void SetProximityDuration(float duration)
+        {
+            _proximityDetection?.SetDetectionDuration(duration);
+        }
+
+        // NEW: Implement interface method
+        public void OnPlayerRespawned()
+        {
+            // Force reset all detection states
+            _hasDealtDamage = false;
+            _damageResetTimer = 0f;
+
+            // Reset proximity detection
+            _proximityDetection?.ResetDetection();
+
+            API.Log("[EnemyController] Player respawned - all detection states reset");
+        }
         public void OnDestroy()
         {
             _vision?.OnDestroy();
+            _proximityDetection?.OnDestroy();
+
+            // NEW: Unregister from PlayerManager
+            PlayerManager.UnregisterEnemy(this);
+
             API.Log($"[EnemyController] OnDestroy() - Entity: {Entity}");
         }
     }

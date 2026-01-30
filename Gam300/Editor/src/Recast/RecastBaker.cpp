@@ -55,6 +55,12 @@ namespace EditorUI {
         float bmin[3], bmax[3];
         computeBounds(in.verts, bmin, bmax);
 
+        // Debug: log bounds and size
+        BOOM_INFO("[NavBake] Geometry bounds: min=({:.2f}, {:.2f}, {:.2f}), max=({:.2f}, {:.2f}, {:.2f})",
+            bmin[0], bmin[1], bmin[2], bmax[0], bmax[1], bmax[2]);
+        BOOM_INFO("[NavBake] Geometry size: {:.2f} x {:.2f} x {:.2f} (XYZ)",
+            bmax[0] - bmin[0], bmax[1] - bmin[1], bmax[2] - bmin[2]);
+
         rcConfig rcCfg{};
         rcCfg.cs = cfg.cellSize;
         rcCfg.ch = cfg.cellHeight;
@@ -64,6 +70,13 @@ namespace EditorUI {
         rcCfg.walkableRadius = (int)std::ceil(cfg.agentRadius / rcCfg.cs);
         rcVcopy(rcCfg.bmin, bmin); rcVcopy(rcCfg.bmax, bmax);
         rcCalcGridSize(rcCfg.bmin, rcCfg.bmax, rcCfg.cs, &rcCfg.width, &rcCfg.height);
+
+        BOOM_INFO("[NavBake] Grid size: {}x{} cells (cs={:.3f}, ch={:.3f})",
+            rcCfg.width, rcCfg.height, rcCfg.cs, rcCfg.ch);
+        BOOM_INFO("[NavBake] Agent: height={} cells, radius={} cells, climb={} cells",
+            rcCfg.walkableHeight, rcCfg.walkableRadius, rcCfg.walkableClimb);
+
+        rcCfg.borderSize = 0;  // Solo mesh, no border needed
         rcCfg.maxEdgeLen = (int)(cfg.edgeMaxLen / rcCfg.cs);
         rcCfg.maxSimplificationError = cfg.edgeMaxError;
         rcCfg.minRegionArea = cfg.regionMinArea;
@@ -86,6 +99,14 @@ namespace EditorUI {
             in.verts.data(), (int)(in.verts.size() / 3),
             in.tris.data(), ntris, triAreas.data());
 
+        // Count how many triangles are walkable after slope check
+        int walkableTriCount = 0;
+        for (int i = 0; i < ntris; ++i) {
+            if (triAreas[i] != RC_NULL_AREA) ++walkableTriCount;
+        }
+        BOOM_INFO("[NavBake] Walkable triangles after slope filter: {}/{} (slope<={}deg)",
+            walkableTriCount, ntris, cfg.agentMaxSlope);
+
         rcRasterizeTriangles(&ctx,
             in.verts.data(), (int)(in.verts.size() / 3),
             in.tris.data(), triAreas.data(), ntris,
@@ -102,22 +123,54 @@ namespace EditorUI {
             if (error) *error = "rcBuildCompactHeightfield failed"; return false;
         }
 
+        BOOM_INFO("[NavBake] Compact heightfield: {} spans, {} walkable", chf->spanCount, chf->spanCount);
+
         if (!rcErodeWalkableArea(&ctx, rcCfg.walkableRadius, *chf)) {
             if (error) *error = "rcErodeWalkableArea failed"; return false;
         }
+
+        // Count walkable spans after erosion
+        int walkableSpans = 0;
+        for (int i = 0; i < chf->spanCount; ++i) {
+            if (chf->areas[i] != RC_NULL_AREA) ++walkableSpans;
+        }
+        BOOM_INFO("[NavBake] After erosion (radius={}): {} walkable spans", rcCfg.walkableRadius, walkableSpans);
+
         if (!rcBuildDistanceField(&ctx, *chf)) {
             if (error) *error = "rcBuildDistanceField failed"; return false;
         }
-        if (!rcBuildRegions(&ctx, *chf, 0, rcCfg.minRegionArea, rcCfg.mergeRegionArea)) {
-            if (error) *error = "rcBuildRegions failed"; return false;
+
+        BOOM_INFO("[NavBake] Distance field built. maxDistance={}", chf->maxDistance);
+
+        // Use monotone partitioning - more robust for large open areas
+        if (!rcBuildRegionsMonotone(&ctx, *chf, 0, rcCfg.minRegionArea, rcCfg.mergeRegionArea)) {
+            if (error) *error = "rcBuildRegionsMonotone failed"; return false;
         }
+
+        // Count how many spans have valid region IDs
+        int spansWithRegions = 0;
+        unsigned short maxReg = 0;
+        for (int i = 0; i < chf->spanCount; ++i) {
+            if (chf->spans[i].reg > 0 && chf->spans[i].reg < 0x8000) {
+                ++spansWithRegions;
+                if (chf->spans[i].reg > maxReg) maxReg = chf->spans[i].reg;
+            }
+        }
+        BOOM_INFO("[NavBake] Regions: {} spans with regions, maxRegionId={}, chf->maxRegions={}",
+            spansWithRegions, maxReg, chf->maxRegions);
 
         rcContourSet* cset = rcAllocContourSet();
         std::unique_ptr<rcContourSet, void(*)(rcContourSet*)> csetGuard(cset, rcFreeContourSet);
         if (!cset) { if (error) *error = "rcAllocContourSet failed"; return false; }
-        if (!rcBuildContours(&ctx, *chf, rcCfg.maxSimplificationError, rcCfg.maxEdgeLen, *cset)) {
+        BOOM_INFO("[NavBake] Building contours: maxError={:.2f}, maxEdgeLen={}, borderSize={}",
+            rcCfg.maxSimplificationError, rcCfg.maxEdgeLen, chf->borderSize);
+
+        if (!rcBuildContours(&ctx, *chf, rcCfg.maxSimplificationError, rcCfg.maxEdgeLen, *cset,
+                             RC_CONTOUR_TESS_WALL_EDGES)) {
             if (error) *error = "rcBuildContours failed"; return false;
         }
+
+        BOOM_INFO("[NavBake] Contours: {} contours built", cset->nconts);
 
         rcPolyMesh* pmesh = rcAllocPolyMesh();
         std::unique_ptr<rcPolyMesh, void(*)(rcPolyMesh*)> pmeshGuard(pmesh, rcFreePolyMesh);

@@ -326,16 +326,16 @@ namespace Boom {
             return false;
         }
 
-        // Re-enable file watching if it was enabled
-        if (wasAutoReloadEnabled) {
-            m_FileWatcher.AddWatch(m_DllPath,
-                [this](const std::string&) {
-                    BOOM_INFO("[Scripting] DLL modified, triggering hot reload...");
-                    this->ReloadScripts();
-                },
-                1000
-            );
-        }
+        //// Re-enable file watching if it was enabled
+        //if (wasAutoReloadEnabled) {
+        //    m_FileWatcher.AddWatch(m_DllPath,
+        //        [this](const std::string&) {
+        //            BOOM_INFO("[Scripting] DLL modified, triggering hot reload...");
+        //            this->ReloadScripts();
+        //        },
+        //        1000
+        //    );
+        //}
 
         // 7. Call Entry.Start() if it exists
         BOOM_INFO("[Scripting] Calling Entry.Start()...");

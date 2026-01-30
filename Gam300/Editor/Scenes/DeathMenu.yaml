@@ -9,14 +9,12 @@ ENTITIES:
         Translate: [0, 0.200000003, 0]
         Rotate: [0, 0, 0]
         Scale: [1, 0.699999988, 1]
-    DeathMenuTagComponent:
-      {}
     SpriteComponent:
-      textureID: 11757656334676127170
+      textureID: 12520623694830483264
       color: [1, 1, 1, 1]
-      uiOverlay: true
-    DeactivatedComponent:
-      {}
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 1
   - InfoComponent:
       Parent: 0
       Name: Death Menu Script
@@ -26,14 +24,12 @@ ENTITIES:
         Translate: [0, 0, 0]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
-    DeathMenuTagComponent:
-      {}
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.DeathMenu
       ParamsJSON: "{}"
-    DeactivatedComponent:
-      {}
+    MenuComponent:
+      MenuType: 1
   - InfoComponent:
       Parent: 0
       Name: Death_Camera
@@ -48,8 +44,8 @@ ENTITIES:
         NearPlane: 0.300000012
         FarPlane: 1000
         FOV: 91
-    DeathMenuTagComponent:
-      {}
+    MenuComponent:
+      MenuType: 1
   - InfoComponent:
       Parent: 0
       Name: Death_ReturnButton
@@ -59,14 +55,12 @@ ENTITIES:
         Translate: [0, -0.600000024, 0]
         Rotate: [0, 0, 0]
         Scale: [0.200000003, 0.100000001, 1]
-    DeathMenuTagComponent:
-      {}
     SpriteComponent:
-      textureID: 10830320094205736326
+      textureID: 1920245529432086823
       color: [1, 1, 1, 1]
-      uiOverlay: true
-    DeactivatedComponent:
-      {}
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 1
   - InfoComponent:
       Parent: 0
       Name: Death_RestartButton
@@ -76,11 +70,9 @@ ENTITIES:
         Translate: [0, -0.400000006, 0]
         Rotate: [0, 0, 0]
         Scale: [0.200000003, 0.100000001, 1]
-    DeathMenuTagComponent:
-      {}
     SpriteComponent:
-      textureID: 12846627940444493632
+      textureID: 1815887354929855275
       color: [1, 1, 1, 1]
-      uiOverlay: true
-    DeactivatedComponent:
-      {}
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 1

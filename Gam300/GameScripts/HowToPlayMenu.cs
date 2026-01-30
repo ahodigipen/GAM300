@@ -6,7 +6,7 @@ namespace GameScripts
     public class HowToPlayMenu
     {
         private const int MOUSE_LEFT = 0;
-        private const string RETURN_TEX_CLICKED = "Resources/Textures/HowToPlayMenu/ReturnButton_Clicked.png";
+        private const string RETURN_TEX_CLICKED = "Resources/Textures/MenusUI/ReturnButton_Clicked.png";
 
         private ulong _returnButtonID;
 

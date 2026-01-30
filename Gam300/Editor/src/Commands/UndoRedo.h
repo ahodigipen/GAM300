@@ -213,7 +213,7 @@ namespace EditorUI {
         bool hasSprite = false;
         Boom::AssetID spriteTextureID = 0;
         glm::vec4 spriteColor = glm::vec4(1.0f);
-        bool spriteUIOverlay = true;
+        bool spriteRenderAs3D = false;
 
         // Add more component snapshots as needed
         std::vector<EntitySnapshot> children;
@@ -289,7 +289,7 @@ namespace EditorUI {
                 const auto& sprite = m_Registry->get<Boom::SpriteComponent>(entity);
                 snapshot.spriteTextureID = sprite.textureID;
                 snapshot.spriteColor = sprite.color;
-                snapshot.spriteUIOverlay = sprite.uiOverlay;
+                snapshot.spriteRenderAs3D = sprite.renderAs3D;
             }
 
             // Capture children recursively
@@ -339,7 +339,7 @@ namespace EditorUI {
                 auto& sprite = m_Registry->emplace<Boom::SpriteComponent>(entity);
                 sprite.textureID = snapshot.spriteTextureID;
                 sprite.color = snapshot.spriteColor;
-                sprite.uiOverlay = snapshot.spriteUIOverlay;
+                sprite.renderAs3D = snapshot.spriteRenderAs3D;
             }
 
             // Restore children recursively
@@ -456,6 +456,8 @@ namespace EditorUI {
 
     // ==================== DUPLICATE ENTITY COMMAND ====================
 
+       // ==================== DUPLICATE ENTITY COMMAND ====================
+
     class DuplicateEntityCommand : public ICommand {
     public:
         DuplicateEntityCommand(entt::registry* registry, entt::entity sourceEntity)
@@ -467,15 +469,37 @@ namespace EditorUI {
             if (m_Registry && m_Registry->valid(sourceEntity) &&
                 m_Registry->all_of<Boom::InfoComponent>(sourceEntity)) {
                 m_SourceUID = m_Registry->get<Boom::InfoComponent>(sourceEntity).uid;
+                BOOM_INFO("[DuplicateEntityCommand] Captured source UID: {}", m_SourceUID);
+            }
+            else {
+                BOOM_WARN("[DuplicateEntityCommand] Could not capture source UID - registry:{}, valid:{}, hasInfo:{}",
+                    (m_Registry != nullptr),
+                    (m_Registry && m_Registry->valid(sourceEntity)),
+                    (m_Registry && m_Registry->valid(sourceEntity) && m_Registry->all_of<Boom::InfoComponent>(sourceEntity)));
             }
         }
 
         void Execute() override {
-            if (!m_Registry) return;
+            if (!m_Registry) {
+                BOOM_WARN("[DuplicateEntityCommand] Execute failed: registry is null");
+                return;
+            }
 
-            entt::entity source = FindEntityByUID(m_SourceUID);
+            // Try to find by UID first, fallback to cached entity
+            entt::entity source = entt::null;
+            if (m_SourceUID != 0) {
+                source = FindEntityByUID(m_SourceUID);
+            }
+
+            // Fallback: use the cached entity directly if UID lookup failed
+            if (source == entt::null && m_Registry->valid(m_SourceEntity)) {
+                source = m_SourceEntity;
+                BOOM_WARN("[DuplicateEntityCommand] UID lookup failed, using cached entity directly");
+            }
+
             if (source == entt::null) {
-                BOOM_WARN("[Undo] Cannot duplicate: source entity UID {} not found", m_SourceUID);
+                BOOM_WARN("[DuplicateEntityCommand] Cannot duplicate: source entity not found (UID: {}, cached entity valid: {})",
+                    m_SourceUID, m_Registry->valid(m_SourceEntity));
                 return;
             }
 
@@ -484,21 +508,32 @@ namespace EditorUI {
 
             if (m_DuplicatedEntity != entt::null && m_Registry->all_of<Boom::InfoComponent>(m_DuplicatedEntity)) {
                 m_DuplicatedUID = m_Registry->get<Boom::InfoComponent>(m_DuplicatedEntity).uid;
-                BOOM_INFO("[Undo] Duplicated entity - new UID: {}", m_DuplicatedUID);
+                BOOM_INFO("[DuplicateEntityCommand] Duplicated entity - new UID: {}", m_DuplicatedUID);
+            }
+            else {
+                BOOM_WARN("[DuplicateEntityCommand] Duplication failed or new entity missing InfoComponent");
             }
         }
 
         void Undo() override {
-            if (!m_Registry || m_DuplicatedEntity == entt::null) return;
+            if (!m_Registry) {
+                BOOM_WARN("[DuplicateEntityCommand] Undo failed: registry is null");
+                return;
+            }
+
+            if (m_DuplicatedUID == 0) {
+                BOOM_WARN("[DuplicateEntityCommand] Undo failed: no duplicated UID recorded");
+                return;
+            }
 
             entt::entity dup = FindEntityByUID(m_DuplicatedUID);
             if (dup == entt::null) {
-                BOOM_WARN("[Undo] Cannot undo duplicate: duplicated entity UID {} not found", m_DuplicatedUID);
+                BOOM_WARN("[DuplicateEntityCommand] Cannot undo duplicate: duplicated entity UID {} not found", m_DuplicatedUID);
                 return;
             }
 
             // Delete the duplicated entity (including its children)
-            BOOM_INFO("[Undo] Deleting duplicated entity UID: {}", m_DuplicatedUID);
+            BOOM_INFO("[DuplicateEntityCommand] Deleting duplicated entity UID: {}", m_DuplicatedUID);
             Boom::DeleteEntityRecursive(*m_Registry, dup, nullptr);
             m_DuplicatedEntity = entt::null;
         }

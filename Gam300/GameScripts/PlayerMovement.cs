@@ -22,31 +22,20 @@ namespace GameScripts
     {
         public ulong Entity;
 
-        [Boom.EditorExposed("Walk Speed", "Base walking speed in m/s", 0.5f, 10f, true)]
+        // ==== DEBUG: Enable verbose crouch zone logging ====
+        private const bool DEBUG_CROUCH = true;
+        private float _debugLogTimer = 0f;
+        private const float DEBUG_LOG_INTERVAL = 1.0f; // Log state every 1 second
+
         private float _walkSpeed = 3f;
-
-        [Boom.EditorExposed("Sprint Speed", "Running speed in m/s", 1f, 20f, true)]
         private float _sprintSpeed = 8f;
-
-        [Boom.EditorExposed("Sneak Speed", "Crouching/sneaking speed in m/s", 0.1f, 5f, true)]
         private float _sneakSpeed = 1.5f;
 
-        [Boom.EditorExposed("Health", "Current player health", 0, 10)]
         private int _health = 5;
-
-        [Boom.EditorExposed("Max Health", "Maximum player health", 1, 10)]
         private int _maxHealth = 5;
-        [Boom.EditorExposed("Spawn Point", "Checkpoint/respawn position")]
         private Vec3 _spawnPoint;
-
         private bool _isRespawning = false;
-        //private float _respawnDelay = 1.0f;
-        //private float _respawnTimer = 0f;
-
-        [Boom.EditorExposed("Is Invulnerable", "Whether player is currently invulnerable")]
         private bool _isInvulnerable = false;
-
-        [Boom.EditorExposed("Invulnerability Duration", "How long invulnerability lasts in seconds", 0.1f, 10f, true)]
         private float _invulnerabilityDuration = 2.0f;
         private float _invulnerabilityTimer = 0f;
 
@@ -69,24 +58,9 @@ namespace GameScripts
         private double _smoothedSpeed = 0.0;
         private bool _hasAnimator = false;
 
-        [Boom.EditorExposed("Roll Speed", "Speed during roll/dodge in m/s", 5f, 30f, true)]
         private float _rollSpeed = 14.0f;
-
-        [Boom.EditorExposed("Roll Duration", "How long the roll lasts in seconds", 0.1f, 2f, true)]
         private float _rollDuration = 0.9f;
-
-        [Boom.EditorExposed("Roll Cooldown", "Time between rolls in seconds", 0f, 2f, true)]
         private float _rollCooldown = 0.35f;
-
-        // ===== Audio Settings =====
-        [Boom.EditorExposed("Damage Sound", "Sound played when player takes damage")]
-        private string _damageSoundPath = "Resources/Audio/playerPunch_1.wav";
-
-        [Boom.EditorExposed("Death Sound", "Sound played when player dies")]
-        private string _deathSoundPath = "Resources/Audio/playerPunch_1.wav";
-
-        [Boom.EditorExposed("Checkpoint Sound", "Sound played when reaching a checkpoint")]
-        private string _checkpointSoundPath = "Resources/Audio/playerPunch_1.wav";
 
         private bool _isRolling = false;
         private float _rollTimer = 0f;
@@ -95,30 +69,53 @@ namespace GameScripts
         private Vec3 _rollDir = new Vec3(0, 0, 0);
 
         // ==== Crouch / Stealth Fields ====
-        private const int CROUCH_KEY = API.KEY_Q;
+        private const int CROUCH_KEY = API.KEY_LEFT_CONTROL;
         private bool _inCrouchZone = false;
         private bool _isCrouching = false;
         private static bool s_isStealthInvisible = false;
 
+        // NEW: Track all crouch zone entity IDs
+        private HashSet<ulong> _crouchZoneIDs = new HashSet<ulong>();
+
         // ==== Freeze Ability Fields ====
-        private const int PICKUP_KEY = API.KEY_F;
-        private const int USE_KEY = API.KEY_G;
+        private const int USE_FREEZE = API.KEY_E;
+        private bool _wasUseFreezeDown = false;
 
         private bool _canPickupFreeze = false;
         private ulong _currentPickupEntity = 0;
 
-        private bool _wasPickupKeyDown = false;
-        private bool _wasUseKeyDown = false;
-
         private HashSet<ulong> _freezePickupIDs = new HashSet<ulong>();
         private const int MAX_PICKUPS_TO_CHECK = 10;
 
-        // ==== Gravity constant ====
-        private const float GRAVITY = 20f;
+        // ==== Gravity constant ====a
+        private const float GRAVITY = 50f;
         private const float GROUND_STICK = -5.0f;
 
         // ==== CRITICAL: Manual vertical velocity tracking for Character Controller ====
         private float _verticalVelocity = 0f;
+
+        // ==== DEBUG: Helper to log crouch state ====
+        private static void DebugCrouch(string message)
+        {
+            if (DEBUG_CROUCH)
+            {
+                API.Log($"[CROUCH_DEBUG] {message}");
+            }
+        }
+
+        private void DebugLogCrouchState(string context)
+        {
+            if (DEBUG_CROUCH)
+            {
+                API.Log($"[CROUCH_DEBUG] === STATE ({context}) ===");
+                API.Log($"[CROUCH_DEBUG]   _inCrouchZone:        {_inCrouchZone}");
+                API.Log($"[CROUCH_DEBUG]   _isCrouching:         {_isCrouching}");
+                API.Log($"[CROUCH_DEBUG]   s_isStealthInvisible: {s_isStealthInvisible}");
+                API.Log($"[CROUCH_DEBUG]   _isInvulnerable:      {_isInvulnerable}");
+                API.Log($"[CROUCH_DEBUG]   IsPlayerInvisibleToEnemies(): {IsPlayerInvisibleToEnemies()}");
+                API.Log($"[CROUCH_DEBUG]   Registered zones: {_crouchZoneIDs.Count}");
+            }
+        }
 
         public void OnStart(string jsonParams)
         {
@@ -170,22 +167,31 @@ namespace GameScripts
 
             RegisterTriggerCallbacksOnAllTriggers();
             HUD.SetHealth(_health, _maxHealth);
+
+            DebugCrouch($"OnStart complete. Player Entity: {Entity}");
+            DebugLogCrouchState("OnStart");
         }
 
         public void OnCaughtByEnemy(ulong enemyEntity)
         {
-            if (_isInvulnerable || _isRespawning) return;
+            DebugCrouch($"OnCaughtByEnemy called! Enemy: {enemyEntity}");
+            DebugLogCrouchState("OnCaughtByEnemy");
+
+            if (_isInvulnerable || _isRespawning)
+            {
+                DebugCrouch($"  -> BLOCKED: _isInvulnerable={_isInvulnerable}, _isRespawning={_isRespawning}");
+                return;
+            }
 
             _health--;
             HUD.SetHealth(_health, _maxHealth);
 
             Vec3 playerPos = API.GetPosition(Entity);
-            API.PlaySoundAt("player_damage", _damageSoundPath, playerPos, false);
-            API.Set3DMinMaxDistance("player_damage", 1.0f, 20.0f);  // Damage sound heard from medium distance
+            API.PlaySoundAt("player_damage", "Resources/Audio/playerPunch_1.wav", playerPos, false);
+            API.Set3DMinMaxDistance("player_damage", 1.0f, 20.0f);
             API.SetSoundVolume("player_damage", 1.0f);
 
             if (_health <= 0)
-                //RestartLevel();
                 Entry.TriggerPlayerDeath();
             else
                 StartRespawn();
@@ -195,7 +201,8 @@ namespace GameScripts
         {
             _isRespawning = true;
             _verticalVelocity = 0f;
-            // Stop movement by applying zero displacement
+            // REMOVED: Don't overwrite _spawnPoint here - it should keep the checkpoint value
+            // _spawnPoint = new Vec3(0.914043128f, 1.5f, 13.9171219f);
             API.MoveController(Entity, new Vec3(0, 0, 0), 0.001f, 0.016f);
             _fadeState = FadeState.FadingOut;
             _fadeTimer = 0f;
@@ -205,37 +212,47 @@ namespace GameScripts
         private void RestartLevel()
         {
             Vec3 playerPos = API.GetPosition(Entity);
-            API.PlaySoundAt("player_death", _deathSoundPath, playerPos, false);
-            API.Set3DMinMaxDistance("player_death", 2.0f, 30.0f);  // Death sound heard from further away
+            API.PlaySoundAt("player_death", "Resources/Audio/playerPunch_1.wav", playerPos, false);
+            API.Set3DMinMaxDistance("player_death", 2.0f, 30.0f);
             API.SetSoundVolume("player_death", 1.0f);
             API.LoadScene(API.GetCurrentSceneName());
         }
 
         private void RespawnAtCheckpoint()
         {
-            API.TeleportRigidBody(Entity, _spawnPoint);
             _verticalVelocity = 0f;
-            // Stop movement by applying zero displacement
-            API.MoveController(Entity, new Vec3(0, 0, 0), 0.001f, 0.016f);
+
+            API.TeleportController(Entity, _spawnPoint);
+            API.SetPosition(Entity, _spawnPoint);
+
             _isInvulnerable = true;
             _invulnerabilityTimer = 0f;
             HUD.SetHealth(_health, _maxHealth);
             _isRespawning = false;
+
+            PlayerManager.NotifyPlayerRespawned();
+            API.Log("[PlayerMovement] Player respawned - enemies notified");
+            SpotlightFollower.ResetAllSpotlights();
+
+            API.Log($"[PlayerMovement] Respawned at ({_spawnPoint.X}, {_spawnPoint.Y}, {_spawnPoint.Z})");
         }
 
         public void UpdateCheckpoint(Vec3 newCheckpoint)
         {
             _spawnPoint = newCheckpoint;
-            API.PlaySoundAt("checkpoint_save", _checkpointSoundPath, newCheckpoint, false);
-            API.Set3DMinMaxDistance("checkpoint_save", 1.0f, 15.0f);  // Checkpoint sound
+            API.PlaySoundAt("checkpoint_save", "Resources/Audio/playerPunch_1.wav", newCheckpoint, false);
+            API.Set3DMinMaxDistance("checkpoint_save", 1.0f, 15.0f);
             API.SetSoundVolume("checkpoint_save", 0.8f);
         }
 
         private void RegisterTriggerCallbacksOnAllTriggers()
         {
             _freezePickupIDs.Clear();
+            _crouchZoneIDs.Clear();
 
-            string[] standardTriggers = { "Checkpoint", "DamageZone", "PowerUp", "DoorTrigger", "TriggerVolume", "AreaTrigger" };
+            DebugCrouch("=== Registering Trigger Callbacks ===");
+
+            string[] standardTriggers = { "Checkpoint", "DamageZone", "PowerUp", "DoorTrigger", "TriggerVolume", "AreaTrigger", "CrouchTriggerZone" };
             foreach (string name in standardTriggers)
             {
                 ulong id = API.FindEntity(name);
@@ -243,11 +260,20 @@ namespace GameScripts
                 {
                     API.RegisterTriggerEnterCallback(id, OnTriggerEnter);
                     API.RegisterTriggerExitCallback(id, OnTriggerExit);
+                    DebugCrouch($"  Registered standard trigger: {name} (ID: {id})");
                 }
             }
 
-            ulong crouchZone = API.FindEntity("CrouchTriggerZone");
-            API.Log($"[PlayerMovement] CrouchTriggerZone entity ID: {crouchZone}");
+            // Register crouch zones - search for multiple possible names
+            RegisterCrouchZone("CrouchTriggerZone");
+            RegisterCrouchZone("CrouchZone");
+            RegisterCrouchZone("StealthZone");
+            for (int i = 1; i <= 10; i++)
+            {
+                RegisterCrouchZone($"CrouchTriggerZone_{i}");
+                RegisterCrouchZone($"CrouchZone_{i}");
+                RegisterCrouchZone($"StealthZone_{i}");
+            }
 
             RegisterFreezePickup("FreezePowerUp");
             for (int i = 1; i <= MAX_PICKUPS_TO_CHECK; i++)
@@ -255,10 +281,18 @@ namespace GameScripts
                 RegisterFreezePickup($"FreezePowerUp_{i}");
             }
 
-            if (crouchZone != 0)
+            DebugCrouch($"=== Registration Complete: {_crouchZoneIDs.Count} crouch zones ===");
+        }
+
+        private void RegisterCrouchZone(string name)
+        {
+            ulong id = API.FindEntity(name);
+            if (id != 0 && API.HasCollider(id) && API.IsTrigger(id))
             {
-                API.RegisterTriggerEnterCallback(crouchZone, OnTriggerEnter);
-                API.RegisterTriggerExitCallback(crouchZone, OnTriggerExit);
+                DebugCrouch($"  Found Crouch Zone: {name} (ID: {id})");
+                API.RegisterTriggerEnterCallback(id, OnTriggerEnter);
+                API.RegisterTriggerExitCallback(id, OnTriggerExit);
+                _crouchZoneIDs.Add(id);
             }
         }
 
@@ -319,39 +353,24 @@ namespace GameScripts
 
             FreezeManager.Update(dt);
 
-            bool isPickupDown = API.IsKeyDown(PICKUP_KEY);
-            bool isPickupPressed = isPickupDown && !_wasPickupKeyDown;
-            _wasPickupKeyDown = isPickupDown;
+            // ==== DEBUG: Periodic state logging ====
+            if (DEBUG_CROUCH)
+            {
+                _debugLogTimer += dt;
+                if (_debugLogTimer >= DEBUG_LOG_INTERVAL)
+                {
+                    _debugLogTimer = 0f;
+                    DebugLogCrouchState("Periodic Update");
+                }
+            }
 
-            bool isUseDown = API.IsKeyDown(USE_KEY);
-            bool isUsePressed = isUseDown && !_wasUseKeyDown;
-            _wasUseKeyDown = isUseDown;
+            bool isUseFreeze = API.IsKeyDown(USE_FREEZE);
+            bool isFreezePressed = isUseFreeze && !_wasUseFreezeDown;
+            _wasUseFreezeDown = isUseFreeze;
 
             if (API.GetApplicationState() != API.APP_STATE_PAUSED)
             {
-                if (isPickupPressed && _canPickupFreeze)
-                {
-                    if (!PlayerInventory.HasFreezePower())
-                    {
-                        if (PlayerInventory.TryAddFreezeCharge())
-                        {
-                            API.Log("[PlayerMovement] Picked up Freeze Ability!");
-
-                            if (_currentPickupEntity != 0)
-                            {
-                                API.SetPosition(_currentPickupEntity, new Vec3(0, -5000, 0));
-                                _canPickupFreeze = false;
-                                _currentPickupEntity = 0;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        API.Log("[PlayerMovement] Cannot pickup: You already have a Freeze Charge!");
-                    }
-                }
-
-                if (isUsePressed)
+                if (isFreezePressed)
                 {
                     if (PlayerInventory.HasFreezePower())
                     {
@@ -387,30 +406,48 @@ namespace GameScripts
 
             bool isGrounded = IsPlayerGrounded();
 
-            // Crouch logic
-            if (_inCrouchZone)
+            // Crouch logic - CTRL key works anywhere, stealth invisibility only in crouch zones
+            bool crouchDown = API.IsKeyDown(CROUCH_KEY);
+            if (crouchDown && !_isCrouching)
             {
-                bool crouchDown = API.IsKeyDown(CROUCH_KEY);
-                if (crouchDown && !_isCrouching)
+                _isCrouching = true;
+                DebugCrouch($"Crouch START - _inCrouchZone={_inCrouchZone}");
+
+                // Only become invisible to enemies when in a crouch zone
+                if (_inCrouchZone)
                 {
-                    _isCrouching = true;
                     s_isStealthInvisible = true;
-                    if (_hasAnimator) API.AnimatorSetBool(Entity, "IsCrouching", true);
-                    API.Log("[PlayerMovement] Player entered crouch state");
+                    DebugCrouch("  -> INVISIBLE (crouching in zone)");
                 }
-                else if (!crouchDown && _isCrouching)
+                else
                 {
-                    _isCrouching = false;
-                    s_isStealthInvisible = false;
-                    if (_hasAnimator) API.AnimatorSetBool(Entity, "IsCrouching", false);
-                    API.Log("[PlayerMovement] Player exited crouch state");
+                    DebugCrouch("  -> VISIBLE (not in zone)");
                 }
+
+                if (_hasAnimator) API.AnimatorSetBool(Entity, "IsCrouching", true);
             }
-            else if (_isCrouching)
+            else if (!crouchDown && _isCrouching)
             {
                 _isCrouching = false;
                 s_isStealthInvisible = false;
+                DebugCrouch("Crouch END - now VISIBLE");
                 if (_hasAnimator) API.AnimatorSetBool(Entity, "IsCrouching", false);
+            }
+
+            // Update stealth visibility based on crouch zone while crouching
+            if (_isCrouching)
+            {
+                bool wasInvisible = s_isStealthInvisible;
+                s_isStealthInvisible = _inCrouchZone;
+
+                // Log state changes
+                if (s_isStealthInvisible != wasInvisible)
+                {
+                    if (s_isStealthInvisible)
+                        DebugCrouch("Stealth CHANGED: INVISIBLE (entered zone while crouching)");
+                    else
+                        DebugCrouch("Stealth CHANGED: VISIBLE (left zone while crouching)");
+                }
             }
 
             if (_isCrouching)
@@ -425,7 +462,6 @@ namespace GameScripts
                     _verticalVelocity = -0.5f;
                 }
 
-                // Use MoveController with displacement (velocity * dt)
                 Vec3 displacement = new Vec3(0, _verticalVelocity * dt, 0);
                 API.MoveController(Entity, displacement, 0.001f, dt);
 
@@ -438,32 +474,28 @@ namespace GameScripts
                 }
                 return;
             }
-
             bool allowMove = !API.IsMouseDown(API.MOUSE_RIGHT);
 
-            // Update vertical velocity with gravity
+            // --- Gravity Handling ---
             if (!isGrounded)
             {
+                // Airborne: apply gravity acceleration
                 _verticalVelocity -= GRAVITY * dt;
             }
             else
             {
-                // Only reset if we were actually falling
-                if (_verticalVelocity < GROUND_STICK)
-                {
-                    _verticalVelocity = GROUND_STICK;
-                }
-                else
+                // Grounded: use small stick force to maintain ground contact
+                // Only reset if falling (preserves upward velocity for jumps if added later)
+                if (_verticalVelocity < 0f)
                 {
                     _verticalVelocity = GROUND_STICK;
                 }
             }
 
             // Clamp terminal velocity
-            if (_verticalVelocity < -50f) _verticalVelocity = -50f;
-            if (_verticalVelocity > 15f) _verticalVelocity = 15f;
+            _verticalVelocity = Math.Max(_verticalVelocity, -50f);
+            _verticalVelocity = Math.Min(_verticalVelocity, 15f);
 
-            // Horizontal movement input
             float inputX = 0f, inputZ = 0f;
             if (allowMove)
             {
@@ -481,7 +513,6 @@ namespace GameScripts
             if (sneakKey) currentSpeed = _sneakSpeed;
             else if (sprintKey) currentSpeed = _sprintSpeed;
 
-            // Calculate horizontal velocity
             float velX = 0f, velZ = 0f;
             if (hasInput)
             {
@@ -506,7 +537,6 @@ namespace GameScripts
                 }
             }
 
-            // Roll logic
             bool ctrlDown = API.IsKeyDown(API.KEY_LEFT_CONTROL);
             Vec3 desiredMoveDir = new Vec3(0, 0, 0);
             if (hasInput)
@@ -543,7 +573,6 @@ namespace GameScripts
                 _isInvulnerable = true;
                 _wasCtrlPressed = ctrlDown;
 
-                // Use MoveController with displacement (velocity * dt)
                 Vec3 displacement = new Vec3(velX * dt, _verticalVelocity * dt, velZ * dt);
                 API.MoveController(Entity, displacement, 0.001f, dt);
                 return;
@@ -563,7 +592,6 @@ namespace GameScripts
                 }
                 _wasCtrlPressed = ctrlDown;
 
-                // Use MoveController with displacement (velocity * dt)
                 Vec3 displacement = new Vec3(velX * dt, _verticalVelocity * dt, velZ * dt);
                 API.MoveController(Entity, displacement, 0.001f, dt);
                 return;
@@ -573,7 +601,6 @@ namespace GameScripts
                 _rollCooldownTimer = Math.Max(0f, _rollCooldownTimer - dt);
             _wasCtrlPressed = ctrlDown;
 
-            // Apply final movement using MoveController with displacement (velocity * dt)
             Vec3 finalDisplacement = new Vec3(velX * dt, _verticalVelocity * dt, velZ * dt);
             API.MoveController(Entity, finalDisplacement, 0.001f, dt);
 
@@ -590,6 +617,9 @@ namespace GameScripts
 
         private bool IsPlayerGrounded()
         {
+            // Use the engine's native controller grounded check.
+            // The previous raycast with 0.4f distance was causing false positives while airborne,
+            // resulting in "sticky" gravity (constant fall speed) instead of proper acceleration.
             return API.IsControllerGrounded(Entity);
         }
 
@@ -597,21 +627,49 @@ namespace GameScripts
         {
             try
             {
-                if (otherEntity != s_playerEntity) return;
+                DebugCrouch($"OnTriggerEnter: trigger={triggerEntity}, other={otherEntity}, player={s_playerEntity}");
 
-                ulong crouchZone = API.FindEntity("CrouchTriggerZone");
-                if (triggerEntity == crouchZone && crouchZone != 0 && s_instance != null)
+                if (otherEntity != s_playerEntity || s_instance == null)
                 {
-                    s_instance._inCrouchZone = true;
-                    API.Log("[PlayerMovement] Player ENTERED CrouchTriggerZone");
+                    DebugCrouch($"  -> IGNORED (not player or no instance)");
                     return;
                 }
 
-                if (s_instance != null && s_instance._freezePickupIDs.Contains(triggerEntity))
+                // Check if this is a crouch zone using our cached IDs
+                if (s_instance._crouchZoneIDs.Contains(triggerEntity))
                 {
-                    s_instance._canPickupFreeze = true;
-                    s_instance._currentPickupEntity = triggerEntity;
-                    API.Log($"[PlayerMovement] Standing on Freeze Powerup (ID: {triggerEntity}). Press F to pickup.");
+                    s_instance._inCrouchZone = true;
+                    DebugCrouch($"  -> CROUCH ZONE ENTERED (ID: {triggerEntity})");
+                    DebugCrouch($"     _isCrouching={s_instance._isCrouching}");
+
+                    // If already crouching, immediately become invisible
+                    if (s_instance._isCrouching)
+                    {
+                        s_isStealthInvisible = true;
+                        DebugCrouch($"     Already crouching - now INVISIBLE");
+                    }
+                    return;
+                }
+                else
+                {
+                    DebugCrouch($"  -> NOT a registered crouch zone");
+                }
+
+                // Check freeze pickups
+                if (s_instance._freezePickupIDs.Contains(triggerEntity))
+                {
+                    if (!PlayerInventory.HasFreezePower())
+                    {
+                        if (PlayerInventory.TryAddFreezeCharge())
+                        {
+                            API.Log($"[PlayerMovement] Instant Pickup: Freeze Powerup (ID: {triggerEntity})");
+                            API.DestroyEntity(triggerEntity);
+                        }
+                    }
+                    else
+                    {
+                        API.Log("[PlayerMovement] Inventory Full: Cannot pick up freeze.");
+                    }
                     return;
                 }
             }
@@ -625,25 +683,28 @@ namespace GameScripts
         {
             try
             {
-                if (otherEntity != s_playerEntity) return;
+                DebugCrouch($"OnTriggerExit: trigger={triggerEntity}, other={otherEntity}, player={s_playerEntity}");
 
-                ulong crouchZone = API.FindEntity("CrouchTriggerZone");
-                if (triggerEntity == crouchZone && crouchZone != 0 && s_instance != null)
+                if (otherEntity != s_playerEntity || s_instance == null)
                 {
-                    s_instance._inCrouchZone = false;
-                    API.Log("[PlayerMovement] Player EXITED CrouchTriggerZone");
-
-                    if (s_instance._isCrouching)
-                    {
-                        s_instance._isCrouching = false;
-                        s_isStealthInvisible = false;
-                        if (s_instance._hasAnimator)
-                            API.AnimatorSetBool(s_instance.Entity, "IsCrouching", false);
-                    }
+                    DebugCrouch($"  -> IGNORED (not player or no instance)");
                     return;
                 }
 
-                if (s_instance != null && s_instance._freezePickupIDs.Contains(triggerEntity))
+                // Check if this is a crouch zone using our cached IDs
+                if (s_instance._crouchZoneIDs.Contains(triggerEntity))
+                {
+                    s_instance._inCrouchZone = false;
+                    DebugCrouch($"  -> CROUCH ZONE EXITED (ID: {triggerEntity})");
+
+                    // Immediately become visible when leaving crouch zone
+                    s_isStealthInvisible = false;
+                    DebugCrouch($"     Now VISIBLE to enemies");
+                    return;
+                }
+
+                // Check freeze pickups
+                if (s_instance._freezePickupIDs.Contains(triggerEntity))
                 {
                     s_instance._canPickupFreeze = false;
                     if (s_instance._currentPickupEntity == triggerEntity)
@@ -656,6 +717,36 @@ namespace GameScripts
             catch (Exception ex)
             {
                 API.Log($"[PlayerMovement] ERROR in OnTriggerExit: {ex.Message}");
+            }
+        }
+
+        // PUBLIC: Allow external scripts (like CrouchTriggerZone) to notify us
+        public static void SetInCrouchZone(bool inZone)
+        {
+            DebugCrouch($"SetInCrouchZone called externally: inZone={inZone}");
+
+            if (s_instance == null)
+            {
+                DebugCrouch("  -> IGNORED (no instance)");
+                return;
+            }
+
+            bool wasInZone = s_instance._inCrouchZone;
+            s_instance._inCrouchZone = inZone;
+
+            if (inZone && !wasInZone)
+            {
+                DebugCrouch("  External: Entered crouch zone");
+                if (s_instance._isCrouching)
+                {
+                    s_isStealthInvisible = true;
+                    DebugCrouch("  Already crouching - now INVISIBLE");
+                }
+            }
+            else if (!inZone && wasInZone)
+            {
+                DebugCrouch("  External: Exited crouch zone");
+                s_isStealthInvisible = false;
             }
         }
 
@@ -682,6 +773,28 @@ namespace GameScripts
         }
         public int GetHealth() => _health;
         public static ulong GetPlayerEntity() => s_playerEntity;
-        public static bool IsPlayerInvisibleToEnemies() => s_isStealthInvisible;
+        public static bool IsPlayerInvisibleToEnemies()
+        {
+            if (s_instance == null) return false;
+
+            // Check crouch stealth
+            if (s_isStealthInvisible) return true;
+
+            // Check invulnerability (respawn protection)
+            if (s_instance._isInvulnerable) return true;
+
+            return false;
+        }
+
+        // Debug helper
+        public static bool IsInCrouchZone()
+        {
+            return s_instance != null && s_instance._inCrouchZone;
+        }
+
+        public static bool IsCrouching()
+        {
+            return s_instance != null && s_instance._isCrouching;
+        }
     }
 }

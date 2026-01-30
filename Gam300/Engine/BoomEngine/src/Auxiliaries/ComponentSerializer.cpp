@@ -580,17 +580,90 @@ namespace Boom
         RegisterPropertyComponent<ThirdPersonCameraComponent>("ThirdPersonCameraComponent");
 
         // === SPRITE COMPONENT ===
-        RegisterPropertyComponent<SpriteComponent>("SpriteComponent");
+        // Custom serializer for backwards compatibility with uiOverlay -> renderAs3D migration
+        registry.RegisterComponentSerializer(
+            "SpriteComponent",
+            // ----- SERIALIZE -----
+            [](YAML::Emitter& e, EntityRegistry& reg, EntityID ent)
+            {
+                if (!reg.all_of<SpriteComponent>(ent))
+                    return;
 
-        // === PAUSE MENU TAG COMPONENT ===
-        RegisterPropertyComponent<PauseMenuTagComponent>("PauseMenuTagComponent");
+                auto& sprite = reg.get<SpriteComponent>(ent);
 
-        // === DEATH MENU TAG COMPONENT ===
-        RegisterPropertyComponent<DeathMenuTagComponent>("DeathMenuTagComponent");
+                e << YAML::Key << "SpriteComponent" << YAML::Value << YAML::BeginMap;
+                e << YAML::Key << "textureID" << YAML::Value << sprite.textureID;
+                e << YAML::Key << "color" << YAML::Value
+                    << YAML::Flow << YAML::BeginSeq
+                    << sprite.color.x << sprite.color.y << sprite.color.z << sprite.color.w
+                    << YAML::EndSeq;
+                e << YAML::Key << "renderAs3D" << YAML::Value << sprite.renderAs3D;
+                e << YAML::EndMap;
+            },
+            // ----- DESERIALIZE -----
+            [](const YAML::Node& data, EntityRegistry& reg, EntityID ent, AssetRegistry&)
+            {
+                if (!data || !data.IsMap())
+                    return;
+
+                auto& sprite = reg.get_or_emplace<SpriteComponent>(ent);
+
+                if (auto v = data["textureID"])
+                    sprite.textureID = v.as<uint64_t>(sprite.textureID);
+
+                if (auto c = data["color"]; c && c.IsSequence() && c.size() == 4) {
+                    sprite.color.x = c[0].as<float>(sprite.color.x);
+                    sprite.color.y = c[1].as<float>(sprite.color.y);
+                    sprite.color.z = c[2].as<float>(sprite.color.z);
+                    sprite.color.w = c[3].as<float>(sprite.color.w);
+                }
+
+                // Handle both new 'renderAs3D' and legacy 'uiOverlay' property
+                if (auto v = data["renderAs3D"]) {
+                    sprite.renderAs3D = v.as<bool>(sprite.renderAs3D);
+                }
+                else if (auto v = data["uiOverlay"]) {
+                    // Legacy: uiOverlay=true means 2D (renderAs3D=false)
+                    sprite.renderAs3D = !v.as<bool>(true);
+                }
+            }
+        );
+
+        // === MENU COMPONENT ===
+        registry.RegisterComponentSerializer(
+            "MenuComponent",
+            // ----- SERIALIZE -----
+            [](YAML::Emitter& e, EntityRegistry& reg, EntityID ent)
+            {
+                if (!reg.all_of<MenuComponent>(ent)) return;
+
+                auto& mc = reg.get<MenuComponent>(ent);
+
+                e << YAML::Key << "MenuComponent" << YAML::Value << YAML::BeginMap;
+                // Explicitly cast the Enum to int for saving
+                e << YAML::Key << "MenuType" << YAML::Value << static_cast<int>(mc.menuType);
+                e << YAML::EndMap;
+            },
+            // ----- DESERIALIZE -----
+            [](const YAML::Node& data, EntityRegistry& reg, EntityID ent, AssetRegistry&)
+            {
+                if (!data || !data.IsMap()) return;
+
+                auto& mc = reg.get_or_emplace<MenuComponent>(ent);
+
+                // Load the int and cast it back to the Enum
+                if (auto v = data["MenuType"]) {
+                    int typeVal = v.as<int>(0);
+                    mc.menuType = static_cast<MenuType>(typeVal);
+                }
+            }
+        );
 
         // === DEACTIVATED COMPONENT ===
         RegisterPropertyComponent<DeactivatedComponent>("DeactivatedComponent");
 
+        // === VIDEO COMPONENT ===
+        RegisterPropertyComponent<VideoComponent>("VideoComponent");
 
         // === SOUND COMPONENT ===
         registry.RegisterComponentSerializer(

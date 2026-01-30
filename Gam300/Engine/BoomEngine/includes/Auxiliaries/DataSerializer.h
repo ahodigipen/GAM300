@@ -18,6 +18,7 @@ namespace Boom
     {
         // Version tracking for backward compatibility
         static constexpr const char* SERIALIZATION_VERSION = "1.0";
+        bool m_SaveAdditiveObjects = true;
 
         // ===== ENTITY SERIALIZATION =====
         void Serialize(EntityRegistry& scene, const std::string& path)
@@ -38,6 +39,11 @@ namespace Boom
                 // EnTT orphan() returns true if entity has NO components attached
                 if (scene.orphan(entt))
                     continue;
+
+                if (!m_SaveAdditiveObjects && scene.any_of<Boom::MenuComponent>(entt))
+                {
+                    continue;
+                }
 
                 emitter << YAML::BeginMap;
                 SerializationRegistry::Instance().SerializeAllComponents(emitter, scene, entt);

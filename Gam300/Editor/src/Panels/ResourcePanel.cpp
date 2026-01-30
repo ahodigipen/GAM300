@@ -6,9 +6,12 @@
 #include "Auxiliaries/Assets.h"
 #include "Graphics/Textures/Texture.h"
 #include "Graphics/Textures/Compression.h"
+#include "Graphics/Renderer.h"
 
 #include <filesystem>
 #include <future>
+#include <algorithm>
+#include <cctype>
 
 #ifndef ICON_FA_IMAGE
 #define ICON_FA_IMAGE ""
@@ -26,6 +29,9 @@ namespace EditorUI {
 		m_App = dynamic_cast<Boom::AppInterface*>(owner);
 		DEBUG_POINTER(m_App, "AppInterface");
 		m_Icon = m_App->GetTexIDFromPath("Resources/Textures/Icons/asset.png");
+		m_ModelIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/model.png");
+		m_MaterialIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/material.png");
+		m_ScriptIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/script.png");
     }
 
     void ResourcePanel::OnShow()
@@ -99,17 +105,39 @@ namespace EditorUI {
 					// filters
 					if (static_cast<AssetType>(currentType) != AssetType::UNKNOWN && asset->type != static_cast<AssetType>(currentType))
 						return;
-					if (asset->name.find(searchBuff) == std::string::npos) 
+
+					// Case-insensitive search comparison
+					std::string searchLower(searchBuff);
+					std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(),
+						[](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+					std::string nameLower = asset->name;
+					std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(),
+						[](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+					if (nameLower.find(searchLower) == std::string::npos)
 						return;
 
 					ImGui::TableNextColumn();
 					ImTextureID texid{ m_Icon }; //default file icon
+
+					// change icon based on asset type
+					MaterialAsset* matAsset = dynamic_cast<MaterialAsset*>(asset);
+					if (matAsset) {
+						// Try to get material preview, fall back to icon if unavailable
+						uint32_t previewTex = GetMaterialPreviewTexture(matAsset);
+						texid = (previewTex != 0) ? (ImTextureID)(intptr_t)previewTex : m_MaterialIcon;
+					}
+					else if (dynamic_cast<ModelAsset*>(asset)) texid = m_ModelIcon;
+					else if (dynamic_cast<ScriptAsset*>(asset)) texid = m_ScriptIcon;
+
 					TextureAsset* tex{ dynamic_cast<TextureAsset*>(asset) };
 					if (tex) texid = *tex->data.get();
 
 					ImGui::PushID((int)asset->uid);
+					// Material previews need flipped UVs (OpenGL origin is bottom-left, ImGui expects top-left)
+					ImVec2 uv0 = (matAsset && texid != m_MaterialIcon) ? ImVec2(0, 1) : ImVec2(0, 0);
+					ImVec2 uv1 = (matAsset && texid != m_MaterialIcon) ? ImVec2(1, 0) : ImVec2(1, 1);
 					bool isClicked = ImGui::ImageButton("##thumb", texid, ImVec2(ASSET_SIZE, ASSET_SIZE),
-						ImVec2(0, 0), ImVec2(1, 1),
+						uv0, uv1,
 						ImVec4(0, 0, 0, 1),
 						ImVec4(1, 1, 1, 1));
 
@@ -118,7 +146,7 @@ namespace EditorUI {
 						ImGui::Text("Dragging Texture: %s", asset->name.c_str());
 						ImGui::EndDragDropSource();
 					}
-					else if (dynamic_cast<MaterialAsset*>(asset) && ImGui::BeginDragDropSource()) {
+					else if (matAsset && ImGui::BeginDragDropSource()) {
 						ImGui::SetDragDropPayload(CONSTANTS::DND_PAYLOAD_MATERIAL.data(), &asset->uid, sizeof(AssetID));
 						ImGui::Text("Dragging Material: %s", asset->name.c_str());
 						ImGui::EndDragDropSource();
@@ -131,6 +159,11 @@ namespace EditorUI {
 					else if (dynamic_cast<SkyboxAsset*>(asset) && ImGui::BeginDragDropSource()) {
 						ImGui::SetDragDropPayload(CONSTANTS::DND_PAYLOAD_SKYBOX.data(), &asset->uid, sizeof(AssetID));
 						ImGui::Text("Dragging Skybox: %s", asset->name.c_str());
+						ImGui::EndDragDropSource();
+					}
+					else if (dynamic_cast<AnimationAsset*>(asset) && ImGui::BeginDragDropSource()) {
+						ImGui::SetDragDropPayload(CONSTANTS::DND_PAYLOAD_ANIMATION.data(), &asset->uid, sizeof(AssetID));
+						ImGui::Text("Dragging Animation: %s", asset->name.c_str());
 						ImGui::EndDragDropSource();
 					}
 					ImGui::PopID();
@@ -194,4 +227,33 @@ namespace EditorUI {
 		name = baseName;
 	}
 
+	uint32_t ResourcePanel::GetMaterialPreviewTexture(Boom::MaterialAsset* mat) {
+		if (!m_Ctx || !m_Ctx->renderer || !m_Ctx->assets) return 0;
+
+		// Initialize material preview system if not already done
+		if (!m_Ctx->renderer->IsMaterialPreviewInitialized()) {
+			// Find sphere model in assets
+			Boom::Model3D sphereModel;
+			auto& modelMap = m_Ctx->assets->GetMap<Boom::ModelAsset>();
+			for (auto& [assetID, assetPtr] : modelMap) {
+				auto* modelAsset = dynamic_cast<Boom::ModelAsset*>(assetPtr.get());
+				if (modelAsset && modelAsset->source.find("sphere.fbx") != std::string::npos) {
+					sphereModel = modelAsset->data;
+					break;
+				}
+			}
+			if (sphereModel) {
+				m_Ctx->renderer->InitMaterialPreview(sphereModel);
+			} else {
+				return 0; // Can't initialize without sphere model
+			}
+		}
+
+		// Resolve texture IDs to actual texture pointers
+		m_Ctx->assets->ResolveMaterialTextures(mat);
+
+		// Render and return the cached preview texture
+		return m_Ctx->renderer->RenderMaterialPreviewCached(
+			mat->uid, mat->data, PREVIEW_YAW, PREVIEW_PITCH, PREVIEW_DISTANCE);
+	}
 } // namespace EditorUI
