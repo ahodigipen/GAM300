@@ -477,11 +477,6 @@ namespace EditorUI {
                     ImGui::SetTooltip("Visualize bone hierarchy as colored lines");
                 }
 
-                ImGui::Checkbox("Show Physics Debug", &ctx->ShowPhysicsDebug);
-                if (ImGui::IsItemHovered()) {
-                    ImGui::SetTooltip("Show/hide physics collision debug lines");
-                }
-
                 ImGui::Checkbox("Show Mesh Debug", &ctx->ShowMeshDebug);
                 if (ImGui::IsItemHovered()) {
                     ImGui::SetTooltip("Show/hide mesh edge debug lines (disable for clearer skeleton view)");
