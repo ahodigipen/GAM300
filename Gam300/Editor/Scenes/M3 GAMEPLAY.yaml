@@ -34,6 +34,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: true
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: BOX
     InfoComponent:
@@ -54,6 +55,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: true
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: BOX
     InfoComponent:
@@ -111,6 +113,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -164,6 +167,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -201,6 +205,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -238,6 +243,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -275,6 +281,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: true
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: BOX
     InfoComponent:
@@ -313,7 +320,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 2.53051853, -14.2555885]
-        Rotate: [0, 512.109924, 0]
+        Rotate: [0, 422.109924, 0]
         Scale: [68.965065, 68.9655151, 68.965065]
     ScriptComponent:
       Enabled: true
@@ -334,6 +341,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -371,6 +379,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -408,6 +417,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -445,6 +455,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -544,7 +555,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [2.07987475, 17.7299271, 63.520256]
-        Rotate: [0, 199.672256, 0]
+        Rotate: [0, 214.807587, 0]
         Scale: [0.0145000033, 0.0145000005, 0.0145000033]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -640,6 +651,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: CAPSULE
     InfoComponent:
@@ -648,8 +660,8 @@ ENTITIES:
       UID: 14450237795829985322
     TransformComponent:
       Transform:
-        Translate: [-63.2716866, 31.6161957, 19.9432697]
-        Rotate: [180, 44.4718933, 180]
+        Translate: [-60.4327278, 31.6161957, 18.3847198]
+        Rotate: [0, -61.2338295, 0]
         Scale: [0.0200004745, 0.0199999996, 0.0200004745]
     RigidBodyComponent:
       RigidBody:
@@ -727,12 +739,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 3.47599721
       BoolParams:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-46.5436516, 31.8782978, 10.7598639]
+      Target: [-64.7831268, 31.8782978, 20.773016]
       Speed: 3.5
       ArriveRadius: 0.150000006
       Active: true
@@ -748,7 +760,7 @@ ENTITIES:
       PatrolPoints:
         - [-64.7831268, 31.8782978, 20.773016]
         - [-46.5436516, 31.8782978, 10.7598639]
-      PatrolIndex: 1
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -762,6 +774,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: CAPSULE
     InfoComponent:
@@ -770,8 +783,8 @@ ENTITIES:
       UID: 263206634475258297
     TransformComponent:
       Transform:
-        Translate: [-41.1296539, 24.3438988, -9.79262733]
-        Rotate: [0, 89.980217, 0]
+        Translate: [-62.4100304, 24.3438988, -9.79262733]
+        Rotate: [0, -89.980217, 0]
         Scale: [0.0200004745, 0.0199999996, 0.0200004745]
     RigidBodyComponent:
       RigidBody:
@@ -849,12 +862,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 0.000341020233
       BoolParams:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-31.1600056, 24.8474388, -9.79262638]
+      Target: [-62.5423012, 24.8474388, -9.79262638]
       Speed: 4.55000019
       ArriveRadius: 0.150000006
       Active: true
@@ -884,6 +897,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: CAPSULE
     InfoComponent:
@@ -892,8 +906,8 @@ ENTITIES:
       UID: 9730896463395262189
     TransformComponent:
       Transform:
-        Translate: [-31.8510647, 24.3238983, 14.6002922]
-        Rotate: [180, -1.8669336e-05, 180]
+        Translate: [-31.8510647, 24.3238983, 21.7545967]
+        Rotate: [180, -9.52163029, 180]
         Scale: [0.0200001765, 0.0199999996, 0.0200001765]
     RigidBodyComponent:
       RigidBody:
@@ -971,7 +985,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 4.39162827
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -1006,6 +1020,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: CAPSULE
     InfoComponent:
@@ -1014,8 +1029,8 @@ ENTITIES:
       UID: 7103488143176582610
     TransformComponent:
       Transform:
-        Translate: [-23.5900803, 13.3755474, 62.1609192]
-        Rotate: [180, -90, 180]
+        Translate: [-23.3554268, 13.3755474, 62.1609192]
+        Rotate: [180, 90, 180]
         Scale: [0.0200004764, 0.0199999996, 0.0200004764]
     RigidBodyComponent:
       RigidBody:
@@ -1093,12 +1108,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 2.47587752
       BoolParams:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-28.2320347, 13.4397764, 62.1609154]
+      Target: [-13.3622103, 13.4397764, 62.1609154]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -1115,7 +1130,7 @@ ENTITIES:
         - [-13.3622103, 13.4397764, 62.1609154]
         - [-28.2320347, 13.4397764, 62.1609154]
         - [-34.7096901, 13.4397764, 62.1609154]
-      PatrolIndex: 1
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -1129,6 +1144,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: CAPSULE
     InfoComponent:
@@ -1137,8 +1153,8 @@ ENTITIES:
       UID: 11377284783086712530
     TransformComponent:
       Transform:
-        Translate: [-12.6949921, 13.3755455, 31.8400154]
-        Rotate: [180, 90, 180]
+        Translate: [-12.2038927, 13.3755455, 31.8400135]
+        Rotate: [0, 90, 0]
         Scale: [0.0200004783, 0.0199999996, 0.0200004783]
     RigidBodyComponent:
       RigidBody:
@@ -1216,7 +1232,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 0.0707147196
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -1237,7 +1253,7 @@ ENTITIES:
       PatrolPoints:
         - [-23.0942459, 13.4397764, 31.8400135]
         - [-12.0609379, 13.4397764, 31.8400135]
-      PatrolIndex: 1
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -1251,6 +1267,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: CAPSULE
     InfoComponent:
@@ -1259,8 +1276,8 @@ ENTITIES:
       UID: 4350822310922817577
     TransformComponent:
       Transform:
-        Translate: [-13.3622131, 13.3755455, 41.742897]
-        Rotate: [0, -0, 0]
+        Translate: [-13.362216, 13.3755465, 51.1671562]
+        Rotate: [180, 4.96325556e-05, 180]
         Scale: [0.0200004783, 0.0199999996, 0.0200004783]
     RigidBodyComponent:
       RigidBody:
@@ -1338,12 +1355,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 2.47599053
       BoolParams:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-13.3622103, 13.4397764, 58.4554634]
+      Target: [-13.3622103, 13.4397764, 39.6917191]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -1359,7 +1376,7 @@ ENTITIES:
       PatrolPoints:
         - [-13.3622103, 13.4397764, 39.6917191]
         - [-13.3622103, 13.4397764, 58.4554634]
-      PatrolIndex: 1
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -1371,7 +1388,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-32.5929832, 24.2603378, -2.77601147]
-        Rotate: [0, 180, 0]
+        Rotate: [0, 270, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -1483,6 +1500,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 745832861092578866
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -1520,6 +1538,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 10218476581140508616
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -1557,6 +1576,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 16135378917386993712
         Type: CONVEX_MESH
     InfoComponent:
@@ -1632,6 +1652,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: true
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: BOX
     InfoComponent:
@@ -1656,6 +1677,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: true
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: BOX
     InfoComponent:
@@ -1680,6 +1702,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -1717,6 +1740,7 @@ ENTITIES:
         StaticFriction: 0.5
         Restitution: 0
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 6064271428936207948
         Type: CONVEX_MESH
     InfoComponent:
@@ -1754,6 +1778,7 @@ ENTITIES:
         StaticFriction: 0.5
         Restitution: 0
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 6064271428936207948
         Type: CONVEX_MESH
     InfoComponent:
@@ -1791,6 +1816,7 @@ ENTITIES:
         StaticFriction: 0.5
         Restitution: 0
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 6064271428936207948
         Type: CONVEX_MESH
     InfoComponent:
@@ -1888,6 +1914,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 2665223197068733968
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -1951,6 +1978,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -1986,7 +2014,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-46.1160126, 24.2603378, -18.4139233]
-        Rotate: [0, 0, 0]
+        Rotate: [0, 270, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -2124,6 +2152,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -2161,6 +2190,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: true
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: BOX
     InfoComponent:
@@ -2205,6 +2235,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -2349,6 +2380,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: CAPSULE
     InfoComponent:
@@ -2357,8 +2389,8 @@ ENTITIES:
       UID: 9778697280815915040
     TransformComponent:
       Transform:
-        Translate: [11.9110031, 13.4210215, -9.57754326]
-        Rotate: [180, -90, 180]
+        Translate: [3.49125409, 13.4210215, -9.57754421]
+        Rotate: [0, 90, 0]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -2436,12 +2468,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 2.47598505
       BoolParams:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-4.79301453, 13.4210176, -9.57754421]
+      Target: [23.1396694, 13.4210176, -9.57754421]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -2457,7 +2489,7 @@ ENTITIES:
       PatrolPoints:
         - [-4.79301453, 13.4210176, -9.57754421]
         - [23.1396694, 13.4210176, -9.57754421]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -2471,6 +2503,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: CAPSULE
     InfoComponent:
@@ -2479,8 +2512,8 @@ ENTITIES:
       UID: 3476234535713046263
     TransformComponent:
       Transform:
-        Translate: [-14.5551052, 13.4210224, 19.3370743]
-        Rotate: [0, -89.980217, 0]
+        Translate: [-5.94089222, 13.4210205, 19.3370743]
+        Rotate: [0, 89.980217, 0]
         Scale: [0.0200004801, 0.0199999996, 0.0200004801]
     RigidBodyComponent:
       RigidBody:
@@ -2558,12 +2591,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 2.47595549
       BoolParams:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-22.7366295, 13.404274, 19.3370762]
+      Target: [10.9044418, 13.404274, 19.3370762]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -2579,7 +2612,7 @@ ENTITIES:
       PatrolPoints:
         - [-22.7366295, 13.404274, 19.3370762]
         - [10.9044418, 13.404274, 19.3370762]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -2593,6 +2626,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: CAPSULE
     InfoComponent:
@@ -2601,8 +2635,8 @@ ENTITIES:
       UID: 7568830222834310318
     TransformComponent:
       Transform:
-        Translate: [-8.9820261, 13.4210215, -8.18049717]
-        Rotate: [0, -0, 0]
+        Translate: [-8.9820261, 13.4210215, -1.86917818]
+        Rotate: [180, 2.23118004e-05, 180]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -2680,12 +2714,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 2.47595549
       BoolParams:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-8.98202515, 13.2056856, 7.27203894]
+      Target: [-8.98202515, 13.2056856, -10.6896248]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -2701,7 +2735,7 @@ ENTITIES:
       PatrolPoints:
         - [-8.98202515, 13.2056856, -10.6896248]
         - [-8.98202515, 13.2056856, 7.27203894]
-      PatrolIndex: 1
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -2731,6 +2765,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: true
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: BOX
     InfoComponent:
@@ -2788,6 +2823,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 12807707659119185110
         Type: CONVEX_MESH
     InfoComponent:
@@ -2825,6 +2861,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 16135378917386993712
         Type: CONVEX_MESH
     InfoComponent:
@@ -2929,7 +2966,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-56.9920845, 24.2603378, -2.19607687]
-        Rotate: [0, 0, 0]
+        Rotate: [0, 270, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3028,6 +3065,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 7982763225733669098
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -3063,7 +3101,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-14.5949755, 13.3514919, 22.6192093]
-        Rotate: [0, 0, 0]
+        Rotate: [0, 270, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3157,7 +3195,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [17.540493, 13.4146328, 3.31294298]
-        Rotate: [5.00895476e-06, 0, 5.00895476e-06]
+        Rotate: [5.00895476e-06, 270, 5.00895476e-06]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3251,7 +3289,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [9.27553558, 0.550991118, -14.2555885]
-        Rotate: [0, 0, 0]
+        Rotate: [0, 270, 0]
         Scale: [0.0145000955, 0.0145000005, 0.0145000955]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3345,7 +3383,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 0.530518472, -14.2555885]
-        Rotate: [0, 332.109924, 0]
+        Rotate: [0, 242.109924, 0]
         Scale: [0.0144997435, 0.0145000005, 0.0144997435]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3473,6 +3511,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 16135378917386993712
         Type: CONVEX_MESH
     InfoComponent:
@@ -3510,6 +3549,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 16135378917386993712
         Type: CONVEX_MESH
     InfoComponent:
@@ -3611,6 +3651,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13583425803943598177
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -3648,6 +3689,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13583425803943598177
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -4005,6 +4047,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 5710357086850101923
         Type: CONVEX_MESH
     InfoComponent:
@@ -4042,6 +4085,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 5710357086850101923
         Type: CONVEX_MESH
     InfoComponent:
@@ -4143,6 +4187,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 5710357086850101923
         Type: CONVEX_MESH
     InfoComponent:
@@ -4196,6 +4241,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 4356505632757386652
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -4281,6 +4327,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -4318,6 +4365,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -4355,6 +4403,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 1541321499593983523
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -4392,6 +4441,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 15621530879397167257
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -4477,6 +4527,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -4514,6 +4565,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -4551,6 +4603,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -4588,6 +4641,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -4625,6 +4679,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -4662,6 +4717,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -4699,6 +4755,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -4736,6 +4793,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -4773,6 +4831,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -4810,6 +4869,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -4847,6 +4907,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -4884,6 +4945,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -4921,6 +4983,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -4958,6 +5021,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -5011,6 +5075,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 2061877446978793964
         Type: CONVEX_MESH
     InfoComponent:
@@ -5048,6 +5113,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -5085,6 +5151,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -5122,6 +5189,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 8640865451825922005
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -5159,6 +5227,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -5196,6 +5265,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 12807707659119185110
         Type: CONVEX_MESH
     InfoComponent:
@@ -5233,6 +5303,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -5270,6 +5341,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 5710357086850101923
         Type: CONVEX_MESH
     InfoComponent:
@@ -5307,6 +5379,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -5344,6 +5417,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 5710357086850101923
         Type: CONVEX_MESH
     InfoComponent:
@@ -5381,6 +5455,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 5710357086850101923
         Type: CONVEX_MESH
     InfoComponent:
@@ -5418,6 +5493,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 4356505632757386652
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -5455,6 +5531,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 4356505632757386652
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -5492,6 +5569,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 5710357086850101923
         Type: CONVEX_MESH
     InfoComponent:
@@ -5529,6 +5607,7 @@ ENTITIES:
         StaticFriction: 1
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 1469225857040615382
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -5566,6 +5645,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 7982763225733669098
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -5667,6 +5747,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 4356505632757386652
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -5725,6 +5806,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 4356505632757386652
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -5762,6 +5844,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -5799,6 +5882,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -5836,6 +5920,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -5873,6 +5958,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -5932,6 +6018,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 10628283856412644923
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -5969,6 +6056,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 10628283856412644923
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -6006,6 +6094,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 3835169672366958006
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -6075,6 +6164,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -6112,6 +6202,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 4431181016770564176
         Type: CONVEX_MESH
     InfoComponent:
@@ -6149,6 +6240,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 4431181016770564176
         Type: CONVEX_MESH
     InfoComponent:
@@ -6186,6 +6278,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 4431181016770564176
         Type: CONVEX_MESH
     InfoComponent:
@@ -6223,6 +6316,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 4431181016770564176
         Type: CONVEX_MESH
     InfoComponent:
@@ -6260,6 +6354,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 4431181016770564176
         Type: CONVEX_MESH
     InfoComponent:
@@ -6297,6 +6392,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 11737700492935567662
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -6350,6 +6446,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -6419,6 +6516,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -6456,6 +6554,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -6493,6 +6592,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -6530,6 +6630,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -6567,6 +6668,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 7134129580656216935
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -6604,8 +6706,9 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
-        Type: TRIANGLE_MESH
+        Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
       Name: Hut_Base
@@ -6641,6 +6744,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -6678,6 +6782,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 5710357086850101923
         Type: CONVEX_MESH
     InfoComponent:
@@ -6715,6 +6820,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -6752,6 +6858,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 4356505632757386652
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -6789,6 +6896,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 10628283856412644923
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -6826,6 +6934,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 5710357086850101923
         Type: CONVEX_MESH
     InfoComponent:
@@ -6863,6 +6972,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 4356505632757386652
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -6900,6 +7010,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 5710357086850101923
         Type: CONVEX_MESH
     InfoComponent:
@@ -6937,6 +7048,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 5710357086850101923
         Type: CONVEX_MESH
     InfoComponent:
@@ -7006,6 +7118,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: BOX
     InfoComponent:
@@ -7043,6 +7156,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: BOX
     InfoComponent:
@@ -7080,6 +7194,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 5710357086850101923
         Type: CONVEX_MESH
     InfoComponent:
@@ -7117,6 +7232,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 5710357086850101923
         Type: CONVEX_MESH
     InfoComponent:
@@ -7154,6 +7270,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 4356505632757386652
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -7191,6 +7308,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 4356505632757386652
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -7228,6 +7346,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -7265,6 +7384,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 2159505294651867228
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -7302,6 +7422,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -7371,6 +7492,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -7408,6 +7530,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 4356505632757386652
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -7445,6 +7568,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 4356505632757386652
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -7514,6 +7638,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -7572,6 +7697,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -7609,6 +7735,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -7678,6 +7805,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 14214629347157244268
         Type: BOX
     InfoComponent:
@@ -7715,6 +7843,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -7752,6 +7881,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 5710357086850101923
         Type: CONVEX_MESH
     InfoComponent:
@@ -7821,6 +7951,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: BOX
     InfoComponent:
@@ -7851,6 +7982,7 @@ ENTITIES:
         StaticFriction: 0.5
         Restitution: 0
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 6064271428936207948
         Type: CONVEX_MESH
     InfoComponent:
@@ -7896,8 +8028,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-3.26197743, 8.09380054, 12.2714424]
-        Rotate: [-199.312531, 1989.875, 180]
+        Translate: [-6.91686916, 6.75718737, 6.86803341]
+        Rotate: [95.9999847, -8.00017548, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -7910,8 +8042,8 @@ ENTITIES:
       Current Distance: 1
       Min Distance: 1
       Max Distance: 5
-      Current Yaw: -5084
-      Current Pitch: -52
+      Current Yaw: -4672
+      Current Pitch: 84
       Mouse Sensitivity: 1
       Scroll Sensitivity: 1
   - InfoComponent:
@@ -7936,6 +8068,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -7988,6 +8121,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 2061877446978793964
         Type: CONVEX_MESH
     InfoComponent:
@@ -8025,6 +8159,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 2061877446978793964
         Type: CONVEX_MESH
     InfoComponent:
@@ -8062,6 +8197,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 12807707659119185110
         Type: CONVEX_MESH
     InfoComponent:
@@ -8099,6 +8235,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 12807707659119185110
         Type: CONVEX_MESH
     InfoComponent:
@@ -8136,6 +8273,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 5710357086850101923
         Type: CONVEX_MESH
     InfoComponent:
@@ -8189,6 +8327,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -8226,6 +8365,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -8279,6 +8419,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 5710357086850101923
         Type: CONVEX_MESH
     InfoComponent:
@@ -8316,6 +8457,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -8417,6 +8559,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 5710357086850101923
         Type: CONVEX_MESH
     InfoComponent:
@@ -8454,6 +8597,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -8491,6 +8635,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 2665223197068733968
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -8528,6 +8673,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 16135378917386993712
         Type: CONVEX_MESH
     InfoComponent:
@@ -8565,6 +8711,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 1336452752375064697
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -8602,6 +8749,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -8639,6 +8787,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 16135378917386993712
         Type: CONVEX_MESH
     InfoComponent:
@@ -8692,6 +8841,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -8729,6 +8879,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -8766,6 +8917,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -8803,6 +8955,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 7103059716832083419
         Type: BOX
     InfoComponent:
@@ -8840,6 +8993,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -8877,6 +9031,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         Type: CONVEX_MESH
     InfoComponent:
@@ -8914,6 +9069,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 12807707659119185110
         Type: CONVEX_MESH
     InfoComponent:
@@ -8951,6 +9107,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 9561371257336025290
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -8988,6 +9145,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 9561371257336025290
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -9022,8 +9180,8 @@ ENTITIES:
       UID: 2377197601835279376
     TransformComponent:
       Transform:
-        Translate: [-6.89046192, 1.61266494, 7.12708807]
-        Rotate: [0, 77.0000458, 0]
+        Translate: [-6.91232157, 1.61266518, 6.97154427]
+        Rotate: [0, -172.000198, 0]
         Scale: [0.0164999887, 0.0164999999, 0.0164999887]
     CharacterControllerComponent:
       Radius: 0.800000012
@@ -9177,14 +9335,14 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 0.00245609158
       BoolParams:
         IsMoving: false
         Sprint: false
         IsCrouching: false
         IsSneaking: false
         IsRolling: false
-      CurrentStateIndex: 2
+      CurrentStateIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PlayerMovement
@@ -9211,6 +9369,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -9248,6 +9407,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 7982763225733669098
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -9296,7 +9456,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 2.53051853, -14.2555885]
-        Rotate: [0, 512.109924, 0]
+        Rotate: [0, 422.109924, 0]
         Scale: [136.157349, 68.9649124, 68.9648361]
     ScriptComponent:
       Enabled: true
@@ -9317,6 +9477,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: true
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: BOX
     InfoComponent:
@@ -9361,6 +9522,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: CAPSULE
     InfoComponent:
@@ -9369,8 +9531,8 @@ ENTITIES:
       UID: 11344090768170482118
     TransformComponent:
       Transform:
-        Translate: [-22.2951069, 13.4210224, 4.73680973]
-        Rotate: [-0, 1.00179122e-05, -0]
+        Translate: [-22.2951069, 13.4210224, -13.7933044]
+        Rotate: [180, -5.00895612e-06, 180]
         Scale: [0.0199999977, 0.0199999996, 0.0199999977]
     RigidBodyComponent:
       RigidBody:
@@ -9448,12 +9610,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 2.47599483
       BoolParams:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-22.2951069, 13.404274, 7.21938944]
+      Target: [-22.2951069, 13.404274, -14.4732275]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -9469,7 +9631,7 @@ ENTITIES:
       PatrolPoints:
         - [-22.2951069, 13.404274, 7.21938944]
         - [-22.2951069, 13.404274, -14.4732275]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -9528,6 +9690,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 16135378917386993712
         Type: CONVEX_MESH
     InfoComponent:
@@ -9565,6 +9728,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: true
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         Type: BOX
     InfoComponent:
@@ -9699,3 +9863,28 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: Checkpoint1
+      UID: 9034677838078506674
+    TransformComponent:
+      Transform:
+        Translate: [-0.504779816, 20.3323364, 36.178093]
+        Rotate: [0, -0, 0]
+        Scale: [5, 5, 5]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.CPTrigger
+      ParamsJSON: "{}"

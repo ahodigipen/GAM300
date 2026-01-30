@@ -201,7 +201,8 @@ namespace GameScripts
         {
             _isRespawning = true;
             _verticalVelocity = 0f;
-            _spawnPoint = new Vec3(0.914043128f, 1.5f, 13.9171219f);
+            // REMOVED: Don't overwrite _spawnPoint here - it should keep the checkpoint value
+            // _spawnPoint = new Vec3(0.914043128f, 1.5f, 13.9171219f);
             API.MoveController(Entity, new Vec3(0, 0, 0), 0.001f, 0.016f);
             _fadeState = FadeState.FadingOut;
             _fadeTimer = 0f;

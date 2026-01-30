@@ -46,6 +46,7 @@
     <Compile Include="API.cs" />
     <Compile Include="AttackSquash.cs" />
     <Compile Include="CharacterAnimation.cs" />
+    <Compile Include="CPTrigger.cs" />
     <Compile Include="ProximityDetectionComponent.cs" />
     <Compile Include="DeathMenu.cs" />
     <Compile Include="EndMenu.cs" />
