@@ -1,11 +1,146 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using Boom;
 
 namespace Boom
 {
     /// <summary>
-    /// Component that handles footstep sounds for moving entities.
+    /// Static library mapping surface types to footstep sound files.
+    /// Add your audio files here for each surface type.
+    /// </summary>
+    public static class SurfaceAudioLibrary
+    {
+        // Base path for footstep sounds
+        private static readonly string BasePath = "Resources/Audio/";
+
+        // Surface type -> array of sound file paths
+        private static readonly Dictionary<string, string[]> SurfaceSounds = new Dictionary<string, string[]>
+        {
+            // Default fallback sounds
+            { "default", new[] {
+                "Resources/Audio/playerWalk_01.wav",
+                "Resources/Audio/playerWalk_02.wav",
+                "Resources/Audio/playerWalk_03.wav",
+                "Resources/Audio/playerWalk_04.wav"
+            }},
+
+            // Stone/concrete surfaces
+            { "stone", new[] {
+                BasePath + "stone_01.wav",
+                BasePath + "stone_02.wav",
+                BasePath + "stone_03.wav",
+                BasePath + "stone_04.wav"
+            }},
+
+            // Wood surfaces
+            { "wood", new[] {
+                BasePath + "wood_01.wav",
+                BasePath + "wood_02.wav",
+                BasePath + "wood_03.wav",
+                BasePath + "wood_04.wav"
+            }},
+
+            // Metal surfaces
+            { "metal", new[] {
+                BasePath + "metal_01.wav",
+                BasePath + "metal_02.wav",
+                BasePath + "metal_03.wav",
+                BasePath + "metal_04.wav"
+            }},
+
+            // Tatami (Japanese mat) surfaces
+            { "tatami", new[] {
+                BasePath + "tatami_01.wav",
+                BasePath + "tatami_02.wav",
+                BasePath + "tatami_03.wav",
+                BasePath + "tatami_04.wav"
+            }},
+
+            // Sand surfaces
+            { "sand", new[] {
+                BasePath + "footstep_sand_1.wav",
+                BasePath + "footstep_sand_2.wav",
+                BasePath + "footstep_sand_3.wav",
+                BasePath + "footstep_sand_4.wav"
+                //BasePath + "footstep_sand_5.wav",
+                //BasePath + "footstep_sand_6.wav",
+                //BasePath + "footstep_sand_7.wav"
+            }},
+
+            // Grass surfaces
+            { "grass", new[] {
+                BasePath + "grass_01.wav",
+                BasePath + "grass_02.wav",
+                BasePath + "grass_03.wav",
+                BasePath + "grass_04.wav"
+            }},
+
+            // Dirt surfaces
+            { "dirt", new[] {
+                BasePath + "dirt_01.wav",
+                BasePath + "dirt_02.wav",
+                BasePath + "dirt_03.wav",
+                BasePath + "dirt_04.wav"
+            }},
+
+            // Gravel surfaces
+            { "gravel", new[] {
+                BasePath + "gravel_01.wav",
+                BasePath + "gravel_02.wav",
+                BasePath + "gravel_03.wav",
+                BasePath + "gravel_04.wav"
+            }},
+
+            // Water/puddle surfaces
+            { "water", new[] {
+                BasePath + "water_01.wav",
+                BasePath + "water_02.wav",
+                BasePath + "water_03.wav",
+                BasePath + "water_04.wav"
+            }},
+
+            // Carpet surfaces
+            { "carpet", new[] {
+                BasePath + "carpet_01.wav",
+                BasePath + "carpet_02.wav",
+                BasePath + "carpet_03.wav",
+                BasePath + "carpet_04.wav"
+            }}
+        };
+
+        /// <summary>
+        /// Get sound files for a surface type. Returns default if not found.
+        /// </summary>
+        public static string[] GetSoundsForSurface(string surfaceType)
+        {
+            if (string.IsNullOrEmpty(surfaceType))
+                surfaceType = "default";
+
+            // Case-insensitive lookup
+            string key = surfaceType.ToLower().Trim();
+
+            if (SurfaceSounds.TryGetValue(key, out string[] sounds))
+                return sounds;
+
+            // Fallback to default
+            return SurfaceSounds["default"];
+        }
+
+        /// <summary>
+        /// Get all registered surface types
+        /// </summary>
+        public static string[] GetAllSurfaceTypes()
+        {
+            var keys = new string[SurfaceSounds.Count];
+            SurfaceSounds.Keys.CopyTo(keys, 0);
+            return keys;
+        }
+    }
+
+    /// <summary>
+    /// Component that handles dynamic footstep sounds based on surface type.
     /// Attach this to any entity that should make footstep sounds when moving.
+    /// Automatically detects the surface type below the entity and plays appropriate sounds.
     /// </summary>
     public class FootstepComponent
     {
@@ -13,36 +148,35 @@ namespace Boom
 
         // Footstep configuration
         [EditorExposed("Footstep Interval", "Time between footstep sounds in seconds", 0.1f, 2f, true)]
-        private float _footstepInterval = 0.5f; // Time between footsteps
+        private float _footstepInterval = 0.5f;
 
         [EditorExposed("Min Speed", "Minimum movement speed to trigger footsteps", 0.1f, 5f, true)]
-        private float _minSpeed = 1.0f; // Minimum movement speed to trigger footsteps
+        private float _minSpeed = 1.0f;
 
         [EditorExposed("Footstep Volume", "Volume of footstep sounds", 0f, 1f, true)]
         private float _footstepVolume = 0.95f;
+
+        [EditorExposed("Ground Check Distance", "How far to raycast down for surface detection", 0.1f, 2f, true)]
+        private float _groundCheckDistance = 1.0f;
+
+        [EditorExposed("Debug Logging", "Enable debug logging for surface detection")]
+        private bool _debugLogging = true;
 
         // Runtime state
         private float _timeSinceLastFootstep = 0f;
         private Vec3 _lastPosition;
         private bool _isMoving = false;
-
-        // Sound files (customize these paths for your project)
-        [EditorExposed("Footstep Sound 1", "First footstep sound variant")]
-        private string _footstepSound1 = "Resources/Audio/playerWalk_01.wav";
-
-        [EditorExposed("Footstep Sound 2", "Second footstep sound variant")]
-        private string _footstepSound2 = "Resources/Audio/playerWalk_02.wav";
-
-        [EditorExposed("Footstep Sound 3", "Third footstep sound variant")]
-        private string _footstepSound3 = "Resources/Audio/playerWalk_03.wav";
-
-        [EditorExposed("Footstep Sound 4", "Fourth footstep sound variant")]
-        private string _footstepSound4 = "Resources/Audio/playerWalk_04.wav";
-
-        // Helper to get footstep sounds as array
-        private string[] GetFootstepSounds() => new string[] { _footstepSound1, _footstepSound2, _footstepSound3, _footstepSound4 };
+        private string _currentSurfaceType = "default";
+        private string _lastSurfaceType = "default";
 
         private Random _random = new Random();
+
+        // Cache for preloaded sounds per surface type
+        private HashSet<string> _preloadedSurfaces = new HashSet<string>();
+
+        // Debug: timer to log surface type periodically (not every frame)
+        private float _debugLogTimer = 0f;
+        private const float DEBUG_LOG_INTERVAL = 1.0f; // Log every 1 second while moving
 
         /// <summary>
         /// Initialize the footstep component
@@ -59,14 +193,31 @@ namespace Boom
 
             _lastPosition = API.GetPosition(Entity);
 
-            // Preload all footstep sounds for better performance
-            for (int i = 0; i < GetFootstepSounds().Length; i++)
+            // Preload default sounds
+            PreloadSurfaceSounds("default");
+
+            API.Log("[FootstepComponent] Dynamic surface footsteps initialized");
+        }
+
+        /// <summary>
+        /// Preload sounds for a specific surface type
+        /// </summary>
+        private void PreloadSurfaceSounds(string surfaceType)
+        {
+            if (_preloadedSurfaces.Contains(surfaceType))
+                return;
+
+            string[] sounds = SurfaceAudioLibrary.GetSoundsForSurface(surfaceType);
+            for (int i = 0; i < sounds.Length; i++)
             {
-                string soundName = $"footstep_{Entity}_{i}";
-                API.PreloadSound(soundName, GetFootstepSounds()[i]);
+                string soundName = $"footstep_{Entity}_{surfaceType}_{i}";
+                API.PreloadSound(soundName, sounds[i]);
             }
 
-            API.Log("[FootstepComponent] Footstep sounds preloaded successfully");
+            _preloadedSurfaces.Add(surfaceType);
+
+            if (_debugLogging)
+                API.Log($"[FootstepComponent] Preloaded {sounds.Length} sounds for surface: {surfaceType}");
         }
 
         /// <summary>
@@ -94,6 +245,37 @@ namespace Boom
 
             if (_isMoving)
             {
+                // Detect surface type
+                string rawSurfaceType = API.GetGroundSurfaceType(Entity, _groundCheckDistance);
+                _currentSurfaceType = string.IsNullOrEmpty(rawSurfaceType) ? "default" : rawSurfaceType;
+
+                // Periodic debug logging of current surface type
+                if (_debugLogging)
+                {
+                    _debugLogTimer += dt;
+                    if (_debugLogTimer >= DEBUG_LOG_INTERVAL)
+                    {
+                        Vec3 pos = API.GetPosition(Entity);
+                        API.Log($"[FootstepComponent] Current surface: '{_currentSurfaceType}' at pos ({pos.X:F1}, {pos.Y:F1}, {pos.Z:F1})");
+                        _debugLogTimer = 0f;
+                    }
+                }
+
+                // Preload sounds for new surface if needed
+                if (_currentSurfaceType != _lastSurfaceType)
+                {
+                    PreloadSurfaceSounds(_currentSurfaceType);
+
+                    if (_debugLogging)
+                    {
+                        API.Log($"[FootstepComponent] Surface CHANGED: '{_lastSurfaceType}' -> '{_currentSurfaceType}'");
+                        string[] sounds = SurfaceAudioLibrary.GetSoundsForSurface(_currentSurfaceType);
+                        API.Log($"[FootstepComponent] Will use {sounds.Length} sounds, first: {(sounds.Length > 0 ? sounds[0] : "none")}");
+                    }
+
+                    _lastSurfaceType = _currentSurfaceType;
+                }
+
                 _timeSinceLastFootstep += dt;
 
                 // Adjust footstep timing based on movement speed
@@ -115,24 +297,25 @@ namespace Boom
         }
 
         /// <summary>
-        /// Play a random footstep sound at the entity's position
+        /// Play a random footstep sound for the current surface at the entity's position
         /// </summary>
         private void PlayFootstepSound(Vec3 position)
         {
+            string[] sounds = SurfaceAudioLibrary.GetSoundsForSurface(_currentSurfaceType);
+
             // Choose random footstep sound
-            int soundIndex = _random.Next(GetFootstepSounds().Length);
+            int soundIndex = _random.Next(sounds.Length);
             string soundName = $"footstep_{Entity}_current";
 
             // Stop any previous footstep from this entity
             API.StopSound(soundName);
 
             // Play the footstep sound at the entity's position (3D sound)
-            API.PlaySoundAt(soundName, GetFootstepSounds()[soundIndex], position, false);
+            API.PlaySoundAt(soundName, sounds[soundIndex], position, false);
             API.SetSoundVolume(soundName, _footstepVolume);
-            // Note: No Set3DMinMaxDistance needed - player should always hear their own footsteps clearly
-            // since the camera/listener follows right behind the player
 
-            API.Log($"[FootstepComponent] Played footstep {soundIndex + 1} at position ({position.X:F1}, {position.Y:F1}, {position.Z:F1})");
+            if (_debugLogging)
+                API.Log($"[FootstepComponent] Played {_currentSurfaceType} footstep at ({position.X:F1}, {position.Y:F1}, {position.Z:F1})");
         }
 
         /// <summary>
@@ -144,11 +327,17 @@ namespace Boom
 
             // Stop any playing footstep sounds
             API.StopSound($"footstep_{Entity}_current");
-
-            // Note: Preloaded sounds will be cleaned up by the sound engine
         }
 
         // Public methods for customization
+
+        /// <summary>
+        /// Get the current detected surface type
+        /// </summary>
+        public string GetCurrentSurfaceType()
+        {
+            return _currentSurfaceType;
+        }
 
         /// <summary>
         /// Set the time interval between footsteps (in seconds)

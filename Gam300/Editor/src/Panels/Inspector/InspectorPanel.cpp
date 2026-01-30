@@ -2459,6 +2459,26 @@ namespace EditorUI {
                     m_App->GetPhysicsContext().UpdatePhysicsMaterial(selected);
                 }
 
+                // Surface Type section (for footstep audio)
+                ImGui::Spacing();
+                ImGui::SeparatorText("Audio");
+                ImGui::Spacing();
+
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Surface Type");
+                ImGui::SameLine(150);
+                ImGui::SetNextItemWidth(-1);
+
+                char surfaceBuffer[64];
+                strncpy_s(surfaceBuffer, collider->surfaceType.c_str(), sizeof(surfaceBuffer) - 1);
+                surfaceBuffer[sizeof(surfaceBuffer) - 1] = '\0';
+                if (ImGui::InputText("##SurfaceType", surfaceBuffer, sizeof(surfaceBuffer))) {
+                    collider->surfaceType = surfaceBuffer;
+                }
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Surface type for footstep audio (e.g., stone, wood, tatami, sand, metal, grass)");
+                }
+
                 // Fit to Transform button
                 ImGui::Spacing();
                 if (ImGui::Button("Fit to Transform")) {

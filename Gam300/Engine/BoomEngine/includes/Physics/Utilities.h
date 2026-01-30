@@ -88,6 +88,9 @@ namespace Boom {
 
         bool isTrigger = false; // New: Make this a trigger volume (no collision response)
 
+        // Surface type for dynamic footsteps audio (e.g., "stone", "wood", "tatami", "sand", "metal", "grass")
+        std::string surfaceType = "default";
+
         // Update XPROPERTY_DEF to include the new field
         XPROPERTY_DEF(
             "Collider3D", Boom::Collider3D,
@@ -97,7 +100,8 @@ namespace Boom {
             obj_member<"DynamicFriction", &Boom::Collider3D::dynamicFriction>,
             obj_member<"StaticFriction", &Boom::Collider3D::staticFriction>,
             obj_member<"Restitution", &Boom::Collider3D::restitution>,
-            obj_member<"IsTrigger", &Boom::Collider3D::isTrigger>, // NEW
+            obj_member<"IsTrigger", &Boom::Collider3D::isTrigger>,
+            obj_member<"SurfaceType", &Boom::Collider3D::surfaceType>,
             obj_member<"PhysicsMesh", &Boom::Collider3D::physicsMeshID>,
             obj_member<"Type", &Boom::Collider3D::type,
             member_enum_value<"BOX", Boom::Collider3D::Type::BOX>,

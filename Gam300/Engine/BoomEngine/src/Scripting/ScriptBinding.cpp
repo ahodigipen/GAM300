@@ -726,6 +726,128 @@ namespace Boom {
         return false;
     }
 
+    // Get surface type of ground below entity (for dynamic footsteps)
+    // Raycasts down from entity position and returns the surfaceType string from hit collider
+    // Debug flag for surface type detection - set to true to enable verbose logging
+    static bool s_DebugSurfaceType = true;
+
+    static MonoString* ICALL_API_GetGroundSurfaceType(uint64_t entityHandle, float maxDistance)
+    {
+        if (!s_Ctx) return mono_string_new(mono_domain_get(), "");
+        if (!s_Ctx->physics) return mono_string_new(mono_domain_get(), "");
+
+        entt::entity entity = static_cast<entt::entity>(static_cast<uint32_t>(entityHandle));
+        if (entity == entt::null || !s_Ctx->scene.valid(entity))
+            return mono_string_new(mono_domain_get(), "");
+
+        // Get entity position
+        if (!s_Ctx->scene.any_of<TransformComponent>(entity))
+            return mono_string_new(mono_domain_get(), "");
+
+        auto& trans = s_Ctx->scene.get<TransformComponent>(entity);
+        glm::vec3 pos = trans.transform.translate;
+
+        PxScene* scene = s_Ctx->physics->GetPxScene();
+        if (!scene) return mono_string_new(mono_domain_get(), "");
+
+        // Raycast from slightly above feet downward
+        PxVec3 origin(pos.x, pos.y + 0.1f, pos.z);
+        PxVec3 dir(0.0f, -1.0f, 0.0f);
+
+        PxQueryFilterData filter;
+        filter.flags = PxQueryFlag::eSTATIC | PxQueryFlag::eDYNAMIC | PxQueryFlag::ePREFILTER;
+
+        // Pre-filter to skip triggers and the entity doing the raycast
+        struct PreFilter : PxQueryFilterCallback {
+            entt::entity entityToIgnore;
+
+            PreFilter(entt::entity ignore) : entityToIgnore(ignore) {}
+
+            PxQueryHitType::Enum preFilter(const PxFilterData&, const PxShape* shape,
+                const PxRigidActor* actor, PxHitFlags&) override
+            {
+                // Skip triggers
+                if (shape->getFlags() & PxShapeFlag::eTRIGGER_SHAPE)
+                    return PxQueryHitType::eNONE;
+
+                // Skip the entity doing the raycast
+                if (actor && actor->userData)
+                {
+                    EntityID* entityID = static_cast<EntityID*>(actor->userData);
+                    if (entityID && *entityID == entityToIgnore)
+                        return PxQueryHitType::eNONE;
+                }
+
+                return PxQueryHitType::eBLOCK;
+            }
+
+            PxQueryHitType::Enum postFilter(const PxFilterData&, const PxQueryHit&) override
+            {
+                return PxQueryHitType::eBLOCK;
+            }
+        } preFilter(entity);
+
+        PxRaycastBuffer hit;
+        bool blocked = scene->raycast(origin, dir, maxDistance, hit, PxHitFlag::eDEFAULT, filter, &preFilter);
+
+        if (s_DebugSurfaceType)
+        {
+            BOOM_INFO("[SurfaceType] Raycast from ({:.2f}, {:.2f}, {:.2f}) down {:.2f}m - Hit: {}",
+                origin.x, origin.y, origin.z, maxDistance, blocked ? "YES" : "NO");
+        }
+
+        if (blocked && hit.block.actor && hit.block.actor->userData)
+        {
+            EntityID* hitEntityID = static_cast<EntityID*>(hit.block.actor->userData);
+            if (hitEntityID)
+            {
+                entt::entity hitEntity = *hitEntityID;
+
+                // Get hit entity name for debugging
+                std::string hitEntityName = "Unknown";
+                if (s_Ctx->scene.valid(hitEntity) && s_Ctx->scene.any_of<InfoComponent>(hitEntity))
+                {
+                    hitEntityName = s_Ctx->scene.get<InfoComponent>(hitEntity).name;
+                }
+
+                if (s_DebugSurfaceType)
+                {
+                    BOOM_INFO("[SurfaceType] Hit entity: '{}' (ID: {})", hitEntityName, static_cast<uint32_t>(hitEntity));
+                }
+
+                // Check if hit entity has a ColliderComponent with surfaceType
+                if (s_Ctx->scene.valid(hitEntity) && s_Ctx->scene.any_of<ColliderComponent>(hitEntity))
+                {
+                    auto& collider = s_Ctx->scene.get<ColliderComponent>(hitEntity);
+
+                    if (s_DebugSurfaceType)
+                    {
+                        BOOM_INFO("[SurfaceType] Entity '{}' has ColliderComponent, surfaceType = '{}'",
+                            hitEntityName, collider.Collider.surfaceType);
+                    }
+
+                    return mono_string_new(mono_domain_get(), collider.Collider.surfaceType.c_str());
+                }
+                else
+                {
+                    if (s_DebugSurfaceType)
+                    {
+                        BOOM_WARN("[SurfaceType] Entity '{}' has NO ColliderComponent!", hitEntityName);
+                    }
+                }
+            }
+        }
+        else if (blocked)
+        {
+            if (s_DebugSurfaceType)
+            {
+                BOOM_WARN("[SurfaceType] Raycast hit something but no userData on actor!");
+            }
+        }
+
+        return mono_string_new(mono_domain_get(), ""); // No hit or no surface type
+    }
+
     // Add these new functions after the existing ICALL functions
 
     static bool ICALL_API_HasCollider(uint64_t handle) {
@@ -2058,6 +2180,9 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetRotationY", (const void*)ICALL_API_SetRotationY);
     
         mono_add_internal_call("Boom.Native::Boom_API_LinecastIgnoreBoth",(const void*)ICALL_API_LinecastIgnoreBoth);
+
+        // Surface detection for dynamic footsteps
+        mono_add_internal_call("Boom.Native::Boom_API_GetGroundSurfaceType", (const void*)ICALL_API_GetGroundSurfaceType);
 
         mono_add_internal_call("Boom.Native::Boom_API_EnableFileWatcher", (const void*)ICALL_API_EnableFileWatcher);
 
