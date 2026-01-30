@@ -374,8 +374,9 @@ namespace EditorUI {
                 // Apply to physics system
                 m_Context->physics->EnableDebugVisualization(newState, 1.0f);
 
-                // Update the Application's state
+                // Update both the Application's state AND the context flag
                 m_App->m_PhysDebugViz = newState;
+                m_Context->ShowPhysicsDebug = newState;  // Keep context in sync
 
                 BOOM_INFO("[Shortcut] Physics Debug Visualization (F9): {}", newState ? "ON" : "OFF");
             }

@@ -423,10 +423,10 @@ namespace Boom
             RenderScene();
             //DrawDebugTPC();
 
-            // Sync physics debug viz with context flag
+            // Sync physics debug viz with context flag (bidirectional)
             if (m_PhysDebugViz != m_Context->ShowPhysicsDebug)
             {
-                m_PhysDebugViz = m_Context->ShowPhysicsDebug;
+                m_Context->ShowPhysicsDebug = m_PhysDebugViz;
                 m_Context->physics->EnableDebugVisualization(m_PhysDebugViz, 1.0f);
             }
 
