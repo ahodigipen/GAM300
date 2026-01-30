@@ -468,11 +468,11 @@ namespace Boom {
                     }
 
                     // Draw all animated instances in this batch (mode 2)
-                    // Note: baseInstance is the transform offset, joint offset is implicitly handled
-                    // since we're using the same base instance for both SSBOs
+                    // baseInstance = transform SSBO offset, jointBaseInstance = joint SSBO offset / joints per instance
                     pbrShader->DrawAnimatedInstanced(modelAsset->data, material,
                                                      static_cast<uint32_t>(batch.Count()),
                                                      static_cast<uint32_t>(batch.transformSsboOffset),
+                                                     static_cast<uint32_t>(batch.jointSsboOffset / MAX_ANIMATED_JOINTS),
                                                      showNormalTexture);
                 }
             }

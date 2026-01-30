@@ -437,5 +437,6 @@ namespace Boom {
 		// Instancing support (mode: 0=none, 1=static, 2=animated)
 		int32_t instancingModeLoc;
 		int32_t baseInstanceLoc;
+		int32_t jointBaseInstanceLoc;
 	};
 }

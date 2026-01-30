@@ -2,6 +2,150 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
+      Name: Player (Copy) 4
+      UID: 7588721027396344400
+    TransformComponent:
+      Transform:
+        Translate: [0, 1.23532224, 0]
+        Rotate: [0, 0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ModelComponent:
+      ModelID: 5190089082055736376
+      MaterialID: 11573253777835523025
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    AnimatorComponent:
+      Clips:
+        - name: mixamo.com
+          filePath: ""
+        - name: Samurai New Walk
+          filePath: Resources/Samurai New Walk.fbx
+        - name: Samurai Idle (1)
+          filePath: Resources/Samurai Idle (1).fbx
+      States:
+        - name: dance
+          clipIndex: 0
+          speed: 1
+          loop: true
+          transitions:
+            []
+        - name: walk
+          clipIndex: 1
+          speed: 1
+          loop: true
+          transitions:
+            []
+        - name: Idle
+          clipIndex: 2
+          speed: 1
+          loop: true
+          transitions:
+            []
+      FloatParams:
+        {}
+      BoolParams:
+        {}
+      CurrentStateIndex: 1
+  - InfoComponent:
+      Parent: 0
+      Name: Player (Copy) 2
+      UID: 1972129253767778041
+    TransformComponent:
+      Transform:
+        Translate: [-1.98537529, 1.23531473, -1.16290438]
+        Rotate: [0, -0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ModelComponent:
+      ModelID: 5190089082055736376
+      MaterialID: 11573253777835523025
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    AnimatorComponent:
+      Clips:
+        - name: mixamo.com
+          filePath: ""
+        - name: Samurai New Walk
+          filePath: Resources/Samurai New Walk.fbx
+        - name: Samurai Idle (1)
+          filePath: Resources/Samurai Idle (1).fbx
+      States:
+        - name: dance
+          clipIndex: 0
+          speed: 1
+          loop: true
+          transitions:
+            []
+        - name: walk
+          clipIndex: 1
+          speed: 1
+          loop: true
+          transitions:
+            []
+        - name: Idle
+          clipIndex: 2
+          speed: 1
+          loop: true
+          transitions:
+            []
+      FloatParams:
+        {}
+      BoolParams:
+        {}
+      CurrentStateIndex: 1
+  - InfoComponent:
+      Parent: 0
+      Name: Player (Copy) 3
+      UID: 2472368423458818833
+    TransformComponent:
+      Transform:
+        Translate: [0.283995628, 1.23531663, -1.07942498]
+        Rotate: [0, -0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ModelComponent:
+      ModelID: 5190089082055736376
+      MaterialID: 11573253777835523025
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    AnimatorComponent:
+      Clips:
+        - name: mixamo.com
+          filePath: ""
+        - name: Samurai New Walk
+          filePath: Resources/Samurai New Walk.fbx
+        - name: Samurai Idle (1)
+          filePath: Resources/Samurai Idle (1).fbx
+      States:
+        - name: dance
+          clipIndex: 0
+          speed: 1
+          loop: true
+          transitions:
+            []
+        - name: walk
+          clipIndex: 1
+          speed: 1
+          loop: true
+          transitions:
+            []
+        - name: Idle
+          clipIndex: 2
+          speed: 1
+          loop: true
+          transitions:
+            []
+      FloatParams:
+        {}
+      BoolParams:
+        {}
+      CurrentStateIndex: 1
+  - InfoComponent:
+      Parent: 0
       Name: WallBack
       UID: 1518808387232098787
     TransformComponent:
@@ -71,7 +215,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
+        Rotate: [0, -0, 0]
         Scale: [50, 0.100000001, 50]
     ModelComponent:
       ModelID: 7633162898494281895
@@ -151,8 +295,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [1.27251744, 3.38842225, 2.7138021]
-        Rotate: [-17.8149986, 12.4375, 0]
+        Translate: [1.71694243, 4.33588076, 3.52536941]
+        Rotate: [-29.5649986, 7.125, 0]
         Scale: [1, 1, 1]
     CameraComponent:
       Camera:
@@ -192,8 +336,8 @@ ENTITIES:
       UID: 18299148976802030936
     TransformComponent:
       Transform:
-        Translate: [0, 1.23532224, 0]
-        Rotate: [0, 0, 0]
+        Translate: [-0.890829921, 1.23531783, -0.726380289]
+        Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
       ModelID: 5190089082055736376
@@ -234,3 +378,37 @@ ENTITIES:
       BoolParams:
         {}
       CurrentStateIndex: 1
+  - InfoComponent:
+      Parent: 0
+      Name: Scene Settings
+      UID: 1048590
+    SceneNavmeshComponent:
+      NavmeshFile: ""
+      AmbientStrength: 0.0160000008
+  - InfoComponent:
+      Parent: 0
+      Name: New Entity
+      UID: 11322477703666455443
+    TransformComponent:
+      Transform:
+        Translate: [1.26329947, 1.24397135, 0.238972306]
+        Rotate: [0, -0, 0]
+        Scale: [0.0111999996, 0.0111999996, 0.0111999996]
+    ModelComponent:
+      ModelID: 5190089082055736376
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    AnimatorComponent:
+      Clips:
+        - name: mixamo.com
+          filePath: ""
+      States:
+        []
+      FloatParams:
+        {}
+      BoolParams:
+        {}
+      CurrentStateIndex: 0
