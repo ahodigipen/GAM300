@@ -632,8 +632,8 @@ ENTITIES:
       UID: 14450237795829985322
     TransformComponent:
       Transform:
-        Translate: [-64.664093, 31.575304, 20.7080231]
-        Rotate: [0, -61.3656845, 0]
+        Translate: [-60.8295212, 31.6161957, 18.6028366]
+        Rotate: [180, 61.2330971, 180]
         Scale: [0.0200004745, 0.0199999996, 0.0200004745]
     RigidBodyComponent:
       RigidBody:
@@ -716,7 +716,7 @@ ENTITIES:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-64.7831268, 31.8782978, 20.773016]
+      Target: [-46.5436516, 31.8782978, 10.7598639]
       Speed: 3.5
       ArriveRadius: 0.150000006
       Active: true
@@ -754,8 +754,8 @@ ENTITIES:
       UID: 263206634475258297
     TransformComponent:
       Transform:
-        Translate: [-44.7131805, 24.150177, -9.85211277]
-        Rotate: [180, 89.810257, 180]
+        Translate: [-39.0983849, 24.3438988, -9.82746887]
+        Rotate: [0, 89.7482071, 0]
         Scale: [0.0200004745, 0.0199999996, 0.0200004745]
     RigidBodyComponent:
       RigidBody:
@@ -876,8 +876,8 @@ ENTITIES:
       UID: 9730896463395262189
     TransformComponent:
       Transform:
-        Translate: [-31.7361031, 24.4946156, 5.09300613]
-        Rotate: [-180, 0.348916858, -180]
+        Translate: [-31.848568, 24.3238983, 0.419570118]
+        Rotate: [180, -1.37714899, 180]
         Scale: [0.0200001765, 0.0199999996, 0.0200001765]
     RigidBodyComponent:
       RigidBody:
@@ -976,7 +976,7 @@ ENTITIES:
       PatrolPoints:
         - [-31.8510666, 24.596777, 24.0069332]
         - [-31.8510666, 24.596777, 0.315589666]
-      PatrolIndex: 1
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -998,8 +998,8 @@ ENTITIES:
       UID: 7103488143176582610
     TransformComponent:
       Transform:
-        Translate: [-27.7953663, 13.4010181, 62.1609192]
-        Rotate: [180, 90, 180]
+        Translate: [-24.6860619, 13.4010172, 62.1609154]
+        Rotate: [0, 90, 0]
         Scale: [0.0200004764, 0.0199999996, 0.0200004764]
     RigidBodyComponent:
       RigidBody:
@@ -1121,8 +1121,8 @@ ENTITIES:
       UID: 11377284783086712530
     TransformComponent:
       Transform:
-        Translate: [-22.6554394, 13.4010172, 31.8400154]
-        Rotate: [180, -50.9931641, 180]
+        Translate: [-19.5455914, 13.4010181, 31.8400154]
+        Rotate: [0, 90, 0]
         Scale: [0.0200004783, 0.0199999996, 0.0200004783]
     RigidBodyComponent:
       RigidBody:
@@ -1243,8 +1243,8 @@ ENTITIES:
       UID: 4350822310922817577
     TransformComponent:
       Transform:
-        Translate: [-13.3622141, 13.4010172, 57.771759]
-        Rotate: [0, -74.587326, 0]
+        Translate: [-13.3622141, 13.4010181, 54.9389229]
+        Rotate: [180, 2.23118004e-05, 180]
         Scale: [0.0200004783, 0.0199999996, 0.0200004783]
     RigidBodyComponent:
       RigidBody:
@@ -2463,8 +2463,8 @@ ENTITIES:
       UID: 9778697280815915040
     TransformComponent:
       Transform:
-        Translate: [2.8415525, 13.4210176, -9.57754421]
-        Rotate: [180, 90, 180]
+        Translate: [5.95139599, 13.4210176, -9.57754707]
+        Rotate: [0, 89.980217, 0]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -2585,8 +2585,8 @@ ENTITIES:
       UID: 3476234535713046263
     TransformComponent:
       Transform:
-        Translate: [-21.1871853, 13.4210167, 19.3370743]
-        Rotate: [0, 90, 0]
+        Translate: [-18.0773315, 13.4210176, 19.3370724]
+        Rotate: [0, 89.980217, 0]
         Scale: [0.0200004801, 0.0199999996, 0.0200004801]
     RigidBodyComponent:
       RigidBody:
@@ -2707,8 +2707,8 @@ ENTITIES:
       UID: 7568830222834310318
     TransformComponent:
       Transform:
-        Translate: [-8.9820261, 13.4210176, -0.612036884]
-        Rotate: [0, 0.000116125695, 0]
+        Translate: [-8.9820261, 13.4210176, 2.49777412]
+        Rotate: [0, 0.000136643081, 0]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -8268,8 +8268,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [3.97437644, 35.9115219, -4.51032686]
-        Rotate: [-209.75, 4713.0625, 180]
+        Translate: [2.94533515, 22.5106907, 29.9268112]
+        Rotate: [-129.999985, -77.0002289, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -9448,7 +9448,7 @@ ENTITIES:
       UID: 2377197601835279376
     TransformComponent:
       Transform:
-        Translate: [3.248492, 18.2166843, 29.9991074]
+        Translate: [3.248492, 18.7437134, 29.9991074]
         Rotate: [0, -0, 0]
         Scale: [0.0164999887, 0.0164999999, 0.0164999887]
     CharacterControllerComponent:
@@ -9825,8 +9825,8 @@ ENTITIES:
       UID: 11344090768170482118
     TransformComponent:
       Transform:
-        Translate: [-22.2951069, 13.4210167, -0.0162836704]
-        Rotate: [180, 0.000172575965, 180]
+        Translate: [-22.2951164, 13.4210186, -3.12613535]
+        Rotate: [180, 0.000240877853, 180]
         Scale: [0.0199999977, 0.0199999996, 0.0199999977]
     RigidBodyComponent:
       RigidBody:
@@ -9929,7 +9929,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_alertVideoName\": \"AlertVideo3\"\n}"
   - InfoComponent:
       Parent: 0
       Name: Wall_Texture_Floor_3_Hut
@@ -10664,3 +10664,20 @@ ENTITIES:
       Enabled: true
       TypeName: GameScripts.DoorTriggerLeft
       ParamsJSON: "{\n  \"_doorName\": \"2nd_Level_Door_Move\",\n  \"_requiredKeyType\": \"Key2\"\n}"
+  - InfoComponent:
+      Parent: 0
+      Name: AlertVideo3
+      UID: 12767364032630375654
+    TransformComponent:
+      Transform:
+        Translate: [-22.2951164, 18.4210186, -3.09058976]
+        Rotate: [0, 37.6663628, 0]
+        Scale: [1, 1, 1]
+    VideoComponent:
+      VideoPath: zoro.mpeg
+      PlayOnStart: true
+      Loop: true
+      Volume: 1
+      PlaybackSpeed: 1
+      TintColor: [1, 1, 1, 1]
+      RenderAs3D: true

@@ -32,6 +32,17 @@ namespace GameScripts
 
         private Vec3 _anchorPos;
 
+        // ====== ALERT VIDEO UI ======
+        [Boom.EditorExposed("Alert Video Name", "Name of the entity with VideoComponent to show on alert")]
+        private string _alertVideoName = "AlertVideo";
+
+        [Boom.EditorExposed("Alert Video Offset Y", "Vertical offset for the alert video")]
+        private float _alertVideoOffsetY = 5.0f;
+
+        private ulong _alertVideoEntity = 0;
+        private Vec3 _alertVideoBaseScale = new Vec3(1, 1, 1);
+        private bool _isVideoVisible = false;
+
         // ====== AUDIO ======
         [Boom.EditorExposed("Footstep Sound", "Sound played for enemy footsteps")]
         private string _footstepSoundPath = "Resources/Audio/playerRun_02.wav";
@@ -101,6 +112,41 @@ namespace GameScripts
 
             // NEW: Register with PlayerManager
             PlayerManager.RegisterEnemy(this);
+
+            // Initialize Alert Video
+            if (!string.IsNullOrEmpty(_alertVideoName))
+            {
+                _alertVideoEntity = API.FindEntity(_alertVideoName);
+                if (_alertVideoEntity != 0)
+                {
+                    API.Log($"[PatrolEnemyController] Found alert video entity: '{_alertVideoName}' (ID: {_alertVideoEntity})");
+                    _alertVideoBaseScale = API.GetScale(_alertVideoEntity);
+                    
+                    // Improved scale check - if it's too small/hidden, default to 1s
+                    if (Math.Abs(_alertVideoBaseScale.X) < 0.01f || Math.Abs(_alertVideoBaseScale.Y) < 0.01f) 
+                    {
+                        API.Log($"[PatrolEnemyController] Video entity scale was near zero ({_alertVideoBaseScale.X:F2}, {_alertVideoBaseScale.Y:F2}). Defaulting to (1,1,1).");
+                        _alertVideoBaseScale = new Vec3(1, 1, 1);
+                    }
+                    else
+                    {
+                         API.Log($"[PatrolEnemyController] Captured base scale: {_alertVideoBaseScale.X:F2}, {_alertVideoBaseScale.Y:F2}, {_alertVideoBaseScale.Z:F2}");
+                    }
+                        
+                    // Default State: Hidden
+                    API.SetScale(_alertVideoEntity, new Vec3(0, 0, 0));
+                    _isVideoVisible = false;
+                }
+                else
+                {
+                    API.Log($"[PatrolEnemyController] ERROR: Could not find entity named '{_alertVideoName}'!");
+                    API.Log($"[PatrolEnemyController] ACTION REQUIRED: Create an entity named '{_alertVideoName}', add a VideoComponent with 'zoro.mpeg', and check 'Play On Start'.");
+                }
+            }
+            else
+            {
+                API.Log("[PatrolEnemyController] Alert Video Name is empty. Please set it to 'AlertVideo' in the Inspector.");
+            }
 
         }
 
@@ -208,6 +254,52 @@ namespace GameScripts
             if (EnemyDetection)
             {
                 _proximityDetection?.OnUpdate(dt);
+            }
+
+            // Update Alert Video
+            if (_alertVideoEntity != 0)
+            {
+                // 1. Position Update (Follow)
+                Vec3 myPos = API.GetPosition(Entity);
+                API.SetPosition(_alertVideoEntity, new Vec3(myPos.X, myPos.Y + _alertVideoOffsetY, myPos.Z));
+
+                // 2. Rotation Update (Face Camera)
+                // Use camera yaw to ensure 2D video always faces the screen (billboard)
+                float camYaw = API.GetThirdPersonCameraYaw();
+                
+                // The camera looks towards 'camYaw'. We want the video to look AT the camera,
+                // so we face the opposite direction (camYaw + 180).
+                float billboardYaw = camYaw + 180.0f; 
+                
+                API.SetRotationY(_alertVideoEntity, billboardYaw);
+
+                // 3. Visibility Update
+                bool isInProximity = (_proximityDetection != null && _proximityDetection.IsPlayerInProximity());
+                bool isVisible = _isAlert || isInProximity;
+
+                // DEBUG LOGGING
+                // API.Log($"[Debug] Prox: {isInProximity}, Alert: {_isAlert}, Visible: {_isVideoVisible}");
+
+                if (isVisible)
+                {
+                    if (!_isVideoVisible)
+                    {
+                        API.Log($"[PatrolEnemyController] Showing video '{_alertVideoName}'. Reason: Prox={isInProximity}, Alert={_isAlert}. Target Scale: {_alertVideoBaseScale.X}, {_alertVideoBaseScale.Y}");
+                        API.SetScale(_alertVideoEntity, _alertVideoBaseScale);
+                        _isVideoVisible = true;
+                    }
+                    // Force scale every frame to ensure it stays visible against any other systems
+                    // API.SetScale(_alertVideoEntity, _alertVideoBaseScale); 
+                }
+                else
+                {
+                    if (_isVideoVisible)
+                    {
+                        API.Log($"[PatrolEnemyController] Hiding video '{_alertVideoName}'");
+                        API.SetScale(_alertVideoEntity, new Vec3(0, 0, 0));
+                        _isVideoVisible = false;
+                    }
+                }
             }
 
             _debugTimer += dt;
