@@ -111,8 +111,11 @@ namespace GameScripts
                 if (!isAnyDragging && _sfxSlider != null)
                 {
                     _sfxSlider.Update();
+                    if (_sfxSlider.IsDragging) isAnyDragging = true;
                 }
             }
+
+            if (isAnyDragging) return;
 
             switch (_currentState)
             {

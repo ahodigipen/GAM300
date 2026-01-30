@@ -19,16 +19,21 @@ namespace GameScripts
         // --- Configuration ---
         private const float DRAG_SENSITIVITY = 0.002f;
         private const float MIN_ENGINE_SCALE = 0.0001f;
-        private const float Z_PLANE_BARS = 0.00f;
-        private const float Z_PLANE_HANDLE = 0.02f;
 
-        // --- Geometry & Calibration ---
-        private float _visualMultiplier;
+        // Stacking order (Z-axis)
+        private const float Z_BG = 0.00f;       // Bottom
+        private const float Z_FILL = 0.01f;     // Middle
+        private const float Z_HANDLE = 0.02f;   // Top
+
+        // Geometry Data
         private float _leftAnchorX;
         private float _rightAnchorX;
         private float _fixedY;
         private float _fixedZ;
         private float _totalWorldWidth;
+
+        // Auto-Calibration
+        private float _fillVisualMultiplier;
 
         public VolumeSlider(string bgEntityName, string fillEntityName, string handleEntityName, string audioGroup, string emptyEntityName = null)
         {
@@ -37,7 +42,7 @@ namespace GameScripts
             _handleID = API.FindEntity(handleEntityName);
             _audioGroup = audioGroup;
 
-            // Handle optional placeholder entity
+            // Optional: Deactivate legacy "empty" bar entities
             if (!string.IsNullOrEmpty(emptyEntityName))
             {
                 ulong extraID = API.FindEntity(emptyEntityName);
@@ -56,34 +61,37 @@ namespace GameScripts
                 return;
             }
 
-            // --- Auto-Calibration ---
+            // --- Calibration ---
+            // Logic assumes Handle is positioned at the maximum right (100%) in the Editor
             TransformData initBg = API.GetTransform(_bgID);
-            TransformData initHandle = API.GetTransform(_handleID);
-
-            float distBgToHandle = Math.Abs(initBg.PositionX - initHandle.PositionX);
-            float currentBgVisualWidth = distBgToHandle * 2.0f;
-
-            float bgScale = Math.Abs(initBg.ScaleX);
-            if (bgScale < 0.001f) bgScale = 1.0f;
-
-            _visualMultiplier = currentBgVisualWidth / bgScale;
-
-            // Calculate anchor points
-            _rightAnchorX = initBg.PositionX + (currentBgVisualWidth * 0.5f);
-
             TransformData initFill = API.GetTransform(_fillID);
-            float distFillToHandle = Math.Abs(initHandle.PositionX - initFill.PositionX);
-            float currentFillWidth = distFillToHandle * 2.0f;
-
-            _leftAnchorX = initFill.PositionX - (currentFillWidth * 0.5f);
-            _totalWorldWidth = _rightAnchorX - _leftAnchorX;
-
-            if (_totalWorldWidth < 0.001f) _totalWorldWidth = 1.0f;
+            TransformData initHandle = API.GetTransform(_handleID);
 
             _fixedY = initBg.PositionY;
             _fixedZ = initBg.PositionZ;
 
+            // Calculate horizontal boundaries
+            float centerPos = initBg.PositionX;
+            float rightPos = initHandle.PositionX;
+            float halfWidth = Math.Abs(rightPos - centerPos);
+
+            _leftAnchorX = centerPos - halfWidth;
+            _rightAnchorX = centerPos + halfWidth;
+            _totalWorldWidth = _rightAnchorX - _leftAnchorX;
+
+            if (_totalWorldWidth < 0.001f) _totalWorldWidth = 1.0f;
+
+            // Calibrate Fill Bar scaling multiplier based on Editor setup
+            float rawFillScale = Math.Max(MIN_ENGINE_SCALE, Math.Abs(initFill.ScaleX));
+            _fillVisualMultiplier = _totalWorldWidth / rawFillScale;
+
+            // --- Z-Order Stacking ---
+            initBg.PositionZ = _fixedZ + Z_BG;
+            API.SetTransform(_bgID, initBg);
+
             _currentValue = API.GetGroupVolume(_audioGroup);
+            API.Log($"[Slider] Initialized for {_audioGroup}. Width: {_totalWorldWidth:0.00}");
+
             UpdateVisuals(_currentValue);
         }
 
@@ -91,7 +99,7 @@ namespace GameScripts
         {
             if (!API.GetMousePosInViewport(out Vec2 mouseScreenPos)) return;
 
-            // Handle Mouse Up / End Drag
+            // Handle Mouse Up
             if (!API.IsMouseDown(0))
             {
                 if (_isDragging)
@@ -102,7 +110,7 @@ namespace GameScripts
                 return;
             }
 
-            // Handle Input Detection
+            // Handle Click/Drag Detection
             if (!_isDragging)
             {
                 if (API.Check2DViewportClick(_bgID, mouseScreenPos.X, mouseScreenPos.Y) ||
@@ -115,7 +123,7 @@ namespace GameScripts
             }
             else
             {
-                // Process Dragging
+                // Handle Drag Movement
                 float deltaX = mouseScreenPos.X - _lastMouseX;
                 if (Math.Abs(deltaX) > 0.0001f)
                 {
@@ -123,10 +131,9 @@ namespace GameScripts
                     _currentValue = Clamp(_currentValue, 0f, 1f);
 
                     API.SetGroupVolume(_audioGroup, _currentValue);
+                    API.Log($"[Slider] {_audioGroup} Volume: {_currentValue:0.00}");
+
                     UpdateVisuals(_currentValue);
-
-                    API.Log($"[Slider] {_audioGroup} volume set to: {_currentValue:P0}");
-
                     _lastMouseX = mouseScreenPos.X;
                 }
             }
@@ -134,38 +141,27 @@ namespace GameScripts
 
         private void UpdateVisuals(float t)
         {
-            float safeMultiplier = Math.Max(0.0001f, _visualMultiplier);
-
-            // 1. Update Handle Position
+            // 1. Position Handle
             float handleX = _leftAnchorX + (_totalWorldWidth * t);
+
             TransformData handleTrans = API.GetTransform(_handleID);
             handleTrans.PositionX = handleX;
             handleTrans.PositionY = _fixedY;
-            handleTrans.PositionZ = _fixedZ + Z_PLANE_HANDLE;
+            handleTrans.PositionZ = _fixedZ + Z_HANDLE;
             API.SetTransform(_handleID, handleTrans);
 
-            // 2. Update Fill Bar (Left side)
-            float fillWorldWidth = handleX - _leftAnchorX;
-            float fillScale = Math.Max(MIN_ENGINE_SCALE, fillWorldWidth / safeMultiplier);
+            // 2. Scale and Position Fill Bar
+            float currentFillWidth = handleX - _leftAnchorX;
+            float newScale = Math.Max(MIN_ENGINE_SCALE, currentFillWidth / _fillVisualMultiplier);
 
             TransformData fillTrans = API.GetTransform(_fillID);
-            fillTrans.ScaleX = fillScale;
-            fillTrans.PositionX = _leftAnchorX + (fillWorldWidth * 0.5f);
+            fillTrans.ScaleX = newScale;
+
+            // Adjust X position to account for center-pivot scaling
+            fillTrans.PositionX = _leftAnchorX + (currentFillWidth * 0.5f);
             fillTrans.PositionY = _fixedY;
-            fillTrans.PositionZ = _fixedZ + Z_PLANE_BARS;
+            fillTrans.PositionZ = _fixedZ + Z_FILL;
             API.SetTransform(_fillID, fillTrans);
-
-            // 3. Update Background Bar (Right side)
-            float bgWorldWidth = _rightAnchorX - handleX;
-            float bgScale = Math.Max(MIN_ENGINE_SCALE, bgWorldWidth / safeMultiplier);
-
-            TransformData bgTrans = API.GetTransform(_bgID);
-            bgTrans.ScaleX = bgScale;
-            bgTrans.PositionX = _rightAnchorX - (bgWorldWidth * 0.5f);
-            bgTrans.PositionY = _fixedY;
-            bgTrans.PositionZ = _fixedZ + Z_PLANE_BARS;
-
-            API.SetTransform(_bgID, bgTrans);
         }
 
         private static float Clamp(float x, float lo, float hi)
