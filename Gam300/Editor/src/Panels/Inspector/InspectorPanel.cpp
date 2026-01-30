@@ -231,6 +231,9 @@ namespace EditorUI {
             // Assuming: Entity(Boom::Scene*, entt::entity)
         Boom::Entity selected{ &ctx->scene, m_App->SelectedEntity() };
 
+        // Push ID to prevent field edit state leaking to other entities when selection changes
+        ImGui::PushID((int)m_App->SelectedEntity());
+
         // ===== ENTITY NAME =====
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
 
@@ -3240,6 +3243,8 @@ namespace EditorUI {
             ImGui::OpenPopup("AddComponentPopup");
         }
         ComponentSelector(selected);
+
+        ImGui::PopID();
     }
 
     void InspectorPanel::AssetUpdate() {
