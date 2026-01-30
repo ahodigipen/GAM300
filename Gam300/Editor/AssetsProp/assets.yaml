@@ -693,6 +693,27 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+  - Type: MATERIAL
+    UID: 162870785414010399
+    Name: Translucent
+    Source: Translucent
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+        opacity: 0.649999976
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 0
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 0
   - Type: PHYSICS_MESH
     UID: 2159505294651867228
     Name: Wall_Slanted (Tri)
@@ -1047,16 +1068,16 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 6336388213168836440
+    UID: 14452546169200855872
     Name: HowToPlayButton
-    Source: Resources/Textures/MenusUI/HowToPlayButton.png
+    Source: Resources/Textures/MainMenu/HowToPlayButton.png
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 9587372192931143309
     Name: Outdoor_Stone_Lantern2_midsection_BaseColor
@@ -1157,6 +1178,28 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 12678405704945466943
+    Name: NewGameButton_Clicked
+    Source: Resources/Textures/MainMenu/NewGameButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 4271895845596125777
+    Name: ExitButton
+    Source: Resources/Textures/MainMenu/ExitButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 7527779657416384175
     Name: Red_Gem_Glow
     Source: Resources/UnityOtherFiles/UI Assets/Red_Gem_Glow.png
@@ -1171,6 +1214,28 @@ ASSETS:
     UID: 10550814798653882356
     Name: UI_Beginning
     Source: Resources/Textures/PlayerUI/UI_Beginning.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 8298581291578973732
+    Name: PauseMenuMockup
+    Source: Resources/Textures/PauseMenu/PauseMenuMockup.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 11757656334676127170
+    Name: DeathMenuBackground
+    Source: Resources/Textures/Menus/DeathMenuBackground.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1245,6 +1310,28 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 10420817796548402854
+    Name: HowToPlayButton_Clicked
+    Source: Resources/Textures/MainMenu/HowToPlayButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 13461473539925509901
+    Name: RestartButton
+    Source: Resources/Textures/PauseMenu/RestartButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 11795212342725236264
     Name: lantern_colour_2_MaskMap
     Source: Resources/Models/Props/lantern mat/lantern_colour_2_MaskMap.png
@@ -1281,6 +1368,17 @@ ASSETS:
     UID: 15452675258460406062
     Name: roof texture
     Source: Resources/Textures/Wall Textures/roof texture.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 11793825276519391915
+    Name: ExitButton_Clicked
+    Source: Resources/Textures/MainMenu/ExitButton_Clicked.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1377,6 +1475,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 13898311701991055595
+    Name: ReturnMenuButton_Clicked
+    Source: Resources/Textures/PauseMenu/ReturnMenuButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 3670703154944615175
     Name: Wall_Stone_C_Basecolor
     Source: Resources/Textures/Wall Textures/Wall stone/Wall_Stone_C_Basecolor.png
@@ -1446,6 +1555,28 @@ ASSETS:
     UID: 3489333510165140307
     Name: seamless sand zen garden texture_Outdoor
     Source: Resources/Textures/Floor Texture/seamless sand zen garden texture_Outdoor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 9401454698162006202
+    Name: PauseMenuScroll
+    Source: Resources/Textures/PauseMenu/PauseMenuScroll.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 11738458055785486354
+    Name: NewGameButton_Clicked
+    Source: Resources/Textures/MainMenu/NewGameButton_Clicked.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1567,6 +1698,17 @@ ASSETS:
     UID: 17039813470002885239
     Name: Lantern_Hanging_openPBR_shader1_BaseColor
     Source: Resources/Models/Props/2_KEN_LanternTextures/Lantern_Hanging_openPBR_shader1_BaseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 11501595314086654412
+    Name: ReturnMenuButton_Clicked
+    Source: Resources/Textures/PauseMenu/ReturnMenuButton_Clicked.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1773,6 +1915,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 15426909549303303183
+    Name: QuitButton
+    Source: Resources/Textures/PauseMenu/QuitButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 12965757645435111200
     Name: border
     Source: Resources/UnityOtherFiles/UI Assets/border.png
@@ -1816,17 +1969,6 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
-  - Type: TEXTURE
-    UID: 10509866360653012002
-    Name: ResumeButton
-    Source: Resources/Textures/MenusUI/ResumeButton.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
   - Type: TEXTURE
     UID: 12369697772828963859
     Name: GameTitleLogo
@@ -1883,9 +2025,75 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 18098974966956010645
+    Name: NewGameButton
+    Source: Resources/Textures/MainMenu/NewGameButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 6358066585089950257
+    Name: QuitButton_Clicked
+    Source: Resources/Textures/PauseMenu/QuitButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 16238148320953236535
+    Name: RestartButton_Clicked
+    Source: Resources/Textures/PauseMenu/RestartButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 12220421531860267391
     Name: Pedastal_occlusionRoughnessMetallic
     Source: Resources/Models/Enemy/Stationary Sentry/Pedastal_occlusionRoughnessMetallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 13384554175947983795
+    Name: ResumeButton
+    Source: Resources/Textures/PauseMenu/ResumeButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 17046029094205163093
+    Name: ResumeButton_Clicked
+    Source: Resources/Textures/PauseMenu/ResumeButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 17744112895544050321
+    Name: ReturnMenuButton
+    Source: Resources/Textures/PauseMenu/ReturnMenuButton.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1982,17 +2190,6 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 14139683242845732920
-    Name: ResumeButton_Clicked
-    Source: Resources/Textures/MenusUI/ResumeButton_Clicked.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
     UID: 3727801128357366120
     Name: Scissors_Ninja_Hood_Normal
     Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Hood_Normal.png
@@ -2003,17 +2200,6 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
-  - Type: TEXTURE
-    UID: 10845518425233378224
-    Name: RestartButton_Clicked
-    Source: Resources/Textures/MenusUI/RestartButton_Clicked.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
   - Type: TEXTURE
     UID: 7119423401994078713
     Name: Scissors_Ninja_Hood_Roughness
@@ -2235,6 +2421,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 7730071964959495492
+    Name: QuitButton
+    Source: Resources/Textures/PauseMenu/QuitButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 11743504275063107094
     Name: lantern_colour_1_BaseMap
     Source: Resources/Models/Props/lantern mat/lantern_colour_1_BaseMap.png
@@ -2267,17 +2464,6 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
-  - Type: TEXTURE
-    UID: 4264408264520885961
-    Name: ExitButton
-    Source: Resources/Textures/MenusUI/ExitButton.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
   - Type: TEXTURE
     UID: 8781181629247619230
     Name: Lion_Statue2_openPBR_shader1_BaseColor
@@ -2322,17 +2508,6 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
-  - Type: TEXTURE
-    UID: 13983692512001316939
-    Name: MainMenuBackground
-    Source: Resources/Textures/MenusUI/MainMenuBackground.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
   - Type: TEXTURE
     UID: 660614054657113155
     Name: Wall_Stone_C_AO
@@ -2499,6 +2674,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 14130988858541949245
+    Name: HowToPlayScroll
+    Source: Resources/Textures/HowToPlayMenu/HowToPlayScroll.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 5317665029481884147
     Name: Sakura Tree_baseColor
     Source: Resources/Textures/Props Textures/SakuraV2_Textures/Sakura Tree_baseColor.png
@@ -2510,20 +2696,141 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 11023485835561908912
-    Name: ReturnMenuButton
-    Source: Resources/Textures/MenusUI/ReturnMenuButton.png
+    UID: 6796308930608697527
+    Name: ReturnButton
+    Source: Resources/Textures/HowToPlayMenu/ReturnButton.png
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 8068162420720260057
+    Name: ReturnButton_Clicked
+    Source: Resources/Textures/HowToPlayMenu/ReturnButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 17872212269469502547
+    Name: MainMenuBackground
+    Source: Resources/Textures/MainMenu/MainMenuBackground.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 9596048226089820256
+    Name: MainMenuLogo
+    Source: Resources/Textures/MainMenu/MainMenuLogo.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 13056076664256934653
+    Name: MainMenuTeamName
+    Source: Resources/Textures/MainMenu/MainMenuTeamName.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 16990764436776752376
+    Name: ResumeButton
+    Source: Resources/Textures/PauseMenu/ResumeButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 12846627940444493632
+    Name: RestartButton
+    Source: Resources/Textures/PauseMenu/RestartButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 10830320094205736326
+    Name: ReturnMenuButton
+    Source: Resources/Textures/PauseMenu/ReturnMenuButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 15597616636115056766
+    Name: ResumeButton_Clicked
+    Source: Resources/Textures/PauseMenu/ResumeButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 4956013053420677798
+    Name: RestartButton_Clicked
+    Source: Resources/Textures/PauseMenu/RestartButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 10630437351094259867
+    Name: HowToPlayButton_Clicked
+    Source: Resources/Textures/MainMenu/HowToPlayButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 9017295754197066604
     Name: M4_Sentry_untextured_Sentry_BaseColor
     Source: Resources/Models/Enemy/M4_SS/M4_Sentry_untextured_Sentry_BaseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 2150971313358040238
+    Name: ReturnButton_Clicked
+    Source: Resources/Textures/HowToPlayMenu/ReturnButton_Clicked.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2663,17 +2970,6 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
-  - Type: TEXTURE
-    UID: 16541366282253303416
-    Name: MainMenuLogo
-    Source: Resources/Textures/MenusUI/MainMenuLogo.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
   - Type: TEXTURE
     UID: 8015819090818401326
     Name: Japanese table_openPBR_shader1_Normal
@@ -2818,17 +3114,6 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 13415878511549165281
-    Name: PauseMenuScroll
-    Source: Resources/Textures/MenusUI/PauseMenuScroll.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
     UID: 17527799947353995107
     Name: detection bar - circle unfilled
     Source: Resources/Textures/EnemyUI/detection bar - circle unfilled.png
@@ -2865,6 +3150,17 @@ ASSETS:
     UID: 4939597093217633384
     Name: detection bar - undetected mockup
     Source: Resources/Textures/EnemyUI/detection bar - undetected mockup.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 9631519320533516153
+    Name: EndMenuBackground
+    Source: Resources/Textures/Menus/EndMenuBackground.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3015,193 +3311,6 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
-  - Type: TEXTURE
-    UID: 12520623694830483264
-    Name: DeathMenuBackground
-    Source: Resources/Textures/MenusUI/DeathMenuBackground.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 5109979046645362819
-    Name: EndMenuBackground
-    Source: Resources/Textures/MenusUI/EndMenuBackground.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 7774158445587761763
-    Name: ExitButton_Clicked
-    Source: Resources/Textures/MenusUI/ExitButton_Clicked.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 10258411235812800368
-    Name: FilledBar
-    Source: Resources/Textures/MenusUI/FilledBar.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 11914215145104658910
-    Name: HowToPlayButton_Clicked
-    Source: Resources/Textures/MenusUI/HowToPlayButton_Clicked.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 11766718581238552621
-    Name: HowToPlayScroll
-    Source: Resources/Textures/MenusUI/HowToPlayScroll.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 5600707374096394357
-    Name: MainMenuTeamName
-    Source: Resources/Textures/MenusUI/MainMenuTeamName.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 7674047389630878109
-    Name: NewGameButton
-    Source: Resources/Textures/MenusUI/NewGameButton.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 10429554580150133991
-    Name: NewGameButton_Clicked
-    Source: Resources/Textures/MenusUI/NewGameButton_Clicked.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 7454713948341072606
-    Name: QuitButton
-    Source: Resources/Textures/MenusUI/QuitButton.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 3837114816075316612
-    Name: QuitButton_Clicked
-    Source: Resources/Textures/MenusUI/QuitButton_Clicked.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 3271889770755654042
-    Name: RestartButton
-    Source: Resources/Textures/MenusUI/RestartButton.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 18426389008356641383
-    Name: ReturnButton
-    Source: Resources/Textures/MenusUI/ReturnButton.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 2676478744274535465
-    Name: ReturnButton_Clicked
-    Source: Resources/Textures/MenusUI/ReturnButton_Clicked.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 5826171970229966582
-    Name: ReturnMenuButton_Clicked
-    Source: Resources/Textures/MenusUI/ReturnMenuButton_Clicked.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 12879034172909871896
-    Name: Slider
-    Source: Resources/Textures/MenusUI/Slider.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 15235968341662935537
-    Name: UnfilledBar
-    Source: Resources/Textures/MenusUI/UnfilledBar.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
   - Type: SKYBOX
     UID: 4245843529762785392
     Name: NightSkyHDRI003_8K_HDR

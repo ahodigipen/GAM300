@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <limits>
 #include <glm/glm.hpp>
 #include "Auxiliaries/Assets.h"
 
@@ -47,6 +48,38 @@ namespace Boom {
 
         void Add(const glm::mat4& transform) {
             instances.push_back({transform});
+        }
+
+        size_t Count() const { return instances.size(); }
+
+        bool IsEmpty() const { return instances.empty(); }
+    };
+
+    // A batch of transparent instances sharing the same model+material
+    // Includes distance tracking for back-to-front batch sorting
+    struct TransparentInstanceBatch {
+        AssetID modelID = EMPTY_ASSET;
+        AssetID materialID = EMPTY_ASSET;
+        std::vector<InstanceData> instances;
+
+        // Offset into the flattened SSBO buffer (set during upload)
+        size_t ssboOffset = 0;
+
+        // Distance tracking for batch sorting (minimum distance in batch)
+        float minDistanceToCamera = std::numeric_limits<float>::max();
+
+        void Clear() {
+            instances.clear();
+            ssboOffset = 0;
+            minDistanceToCamera = std::numeric_limits<float>::max();
+        }
+
+        void Add(const glm::mat4& transform, float distanceToCamera) {
+            instances.push_back({transform});
+            // Track minimum distance for batch sorting (closest object determines batch order)
+            if (distanceToCamera < minDistanceToCamera) {
+                minDistanceToCamera = distanceToCamera;
+            }
         }
 
         size_t Count() const { return instances.size(); }
