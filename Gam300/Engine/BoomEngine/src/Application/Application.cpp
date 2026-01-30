@@ -467,6 +467,66 @@ namespace Boom
                         m_DebugLinesShader->Draw(dbgView, dbgProj, filtered, 50.5f);
                 }
             }
+            // Per-entity physics debug visualization
+            if (m_DebugLinesShader)
+            {
+                std::vector<Boom::LineVert> perEntityPhysLines;
+
+                // Collect debug lines only for entities with showPhysicsDebug enabled
+                EnttView<Entity, ColliderComponent, TransformComponent>([this, &perEntityPhysLines, &dbgCamPos](auto entity, ColliderComponent& col, TransformComponent& tc) {
+                    if (!col.Collider.showPhysicsDebug) return;
+
+                    // Get the physics actor for this entity
+                    PxRigidActor* actor = nullptr;
+                    if (entity.Has<RigidBodyComponent>()) {
+                        actor = entity.Get<RigidBodyComponent>().RigidBody.actor;
+                    }
+                    else if (col.Collider.actor) {
+                        actor = col.Collider.actor;
+                    }
+
+                    if (!actor) return;
+
+                    // Get shapes and draw debug wireframes
+                    PxU32 numShapes = actor->getNbShapes();
+                    std::vector<PxShape*> shapes(numShapes);
+                    actor->getShapes(shapes.data(), numShapes);
+
+                    PxTransform actorPose = actor->getGlobalPose();
+                    glm::vec4 debugColor(0.0f, 1.0f, 0.0f, 1.0f); // Green for per-entity debug
+
+                    for (PxShape* shape : shapes) {
+                        PxTransform shapePose = actorPose * shape->getLocalPose();
+                        PxGeometryHolder geom = shape->getGeometry();
+
+                        switch (geom.getType()) {
+                        case PxGeometryType::eBOX:
+                            AppendBoxWire(geom.box(), shapePose, perEntityPhysLines, debugColor);
+                            break;
+                        case PxGeometryType::eSPHERE:
+                            AppendSphereWire(geom.sphere().radius, shapePose, perEntityPhysLines, debugColor);
+                            break;
+                        case PxGeometryType::eCAPSULE:
+                            AppendCapsuleWire(geom.capsule().radius, geom.capsule().halfHeight, shapePose, perEntityPhysLines, debugColor);
+                            break;
+                        case PxGeometryType::eCONVEXMESH:
+                            AppendConvexMeshWire(geom.convexMesh(), shapePose, perEntityPhysLines, debugColor);
+                            break;
+                        case PxGeometryType::eTRIANGLEMESH:
+                            AppendTriangleMeshWire(geom.triangleMesh(), shapePose, perEntityPhysLines, debugColor);
+                            break;
+                        default:
+                            break;
+                        }
+                    }
+                    });
+
+                // Draw per-entity debug lines
+                if (!perEntityPhysLines.empty()) {
+                    m_DebugLinesShader->Draw(dbgView, dbgProj, perEntityPhysLines, 2.0f);
+                }
+            }
+
             if (m_PhysDebugViz && m_DebugLinesShader) {
                 DrawRigidBodiesDebugOnly(dbgView, dbgProj);
             }

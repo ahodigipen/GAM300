@@ -2205,6 +2205,8 @@ namespace EditorUI {
                 ImGui::EndPopup();
             }
 
+
+
             // 3. Reset cursor
             ImGui::SetCursorScreenPos(ImVec2(headerMin.x, headerMax.y + ImGui::GetStyle().ItemSpacing.y));
 
@@ -2229,6 +2231,12 @@ namespace EditorUI {
                 ImGui::Spacing();
                 ImGui::SeparatorText("Behavior");
                 ImGui::Spacing();
+
+                // Per-entity physics debug toggle
+                ImGui::Checkbox("Show Physics Debug", &col.Collider.showPhysicsDebug);
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Show physics collision debug lines for THIS entity only");
+                }
 
                 bool isTrigger = collider->isTrigger;
                 if (ImGui::Checkbox("Is Trigger", &isTrigger)) {

@@ -71,7 +71,7 @@ namespace Boom {
         // collider geometry shape
         PxShape* Shape = nullptr;
 
-		// For when Collider Component is added without RigidBody Component
+        // For when Collider Component is added without RigidBody Component
         PxRigidActor* actor = nullptr;
 
         // collider shape type
@@ -87,6 +87,7 @@ namespace Boom {
         } type = BOX;
 
         bool isTrigger = false; // New: Make this a trigger volume (no collision response)
+        bool showPhysicsDebug = false; // Per-entity physics debug visualization
 
         // Update XPROPERTY_DEF to include the new field
         XPROPERTY_DEF(
@@ -97,14 +98,15 @@ namespace Boom {
             obj_member<"DynamicFriction", &Boom::Collider3D::dynamicFriction>,
             obj_member<"StaticFriction", &Boom::Collider3D::staticFriction>,
             obj_member<"Restitution", &Boom::Collider3D::restitution>,
-            obj_member<"IsTrigger", &Boom::Collider3D::isTrigger>, // NEW
+            obj_member<"IsTrigger", &Boom::Collider3D::isTrigger>,
+            obj_member<"ShowPhysicsDebug", &Boom::Collider3D::showPhysicsDebug>,
             obj_member<"PhysicsMesh", &Boom::Collider3D::physicsMeshID>,
             obj_member<"Type", &Boom::Collider3D::type,
             member_enum_value<"BOX", Boom::Collider3D::Type::BOX>,
             member_enum_value<"SPHERE", Boom::Collider3D::Type::SPHERE>,
             member_enum_value<"CAPSULE", Boom::Collider3D::Type::CAPSULE>,
-            member_enum_value<"CONVEX_MESH", Boom::Collider3D::Type::CONVEX_MESH>,   // Updated
-            member_enum_value<"TRIANGLE_MESH", Boom::Collider3D::Type::TRIANGLE_MESH>, // Updated
+            member_enum_value<"CONVEX_MESH", Boom::Collider3D::Type::CONVEX_MESH>,
+            member_enum_value<"TRIANGLE_MESH", Boom::Collider3D::Type::TRIANGLE_MESH>,
             member_enum_value<"PLANE", Boom::Collider3D::Type::PLANE>,
             member_enum_value<"CYLINDER", Boom::Collider3D::Type::CYLINDER>,
             member_enum_value<"TRIANGLE", Boom::Collider3D::Type::TRIANGLE>
