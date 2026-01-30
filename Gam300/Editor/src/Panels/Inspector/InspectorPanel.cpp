@@ -370,6 +370,225 @@ namespace EditorUI {
                 ImGui::Spacing();
                 ImGui::SeparatorText("Utilities");
 
+                // --- SNAP TO GRID ---
+                if (ImGui::TreeNode("Grid Snapping")) {
+                    ImGui::DragFloat("Pos Step", &m_GridSnapValues.x, 0.1f, 0.01f, 10.0f);
+                    ImGui::DragFloat("Rot Step", &m_GridSnapValues.y, 1.0f, 1.0f, 90.0f);
+                    ImGui::DragFloat("Scale Step", &m_GridSnapValues.z, 0.1f, 0.01f, 2.0f);
+
+                    if (ImGui::Button("Snap to Grid", ImVec2(-1, 0))) {
+                        // Capture state for Undo
+                        auto* history = m_Owner->GetCommandHistory();
+                        Boom::Transform3D transformBefore = tc.transform;
+
+                        // Apply Snap
+                        // Position
+                        if (m_GridSnapValues.x > 0.001f) {
+                            tc.transform.translate.x = round(tc.transform.translate.x / m_GridSnapValues.x) * m_GridSnapValues.x;
+                            tc.transform.translate.y = round(tc.transform.translate.y / m_GridSnapValues.x) * m_GridSnapValues.x;
+                            tc.transform.translate.z = round(tc.transform.translate.z / m_GridSnapValues.x) * m_GridSnapValues.x;
+                        }
+                        // Rotation
+                        if (m_GridSnapValues.y > 0.001f) {
+                            tc.transform.rotate.x = round(tc.transform.rotate.x / m_GridSnapValues.y) * m_GridSnapValues.y;
+                            tc.transform.rotate.y = round(tc.transform.rotate.y / m_GridSnapValues.y) * m_GridSnapValues.y;
+                            tc.transform.rotate.z = round(tc.transform.rotate.z / m_GridSnapValues.y) * m_GridSnapValues.y;
+                        }
+                        // Scale
+                        if (m_GridSnapValues.z > 0.001f) {
+                            tc.transform.scale.x = round(tc.transform.scale.x / m_GridSnapValues.z) * m_GridSnapValues.z;
+                            tc.transform.scale.y = round(tc.transform.scale.y / m_GridSnapValues.z) * m_GridSnapValues.z;
+                            tc.transform.scale.z = round(tc.transform.scale.z / m_GridSnapValues.z) * m_GridSnapValues.z;
+                        }
+
+                        // Record Undo if changed
+                        if (history && (transformBefore.translate != tc.transform.translate || 
+                                        transformBefore.rotate != tc.transform.rotate || 
+                                        transformBefore.scale != tc.transform.scale)) 
+                        {
+                            auto command = std::make_unique<TransformCommand>(
+                                &ctx->scene,
+                                m_App->SelectedEntity(),
+                                transformBefore,
+                                tc.transform,
+                                "Snap to Grid"
+                            );
+                            history->Execute(std::move(command));
+                            BOOM_INFO("[Inspector] Snapped entity to grid");
+                        }
+                    }
+                    ImGui::TreePop();
+                }
+
+                // --- ALIGNMENT TOOL ---
+                if (ImGui::TreeNode("Alignment Tool")) {
+                    // 1. Target Picker
+                    std::string targetName = "None";
+                    if (m_AlignTarget != entt::null && ctx->scene.valid(m_AlignTarget) && ctx->scene.all_of<Boom::InfoComponent>(m_AlignTarget)) {
+                        targetName = ctx->scene.get<Boom::InfoComponent>(m_AlignTarget).name;
+                    } else {
+                        m_AlignTarget = entt::null; // Reset if invalid
+                    }
+
+                    if (ImGui::BeginCombo("Target", targetName.c_str())) {
+                        // Search Box
+                        ImGui::InputTextWithHint("##AlignSearch", "Search...", m_AlignSearchBuffer, sizeof(m_AlignSearchBuffer));
+                        
+                        // Convert search to lowercase for case-insensitive matching
+                        std::string searchLower = m_AlignSearchBuffer;
+                        std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), 
+                            [](unsigned char c){ return std::tolower(c); });
+
+                        auto view = ctx->scene.view<Boom::InfoComponent>();
+                        for (auto e : view) {
+                            if (e == m_App->SelectedEntity()) continue; // Skip self
+                            const auto& info = view.get<Boom::InfoComponent>(e);
+                            
+                            // Filter logic
+                            if (!searchLower.empty()) {
+                                std::string nameLower = info.name;
+                                std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), 
+                                    [](unsigned char c){ return std::tolower(c); });
+                                if (nameLower.find(searchLower) == std::string::npos) {
+                                    continue; // Skip if doesn't match
+                                }
+                            }
+
+                            bool isSelected = (m_AlignTarget == e);
+                            if (ImGui::Selectable(info.name.c_str(), isSelected)) {
+                                m_AlignTarget = e;
+                            }
+                            if (isSelected) ImGui::SetItemDefaultFocus();
+                        }
+                        ImGui::EndCombo();
+                    }
+
+                    if (m_AlignTarget != entt::null) {
+                        Boom::Entity targetEntity{ &ctx->scene, m_AlignTarget };
+                        
+                        // Helper to perform alignment
+                        auto DoAlign = [&](const char* name, int axis, int mode) {
+                            // Modes: 
+                            // 0: Min-to-Max (Place Right/Top/Front of Target)
+                            // 1: Max-to-Min (Place Left/Bottom/Back of Target)
+                            // 2: Min-to-Min (Flush Min)
+                            // 3: Max-to-Max (Flush Max)
+                            // 4: Center-to-Center
+
+                            glm::vec3 selMin, selMax, tarMin, tarMax;
+                            GetEntityAABB(selected, selMin, selMax);
+                            GetEntityAABB(targetEntity, tarMin, tarMax);
+
+                            // Calculate current world position offset
+                            glm::vec3 selCenter = (selMin + selMax) * 0.5f;
+                            glm::vec3 selSize = selMax - selMin;
+                            glm::vec3 tarCenter = (tarMin + tarMax) * 0.5f;
+                            glm::vec3 tarSize = tarMax - tarMin;
+
+                            // We modify the transform position directly
+                            // But AABB is in world space, so we calculate the world space shift needed
+                            float shift = 0.0f;
+                            float currentPos = tc.transform.translate[axis]; 
+                            
+                            // To make this accurate, we need the difference between the AABB edge and the pivot
+                            // Pivot World Pos = tc.transform.translate (assuming no parent for simplicity, or handle local later)
+                            // Let's assume World Space calculation for now.
+                            
+                            // Re-getting AABBs to be safe (GetEntityAABB returns world space AABB)
+                            
+                            float selEdgeMin = selMin[axis];
+                            float selEdgeMax = selMax[axis];
+                            float tarEdgeMin = tarMin[axis];
+                            float tarEdgeMax = tarMax[axis];
+
+                            float targetWorldPos = 0.0f;
+
+                            switch (mode) {
+                                case 0: // Min (Self) to Max (Target) -> "Next To (Positive)"
+                                    // New Min should be Tar Max
+                                    // NewPos = OldPos + (TarMax - SelMin)
+                                    shift = tarEdgeMax - selEdgeMin;
+                                    break;
+                                case 1: // Max (Self) to Min (Target) -> "Next To (Negative)"
+                                    shift = tarEdgeMin - selEdgeMax;
+                                    break;
+                                case 2: // Min to Min (Flush Low)
+                                    shift = tarEdgeMin - selEdgeMin;
+                                    break;
+                                case 3: // Max to Max (Flush High)
+                                    shift = tarEdgeMax - selEdgeMax;
+                                    break;
+                                case 4: // Center to Center
+                                    shift = ((tarEdgeMin + tarEdgeMax) * 0.5f) - ((selEdgeMin + selEdgeMax) * 0.5f);
+                                    break;
+                            }
+
+                            // Apply Undo
+                            auto* history = m_Owner->GetCommandHistory();
+                            Boom::Transform3D oldTrans = tc.transform;
+                            
+                            tc.transform.translate[axis] += shift;
+
+                            if (history) {
+                                auto cmd = std::make_unique<TransformCommand>(
+                                    &ctx->scene, m_App->SelectedEntity(), oldTrans, tc.transform, 
+                                    std::string("Align ") + name
+                                );
+                                history->Execute(std::move(cmd));
+                            }
+                        };
+
+                        ImGui::Spacing();
+                        ImGui::TextDisabled("Place Next To Target (Adjacency)");
+                        
+                        // X Axis
+                        if (ImGui::Button("Left##Adj", ImVec2(60, 0))) DoAlign("Left", 0, 1);
+                        ImGui::SameLine();
+                        if (ImGui::Button("Right##Adj", ImVec2(60, 0))) DoAlign("Right", 0, 0);
+                        
+                        // Y Axis
+                        ImGui::SameLine();
+                        if (ImGui::Button("Below##Adj", ImVec2(60, 0))) DoAlign("Below", 1, 1);
+                        ImGui::SameLine();
+                        if (ImGui::Button("Above##Adj", ImVec2(60, 0))) DoAlign("Above", 1, 0);
+
+                        // Z Axis
+                        ImGui::SameLine();
+                        if (ImGui::Button("Back##Adj", ImVec2(60, 0))) DoAlign("Back", 2, 1);
+                        ImGui::SameLine();
+                        if (ImGui::Button("Front##Adj", ImVec2(60, 0))) DoAlign("Front", 2, 0);
+
+                        ImGui::Spacing();
+                        ImGui::TextDisabled("Align Faces (Flush)");
+
+                        // X Axis
+                        if (ImGui::Button("Left##Fl", ImVec2(60, 0))) DoAlign("Flush Left", 0, 2);
+                        ImGui::SameLine();
+                        if (ImGui::Button("Right##Fl", ImVec2(60, 0))) DoAlign("Flush Right", 0, 3);
+                        ImGui::SameLine();
+                        if (ImGui::Button("Center X", ImVec2(60, 0))) DoAlign("Center X", 0, 4);
+
+                        // Y Axis
+                        if (ImGui::Button("Bottom##Fl", ImVec2(60, 0))) DoAlign("Flush Bottom", 1, 2);
+                        ImGui::SameLine();
+                        if (ImGui::Button("Top##Fl", ImVec2(60, 0))) DoAlign("Flush Top", 1, 3); // "Top of stairs to Top of wall"
+                        ImGui::SameLine();
+                        if (ImGui::Button("Center Y", ImVec2(60, 0))) DoAlign("Center Y", 1, 4);
+
+                        // Z Axis
+                        if (ImGui::Button("Back##Fl", ImVec2(60, 0))) DoAlign("Flush Back", 2, 2);
+                        ImGui::SameLine();
+                        if (ImGui::Button("Front##Fl", ImVec2(60, 0))) DoAlign("Flush Front", 2, 3);
+                        ImGui::SameLine();
+                        if (ImGui::Button("Center Z", ImVec2(60, 0))) DoAlign("Center Z", 2, 4);
+                    }
+                    else {
+                        ImGui::TextColored(ImVec4(1, 1, 0, 1), "Select a target entity to enable alignment tools.");
+                    }
+
+                    ImGui::TreePop();
+                }
+
                 // We use -1 width to make the buttons span the whole panel
                 if (ImGui::Button("Snap to Floor", ImVec2(-1, 0))) {
                     SnapEntity(selected, glm::vec3(0.0f, -1.0f, 0.0f));
