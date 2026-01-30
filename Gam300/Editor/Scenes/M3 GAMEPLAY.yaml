@@ -2,6 +2,64 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
+      Name: Ambience SFX (Outoors)
+      UID: 18271923921574086824
+    TransformComponent:
+      Transform:
+        Translate: [4.79888058, 30.0090199, 1.95419979]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    SoundComponent:
+      Entries:
+        - name: Gameplay
+          filePaths:
+            - Resources/Audio/02.Night_Forest_Field_Stars_Loop.wav
+          loop: true
+          volume: 0.0529999994
+          priority: 42
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 0.850000024
+          mute: false
+          playOnStart: true
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1.29999995
+          maxDistance: 32.9000015
+  - InfoComponent:
+      Parent: 0
+      Name: Game BGM
+      UID: 963553026872494941
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    SoundComponent:
+      Entries:
+        - name: BGM
+          filePaths:
+            - Resources/Audio/HouseOfLanternsBGM1Mstr.wav
+          loop: true
+          volume: 0.0410000011
+          priority: 66
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: true
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+  - InfoComponent:
+      Parent: 0
       Name: New Entity (1)
       UID: 9054217741465614535
     TransformComponent:
@@ -739,7 +797,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 3.47599721
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -862,7 +920,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0.000341020233
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -985,7 +1043,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 4.39162827
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -1108,7 +1166,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.47587752
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -1232,7 +1290,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0.0707147196
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -1355,7 +1413,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.47599053
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -1607,24 +1665,24 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Gameplay BGM
+      Name: Ambience SFX (Room)
       UID: 18108710378386747548
     TransformComponent:
       Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
+        Translate: [0, 3.66154099, 0]
+        Rotate: [0, -0, 0]
         Scale: [1, 1, 1]
     SoundComponent:
       Entries:
         - name: Gameplay
           filePaths:
-            - Resources/Audio/Kairos_Cave-Vuk_Loop.wav
+            - Resources/Audio/20.Room-Tone_SFX_Ambience_Loop.wav
           loop: true
-          volume: 0.395999998
-          priority: 128
+          volume: 0.501999974
+          priority: 53
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.810000002
           mute: false
           playOnStart: true
           triggerKey: -1
@@ -1632,8 +1690,8 @@ ENTITIES:
           moveThreshold: 0.100000001
           repeatInterval: 0.5
           animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
+          minDistance: 4
+          maxDistance: 12.6000004
   - InfoComponent:
       Parent: 0
       Name: PlayerHP
@@ -2468,7 +2526,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.47598505
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -2591,7 +2649,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.47595549
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -2714,7 +2772,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.47595549
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -3055,7 +3113,7 @@ ENTITIES:
       ParamsJSON: "{}"
   - SceneNavmeshComponent:
       NavmeshFile: Resources/NavData/solo_navmesh.bin
-      AmbientStrength: 0.193000004
+      AmbientStrength: 0.104000002
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -8028,8 +8086,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-6.91686916, 6.75718737, 6.86803341]
-        Rotate: [95.9999847, -8.00017548, 180]
+        Translate: [-10.6515999, 3.28225136, 5.05467653]
+        Rotate: [-207.375, -79.0626831, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -9335,7 +9393,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0.00245609158
+        Speed: 0
       BoolParams:
         IsMoving: false
         Sprint: false
@@ -9610,7 +9668,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.47599483
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
