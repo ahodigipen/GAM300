@@ -96,6 +96,21 @@ namespace Boom {
 			glBindVertexArray(0);
 		}
 
+		// Instanced draw for batched rendering
+		// @param mode GL draw mode (e.g., GL_TRIANGLES)
+		// @param instanceCount Number of instances to draw
+		BOOM_INLINE void DrawInstanced(uint32_t mode, uint32_t instanceCount) {
+			if (instanceCount == 0) return;
+			glBindVertexArray(buffId);
+			if (numIdx) {
+				glDrawElementsInstanced(mode, numIdx, GL_UNSIGNED_INT, 0, instanceCount);
+			}
+			else {
+				glDrawArraysInstanced(mode, 0, numVtx, instanceCount);
+			}
+			glBindVertexArray(0);
+		}
+
 		//automatically frees storage when life over
 		BOOM_INLINE ~Mesh() {
 			glDeleteVertexArrays(1, &buffId);

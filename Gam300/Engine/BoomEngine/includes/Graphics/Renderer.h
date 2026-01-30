@@ -9,6 +9,7 @@
 #include "Shaders/Shadow.h"
 #include "Shaders/Color.h"
 #include "Shaders/PickingShader.h"
+#include "Graphics/Instancing/InstanceManager.h"
 #include "GlobalConstants.h"
 
 #include <memory>
@@ -66,6 +67,9 @@ namespace Boom {
 
             // --- Meshes ---
             skyboxMesh = CreateSkyboxMesh();
+
+            // --- Instancing ---
+            m_InstanceManager = std::make_unique<InstanceManager>();
 
             // --- Internal bookkeeping ---
             m_Width = w;
@@ -361,6 +365,81 @@ namespace Boom {
 
         BOOM_INLINE float Aspect() const { return frame->Ratio(); } // kept for backward compatibility
 
+    public: // ---------------------- Instanced Rendering ----------------------
+        /**
+         * @brief Begin collecting instances for this frame.
+         * Call at start of render phase, before adding any instances.
+         */
+        BOOM_INLINE void BeginInstanceCollection() {
+            m_InstanceManager->BeginFrame();
+        }
+
+        /**
+         * @brief Add an instance to be rendered this frame.
+         *
+         * @param modelID Asset ID of the model
+         * @param materialID Asset ID of the material
+         * @param worldMatrix Pre-computed world transform matrix
+         * @param isAnimated If true, cannot be instanced (returns false)
+         * @return true if batched, false if should use immediate draw
+         */
+        BOOM_INLINE bool AddInstance(AssetID modelID, AssetID materialID,
+                                    const glm::mat4& worldMatrix, bool isAnimated) {
+            return m_InstanceManager->AddInstance(modelID, materialID, worldMatrix, isAnimated);
+        }
+
+        /**
+         * @brief Render all collected instance batches.
+         *
+         * @param assets Asset registry to look up models and materials
+         */
+        template<typename AssetRegistryT>
+        BOOM_INLINE void RenderInstancedBatches(AssetRegistryT& assets) {
+            // Upload all instance transforms to GPU
+            m_InstanceManager->UploadBatches();
+
+            if (m_InstanceManager->GetTotalInstances() == 0) return;
+
+            // Bind the instance SSBO
+            m_InstanceManager->BindSSBO(3);
+
+            // Render each batch
+            for (const auto& [key, batch] : m_InstanceManager->GetBatches()) {
+                if (batch.IsEmpty()) continue;
+
+                // Get model
+                auto* modelAsset = assets.template TryGet<ModelAsset>(batch.modelID);
+                if (!modelAsset || !modelAsset->data) continue;
+
+                // Get material
+                PbrMaterial material{};
+                if (batch.materialID != EMPTY_ASSET) {
+                    auto* matAsset = assets.template TryGet<MaterialAsset>(batch.materialID);
+                    if (matAsset) {
+                        assets.ResolveMaterialTextures(matAsset);
+                        material = matAsset->data;
+                    }
+                }
+
+                // Draw all instances in this batch
+                pbrShader->DrawInstanced(modelAsset->data, material,
+                                        static_cast<uint32_t>(batch.Count()),
+                                        static_cast<uint32_t>(batch.ssboOffset),
+                                        showNormalTexture);
+            }
+        }
+
+        /**
+         * @brief Get instancing statistics for debugging/profiling.
+         */
+        BOOM_INLINE size_t GetInstanceBatchCount() const {
+            return m_InstanceManager->GetActiveBatchCount();
+        }
+
+        BOOM_INLINE size_t GetTotalInstanceCount() const {
+            return m_InstanceManager->GetTotalInstances();
+        }
+
     public: // ---------------------- Frame lifecycle ----------------------
         BOOM_INLINE void NewFrame() {
             pbrShader->showDither = showLowPoly;
@@ -536,6 +615,7 @@ namespace Boom {
         std::unique_ptr<BloomShader>   bloom;
         std::unique_ptr<ColorShader>   colorShader;
         std::unique_ptr<Color3DShader> color3DShader;
+        std::unique_ptr<InstanceManager> m_InstanceManager;
         SkyboxMesh                     skyboxMesh;
 
     private: // ---------------------- Internal state -----------------------

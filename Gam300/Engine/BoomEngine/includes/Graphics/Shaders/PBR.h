@@ -68,6 +68,8 @@ namespace Boom {
 			, u_EnableShadows{ GetUniformVar("u_enableShadows") }
 			, useWorldSpaceUVLoc{ GetUniformVar("useWorldSpaceUV") }
 			, textureScaleLoc{ GetUniformVar("textureScale") }
+			, useInstancingLoc{ GetUniformVar("u_useInstancing") }
+			, baseInstanceLoc{ GetUniformVar("u_baseInstance") }
 		{
 			GLuint prog = shaderId; 
 
@@ -295,6 +297,45 @@ namespace Boom {
 			model->Draw(GL_LINES);
 		}
 
+		// Instanced rendering methods
+		BOOM_INLINE void SetInstancing(bool enabled, uint32_t baseInstance = 0) {
+			SetUniform(useInstancingLoc, enabled);
+			SetUniform(baseInstanceLoc, baseInstance);
+		}
+
+		// Draw multiple instances of a model with the same material
+		// Assumes SSBO is already bound and contains the instance matrices
+		BOOM_INLINE void DrawInstanced(Model3D const& model, PbrMaterial const& material,
+									   uint32_t instanceCount, uint32_t baseInstance, bool showNormal = false) {
+			Use();
+			SetUniform(isDebugModeLoc, false);
+			SetUniform(ditherThresholdLoc, showDither ? ditherThreshold : 0.f);
+			SetUniform(showNormalTextureLoc, showNormal);
+			SetUniform(ambientStrengthLoc, ambientStrength);
+
+			// For instancing, we only use the model's internal transform as a base
+			// The world transform comes from the SSBO
+			SetUniform(modelMatLoc, model->modelTransform.Matrix());
+
+			// World-space UV settings
+			SetWorldSpaceUV(material.useWorldSpaceUV, material.textureScale);
+
+			// Material texture maps (start at unit 1 to avoid depth map at unit 0)
+			SetMaterial(material, 1);
+
+			// Static models only - no joints in instanced mode
+			SetUniform(jointsLoc, false);
+
+			// Enable instancing and set base instance offset
+			SetInstancing(true, baseInstance);
+
+			// Draw all instances
+			model->DrawInstanced(GL_TRIANGLES, instanceCount);
+
+			// Disable instancing after draw
+			SetInstancing(false, 0);
+		}
+
 		//Animation 
 		BOOM_INLINE void SetJoints(std::vector<glm::mat4>& transforms)
 		{
@@ -354,5 +395,9 @@ namespace Boom {
 		// World-space UV mapping
 		int32_t useWorldSpaceUVLoc;
 		int32_t textureScaleLoc;
+
+		// Instancing support
+		int32_t useInstancingLoc;
+		int32_t baseInstanceLoc;
 	};
 }
