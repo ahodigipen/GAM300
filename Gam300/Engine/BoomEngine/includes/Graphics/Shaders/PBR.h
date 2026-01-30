@@ -374,7 +374,40 @@ namespace Boom {
 			SetInstancingMode(0, 0, 0);
 		}
 
-		//Animation 
+		// Draw multiple instances of a transparent static model with the same material
+		// Assumes transform SSBO (binding 3) is already bound
+		// Uses static instancing mode (mode 1) but called separately for transparent objects
+		BOOM_INLINE void DrawTransparentInstanced(Model3D const& model, PbrMaterial const& material,
+												  uint32_t instanceCount, uint32_t baseInstance, bool showNormal = false) {
+			Use();
+			SetUniform(isDebugModeLoc, false);
+			SetUniform(ditherThresholdLoc, showDither ? ditherThreshold : 0.f);
+			SetUniform(showNormalTextureLoc, showNormal);
+			SetUniform(ambientStrengthLoc, ambientStrength);
+
+			// For instancing, model transform is identity (baked into world matrices)
+			SetUniform(modelMatLoc, model->modelTransform.Matrix());
+
+			// World-space UV settings
+			SetWorldSpaceUV(material.useWorldSpaceUV, material.textureScale);
+
+			// Material texture maps (start at unit 1 to avoid depth map at unit 0)
+			SetMaterial(material, 1);
+
+			// Static models have no joints
+			SetUniform(jointsLoc, false);
+
+			// Enable static instancing (mode 1) - same as opaque static instancing
+			SetInstancingMode(1, baseInstance, 0);
+
+			// Draw all instances
+			model->DrawInstanced(GL_TRIANGLES, instanceCount);
+
+			// Disable instancing after draw
+			SetInstancingMode(0, 0, 0);
+		}
+
+		//Animation
 		BOOM_INLINE void SetJoints(std::vector<glm::mat4>& transforms)
 		{
 			for (size_t i = 0; i < transforms.size() && i < 100; ++i)

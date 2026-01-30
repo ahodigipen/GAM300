@@ -683,8 +683,18 @@ namespace Boom
                         bool isTransparent = (material.data.opacity < 1.0f) || (material.opacityMapID != EMPTY_ASSET);
 
                         if (isTransparent) {
-                            // Defer transparent object rendering (cannot be instanced)
                             float dist = glm::length(worldTransform.translate - cameraPos);
+
+                            if (!isAnimated) {
+                                // Static transparent object - try to batch it
+                                glm::mat4 finalMatrix = worldMatrix * model.data->modelTransform.Matrix();
+                                if (m_Context->renderer->AddTransparentInstance(comp.modelID, comp.materialID, finalMatrix, dist)) {
+                                    // Successfully batched - skip immediate draw
+                                    return;
+                                }
+                            }
+
+                            // Animated transparent object or batching failed - defer for individual rendering
                             transparentObjects.push_back({
                                 model.data,
                                 worldTransform,
@@ -802,13 +812,8 @@ namespace Boom
         }
 
         // === TRANSPARENT OBJECTS PASS ===
-        // Sort transparent objects back-to-front (farthest first)
-        if (!transparentObjects.empty() && !isPicking) {
-            std::sort(transparentObjects.begin(), transparentObjects.end(),
-                [](const TransparentRenderData& a, const TransparentRenderData& b) {
-                    return a.distanceToCamera > b.distanceToCamera; // Sort back-to-front
-                });
-
+        // Render transparent objects (batched + individual)
+        if (!isPicking) {
             // Ensure depth testing is enabled, disable depth writing
             glEnable(GL_DEPTH_TEST);
             glDepthFunc(GL_LESS);
@@ -820,12 +825,23 @@ namespace Boom
                 glCullFace(GL_BACK);
             }
 
-            for (auto& obj : transparentObjects) {
-                // Set joints if the model has them
-                if (obj.hasJoints && !obj.joints.empty()) {
-                    m_Context->renderer->SetJoints(obj.joints);
+            // Render batched transparent instances (already sorted back-to-front)
+            m_Context->renderer->RenderTransparentBatches(*m_Context->assets);
+
+            // Sort and render individual transparent objects (animated transparent or batching failed)
+            if (!transparentObjects.empty()) {
+                std::sort(transparentObjects.begin(), transparentObjects.end(),
+                    [](const TransparentRenderData& a, const TransparentRenderData& b) {
+                        return a.distanceToCamera > b.distanceToCamera; // Sort back-to-front
+                    });
+
+                for (auto& obj : transparentObjects) {
+                    // Set joints if the model has them
+                    if (obj.hasJoints && !obj.joints.empty()) {
+                        m_Context->renderer->SetJoints(obj.joints);
+                    }
+                    m_Context->renderer->Draw(obj.model, obj.transform, obj.material);
                 }
-                m_Context->renderer->Draw(obj.model, obj.transform, obj.material);
             }
 
             // Restore state

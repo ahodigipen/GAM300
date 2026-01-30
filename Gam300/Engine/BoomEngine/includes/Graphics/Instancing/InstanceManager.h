@@ -7,12 +7,14 @@
 namespace Boom {
 
     /**
-     * @brief Manages instanced rendering batches for both static and animated objects.
+     * @brief Manages instanced rendering batches for static, animated, and transparent objects.
      *
      * Collects instances sharing the same model+material, uploads transform matrices
      * to GPU Shader Storage Buffer Objects (SSBOs):
-     * - Binding 3: Transform matrices (static + animated world transforms)
+     * - Binding 3: Transform matrices (static + animated + transparent world transforms)
      * - Binding 4: Joint matrices (animated models only, flattened)
+     *
+     * Transparent batches are sorted back-to-front by minimum distance before rendering.
      */
     class InstanceManager {
     public:
@@ -54,6 +56,21 @@ namespace Boom {
                                  const std::vector<glm::mat4>& jointMatrices);
 
         /**
+         * @brief Add a transparent instance to be rendered this frame.
+         *
+         * Transparent instances are batched by model+material and sorted by distance.
+         * Within a batch, instances are rendered together (not individually sorted).
+         *
+         * @param modelID Asset ID of the model
+         * @param materialID Asset ID of the material
+         * @param worldMatrix Pre-computed world transform matrix
+         * @param distanceToCamera Distance from camera for batch sorting
+         * @return true if the instance was batched
+         */
+        bool AddTransparentInstance(AssetID modelID, AssetID materialID,
+                                    const glm::mat4& worldMatrix, float distanceToCamera);
+
+        /**
          * @brief Upload all collected batches to GPU SSBOs.
          *
          * Call this after all Add*Instance() calls and before rendering.
@@ -72,6 +89,15 @@ namespace Boom {
          */
         const std::unordered_map<AnimatedInstanceKey, AnimatedInstanceBatch, AnimatedInstanceKeyHash>&
             GetAnimatedBatches() const { return m_AnimatedBatches; }
+
+        /**
+         * @brief Get sorted transparent batches for rendering (back-to-front order).
+         *
+         * Must be called after UploadBatches() as that's when sorting occurs.
+         */
+        const std::vector<TransparentInstanceBatch*>& GetSortedTransparentBatches() const {
+            return m_SortedTransparentBatches;
+        }
 
         /**
          * @brief Get the transform SSBO ID (binding point 3).
@@ -104,10 +130,13 @@ namespace Boom {
         // Statistics
         size_t GetBatchCount() const { return m_Batches.size(); }
         size_t GetAnimatedBatchCount() const { return m_AnimatedBatches.size(); }
+        size_t GetTransparentBatchCount() const { return m_TransparentBatches.size(); }
         size_t GetTotalInstances() const;
         size_t GetTotalAnimatedInstances() const;
+        size_t GetTotalTransparentInstances() const;
         size_t GetActiveBatchCount() const; // Static batches with >0 instances
         size_t GetActiveAnimatedBatchCount() const; // Animated batches with >0 instances
+        size_t GetActiveTransparentBatchCount() const; // Transparent batches with >0 instances
 
     private:
         // Static instance batches
@@ -116,7 +145,13 @@ namespace Boom {
         // Animated instance batches
         std::unordered_map<AnimatedInstanceKey, AnimatedInstanceBatch, AnimatedInstanceKeyHash> m_AnimatedBatches;
 
-        // GPU buffer for transform matrices (static + animated world transforms)
+        // Transparent instance batches (keyed same as static, but rendered with blending)
+        std::unordered_map<InstanceKey, TransparentInstanceBatch, InstanceKeyHash> m_TransparentBatches;
+
+        // Sorted pointers to transparent batches (back-to-front order, set during UploadBatches)
+        std::vector<TransparentInstanceBatch*> m_SortedTransparentBatches;
+
+        // GPU buffer for transform matrices (static + animated + transparent world transforms)
         uint32_t m_InstanceSSBO = 0;
         size_t m_SSBOCapacity = 0;
 
@@ -125,9 +160,10 @@ namespace Boom {
         size_t m_JointSSBOCapacity = 0;
 
         // Flat arrays for upload
-        std::vector<InstanceData> m_UploadBuffer;           // Static transforms
-        std::vector<InstanceData> m_AnimatedUploadBuffer;   // Animated transforms
-        std::vector<glm::mat4> m_JointUploadBuffer;         // Joint matrices
+        std::vector<InstanceData> m_UploadBuffer;              // Static transforms
+        std::vector<InstanceData> m_AnimatedUploadBuffer;      // Animated transforms
+        std::vector<InstanceData> m_TransparentUploadBuffer;   // Transparent transforms
+        std::vector<glm::mat4> m_JointUploadBuffer;            // Joint matrices
 
         /**
          * @brief Ensure transform SSBO is large enough.

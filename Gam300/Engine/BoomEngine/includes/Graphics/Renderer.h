@@ -404,6 +404,23 @@ namespace Boom {
         }
 
         /**
+         * @brief Add a transparent instance to be rendered this frame.
+         *
+         * Transparent instances are batched by model+material and sorted by distance.
+         * Within a batch, instances are rendered together (not individually sorted).
+         *
+         * @param modelID Asset ID of the model
+         * @param materialID Asset ID of the material
+         * @param worldMatrix Pre-computed world transform matrix
+         * @param distanceToCamera Distance from camera for batch sorting
+         * @return true if batched
+         */
+        BOOM_INLINE bool AddTransparentInstance(AssetID modelID, AssetID materialID,
+                                               const glm::mat4& worldMatrix, float distanceToCamera) {
+            return m_InstanceManager->AddTransparentInstance(modelID, materialID, worldMatrix, distanceToCamera);
+        }
+
+        /**
          * @brief Render all collected instance batches (static and animated).
          *
          * @param assets Asset registry to look up models and materials
@@ -479,6 +496,51 @@ namespace Boom {
         }
 
         /**
+         * @brief Render all collected transparent instance batches.
+         *
+         * Call this AFTER RenderInstancedBatches() and with blending enabled.
+         * Batches are rendered in back-to-front order (sorted during UploadBatches).
+         *
+         * @param assets Asset registry to look up models and materials
+         */
+        template<typename AssetRegistryT>
+        BOOM_INLINE void RenderTransparentBatches(AssetRegistryT& assets) {
+            size_t totalTransparent = m_InstanceManager->GetTotalTransparentInstances();
+            if (totalTransparent == 0) return;
+
+            // SSBO should already be bound from RenderInstancedBatches
+            // Just ensure it's bound in case this is called standalone
+            m_InstanceManager->BindSSBO(3);
+
+            // Get sorted batches (back-to-front order)
+            const auto& sortedBatches = m_InstanceManager->GetSortedTransparentBatches();
+
+            for (const auto* batch : sortedBatches) {
+                if (batch->IsEmpty()) continue;
+
+                // Get model
+                auto* modelAsset = assets.template TryGet<ModelAsset>(batch->modelID);
+                if (!modelAsset || !modelAsset->data) continue;
+
+                // Get material
+                PbrMaterial material{};
+                if (batch->materialID != EMPTY_ASSET) {
+                    auto* matAsset = assets.template TryGet<MaterialAsset>(batch->materialID);
+                    if (matAsset) {
+                        assets.ResolveMaterialTextures(matAsset);
+                        material = matAsset->data;
+                    }
+                }
+
+                // Draw all transparent instances in this batch
+                pbrShader->DrawTransparentInstanced(modelAsset->data, material,
+                                                    static_cast<uint32_t>(batch->Count()),
+                                                    static_cast<uint32_t>(batch->ssboOffset),
+                                                    showNormalTexture);
+            }
+        }
+
+        /**
          * @brief Get instancing statistics for debugging/profiling.
          */
         BOOM_INLINE size_t GetInstanceBatchCount() const {
@@ -489,12 +551,20 @@ namespace Boom {
             return m_InstanceManager->GetActiveAnimatedBatchCount();
         }
 
+        BOOM_INLINE size_t GetTransparentInstanceBatchCount() const {
+            return m_InstanceManager->GetActiveTransparentBatchCount();
+        }
+
         BOOM_INLINE size_t GetTotalInstanceCount() const {
             return m_InstanceManager->GetTotalInstances();
         }
 
         BOOM_INLINE size_t GetTotalAnimatedInstanceCount() const {
             return m_InstanceManager->GetTotalAnimatedInstances();
+        }
+
+        BOOM_INLINE size_t GetTotalTransparentInstanceCount() const {
+            return m_InstanceManager->GetTotalTransparentInstances();
         }
 
     public: // ---------------------- Frame lifecycle ----------------------

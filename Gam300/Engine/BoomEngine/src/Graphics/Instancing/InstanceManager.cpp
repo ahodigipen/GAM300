@@ -1,5 +1,6 @@
 #include "Core.h"
 #include "Graphics/Instancing/InstanceManager.h"
+#include <algorithm>
 
 namespace Boom {
 
@@ -34,6 +35,14 @@ namespace Boom {
         for (auto& [key, batch] : m_AnimatedBatches) {
             batch.Clear();
         }
+
+        // Clear instance data from all transparent batches
+        for (auto& [key, batch] : m_TransparentBatches) {
+            batch.Clear();
+        }
+
+        // Clear sorted transparent batch list
+        m_SortedTransparentBatches.clear();
     }
 
     bool InstanceManager::AddInstance(AssetID modelID, AssetID materialID,
@@ -82,12 +91,34 @@ namespace Boom {
         return true;
     }
 
+    bool InstanceManager::AddTransparentInstance(AssetID modelID, AssetID materialID,
+                                                 const glm::mat4& worldMatrix, float distanceToCamera) {
+        // Skip empty assets
+        if (modelID == EMPTY_ASSET) {
+            return false;
+        }
+
+        InstanceKey key{modelID, materialID};
+        auto& batch = m_TransparentBatches[key];
+
+        // Initialize batch if new
+        if (batch.modelID == EMPTY_ASSET) {
+            batch.modelID = modelID;
+            batch.materialID = materialID;
+        }
+
+        batch.Add(worldMatrix, distanceToCamera);
+        return true;
+    }
+
     void InstanceManager::UploadBatches() {
         // === Upload Static Instances ===
         size_t totalStaticInstances = GetTotalInstances();
+        size_t totalAnimatedInstances = GetTotalAnimatedInstances();
+        size_t totalTransparentInstances = GetTotalTransparentInstances();
 
         if (totalStaticInstances > 0) {
-            EnsureSSBOCapacity(totalStaticInstances + GetTotalAnimatedInstances());
+            EnsureSSBOCapacity(totalStaticInstances + totalAnimatedInstances + totalTransparentInstances);
 
             m_UploadBuffer.clear();
             m_UploadBuffer.reserve(totalStaticInstances);
@@ -104,7 +135,6 @@ namespace Boom {
         }
 
         // === Upload Animated Instances ===
-        size_t totalAnimatedInstances = GetTotalAnimatedInstances();
         size_t totalJointMatrices = 0;
 
         if (totalAnimatedInstances > 0) {
@@ -114,7 +144,7 @@ namespace Boom {
             }
 
             // Ensure SSBOs are large enough
-            EnsureSSBOCapacity(totalStaticInstances + totalAnimatedInstances);
+            EnsureSSBOCapacity(totalStaticInstances + totalAnimatedInstances + totalTransparentInstances);
             EnsureJointSSBOCapacity(totalJointMatrices);
 
             m_AnimatedUploadBuffer.clear();
@@ -150,10 +180,46 @@ namespace Boom {
             }
         }
 
+        // === Upload Transparent Instances ===
+        // Sort transparent batches back-to-front (farthest first) before uploading
+        m_SortedTransparentBatches.clear();
+        if (totalTransparentInstances > 0) {
+            // Collect non-empty batches
+            for (auto& [key, batch] : m_TransparentBatches) {
+                if (!batch.IsEmpty()) {
+                    m_SortedTransparentBatches.push_back(&batch);
+                }
+            }
+
+            // Sort by distance (back-to-front: farthest first)
+            std::sort(m_SortedTransparentBatches.begin(), m_SortedTransparentBatches.end(),
+                [](const TransparentInstanceBatch* a, const TransparentInstanceBatch* b) {
+                    return a->minDistanceToCamera > b->minDistanceToCamera;
+                });
+
+            // Ensure SSBO is large enough
+            EnsureSSBOCapacity(totalStaticInstances + totalAnimatedInstances + totalTransparentInstances);
+
+            m_TransparentUploadBuffer.clear();
+            m_TransparentUploadBuffer.reserve(totalTransparentInstances);
+
+            // Transparent transforms come after static + animated in the same SSBO
+            size_t transparentBaseOffset = m_UploadBuffer.size() + m_AnimatedUploadBuffer.size();
+
+            // Upload in sorted order so SSBO matches render order
+            for (auto* batch : m_SortedTransparentBatches) {
+                batch->ssboOffset = transparentBaseOffset + m_TransparentUploadBuffer.size();
+
+                for (const auto& instance : batch->instances) {
+                    m_TransparentUploadBuffer.push_back(instance);
+                }
+            }
+        }
+
         // === Upload to GPU ===
 
-        // Upload transforms (static + animated in same SSBO)
-        if (!m_UploadBuffer.empty() || !m_AnimatedUploadBuffer.empty()) {
+        // Upload transforms (static + animated + transparent in same SSBO)
+        if (!m_UploadBuffer.empty() || !m_AnimatedUploadBuffer.empty() || !m_TransparentUploadBuffer.empty()) {
             glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_InstanceSSBO);
 
             // Upload static transforms
@@ -169,6 +235,14 @@ namespace Boom {
                 glBufferSubData(GL_SHADER_STORAGE_BUFFER, offset,
                                 m_AnimatedUploadBuffer.size() * sizeof(InstanceData),
                                 m_AnimatedUploadBuffer.data());
+            }
+
+            // Upload transparent transforms (after static + animated)
+            if (!m_TransparentUploadBuffer.empty()) {
+                size_t offset = (m_UploadBuffer.size() + m_AnimatedUploadBuffer.size()) * sizeof(InstanceData);
+                glBufferSubData(GL_SHADER_STORAGE_BUFFER, offset,
+                                m_TransparentUploadBuffer.size() * sizeof(InstanceData),
+                                m_TransparentUploadBuffer.data());
             }
 
             glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
@@ -208,6 +282,14 @@ namespace Boom {
         return total;
     }
 
+    size_t InstanceManager::GetTotalTransparentInstances() const {
+        size_t total = 0;
+        for (const auto& [key, batch] : m_TransparentBatches) {
+            total += batch.Count();
+        }
+        return total;
+    }
+
     size_t InstanceManager::GetActiveBatchCount() const {
         size_t count = 0;
         for (const auto& [key, batch] : m_Batches) {
@@ -221,6 +303,16 @@ namespace Boom {
     size_t InstanceManager::GetActiveAnimatedBatchCount() const {
         size_t count = 0;
         for (const auto& [key, batch] : m_AnimatedBatches) {
+            if (!batch.IsEmpty()) {
+                ++count;
+            }
+        }
+        return count;
+    }
+
+    size_t InstanceManager::GetActiveTransparentBatchCount() const {
+        size_t count = 0;
+        for (const auto& [key, batch] : m_TransparentBatches) {
             if (!batch.IsEmpty()) {
                 ++count;
             }
