@@ -20,6 +20,7 @@ namespace Boom {
 		BOOM_INLINE Model(std::string const&) {};
 		BOOM_INLINE virtual bool HasJoint() { return false; }
 		BOOM_INLINE virtual void Draw(uint32_t = GL_TRIANGLES) {};
+		BOOM_INLINE virtual void DrawInstanced(uint32_t /*mode*/, uint32_t /*instanceCount*/) {};
 
 		static BOOM_INLINE bool CheckForJoints(std::string const& filename) {
 			Assimp::Importer importer; //will auto free
@@ -103,6 +104,14 @@ namespace Boom {
 		{
 			for (auto& mesh : meshes) {
 				mesh->Draw(mode);
+			}
+		}
+
+		// Instanced draw for batched rendering
+		BOOM_INLINE void DrawInstanced(uint32_t mode, uint32_t instanceCount) override
+		{
+			for (auto& mesh : meshes) {
+				mesh->DrawInstanced(mode, instanceCount);
 			}
 		}
 
@@ -230,6 +239,14 @@ namespace Boom {
 			{
 				mesh->Draw(mode);
 			}
+		}
+
+		// Note: SkeletalModel should NOT be instanced (each instance needs unique joint matrices)
+		// This override does nothing intentionally - use immediate draw for skeletal models
+		BOOM_INLINE void DrawInstanced(uint32_t /*mode*/, uint32_t /*instanceCount*/) override final
+		{
+			// Skeletal models cannot be instanced - each needs unique joint transforms
+			// Callers should check HasJoint() and use immediate draw for animated models
 		}
 
 		/**

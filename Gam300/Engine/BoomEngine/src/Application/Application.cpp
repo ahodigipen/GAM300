@@ -591,10 +591,27 @@ namespace Boom
             float distanceToCamera;
         };
         std::vector<TransparentRenderData> transparentObjects;
+
+        // Structure for animated/immediate draw objects
+        struct ImmediateDrawData {
+            Model3D model;
+            Transform3D transform;
+            PbrMaterial material;
+            std::vector<glm::mat4> joints;
+            bool hasJoints;
+            bool hasMaterial;
+        };
+        std::vector<ImmediateDrawData> immediateDraws;
+
         glm::vec3 cameraPos = m_Context->renderer->GetCameraPosition();
 
+        // Begin instance collection for this frame (only for rendering, not picking)
+        if (!isPicking) {
+            m_Context->renderer->BeginInstanceCollection();
+        }
+
         //pbr ecs (always render)
-        EnttView<Entity, TransformComponent>([this, &guiList, &isPicking, &transparentObjects, &cameraPos](auto entity, TransformComponent& t) {
+        EnttView<Entity, TransformComponent>([this, &guiList, &isPicking, &transparentObjects, &immediateDraws, &cameraPos](auto entity, TransformComponent& t) {
             if (entity.Has<DeactivatedComponent>()) return;
 
             if (entity.Has<ModelComponent>()) {
@@ -606,6 +623,7 @@ namespace Boom
 
                 std::vector<glm::mat4> currentJoints;
                 bool hasAnimator = entity.Has<AnimatorComponent>();
+                bool isAnimated = hasAnimator || model.hasJoints;
 
                 if (hasAnimator) {
                     auto& an = entity.Get<AnimatorComponent>();
@@ -649,6 +667,7 @@ namespace Boom
                 DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
 
                 if (isPicking) {
+                    // Picking pass - always use immediate draw
                     m_Context->renderer->SetPickUniform(entt::to_integral(entity.ID())); //entity should be of type uint32_t
                     m_Context->renderer->DrawPick(model.data, worldTransform);
                 }
@@ -664,23 +683,35 @@ namespace Boom
                         bool isTransparent = (material.data.opacity < 1.0f) || (material.opacityMapID != EMPTY_ASSET);
 
                         if (isTransparent) {
-                            // Defer transparent object rendering
+                            // Defer transparent object rendering (cannot be instanced)
                             float dist = glm::length(worldTransform.translate - cameraPos);
                             transparentObjects.push_back({
                                 model.data,
                                 worldTransform,
                                 material.data,
                                 currentJoints,
-                                model.hasJoints || hasAnimator,
+                                isAnimated,
                                 dist
                             });
                         }
+                        else if (!isAnimated) {
+                            // Static opaque object with material - try to batch it
+                            // Include model's internal transform in the world matrix
+                            glm::mat4 finalMatrix = worldMatrix * model.data->modelTransform.Matrix();
+                            if (m_Context->renderer->AddInstance(comp.modelID, comp.materialID, finalMatrix, false)) {
+                                // Successfully batched - skip immediate draw
+                                return;
+                            }
+                            // Failed to batch (shouldn't happen for static objects) - fall through to immediate draw
+                            m_Context->renderer->Draw(model.data, worldTransform, material.data);
+                        }
                         else {
-                            // Render opaque objects immediately
+                            // Animated opaque object - must use immediate draw
                             m_Context->renderer->Draw(model.data, worldTransform, material.data);
                         }
                     }
                     else {
+                        // No material - cannot batch (no material ID), use immediate draw
                         m_Context->renderer->Draw(model.data, worldTransform);
                     }
                 }
@@ -757,6 +788,12 @@ namespace Boom
                 }
             }
             });
+
+        // === INSTANCED RENDERING PASS ===
+        // Render all batched static opaque objects
+        if (!isPicking) {
+            m_Context->renderer->RenderInstancedBatches(*m_Context->assets);
+        }
 
         // === TRANSPARENT OBJECTS PASS ===
         // Sort transparent objects back-to-front (farthest first)
