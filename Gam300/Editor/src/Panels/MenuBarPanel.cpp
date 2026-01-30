@@ -163,7 +163,6 @@ namespace EditorUI {
             if (m.ctx && m.ctx->renderer) {
                 ImGui::MenuItem("Debug Draw", nullptr, &m.ctx->renderer->isDrawDebugMode);
                 ImGui::MenuItem("Normal View", nullptr, &m.ctx->renderer->showNormalTexture);
-                ImGui::MenuItem("Transparent Backface Culling", nullptr, &m.ctx->renderer->enableTransparentBackfaceCulling);
                 if (ImGui::BeginMenu("Low Poly Mode")) {
                     ImGui::Checkbox("Enabled", &m.ctx->renderer->showLowPoly);
                     if (m.ctx->renderer->showLowPoly) {

@@ -1,34 +1,5 @@
 Version: 1.0
 ENTITIES:
-  - InfoComponent:
-      Parent: 0
-      Name: New Entity
-      UID: 15729046611990068865
-    TransformComponent:
-      Transform:
-        Translate: [0, 36.2840271, 0]
-        Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [14.7299995, 5.57000017, 37.2000008]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: true
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Squeeze
-      UID: 17966297571862268424
-    TransformComponent:
-      Transform:
-        Translate: [-0.610087514, 20.6173363, 45.5718765]
-        Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -46,7 +17,7 @@ ENTITIES:
       UID: 3286848895912838454
     TransformComponent:
       Transform:
-        Translate: [-39.4119606, 38.4697838, -6.55990791]
+        Translate: [5.28795481, 18.3139172, 31.2804298]
         Rotate: [27.5745697, 43.9666595, 53.7106781]
         Scale: [0.0312000178, 0.0404912941, 0.0897001177]
     ModelComponent:
@@ -1225,7 +1196,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"EnemyDetection\": true\n}"
+      ParamsJSON: "{\n  \"EnemyDetection\": false\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 2, 0]
@@ -2689,7 +2660,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"EnemyDetection\": false\n}"
+      ParamsJSON: "{}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 1.98000002, 0]
@@ -2845,7 +2816,7 @@ ENTITIES:
       UID: 1377313242926581139
     TransformComponent:
       Transform:
-        Translate: [0.452544689, 23.0017834, 12.1947794]
+        Translate: [-0.503998756, 18.3139172, 31.2804298]
         Rotate: [27.5745697, 43.9666595, 53.7106781]
         Scale: [0.0312000178, 0.0404912941, 0.0897001177]
     ModelComponent:
@@ -2975,7 +2946,7 @@ ENTITIES:
     DirectLightComponent:
       Light:
         Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 0.5
+        Intensity: 2
   - InfoComponent:
       Parent: 0
       Name: Directional Light 4
@@ -2988,7 +2959,7 @@ ENTITIES:
     DirectLightComponent:
       Light:
         Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 0.5
+        Intensity: 2
   - InfoComponent:
       Parent: 0
       Name: Directional Light 3
@@ -3001,7 +2972,7 @@ ENTITIES:
     DirectLightComponent:
       Light:
         Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 0.5
+        Intensity: 2
   - InfoComponent:
       Parent: 0
       Name: Directional Light 2
@@ -3014,7 +2985,7 @@ ENTITIES:
     DirectLightComponent:
       Light:
         Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 0.5
+        Intensity: 2
   - InfoComponent:
       Parent: 0
       Name: Directional Light 1
@@ -3027,7 +2998,7 @@ ENTITIES:
     DirectLightComponent:
       Light:
         Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 0.5
+        Intensity: 2
   - InfoComponent:
       Parent: 0
       Name: Light Lamp 6
@@ -3075,7 +3046,7 @@ ENTITIES:
         CutOff: 0.34906584
   - SceneNavmeshComponent:
       NavmeshFile: Resources/NavData/solo_navmesh.bin
-      AmbientStrength: 0.0309999995
+      AmbientStrength: 0.0939999968
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -8268,8 +8239,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [3.97437644, 35.9115219, -4.51032686]
-        Rotate: [-209.75, 4713.0625, 180]
+        Translate: [-8.44007874, 34.6000633, -19.4584484]
+        Rotate: [-210.125, 1430.74976, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -9744,7 +9715,7 @@ ENTITIES:
     DirectLightComponent:
       Light:
         Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 0.5
+        Intensity: 1
   - InfoComponent:
       Parent: 13685181942599758823
       Name: VisionConeFake 1

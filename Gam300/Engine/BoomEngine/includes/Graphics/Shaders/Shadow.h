@@ -13,9 +13,6 @@ namespace Boom {
         {
             u_LightSpace = glGetUniformLocation(shaderId, "u_lightSpace");
             u_Model = glGetUniformLocation(shaderId, "u_model");
-            u_Opacity = glGetUniformLocation(shaderId, "u_opacity");
-            u_HasOpacityMap = glGetUniformLocation(shaderId, "u_hasOpacityMap");
-            u_OpacityMap = glGetUniformLocation(shaderId, "u_opacityMap");
 
             // === Directional Light Shadow Map ===
             glGenFramebuffers(1, &m_FrameBuffer);
@@ -68,26 +65,6 @@ namespace Boom {
         }
         BOOM_INLINE void Draw(Model3D& model, Transform3D& transform)
         {
-            // Default: fully opaque shadow
-            SetUniform(u_Opacity, 1.0f);
-            SetUniform(u_HasOpacityMap, false);
-            SetUniform(jointsLoc, model->HasJoint());
-            SetUniform(u_Model, transform.Matrix() * model->modelTransform.Matrix());
-            model->Draw();
-        }
-
-        BOOM_INLINE void Draw(Model3D& model, Transform3D& transform, const PbrMaterial& material)
-        {
-            SetUniform(u_Opacity, material.opacity);
-
-            bool hasOpacityMap = material.opacityMap != nullptr;
-            SetUniform(u_HasOpacityMap, hasOpacityMap);
-            if (hasOpacityMap) {
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, *material.opacityMap);
-                SetUniform(u_OpacityMap, 0);
-            }
-
             SetUniform(jointsLoc, model->HasJoint());
             SetUniform(u_Model, transform.Matrix() * model->modelTransform.Matrix());
             model->Draw();
@@ -185,8 +162,5 @@ namespace Boom {
         int32_t jointsLoc{};
         uint32_t u_LightSpace = 0u;
         uint32_t u_Model = 0u;
-        int32_t u_Opacity = 0;
-        int32_t u_HasOpacityMap = 0;
-        int32_t u_OpacityMap = 0;
     };
 }

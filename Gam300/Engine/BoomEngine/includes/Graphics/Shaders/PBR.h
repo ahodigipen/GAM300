@@ -37,7 +37,6 @@ namespace Boom {
 			, metallicMapLoc{ GetUniformVar("material.metallicMap") }
 			, albedoMapLoc{ GetUniformVar("material.albedoMap") }
 			, normalMapLoc{ GetUniformVar("material.normalMap") }
-			, opacityMapLoc{ GetUniformVar("material.opacityMap") }
 
 			, isRoughnessMapLoc{ GetUniformVar("material.isRoughnessMap") }
 			, isOcclusionMapLoc{ GetUniformVar("material.isOcclusionMap") }
@@ -45,14 +44,12 @@ namespace Boom {
 			, isMetallicMapLoc{ GetUniformVar("material.isMetallicMap") }
 			, isAlbedoMapLoc{ GetUniformVar("material.isAlbedoMap") }
 			, isNormalMapLoc{ GetUniformVar("material.isNormalMap") }
-			, isOpacityMapLoc{ GetUniformVar("material.isOpacityMap") }
 
 			, albedoLoc{ GetUniformVar("material.albedo") }
 			, roughLoc{ GetUniformVar("material.roughness") }
 			, metalLoc{ GetUniformVar("material.metallic") }
 			, occlusionLoc{ GetUniformVar("material.occlusion") }
 			, emissiveLoc{ GetUniformVar("material.emissive") }
-			, opacityLoc{ GetUniformVar("material.opacity") }
 
 			, frustumMatLoc{ GetUniformVar("frustumMat") }
 			, modelMatLoc{ GetUniformVar("modelMat") }
@@ -206,7 +203,6 @@ namespace Boom {
 			SetUniform(metalLoc, material.metallic);
 			SetUniform(emissiveLoc, material.emissive);
 			SetUniform(occlusionLoc, material.occlusion);
-			SetUniform(opacityLoc, material.opacity);
 
 			bool isMap{};
 			isMap = material.albedoMap != nullptr;
@@ -243,12 +239,6 @@ namespace Boom {
 			SetUniform(isRoughnessMapLoc, isMap);
 			if (isMap) {
 				material.roughnessMap->Use(roughnessMapLoc, unit++);
-			}
-
-			isMap = material.opacityMap != nullptr;
-			SetUniform(isOpacityMapLoc, isMap);
-			if (isMap) {
-				material.opacityMap->Use(opacityMapLoc, unit++);
 			}
 		}
 
@@ -304,7 +294,6 @@ namespace Boom {
 		int32_t metallicMapLoc;
 		int32_t albedoMapLoc;
 		int32_t normalMapLoc;
-		int32_t opacityMapLoc;
 
 		int32_t isRoughnessMapLoc;
 		int32_t isOcclusionMapLoc;
@@ -312,14 +301,12 @@ namespace Boom {
 		int32_t isMetallicMapLoc;
 		int32_t isAlbedoMapLoc;
 		int32_t isNormalMapLoc;
-		int32_t isOpacityMapLoc;
 
 		int32_t albedoLoc;
 		int32_t roughLoc;
 		int32_t metalLoc;
 		int32_t occlusionLoc;
 		int32_t emissiveLoc;
-		int32_t opacityLoc;
 
 		int32_t frustumMatLoc;
 		int32_t modelMatLoc;

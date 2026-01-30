@@ -911,21 +911,6 @@ namespace Boom
 						Transform3D worldTransform;
 						DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
 
-						// Get material for opacity-based shadow casting
-						if (comp.materialID != EMPTY_ASSET) {
-							MaterialAsset* matAsset = m_Context->assets->TryGet<MaterialAsset>(comp.materialID);
-							if (matAsset) {
-								// Resolve opacity map texture if present
-								if (matAsset->opacityMapID != EMPTY_ASSET) {
-									TextureAsset* opacityTex = m_Context->assets->TryGet<TextureAsset>(matAsset->opacityMapID);
-									if (opacityTex && opacityTex->data) {
-										matAsset->data.opacityMap = opacityTex->data;
-									}
-								}
-								m_Context->renderer->DrawShadow(model->data, worldTransform, joints, matAsset->data);
-								return;
-							}
-						}
 						m_Context->renderer->DrawShadow(model->data, worldTransform, joints);
 						});
 
@@ -981,21 +966,6 @@ namespace Boom
 						Transform3D worldTransform;
 						DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
 
-						// Get material for opacity-based shadow casting
-						if (comp.materialID != EMPTY_ASSET) {
-							MaterialAsset* matAsset = m_Context->assets->TryGet<MaterialAsset>(comp.materialID);
-							if (matAsset) {
-								// Resolve opacity map texture if present
-								if (matAsset->opacityMapID != EMPTY_ASSET) {
-									TextureAsset* opacityTex = m_Context->assets->TryGet<TextureAsset>(matAsset->opacityMapID);
-									if (opacityTex && opacityTex->data) {
-										matAsset->data.opacityMap = opacityTex->data;
-									}
-								}
-								m_Context->renderer->DrawShadow(model->data, worldTransform, joints, matAsset->data);
-								return;
-							}
-						}
 						m_Context->renderer->DrawShadow(model->data, worldTransform, joints);
 					});
 
@@ -1366,11 +1336,6 @@ namespace Boom
 
 			// Clear the ECS scene
 			m_Context->scene.clear();
-
-			// Reset material preview (sphere model will be invalid after scene change)
-			if (m_Context->renderer) {
-				m_Context->renderer->ResetMaterialPreview();
-			}
 
 			// PRESERVE PREFABS - but only those that exist on disk
 			std::unordered_map<AssetID, std::shared_ptr<Asset>> savedPrefabs;

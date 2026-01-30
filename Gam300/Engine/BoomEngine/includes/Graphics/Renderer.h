@@ -149,12 +149,9 @@ namespace Boom {
 
         BOOM_INLINE void DrawShadow(Model3D& model, Transform3D& transform, std::vector<glm::mat4>& joints) {
             if (!joints.empty()) shadowShader->SetJoints(joints);
+            //glCullFace(GL_FRONT);
             shadowShader->Draw(model, transform);
-        }
-
-        BOOM_INLINE void DrawShadow(Model3D& model, Transform3D& transform, std::vector<glm::mat4>& joints, const PbrMaterial& material) {
-            if (!joints.empty()) shadowShader->SetJoints(joints);
-            shadowShader->Draw(model, transform, material);
+            //glCullFace(GL_BACK);
         }
         BOOM_INLINE void BeginShadowPass(const glm::vec3& LightRotation, bool enableShadows = true)
         {
@@ -310,10 +307,7 @@ namespace Boom {
             skyBoxShader->SetCamera(cam, transform, aspect);
             color3DShader->SetCamera(cam, transform, aspect);
             pbrShader->Use();
-            m_CameraPosition = transform.translate;
         }
-
-        BOOM_INLINE glm::vec3 GetCameraPosition() const { return m_CameraPosition; }
 
         BOOM_INLINE void Draw(Mesh3D const& mesh, Transform3D const& transform) {
             pbrShader->Draw(mesh, transform);
@@ -545,7 +539,6 @@ namespace Boom {
         GLuint m_PointLightUBO = 0;
         GLuint m_DirLightUBO = 0;
         GLuint m_SpotLightUBO = 0;
-        glm::vec3 m_CameraPosition{};
     public:  // ---------------------- ImGui-exposed toggles ----------------
         bool isDrawDebugMode{};
         bool showLowPoly{};
@@ -553,155 +546,6 @@ namespace Boom {
         bool enabledBloom{};
         bool isPickIgnoreGUI{};
         bool isDepthBufferView{};
-        bool enableTransparentBackfaceCulling{ true };
-
-    public: // ---------------------- Material Preview ----------------------
-        // Call this to reset the material preview (e.g., after scene change)
-        BOOM_INLINE void ResetMaterialPreview() {
-            m_MatPreviewFrame.reset();
-            m_PreviewSphere = nullptr;
-        }
-
-        BOOM_INLINE void InitMaterialPreview(Model3D sphereModel) {
-            m_PreviewSphere = sphereModel;
-
-            // Debug: check if model has meshes
-            if (m_PreviewSphere) {
-                BOOM_INFO("[Renderer] Sphere modelTransform: translate({},{},{}), scale({},{},{})",
-                    m_PreviewSphere->modelTransform.translate.x,
-                    m_PreviewSphere->modelTransform.translate.y,
-                    m_PreviewSphere->modelTransform.translate.z,
-                    m_PreviewSphere->modelTransform.scale.x,
-                    m_PreviewSphere->modelTransform.scale.y,
-                    m_PreviewSphere->modelTransform.scale.z);
-            }
-
-            // Save current FBO to restore later (important for ImGui compatibility)
-            GLint prevFBO;
-            glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
-
-            // Create framebuffer using the existing FrameBuffer class
-            m_MatPreviewFrame = std::make_unique<FrameBuffer>(m_MatPreviewSize, m_MatPreviewSize, false, GL_RGB, GL_RGB);
-
-            // Restore previous FBO (FrameBuffer constructor binds to 0)
-            glBindFramebuffer(GL_FRAMEBUFFER, prevFBO);
-            BOOM_INFO("[MaterialPreview] Initialized successfully");
-        }
-
-        // Renders a sphere with the given material and returns the texture ID for ImGui
-        // cameraYaw, cameraPitch: orbit camera angles (radians)
-        // cameraDistance: distance from center
-        BOOM_INLINE uint32_t RenderMaterialPreview(PbrMaterial const& material,
-                                                    float cameraYaw = 0.0f,
-                                                    float cameraPitch = 0.3f,
-                                                    float cameraDistance = 2.5f) {
-            if (!m_MatPreviewFrame || !m_PreviewSphere) {
-                return 0;
-            }
-
-            // Clear any stale GL errors before we start
-            while (glGetError() != GL_NO_ERROR) {}
-
-            // Save current state FIRST before any GL calls
-            GLint prevFBO;
-            glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
-            GLint prevViewport[4];
-            glGetIntegerv(GL_VIEWPORT, prevViewport);
-
-            // Bind preview framebuffer using SBind (doesn't clear automatically)
-            m_MatPreviewFrame->SBind();
-
-            // Clear with background color
-            glClearColor(0.15f, 0.15f, 0.18f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glEnable(GL_DEPTH_TEST);
-            glDepthFunc(GL_LESS);
-            glEnable(GL_CULL_FACE);
-            glCullFace(GL_BACK);
-
-            // Activate shader before setting uniforms
-            pbrShader->Use();
-
-            // Bind light UBOs
-            glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_PointLightUBO);
-            glBindBufferBase(GL_UNIFORM_BUFFER, 1, m_DirLightUBO);
-            glBindBufferBase(GL_UNIFORM_BUFFER, 2, m_SpotLightUBO);
-
-            // Disable shadows for preview
-            pbrShader->SetShadowsEnabled(false);
-
-            // Set up lighting for preview - use local UBO updates to avoid affecting main scene
-            std::vector<GPUDirLight> dirLights(1);
-            dirLights[0].dir_intensity = glm::vec4(glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)), 1.0f);
-            dirLights[0].radiance = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-            glBindBuffer(GL_UNIFORM_BUFFER, m_DirLightUBO);
-            glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GPUDirLight), dirLights.data());
-            glBindBuffer(GL_UNIFORM_BUFFER, 0);
-            pbrShader->SetUniform(pbrShader->GetUniformVar("noDirLight"), 1);
-
-            // Clear point and spot lights for preview
-            pbrShader->SetUniform(pbrShader->GetUniformVar("noPointLight"), 0);
-            pbrShader->SetUniform(pbrShader->GetUniformVar("noSpotLight"), 0);
-
-            float savedAmbient = pbrShader->ambientStrength;
-            pbrShader->ambientStrength = 0.4f;
-
-            // Calculate camera position (spherical coordinates)
-            float camX = cameraDistance * cos(cameraPitch) * sin(cameraYaw);
-            float camY = cameraDistance * sin(cameraPitch);
-            float camZ = cameraDistance * cos(cameraPitch) * cos(cameraYaw);
-            glm::vec3 cameraPos = glm::vec3(camX, camY, camZ);
-            glm::vec3 cameraTarget = glm::vec3(0.0f);
-
-            // Set up camera matrices directly on PBR shader only (avoid touching other shaders)
-            Camera3D camera{};
-            camera.FOV = 45.0f;
-            camera.nearPlane = 0.01f;
-            camera.farPlane = 100.0f;
-
-            glm::vec3 direction = glm::normalize(cameraTarget - cameraPos);
-            float yaw = atan2(-direction.x, -direction.z);
-            float pitch = asin(direction.y);
-
-            Transform3D cameraTransform{};
-            cameraTransform.translate = cameraPos;
-            cameraTransform.rotate = glm::vec3(glm::degrees(pitch), glm::degrees(yaw), 0.0f);
-            cameraTransform.scale = glm::vec3(1.0f);
-
-            // Set camera directly on pbr shader with 1:1 aspect ratio
-            pbrShader->SetCamera(camera, cameraTransform, 1.0f);
-            pbrShader->Use(); // Ensure shader is active after SetCamera
-
-            // Simple approach: just use identity transform and let the model's built-in transform work
-            Transform3D modelTransform{};
-            modelTransform.translate = glm::vec3(0.0f);
-            modelTransform.rotate = glm::vec3(0.0f);
-            modelTransform.scale = glm::vec3(1.0f);
-
-            // Clear any existing joint transforms (for static models)
-            std::vector<glm::mat4> emptyJoints;
-            pbrShader->SetJoints(emptyJoints);
-
-            // Draw sphere with material
-            pbrShader->Draw(m_PreviewSphere, modelTransform, material, false);
-
-            // Restore state (don't use End() as it binds to FBO 0)
-            pbrShader->ambientStrength = savedAmbient;
-            glDisable(GL_DEPTH_TEST);
-            glEnable(GL_BLEND);
-            glBindFramebuffer(GL_FRAMEBUFFER, prevFBO);
-            glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
-
-            return m_MatPreviewFrame->GetTexture();
-        }
-
-        BOOM_INLINE bool IsMaterialPreviewInitialized() const { return m_MatPreviewFrame != nullptr && m_PreviewSphere != nullptr; }
-        BOOM_INLINE int32_t GetMaterialPreviewSize() const { return m_MatPreviewSize; }
-
-    private: // ---------------------- Material Preview State ----------------
-        std::unique_ptr<FrameBuffer> m_MatPreviewFrame;
-        Model3D m_PreviewSphere;
-        int32_t m_MatPreviewSize = 200;
     };
 
 } // namespace Boom

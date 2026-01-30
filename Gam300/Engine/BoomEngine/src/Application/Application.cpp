@@ -554,6 +554,26 @@ namespace Boom
                 }
             }
 
+            //skybox ecs (should be drawn at the end)
+            EnttView<Entity, SkyboxComponent>([this](auto entity, SkyboxComponent& comp) {
+                Transform3D& transform{ entity.template Get<TransformComponent>().transform };
+                static AssetID prevSkyID{ comp.skyboxID };
+
+                //reinitialize skybox if different
+                if (prevSkyID != comp.skyboxID) {
+                    EnttView<Entity, SkyboxComponent>([this](auto, auto& comp) {
+                        SkyboxAsset& skybox{ m_Context->assets->Get<SkyboxAsset>(comp.skyboxID) };
+                        m_Context->renderer->InitSkybox(skybox.data, skybox.envMap, skybox.size);
+                        return; //should stop after one skybox rendered
+                        });
+                }
+
+                prevSkyID = comp.skyboxID;
+                SkyboxAsset& skybox{ m_Context->assets->Get<SkyboxAsset>(comp.skyboxID) };
+                m_Context->renderer->DrawSkybox(skybox.data, transform);
+                return; //should stop after one skybox rendered
+                });
+
             // Frame end
             m_Context->profiler.Start("Renderer End Frame");
             m_Context->renderer->EndFrame();
@@ -580,21 +600,8 @@ namespace Boom
     void Application::RenderScene(bool isPicking)
     {
         std::vector<std::tuple<SpriteComponent, Transform2D, uint32_t>> guiList;
-
-        // Structure to hold transparent object render data for deferred rendering
-        struct TransparentRenderData {
-            Model3D model;
-            Transform3D transform;
-            PbrMaterial material;
-            std::vector<glm::mat4> joints;
-            bool hasJoints;
-            float distanceToCamera;
-        };
-        std::vector<TransparentRenderData> transparentObjects;
-        glm::vec3 cameraPos = m_Context->renderer->GetCameraPosition();
-
         //pbr ecs (always render)
-        EnttView<Entity, TransformComponent>([this, &guiList, &isPicking, &transparentObjects, &cameraPos](auto entity, TransformComponent& t) {
+        EnttView<Entity, TransformComponent>([this, &guiList, &isPicking](auto entity, TransformComponent& t) {
             if (entity.Has<DeactivatedComponent>()) return;
 
             if (entity.Has<ModelComponent>()) {
@@ -603,17 +610,13 @@ namespace Boom
                 ModelAsset* mdlPtr{ m_Context->assets->TryGet<ModelAsset>(comp.modelID) };
                 if (!mdlPtr) return;
                 ModelAsset& model{ *mdlPtr };
-
-                std::vector<glm::mat4> currentJoints;
-                bool hasAnimator = entity.Has<AnimatorComponent>();
-
-                if (hasAnimator) {
+                if (entity.Has<AnimatorComponent>()) {
                     auto& an = entity.Get<AnimatorComponent>();
                     if (isPicking) {
                         m_Context->renderer->SetJoints(an.animator->GetJoints(), isPicking);
-                        currentJoints = an.animator->GetJoints();
                     }
                     else {
+                        // float dt = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) ? (float)m_Context->DeltaTime : 0.0f;
                         bool shouldAnimate = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING);
                         bool isMenuObj = entity.Has<Boom::MenuComponent>();
                         if ((m_IsGameLogicPaused || m_IsPlayerDead || m_IsEnd) && !isMenuObj) {
@@ -629,7 +632,6 @@ namespace Boom
 
                         float dt = shouldAnimate ? (float)m_Context->DeltaTime : 0.0f;
                         auto& joints = an.animator->Animate(dt);
-                        currentJoints = joints;
                         m_Context->renderer->SetJoints(joints);
                     }
                 }
@@ -639,7 +641,6 @@ namespace Boom
                     {
                         static std::vector<glm::mat4> identityPalette(100, glm::mat4(1.0f));
                         m_Context->renderer->SetJoints(identityPalette, isPicking);
-                        currentJoints = identityPalette;
                     }
                 }
 
@@ -657,83 +658,27 @@ namespace Boom
                     if (comp.materialID != EMPTY_ASSET) {
                         auto& material{ m_Context->assets->Get<MaterialAsset>(comp.materialID) };
 
-                        // Assign textures if they exist and are valid, otherwise clear them
+                        // Only assign textures if they exist and are valid
                         if (material.albedoMapID != EMPTY_ASSET) {
                             auto& albedoTex = m_Context->assets->Get<TextureAsset>(material.albedoMapID);
                             if (albedoTex.data) {
                                 material.data.albedoMap = albedoTex.data;
                             }
-                        } else {
-                            material.data.albedoMap = nullptr;
                         }
                         if (material.normalMapID != EMPTY_ASSET) {
                             auto& normalTex = m_Context->assets->Get<TextureAsset>(material.normalMapID);
                             if (normalTex.data) {
                                 material.data.normalMap = normalTex.data;
                             }
-                        } else {
-                            material.data.normalMap = nullptr;
                         }
                         if (material.roughnessMapID != EMPTY_ASSET) {
                             auto& roughnessTex = m_Context->assets->Get<TextureAsset>(material.roughnessMapID);
                             if (roughnessTex.data) {
                                 material.data.roughnessMap = roughnessTex.data;
                             }
-                        } else {
-                            material.data.roughnessMap = nullptr;
-                        }
-                        if (material.metallicMapID != EMPTY_ASSET) {
-                            auto& metallicTex = m_Context->assets->Get<TextureAsset>(material.metallicMapID);
-                            if (metallicTex.data) {
-                                material.data.metallicMap = metallicTex.data;
-                            }
-                        } else {
-                            material.data.metallicMap = nullptr;
-                        }
-                        if (material.occlusionMapID != EMPTY_ASSET) {
-                            auto& occlusionTex = m_Context->assets->Get<TextureAsset>(material.occlusionMapID);
-                            if (occlusionTex.data) {
-                                material.data.occlusionMap = occlusionTex.data;
-                            }
-                        } else {
-                            material.data.occlusionMap = nullptr;
-                        }
-                        if (material.emissiveMapID != EMPTY_ASSET) {
-                            auto& emissiveTex = m_Context->assets->Get<TextureAsset>(material.emissiveMapID);
-                            if (emissiveTex.data) {
-                                material.data.emissiveMap = emissiveTex.data;
-                            }
-                        } else {
-                            material.data.emissiveMap = nullptr;
-                        }
-                        if (material.opacityMapID != EMPTY_ASSET) {
-                            auto& opacityTex = m_Context->assets->Get<TextureAsset>(material.opacityMapID);
-                            if (opacityTex.data) {
-                                material.data.opacityMap = opacityTex.data;
-                            }
-                        } else {
-                            material.data.opacityMap = nullptr;
                         }
 
-                        // Check if material is transparent (has opacity map or opacity < 1.0)
-                        bool isTransparent = (material.data.opacity < 1.0f) || (material.opacityMapID != EMPTY_ASSET);
-
-                        if (isTransparent) {
-                            // Defer transparent object rendering
-                            float dist = glm::length(worldTransform.translate - cameraPos);
-                            transparentObjects.push_back({
-                                model.data,
-                                worldTransform,
-                                material.data,
-                                currentJoints,
-                                model.hasJoints || hasAnimator,
-                                dist
-                            });
-                        }
-                        else {
-                            // Render opaque objects immediately
-                            m_Context->renderer->Draw(model.data, worldTransform, material.data);
-                        }
+                        m_Context->renderer->Draw(model.data, worldTransform, material.data);
                     }
                     else {
                         m_Context->renderer->Draw(model.data, worldTransform);
@@ -813,40 +758,6 @@ namespace Boom
             }
             });
 
-        // === TRANSPARENT OBJECTS PASS ===
-        // Sort transparent objects back-to-front (farthest first)
-        if (!transparentObjects.empty() && !isPicking) {
-            std::sort(transparentObjects.begin(), transparentObjects.end(),
-                [](const TransparentRenderData& a, const TransparentRenderData& b) {
-                    return a.distanceToCamera > b.distanceToCamera; // Sort back-to-front
-                });
-
-            // Ensure depth testing is enabled, disable depth writing
-            glEnable(GL_DEPTH_TEST);
-            glDepthFunc(GL_LESS);
-            glDepthMask(GL_FALSE);
-
-            // Enable backface culling for transparent objects if toggled on
-            if (m_Context->renderer->enableTransparentBackfaceCulling) {
-                glEnable(GL_CULL_FACE);
-                glCullFace(GL_BACK);
-            }
-
-            for (auto& obj : transparentObjects) {
-                // Set joints if the model has them
-                if (obj.hasJoints && !obj.joints.empty()) {
-                    m_Context->renderer->SetJoints(obj.joints);
-                }
-                m_Context->renderer->Draw(obj.model, obj.transform, obj.material);
-            }
-
-            // Restore state
-            if (m_Context->renderer->enableTransparentBackfaceCulling) {
-                glDisable(GL_CULL_FACE);
-            }
-            glDepthMask(GL_TRUE);
-        }
-
         //sort guiList based on z-axis from negative to positive(opengl z-axis towards camera)
         std::sort(guiList.begin(), guiList.end(), [](const auto& a, const auto& b) {
             return std::get<1>(a).translate.z < std::get<1>(b).translate.z;  // descending Z order
@@ -855,7 +766,7 @@ namespace Boom
         //render gui overlays at the end
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL); //supports partial transparency to not interfere with background gui
-
+        
         for (auto const& gui : guiList) {
             if (isPicking) {
                 m_Context->renderer->SetPickUniform(std::get<2>(gui)); //entity should be of type uint32_t

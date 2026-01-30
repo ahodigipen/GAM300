@@ -9,8 +9,6 @@
 
 #include <filesystem>
 #include <future>
-#include <algorithm>
-#include <cctype>
 
 #ifndef ICON_FA_IMAGE
 #define ICON_FA_IMAGE ""
@@ -28,9 +26,6 @@ namespace EditorUI {
 		m_App = dynamic_cast<Boom::AppInterface*>(owner);
 		DEBUG_POINTER(m_App, "AppInterface");
 		m_Icon = m_App->GetTexIDFromPath("Resources/Textures/Icons/asset.png");
-		m_ModelIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/model.png");
-		m_MaterialIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/material.png");
-		m_ScriptIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/script.png");
     }
 
     void ResourcePanel::OnShow()
@@ -104,25 +99,11 @@ namespace EditorUI {
 					// filters
 					if (static_cast<AssetType>(currentType) != AssetType::UNKNOWN && asset->type != static_cast<AssetType>(currentType))
 						return;
-
-					// Case-insensitive search comparison
-					std::string searchLower(searchBuff);
-					std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(),
-						[](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-					std::string nameLower = asset->name;
-					std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(),
-						[](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-					if (nameLower.find(searchLower) == std::string::npos)
+					if (asset->name.find(searchBuff) == std::string::npos) 
 						return;
 
 					ImGui::TableNextColumn();
 					ImTextureID texid{ m_Icon }; //default file icon
-
-					// change icon based on asset type
-					if (dynamic_cast<MaterialAsset*>(asset)) texid = m_MaterialIcon;
-					else if (dynamic_cast<ModelAsset*>(asset)) texid = m_ModelIcon;
-					else if (dynamic_cast<ScriptAsset*>(asset)) texid = m_ScriptIcon;
-
 					TextureAsset* tex{ dynamic_cast<TextureAsset*>(asset) };
 					if (tex) texid = *tex->data.get();
 
@@ -217,4 +198,5 @@ namespace EditorUI {
 		}
 		name = baseName;
 	}
+
 } // namespace EditorUI
