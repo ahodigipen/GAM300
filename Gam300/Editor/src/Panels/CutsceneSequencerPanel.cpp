@@ -16,6 +16,7 @@ namespace EditorUI
     {
         m_FrameMin = 0;
         m_FrameMax = 600; // 10 seconds at 60fps
+        RefreshFileList();
     }
 
     const char* CutsceneSequencerPanel::GetItemLabel(int index) const
@@ -144,11 +145,12 @@ namespace EditorUI
             bool found = false;
             for (auto& kf : track.keyFrames) {
                 if (kf.frame == m_CurrentFrame) {
-                    // Update existing
-                    if (captured) {
-                        kf.valueX = vX; kf.valueY = vY; kf.valueZ = vZ;
-                        BOOM_INFO("Keyframe UPDATED [{}]: ({:.2f}, {:.2f}, {:.2f})", m_CurrentFrame, vX, vY, vZ);
-                    }
+                    // FIX: Do NOT overwrite existing keyframe with scene data automatically.
+                    // Only overwrite if explicit "Snapshot" button was used, OR if we want that behavior.
+                    // User complained they can't edit. It's because we were resetting it to scene value!
+                    
+                    // if (captured) { ... }  <-- REMOVED THIS
+                    
                     ImGui::OpenPopup("Edit Keyframe");
                     found = true;
                     break;
@@ -320,23 +322,52 @@ namespace EditorUI
 
     void CutsceneSequencerPanel::RenderMenuBar()
     {
-        if (ImGui::Button("Save Sequence"))
+        // 1. Filename Input
+        ImGui::SetNextItemWidth(200);
+        ImGui::InputText("Filename", m_SaveFilename, IM_ARRAYSIZE(m_SaveFilename));
+        ImGui::SameLine();
+        ImGui::SameLine();
+        ImGui::Text(".seq");
+        ImGui::SameLine();
+
+        // 1b. File List Combo
+        if (ImGui::BeginCombo("##FileList", "Select File..."))
         {
-             SaveSequence("Resources/Cutscenes/Test.seq");
+            for (const auto& f : m_AvailableFiles)
+            {
+                if (ImGui::Selectable(f.c_str()))
+                {
+                    // Copy to buffer (remove extension)
+                    std::string justName = f.substr(0, f.find_last_of('.'));
+                    strcpy_s(m_SaveFilename, justName.c_str());
+                }
+            }
+            ImGui::EndCombo();
+        }
+        ImGui::SameLine();
+
+        // 2. Construct Path
+        std::string filename = m_SaveFilename;
+        if (filename.empty()) filename = "NewCutscene";
+        std::string fullPath = "Resources/Cutscenes/" + filename + ".seq";
+
+        if (ImGui::Button("Save"))
+        {
+             SaveSequence(fullPath);
              ImGui::OpenPopup("SaveConfirm");
         }
         
         if (ImGui::BeginPopup("SaveConfirm"))
         {
-            ImGui::Text("Sequence Saved Successfully!");
+            ImGui::Text("Saved to %s!", fullPath.c_str());
             if (ImGui::Button("OK")) ImGui::CloseCurrentPopup();
             ImGui::EndPopup();
         }
 
         ImGui::SameLine();
-        if (ImGui::Button("Load Sequence"))
+        if (ImGui::Button("Load"))
         {
-             LoadSequence("Resources/Cutscenes/Test.seq");
+             LoadSequence(fullPath);
         }
     }
 
@@ -625,7 +656,9 @@ namespace EditorUI
             }
         }
         out.close();
+        out.close();
         BOOM_INFO("Saved cutscene to {}", path);
+        RefreshFileList(); // Update list after save
     }
 
     void CutsceneSequencerPanel::LoadSequence(const std::string& path)
@@ -698,5 +731,20 @@ namespace EditorUI
         }
         in.close();
         BOOM_INFO("Loaded cutscene from {}", path);
+    }
+
+    void CutsceneSequencerPanel::RefreshFileList()
+    {
+        m_AvailableFiles.clear();
+        std::string path = "Resources/Cutscenes";
+        if (!std::filesystem::exists(path)) return;
+
+        for (const auto& entry : std::filesystem::directory_iterator(path))
+        {
+            if (entry.path().extension() == ".seq")
+            {
+                m_AvailableFiles.push_back(entry.path().filename().string());
+            }
+        }
     }
 }
