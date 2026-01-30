@@ -381,6 +381,39 @@ namespace EditorUI {
             }
         }
 
+        // ===== Entity Shortcuts (Global - work when any entity is selected) =====
+
+       // Ctrl+D: Duplicate selected entity (works globally, not just in Hierarchy)
+        if (ctrl && !shift && ImGui::IsKeyPressed(ImGuiKey_D, false))
+        {
+            entt::entity selected = SelectedEntity();
+            auto& registry = m_Context->scene;
+
+            if (selected != entt::null && registry.valid(selected)) {
+                auto* history = GetCommandHistory();
+                if (history) {
+                    auto command = std::make_unique<DuplicateEntityCommand>(&registry, selected);
+                    history->Execute(std::move(command));
+
+                    if (registry.all_of<Boom::InfoComponent>(selected)) {
+                        BOOM_INFO("[Shortcut] Duplicated '{}' with Ctrl+D (global)",
+                            registry.get<Boom::InfoComponent>(selected).name);
+                    }
+                }
+                else {
+                    // Fallback
+                    entt::entity duplicated = Boom::DuplicateEntity(registry, selected, true);
+                    if (duplicated != entt::null) {
+                        SelectedEntity(true) = duplicated;
+                        if (registry.all_of<Boom::InfoComponent>(selected)) {
+                            BOOM_INFO("[Shortcut] Duplicated '{}' with Ctrl+D",
+                                registry.get<Boom::InfoComponent>(selected).name);
+                        }
+                    }
+                }
+            }
+        }
+
         // Note: Ctrl+Shift+S for Stop is handled above in the Save Section
         // to avoid conflicts with "Save As" when not playing
     }
