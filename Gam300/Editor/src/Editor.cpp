@@ -374,10 +374,44 @@ namespace EditorUI {
                 // Apply to physics system
                 m_Context->physics->EnableDebugVisualization(newState, 1.0f);
 
-                // Update the Application's state
+                // Update both the Application's state AND the context flag
                 m_App->m_PhysDebugViz = newState;
+                m_Context->ShowPhysicsDebug = newState;  // Keep context in sync
 
                 BOOM_INFO("[Shortcut] Physics Debug Visualization (F9): {}", newState ? "ON" : "OFF");
+            }
+        }
+
+        // ===== Entity Shortcuts (Global - work when any entity is selected) =====
+
+       // Ctrl+D: Duplicate selected entity (works globally, not just in Hierarchy)
+        if (ctrl && !shift && ImGui::IsKeyPressed(ImGuiKey_D, false))
+        {
+            entt::entity selected = SelectedEntity();
+            auto& registry = m_Context->scene;
+
+            if (selected != entt::null && registry.valid(selected)) {
+                auto* history = GetCommandHistory();
+                if (history) {
+                    auto command = std::make_unique<DuplicateEntityCommand>(&registry, selected);
+                    history->Execute(std::move(command));
+
+                    if (registry.all_of<Boom::InfoComponent>(selected)) {
+                        BOOM_INFO("[Shortcut] Duplicated '{}' with Ctrl+D (global)",
+                            registry.get<Boom::InfoComponent>(selected).name);
+                    }
+                }
+                else {
+                    // Fallback
+                    entt::entity duplicated = Boom::DuplicateEntity(registry, selected, true);
+                    if (duplicated != entt::null) {
+                        SelectedEntity(true) = duplicated;
+                        if (registry.all_of<Boom::InfoComponent>(selected)) {
+                            BOOM_INFO("[Shortcut] Duplicated '{}' with Ctrl+D",
+                                registry.get<Boom::InfoComponent>(selected).name);
+                        }
+                    }
+                }
             }
         }
 

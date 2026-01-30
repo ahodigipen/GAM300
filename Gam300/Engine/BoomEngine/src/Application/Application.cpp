@@ -423,10 +423,10 @@ namespace Boom
             RenderScene();
             //DrawDebugTPC();
 
-            // Sync physics debug viz with context flag
+            // Sync physics debug viz with context flag (bidirectional)
             if (m_PhysDebugViz != m_Context->ShowPhysicsDebug)
             {
-                m_PhysDebugViz = m_Context->ShowPhysicsDebug;
+                m_Context->ShowPhysicsDebug = m_PhysDebugViz;
                 m_Context->physics->EnableDebugVisualization(m_PhysDebugViz, 1.0f);
             }
 
@@ -600,8 +600,38 @@ namespace Boom
     void Application::RenderScene(bool isPicking)
     {
         std::vector<std::tuple<SpriteComponent, Transform2D, uint32_t>> guiList;
+
+        // Structure to hold transparent object render data for deferred rendering
+        struct TransparentRenderData {
+            Model3D model;
+            Transform3D transform;
+            PbrMaterial material;
+            std::vector<glm::mat4> joints;
+            bool hasJoints;
+            float distanceToCamera;
+        };
+        std::vector<TransparentRenderData> transparentObjects;
+
+        // Structure for animated/immediate draw objects
+        struct ImmediateDrawData {
+            Model3D model;
+            Transform3D transform;
+            PbrMaterial material;
+            std::vector<glm::mat4> joints;
+            bool hasJoints;
+            bool hasMaterial;
+        };
+        std::vector<ImmediateDrawData> immediateDraws;
+
+        glm::vec3 cameraPos = m_Context->renderer->GetCameraPosition();
+
+        // Begin instance collection for this frame (only for rendering, not picking)
+        if (!isPicking) {
+            m_Context->renderer->BeginInstanceCollection();
+        }
+
         //pbr ecs (always render)
-        EnttView<Entity, TransformComponent>([this, &guiList, &isPicking](auto entity, TransformComponent& t) {
+        EnttView<Entity, TransformComponent>([this, &guiList, &isPicking, &transparentObjects, &immediateDraws, &cameraPos](auto entity, TransformComponent&) {
             if (entity.Has<DeactivatedComponent>()) return;
 
             if (entity.Has<ModelComponent>()) {
@@ -610,7 +640,12 @@ namespace Boom
                 ModelAsset* mdlPtr{ m_Context->assets->TryGet<ModelAsset>(comp.modelID) };
                 if (!mdlPtr) return;
                 ModelAsset& model{ *mdlPtr };
-                if (entity.Has<AnimatorComponent>()) {
+
+                std::vector<glm::mat4> currentJoints;
+                bool hasAnimator = entity.Has<AnimatorComponent>();
+                bool isAnimated = hasAnimator || model.hasJoints;
+
+                if (hasAnimator) {
                     auto& an = entity.Get<AnimatorComponent>();
                     if (isPicking) {
                         m_Context->renderer->SetJoints(an.animator->GetJoints(), isPicking);
@@ -650,6 +685,7 @@ namespace Boom
                 DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
 
                 if (isPicking) {
+                    // Picking pass - always use immediate draw
                     m_Context->renderer->SetPickUniform(entt::to_integral(entity.ID())); //entity should be of type uint32_t
                     m_Context->renderer->DrawPick(model.data, worldTransform);
                 }
@@ -658,29 +694,58 @@ namespace Boom
                     if (comp.materialID != EMPTY_ASSET) {
                         auto& material{ m_Context->assets->Get<MaterialAsset>(comp.materialID) };
 
-                        // Only assign textures if they exist and are valid
-                        if (material.albedoMapID != EMPTY_ASSET) {
-                            auto& albedoTex = m_Context->assets->Get<TextureAsset>(material.albedoMapID);
-                            if (albedoTex.data) {
-                                material.data.albedoMap = albedoTex.data;
-                            }
-                        }
-                        if (material.normalMapID != EMPTY_ASSET) {
-                            auto& normalTex = m_Context->assets->Get<TextureAsset>(material.normalMapID);
-                            if (normalTex.data) {
-                                material.data.normalMap = normalTex.data;
-                            }
-                        }
-                        if (material.roughnessMapID != EMPTY_ASSET) {
-                            auto& roughnessTex = m_Context->assets->Get<TextureAsset>(material.roughnessMapID);
-                            if (roughnessTex.data) {
-                                material.data.roughnessMap = roughnessTex.data;
-                            }
-                        }
+                        // Resolve texture IDs to actual texture pointers
+                        m_Context->assets->ResolveMaterialTextures(&material);
 
-                        m_Context->renderer->Draw(model.data, worldTransform, material.data);
+                        // Check if material is transparent (has opacity map or opacity < 1.0)
+                        bool isTransparent = (material.data.opacity < 1.0f) || (material.opacityMapID != EMPTY_ASSET);
+
+                        if (isTransparent) {
+                            float dist = glm::length(worldTransform.translate - cameraPos);
+
+                            if (!isAnimated) {
+                                // Static transparent object - try to batch it
+                                glm::mat4 finalMatrix = worldMatrix * model.data->modelTransform.Matrix();
+                                if (m_Context->renderer->AddTransparentInstance(comp.modelID, comp.materialID, finalMatrix, dist)) {
+                                    // Successfully batched - skip immediate draw
+                                    return;
+                                }
+                            }
+
+                            // Animated transparent object or batching failed - defer for individual rendering
+                            transparentObjects.push_back({
+                                model.data,
+                                worldTransform,
+                                material.data,
+                                currentJoints,
+                                isAnimated,
+                                dist
+                            });
+                        }
+                        else if (!isAnimated) {
+                            // Static opaque object with material - try to batch it
+                            // Include model's internal transform in the world matrix
+                            glm::mat4 finalMatrix = worldMatrix * model.data->modelTransform.Matrix();
+                            if (m_Context->renderer->AddInstance(comp.modelID, comp.materialID, finalMatrix, false)) {
+                                // Successfully batched - skip immediate draw
+                                return;
+                            }
+                            // Failed to batch (shouldn't happen for static objects) - fall through to immediate draw
+                            m_Context->renderer->Draw(model.data, worldTransform, material.data);
+                        }
+                        else {
+                            // Animated opaque object - try to batch with joints
+                            glm::mat4 finalMatrix = worldMatrix * model.data->modelTransform.Matrix();
+                            if (m_Context->renderer->AddAnimatedInstance(comp.modelID, comp.materialID, finalMatrix, currentJoints)) {
+                                // Successfully batched animated instance - skip immediate draw
+                                return;
+                            }
+                            // Failed to batch (shouldn't happen) - fall through to immediate draw
+                            m_Context->renderer->Draw(model.data, worldTransform, material.data);
+                        }
                     }
                     else {
+                        // No material - cannot batch (no material ID), use immediate draw
                         m_Context->renderer->Draw(model.data, worldTransform);
                     }
                 }
@@ -757,6 +822,52 @@ namespace Boom
                 }
             }
             });
+
+        // === INSTANCED RENDERING PASS ===
+        // Render all batched static opaque objects
+        if (!isPicking) {
+            m_Context->renderer->RenderInstancedBatches(*m_Context->assets);
+        }
+
+        // === TRANSPARENT OBJECTS PASS ===
+        // Render transparent objects (batched + individual)
+        if (!isPicking) {
+            // Ensure depth testing is enabled, disable depth writing
+            glEnable(GL_DEPTH_TEST);
+            glDepthFunc(GL_LESS);
+            glDepthMask(GL_FALSE);
+
+            // Enable backface culling for transparent objects if toggled on
+            if (m_Context->renderer->enableTransparentBackfaceCulling) {
+                glEnable(GL_CULL_FACE);
+                glCullFace(GL_BACK);
+            }
+
+            // Render batched transparent instances (already sorted back-to-front)
+            m_Context->renderer->RenderTransparentBatches(*m_Context->assets);
+
+            // Sort and render individual transparent objects (animated transparent or batching failed)
+            if (!transparentObjects.empty()) {
+                std::sort(transparentObjects.begin(), transparentObjects.end(),
+                    [](const TransparentRenderData& a, const TransparentRenderData& b) {
+                        return a.distanceToCamera > b.distanceToCamera; // Sort back-to-front
+                    });
+
+                for (auto& obj : transparentObjects) {
+                    // Set joints if the model has them
+                    if (obj.hasJoints && !obj.joints.empty()) {
+                        m_Context->renderer->SetJoints(obj.joints);
+                    }
+                    m_Context->renderer->Draw(obj.model, obj.transform, obj.material);
+                }
+            }
+
+            // Restore state
+            if (m_Context->renderer->enableTransparentBackfaceCulling) {
+                glDisable(GL_CULL_FACE);
+            }
+            glDepthMask(GL_TRUE);
+        }
 
         //sort guiList based on z-axis from negative to positive(opengl z-axis towards camera)
         std::sort(guiList.begin(), guiList.end(), [](const auto& a, const auto& b) {

@@ -143,13 +143,16 @@ void AnimationTimelinePanel::Render()
             {
                 // CRITICAL: Manually advance time to control looping
                 // The animator always loops in clip mode (Animator.h:128), so we control it here
+                float lastTime = m_CurrentTime;  // Store for audio event processing
                 float newTime = m_CurrentTime + (deltaTime * m_PlaybackSpeed * clip->ticksPerSecond);
+                bool looped = false;
 
                 if (m_Loop)
                 {
                     // Loop enabled: wrap time
                     if (newTime >= clip->duration)
                     {
+                        looped = true;
                         newTime = fmod(newTime, clip->duration);
                     }
                     m_CurrentTime = newTime;
@@ -171,6 +174,17 @@ void AnimationTimelinePanel::Render()
                 // Update animator to match our timeline time
                 m_Animator->SetTime(m_CurrentTime);
                 m_Animator->UpdateJointsFromCurrentTime();
+
+                // Process audio events for this time range
+                if (m_SelectedClipIndex >= 0)
+                {
+                    m_Animator->ProcessAudioEventsForClip(
+                        static_cast<size_t>(m_SelectedClipIndex),
+                        lastTime,
+                        m_CurrentTime,
+                        looped
+                    );
+                }
             }
             else
             {
@@ -397,186 +411,207 @@ void AnimationTimelinePanel::Render()
 
 void AnimationTimelinePanel::RenderControlBar()
 {
-    // Top bar with model loading, playback controls, and visualization options
+    // Top bar with collapsible sections for better organization
     ImGui::BeginGroup();
 
-    // Model loading button
-    if (ImGui::Button("Load Model", ImVec2(100, 0)))
-    {
-        ImGui::OpenPopup("SelectModelPopup");
-    }
+    // ========== SECTION 1: MODEL & PLAYBACK ==========
+    // Blue tint for model/playback section
+    ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.2f, 0.3f, 0.5f, 0.8f));
+    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.25f, 0.35f, 0.55f, 0.9f));
+    ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.3f, 0.4f, 0.6f, 1.0f));
 
-    if (ImGui::BeginPopup("SelectModelPopup"))
+    if (ImGui::CollapsingHeader("Model & Playback", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        ImGui::Text("Select a model:");
-        ImGui::Separator();
+        ImGui::Indent(10.0f);
 
-        if (m_Ctx && m_Ctx->assets)
+        // Model loading
+        if (ImGui::Button("Load Model", ImVec2(100, 0)))
         {
-            auto& modelMap = m_Ctx->assets->GetMap<Boom::ModelAsset>();
+            ImGui::OpenPopup("SelectModelPopup");
+        }
 
-            for (auto& [assetID, assetPtr] : modelMap)
+        if (ImGui::BeginPopup("SelectModelPopup"))
+        {
+            ImGui::Text("Select a model:");
+            ImGui::Separator();
+
+            if (m_Ctx && m_Ctx->assets)
             {
-                if (assetID == Boom::EMPTY_ASSET) continue;
+                auto& modelMap = m_Ctx->assets->GetMap<Boom::ModelAsset>();
 
-                auto* modelAsset = dynamic_cast<Boom::ModelAsset*>(assetPtr.get());
-                if (modelAsset && modelAsset->data)
+                for (auto& [assetID, assetPtr] : modelMap)
                 {
-                    std::string displayName = modelAsset->name;
-                    if (modelAsset->hasJoints)
-                    {
-                        displayName += " (Skeletal)";
-                    }
+                    if (assetID == Boom::EMPTY_ASSET) continue;
 
-                    if (ImGui::Selectable(displayName.c_str()))
+                    auto* modelAsset = dynamic_cast<Boom::ModelAsset*>(assetPtr.get());
+                    if (modelAsset && modelAsset->data)
                     {
-                        LoadModel(modelAsset->name);
-                        ImGui::CloseCurrentPopup();
-                    }
+                        std::string displayName = modelAsset->name;
+                        if (modelAsset->hasJoints)
+                        {
+                            displayName += " (Skeletal)";
+                        }
 
-                    if (ImGui::IsItemHovered())
-                    {
-                        ImGui::BeginTooltip();
-                        ImGui::Text("Source: %s", modelAsset->source.c_str());
-                        ImGui::Text("Has Joints: %s", modelAsset->hasJoints ? "Yes" : "No");
-                        ImGui::EndTooltip();
+                        if (ImGui::Selectable(displayName.c_str()))
+                        {
+                            LoadModel(modelAsset->name);
+                            ImGui::CloseCurrentPopup();
+                        }
+
+                        if (ImGui::IsItemHovered())
+                        {
+                            ImGui::BeginTooltip();
+                            ImGui::Text("Source: %s", modelAsset->source.c_str());
+                            ImGui::Text("Has Joints: %s", modelAsset->hasJoints ? "Yes" : "No");
+                            ImGui::EndTooltip();
+                        }
                     }
                 }
             }
+            else
+            {
+                ImGui::TextDisabled("No models available");
+            }
+
+            ImGui::EndPopup();
         }
-        else
+
+        ImGui::SameLine();
+        if (ImGui::Button("Clear", ImVec2(60, 0)) && m_HasModel)
         {
-            ImGui::TextDisabled("No models available");
+            ClearModel();
         }
 
-        ImGui::EndPopup();
-    }
+        ImGui::SameLine(0, 20);
+        ImGui::Text("|");
+        ImGui::SameLine(0, 20);
 
-    ImGui::SameLine();
-    if (ImGui::Button("Clear", ImVec2(60, 0)) && m_HasModel)
-    {
-        ClearModel();
-    }
+        // Playback controls (Unity-style layout)
+        ImGui::BeginDisabled(!m_HasModel || !m_Animator || m_SelectedClipIndex < 0);
 
-    ImGui::SameLine();
-    ImGui::Separator();
-    ImGui::SameLine();
+        // First Frame button
+        if (ImGui::Button("|<")) {
+            m_CurrentTime = 0.0f;
+            m_IsPlaying = false;
+        }
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("First Frame");
 
-    // Playback controls (Unity-style layout)
-    ImGui::BeginDisabled(!m_HasModel || !m_Animator || m_SelectedClipIndex < 0);
-
-    // First Frame button
-    if (ImGui::Button("|<")) {
-        m_CurrentTime = 0.0f;
-        m_IsPlaying = false;
-    }
-    if (ImGui::IsItemHovered()) ImGui::SetTooltip("First Frame");
-
-    // Previous Keyframe button
-    ImGui::SameLine();
-    if (ImGui::Button("<K")) {
-        // Jump to previous keyframe
-        if (m_Animator && m_SelectedClipIndex >= 0) {
-            float prevTime = 0.0f;
-            const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
-            if (clip) {
-                // Find previous keyframe across all bones
-                for (const auto& [boneName, track] : clip->tracks) {
-                    for (const auto& kf : track) {
-                        if (kf.timeStamp < m_CurrentTime - 0.001f && kf.timeStamp > prevTime) {
-                            prevTime = kf.timeStamp;
+        // Previous Keyframe button
+        ImGui::SameLine();
+        if (ImGui::Button("<K")) {
+            // Jump to previous keyframe
+            if (m_Animator && m_SelectedClipIndex >= 0) {
+                float prevTime = 0.0f;
+                const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
+                if (clip) {
+                    // Find previous keyframe across all bones
+                    for (const auto& [boneName, track] : clip->tracks) {
+                        for (const auto& kf : track) {
+                            if (kf.timeStamp < m_CurrentTime - 0.001f && kf.timeStamp > prevTime) {
+                                prevTime = kf.timeStamp;
+                            }
                         }
                     }
+                    if (prevTime > 0.0f) m_CurrentTime = prevTime;
                 }
-                if (prevTime > 0.0f) m_CurrentTime = prevTime;
             }
+            m_IsPlaying = false;
         }
-        m_IsPlaying = false;
-    }
-    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Previous Keyframe");
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Previous Keyframe");
 
-    ImGui::SameLine();
-    if (ImGui::Button(m_IsPlaying ? "Pause" : "Play")) {
-        m_IsPlaying = !m_IsPlaying;
-    }
+        ImGui::SameLine();
+        if (ImGui::Button(m_IsPlaying ? "Pause" : "Play")) {
+            m_IsPlaying = !m_IsPlaying;
+        }
 
-    // Next Keyframe button
-    ImGui::SameLine();
-    if (ImGui::Button("K>")) {
-        // Jump to next keyframe
-        if (m_Animator && m_SelectedClipIndex >= 0) {
-            const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
-            if (clip) {
-                float nextTime = clip->duration;
-                // Find next keyframe across all bones
-                for (const auto& [boneName, track] : clip->tracks) {
-                    for (const auto& kf : track) {
-                        if (kf.timeStamp > m_CurrentTime + 0.001f && kf.timeStamp < nextTime) {
-                            nextTime = kf.timeStamp;
+        // Next Keyframe button
+        ImGui::SameLine();
+        if (ImGui::Button("K>")) {
+            // Jump to next keyframe
+            if (m_Animator && m_SelectedClipIndex >= 0) {
+                const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
+                if (clip) {
+                    float nextTime = clip->duration;
+                    // Find next keyframe across all bones
+                    for (const auto& [boneName, track] : clip->tracks) {
+                        for (const auto& kf : track) {
+                            if (kf.timeStamp > m_CurrentTime + 0.001f && kf.timeStamp < nextTime) {
+                                nextTime = kf.timeStamp;
+                            }
                         }
                     }
+                    if (nextTime < clip->duration) m_CurrentTime = nextTime;
                 }
-                if (nextTime < clip->duration) m_CurrentTime = nextTime;
             }
+            m_IsPlaying = false;
         }
-        m_IsPlaying = false;
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Next Keyframe");
+
+        ImGui::SameLine();
+        if (ImGui::Button("Stop")) {
+            m_IsPlaying = false;
+            m_CurrentTime = 0.0f;
+        }
+
+        ImGui::SameLine();
+        ImGui::Checkbox("Loop", &m_Loop);
+
+        // Playback speed control
+        ImGui::SameLine();
+        ImGui::Text("Speed:");
+        ImGui::SameLine();
+        // Proportional width (6% of window, min 60, max 100)
+        float speedSliderWidth = ImGui::GetWindowWidth() * 0.06f;
+        speedSliderWidth = (speedSliderWidth < 60.0f) ? 60.0f : (speedSliderWidth > 100.0f) ? 100.0f : speedSliderWidth;
+        ImGui::SetNextItemWidth(speedSliderWidth);
+        ImGui::SliderFloat("##PlaybackSpeed", &m_PlaybackSpeed, 0.1f, 3.0f, "%.1fx");
+        if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("Playback speed multiplier");
+        }
+        ImGui::SameLine();
+        if (ImGui::SmallButton("1x")) {
+            m_PlaybackSpeed = 1.0f;
+        }
+        ImGui::EndDisabled();
+
+        ImGui::Unindent(10.0f);
+        ImGui::Spacing();
     }
-    if (ImGui::IsItemHovered()) ImGui::SetTooltip("Next Keyframe");
+    ImGui::PopStyleColor(3); // Pop Model & Playback colors
 
-    ImGui::SameLine();
-    if (ImGui::Button("Stop")) {
-        m_IsPlaying = false;
-        m_CurrentTime = 0.0f;
-    }
+    // ========== SECTION 2: EDITING TOOLS ==========
+    // Green tint for editing tools section
+    ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.2f, 0.5f, 0.3f, 0.8f));
+    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.25f, 0.55f, 0.35f, 0.9f));
+    ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.3f, 0.6f, 0.4f, 1.0f));
 
-    ImGui::SameLine();
-    ImGui::Checkbox("Loop", &m_Loop);
-
-    // Playback speed control
-    ImGui::SameLine();
-    ImGui::Text("Speed:");
-    ImGui::SameLine();
-    // Proportional width (6% of window, min 60, max 100)
-    float speedSliderWidth = ImGui::GetWindowWidth() * 0.06f;
-    speedSliderWidth = (speedSliderWidth < 60.0f) ? 60.0f : (speedSliderWidth > 100.0f) ? 100.0f : speedSliderWidth;
-    ImGui::SetNextItemWidth(speedSliderWidth);
-    ImGui::SliderFloat("##PlaybackSpeed", &m_PlaybackSpeed, 0.1f, 3.0f, "%.1fx");
-    if (ImGui::IsItemHovered()) {
-        ImGui::SetTooltip("Playback speed multiplier");
-    }
-    ImGui::SameLine();
-    if (ImGui::SmallButton("1x")) {
-        m_PlaybackSpeed = 1.0f;
-    }
-    ImGui::EndDisabled();
-
-    // Undo/Redo buttons
-    ImGui::SameLine(0, 20);
-    ImGui::Separator();
-    ImGui::SameLine(0, 20);
-
-    ImGui::BeginDisabled(m_UndoStack.empty());
-    if (ImGui::Button("Undo"))
+    if (ImGui::CollapsingHeader("Editing Tools", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        Undo();
-    }
-    if (ImGui::IsItemHovered())
-    {
-        ImGui::SetTooltip("Undo last keyframe edit (Ctrl+Z)");
-    }
-    ImGui::EndDisabled();
+        ImGui::Indent(10.0f);
 
-    ImGui::SameLine();
-    ImGui::BeginDisabled(m_RedoStack.empty());
-    if (ImGui::Button("Redo"))
-    {
-        Redo();
-    }
-    if (ImGui::IsItemHovered())
-    {
-        ImGui::SetTooltip("Redo keyframe edit (Ctrl+Y)");
-    }
-    ImGui::EndDisabled();
+        // Undo/Redo buttons
+        ImGui::BeginDisabled(m_UndoStack.empty());
+        if (ImGui::Button("Undo"))
+        {
+            Undo();
+        }
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Undo last keyframe edit (Ctrl+Z)");
+        }
+        ImGui::EndDisabled();
+
+        ImGui::SameLine();
+        ImGui::BeginDisabled(m_RedoStack.empty());
+        if (ImGui::Button("Redo"))
+        {
+            Redo();
+        }
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Redo keyframe edit (Ctrl+Y)");
+        }
+        ImGui::EndDisabled();
 
     // Keyboard shortcuts - only process when Animation Timeline window is focused
     // The Editor's global undo/redo is skipped when this window is focused (see Editor.cpp)
@@ -662,21 +697,43 @@ void AnimationTimelinePanel::RenderControlBar()
             }
         }
 
-        // Delete key - Delete selected keyframes
+        // Delete key - Delete selected keyframes OR audio events
         if (ImGui::IsKeyPressed(ImGuiKey_Delete, false))
         {
             if (!m_SelectedKeyframes.empty())
             {
                 DeleteSelectedKeyframes();
             }
+            else if (m_SelectedAudioEventIndex >= 0)
+            {
+                // Delete selected audio event using command system for undo/redo
+                if (m_Animator && m_SelectedClipIndex >= 0)
+                {
+                    auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+                    if (clip && m_SelectedAudioEventIndex < (int)clip->audioEvents.size())
+                    {
+                        KeyframeCommand cmd;
+                        cmd.type = KeyframeCommand::AUDIO_REMOVE;
+                        cmd.audioEventIndex = static_cast<size_t>(m_SelectedAudioEventIndex);
+                        cmd.audioEvent = clip->audioEvents[m_SelectedAudioEventIndex];  // Store for undo
+                        ExecuteCommand(cmd);
+
+                        m_SelectedAudioEventIndex = -1;
+                    }
+                }
+            }
         }
 
-        // Escape key - Clear keyframe selection
+        // Escape key - Clear keyframe selection or audio event selection
         if (ImGui::IsKeyPressed(ImGuiKey_Escape, false))
         {
             if (!m_SelectedKeyframes.empty())
             {
                 ClearKeyframeSelection();
+            }
+            else if (m_SelectedAudioEventIndex >= 0)
+            {
+                m_SelectedAudioEventIndex = -1;
             }
         }
 
@@ -703,230 +760,288 @@ void AnimationTimelinePanel::RenderControlBar()
         }
     }
 
-    ImGui::SameLine(0, 20);
-    ImGui::Separator();
-    ImGui::SameLine(0, 20);
+        ImGui::SameLine(0, 20);
+        ImGui::Text("|");
+        ImGui::SameLine(0, 20);
 
-    // Gizmo mode buttons
-    const char* gizmoModeText = "";
-    if (m_GizmoOperation == 7) gizmoModeText = "Move (W)";
-    else if (m_GizmoOperation == 120) gizmoModeText = "Rotate (E)";
-    else if (m_GizmoOperation == 896) gizmoModeText = "Scale (R)";
+        // Gizmo mode buttons
+        const char* gizmoModeText = "";
+        if (m_GizmoOperation == 7) gizmoModeText = "Move (W)";
+        else if (m_GizmoOperation == 120) gizmoModeText = "Rotate (E)";
+        else if (m_GizmoOperation == 896) gizmoModeText = "Scale (R)";
 
-    const char* gizmoSpaceText = (m_GizmoMode == 1) ? "World" : "Local";
+        const char* gizmoSpaceText = (m_GizmoMode == 1) ? "World" : "Local";
 
-    ImGui::Text("Gizmo:");
-    ImGui::SameLine();
-    if (ImGui::Button("Move (W)")) m_GizmoOperation = 7;
-    ImGui::SameLine();
-    if (ImGui::Button("Rotate (E)")) m_GizmoOperation = 120;
-    ImGui::SameLine();
-    if (ImGui::Button("Scale (R)")) m_GizmoOperation = 896;
-    ImGui::SameLine();
-    ImGui::Text("|");
-    ImGui::SameLine();
-    if (ImGui::Button("Toggle Space (T)"))
-    {
-        m_GizmoMode = (m_GizmoMode == 0) ? 1 : 0;
-    }
-    ImGui::SameLine();
-    ImGui::Text("[%s - %s]", gizmoModeText, gizmoSpaceText);
-
-    // Keyframe recording hint
-    ImGui::SameLine(0, 20);
-    ImGui::Separator();
-    ImGui::SameLine(0, 20);
-
-    // Show keyframe recording status
-    if (!m_SelectedBoneName.empty())
-    {
-        ImGui::Text("Add Keyframe:");
-        ImGui::SameLine();
-        if (ImGui::Button("K"))
+        if (!m_CompactMode)
         {
-            // Trigger K key action manually via button
-            if (m_Animator && m_SelectedClipIndex >= 0)
+            // Full gizmo controls
+            ImGui::Text("Gizmo:");
+            ImGui::SameLine();
+            if (ImGui::Button("Move (W)")) m_GizmoOperation = 7;
+            ImGui::SameLine();
+            if (ImGui::Button("Rotate (E)")) m_GizmoOperation = 120;
+            ImGui::SameLine();
+            if (ImGui::Button("Scale (R)")) m_GizmoOperation = 896;
+            ImGui::SameLine();
+            ImGui::Text("|");
+            ImGui::SameLine();
+            if (ImGui::Button("Toggle Space (T)"))
             {
-                Boom::KeyFrame kf = CaptureCurrentBoneTransform(m_SelectedBoneName);
-                if (kf.timeStamp >= 0.0f)
-                {
-                    KeyframeCommand cmd;
-                    cmd.type = KeyframeCommand::ADD;
-                    cmd.boneName = m_SelectedBoneName;
-                    cmd.keyframe = kf;
-                    ExecuteCommand(cmd);
-                }
+                m_GizmoMode = (m_GizmoMode == 0) ? 1 : 0;
             }
-        }
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetTooltip("Add keyframe for '%s' at current time (%.2fs)\nOr press K key",
-                            m_SelectedBoneName.c_str(), m_CurrentTime);
-        }
-    }
-    else
-    {
-        ImGui::TextDisabled("Add Keyframe: K");
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetTooltip("Select a bone first, then press K to add a keyframe");
-        }
-    }
-
-    // Show selected keyframes count (multiselect status)
-    ImGui::SameLine(0, 20);
-    if (!m_SelectedKeyframes.empty())
-    {
-        ImGui::TextColored(ImVec4(0.5f, 0.8f, 1.0f, 1.0f), "| %zu keyframe%s selected",
-                          m_SelectedKeyframes.size(),
-                          m_SelectedKeyframes.size() == 1 ? "" : "s");
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetTooltip("Multiselect shortcuts:\n"
-                             "  Ctrl+Click: Add/remove from selection\n"
-                             "  Ctrl+A: Select all keyframes\n"
-                             "  Delete: Delete selected keyframes\n"
-                             "  Escape: Clear selection\n"
-                             "  Drag: Move all selected together");
-        }
-    }
-
-    ImGui::SameLine(0, 20);
-    ImGui::Separator();
-    ImGui::SameLine(0, 20);
-
-    // Visualization toggles
-    ImGui::Checkbox("Show Skeleton", &m_ShowSkeleton);
-    ImGui::SameLine();
-    ImGui::Checkbox("Show Grid", &m_ShowGrid);
-    ImGui::SameLine();
-    ImGui::Checkbox("Wireframe", &m_ShowWireframe);
-
-    ImGui::SameLine(0, 20);
-    ImGui::Separator();
-    ImGui::SameLine(0, 10);
-
-    // Gizmo manipulation mode toggle
-    if (ImGui::Checkbox("Rotation Only", &m_RotationOnlyMode))
-    {
-        // If switching to rotation-only mode, force rotate gizmo
-        if (m_RotationOnlyMode)
-        {
-            m_GizmoOperation = 120;  // ImGuizmo::ROTATE
-            BOOM_INFO("[Gizmo] Rotation-Only Mode ENABLED - translation disabled to prevent bone stretching");
+            ImGui::SameLine();
+            ImGui::Text("[%s - %s]", gizmoModeText, gizmoSpaceText);
         }
         else
         {
-            BOOM_INFO("[Gizmo] Rotation-Only Mode DISABLED - translation allowed (may cause bone stretching)");
-        }
-    }
-    if (ImGui::IsItemHovered())
-    {
-        ImGui::SetTooltip("When enabled, only rotation gizmo is allowed.\nPrevents bone length stretching from translation.");
-    }
-
-    // Show current gizmo mode indicator
-    ImGui::SameLine();
-    const char* gizmoModeLabel = "Unknown";
-    if (m_GizmoOperation == 7) gizmoModeLabel = "Translate (W)";
-    else if (m_GizmoOperation == 120) gizmoModeLabel = "Rotate (E)";
-    else if (m_GizmoOperation == 896) gizmoModeLabel = "Scale (R)";
-    ImGui::TextColored(ImVec4(0.4f, 0.8f, 1.0f, 1.0f), "[%s]", gizmoModeLabel);
-    if (ImGui::IsItemHovered())
-    {
-        ImGui::SetTooltip("Current gizmo mode. Press W/E/R to switch.\nPress T to toggle World/Local space.");
-    }
-
-    ImGui::SameLine();
-    if (ImGui::Button("Reset Camera")) {
-        ResetCamera();
-    }
-
-    if (m_HasModel) {
-        ImGui::SameLine();
-        if (ImGui::Button("Frame Model")) {
-            FrameModel();
-        }
-
-        // Clear bone poses button (only show if we have manual poses)
-        if (m_HasManualPoses && !m_SelectedBoneName.empty())
-        {
+            // Compact mode - smaller buttons without labels
+            if (ImGui::SmallButton("W")) m_GizmoOperation = 7;
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Move");
             ImGui::SameLine();
-            if (ImGui::Button("Clear Bone Pose"))
+            if (ImGui::SmallButton("E")) m_GizmoOperation = 120;
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Rotate");
+            ImGui::SameLine();
+            if (ImGui::SmallButton("R")) m_GizmoOperation = 896;
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Scale");
+            ImGui::SameLine();
+            if (ImGui::SmallButton("T"))
             {
-                ClearBonePose(m_SelectedBoneName);
+                m_GizmoMode = (m_GizmoMode == 0) ? 1 : 0;
+            }
+            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Toggle %s", gizmoSpaceText);
+        }
+
+        ImGui::SameLine();
+        // Gizmo manipulation mode toggle
+        if (ImGui::Checkbox("Rotation Only", &m_RotationOnlyMode))
+        {
+            // If switching to rotation-only mode, force rotate gizmo
+            if (m_RotationOnlyMode)
+            {
+                m_GizmoOperation = 120;  // ImGuizmo::ROTATE
+                BOOM_INFO("[Gizmo] Rotation-Only Mode ENABLED - translation disabled to prevent bone stretching");
+            }
+            else
+            {
+                BOOM_INFO("[Gizmo] Rotation-Only Mode DISABLED - translation allowed (may cause bone stretching)");
+            }
+        }
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("When enabled, only rotation gizmo is allowed.\nPrevents bone length stretching from translation.");
+        }
+
+        // Keyframe recording controls (new row)
+        ImGui::Text("Keyframe:");
+        ImGui::SameLine();
+        if (!m_SelectedBoneName.empty())
+        {
+            if (ImGui::Button("Add (K)"))
+            {
+                // Trigger K key action manually via button
+                if (m_Animator && m_SelectedClipIndex >= 0)
+                {
+                    Boom::KeyFrame kf = CaptureCurrentBoneTransform(m_SelectedBoneName);
+                    if (kf.timeStamp >= 0.0f)
+                    {
+                        KeyframeCommand cmd;
+                        cmd.type = KeyframeCommand::ADD;
+                        cmd.boneName = m_SelectedBoneName;
+                        cmd.keyframe = kf;
+                        ExecuteCommand(cmd);
+                    }
+                }
             }
             if (ImGui::IsItemHovered())
             {
-                ImGui::SetTooltip("Clear manual pose for selected bone '%s'\n(Ctrl+Z to undo)",
-                                m_SelectedBoneName.c_str());
+                ImGui::SetTooltip("Add keyframe for '%s' at current time (%.2fs)\nOr press K key",
+                                m_SelectedBoneName.c_str(), m_CurrentTime);
             }
         }
-
-        if (m_HasManualPoses)
+        else
         {
-            ImGui::SameLine();
-            if (ImGui::Button("Clear All Poses"))
-            {
-                ClearAllBonePoses();
-            }
+            ImGui::BeginDisabled();
+            ImGui::Button("Add (K)");
+            ImGui::EndDisabled();
             if (ImGui::IsItemHovered())
             {
-                ImGui::SetTooltip("Clear all manual bone poses\n(Returns to animation keyframes)");
+                ImGui::SetTooltip("Select a bone first, then press K to add a keyframe");
             }
         }
-    }
 
-    // Scale controls (new row)
-    if (m_HasModel)
+        // Show selected keyframes count (multiselect status)
+        ImGui::SameLine();
+        if (!m_SelectedKeyframes.empty())
+        {
+            ImGui::TextColored(ImVec4(0.5f, 0.8f, 1.0f, 1.0f), "| %zu keyframe%s selected",
+                              m_SelectedKeyframes.size(),
+                              m_SelectedKeyframes.size() == 1 ? "" : "s");
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::SetTooltip("Multiselect shortcuts:\n"
+                                 "  Ctrl+Click: Add/remove from selection\n"
+                                 "  Ctrl+A: Select all keyframes\n"
+                                 "  Delete: Delete selected keyframes\n"
+                                 "  Escape: Clear selection\n"
+                                 "  Drag: Move all selected together");
+            }
+        }
+
+        ImGui::Unindent(10.0f);
+        ImGui::Spacing();
+    }
+    ImGui::PopStyleColor(3); // Pop Editing Tools colors
+
+    // ========== SECTION 3: VIEW OPTIONS ==========
+    // Purple tint for view options section
+    ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.4f, 0.2f, 0.5f, 0.8f));
+    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.45f, 0.25f, 0.55f, 0.9f));
+    ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.5f, 0.3f, 0.6f, 1.0f));
+
+    if (ImGui::CollapsingHeader("View Options", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        ImGui::Text("Preview Scale:");
-        ImGui::SameLine();
-        // Use proportional width: 15% of window width (min 100, max 200)
-        float scaleSliderWidth = ImGui::GetWindowWidth() * 0.15f;
-        scaleSliderWidth = (scaleSliderWidth < 100.0f) ? 100.0f : (scaleSliderWidth > 200.0f) ? 200.0f : scaleSliderWidth;
-        ImGui::SetNextItemWidth(scaleSliderWidth);
+        ImGui::Indent(10.0f);
 
-        // Use logarithmic slider for better control at small values
-        if (ImGui::SliderFloat("##ModelScale", &m_ModelScale, 0.001f, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic))
+        // Compact mode toggle (first item for easy access)
+        if (ImGui::Checkbox("Compact Mode", &m_CompactMode))
         {
-            // Scale changed - optionally re-frame
+            // Optional: log state change
         }
-
-        ImGui::SameLine();
-        if (ImGui::Button("Reset Scale"))
+        if (ImGui::IsItemHovered())
         {
-            m_ModelScale = 1.0f;
-        }
-        ImGui::SameLine();
-        if (ImGui::Button("0.01x"))
-        {
-            m_ModelScale = 0.01f;
-        }
-        ImGui::SameLine();
-        if (ImGui::Button("0.1x"))
-        {
-            m_ModelScale = 0.1f;
+            ImGui::SetTooltip("Hide less-frequently-used controls for smaller screens");
         }
 
-        // Show info
         ImGui::SameLine();
-        if (m_Model)
-        {
-            ImGui::TextDisabled("| Asset Scale: (%.2f, %.2f, %.2f) | Camera Dist: %.2f",
-                m_Model->modelTransform.scale.x,
-                m_Model->modelTransform.scale.y,
-                m_Model->modelTransform.scale.z,
-                m_CameraDistance);
+        ImGui::Text("|");
+        ImGui::SameLine();
+
+        // Visualization toggles
+        ImGui::Checkbox("Show Skeleton", &m_ShowSkeleton);
+        ImGui::SameLine();
+        ImGui::Checkbox("Show Grid", &m_ShowGrid);
+        ImGui::SameLine();
+        ImGui::Checkbox("Wireframe", &m_ShowWireframe);
+
+        // Camera controls
+        if (ImGui::Button("Reset Camera")) {
+            ResetCamera();
         }
+
+        if (m_HasModel) {
+            ImGui::SameLine();
+            if (ImGui::Button("Frame Model")) {
+                FrameModel();
+            }
+
+            // Clear bone poses button (only show if we have manual poses)
+            if (m_HasManualPoses && !m_SelectedBoneName.empty())
+            {
+                ImGui::SameLine();
+                if (ImGui::Button("Clear Bone Pose"))
+                {
+                    ClearBonePose(m_SelectedBoneName);
+                }
+                if (ImGui::IsItemHovered())
+                {
+                    ImGui::SetTooltip("Clear manual pose for selected bone '%s'\n(Ctrl+Z to undo)",
+                                    m_SelectedBoneName.c_str());
+                }
+            }
+
+            if (m_HasManualPoses)
+            {
+                ImGui::SameLine();
+                if (ImGui::Button("Clear All Poses"))
+                {
+                    ClearAllBonePoses();
+                }
+                if (ImGui::IsItemHovered())
+                {
+                    ImGui::SetTooltip("Clear all manual bone poses\n(Returns to animation keyframes)");
+                }
+            }
+        }
+
+        // Scale controls (new row)
+        if (m_HasModel)
+        {
+            if (!m_CompactMode)
+            {
+                // Full scale controls (only in non-compact mode)
+                ImGui::Text("Preview Scale:");
+                ImGui::SameLine();
+                // Use proportional width: 15% of window width (min 100, max 200)
+                float scaleSliderWidth = ImGui::GetWindowWidth() * 0.15f;
+                scaleSliderWidth = (scaleSliderWidth < 100.0f) ? 100.0f : (scaleSliderWidth > 200.0f) ? 200.0f : scaleSliderWidth;
+                ImGui::SetNextItemWidth(scaleSliderWidth);
+
+                // Use logarithmic slider for better control at small values
+                if (ImGui::SliderFloat("##ModelScale", &m_ModelScale, 0.001f, 10.0f, "%.3f", ImGuiSliderFlags_Logarithmic))
+                {
+                    // Scale changed - optionally re-frame
+                }
+
+                ImGui::SameLine();
+                if (ImGui::Button("Reset Scale"))
+                {
+                    m_ModelScale = 1.0f;
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("0.01x"))
+                {
+                    m_ModelScale = 0.01f;
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("0.1x"))
+                {
+                    m_ModelScale = 0.1f;
+                }
+
+                // Show info
+                ImGui::SameLine();
+                if (m_Model)
+                {
+                    ImGui::TextDisabled("| Asset Scale: (%.2f, %.2f, %.2f) | Camera Dist: %.2f",
+                        m_Model->modelTransform.scale.x,
+                        m_Model->modelTransform.scale.y,
+                        m_Model->modelTransform.scale.z,
+                        m_CameraDistance);
+                }
+            }
+            else
+            {
+                // Compact mode - just show reset button
+                ImGui::Text("Scale:");
+                ImGui::SameLine();
+                ImGui::Text("%.2fx", m_ModelScale);
+                ImGui::SameLine();
+                if (ImGui::SmallButton("Reset"))
+                {
+                    m_ModelScale = 1.0f;
+                }
+            }
+        }
+
+        ImGui::Unindent(10.0f);
+        ImGui::Spacing();
     }
+    ImGui::PopStyleColor(3); // Pop View Options colors
 
-    // ===== CHUNK 2: Animation Clip Selection & Info Display =====
+    // ========== SECTION 4: ANIMATION CLIP ==========
     if (m_Animator && m_Animator->GetClipCount() > 0)
     {
-        ImGui::Separator();
-        ImGui::Text("Animation Clip:");
-        ImGui::SameLine();
+        // Orange tint for animation clip section
+        ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.6f, 0.4f, 0.2f, 0.8f));
+        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.65f, 0.45f, 0.25f, 0.9f));
+        ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.7f, 0.5f, 0.3f, 1.0f));
+
+        if (ImGui::CollapsingHeader("Animation Clip", ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            ImGui::Indent(10.0f);
+
+            ImGui::Text("Clip:");
+            ImGui::SameLine();
 
         // Animation clip dropdown - proportional width (15% of window, min 120, max 250)
         float clipDropdownWidth = ImGui::GetWindowWidth() * 0.15f;
@@ -1086,6 +1201,7 @@ void AnimationTimelinePanel::RenderControlBar()
                                 entityClip->ticksPerSecond = timelineClip->ticksPerSecond;
                                 entityClip->filePath = timelineClip->filePath;
                                 entityClip->tracks = timelineClip->tracks;  // Deep copy tracks
+                                entityClip->audioEvents = timelineClip->audioEvents;  // Copy audio events
 
                                 if (m_SelectedClipIndex < (int)animComp.animator->GetClipCount())
                                 {
@@ -1100,13 +1216,11 @@ void AnimationTimelinePanel::RenderControlBar()
                                     BOOM_INFO("[AnimTimeline] Added copied clip '{}' to entity", entityClip->name);
                                 }
 
-                                // Force entity to play this clip
-                                // Clear states to force legacy clip-based mode (simpler for editor preview)
-                                auto& states = animComp.animator->GetStates();
-                                states.clear();
+                                // NOTE: We do NOT clear the state machine here!
+                                // The state machine is managed by the Animator Graph panel.
+                                // We only update the clip data, not the playback mode.
 
-                                // Set the clip and time
-                                animComp.animator->PlayClip(m_SelectedClipIndex);
+                                // Sync the current time to entity (for preview purposes)
                                 animComp.animator->SetTime(m_CurrentTime);
 
                                 // Force immediate joint transform update
@@ -1116,8 +1230,8 @@ void AnimationTimelinePanel::RenderControlBar()
                                 m_ManualBonePoses.clear();
                                 m_HasManualPoses = false;
 
-                                BOOM_INFO("[AnimTimeline] Applied - entity now has copy of clip (clip: '{}', time: {:.2f})",
-                                    entityClip->name, m_CurrentTime);
+                                BOOM_INFO("[AnimTimeline] Applied - entity clip updated (clip: '{}', time: {:.2f}, audioEvents: {})",
+                                    entityClip->name, m_CurrentTime, entityClip->audioEvents.size());
                             }
                         }
                     }
@@ -1358,11 +1472,11 @@ void AnimationTimelinePanel::RenderControlBar()
                                                         animComp.animator->AddClip(timelineClipPtr);
                                                     }
 
-                                                    // Clear states and force clip playback
-                                                    auto& states = animComp.animator->GetStates();
-                                                    states.clear();
+                                                    // NOTE: We do NOT clear the state machine here!
+                                                    // The state machine is managed by the Animator Graph panel.
+                                                    // We only sync the clip data.
 
-                                                    animComp.animator->PlayClip(m_SelectedClipIndex);
+                                                    // Sync current time for preview
                                                     animComp.animator->SetTime(m_CurrentTime);
                                                     animComp.animator->UpdateJointsFromCurrentTime();
 
@@ -1370,7 +1484,8 @@ void AnimationTimelinePanel::RenderControlBar()
                                                     m_ManualBonePoses.clear();
                                                     m_HasManualPoses = false;
 
-                                                    BOOM_INFO("[AnimTimeline] Synced - entity now shares clip pointer");
+                                                    BOOM_INFO("[AnimTimeline] Synced - entity clip updated (audioEvents: {})",
+                                                        timelineClipPtr->audioEvents.size());
                                                 }
                                             }
                                         }
@@ -1407,33 +1522,52 @@ void AnimationTimelinePanel::RenderControlBar()
                 ImGui::SameLine();
                 ImGui::Text("|");
 
-                // Duration display
-                ImGui::SameLine();
-                ImGui::Text("Duration: %.2fs", clip->duration);
+                if (!m_CompactMode)
+                {
+                    // Full info display
+                    // Duration display
+                    ImGui::SameLine();
+                    ImGui::Text("Duration: %.2fs", clip->duration);
 
-                // FPS / Ticks per second
-                ImGui::SameLine();
-                ImGui::Text("| FPS: %.1f", clip->ticksPerSecond);
+                    // FPS / Ticks per second
+                    ImGui::SameLine();
+                    ImGui::Text("| FPS: %.1f", clip->ticksPerSecond);
 
-                // Frame count (approximate)
-                int frameCount = (int)(clip->duration * clip->ticksPerSecond);
-                ImGui::SameLine();
-                ImGui::Text("| Frames: %d", frameCount);
+                    // Frame count (approximate)
+                    int frameCount = (int)(clip->duration * clip->ticksPerSecond);
+                    ImGui::SameLine();
+                    ImGui::Text("| Frames: %d", frameCount);
 
-                // Current time / Total time
-                ImGui::SameLine();
-                ImGui::Text("| Time: %.2f / %.2f", m_CurrentTime, clip->duration);
+                    // Current time / Total time
+                    ImGui::SameLine();
+                    ImGui::Text("| Time: %.2f / %.2f", m_CurrentTime, clip->duration);
 
-                // DEBUG: Playback state
-                ImGui::SameLine();
-                ImGui::TextColored(m_IsPlaying ? ImVec4(0, 1, 0, 1) : ImVec4(1, 0, 0, 1),
-                    "| %s", m_IsPlaying ? "PLAYING" : "PAUSED");
+                    // DEBUG: Playback state
+                    ImGui::SameLine();
+                    ImGui::TextColored(m_IsPlaying ? ImVec4(0, 1, 0, 1) : ImVec4(1, 0, 0, 1),
+                        "| %s", m_IsPlaying ? "PLAYING" : "PAUSED");
 
-                ImGui::SameLine();
-                ImGui::TextColored(m_Loop ? ImVec4(0, 1, 1, 1) : ImVec4(0.5f, 0.5f, 0.5f, 1),
-                    "| Loop: %s", m_Loop ? "ON" : "OFF");
+                    ImGui::SameLine();
+                    ImGui::TextColored(m_Loop ? ImVec4(0, 1, 1, 1) : ImVec4(0.5f, 0.5f, 0.5f, 1),
+                        "| Loop: %s", m_Loop ? "ON" : "OFF");
+                }
+                else
+                {
+                    // Compact mode - just essentials
+                    ImGui::SameLine();
+                    ImGui::Text("%.2fs", clip->duration);
+
+                    ImGui::SameLine();
+                    ImGui::TextColored(m_IsPlaying ? ImVec4(0, 1, 0, 1) : ImVec4(1, 0, 0, 1),
+                        "| %s", m_IsPlaying ? "►" : "■");
+                }
             }
         }
+
+            ImGui::Unindent(10.0f);
+            ImGui::Spacing();
+        }
+        ImGui::PopStyleColor(3); // Pop Animation Clip colors
     }
     else if (m_Animator)
     {
@@ -1512,6 +1646,39 @@ void AnimationTimelinePanel::ExecuteSingleCommand(const KeyframeCommand& cmd)
             ExecuteSingleCommand(subCmd);
         }
         break;
+
+    case KeyframeCommand::AUDIO_ADD:
+        {
+            auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+            if (clip)
+            {
+                clip->audioEvents.push_back(cmd.audioEvent);
+                BOOM_INFO("[Undo/Redo] Added audio event '{}' at {:.2f}s", cmd.audioEvent.eventName, cmd.audioEvent.timeStamp);
+            }
+        }
+        break;
+
+    case KeyframeCommand::AUDIO_EDIT:
+        {
+            auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+            if (clip && cmd.audioEventIndex < clip->audioEvents.size())
+            {
+                clip->audioEvents[cmd.audioEventIndex] = cmd.audioEvent;
+                BOOM_INFO("[Undo/Redo] Updated audio event '{}' at {:.2f}s", cmd.audioEvent.eventName, cmd.audioEvent.timeStamp);
+            }
+        }
+        break;
+
+    case KeyframeCommand::AUDIO_REMOVE:
+        {
+            auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+            if (clip && cmd.audioEventIndex < clip->audioEvents.size())
+            {
+                clip->audioEvents.erase(clip->audioEvents.begin() + cmd.audioEventIndex);
+                BOOM_INFO("[Undo/Redo] Removed audio event '{}' at {:.2f}s", cmd.audioEvent.eventName, cmd.audioEvent.timeStamp);
+            }
+        }
+        break;
     }
 }
 
@@ -1565,6 +1732,53 @@ void AnimationTimelinePanel::UndoSingleCommand(const KeyframeCommand& cmd)
         for (auto it = cmd.batchCommands.rbegin(); it != cmd.batchCommands.rend(); ++it)
         {
             UndoSingleCommand(*it);
+        }
+        break;
+
+    case KeyframeCommand::AUDIO_ADD:
+        {
+            // Undo AUDIO_ADD = remove the audio event (find by timestamp)
+            auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+            if (clip)
+            {
+                // Find the event by timestamp (more reliable than index after multiple operations)
+                for (auto it = clip->audioEvents.begin(); it != clip->audioEvents.end(); ++it)
+                {
+                    if (std::abs(it->timeStamp - cmd.audioEvent.timeStamp) < 0.001f &&
+                        it->soundFile == cmd.audioEvent.soundFile)
+                    {
+                        BOOM_INFO("[Undo] Removed audio event '{}' at {:.2f}s", it->eventName, it->timeStamp);
+                        clip->audioEvents.erase(it);
+                        break;
+                    }
+                }
+            }
+        }
+        break;
+
+    case KeyframeCommand::AUDIO_EDIT:
+        {
+            // Undo AUDIO_EDIT = restore old audio event state
+            auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+            if (clip && cmd.audioEventIndex < clip->audioEvents.size())
+            {
+                clip->audioEvents[cmd.audioEventIndex] = cmd.oldAudioEvent;
+                BOOM_INFO("[Undo] Restored audio event '{}' at {:.2f}s", cmd.oldAudioEvent.eventName, cmd.oldAudioEvent.timeStamp);
+            }
+        }
+        break;
+
+    case KeyframeCommand::AUDIO_REMOVE:
+        {
+            // Undo AUDIO_REMOVE = insert the audio event back at original index
+            auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+            if (clip)
+            {
+                // Insert at original position (or at end if index is out of range)
+                size_t insertIdx = (cmd.audioEventIndex <= clip->audioEvents.size()) ? cmd.audioEventIndex : clip->audioEvents.size();
+                clip->audioEvents.insert(clip->audioEvents.begin() + insertIdx, cmd.audioEvent);
+                BOOM_INFO("[Undo] Restored audio event '{}' at {:.2f}s", cmd.audioEvent.eventName, cmd.audioEvent.timeStamp);
+            }
         }
         break;
     }

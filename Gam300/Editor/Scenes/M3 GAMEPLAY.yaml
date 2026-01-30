@@ -1,5 +1,50 @@
 Version: 1.0
 ENTITIES:
+  - InfoComponent:
+      Parent: 0
+      Name: New Entity (1)
+      UID: 9054217741465614535
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+  - InfoComponent:
+      Parent: 0
+      Name: Top_Ceiling
+      UID: 15729046611990068865
+    TransformComponent:
+      Transform:
+        Translate: [0, 12.3543997, 5.49479961]
+        Rotate: [0, -0, 0]
+        Scale: [1.53440881, 0.0199999996, 4.18454552]
+    ModelComponent:
+      ModelID: 1441742420851203854
+      MaterialID: 16257091296667891899
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [14.7299995, 5.57000017, 37.2000008]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: Squeeze
+      UID: 17966297571862268424
+    TransformComponent:
+      Transform:
+        Translate: [-0.610087514, 20.6173363, 45.5718765]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -17,7 +62,7 @@ ENTITIES:
       UID: 3286848895912838454
     TransformComponent:
       Transform:
-        Translate: [5.28795481, 18.3139172, 31.2804298]
+        Translate: [-39.4119606, 38.4697838, -6.55990791]
         Rotate: [27.5745697, 43.9666595, 53.7106781]
         Scale: [0.0312000178, 0.0404912941, 0.0897001177]
     ModelComponent:
@@ -89,7 +134,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -105,7 +150,7 @@ ENTITIES:
         Scale: [0.0207892749, 0.207735717, 0.0700263679]
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -142,7 +187,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -179,7 +224,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -216,7 +261,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -268,7 +313,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 2.53051853, -14.2555885]
-        Rotate: [0, 450, 0]
+        Rotate: [0, 512.109924, 0]
         Scale: [68.965065, 68.9655151, 68.965065]
     ScriptComponent:
       Enabled: true
@@ -312,7 +357,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -349,7 +394,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -386,7 +431,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -423,7 +468,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -499,7 +544,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [2.07987475, 17.7299271, 63.520256]
-        Rotate: [0, 0, 0]
+        Rotate: [0, 199.672256, 0]
         Scale: [0.0145000033, 0.0145000005, 0.0145000033]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -603,8 +648,8 @@ ENTITIES:
       UID: 14450237795829985322
     TransformComponent:
       Transform:
-        Translate: [-64.664093, 31.575304, 20.7080231]
-        Rotate: [0, -61.3656845, 0]
+        Translate: [-63.2716866, 31.6161957, 19.9432697]
+        Rotate: [180, 44.4718933, 180]
         Scale: [0.0200004745, 0.0199999996, 0.0200004745]
     RigidBodyComponent:
       RigidBody:
@@ -687,7 +732,7 @@ ENTITIES:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-64.7831268, 31.8782978, 20.773016]
+      Target: [-46.5436516, 31.8782978, 10.7598639]
       Speed: 3.5
       ArriveRadius: 0.150000006
       Active: true
@@ -725,8 +770,8 @@ ENTITIES:
       UID: 263206634475258297
     TransformComponent:
       Transform:
-        Translate: [-44.7131805, 24.150177, -9.85211277]
-        Rotate: [180, 89.810257, 180]
+        Translate: [-41.1296539, 24.3438988, -9.79262733]
+        Rotate: [0, 89.980217, 0]
         Scale: [0.0200004745, 0.0199999996, 0.0200004745]
     RigidBodyComponent:
       RigidBody:
@@ -847,8 +892,8 @@ ENTITIES:
       UID: 9730896463395262189
     TransformComponent:
       Transform:
-        Translate: [-31.7361031, 24.4946156, 5.09300613]
-        Rotate: [-180, 0.348916858, -180]
+        Translate: [-31.8510647, 24.3238983, 14.6002922]
+        Rotate: [180, -1.8669336e-05, 180]
         Scale: [0.0200001765, 0.0199999996, 0.0200001765]
     RigidBodyComponent:
       RigidBody:
@@ -969,8 +1014,8 @@ ENTITIES:
       UID: 7103488143176582610
     TransformComponent:
       Transform:
-        Translate: [-27.7953663, 13.4010181, 62.1609192]
-        Rotate: [180, 90, 180]
+        Translate: [-23.5900803, 13.3755474, 62.1609192]
+        Rotate: [180, -90, 180]
         Scale: [0.0200004764, 0.0199999996, 0.0200004764]
     RigidBodyComponent:
       RigidBody:
@@ -1053,7 +1098,7 @@ ENTITIES:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-13.3622103, 13.4397764, 62.1609154]
+      Target: [-28.2320347, 13.4397764, 62.1609154]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -1070,7 +1115,7 @@ ENTITIES:
         - [-13.3622103, 13.4397764, 62.1609154]
         - [-28.2320347, 13.4397764, 62.1609154]
         - [-34.7096901, 13.4397764, 62.1609154]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -1092,8 +1137,8 @@ ENTITIES:
       UID: 11377284783086712530
     TransformComponent:
       Transform:
-        Translate: [-22.6554394, 13.4010172, 31.8400154]
-        Rotate: [180, -50.9931641, 180]
+        Translate: [-12.6949921, 13.3755455, 31.8400154]
+        Rotate: [180, 90, 180]
         Scale: [0.0200004783, 0.0199999996, 0.0200004783]
     RigidBodyComponent:
       RigidBody:
@@ -1196,7 +1241,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"EnemyDetection\": false\n}"
+      ParamsJSON: "{\n  \"EnemyDetection\": true\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 2, 0]
@@ -1214,8 +1259,8 @@ ENTITIES:
       UID: 4350822310922817577
     TransformComponent:
       Transform:
-        Translate: [-13.3622141, 13.4010172, 57.771759]
-        Rotate: [0, -74.587326, 0]
+        Translate: [-13.3622131, 13.3755455, 41.742897]
+        Rotate: [0, -0, 0]
         Scale: [0.0200004783, 0.0199999996, 0.0200004783]
     RigidBodyComponent:
       RigidBody:
@@ -1298,7 +1343,7 @@ ENTITIES:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-13.3622103, 13.4397764, 39.6917191]
+      Target: [-13.3622103, 13.4397764, 58.4554634]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -1314,7 +1359,7 @@ ENTITIES:
       PatrolPoints:
         - [-13.3622103, 13.4397764, 39.6917191]
         - [-13.3622103, 13.4397764, 58.4554634]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -1326,7 +1371,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-32.5929832, 24.2603378, -2.77601147]
-        Rotate: [0, 270, 0]
+        Rotate: [0, 180, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -1461,7 +1506,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 9363644534041975679
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1498,7 +1543,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 13196777273589981794
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -1643,15 +1688,15 @@ ENTITIES:
       UID: 10603877224477453926
     TransformComponent:
       Transform:
-        Translate: [26.1251488, 12.1000004, 3.1269989]
-        Rotate: [-180, -89.980217, 0]
-        Scale: [1.7445035, 2.5, 0.224999964]
+        Translate: [26.1251488, 13.3294411, 3.1269989]
+        Rotate: [-180, -89.980217, 5.8957178e-10]
+        Scale: [1.7445035, 2.514328, 0.224999964]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.7445035, 2.5, 0.224999964]
+        Previous Scale: [1.7445035, 2.514328, 0.224999964]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -1872,200 +1917,162 @@ ENTITIES:
       ModelSource: ""
       MaterialSource: ""
   - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 43
-      UID: 17798945096470409722
+      Parent: 18428452598414175165
+      Name: Heart_Dead
+      UID: 7305709452366689602
     TransformComponent:
       Transform:
-        Translate: [16.4799995, 59.4169998, -108.244003]
-        Rotate: [0, -89.980217, 0]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
+        Translate: [-0.754039526, 0.857142925, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.0419672243, 0.0800000429, 0.0800000429]
+    SpriteComponent:
+      textureID: 947084306896258002
+      color: [0.196078435, 0.196078435, 0.196078435, 1]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 18428452598414175165
+      Name: Heart_5
+      UID: 5351145407601607575
+    TransformComponent:
+      Transform:
+        Translate: [-0.569120288, 0.857142925, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.0419672243, 0.0800000429, 0.0800000429]
+    SpriteComponent:
+      textureID: 9683671951523272381
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 799933234689450045
+        Type: TRIANGLE_MESH
+    InfoComponent:
+      Parent: 0
+      Name: Level1_Platform (Copy) (Copy)
+      UID: 7393927911693108114
+    TransformComponent:
+      Transform:
+        Translate: [-0.841246486, 23.2352219, 12.8422441]
+        Rotate: [0, -0, 0]
+        Scale: [0.130786642, 0.0418503992, 0.0361055285]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.130786642, 0.0418503992, 0.0361055285]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 1441742420851203854
+      MaterialID: 6104124486273075758
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Light Lamp 42
-      UID: 6817032390761170715
+      Name: Sentry_level2_3
+      UID: 5648346527941532950
     TransformComponent:
       Transform:
-        Translate: [-0.0199999996, 49.4970016, -110.304001]
-        Rotate: [0, -89.980217, 0]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 41
-      UID: 7210488533233976126
-    TransformComponent:
-      Transform:
-        Translate: [-5.65999985, 35.007, -61.0839996]
-        Rotate: [0, -89.980217, 0]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 40
-      UID: 496415249701938417
-    TransformComponent:
-      Transform:
-        Translate: [-5.69000006, 33.9469986, -53.4140015]
-        Rotate: [0, -89.980217, -83.8909988]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 39
-      UID: 15345700552811992908
-    TransformComponent:
-      Transform:
-        Translate: [3.70000005, 38.5569992, -54.1240005]
-        Rotate: [0, -89.980217, 0]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 38
-      UID: 1152726940522555025
-    TransformComponent:
-      Transform:
-        Translate: [3.70000005, 38.5569992, -46.9640007]
-        Rotate: [0, -89.980217, -93.9459991]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 37
-      UID: 12194674708718532892
-    TransformComponent:
-      Transform:
-        Translate: [-10.9700003, 34.0569992, -46.8740005]
-        Rotate: [0, -89.980217, 0]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 36
-      UID: 12690335982693118595
-    TransformComponent:
-      Transform:
-        Translate: [-18.8700008, 34.0569992, -46.8740005]
-        Rotate: [0, -89.980217, 0]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 35
-      UID: 2359042787134622935
-    TransformComponent:
-      Transform:
-        Translate: [-26.1100006, 34.0569992, -46.7540016]
-        Rotate: [0, -89.980217, -91.4319992]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 34
-      UID: 6950083800583295014
-    TransformComponent:
-      Transform:
-        Translate: [-28.4599991, 31.5470009, -27.9139996]
-        Rotate: [0, -89.980217, 0]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 33
-      UID: 10807713650383549616
-    TransformComponent:
-      Transform:
-        Translate: [-28.3700008, 31.5470009, -34.5940018]
-        Rotate: [0, -89.980217, 0]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 32
-      UID: 6446685568708249982
-    TransformComponent:
-      Transform:
-        Translate: [-44.6599998, 31.6870003, -34.5239983]
-        Rotate: [0, -89.980217, 0]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 31
-      UID: 4176041017015991512
-    TransformComponent:
-      Transform:
-        Translate: [-44.6599998, 31.3968868, -27.8640003]
-        Rotate: [-80.3184357, -90, -2.82800007]
-        Scale: [1.00000012, 1.00000012, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
+        Translate: [-46.1160126, 24.2603378, -18.4139233]
+        Rotate: [0, 0, 0]
+        Scale: [0.0145000042, 0.0145000005, 0.0145000042]
+    ModelComponent:
+      ModelID: 12373711864448078618
+      MaterialID: 1781146247448718189
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _turnSoundPath1
+          filePaths:
+            - Resources/Audio/StatueTurn_01.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath2
+          filePaths:
+            - Resources/Audio/StatueTurn_02.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath3
+          filePaths:
+            - Resources/Audio/StatueTurn_03.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/playerPunch_1.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.EnemyController
+      ParamsJSON: "{}"
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3 4
@@ -2083,275 +2090,191 @@ ENTITIES:
       ModelSource: ""
       MaterialSource: ""
   - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 30
-      UID: 1524767927724002307
+      Parent: 18428452598414175165
+      Name: Heart_3
+      UID: 8738239648003058153
     TransformComponent:
       Transform:
-        Translate: [-65.5, 33.6269989, 14.7659998]
-        Rotate: [0, -89.980217, -90.4899979]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
+        Translate: [-0.754039526, 0.857142925, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.0419672243, 0.0800000429, 0.0800000429]
+    SpriteComponent:
+      textureID: 9683671951523272381
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 18428452598414175165
+      Name: Heart_1
+      UID: 16075859986944912680
+    TransformComponent:
+      Transform:
+        Translate: [-0.938958704, 0.857142925, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.0419672243, 0.0800000429, 0.0800000429]
+    SpriteComponent:
+      textureID: 9683671951523272381
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 13244744886219103757
+        Type: CONVEX_MESH
+    InfoComponent:
+      Parent: 0
+      Name: Big Wall
+      UID: 2102239511598691624
+    TransformComponent:
+      Transform:
+        Translate: [-26.1500111, 26.0529957, 10.391284]
+        Rotate: [0, 89.980217, 0]
+        Scale: [2.02822948, 2.48813438, 0.238284126]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.02822948, 2.48813438, 0.238284126]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 1441742420851203854
+      MaterialID: 6104124486273075758
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [3.17000008, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [7.78000021, 6.11000013, 6.94000006]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        PhysicsMesh: 0
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: DoorTrigger2
+      UID: 7751103662141316706
+    TransformComponent:
+      Transform:
+        Translate: [-42.9265518, 28.3803501, -19.1654472]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    SoundComponent:
+      Entries:
+        - name: _doorSoundPath
+          filePaths:
+            - Resources/Audio/unlock.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.DoorTriggerLeft
+      ParamsJSON: "{\n  \"_doorName\": \"2nd_Level_Door_Move\",\n  \"_requiredKeyType\": \"Key2\"\n}"
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 799933234689450045
+        Type: TRIANGLE_MESH
+    InfoComponent:
+      Parent: 0
+      Name: Level1_r2 (Copy)
+      UID: 1923409079914458876
+    TransformComponent:
+      Transform:
+        Translate: [1.15100801, 23.2352219, 11.7378435]
+        Rotate: [0, 89.980217, 0]
+        Scale: [0.0879465193, 0.0418503992, 0.0361055098]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0879465193, 0.0418503992, 0.0361055098]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 1441742420851203854
+      MaterialID: 6104124486273075758
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Light Lamp 29
-      UID: 15945542251932576431
+      Name: SpareBOX
+      UID: 3484787123933464128
     TransformComponent:
       Transform:
-        Translate: [-65.5, 33.7270012, 7.65600014]
-        Rotate: [0, -89.980217, -86.0910034]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
+        Translate: [-87.80233, 38.8613548, -7.88539076]
+        Rotate: [0, -0, 0]
+        Scale: [0.224226654, 0.253265053, 0.0700263754]
+    ModelComponent:
+      ModelID: 1441742420851203854
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 28
-      UID: 8463486267723592175
+      Parent: 18428452598414175165
+      Name: Heart_Dead
+      UID: 6115143401978660500
     TransformComponent:
       Transform:
-        Translate: [-65.4700012, 33.7270012, -16.4239998]
-        Rotate: [0, -89.980217, -83.2630005]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
+        Translate: [-0.569120288, 0.857142925, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.0419672243, 0.0800000429, 0.0800000429]
+    SpriteComponent:
+      textureID: 947084306896258002
+      color: [0.196078435, 0.196078435, 0.196078435, 1]
+      renderAs3D: false
   - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 27
-      UID: 16530625615848943295
+      Parent: 18428452598414175165
+      Name: Heart_2
+      UID: 2471808296830425899
     TransformComponent:
       Transform:
-        Translate: [-65.7399979, 33.7270012, -6.09399986]
-        Rotate: [0, -89.980217, -70.6949997]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 26
-      UID: 15020782243569902837
-    TransformComponent:
-      Transform:
-        Translate: [-27.9300003, 31.0370007, -4.63399982]
-        Rotate: [0, -89.980217, -109.655998]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 25
-      UID: 10892244111774723043
-    TransformComponent:
-      Transform:
-        Translate: [-27.9599991, 28.6170006, 4.58599997]
-        Rotate: [0, -89.980217, -106.199997]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 24
-      UID: 5058029286475433775
-    TransformComponent:
-      Transform:
-        Translate: [-7.63273478, 22.7770004, 50.1860008]
-        Rotate: [-44.9929352, -89.972023, -45.0080757]
-        Scale: [0.99999994, 0.999999702, 0.999999404]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 23
-      UID: 9692417583021519804
-    TransformComponent:
-      Transform:
-        Translate: [5.71571589, 22.8471375, 29.7560005]
-        Rotate: [258.509674, -90, 0]
-        Scale: [0.999999702, 0.999999702, 0.999999642]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 22
-      UID: 36333361852423351
-    TransformComponent:
-      Transform:
-        Translate: [-35.5390739, 33.3769989, 40.0760002]
-        Rotate: [255.377792, -90, 0]
-        Scale: [0.999985278, 0.999982834, 0.999999046]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 12.9799995
-        FallOff: 0.666000009
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 21
-      UID: 10788970591506302
-    TransformComponent:
-      Transform:
-        Translate: [-36.7299995, 27.5769997, 49.3959999]
-        Rotate: [18.2240009, -89.980217, -115.940002]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 12.9799995
-        FallOff: 0.666000009
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 20
-      UID: 9059789126409242687
-    TransformComponent:
-      Transform:
-        Translate: [-9.93999958, 15.6269999, 67.0059967]
-        Rotate: [0, -89.980217, -112.168999]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 7
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 19
-      UID: 11887966738685230682
-    TransformComponent:
-      Transform:
-        Translate: [-10.1700001, 15.7770004, 53.7960014]
-        Rotate: [0, -89.980217, -123.481003]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 7
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 18
-      UID: 8964955794038150151
-    TransformComponent:
-      Transform:
-        Translate: [-9.82999992, 15.6070004, 39.4360008]
-        Rotate: [0, -89.980217, -108.399002]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 7
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 17
-      UID: 11683562074028956539
-    TransformComponent:
-      Transform:
-        Translate: [-24.0900002, 20.0124874, 32.105999]
-        Rotate: [0, -89.980217, -90.8040009]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 16
-      UID: 17028468870716020309
-    TransformComponent:
-      Transform:
-        Translate: [-24.0900002, 19.8610249, 19.566]
-        Rotate: [0, -89.980217, -90.4899979]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 15
-      UID: 3973315274647911303
-    TransformComponent:
-      Transform:
-        Translate: [15.0600004, 21.4069996, 25.316]
-        Rotate: [0, -89.980217, -92.375]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 14
-      UID: 16168447355539648440
-    TransformComponent:
-      Transform:
-        Translate: [20.3999996, 21.177, 25.316]
-        Rotate: [0, -89.980217, -88.2900009]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 13
-      UID: 4532714360149301912
-    TransformComponent:
-      Transform:
-        Translate: [23.6205177, 21.1906948, 20.7859993]
-        Rotate: [-45, -89.960434, -45]
-        Scale: [0.999999821, 0.99999994, 0.999999881]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
+        Translate: [-0.845601499, 0.857142925, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.0419672243, 0.0800000429, 0.0800000429]
+    SpriteComponent:
+      textureID: 9683671951523272381
+      color: [1, 1, 1, 1]
+      renderAs3D: false
   - InfoComponent:
       Parent: 0
       Name: BloodUI
@@ -2434,8 +2357,8 @@ ENTITIES:
       UID: 9778697280815915040
     TransformComponent:
       Transform:
-        Translate: [2.8415525, 13.4210176, -9.57754421]
-        Rotate: [180, 90, 180]
+        Translate: [11.9110031, 13.4210215, -9.57754326]
+        Rotate: [180, -90, 180]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -2518,7 +2441,7 @@ ENTITIES:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [23.1396694, 13.4210176, -9.57754421]
+      Target: [-4.79301453, 13.4210176, -9.57754421]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -2534,7 +2457,7 @@ ENTITIES:
       PatrolPoints:
         - [-4.79301453, 13.4210176, -9.57754421]
         - [23.1396694, 13.4210176, -9.57754421]
-      PatrolIndex: 1
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -2556,8 +2479,8 @@ ENTITIES:
       UID: 3476234535713046263
     TransformComponent:
       Transform:
-        Translate: [-21.1871853, 13.4210167, 19.3370743]
-        Rotate: [0, 90, 0]
+        Translate: [-14.5551052, 13.4210224, 19.3370743]
+        Rotate: [0, -89.980217, 0]
         Scale: [0.0200004801, 0.0199999996, 0.0200004801]
     RigidBodyComponent:
       RigidBody:
@@ -2640,7 +2563,7 @@ ENTITIES:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [10.9044418, 13.404274, 19.3370762]
+      Target: [-22.7366295, 13.404274, 19.3370762]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -2656,11 +2579,11 @@ ENTITIES:
       PatrolPoints:
         - [-22.7366295, 13.404274, 19.3370762]
         - [10.9044418, 13.404274, 19.3370762]
-      PatrolIndex: 1
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"EnemyDetection\": false\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 1.98000002, 0]
@@ -2678,8 +2601,8 @@ ENTITIES:
       UID: 7568830222834310318
     TransformComponent:
       Transform:
-        Translate: [-8.9820261, 13.4210176, -0.612036884]
-        Rotate: [0, 0.000116125695, 0]
+        Translate: [-8.9820261, 13.4210215, -8.18049717]
+        Rotate: [0, -0, 0]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -2816,7 +2739,7 @@ ENTITIES:
       UID: 1377313242926581139
     TransformComponent:
       Transform:
-        Translate: [-0.503998756, 18.3139172, 31.2804298]
+        Translate: [0.452544689, 22.365202, 12.6188822]
         Rotate: [27.5745697, 43.9666595, 53.7106781]
         Scale: [0.0312000178, 0.0404912941, 0.0897001177]
     ModelComponent:
@@ -2888,7 +2811,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 17773246069672836568
-      MaterialID: 17505835518794492079
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2910,15 +2833,15 @@ ENTITIES:
       UID: 16163120983566193923
     TransformComponent:
       Transform:
-        Translate: [-4.6207695, 20.6671638, 51.2536011]
-        Rotate: [89.9999695, 7.51037805e-06, 180]
-        Scale: [1.20635819, 0.948516071, 1.68736947]
+        Translate: [-4.6207695, 20.6671638, 50.6341934]
+        Rotate: [89.9999695, 7.51037669e-06, 180]
+        Scale: [1.20635819, 0.948498309, 1.68733394]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.20635819, 0.948516071, 1.68736947]
+        Previous Scale: [1.20635819, 0.948498309, 1.68733394]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -2946,7 +2869,7 @@ ENTITIES:
     DirectLightComponent:
       Light:
         Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 2
+        Intensity: 0.5
   - InfoComponent:
       Parent: 0
       Name: Directional Light 4
@@ -2959,7 +2882,7 @@ ENTITIES:
     DirectLightComponent:
       Light:
         Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 2
+        Intensity: 0.5
   - InfoComponent:
       Parent: 0
       Name: Directional Light 3
@@ -2972,7 +2895,7 @@ ENTITIES:
     DirectLightComponent:
       Light:
         Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 2
+        Intensity: 0.5
   - InfoComponent:
       Parent: 0
       Name: Directional Light 2
@@ -2985,7 +2908,7 @@ ENTITIES:
     DirectLightComponent:
       Light:
         Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 2
+        Intensity: 0.5
   - InfoComponent:
       Parent: 0
       Name: Directional Light 1
@@ -2998,55 +2921,104 @@ ENTITIES:
     DirectLightComponent:
       Light:
         Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 2
+        Intensity: 0.5
   - InfoComponent:
       Parent: 0
-      Name: Light Lamp 6
-      UID: 4992289060001264530
+      Name: Sentry_level2_2
+      UID: 7684206646313759860
     TransformComponent:
       Transform:
-        Translate: [-12.703826, 5.11552048, -15.0600004]
-        Rotate: [0, -89.980217, -90.8040009]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 4
-      UID: 14060339449485077574
-    TransformComponent:
-      Transform:
-        Translate: [-2.87905788, 5.70368195, -19.2849998]
-        Rotate: [265.725861, -90, 0]
-        Scale: [1, 0.999993563, 0.999993563]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 5
-      UID: 10535824334705980376
-    TransformComponent:
-      Transform:
-        Translate: [3.07651925, 5.97091579, -19.3789997]
-        Rotate: [269.826874, -90, 0]
-        Scale: [0.999964952, 0.999964952, 0.999964952]
-    SpotLightComponent:
-      Light:
-        Radiance: [8.27450943, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
+        Translate: [-56.9920845, 24.2603378, -2.19607687]
+        Rotate: [0, 0, 0]
+        Scale: [0.0145000042, 0.0145000005, 0.0145000042]
+    ModelComponent:
+      ModelID: 12373711864448078618
+      MaterialID: 1781146247448718189
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _turnSoundPath1
+          filePaths:
+            - Resources/Audio/StatueTurn_01.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath2
+          filePaths:
+            - Resources/Audio/StatueTurn_02.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath3
+          filePaths:
+            - Resources/Audio/StatueTurn_03.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/playerPunch_1.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.EnemyController
+      ParamsJSON: "{}"
   - SceneNavmeshComponent:
       NavmeshFile: Resources/NavData/solo_navmesh.bin
-      AmbientStrength: 0.0939999968
+      AmbientStrength: 0.193000004
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -3064,22 +3036,22 @@ ENTITIES:
       UID: 4893602407579985783
     TransformComponent:
       Transform:
-        Translate: [-0.707777619, 14.6403017, 10.1362982]
+        Translate: [-0.707777619, 16.9812908, 10.1362982]
         Rotate: [89.9999847, -0, 0]
-        Scale: [3.99109054, 2.99509263, 0.741531253]
+        Scale: [3.99109054, 2.99499822, 2.03799582]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3.99109054, 2.99509263, 0.741531253]
+        Previous Scale: [3.99109054, 2.99499822, 2.03799582]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
       ModelID: 4826384296126717694
-      MaterialID: 6104124486273075758
+      MaterialID: 12123645547197622302
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3091,7 +3063,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-14.5949755, 13.3514919, 22.6192093]
-        Rotate: [0, 270, 0]
+        Rotate: [0, 0, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3185,7 +3157,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [17.540493, 13.4146328, 3.31294298]
-        Rotate: [5.00895476e-06, 270, 5.00895476e-06]
+        Rotate: [5.00895476e-06, 0, 5.00895476e-06]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3279,7 +3251,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [9.27553558, 0.550991118, -14.2555885]
-        Rotate: [0, 270, 0]
+        Rotate: [0, 0, 0]
         Scale: [0.0145000955, 0.0145000005, 0.0145000955]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3373,7 +3345,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 0.530518472, -14.2555885]
-        Rotate: [0, 270, 0]
+        Rotate: [0, 332.109924, 0]
         Scale: [0.0144997435, 0.0145000005, 0.0144997435]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3460,21 +3432,6 @@ ENTITIES:
       Enabled: true
       TypeName: GameScripts.EnemyController
       ParamsJSON: "{}"
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 1
-      UID: 4728347423512424990
-    TransformComponent:
-      Transform:
-        Translate: [6.39900017, 10.4619999, 4.44299984]
-        Rotate: [-2.51399994, -79.6309967, -88.2900009]
-        Scale: [1.00000072, 0.829999983, 1.00000036]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 2.22600007
-        CutOff: 0.34906584
   - InfoComponent:
       Parent: 0
       Name: Pagoda_Sliding_Door
@@ -3613,18 +3570,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 16135378917386993712
-        Type: CONVEX_MESH
-    InfoComponent:
+  - InfoComponent:
       Parent: 0
       Name: Pagoda_Sliding_Door
       UID: 7370925412447993334
@@ -3633,16 +3579,6 @@ ENTITIES:
         Translate: [-6.70585823, 70.5059967, -79.1029968]
         Rotate: [90, 0, 0]
         Scale: [2, 2, 2]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [2, 2, 2]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
     ModelComponent:
       ModelID: 5963078964798272625
       MaterialID: 12207453972742617529
@@ -3650,18 +3586,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 16135378917386993712
-        Type: CONVEX_MESH
-    InfoComponent:
+  - InfoComponent:
       Parent: 0
       Name: Pagoda_Sliding_Door
       UID: 10890283744556511936
@@ -3670,16 +3595,6 @@ ENTITIES:
         Translate: [5.88403034, 70.5062943, -79.1026077]
         Rotate: [90, 0, 0]
         Scale: [2, 2, 2]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [2, 2, 2]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
     ModelComponent:
       ModelID: 5963078964798272625
       MaterialID: 12207453972742617529
@@ -4065,18 +3980,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1.20000005, 1.20000005, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 8095852268973777608
-        Type: TRIANGLE_MESH
-    InfoComponent:
+  - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3
       UID: 12975091722426689741
@@ -4085,16 +3989,6 @@ ENTITIES:
         Translate: [-27.9699993, 30.8564072, -4.6309967]
         Rotate: [-90, -90, 0]
         Scale: [2, 2, 2]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [2, 2, 2]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 9126702018428758169
@@ -4176,18 +4070,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1.20000005, 1.20000005, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 8095852268973777608
-        Type: TRIANGLE_MESH
-    InfoComponent:
+  - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3
       UID: 11077699063001817715
@@ -4196,16 +4079,6 @@ ENTITIES:
         Translate: [-27.9700241, 28.4772587, 4.60886812]
         Rotate: [-90, -90, 0]
         Scale: [2, 2, 2]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [2, 2, 2]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 9126702018428758169
@@ -4547,18 +4420,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 11807856327719446838
-        Type: TRIANGLE_MESH
-    InfoComponent:
+  - InfoComponent:
       Parent: 0
       Name: Floating_Platform
       UID: 17354752070664653093
@@ -4567,16 +4429,6 @@ ENTITIES:
         Translate: [2.12977314, 56.1651993, -93.8769531]
         Rotate: [-79.4929962, 0, 0]
         Scale: [8, 8, 8]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [8, 8, 8]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
     ModelComponent:
       ModelID: 17511859142013007442
       MaterialID: 2930779482462285987
@@ -4584,18 +4436,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 11807856327719446838
-        Type: TRIANGLE_MESH
-    InfoComponent:
+  - InfoComponent:
       Parent: 0
       Name: Floating_Platform
       UID: 11729297249889730486
@@ -4604,16 +4445,6 @@ ENTITIES:
         Translate: [-3.8817277, 48.7154236, -98.5415649]
         Rotate: [-83.8909988, 0, 0]
         Scale: [4, 4, 4]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [4, 4, 4]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
     ModelComponent:
       ModelID: 17511859142013007442
       MaterialID: 0
@@ -4621,18 +4452,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 11807856327719446838
-        Type: TRIANGLE_MESH
-    InfoComponent:
+  - InfoComponent:
       Parent: 0
       Name: Floating_Platform
       UID: 7686139830452718370
@@ -4641,16 +4461,6 @@ ENTITIES:
         Translate: [-9.07210922, 41.6555748, -89.5403824]
         Rotate: [-52.1570015, 0, 0]
         Scale: [3, 3, 3]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 3, 3]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
     ModelComponent:
       ModelID: 17511859142013007442
       MaterialID: 0
@@ -5156,15 +4966,15 @@ ENTITIES:
       UID: 12984771949456142781
     TransformComponent:
       Transform:
-        Translate: [-422.281158, 18.9319916, -96.840271]
+        Translate: [-47.3688126, 18.9319916, -3.45885515]
         Rotate: [0, -0, 0]
-        Scale: [25.786644, 1.10000002, 25.1515484]
+        Scale: [1.3621037, 1.10000002, 6.42273092]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [25.786644, 1.10000002, 25.1515484]
+        Previous Scale: [1.3621037, 1.10000002, 6.42273092]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -5224,7 +5034,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 14419591904238952119
-      MaterialID: 10882923977369277709
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5246,15 +5056,15 @@ ENTITIES:
       UID: 3125007874419280460
     TransformComponent:
       Transform:
-        Translate: [-84.4083252, 38.3369026, -23.8117065]
+        Translate: [-57.0695, 38.3369026, -23.8117065]
         Rotate: [0, -0, 0]
-        Scale: [2.53092289, 3.125, 0.275000006]
+        Scale: [0.721894562, 3.125, 0.275000006]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [2.53092289, 3.125, 0.275000006]
+        Previous Scale: [0.721894562, 3.125, 0.275000006]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -5409,7 +5219,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 17773246069672836568
-      MaterialID: 17505835518794492079
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5885,6 +5695,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [0, 0.529411793, 1]
+        Intensity: 3.3599999
+        Range: 3.61999989
   - InfoComponent:
       Parent: 0
       Name: Indoor_Lantern_Right2_Floor_1
@@ -6088,29 +5903,13 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Indoor_Lantern_Right_Floor_1
-      UID: 10018564508633348428
+      Name: Level1_Lantern_1 (Copy)
+      UID: 5837872605486375087
     TransformComponent:
       Transform:
-        Translate: [-4.76421309, 10.306119, 4.38749981]
-        Rotate: [-90, 3.30999422, 1.03693037e-05]
-        Scale: [2.5, 2.5, 2.49998212]
-    ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 9126702018428758169
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Indoor_Lantern_Middle_Floor_1
-      UID: 710467865426112306
-    TransformComponent:
-      Transform:
-        Translate: [0.546659589, 10.462203, 4.34645557]
+        Translate: [6.59885406, 10.4461336, 4.59823084]
         Rotate: [-89.9999847, 0, 0]
-        Scale: [2.5, 2.5, 2.49997067]
+        Scale: [2.5, 2.49994469, 2.49994469]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 9126702018428758169
@@ -6118,6 +5917,12 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    SpotLightComponent:
+      Light:
+        Radiance: [0.867647052, 0.323866546, 0.182886392]
+        Intensity: 1.63
+        FallOff: 4.66599989
+        CutOff: -16.6410007
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -6127,7 +5932,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
-        PhysicsMesh: 13583425803943598177
+        PhysicsMesh: 10628283856412644923
         Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
@@ -6164,7 +5969,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
-        PhysicsMesh: 13583425803943598177
+        PhysicsMesh: 10628283856412644923
         Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
@@ -6172,8 +5977,8 @@ ENTITIES:
       UID: 3199022155007006803
     TransformComponent:
       Transform:
-        Translate: [-14.2100849, 1.33913541, 5.51450253]
-        Rotate: [0, -11.3839827, -3.13526689e-05]
+        Translate: [-15.2567644, 1.33925223, 6.14814854]
+        Rotate: [3.32224851e-12, -11.383975, -3.13526762e-05]
         Scale: [0.0149999997, 0.0149999997, 0.0149999997]
     RigidBodyComponent:
       RigidBody:
@@ -6192,15 +5997,36 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 3835169672366958006
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
       Name: RESSURECTION_2
       UID: 4182635420518313201
     TransformComponent:
       Transform:
-        Translate: [0.791032612, 0.547555506, 4.35377216]
+        Translate: [-0.227113545, 0.547555506, 7.48859787]
         Rotate: [-5.00895612e-06, -5.00895794e-06, -5.00895658e-06]
         Scale: [0.0173740163, 0.0173740014, 0.0173740163]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0173740163, 0.0173740014, 0.0173740163]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 9816191447161794531
       MaterialID: 1677706057313398358
@@ -6208,36 +6034,15 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 0.00999999978, 1]
-        DynamicFriction: 0
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 16135378917386993712
-        Type: CONVEX_MESH
-    InfoComponent:
+  - InfoComponent:
       Parent: 0
       Name: Sliding_Door_3
       UID: 16125401810609408549
     TransformComponent:
       Transform:
-        Translate: [0.818903089, 4.77786446, 1.91003978]
-        Rotate: [89.9999847, -0, 180]
-        Scale: [2.23337317, 2.49990129, 2.36198664]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [2.23337317, 2.49990129, 2.36198664]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
+        Translate: [-13.546586, 4.77786446, 1.91003978]
+        Rotate: [89.9999847, -1.01777755e-12, -180]
+        Scale: [1.75, 2.49971557, 2.36180091]
     ModelComponent:
       ModelID: 5963078964798272625
       MaterialID: 12207453972742617529
@@ -6771,14 +6576,14 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [0.238012001, 32.0342598, 47.7282219]
-        Rotate: [-90, 0, 0]
-        Scale: [1, 1.25, 1]
+        Rotate: [-89.9999847, 0, 0]
+        Scale: [1, 1.24999988, 0.747535884]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [1, 1.25, 1]
+        Previous Scale: [1, 1.24999988, 0.747535884]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -6800,22 +6605,22 @@ ENTITIES:
         Restitution: 0.100000001
         IsTrigger: false
         PhysicsMesh: 13244744886219103757
-        Type: CONVEX_MESH
+        Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
       Name: Hut_Base
       UID: 2136373434774079840
     TransformComponent:
       Transform:
-        Translate: [58.2477188, 15.5079336, 48.3323936]
+        Translate: [-0.325205803, 15.5079336, 48.3323936]
         Rotate: [0, -0, 0]
-        Scale: [4.46951056, 0.449999988, 4.25]
+        Scale: [0.47633034, 0.449999988, 4.26189709]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [4.46951056, 0.449999988, 4.25]
+        Previous Scale: [0.47633034, 0.449999988, 4.26189709]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -6844,15 +6649,15 @@ ENTITIES:
       UID: 6365037268832649934
     TransformComponent:
       Transform:
-        Translate: [18.0107307, 12.1000004, 28.0049896]
-        Rotate: [0, 0, 0]
-        Scale: [0.600000024, 2.5, 0.224999994]
+        Translate: [18.0107307, 13.525032, 28.0049896]
+        Rotate: [0, -0, 0]
+        Scale: [0.600000024, 2.58020115, 0.224999994]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.600000024, 2.5, 0.224999994]
+        Previous Scale: [0.600000024, 2.58020115, 0.224999994]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -6881,15 +6686,15 @@ ENTITIES:
       UID: 16900605180980820779
     TransformComponent:
       Transform:
-        Translate: [-7.01244068, 15.7404327, 24.2598057]
+        Translate: [-7.74946213, 15.7404327, 24.2598057]
         Rotate: [-89.9555817, 89.944046, 0.0423971936]
-        Scale: [2.15000105, 1.99999988, 1.39999163]
+        Scale: [2.15000105, 1.99999988, 1.39998686]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [2.15000105, 1.99999988, 1.39999163]
+        Previous Scale: [2.15000105, 1.99999988, 1.39998686]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -6910,7 +6715,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
-        PhysicsMesh: 13583425803943598177
+        PhysicsMesh: 0
         Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
@@ -6984,7 +6789,7 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
-        PhysicsMesh: 13583425803943598177
+        PhysicsMesh: 10628283856412644923
         Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
@@ -7431,15 +7236,15 @@ ENTITIES:
       UID: 9853635101962824744
     TransformComponent:
       Transform:
-        Translate: [-2.80950379, 15.3656158, -22.0168877]
+        Translate: [-1.86501169, 16.91502, -22.0168877]
         Rotate: [-180, -0, 0]
-        Scale: [1.97171724, 1.83070302, 0.36048156]
+        Scale: [1.74898136, 1.83070302, 0.36048156]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.97171724, 1.83070302, 0.36048156]
+        Previous Scale: [1.74898136, 1.83070302, 0.36048156]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -7668,18 +7473,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1.20000005, 1.20000005, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 330654023275890549
-        Type: CONVEX_MESH
-    InfoComponent:
+  - InfoComponent:
       Parent: 0
       Name: Indoor_Hanging_Lanturn_Front_Left
       UID: 15777117760288992777
@@ -7688,16 +7482,6 @@ ENTITIES:
         Translate: [-12.6473351, 5.0162096, -14.7060986]
         Rotate: [-89.9999847, 0, 0]
         Scale: [2.5, 2.49998975, 2.49998975]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [2.5, 2.49998975, 2.49998975]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 9126702018428758169
@@ -7705,18 +7489,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1.20000005, 1.20000005, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 330654023275890549
-        Type: CONVEX_MESH
-    InfoComponent:
+  - InfoComponent:
       Parent: 0
       Name: Indoor_Hanging_Lanturn_Front_Right
       UID: 7163372545072077516
@@ -7725,16 +7498,6 @@ ENTITIES:
         Translate: [12.6297703, 5.05205011, -14.58529]
         Rotate: [-90, 0, 0]
         Scale: [2.5, 2.5, 2.5]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [2.5, 2.5, 2.5]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 9126702018428758169
@@ -7759,15 +7522,15 @@ ENTITIES:
       UID: 13500012620144209348
     TransformComponent:
       Transform:
-        Translate: [-222.134003, 13.3520002, 68.9567413]
+        Translate: [0.400190592, 13.3520041, 5.78579521]
         Rotate: [0, -0, 0]
-        Scale: [16.1630211, 0.00999999978, 16.7594109]
+        Scale: [1.75422895, 0.00999999978, 4.22906542]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [16.1630211, 0.00999999978, 16.7594109]
+        Previous Scale: [1.75422895, 0.00999999978, 4.22906542]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -7781,13 +7544,13 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Indoor_Hanging_Lantern 1
+      Name: Level1_Lantern_1
       UID: 13119191662111720466
     TransformComponent:
       Transform:
-        Translate: [6.34732533, 10.4461336, 4.59823084]
+        Translate: [-6.8278656, 10.4461336, 4.59823084]
         Rotate: [-89.9999847, 0, 0]
-        Scale: [2.5, 2.49997163, 2.49997163]
+        Scale: [2.5, 2.49977446, 2.49977446]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 9126702018428758169
@@ -7795,6 +7558,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -7942,80 +7710,6 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 0.00999999978, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 16135378917386993712
-        Type: CONVEX_MESH
-    InfoComponent:
-      Parent: 0
-      Name: Sliding_Door_2
-      UID: 9465372809338157749
-    TransformComponent:
-      Transform:
-        Translate: [15.0547104, 4.72641563, 1.75]
-        Rotate: [-90, -0, 0]
-        Scale: [1.24997723, 2.49995446, 2.44120407]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.24997723, 2.49995446, 2.44120407]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 5963078964798272625
-      MaterialID: 12207453972742617529
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 0.00999999978, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 16135378917386993712
-        Type: CONVEX_MESH
-    InfoComponent:
-      Parent: 0
-      Name: Sliding_Door_1
-      UID: 3774918408726337557
-    TransformComponent:
-      Transform:
-        Translate: [-14.2747307, 4.7383337, 1.75]
-        Rotate: [-89.9999847, 4.07111004e-13, 0]
-        Scale: [1.46750236, 2.49984741, 2.31156039]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.46750236, 2.49984741, 2.31156039]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 5963078964798272625
-      MaterialID: 12207453972742617529
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
         DynamicFriction: 0.5
         StaticFriction: 0
@@ -8127,43 +7821,6 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
-        PhysicsMesh: 4431181016770564176
-        Type: CONVEX_MESH
-    InfoComponent:
-      Parent: 0
-      Name: Cushion_3
-      UID: 7363969942927904993
-    TransformComponent:
-      Transform:
-        Translate: [5.03408146, 0.741999984, 9.57666016]
-        Rotate: [0, -0, 0]
-        Scale: [0.0250000004, 0.0250000004, 0.0250000004]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0250000004, 0.0250000004, 0.0250000004]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 16321407537260162659
-      MaterialID: 295392599374634747
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
         PhysicsMesh: 0
         Type: BOX
     InfoComponent:
@@ -8239,54 +7896,74 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-8.44007874, 34.6000633, -19.4584484]
-        Rotate: [-210.125, 1430.74976, 180]
+        Translate: [-3.26197743, 8.09380054, 12.2714424]
+        Rotate: [-199.312531, 1989.875, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.00100000005
         FarPlane: 935.47998
-        FOV: 74.0083313
+        FOV: 100
     ThirdPersonCameraComponent:
       Target UID: 2377197601835279376
       Offset: [0.00999999978, 4.1500001, 0]
-      Current Distance: 4
+      Current Distance: 1
       Min Distance: 1
       Max Distance: 5
-      Current Yaw: -4603
-      Current Pitch: -50
+      Current Yaw: -5084
+      Current Pitch: -52
       Mouse Sensitivity: 1
       Scroll Sensitivity: 1
   - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 8
-      UID: 17507222030431965856
+      Parent: 18428452598414175165
+      Name: Heart_Dead
+      UID: 16775474597636124132
     TransformComponent:
       Transform:
-        Translate: [-13.5860004, 5.51599979, -5.90700006]
-        Rotate: [0, -89.980217, -90.8040009]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.113725491]
-        Intensity: 9.93999958
-        FallOff: 1.19599998
-        CutOff: 0.34906584
-  - InfoComponent:
+        Translate: [-0.660682201, 0.857142925, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.0419672243, 0.0800000429, 0.0800000429]
+    SpriteComponent:
+      textureID: 947084306896258002
+      color: [0.196078435, 0.196078435, 0.196078435, 1]
+      renderAs3D: false
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 799933234689450045
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
-      Name: Light Lamp 7
-      UID: 12493384087963679885
+      Name: Level1_r2
+      UID: 12178355083667882808
     TransformComponent:
       Transform:
-        Translate: [17.6849995, 6.14599991, -2.5]
-        Rotate: [0, -89.980217, -89.5469971]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.113725491]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
+        Translate: [-2.6044755, 23.2352219, 11.8266916]
+        Rotate: [0, 89.980217, 0]
+        Scale: [0.0811943933, 0.0418503992, 0.036105521]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0811943933, 0.0418503992, 0.036105521]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 1441742420851203854
+      MaterialID: 6104124486273075758
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
       Parent: 0
       Name: Spot Light
@@ -8487,80 +8164,6 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 4431181016770564176
-        Type: CONVEX_MESH
-    InfoComponent:
-      Parent: 0
-      Name: Cushion_2
-      UID: 13247074783709319581
-    TransformComponent:
-      Transform:
-        Translate: [-2.83864999, 0.741778612, 9.69554996]
-        Rotate: [0, -0, 0]
-        Scale: [0.0250000004, 0.0250000004, 0.0250000004]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0250000004, 0.0250000004, 0.0250000004]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 16321407537260162659
-      MaterialID: 295392599374634747
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 11737700492935567662
-        Type: TRIANGLE_MESH
-    InfoComponent:
-      Parent: 0
-      Name: Table_1
-      UID: 3918560396689782353
-    TransformComponent:
-      Transform:
-        Translate: [0.81777817, 0.560218334, 9.6626091]
-        Rotate: [0, -0, 0]
-        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 13412897965077684229
-      MaterialID: 14891281585286011240
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
   - InfoComponent:
       Parent: 0
       Name: Hanging_Lantern_Outside_Hut_4
@@ -8721,15 +8324,15 @@ ENTITIES:
       UID: 2388035415323208407
     TransformComponent:
       Transform:
-        Translate: [-89.3964844, 31.8470898, 24.2546768]
+        Translate: [-53.4668274, 31.8470898, 24.2546768]
         Rotate: [0, -0, 0]
-        Scale: [3.39572811, 4.5999999, 0.275000006]
+        Scale: [0.990779042, 4.5999999, 0.275000006]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3.39572811, 4.5999999, 0.275000006]
+        Previous Scale: [0.990779042, 4.5999999, 0.275000006]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -8874,7 +8477,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 0
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -9419,8 +9022,8 @@ ENTITIES:
       UID: 2377197601835279376
     TransformComponent:
       Transform:
-        Translate: [3.248492, 18.2166843, 29.9991074]
-        Rotate: [0, -0, 0]
+        Translate: [-6.89046192, 1.61266494, 7.12708807]
+        Rotate: [0, 77.0000458, 0]
         Scale: [0.0164999887, 0.0164999999, 0.0164999887]
     CharacterControllerComponent:
       Radius: 0.800000012
@@ -9599,36 +9202,43 @@ ENTITIES:
       Light:
         Radiance: [0.166522428, 0.754901946, 0.633764923]
         Intensity: 0.129999995
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 0
+        Type: TRIANGLE_MESH
+    InfoComponent:
       Parent: 0
-      Name: Light Lamp 2
-      UID: 3106835252756117780
+      Name: RESSURECTION_1
+      UID: 15809231333415568356
     TransformComponent:
       Transform:
-        Translate: [0.649902821, 10.5524969, 4.49459839]
-        Rotate: [267.50766, -90, 0]
-        Scale: [0.999999881, 0.999986231, 0.999986231]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.50600004
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 3
-      UID: 12637237387574263659
-    TransformComponent:
-      Transform:
-        Translate: [-4.91607666, 10.3404379, 4.4982152]
-        Rotate: [267.50766, -90, 0]
-        Scale: [0.999999881, 0.999992549, 0.999992549]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
+        Translate: [-0.349066317, 17.6987705, 35.8912468]
+        Rotate: [180, -5.00896476e-06, 180]
+        Scale: [0.0146000134, 0.0146000003, 0.0146000134]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0146000134, 0.0146000003, 0.0146000134]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 9816191447161794531
+      MaterialID: 1677706057313398358
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -9666,43 +9276,6 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 7982763225733669098
-        Type: TRIANGLE_MESH
-    InfoComponent:
-      Parent: 0
-      Name: SPOOFWALL3
-      UID: 10703479254282431156
-    TransformComponent:
-      Transform:
-        Translate: [-0.707777619, 18.1080933, 10.1362982]
-        Rotate: [89.9999847, -0, 0]
-        Scale: [3.99109054, 2.99507189, 1.21390331]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [3.99109054, 2.99507189, 1.21390331]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 4826384296126717694
-      MaterialID: 7210221651131134645
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
   - InfoComponent:
       Parent: 0
       Name: Directional Light 6
@@ -9715,7 +9288,7 @@ ENTITIES:
     DirectLightComponent:
       Light:
         Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 1
+        Intensity: 0.5
   - InfoComponent:
       Parent: 13685181942599758823
       Name: VisionConeFake 1
@@ -9723,7 +9296,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 2.53051853, -14.2555885]
-        Rotate: [0, 450, 0]
+        Rotate: [0, 512.109924, 0]
         Scale: [136.157349, 68.9649124, 68.9648361]
     ScriptComponent:
       Enabled: true
@@ -9731,10 +9304,10 @@ ENTITIES:
       ParamsJSON: "{}"
     SpotLightComponent:
       Light:
-        Radiance: [0.970588207, 1, 0]
-        Intensity: 5
-        FallOff: 0.404000014
-        CutOff: 0.280000001
+        Radiance: [1, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.10599995
+        CutOff: 0.769999981
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -9796,8 +9369,8 @@ ENTITIES:
       UID: 11344090768170482118
     TransformComponent:
       Transform:
-        Translate: [-22.2951069, 13.4210167, -0.0162836704]
-        Rotate: [180, 0.000172575965, 180]
+        Translate: [-22.2951069, 13.4210224, 4.73680973]
+        Rotate: [-0, 1.00179122e-05, -0]
         Scale: [0.0199999977, 0.0199999996, 0.0199999977]
     RigidBodyComponent:
       RigidBody:
@@ -9880,7 +9453,7 @@ ENTITIES:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-22.2951069, 13.404274, -14.4732275]
+      Target: [-22.2951069, 13.404274, 7.21938944]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -9896,7 +9469,7 @@ ENTITIES:
       PatrolPoints:
         - [-22.2951069, 13.404274, 7.21938944]
         - [-22.2951069, 13.404274, -14.4732275]
-      PatrolIndex: 1
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -9934,65 +9507,55 @@ ENTITIES:
       ModelSource: ""
       MaterialSource: ""
   - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 9
-      UID: 15465888822392245803
+      Parent: 18428452598414175165
+      Name: Heart_4
+      UID: 13304020931239740115
     TransformComponent:
       Transform:
-        Translate: [-18.2141724, 5.70800018, -2.28500009]
-        Rotate: [0, -89.980217, -94.2600021]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.113725491]
-        Intensity: 9.93999958
-        FallOff: 1.19599998
-        CutOff: 0.34906584
-  - InfoComponent:
+        Translate: [-0.660682201, 0.857142925, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.0419672243, 0.0800000429, 0.0800000429]
+    SpriteComponent:
+      textureID: 9683671951523272381
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        PhysicsMesh: 16135378917386993712
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
-      Name: Light Lamp 10
-      UID: 720629100291451429
+      Name: 2nd_Level_Door_Move
+      UID: 2036230071031837327
     TransformComponent:
       Transform:
-        Translate: [12.5880003, 5.04699993, -14.6719999]
-        Rotate: [0, -89.980217, -90.3509979]
-        Scale: [0.99999994, 1, 0.99999994]
-    SpotLightComponent:
-      Light:
-        Radiance: [8.27450943, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 11
-      UID: 10457751199884690735
-    TransformComponent:
-      Transform:
-        Translate: [-24.1159992, 20.0450325, -6.18858433]
-        Rotate: [-82.0746155, -90, 0]
-        Scale: [1.00000012, 1, 0.999999821]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
-  - InfoComponent:
-      Parent: 0
-      Name: Light Lamp 12
-      UID: 14289988556037673843
-    TransformComponent:
-      Transform:
-        Translate: [23.6000004, 17.7707634, -6.16177082]
-        Rotate: [-40.186451, -90, 0]
-        Scale: [0.999999762, 0.99999994, 0.999999583]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.823529422, 0.572549045, 0.101960786]
-        Intensity: 10
-        FallOff: 1.05592418
-        CutOff: 0.34906584
+        Translate: [-32.5522919, 27.4181995, -23.2234497]
+        Rotate: [89.9999847, -3.86755471e-12, -180]
+        Scale: [1.26724064, 0.999901831, 1.69026423]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.26724064, 0.999901831, 1.69026423]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 5963078964798272625
+      MaterialID: 12207453972742617529
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -10083,176 +9646,36 @@ ENTITIES:
       color: [0.196078435, 0.196078435, 0.196078435, 1]
       renderAs3D: false
   - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_Dead
-      UID: 7305709452366689602
-    TransformComponent:
-      Transform:
-        Translate: [-0.754039526, 0.857142925, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0419672243, 0.0800000429, 0.0800000429]
-    SpriteComponent:
-      textureID: 947084306896258002
-      color: [0.196078435, 0.196078435, 0.196078435, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_Dead
-      UID: 16775474597636124132
-    TransformComponent:
-      Transform:
-        Translate: [-0.660682201, 0.857142925, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0419672243, 0.0800000429, 0.0800000429]
-    SpriteComponent:
-      textureID: 947084306896258002
-      color: [0.196078435, 0.196078435, 0.196078435, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_Dead
-      UID: 6115143401978660500
-    TransformComponent:
-      Transform:
-        Translate: [-0.569120288, 0.857142925, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0419672243, 0.0800000429, 0.0800000429]
-    SpriteComponent:
-      textureID: 947084306896258002
-      color: [0.196078435, 0.196078435, 0.196078435, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_1
-      UID: 16075859986944912680
-    TransformComponent:
-      Transform:
-        Translate: [-0.938958704, 0.857142925, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0419672243, 0.0800000429, 0.0800000429]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_2
-      UID: 2471808296830425899
-    TransformComponent:
-      Transform:
-        Translate: [-0.845601499, 0.857142925, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0419672243, 0.0800000429, 0.0800000429]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_3
-      UID: 8738239648003058153
-    TransformComponent:
-      Transform:
-        Translate: [-0.754039526, 0.857142925, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0419672243, 0.0800000429, 0.0800000429]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_4
-      UID: 13304020931239740115
-    TransformComponent:
-      Transform:
-        Translate: [-0.660682201, 0.857142925, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0419672243, 0.0800000429, 0.0800000429]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_5
-      UID: 5351145407601607575
-    TransformComponent:
-      Transform:
-        Translate: [-0.569120288, 0.857142925, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0419672243, 0.0800000429, 0.0800000429]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 13244744886219103757
-        Type: CONVEX_MESH
-    InfoComponent:
       Parent: 0
-      Name: Big Wall
-      UID: 2102239511598691624
+      Name: Level1_Lantern_1 (Copy)
+      UID: 9834102100243015334
     TransformComponent:
       Transform:
-        Translate: [-26.1500111, 26.0529957, 10.4736261]
-        Rotate: [0, 90, 0]
-        Scale: [2.02823019, 2.48813438, 0.238284156]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [2.02823019, 2.48813438, 0.238284156]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
+        Translate: [-0.16913873, 10.4461336, 4.59823084]
+        Rotate: [-89.9999847, 0, 0]
+        Scale: [2.5, 2.49989843, 2.49989843]
     ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 6104124486273075758
+      ModelID: 17862911105458314379
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 16135378917386993712
-        Type: CONVEX_MESH
-    InfoComponent:
+    SpotLightComponent:
+      Light:
+        Radiance: [0.867647052, 0.323866546, 0.182886392]
+        Intensity: 1.63
+        FallOff: 4.66599989
+        CutOff: -16.6410007
+  - InfoComponent:
       Parent: 0
-      Name: 2nd_Level_Door_Move
-      UID: 2036230071031837327
+      Name: Sliding_Door_3 (Copy)
+      UID: 1758537403935878050
     TransformComponent:
       Transform:
-        Translate: [-32.5522919, 27.4181995, -23.2234497]
-        Rotate: [89.9999847, -3.86755471e-12, -180]
-        Scale: [1.26724064, 0.999901831, 1.69026423]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.26724064, 0.999901831, 1.69026423]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
+        Translate: [13.5128288, 4.77786446, 1.91003978]
+        Rotate: [89.9999847, -1.01777755e-12, -180]
+        Scale: [1.75, 2.49980378, 2.36188912]
     ModelComponent:
       ModelID: 5963078964798272625
       MaterialID: 12207453972742617529
@@ -10262,376 +9685,17 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Sentry_level2_2
-      UID: 7684206646313759860
+      Name: Sliding_Door_3 (Copy) (Copy)
+      UID: 13652929590394751880
     TransformComponent:
       Transform:
-        Translate: [-56.9920845, 24.2603378, -2.19607687]
-        Rotate: [0, 270, 0]
-        Scale: [0.0145000042, 0.0145000005, 0.0145000042]
+        Translate: [-0.183026552, 4.77786446, 1.91003978]
+        Rotate: [89.9999847, -1.01777755e-12, -180]
+        Scale: [1.75, 2.49986196, 2.3619473]
     ModelComponent:
-      ModelID: 12373711864448078618
-      MaterialID: 1781146247448718189
+      ModelID: 5963078964798272625
+      MaterialID: 12207453972742617529
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-    SoundComponent:
-      Entries:
-        - name: _turnSoundPath1
-          filePaths:
-            - Resources/Audio/StatueTurn_01.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _turnSoundPath2
-          filePaths:
-            - Resources/Audio/StatueTurn_02.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _turnSoundPath3
-          filePaths:
-            - Resources/Audio/StatueTurn_03.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _alertSoundPath
-          filePaths:
-            - Resources/Audio/playerPunch_1.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.EnemyController
-      ParamsJSON: "{}"
-  - InfoComponent:
-      Parent: 0
-      Name: Sentry_level2_3
-      UID: 5648346527941532950
-    TransformComponent:
-      Transform:
-        Translate: [-46.1160126, 24.2603378, -18.4139233]
-        Rotate: [0, 270, 0]
-        Scale: [0.0145000042, 0.0145000005, 0.0145000042]
-    ModelComponent:
-      ModelID: 12373711864448078618
-      MaterialID: 1781146247448718189
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-    SoundComponent:
-      Entries:
-        - name: _turnSoundPath1
-          filePaths:
-            - Resources/Audio/StatueTurn_01.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _turnSoundPath2
-          filePaths:
-            - Resources/Audio/StatueTurn_02.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _turnSoundPath3
-          filePaths:
-            - Resources/Audio/StatueTurn_03.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _alertSoundPath
-          filePaths:
-            - Resources/Audio/playerPunch_1.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.EnemyController
-      ParamsJSON: "{}"
-  - InfoComponent:
-      Parent: 0
-      Name: RESSURECTION_1
-      UID: 15809231333415568356
-    TransformComponent:
-      Transform:
-        Translate: [-0.349066317, 17.6987705, 35.8912468]
-        Rotate: [180, -5.00896476e-06, 180]
-        Scale: [0.0146000134, 0.0146000003, 0.0146000134]
-    ModelComponent:
-      ModelID: 9816191447161794531
-      MaterialID: 1677706057313398358
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 799933234689450045
-        Type: TRIANGLE_MESH
-    InfoComponent:
-      Parent: 0
-      Name: Level1_r2
-      UID: 12178355083667882808
-    TransformComponent:
-      Transform:
-        Translate: [-2.6044755, 23.2352219, 11.8266916]
-        Rotate: [0, 89.980217, 0]
-        Scale: [0.0811943933, 0.0418503992, 0.036105521]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0811943933, 0.0418503992, 0.036105521]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 799933234689450045
-        Type: TRIANGLE_MESH
-    InfoComponent:
-      Parent: 0
-      Name: Level1_Platform (Copy) (Copy)
-      UID: 7393927911693108114
-    TransformComponent:
-      Transform:
-        Translate: [-0.841246486, 23.2352219, 12.8422441]
-        Rotate: [0, -0, 0]
-        Scale: [0.130786642, 0.0418503992, 0.0361055285]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.130786642, 0.0418503992, 0.0361055285]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        PhysicsMesh: 799933234689450045
-        Type: TRIANGLE_MESH
-    InfoComponent:
-      Parent: 0
-      Name: Level1_r2 (Copy)
-      UID: 1923409079914458876
-    TransformComponent:
-      Transform:
-        Translate: [1.15100801, 23.2352219, 11.7378435]
-        Rotate: [0, 89.980217, 0]
-        Scale: [0.0879465193, 0.0418503992, 0.0361055098]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0879465193, 0.0418503992, 0.0361055098]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: SpareBOX
-      UID: 3484787123933464128
-    TransformComponent:
-      Transform:
-        Translate: [-87.80233, 38.8613548, -7.88539076]
-        Rotate: [0, -0, 0]
-        Scale: [0.224226654, 0.253265053, 0.0700263754]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [3.17000008, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [7.78000021, 6.11000013, 6.94000006]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: true
-        PhysicsMesh: 0
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: DoorTrigger2
-      UID: 7751103662141316706
-    TransformComponent:
-      Transform:
-        Translate: [-42.9265518, 28.3803501, -19.1654472]
-        Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]
-    SoundComponent:
-      Entries:
-        - name: _doorSoundPath
-          filePaths:
-            - Resources/Audio/unlock.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.DoorTriggerLeft
-      ParamsJSON: "{\n  \"_doorName\": \"2nd_Level_Door_Move\",\n  \"_requiredKeyType\": \"Key2\"\n}"

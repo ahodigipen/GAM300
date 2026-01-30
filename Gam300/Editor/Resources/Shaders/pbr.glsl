@@ -20,29 +20,71 @@ out Vertex {
 layout (location = 1) out vec3 viewPos;
 layout (location = 2) out vec4 fragPosLight;
 
+// Standard per-object model matrix (used for non-instanced rendering)
 uniform mat4 modelMat;
 uniform mat4 frustumMat; // proj * view
 
+// Per-object joint matrices (used for non-instanced animated rendering)
 uniform mat4 jointsMat[MAX_JOINTS];
 uniform bool hasJoints = false;
 uniform mat4 u_lightSpace;
+
+// Instancing support - SSBO containing per-instance model matrices (binding 3)
+layout(std430, binding = 3) buffer InstanceBuffer {
+    mat4 instanceMatrices[];
+};
+
+// Animated instancing support - SSBO containing per-instance joint matrices (binding 4)
+// Layout: [instance0_joint0, instance0_joint1, ..., instance0_joint99, instance1_joint0, ...]
+// Access: instanceJointMatrices[(gl_InstanceID + u_baseInstance) * MAX_JOINTS + jointIndex]
+layout(std430, binding = 4) buffer JointBuffer {
+    mat4 instanceJointMatrices[];
+};
+
+// Instancing mode: 0 = none, 1 = static, 2 = animated
+uniform int u_instancingMode = 0;
+uniform uint u_baseInstance = 0;        // Base instance for transform SSBO lookup
+uniform uint u_jointBaseInstance = 0;   // Base instance for joint SSBO lookup (animated only)
 
 out vec4 fragPosLightSpace;
 
 void main() {
     mat4 transform = mat4(1.0);
+    mat4 worldMatrix;
 
-    if(hasJoints)
-    {
-        transform = mat4(0.0);
-        for(int i = 0; i < MAX_WEIGHTS && joints[i] > -1; i++)
-        {
-            transform += jointsMat[joints[i]] * weights[i];
+    if (u_instancingMode == 2) {
+        // ANIMATED INSTANCING: world matrix from SSBO, joints from joint SSBO
+        worldMatrix = instanceMatrices[gl_InstanceID + u_baseInstance];
+
+        if (hasJoints) {
+            transform = mat4(0.0);
+            // Joint SSBO only contains animated instances, so use separate base
+            uint jointBase = (gl_InstanceID + u_jointBaseInstance) * MAX_JOINTS;
+
+            for (int i = 0; i < MAX_WEIGHTS && joints[i] > -1; i++) {
+                transform += instanceJointMatrices[jointBase + uint(joints[i])] * weights[i];
+            }
+        }
+    }
+    else if (u_instancingMode == 1) {
+        // STATIC INSTANCING: world matrix from SSBO, no joints
+        worldMatrix = instanceMatrices[gl_InstanceID + u_baseInstance];
+        // transform stays as identity (no skeletal animation)
+    }
+    else {
+        // NON-INSTANCED (mode 0): use uniforms for both world matrix and joints
+        worldMatrix = modelMat;
+
+        if (hasJoints) {
+            transform = mat4(0.0);
+            for (int i = 0; i < MAX_WEIGHTS && joints[i] > -1; i++) {
+                transform += jointsMat[joints[i]] * weights[i];
+            }
         }
     }
 
     vertex.uv = vec2(uv.x, uv.y); //flip vertically due to opengl rendering logic
-    transform = modelMat * transform;
+    transform = worldMatrix * transform;
     vertex.normal = mat3(transform) * normal;
     vertex.position = (transform * vec4(position, 1.0)).xyz;
     gl_Position = frustumMat * transform * vec4(position, 1.0);
@@ -69,6 +111,7 @@ struct Material {
     float roughness;
     float metallic;
     float occlusion;
+    float opacity;
 
     sampler2D occlusionMap;
     sampler2D roughnessMap;
@@ -76,6 +119,7 @@ struct Material {
     sampler2D metallicMap;
     sampler2D albedoMap;
     sampler2D normalMap;
+    sampler2D opacityMap;
 
     bool isOcclusionMap;
     bool isRoughnessMap;
@@ -83,8 +127,13 @@ struct Material {
     bool isMetallicMap;
     bool isAlbedoMap;
     bool isNormalMap;
+    bool isOpacityMap;
 };
 uniform Material material;
+
+// World-space UV mapping settings
+uniform bool useWorldSpaceUV = false;
+uniform float textureScale = 1.0;
 
 const float PI = 3.14159265358979323846;
 layout (location=0) out vec4 out_fragment;
@@ -187,6 +236,38 @@ float ComputeShadow()
 }
 
 // Compute shadow for a specific spot light
+// Compute triplanar UVs based on world position and normal
+// This projects the texture from 3 axes and blends based on normal direction
+vec2 ComputeWorldSpaceUV(vec3 worldPos, vec3 worldNormal) {
+    vec3 absNormal = abs(worldNormal);
+
+    // Determine dominant axis for simpler planar projection
+    // This gives a cleaner result than full triplanar blending for architectural surfaces
+    vec2 uv;
+    if (absNormal.y > absNormal.x && absNormal.y > absNormal.z) {
+        // Top/bottom face - project from Y axis (floor/ceiling)
+        uv = worldPos.xz;
+    } else if (absNormal.x > absNormal.z) {
+        // Left/right face - project from X axis
+        uv = worldPos.zy;
+    } else {
+        // Front/back face - project from Z axis
+        uv = worldPos.xy;
+    }
+
+    // Prevent division by zero
+    float scale = max(textureScale, 0.001);
+    return uv / scale;
+}
+
+// Get the appropriate UV coordinates based on useWorldSpaceUV setting
+vec2 GetTextureUV() {
+    if (useWorldSpaceUV) {
+        return ComputeWorldSpaceUV(vertex.position, vertex.normal);
+    }
+    return vertex.uv;
+}
+
 float ComputeSpotShadow(int lightIndex)
 {
   // Check if this light has shadow mapping enabled
@@ -236,17 +317,17 @@ vec3 ComputePointLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, f
 vec3 ComputeDirLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, float metallic);
 vec3 ComputeSpotLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, float metallic);
 
-vec3 ComputeMapOrMatV3(bool isMap, sampler2D map, vec3 mat) {
+vec3 ComputeMapOrMatV3(bool isMap, sampler2D map, vec3 mat, vec2 texUV) {
     vec3 res = mat;
     if (isMap) {
-        res = texture(map, vertex.uv).rgb;
+        res = texture(map, texUV).rgb;
     }
     return res;
 }
-float ComputeMapOrMatF(bool isMap, sampler2D map, float mat) {
+float ComputeMapOrMatF(bool isMap, sampler2D map, float mat, vec2 texUV) {
     float res = mat;
     if (isMap) {
-        res = texture(map, vertex.uv).r;
+        res = texture(map, texUV).r;
     }
     return res;
 }
@@ -275,17 +356,21 @@ void main() {
     }
     vec3 V = normalize(viewPos - vertex.position);
 
+    // Get texture coordinates (world-space or mesh UV based on setting)
+    vec2 texUV = GetTextureUV();
+
     //material or texture maps
     vec3 N = normalize(vertex.normal);
     if (material.isNormalMap) {
-        N = 2.0 * texture(material.normalMap, vertex.uv).rgb - 1.0;
+        N = 2.0 * texture(material.normalMap, texUV).rgb - 1.0;
         N = normalize(vertex.TBN * N);
     }
-    vec3 albedo = ComputeMapOrMatV3(material.isAlbedoMap, material.albedoMap, material.albedo);
-    float roughness = ComputeMapOrMatF(material.isRoughnessMap, material.roughnessMap, material.roughness);
-    float metallic = ComputeMapOrMatF(material.isMetallicMap, material.metallicMap, material.metallic);
-    vec3 emissive = ComputeMapOrMatV3(material.isEmissiveMap, material.emissiveMap, material.emissive);
-    float occlusion = ComputeMapOrMatF(material.isOcclusionMap, material.occlusionMap, material.occlusion);
+    vec3 albedo = ComputeMapOrMatV3(material.isAlbedoMap, material.albedoMap, material.albedo, texUV);
+    float roughness = ComputeMapOrMatF(material.isRoughnessMap, material.roughnessMap, material.roughness, texUV);
+    float metallic = ComputeMapOrMatF(material.isMetallicMap, material.metallicMap, material.metallic, texUV);
+    vec3 emissive = ComputeMapOrMatV3(material.isEmissiveMap, material.emissiveMap, material.emissive, texUV);
+    float occlusion = ComputeMapOrMatF(material.isOcclusionMap, material.occlusionMap, material.occlusion, texUV);
+    float opacity = ComputeMapOrMatF(material.isOpacityMap, material.opacityMap, material.opacity, texUV);
 
     //fresnel reflectivity
     vec3 f0 = mix(vec3(0.04), albedo, metallic);
@@ -329,7 +414,7 @@ void main() {
     float threshold = float(bayer64[col + 8 * row]) / 64.0;
     if (length(color - quanColor) <= threshold * ditherThreshold) color = quanColor;
 
-    out_fragment = vec4(color, 1.0);
+    out_fragment = vec4(color, opacity);
 }
 
 vec3 FresnelSchlick(float cosTheta, vec3 f0) {

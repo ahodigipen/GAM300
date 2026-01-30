@@ -2,32 +2,18 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
-      Name: End_Background
-      UID: 3080625518488956998
+      Name: End_Camera
+      UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [0, 0, 1]
-        Rotate: [0, 0, 0]
+        Translate: [0.0277804472, 0.581749558, 0.942958355]
+        Rotate: [-19.375, 1.6875, 0]
         Scale: [1, 1, 1]
-    SpriteComponent:
-      textureID: 9631519320533516153
-      color: [1, 1, 1, 1]
-      uiOverlay: true
-    MenuComponent:
-      MenuType: 4
-  - InfoComponent:
-      Parent: 0
-      Name: End_ReturnButton
-      UID: 15731111703162505266
-    TransformComponent:
-      Transform:
-        Translate: [0, -0.300000012, 1.10000002]
-        Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.100000001, 1]
-    SpriteComponent:
-      textureID: 10830320094205736326
-      color: [1, 1, 1, 1]
-      uiOverlay: true
+    CameraComponent:
+      Camera:
+        NearPlane: 0.300000012
+        FarPlane: 1000
+        FOV: 91
     MenuComponent:
       MenuType: 4
   - InfoComponent:
@@ -47,17 +33,31 @@ ENTITIES:
       MenuType: 4
   - InfoComponent:
       Parent: 0
-      Name: End_Camera
-      UID: 9201024860084647067
+      Name: End_ReturnButton
+      UID: 15731111703162505266
     TransformComponent:
       Transform:
-        Translate: [0.0277804472, 0.581749558, 0.942958355]
-        Rotate: [-19.375, 1.6875, 0]
+        Translate: [0, -0.300000012, 1.10000002]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.100000001, 1]
+    SpriteComponent:
+      textureID: 1920245529432086823
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 4
+  - InfoComponent:
+      Parent: 0
+      Name: End_Background
+      UID: 3080625518488956998
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 1]
+        Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
-    CameraComponent:
-      Camera:
-        NearPlane: 0.300000012
-        FarPlane: 1000
-        FOV: 91
+    SpriteComponent:
+      textureID: 5109979046645362819
+      color: [1, 1, 1, 1]
+      renderAs3D: false
     MenuComponent:
       MenuType: 4

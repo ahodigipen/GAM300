@@ -196,9 +196,10 @@ namespace EditorUI {
                     bool physDebugViz = m_Owner->GetApp()->m_PhysDebugViz;
 
                     if (ImGui::MenuItem("Collision Lines", "F9", &physDebugViz)) {
-                        // Toggle when clicked
+                        // Toggle when clicked - update both flags for sync
                         m.ctx->physics->EnableDebugVisualization(physDebugViz, 1.0f);
                         m_Owner->GetApp()->m_PhysDebugViz = physDebugViz;
+                        m.ctx->ShowPhysicsDebug = physDebugViz;  // Keep context in sync
                         BOOM_INFO("[Options] Physics Debug Visualization (Collision Lines): {}", physDebugViz ? "ON" : "OFF");
                     }
                 }				

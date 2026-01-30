@@ -13,7 +13,6 @@ namespace EditorUI {
 
     void InspectorPanel::AnimatorComponentUI(Boom::Entity& selected)
     {
-        Boom::AppContext* ctx = GetContext();
         if (!ctx) return;
         if (!selected.Has<Boom::AnimatorComponent>()) return;
 

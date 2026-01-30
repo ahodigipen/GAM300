@@ -2,7 +2,7 @@
 #include "Vendors/imgui/imgui.h"
 #include <string>
 
-namespace Boom { struct AppContext; struct AppInterface; }
+namespace Boom { struct AppContext; struct AppInterface; struct MaterialAsset; }
 
 namespace EditorUI {
 
@@ -18,6 +18,10 @@ namespace EditorUI {
         void CreateEmptyMaterial();
         void HandleConflictName(std::string& name);
 
+        // Resolves material texture IDs and renders a preview sphere
+        // Returns the preview texture ID, or 0 if preview unavailable
+        uint32_t GetMaterialPreviewTexture(Boom::MaterialAsset* mat);
+
     private:
         char const* NEW_MATERIAL_NAME{ "New Material" };
 
@@ -28,6 +32,11 @@ namespace EditorUI {
 
         uint64_t selected{};
         bool showNamePopup{};
+
+        // Fixed camera angles for material thumbnail preview
+        static constexpr float PREVIEW_YAW = 0.5f;
+        static constexpr float PREVIEW_PITCH = 0.3f;
+        static constexpr float PREVIEW_DISTANCE = 1.5f;
     };
 
 } // namespace EditorUI

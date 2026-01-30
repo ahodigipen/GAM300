@@ -178,6 +178,12 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_SetGameLogicPaused(bool paused);
 
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetGroupVolume(string name, float volume);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern float Boom_API_GetGroupVolume(string name);
+
         // Death Menu
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_UnloadDeathMenu();
@@ -713,6 +719,15 @@ namespace Boom
         public static void ShowPauseMenu() => Native.Boom_API_ShowPauseMenu();
         public static bool IsPauseMenuLoaded() => Native.Boom_API_IsPauseMenuLoaded();
         public static void SetGameLogicPaused(bool paused) => Native.Boom_API_SetGameLogicPaused(paused);
+        public static void SetGroupVolume(string groupName, float volume)
+        {
+            Native.Boom_API_SetGroupVolume(groupName, volume);
+        }
+
+        public static float GetGroupVolume(string groupName)
+        {
+            return Native.Boom_API_GetGroupVolume(groupName);
+        }
 
         // Death Menu
         public static void UnloadDeathMenu() => Native.Boom_API_UnloadDeathMenu();

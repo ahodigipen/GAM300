@@ -54,6 +54,7 @@ namespace EditorUI {
     private:
         Editor* m_Owner = nullptr;
         Boom::AppInterface* m_App = nullptr;
+        Boom::AppContext* ctx = nullptr;
         bool* m_ShowInspector = nullptr;
         bool showDeletePopup{};
         bool           m_HasSelection{ false };

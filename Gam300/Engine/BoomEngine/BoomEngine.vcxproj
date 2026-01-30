@@ -220,6 +220,9 @@
     <ClInclude Include="includes\Graphics\Buffers\Frame.h" />
     <ClInclude Include="includes\Graphics\Buffers\Mesh.h" />
     <ClInclude Include="includes\Graphics\Buffers\Vertex.h" />
+    <ClInclude Include="includes\Graphics\Instancing\InstanceBatch.h" />
+    <ClInclude Include="includes\Graphics\Instancing\AnimatedInstanceBatch.h" />
+    <ClInclude Include="includes\Graphics\Instancing\InstanceManager.h" />
     <ClInclude Include="includes\Graphics\Models\Animation.h" />
     <ClInclude Include="includes\Graphics\Models\Animator.h" />
     <ClInclude Include="includes\Graphics\Models\Helper.h" />
@@ -294,6 +297,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\Auxiliaries\PropertyAPI.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Instancing\InstanceManager.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>

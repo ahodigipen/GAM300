@@ -136,7 +136,10 @@ namespace Boom {
 			, roughness{ 0.4f }
 			, metallic{ 0.5f }
 			, occlusion{ 1.f }
-			, occlusionMap{}, roughnessMap{}, metallicMap{}, emissiveMap{}, albedoMap{}, normalMap{}
+			, opacity{ 1.f }
+			, useWorldSpaceUV{ false }
+			, textureScale{ 1.0f }
+			, occlusionMap{}, roughnessMap{}, metallicMap{}, emissiveMap{}, albedoMap{}, normalMap{}, opacityMap{}
 		{
 		}
 		BOOM_INLINE PbrMaterial(PbrMaterial const&) = default;
@@ -146,7 +149,10 @@ namespace Boom {
 			, roughness{ rough }
 			, metallic{ metal }
 			, occlusion{ occlu }
-			, occlusionMap{}, roughnessMap{}, metallicMap{}, emissiveMap{}, albedoMap{}, normalMap{}
+			, opacity{ opac }
+			, useWorldSpaceUV{ false }
+			, textureScale{ 1.0f }
+			, occlusionMap{}, roughnessMap{}, metallicMap{}, emissiveMap{}, albedoMap{}, normalMap{}, opacityMap{}
 		{
 		}
 		glm::vec3 emissive;
@@ -154,6 +160,11 @@ namespace Boom {
 		float roughness;
 		float metallic;
 		float occlusion;
+
+		// World-space UV mapping settings
+		// When true, textures tile based on world position instead of mesh UVs
+		bool useWorldSpaceUV;
+		float textureScale; // World units per texture repeat
 
 		Texture occlusionMap;
 		Texture roughnessMap;
@@ -169,7 +180,10 @@ namespace Boom {
 			obj_member<"albedo", &PbrMaterial::albedo>,
 			obj_member<"roughness", &PbrMaterial::roughness>,
 			obj_member<"metallic", &PbrMaterial::metallic>,
-			obj_member<"occlusion", &PbrMaterial::occlusion>
+			obj_member<"occlusion", &PbrMaterial::occlusion>,
+			obj_member<"opacity", &PbrMaterial::opacity>,
+			obj_member<"useWorldSpaceUV", &PbrMaterial::useWorldSpaceUV>,
+			obj_member<"textureScale", &PbrMaterial::textureScale>
 		)
 
 

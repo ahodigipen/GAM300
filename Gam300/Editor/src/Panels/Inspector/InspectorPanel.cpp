@@ -26,8 +26,92 @@ namespace EditorUI {
         : m_Owner(owner)
         , m_ShowInspector(showFlag)
         , m_App(dynamic_cast<Boom::AppInterface*>(owner))
+        , ctx(m_Owner->GetContext())
     {
         DEBUG_POINTER(m_App, "AppInterface");
+        DEBUG_POINTER(ctx, "AppContext");
+        // Initialize asset picker icons
+        if (m_App) {
+            m_AssetIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/asset.png");
+            m_ModelIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/model.png");
+            m_MaterialIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/material.png");
+            m_ScriptIcon = m_App->GetTexIDFromPath("Resources/Textures/Icons/script.png");
+        }
+    }
+
+    void InspectorPanel::RenderMaterialPreview(Boom::MaterialAsset* mat) {
+        if (!mat || !m_App) return;
+
+        auto* ctx = m_App->GetContext();
+        if (!ctx || !ctx->renderer || !ctx->assets) return;
+
+        // Initialize or reinitialize material preview in renderer if needed
+        if (!ctx->renderer->IsMaterialPreviewInitialized()) {
+            // Find sphere model in assets (need to re-find after scene changes)
+            Boom::Model3D sphereModel;
+            auto& modelMap = ctx->assets->GetMap<Boom::ModelAsset>();
+            for (auto& [assetID, assetPtr] : modelMap) {
+                auto* modelAsset = dynamic_cast<Boom::ModelAsset*>(assetPtr.get());
+                if (modelAsset && modelAsset->source.find("sphere.fbx") != std::string::npos) {
+                    sphereModel = modelAsset->data;
+                    BOOM_INFO("[MaterialPreview] Found sphere model: {}", modelAsset->source);
+                    break;
+                }
+            }
+            if (sphereModel) {
+                ctx->renderer->InitMaterialPreview(sphereModel);
+                BOOM_INFO("[MaterialPreview] Initialized with sphere model");
+            } else {
+                BOOM_WARN("[MaterialPreview] Sphere model not found in assets!");
+            }
+        }
+
+        if (!ctx->renderer->IsMaterialPreviewInitialized()) {
+            ImGui::TextDisabled("Sphere model not found for preview");
+            ImGui::TextDisabled("(Load a scene with sphere.fbx asset)");
+            return;
+        }
+
+        // Resolve texture IDs to actual texture pointers
+        ctx->assets->ResolveMaterialTextures(mat);
+
+        // Render preview using the renderer
+        uint32_t previewTexture = ctx->renderer->RenderMaterialPreview(
+            mat->data, m_MatPreviewYaw, m_MatPreviewPitch, m_MatPreviewDistance);
+
+        if (previewTexture == 0) {
+            ImGui::TextDisabled("Initializing preview...");
+            return;
+        }
+
+        // Display the preview
+        ImGui::Text("Material Preview");
+
+        float previewSize = (float)ctx->renderer->GetMaterialPreviewSize();
+        float availWidth = ImGui::GetContentRegionAvail().x;
+        float offsetX = (availWidth - previewSize) * 0.5f;
+        if (offsetX > 0) ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offsetX);
+
+        ImGui::Image((ImTextureID)(intptr_t)previewTexture,
+            ImVec2(previewSize, previewSize),
+            ImVec2(0, 1), ImVec2(1, 0)); // Flip Y
+
+        // Handle mouse interaction for rotation
+        if (ImGui::IsItemHovered()) {
+            ImGuiIO& io = ImGui::GetIO();
+            if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
+                m_MatPreviewYaw -= io.MouseDelta.x * 0.01f; 
+                m_MatPreviewPitch += io.MouseDelta.y * 0.01f;
+                m_MatPreviewPitch = glm::clamp(m_MatPreviewPitch, -1.5f, 1.5f);
+            }
+            if (io.MouseWheel != 0.0f) {
+                m_MatPreviewDistance -= io.MouseWheel * 0.5f;
+                m_MatPreviewDistance = glm::clamp(m_MatPreviewDistance, 0.5f, 20.0f); // Wider range for different model sizes
+            }
+        }
+
+        ImGui::TextDisabled("Drag to rotate, scroll to zoom");
+        ImGui::Separator();
     }
 
     // ---- templated section drawer ----
@@ -115,7 +199,6 @@ namespace EditorUI {
     {
         if (m_ShowInspector && !*m_ShowInspector) return;
 
-        Boom::AppContext* ctx = GetContext();
         if (!ctx) return;
 
         ImGui::Begin("Inspector", m_ShowInspector);
@@ -138,7 +221,6 @@ namespace EditorUI {
     }
 
     void InspectorPanel::EntityUpdate() {
-        Boom::AppContext* ctx = GetContext();
         // NOTE: adjust Entity wrapper to your real type/ctor signature
             // Assuming: Entity(Boom::Scene*, entt::entity)
         Boom::Entity selected{ &ctx->scene, m_App->SelectedEntity() };
@@ -1359,7 +1441,8 @@ namespace EditorUI {
                             std::sort(mpgFiles.begin(), mpgFiles.end());
                         }
                         catch (const std::filesystem::filesystem_error& e) {
-                            BOOM_ERROR("Failed to scan video directory: {}", e.what());
+                            auto w = e.what();
+                            BOOM_ERROR("Failed to scan video directory: {}", w);
                         }
                     }
                     filesScanned = true;
@@ -3155,7 +3238,19 @@ namespace EditorUI {
                 //data variables (showcase texture name instead of map id)
                 // toggle between mapID and standard slider (vec3/float)
 
+                // Track if any property changed to invalidate cache
+                bool materialChanged = false;
+
                 if (ImGui::CollapsingHeader("Maps", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    // Store previous IDs to detect changes
+                    auto prevAlbedo = mat->albedoMapID;
+                    auto prevNormal = mat->normalMapID;
+                    auto prevRoughness = mat->roughnessMapID;
+                    auto prevMetallic = mat->metallicMapID;
+                    auto prevOcclusion = mat->occlusionMapID;
+                    auto prevEmissive = mat->emissiveMapID;
+                    auto prevOpacity = mat->opacityMapID;
+
                     ImGui::BeginTable("##maps", 6, ImGuiTableFlags_SizingFixedFit);
                     ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
                     ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch);
@@ -3166,14 +3261,41 @@ namespace EditorUI {
                     InputAssetWidget<CONSTANTS::DND_PAYLOAD_TEXTURE>("occlusion map", mat->occlusionMapID);
                     InputAssetWidget<CONSTANTS::DND_PAYLOAD_TEXTURE>("emissive map", mat->emissiveMapID);
                     ImGui::EndTable();
+
+                    // Check if any texture map changed
+                    if (prevAlbedo != mat->albedoMapID || prevNormal != mat->normalMapID ||
+                        prevRoughness != mat->roughnessMapID || prevMetallic != mat->metallicMapID ||
+                        prevOcclusion != mat->occlusionMapID || prevEmissive != mat->emissiveMapID ||
+                        prevOpacity != mat->opacityMapID) {
+                        materialChanged = true;
+                    }
                 }
 
                 if (ImGui::CollapsingHeader("Variables", ImGuiTreeNodeFlags_DefaultOpen)) {
-                    ImGui::DragFloat3("albedo", &mat->data.albedo[0], 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-                    ImGui::DragFloat3("emissive", &mat->data.emissive[0], 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-                    ImGui::DragFloat("roughness", &mat->data.roughness, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-                    ImGui::DragFloat("metallic", &mat->data.metallic, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-                    ImGui::DragFloat("occlusion", &mat->data.occlusion, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat3("albedo", &mat->data.albedo[0], 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat3("emissive", &mat->data.emissive[0], 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat("roughness", &mat->data.roughness, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat("metallic", &mat->data.metallic, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat("occlusion", &mat->data.occlusion, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                    materialChanged |= ImGui::DragFloat("opacity", &mat->data.opacity, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                }
+
+                if (ImGui::CollapsingHeader("UV Mapping", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    materialChanged |= ImGui::Checkbox("Use World Space UV", &mat->data.useWorldSpaceUV);
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip("When enabled, textures tile based on world position\ninstead of mesh UVs. Useful for walls and floors\nto prevent stretching on scaled surfaces.");
+                    }
+                    if (mat->data.useWorldSpaceUV) {
+                        materialChanged |= ImGui::DragFloat("Texture Scale", &mat->data.textureScale, 0.1f, 0.01f, 100.f, "%.2f");
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("World units per texture repeat.\nHigher values = larger texture appearance.");
+                        }
+                    }
+                }
+
+                // Invalidate the cached preview if material was modified
+                if (materialChanged && ctx->renderer) {
+                    ctx->renderer->InvalidateMaterialPreview(mat->uid);
                 }
             }
             else if (asset->type == AssetType::TEXTURE) {
@@ -3413,7 +3535,6 @@ namespace EditorUI {
 
     void InspectorPanel::SnapEntity(Boom::Entity& entity, glm::vec3 direction)
     {
-        Boom::AppContext* ctx = GetContext();
         if (!ctx || !entity.Has<Boom::TransformComponent>()) return;
 
         auto& tc = entity.Get<Boom::TransformComponent>();
@@ -3507,7 +3628,8 @@ namespace EditorUI {
                 hitName = ctx->scene.get<Boom::InfoComponent>(hitEntity).name;
             }
 
-            BOOM_INFO("[Snap] Snapped entity to '{}' (distance: {:.2f})", hitName, glm::distance(entityWorldPos, newWorldPos));
+            auto dout = glm::distance(entityWorldPos, newWorldPos);
+            BOOM_INFO("[Snap] Snapped entity to '{}' (distance: {:.2f})", hitName, dout);
         }
         else {
             BOOM_WARN("[Snap] No surface found in direction ({:.1f}, {:.1f}, {:.1f})", direction.x, direction.y, direction.z);
@@ -3515,18 +3637,18 @@ namespace EditorUI {
     }
 
     // Helper: Get AABB for any entity (model or collider)
-    void InspectorPanel::GetEntityAABBForSnap(Boom::AppContext* ctx, entt::entity entity, glm::vec3& outMin, glm::vec3& outMax)
+    void InspectorPanel::GetEntityAABBForSnap(Boom::AppContext* context, entt::entity entity, glm::vec3& outMin, glm::vec3& outMax)
     {
-        auto& tc = ctx->scene.get<Boom::TransformComponent>(entity);
-        glm::mat4 worldMatrix = Boom::GetWorldMatrix(ctx->scene, entity);
+        //auto& tc = context->scene.get<Boom::TransformComponent>(entity);
+        glm::mat4 worldMatrix = Boom::GetWorldMatrix(context->scene, entity);
 
         glm::vec3 localMin(-0.5f), localMax(0.5f); // Default 1x1x1 box
 
         // Try to get model bounds
-        if (ctx->scene.any_of<Boom::ModelComponent>(entity)) {
-            auto& mc = ctx->scene.get<Boom::ModelComponent>(entity);
+        if (context->scene.any_of<Boom::ModelComponent>(entity)) {
+            auto& mc = context->scene.get<Boom::ModelComponent>(entity);
             if (mc.modelID != EMPTY_ASSET) {
-                auto* modelAsset = ctx->assets->TryGet<ModelAsset>(mc.modelID);
+                auto* modelAsset = context->assets->TryGet<ModelAsset>(mc.modelID);
                 if (modelAsset && modelAsset->data) {
                     auto staticModel = std::dynamic_pointer_cast<Boom::StaticModel>(modelAsset->data);
                     if (staticModel) {
@@ -3546,8 +3668,8 @@ namespace EditorUI {
             }
         }
         // Or use collider bounds
-        else if (ctx->scene.any_of<Boom::ColliderComponent>(entity)) {
-            auto& cc = ctx->scene.get<Boom::ColliderComponent>(entity);
+        else if (context->scene.any_of<Boom::ColliderComponent>(entity)) {
+            auto& cc = context->scene.get<Boom::ColliderComponent>(entity);
             glm::vec3 halfSize = cc.Collider.localScale * 0.5f;
             localMin = cc.Collider.localPosition - halfSize;
             localMax = cc.Collider.localPosition + halfSize;
@@ -3576,7 +3698,6 @@ namespace EditorUI {
 
     void InspectorPanel::GetEntityAABB(Boom::Entity& entity, glm::vec3& outMin, glm::vec3& outMax)
     {
-        Boom::AppContext* ctx = GetContext();
         if (!ctx) {
             outMin = outMax = glm::vec3(0.0f);
             return;
@@ -3606,7 +3727,6 @@ namespace EditorUI {
 
     glm::vec3 InspectorPanel::CalculateAABBHitNormal(const glm::vec3& hitPoint, const glm::vec3& aabbMin, const glm::vec3& aabbMax)
     {
-        const float epsilon = 0.001f;
         glm::vec3 center = (aabbMin + aabbMax) * 0.5f;
         glm::vec3 halfSize = (aabbMax - aabbMin) * 0.5f;
         glm::vec3 localHit = hitPoint - center;
