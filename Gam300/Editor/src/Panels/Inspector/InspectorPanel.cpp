@@ -31,9 +31,9 @@ namespace EditorUI {
         : m_Owner(owner)
         , m_ShowInspector(showFlag)
         , m_App(dynamic_cast<Boom::AppInterface*>(owner))
+        , ctx(m_Owner->GetContext())
     {
         DEBUG_POINTER(m_App, "AppInterface");
-        ctx = m_Owner->GetContext();
         DEBUG_POINTER(ctx, "AppContext");
         // Initialize asset picker icons
         if (m_App) {
@@ -204,7 +204,6 @@ namespace EditorUI {
     {
         if (m_ShowInspector && !*m_ShowInspector) return;
 
-        Boom::AppContext* ctx = GetContext();
         if (!ctx) return;
 
         ImGui::Begin("Inspector", m_ShowInspector);
@@ -227,7 +226,6 @@ namespace EditorUI {
     }
 
     void InspectorPanel::EntityUpdate() {
-        Boom::AppContext* ctx = GetContext();
         // NOTE: adjust Entity wrapper to your real type/ctor signature
             // Assuming: Entity(Boom::Scene*, entt::entity)
         Boom::Entity selected{ &ctx->scene, m_App->SelectedEntity() };
@@ -1440,7 +1438,8 @@ namespace EditorUI {
                             std::sort(mpgFiles.begin(), mpgFiles.end());
                         }
                         catch (const std::filesystem::filesystem_error& e) {
-                            BOOM_ERROR("Failed to scan video directory: {}", e.what());
+                            auto w = e.what();
+                            BOOM_ERROR("Failed to scan video directory: {}", w);
                         }
                     }
                     filesScanned = true;
@@ -3533,7 +3532,6 @@ namespace EditorUI {
 
     void InspectorPanel::SnapEntity(Boom::Entity& entity, glm::vec3 direction)
     {
-        Boom::AppContext* ctx = GetContext();
         if (!ctx || !entity.Has<Boom::TransformComponent>()) return;
 
         auto& tc = entity.Get<Boom::TransformComponent>();
@@ -3627,7 +3625,8 @@ namespace EditorUI {
                 hitName = ctx->scene.get<Boom::InfoComponent>(hitEntity).name;
             }
 
-            BOOM_INFO("[Snap] Snapped entity to '{}' (distance: {:.2f})", hitName, glm::distance(entityWorldPos, newWorldPos));
+            auto dout = glm::distance(entityWorldPos, newWorldPos);
+            BOOM_INFO("[Snap] Snapped entity to '{}' (distance: {:.2f})", hitName, dout);
         }
         else {
             BOOM_WARN("[Snap] No surface found in direction ({:.1f}, {:.1f}, {:.1f})", direction.x, direction.y, direction.z);
@@ -3635,18 +3634,18 @@ namespace EditorUI {
     }
 
     // Helper: Get AABB for any entity (model or collider)
-    void InspectorPanel::GetEntityAABBForSnap(Boom::AppContext* ctx, entt::entity entity, glm::vec3& outMin, glm::vec3& outMax)
+    void InspectorPanel::GetEntityAABBForSnap(Boom::AppContext* context, entt::entity entity, glm::vec3& outMin, glm::vec3& outMax)
     {
-        auto& tc = ctx->scene.get<Boom::TransformComponent>(entity);
-        glm::mat4 worldMatrix = Boom::GetWorldMatrix(ctx->scene, entity);
+        //auto& tc = context->scene.get<Boom::TransformComponent>(entity);
+        glm::mat4 worldMatrix = Boom::GetWorldMatrix(context->scene, entity);
 
         glm::vec3 localMin(-0.5f), localMax(0.5f); // Default 1x1x1 box
 
         // Try to get model bounds
-        if (ctx->scene.any_of<Boom::ModelComponent>(entity)) {
-            auto& mc = ctx->scene.get<Boom::ModelComponent>(entity);
+        if (context->scene.any_of<Boom::ModelComponent>(entity)) {
+            auto& mc = context->scene.get<Boom::ModelComponent>(entity);
             if (mc.modelID != EMPTY_ASSET) {
-                auto* modelAsset = ctx->assets->TryGet<ModelAsset>(mc.modelID);
+                auto* modelAsset = context->assets->TryGet<ModelAsset>(mc.modelID);
                 if (modelAsset && modelAsset->data) {
                     auto staticModel = std::dynamic_pointer_cast<Boom::StaticModel>(modelAsset->data);
                     if (staticModel) {
@@ -3666,8 +3665,8 @@ namespace EditorUI {
             }
         }
         // Or use collider bounds
-        else if (ctx->scene.any_of<Boom::ColliderComponent>(entity)) {
-            auto& cc = ctx->scene.get<Boom::ColliderComponent>(entity);
+        else if (context->scene.any_of<Boom::ColliderComponent>(entity)) {
+            auto& cc = context->scene.get<Boom::ColliderComponent>(entity);
             glm::vec3 halfSize = cc.Collider.localScale * 0.5f;
             localMin = cc.Collider.localPosition - halfSize;
             localMax = cc.Collider.localPosition + halfSize;
@@ -3696,7 +3695,6 @@ namespace EditorUI {
 
     void InspectorPanel::GetEntityAABB(Boom::Entity& entity, glm::vec3& outMin, glm::vec3& outMax)
     {
-        Boom::AppContext* ctx = GetContext();
         if (!ctx) {
             outMin = outMax = glm::vec3(0.0f);
             return;
@@ -3726,7 +3724,6 @@ namespace EditorUI {
 
     glm::vec3 InspectorPanel::CalculateAABBHitNormal(const glm::vec3& hitPoint, const glm::vec3& aabbMin, const glm::vec3& aabbMax)
     {
-        const float epsilon = 0.001f;
         glm::vec3 center = (aabbMin + aabbMax) * 0.5f;
         glm::vec3 halfSize = (aabbMax - aabbMin) * 0.5f;
         glm::vec3 localHit = hitPoint - center;

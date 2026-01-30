@@ -241,12 +241,14 @@ namespace Boom {
 			}
 		}
 
-		// Note: SkeletalModel should NOT be instanced (each instance needs unique joint matrices)
-		// This override does nothing intentionally - use immediate draw for skeletal models
-		BOOM_INLINE void DrawInstanced(uint32_t /*mode*/, uint32_t /*instanceCount*/) override final
+		// Phase 2: Skeletal models CAN be instanced now with joint SSBO
+		// Each instance has its own joint matrices stored in the joint SSBO (binding 4)
+		BOOM_INLINE void DrawInstanced(uint32_t mode, uint32_t instanceCount) override final
 		{
-			// Skeletal models cannot be instanced - each needs unique joint transforms
-			// Callers should check HasJoint() and use immediate draw for animated models
+			for (auto& mesh : meshes)
+			{
+				mesh->DrawInstanced(mode, instanceCount);
+			}
 		}
 
 		/**

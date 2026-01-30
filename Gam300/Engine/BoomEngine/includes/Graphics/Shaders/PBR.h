@@ -68,8 +68,9 @@ namespace Boom {
 			, u_EnableShadows{ GetUniformVar("u_enableShadows") }
 			, useWorldSpaceUVLoc{ GetUniformVar("useWorldSpaceUV") }
 			, textureScaleLoc{ GetUniformVar("textureScale") }
-			, useInstancingLoc{ GetUniformVar("u_useInstancing") }
+			, instancingModeLoc{ GetUniformVar("u_instancingMode") }
 			, baseInstanceLoc{ GetUniformVar("u_baseInstance") }
+			, jointBaseInstanceLoc{ GetUniformVar("u_jointBaseInstance") }
 		{
 			GLuint prog = shaderId; 
 
@@ -298,13 +299,15 @@ namespace Boom {
 		}
 
 		// Instanced rendering methods
-		BOOM_INLINE void SetInstancing(bool enabled, uint32_t baseInstance = 0) {
-			SetUniform(useInstancingLoc, enabled);
+		// Mode: 0 = none, 1 = static, 2 = animated
+		BOOM_INLINE void SetInstancingMode(int mode, uint32_t baseInstance = 0, uint32_t jointBaseInstance = 0) {
+			SetUniform(instancingModeLoc, mode);
 			SetUniform(baseInstanceLoc, baseInstance);
+			SetUniform(jointBaseInstanceLoc, jointBaseInstance);
 		}
 
-		// Draw multiple instances of a model with the same material
-		// Assumes SSBO is already bound and contains the instance matrices
+		// Draw multiple instances of a static model with the same material
+		// Assumes transform SSBO (binding 3) is already bound
 		BOOM_INLINE void DrawInstanced(Model3D const& model, PbrMaterial const& material,
 									   uint32_t instanceCount, uint32_t baseInstance, bool showNormal = false) {
 			Use();
@@ -323,17 +326,52 @@ namespace Boom {
 			// Material texture maps (start at unit 1 to avoid depth map at unit 0)
 			SetMaterial(material, 1);
 
-			// Static models only - no joints in instanced mode
+			// Static models only - no joints in static instanced mode
 			SetUniform(jointsLoc, false);
 
-			// Enable instancing and set base instance offset
-			SetInstancing(true, baseInstance);
+			// Enable static instancing (mode 1) and set base instance offset
+			SetInstancingMode(1, baseInstance, 0);
 
 			// Draw all instances
 			model->DrawInstanced(GL_TRIANGLES, instanceCount);
 
 			// Disable instancing after draw
-			SetInstancing(false, 0);
+			SetInstancingMode(0, 0, 0);
+		}
+
+		// Draw multiple instances of an animated model with the same material
+		// Assumes both SSBOs are bound: transform SSBO (binding 3) and joint SSBO (binding 4)
+		// baseInstance: offset into transform SSBO
+		// jointBaseInstance: offset into joint SSBO (in terms of instance count, not matrix count)
+		BOOM_INLINE void DrawAnimatedInstanced(Model3D const& model, PbrMaterial const& material,
+											   uint32_t instanceCount, uint32_t baseInstance,
+											   uint32_t jointBaseInstance, bool showNormal = false) {
+			Use();
+			SetUniform(isDebugModeLoc, false);
+			SetUniform(ditherThresholdLoc, showDither ? ditherThreshold : 0.f);
+			SetUniform(showNormalTextureLoc, showNormal);
+			SetUniform(ambientStrengthLoc, ambientStrength);
+
+			// For instancing, model transform is identity (baked into world matrices)
+			SetUniform(modelMatLoc, model->modelTransform.Matrix());
+
+			// World-space UV settings
+			SetWorldSpaceUV(material.useWorldSpaceUV, material.textureScale);
+
+			// Material texture maps (start at unit 1 to avoid depth map at unit 0)
+			SetMaterial(material, 1);
+
+			// Animated models have joints - shader reads from joint SSBO
+			SetUniform(jointsLoc, true);
+
+			// Enable animated instancing (mode 2) with separate transform and joint base offsets
+			SetInstancingMode(2, baseInstance, jointBaseInstance);
+
+			// Draw all instances
+			model->DrawInstanced(GL_TRIANGLES, instanceCount);
+
+			// Disable instancing after draw
+			SetInstancingMode(0, 0, 0);
 		}
 
 		//Animation 
@@ -396,8 +434,8 @@ namespace Boom {
 		int32_t useWorldSpaceUVLoc;
 		int32_t textureScaleLoc;
 
-		// Instancing support
-		int32_t useInstancingLoc;
+		// Instancing support (mode: 0=none, 1=static, 2=animated)
+		int32_t instancingModeLoc;
 		int32_t baseInstanceLoc;
 	};
 }

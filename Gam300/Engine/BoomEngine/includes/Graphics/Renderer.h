@@ -375,12 +375,12 @@ namespace Boom {
         }
 
         /**
-         * @brief Add an instance to be rendered this frame.
+         * @brief Add a static instance to be rendered this frame.
          *
          * @param modelID Asset ID of the model
          * @param materialID Asset ID of the material
          * @param worldMatrix Pre-computed world transform matrix
-         * @param isAnimated If true, cannot be instanced (returns false)
+         * @param isAnimated If true, use AddAnimatedInstance instead (returns false)
          * @return true if batched, false if should use immediate draw
          */
         BOOM_INLINE bool AddInstance(AssetID modelID, AssetID materialID,
@@ -389,43 +389,92 @@ namespace Boom {
         }
 
         /**
-         * @brief Render all collected instance batches.
+         * @brief Add an animated instance to be rendered this frame.
+         *
+         * @param modelID Asset ID of the model
+         * @param materialID Asset ID of the material
+         * @param worldMatrix Pre-computed world transform matrix
+         * @param jointMatrices Current frame's joint matrices
+         * @return true if batched
+         */
+        BOOM_INLINE bool AddAnimatedInstance(AssetID modelID, AssetID materialID,
+                                            const glm::mat4& worldMatrix,
+                                            const std::vector<glm::mat4>& jointMatrices) {
+            return m_InstanceManager->AddAnimatedInstance(modelID, materialID, worldMatrix, jointMatrices);
+        }
+
+        /**
+         * @brief Render all collected instance batches (static and animated).
          *
          * @param assets Asset registry to look up models and materials
          */
         template<typename AssetRegistryT>
         BOOM_INLINE void RenderInstancedBatches(AssetRegistryT& assets) {
-            // Upload all instance transforms to GPU
+            // Upload all instance transforms and joint matrices to GPU
             m_InstanceManager->UploadBatches();
 
-            if (m_InstanceManager->GetTotalInstances() == 0) return;
+            size_t totalStatic = m_InstanceManager->GetTotalInstances();
+            size_t totalAnimated = m_InstanceManager->GetTotalAnimatedInstances();
 
-            // Bind the instance SSBO
-            m_InstanceManager->BindSSBO(3);
+            if (totalStatic == 0 && totalAnimated == 0) return;
 
-            // Render each batch
-            for (const auto& [key, batch] : m_InstanceManager->GetBatches()) {
-                if (batch.IsEmpty()) continue;
+            // Bind both SSBOs (transform and joint)
+            m_InstanceManager->BindAllSSBOs();
 
-                // Get model
-                auto* modelAsset = assets.template TryGet<ModelAsset>(batch.modelID);
-                if (!modelAsset || !modelAsset->data) continue;
+            // === Render Static Batches ===
+            if (totalStatic > 0) {
+                for (const auto& [key, batch] : m_InstanceManager->GetBatches()) {
+                    if (batch.IsEmpty()) continue;
 
-                // Get material
-                PbrMaterial material{};
-                if (batch.materialID != EMPTY_ASSET) {
-                    auto* matAsset = assets.template TryGet<MaterialAsset>(batch.materialID);
-                    if (matAsset) {
-                        assets.ResolveMaterialTextures(matAsset);
-                        material = matAsset->data;
+                    // Get model
+                    auto* modelAsset = assets.template TryGet<ModelAsset>(batch.modelID);
+                    if (!modelAsset || !modelAsset->data) continue;
+
+                    // Get material
+                    PbrMaterial material{};
+                    if (batch.materialID != EMPTY_ASSET) {
+                        auto* matAsset = assets.template TryGet<MaterialAsset>(batch.materialID);
+                        if (matAsset) {
+                            assets.ResolveMaterialTextures(matAsset);
+                            material = matAsset->data;
+                        }
                     }
-                }
 
-                // Draw all instances in this batch
-                pbrShader->DrawInstanced(modelAsset->data, material,
-                                        static_cast<uint32_t>(batch.Count()),
-                                        static_cast<uint32_t>(batch.ssboOffset),
-                                        showNormalTexture);
+                    // Draw all static instances in this batch (mode 1)
+                    pbrShader->DrawInstanced(modelAsset->data, material,
+                                            static_cast<uint32_t>(batch.Count()),
+                                            static_cast<uint32_t>(batch.ssboOffset),
+                                            showNormalTexture);
+                }
+            }
+
+            // === Render Animated Batches ===
+            if (totalAnimated > 0) {
+                for (const auto& [key, batch] : m_InstanceManager->GetAnimatedBatches()) {
+                    if (batch.IsEmpty()) continue;
+
+                    // Get model
+                    auto* modelAsset = assets.template TryGet<ModelAsset>(batch.modelID);
+                    if (!modelAsset || !modelAsset->data) continue;
+
+                    // Get material
+                    PbrMaterial material{};
+                    if (batch.materialID != EMPTY_ASSET) {
+                        auto* matAsset = assets.template TryGet<MaterialAsset>(batch.materialID);
+                        if (matAsset) {
+                            assets.ResolveMaterialTextures(matAsset);
+                            material = matAsset->data;
+                        }
+                    }
+
+                    // Draw all animated instances in this batch (mode 2)
+                    // Note: baseInstance is the transform offset, joint offset is implicitly handled
+                    // since we're using the same base instance for both SSBOs
+                    pbrShader->DrawAnimatedInstanced(modelAsset->data, material,
+                                                     static_cast<uint32_t>(batch.Count()),
+                                                     static_cast<uint32_t>(batch.transformSsboOffset),
+                                                     showNormalTexture);
+                }
             }
         }
 
@@ -436,8 +485,16 @@ namespace Boom {
             return m_InstanceManager->GetActiveBatchCount();
         }
 
+        BOOM_INLINE size_t GetAnimatedInstanceBatchCount() const {
+            return m_InstanceManager->GetActiveAnimatedBatchCount();
+        }
+
         BOOM_INLINE size_t GetTotalInstanceCount() const {
             return m_InstanceManager->GetTotalInstances();
+        }
+
+        BOOM_INLINE size_t GetTotalAnimatedInstanceCount() const {
+            return m_InstanceManager->GetTotalAnimatedInstances();
         }
 
     public: // ---------------------- Frame lifecycle ----------------------

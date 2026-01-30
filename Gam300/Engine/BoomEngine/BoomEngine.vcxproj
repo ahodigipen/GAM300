@@ -221,6 +221,7 @@
     <ClInclude Include="includes\Graphics\Buffers\Mesh.h" />
     <ClInclude Include="includes\Graphics\Buffers\Vertex.h" />
     <ClInclude Include="includes\Graphics\Instancing\InstanceBatch.h" />
+    <ClInclude Include="includes\Graphics\Instancing\AnimatedInstanceBatch.h" />
     <ClInclude Include="includes\Graphics\Instancing\InstanceManager.h" />
     <ClInclude Include="includes\Graphics\Models\Animation.h" />
     <ClInclude Include="includes\Graphics\Models\Animator.h" />

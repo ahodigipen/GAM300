@@ -611,7 +611,7 @@ namespace Boom
         }
 
         //pbr ecs (always render)
-        EnttView<Entity, TransformComponent>([this, &guiList, &isPicking, &transparentObjects, &immediateDraws, &cameraPos](auto entity, TransformComponent& t) {
+        EnttView<Entity, TransformComponent>([this, &guiList, &isPicking, &transparentObjects, &immediateDraws, &cameraPos](auto entity, TransformComponent&) {
             if (entity.Has<DeactivatedComponent>()) return;
 
             if (entity.Has<ModelComponent>()) {
@@ -706,7 +706,13 @@ namespace Boom
                             m_Context->renderer->Draw(model.data, worldTransform, material.data);
                         }
                         else {
-                            // Animated opaque object - must use immediate draw
+                            // Animated opaque object - try to batch with joints
+                            glm::mat4 finalMatrix = worldMatrix * model.data->modelTransform.Matrix();
+                            if (m_Context->renderer->AddAnimatedInstance(comp.modelID, comp.materialID, finalMatrix, currentJoints)) {
+                                // Successfully batched animated instance - skip immediate draw
+                                return;
+                            }
+                            // Failed to batch (shouldn't happen) - fall through to immediate draw
                             m_Context->renderer->Draw(model.data, worldTransform, material.data);
                         }
                     }
