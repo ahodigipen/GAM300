@@ -143,13 +143,16 @@ void AnimationTimelinePanel::Render()
             {
                 // CRITICAL: Manually advance time to control looping
                 // The animator always loops in clip mode (Animator.h:128), so we control it here
+                float lastTime = m_CurrentTime;  // Store for audio event processing
                 float newTime = m_CurrentTime + (deltaTime * m_PlaybackSpeed * clip->ticksPerSecond);
+                bool looped = false;
 
                 if (m_Loop)
                 {
                     // Loop enabled: wrap time
                     if (newTime >= clip->duration)
                     {
+                        looped = true;
                         newTime = fmod(newTime, clip->duration);
                     }
                     m_CurrentTime = newTime;
@@ -171,6 +174,17 @@ void AnimationTimelinePanel::Render()
                 // Update animator to match our timeline time
                 m_Animator->SetTime(m_CurrentTime);
                 m_Animator->UpdateJointsFromCurrentTime();
+
+                // Process audio events for this time range
+                if (m_SelectedClipIndex >= 0)
+                {
+                    m_Animator->ProcessAudioEventsForClip(
+                        static_cast<size_t>(m_SelectedClipIndex),
+                        lastTime,
+                        m_CurrentTime,
+                        looped
+                    );
+                }
             }
             else
             {
@@ -692,16 +706,18 @@ void AnimationTimelinePanel::RenderControlBar()
             }
             else if (m_SelectedAudioEventIndex >= 0)
             {
-                // Delete selected audio event
+                // Delete selected audio event using command system for undo/redo
                 if (m_Animator && m_SelectedClipIndex >= 0)
                 {
                     auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
                     if (clip && m_SelectedAudioEventIndex < (int)clip->audioEvents.size())
                     {
-                        BOOM_INFO("[AudioEvent] Deleted audio event '{}' at {:.2f}s",
-                                  clip->audioEvents[m_SelectedAudioEventIndex].eventName,
-                                  clip->audioEvents[m_SelectedAudioEventIndex].timeStamp);
-                        clip->audioEvents.erase(clip->audioEvents.begin() + m_SelectedAudioEventIndex);
+                        KeyframeCommand cmd;
+                        cmd.type = KeyframeCommand::AUDIO_REMOVE;
+                        cmd.audioEventIndex = static_cast<size_t>(m_SelectedAudioEventIndex);
+                        cmd.audioEvent = clip->audioEvents[m_SelectedAudioEventIndex];  // Store for undo
+                        ExecuteCommand(cmd);
+
                         m_SelectedAudioEventIndex = -1;
                     }
                 }
@@ -1185,6 +1201,7 @@ void AnimationTimelinePanel::RenderControlBar()
                                 entityClip->ticksPerSecond = timelineClip->ticksPerSecond;
                                 entityClip->filePath = timelineClip->filePath;
                                 entityClip->tracks = timelineClip->tracks;  // Deep copy tracks
+                                entityClip->audioEvents = timelineClip->audioEvents;  // Copy audio events
 
                                 if (m_SelectedClipIndex < (int)animComp.animator->GetClipCount())
                                 {
@@ -1199,13 +1216,11 @@ void AnimationTimelinePanel::RenderControlBar()
                                     BOOM_INFO("[AnimTimeline] Added copied clip '{}' to entity", entityClip->name);
                                 }
 
-                                // Force entity to play this clip
-                                // Clear states to force legacy clip-based mode (simpler for editor preview)
-                                auto& states = animComp.animator->GetStates();
-                                states.clear();
+                                // NOTE: We do NOT clear the state machine here!
+                                // The state machine is managed by the Animator Graph panel.
+                                // We only update the clip data, not the playback mode.
 
-                                // Set the clip and time
-                                animComp.animator->PlayClip(m_SelectedClipIndex);
+                                // Sync the current time to entity (for preview purposes)
                                 animComp.animator->SetTime(m_CurrentTime);
 
                                 // Force immediate joint transform update
@@ -1215,8 +1230,8 @@ void AnimationTimelinePanel::RenderControlBar()
                                 m_ManualBonePoses.clear();
                                 m_HasManualPoses = false;
 
-                                BOOM_INFO("[AnimTimeline] Applied - entity now has copy of clip (clip: '{}', time: {:.2f})",
-                                    entityClip->name, m_CurrentTime);
+                                BOOM_INFO("[AnimTimeline] Applied - entity clip updated (clip: '{}', time: {:.2f}, audioEvents: {})",
+                                    entityClip->name, m_CurrentTime, entityClip->audioEvents.size());
                             }
                         }
                     }
@@ -1457,11 +1472,11 @@ void AnimationTimelinePanel::RenderControlBar()
                                                         animComp.animator->AddClip(timelineClipPtr);
                                                     }
 
-                                                    // Clear states and force clip playback
-                                                    auto& states = animComp.animator->GetStates();
-                                                    states.clear();
+                                                    // NOTE: We do NOT clear the state machine here!
+                                                    // The state machine is managed by the Animator Graph panel.
+                                                    // We only sync the clip data.
 
-                                                    animComp.animator->PlayClip(m_SelectedClipIndex);
+                                                    // Sync current time for preview
                                                     animComp.animator->SetTime(m_CurrentTime);
                                                     animComp.animator->UpdateJointsFromCurrentTime();
 
@@ -1469,7 +1484,8 @@ void AnimationTimelinePanel::RenderControlBar()
                                                     m_ManualBonePoses.clear();
                                                     m_HasManualPoses = false;
 
-                                                    BOOM_INFO("[AnimTimeline] Synced - entity now shares clip pointer");
+                                                    BOOM_INFO("[AnimTimeline] Synced - entity clip updated (audioEvents: {})",
+                                                        timelineClipPtr->audioEvents.size());
                                                 }
                                             }
                                         }
@@ -1630,6 +1646,39 @@ void AnimationTimelinePanel::ExecuteSingleCommand(const KeyframeCommand& cmd)
             ExecuteSingleCommand(subCmd);
         }
         break;
+
+    case KeyframeCommand::AUDIO_ADD:
+        {
+            auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+            if (clip)
+            {
+                clip->audioEvents.push_back(cmd.audioEvent);
+                BOOM_INFO("[Undo/Redo] Added audio event '{}' at {:.2f}s", cmd.audioEvent.eventName, cmd.audioEvent.timeStamp);
+            }
+        }
+        break;
+
+    case KeyframeCommand::AUDIO_EDIT:
+        {
+            auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+            if (clip && cmd.audioEventIndex < clip->audioEvents.size())
+            {
+                clip->audioEvents[cmd.audioEventIndex] = cmd.audioEvent;
+                BOOM_INFO("[Undo/Redo] Updated audio event '{}' at {:.2f}s", cmd.audioEvent.eventName, cmd.audioEvent.timeStamp);
+            }
+        }
+        break;
+
+    case KeyframeCommand::AUDIO_REMOVE:
+        {
+            auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+            if (clip && cmd.audioEventIndex < clip->audioEvents.size())
+            {
+                clip->audioEvents.erase(clip->audioEvents.begin() + cmd.audioEventIndex);
+                BOOM_INFO("[Undo/Redo] Removed audio event '{}' at {:.2f}s", cmd.audioEvent.eventName, cmd.audioEvent.timeStamp);
+            }
+        }
+        break;
     }
 }
 
@@ -1683,6 +1732,53 @@ void AnimationTimelinePanel::UndoSingleCommand(const KeyframeCommand& cmd)
         for (auto it = cmd.batchCommands.rbegin(); it != cmd.batchCommands.rend(); ++it)
         {
             UndoSingleCommand(*it);
+        }
+        break;
+
+    case KeyframeCommand::AUDIO_ADD:
+        {
+            // Undo AUDIO_ADD = remove the audio event (find by timestamp)
+            auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+            if (clip)
+            {
+                // Find the event by timestamp (more reliable than index after multiple operations)
+                for (auto it = clip->audioEvents.begin(); it != clip->audioEvents.end(); ++it)
+                {
+                    if (std::abs(it->timeStamp - cmd.audioEvent.timeStamp) < 0.001f &&
+                        it->soundFile == cmd.audioEvent.soundFile)
+                    {
+                        BOOM_INFO("[Undo] Removed audio event '{}' at {:.2f}s", it->eventName, it->timeStamp);
+                        clip->audioEvents.erase(it);
+                        break;
+                    }
+                }
+            }
+        }
+        break;
+
+    case KeyframeCommand::AUDIO_EDIT:
+        {
+            // Undo AUDIO_EDIT = restore old audio event state
+            auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+            if (clip && cmd.audioEventIndex < clip->audioEvents.size())
+            {
+                clip->audioEvents[cmd.audioEventIndex] = cmd.oldAudioEvent;
+                BOOM_INFO("[Undo] Restored audio event '{}' at {:.2f}s", cmd.oldAudioEvent.eventName, cmd.oldAudioEvent.timeStamp);
+            }
+        }
+        break;
+
+    case KeyframeCommand::AUDIO_REMOVE:
+        {
+            // Undo AUDIO_REMOVE = insert the audio event back at original index
+            auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+            if (clip)
+            {
+                // Insert at original position (or at end if index is out of range)
+                size_t insertIdx = (cmd.audioEventIndex <= clip->audioEvents.size()) ? cmd.audioEventIndex : clip->audioEvents.size();
+                clip->audioEvents.insert(clip->audioEvents.begin() + insertIdx, cmd.audioEvent);
+                BOOM_INFO("[Undo] Restored audio event '{}' at {:.2f}s", cmd.audioEvent.eventName, cmd.audioEvent.timeStamp);
+            }
         }
         break;
     }

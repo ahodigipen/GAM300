@@ -24,9 +24,9 @@ namespace EditorUI {
     class Editor;
     class CommandHistory;  // Forward declaration
 
-    // Undo/Redo command for keyframe and bone pose operations
+    // Undo/Redo command for keyframe, bone pose, and audio event operations
     struct KeyframeCommand {
-        enum Type { ADD, REMOVE, MOVE, BONE_POSE, BATCH };
+        enum Type { ADD, REMOVE, MOVE, BONE_POSE, BATCH, AUDIO_ADD, AUDIO_EDIT, AUDIO_REMOVE };
 
         Type type;
         std::string boneName;
@@ -45,6 +45,11 @@ namespace EditorUI {
 
         // For BATCH operations (groups multiple commands into one undo)
         std::vector<KeyframeCommand> batchCommands;
+
+        // For AUDIO_ADD, AUDIO_EDIT, AUDIO_REMOVE operations
+        Boom::AudioEventMarker audioEvent;      // The audio event data (for ADD/REMOVE, or new state for EDIT)
+        Boom::AudioEventMarker oldAudioEvent;   // Previous state (for EDIT undo)
+        size_t audioEventIndex = 0;             // Index in audioEvents vector (for EDIT/REMOVE)
     };
 
     // Bone pose for undo/redo
