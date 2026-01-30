@@ -334,9 +334,6 @@ namespace Boom
         internal static extern bool Boom_API_LinecastIgnoreBoth(Vec3 from, Vec3 to, ulong ignoreEntity1, ulong ignoreEntity2);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern string Boom_API_GetGroundSurfaceType(ulong entityHandle, float maxDistance);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_TeleportRigidBody(ulong handle, ref Vec3 pos);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -982,18 +979,6 @@ namespace Boom
         public static bool Linecast(Vec3 from, Vec3 to, ulong ignoreEntity = 0)
         {
             return Native.Boom_API_Linecast(ref from, ref to, ignoreEntity);
-        }
-
-        /// <summary>
-        /// Get the surface type of the ground below an entity (for dynamic footsteps).
-        /// Returns the surfaceType string from the Collider3D of the ground entity.
-        /// Returns empty string if not grounded or no surface type set.
-        /// </summary>
-        /// <param name="entityHandle">The entity to check ground surface for</param>
-        /// <param name="maxDistance">Maximum raycast distance downward (default 1.0)</param>
-        public static string GetGroundSurfaceType(ulong entityHandle, float maxDistance = 1.0f)
-        {
-            return Native.Boom_API_GetGroundSurfaceType(entityHandle, maxDistance);
         }
 
         public static void SetRotationY(ulong h, float yawDegrees)
