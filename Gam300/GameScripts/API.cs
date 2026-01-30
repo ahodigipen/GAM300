@@ -163,12 +163,28 @@ namespace Boom
         internal static extern void Boom_API_LoadSceneAdditive(string name);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_EnableFileWatcher(bool enable);
+        
+        // Pause Menu
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_UnloadPauseMenu();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_ShowPauseMenu();
 
-        // Death
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern bool Boom_API_IsPauseMenuLoaded();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetGameLogicPaused(bool paused);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetGroupVolume(string name, float volume);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern float Boom_API_GetGroupVolume(string name);
+
+        // Death Menu
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_UnloadDeathMenu();
 
@@ -177,19 +193,32 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern bool Boom_API_IsDeathMenuLoaded();
-        // End Death
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_SetPlayerDead(bool isDead);
+
+        // End Menu
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_UnloadEndMenu();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_ShowEndMenu();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern bool Boom_API_IsEndMenuLoaded();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetGameEnd(bool isEnd);
+
+        // Freeze
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        public static extern void Boom_API_DestroyEntity(ulong entity);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_TogglePause();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern int Boom_API_GetApplicationState();
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern bool Boom_API_IsPauseMenuLoaded();
 
         //AI STUFF
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -309,12 +338,6 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern bool Boom_API_LinecastIgnoreBoth(Vec3 from, Vec3 to, ulong ignoreEntity1, ulong ignoreEntity2);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void Boom_API_SetGameLogicPaused(bool paused);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void Boom_API_EnableFileWatcher(bool enable);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_TeleportRigidBody(ulong handle, ref Vec3 pos);
@@ -691,17 +714,35 @@ namespace Boom
         public static void TogglePause() => Native.Boom_API_TogglePause();
         public static int GetApplicationState() => Native.Boom_API_GetApplicationState();
 
-        // Pause
+        // Pause Menu
         public static void UnloadPauseMenu() => Native.Boom_API_UnloadPauseMenu();
         public static void ShowPauseMenu() => Native.Boom_API_ShowPauseMenu();
         public static bool IsPauseMenuLoaded() => Native.Boom_API_IsPauseMenuLoaded();
         public static void SetGameLogicPaused(bool paused) => Native.Boom_API_SetGameLogicPaused(paused);
+        public static void SetGroupVolume(string groupName, float volume)
+        {
+            Native.Boom_API_SetGroupVolume(groupName, volume);
+        }
 
-        // Death
+        public static float GetGroupVolume(string groupName)
+        {
+            return Native.Boom_API_GetGroupVolume(groupName);
+        }
+
+        // Death Menu
         public static void UnloadDeathMenu() => Native.Boom_API_UnloadDeathMenu();
         public static void ShowDeathMenu() => Native.Boom_API_ShowDeathMenu();
         public static bool IsDeathMenuLoaded() => Native.Boom_API_IsDeathMenuLoaded();
         public static void SetPlayerDead(bool isDead) => Native.Boom_API_SetPlayerDead(isDead);
+
+        // End Menu
+        public static void UnloadEndMenu() => Native.Boom_API_UnloadEndMenu();
+        public static void ShowEndMenu() => Native.Boom_API_ShowEndMenu();
+        public static bool IsEndMenuLoaded() => Native.Boom_API_IsEndMenuLoaded();
+        public static void SetGameEnd(bool isEnd) => Native.Boom_API_SetGameEnd(isEnd);
+
+        // Freeze
+        public static void DestroyEntity(ulong entity) => Native.Boom_API_DestroyEntity(entity);
 
         // ===== Animator =====
         public static void AnimatorSetFloat(ulong h, string n, float v) => Native.Boom_API_AnimatorSetFloat(h, n, v);
@@ -1067,8 +1108,9 @@ namespace Boom
         public const int KEY_Q = 81;
         public const int KEY_LEFT_CONTROL = 341;
         public const int KEY_LEFT_SHIFT = 340;
-        public const int KEY_F = 70; // Freeze / Pickup
-        public const int KEY_G = 71; // Use Ability
+        public const int KEY_E = 69; // Use Freeze
+        public const int KEY_F = 70;
+        public const int KEY_G = 71;
 
         public const int MOUSE_LEFT = 0;
         public const int MOUSE_RIGHT = 1;

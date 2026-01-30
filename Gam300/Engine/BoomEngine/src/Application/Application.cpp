@@ -277,7 +277,7 @@ namespace Boom
                 for (auto entity : scriptView) {
                     auto& sc = scriptView.get<Boom::ScriptComponent>(entity);
                     bool isMenuObject = registry.any_of<Boom::MenuComponent>(entity);
-                    bool shouldUpdate = (!m_IsGameLogicPaused && !m_IsPlayerDead) || isMenuObject;
+                    bool shouldUpdate = (!m_IsGameLogicPaused && !m_IsPlayerDead && !m_IsEnd) || isMenuObject;
 
                     // 3. CRITICAL: Never update an object if it is Deactivated (Hidden)
                     if (registry.any_of<DeactivatedComponent>(entity)) {
@@ -291,7 +291,7 @@ namespace Boom
                 }
 
                 // --- RUN ALL GAME LOGIC ---
-                if (!m_IsGameLogicPaused && !m_IsPlayerDead) {
+                if (!m_IsGameLogicPaused && !m_IsPlayerDead && !m_IsEnd) {
                     // AI Logic
                     m_AIagents.update(m_Context->scene, static_cast<float>(m_Context->DeltaTime));
                     if (m_Nav) {
@@ -304,6 +304,11 @@ namespace Boom
                     RunPhysicsSimulation();
                     UpdateThirdPersonCameras();
                     SoundSystem::Update(m_Context->scene, static_cast<float>(m_Context->DeltaTime));
+                }
+
+                // Video System Update (always update, even when paused - for cutscenes)
+                if (m_Context->videoSystem) {
+                    m_Context->videoSystem->Update(m_Context->scene, m_Context->DeltaTime);
                 }
             }
 
@@ -549,26 +554,6 @@ namespace Boom
                 }
             }
 
-            //skybox ecs (should be drawn at the end)
-            EnttView<Entity, SkyboxComponent>([this](auto entity, SkyboxComponent& comp) {
-                Transform3D& transform{ entity.template Get<TransformComponent>().transform };
-                static AssetID prevSkyID{ comp.skyboxID };
-
-                //reinitialize skybox if different
-                if (prevSkyID != comp.skyboxID) {
-                    EnttView<Entity, SkyboxComponent>([this](auto, auto& comp) {
-                        SkyboxAsset& skybox{ m_Context->assets->Get<SkyboxAsset>(comp.skyboxID) };
-                        m_Context->renderer->InitSkybox(skybox.data, skybox.envMap, skybox.size);
-                        return; //should stop after one skybox rendered
-                        });
-                }
-
-                prevSkyID = comp.skyboxID;
-                SkyboxAsset& skybox{ m_Context->assets->Get<SkyboxAsset>(comp.skyboxID) };
-                m_Context->renderer->DrawSkybox(skybox.data, transform);
-                return; //should stop after one skybox rendered
-                });
-
             // Frame end
             m_Context->profiler.Start("Renderer End Frame");
             m_Context->renderer->EndFrame();
@@ -595,8 +580,38 @@ namespace Boom
     void Application::RenderScene(bool isPicking)
     {
         std::vector<std::tuple<SpriteComponent, Transform2D, uint32_t>> guiList;
+
+        // Structure to hold transparent object render data for deferred rendering
+        struct TransparentRenderData {
+            Model3D model;
+            Transform3D transform;
+            PbrMaterial material;
+            std::vector<glm::mat4> joints;
+            bool hasJoints;
+            float distanceToCamera;
+        };
+        std::vector<TransparentRenderData> transparentObjects;
+
+        // Structure for animated/immediate draw objects
+        struct ImmediateDrawData {
+            Model3D model;
+            Transform3D transform;
+            PbrMaterial material;
+            std::vector<glm::mat4> joints;
+            bool hasJoints;
+            bool hasMaterial;
+        };
+        std::vector<ImmediateDrawData> immediateDraws;
+
+        glm::vec3 cameraPos = m_Context->renderer->GetCameraPosition();
+
+        // Begin instance collection for this frame (only for rendering, not picking)
+        if (!isPicking) {
+            m_Context->renderer->BeginInstanceCollection();
+        }
+
         //pbr ecs (always render)
-        EnttView<Entity, TransformComponent>([this, &guiList, &isPicking](auto entity, TransformComponent& t) {
+        EnttView<Entity, TransformComponent>([this, &guiList, &isPicking, &transparentObjects, &immediateDraws, &cameraPos](auto entity, TransformComponent&) {
             if (entity.Has<DeactivatedComponent>()) return;
 
             if (entity.Has<ModelComponent>()) {
@@ -605,16 +620,21 @@ namespace Boom
                 ModelAsset* mdlPtr{ m_Context->assets->TryGet<ModelAsset>(comp.modelID) };
                 if (!mdlPtr) return;
                 ModelAsset& model{ *mdlPtr };
-                if (entity.Has<AnimatorComponent>()) {
+
+                std::vector<glm::mat4> currentJoints;
+                bool hasAnimator = entity.Has<AnimatorComponent>();
+                bool isAnimated = hasAnimator || model.hasJoints;
+
+                if (hasAnimator) {
                     auto& an = entity.Get<AnimatorComponent>();
                     if (isPicking) {
                         m_Context->renderer->SetJoints(an.animator->GetJoints(), isPicking);
+                        currentJoints = an.animator->GetJoints();
                     }
                     else {
-                        // float dt = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) ? (float)m_Context->DeltaTime : 0.0f;
                         bool shouldAnimate = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING);
                         bool isMenuObj = entity.Has<Boom::MenuComponent>();
-                        if ((m_IsGameLogicPaused || m_IsPlayerDead) && !isMenuObj) {
+                        if ((m_IsGameLogicPaused || m_IsPlayerDead || m_IsEnd) && !isMenuObj) {
                             shouldAnimate = false;
                         }
 
@@ -627,6 +647,7 @@ namespace Boom
 
                         float dt = shouldAnimate ? (float)m_Context->DeltaTime : 0.0f;
                         auto& joints = an.animator->Animate(dt);
+                        currentJoints = joints;
                         m_Context->renderer->SetJoints(joints);
                     }
                 }
@@ -636,6 +657,7 @@ namespace Boom
                     {
                         static std::vector<glm::mat4> identityPalette(100, glm::mat4(1.0f));
                         m_Context->renderer->SetJoints(identityPalette, isPicking);
+                        currentJoints = identityPalette;
                     }
                 }
 
@@ -645,6 +667,7 @@ namespace Boom
                 DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
 
                 if (isPicking) {
+                    // Picking pass - always use immediate draw
                     m_Context->renderer->SetPickUniform(entt::to_integral(entity.ID())); //entity should be of type uint32_t
                     m_Context->renderer->DrawPick(model.data, worldTransform);
                 }
@@ -653,29 +676,58 @@ namespace Boom
                     if (comp.materialID != EMPTY_ASSET) {
                         auto& material{ m_Context->assets->Get<MaterialAsset>(comp.materialID) };
 
-                        // Only assign textures if they exist and are valid
-                        if (material.albedoMapID != EMPTY_ASSET) {
-                            auto& albedoTex = m_Context->assets->Get<TextureAsset>(material.albedoMapID);
-                            if (albedoTex.data) {
-                                material.data.albedoMap = albedoTex.data;
-                            }
-                        }
-                        if (material.normalMapID != EMPTY_ASSET) {
-                            auto& normalTex = m_Context->assets->Get<TextureAsset>(material.normalMapID);
-                            if (normalTex.data) {
-                                material.data.normalMap = normalTex.data;
-                            }
-                        }
-                        if (material.roughnessMapID != EMPTY_ASSET) {
-                            auto& roughnessTex = m_Context->assets->Get<TextureAsset>(material.roughnessMapID);
-                            if (roughnessTex.data) {
-                                material.data.roughnessMap = roughnessTex.data;
-                            }
-                        }
+                        // Resolve texture IDs to actual texture pointers
+                        m_Context->assets->ResolveMaterialTextures(&material);
 
-                        m_Context->renderer->Draw(model.data, worldTransform, material.data);
+                        // Check if material is transparent (has opacity map or opacity < 1.0)
+                        bool isTransparent = (material.data.opacity < 1.0f) || (material.opacityMapID != EMPTY_ASSET);
+
+                        if (isTransparent) {
+                            float dist = glm::length(worldTransform.translate - cameraPos);
+
+                            if (!isAnimated) {
+                                // Static transparent object - try to batch it
+                                glm::mat4 finalMatrix = worldMatrix * model.data->modelTransform.Matrix();
+                                if (m_Context->renderer->AddTransparentInstance(comp.modelID, comp.materialID, finalMatrix, dist)) {
+                                    // Successfully batched - skip immediate draw
+                                    return;
+                                }
+                            }
+
+                            // Animated transparent object or batching failed - defer for individual rendering
+                            transparentObjects.push_back({
+                                model.data,
+                                worldTransform,
+                                material.data,
+                                currentJoints,
+                                isAnimated,
+                                dist
+                            });
+                        }
+                        else if (!isAnimated) {
+                            // Static opaque object with material - try to batch it
+                            // Include model's internal transform in the world matrix
+                            glm::mat4 finalMatrix = worldMatrix * model.data->modelTransform.Matrix();
+                            if (m_Context->renderer->AddInstance(comp.modelID, comp.materialID, finalMatrix, false)) {
+                                // Successfully batched - skip immediate draw
+                                return;
+                            }
+                            // Failed to batch (shouldn't happen for static objects) - fall through to immediate draw
+                            m_Context->renderer->Draw(model.data, worldTransform, material.data);
+                        }
+                        else {
+                            // Animated opaque object - try to batch with joints
+                            glm::mat4 finalMatrix = worldMatrix * model.data->modelTransform.Matrix();
+                            if (m_Context->renderer->AddAnimatedInstance(comp.modelID, comp.materialID, finalMatrix, currentJoints)) {
+                                // Successfully batched animated instance - skip immediate draw
+                                return;
+                            }
+                            // Failed to batch (shouldn't happen) - fall through to immediate draw
+                            m_Context->renderer->Draw(model.data, worldTransform, material.data);
+                        }
                     }
                     else {
+                        // No material - cannot batch (no material ID), use immediate draw
                         m_Context->renderer->Draw(model.data, worldTransform);
                     }
                 }
@@ -685,18 +737,19 @@ namespace Boom
                 SpriteComponent& comp{ entity.Get<SpriteComponent>() };
                 if (comp.textureID == EMPTY_ASSET) return;
 
-                if (!comp.uiOverlay) {
+                if (comp.renderAs3D) {
+                    // 3D world space rendering - uses world transform for parent attachment
                     TextureAsset& texture{ m_Context->assets->Get<TextureAsset>(comp.textureID) };
-                    if (isPicking) {
-                        glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
-                        Transform3D worldTransform;
-                        DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
+                    glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+                    Transform3D worldTransform;
+                    DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
 
+                    if (isPicking) {
                         m_Context->renderer->SetPickUniform(entt::to_integral(entity.ID())); //entity should be of type uint32_t
                         m_Context->renderer->DrawPick(worldTransform);
                     }
                     else
-                        m_Context->renderer->DrawQuad(texture.data, t.transform, comp.color);
+                        m_Context->renderer->DrawQuad(texture.data, worldTransform, comp.color);
                 }
                 else {
                     // Calculate world transform for GUI sprites (respects parent hierarchy)
@@ -714,7 +767,89 @@ namespace Boom
                     guiList.push_back({ comp, guiTransform, entt::to_integral(entity.ID()) });
                 }
             }
+            // VideoComponent rendering
+            else if (entity.Has<VideoComponent>()) {
+                VideoComponent& comp{ entity.Get<VideoComponent>() };
+                if (comp.videoPath.empty()) return;
+
+                // Get the video player from the video system
+                VideoPlayer* player = m_Context->videoSystem ? m_Context->videoSystem->GetPlayer(entity.ID()) : nullptr;
+                if (!player || !player->IsLoaded()) return;
+
+                uint32_t textureId = player->GetTextureID();
+                if (textureId == 0) return;
+
+                glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+                Transform3D worldTransform;
+                DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
+
+                if (isPicking) {
+                    m_Context->renderer->SetPickUniform(entt::to_integral(entity.ID()));
+                    m_Context->renderer->DrawPick(worldTransform);
+                }
+                else {
+                    if (comp.renderAs3D) {
+                        // Render as 3D quad in world space
+                        m_Context->renderer->DrawQuadRaw(textureId, worldTransform, comp.tintColor);
+                    }
+                    else {
+                        // Render as 2D UI overlay
+                        Transform2D transform2D{
+                            worldTransform.translate,
+                            worldTransform.rotate.z,
+                            glm::vec2(worldTransform.scale.x, worldTransform.scale.y)
+                        };
+                        m_Context->renderer->DrawQuadRaw(textureId, transform2D, comp.tintColor);
+                    }
+                }
+            }
             });
+
+        // === INSTANCED RENDERING PASS ===
+        // Render all batched static opaque objects
+        if (!isPicking) {
+            m_Context->renderer->RenderInstancedBatches(*m_Context->assets);
+        }
+
+        // === TRANSPARENT OBJECTS PASS ===
+        // Render transparent objects (batched + individual)
+        if (!isPicking) {
+            // Ensure depth testing is enabled, disable depth writing
+            glEnable(GL_DEPTH_TEST);
+            glDepthFunc(GL_LESS);
+            glDepthMask(GL_FALSE);
+
+            // Enable backface culling for transparent objects if toggled on
+            if (m_Context->renderer->enableTransparentBackfaceCulling) {
+                glEnable(GL_CULL_FACE);
+                glCullFace(GL_BACK);
+            }
+
+            // Render batched transparent instances (already sorted back-to-front)
+            m_Context->renderer->RenderTransparentBatches(*m_Context->assets);
+
+            // Sort and render individual transparent objects (animated transparent or batching failed)
+            if (!transparentObjects.empty()) {
+                std::sort(transparentObjects.begin(), transparentObjects.end(),
+                    [](const TransparentRenderData& a, const TransparentRenderData& b) {
+                        return a.distanceToCamera > b.distanceToCamera; // Sort back-to-front
+                    });
+
+                for (auto& obj : transparentObjects) {
+                    // Set joints if the model has them
+                    if (obj.hasJoints && !obj.joints.empty()) {
+                        m_Context->renderer->SetJoints(obj.joints);
+                    }
+                    m_Context->renderer->Draw(obj.model, obj.transform, obj.material);
+                }
+            }
+
+            // Restore state
+            if (m_Context->renderer->enableTransparentBackfaceCulling) {
+                glDisable(GL_CULL_FACE);
+            }
+            glDepthMask(GL_TRUE);
+        }
 
         //sort guiList based on z-axis from negative to positive(opengl z-axis towards camera)
         std::sort(guiList.begin(), guiList.end(), [](const auto& a, const auto& b) {
@@ -724,7 +859,7 @@ namespace Boom
         //render gui overlays at the end
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL); //supports partial transparency to not interfere with background gui
-        
+
         for (auto const& gui : guiList) {
             if (isPicking) {
                 m_Context->renderer->SetPickUniform(std::get<2>(gui)); //entity should be of type uint32_t

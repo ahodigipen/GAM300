@@ -3,6 +3,7 @@
 
 #include <DetourNavMeshBuilder.h>
 #include <DetourAlloc.h>
+#include <filesystem>
 
 namespace Boom {
     static bool ValidatePolyIndices(const BoomNavCreateParams& p, std::string& why)
@@ -107,6 +108,19 @@ namespace Boom {
         if (!ok) {
             BOOM_ERROR("[Detour] dtCreateNavMeshData() failed after validation.");
             return false;
+        }
+
+        // Create parent directory if it doesn't exist
+        std::filesystem::path filePath(outPath);
+        std::filesystem::path parentDir = filePath.parent_path();
+        if (!parentDir.empty()) {
+            std::error_code ec;
+            std::filesystem::create_directories(parentDir, ec);
+            if (ec) {
+                dtFree(data);
+                BOOM_ERROR("[Detour] Failed to create directory '{}': {}", parentDir.string(), ec.message());
+                return false;
+            }
         }
 
         std::ofstream f(outPath, std::ios::binary);

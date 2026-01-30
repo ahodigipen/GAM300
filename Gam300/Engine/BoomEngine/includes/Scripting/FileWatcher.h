@@ -46,6 +46,9 @@ namespace Boom {
 		std::unordered_map<std::string, WatchEntry> m_Watches;
 
 		static TimePoint GetFileWriteTime(const std::string& filepath);
+
+		std::chrono::system_clock::time_point m_LastGlobalTrigger =
+			std::chrono::system_clock::time_point::min();
 	};
 
 }

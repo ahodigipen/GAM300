@@ -580,7 +580,54 @@ namespace Boom
         RegisterPropertyComponent<ThirdPersonCameraComponent>("ThirdPersonCameraComponent");
 
         // === SPRITE COMPONENT ===
-        RegisterPropertyComponent<SpriteComponent>("SpriteComponent");
+        // Custom serializer for backwards compatibility with uiOverlay -> renderAs3D migration
+        registry.RegisterComponentSerializer(
+            "SpriteComponent",
+            // ----- SERIALIZE -----
+            [](YAML::Emitter& e, EntityRegistry& reg, EntityID ent)
+            {
+                if (!reg.all_of<SpriteComponent>(ent))
+                    return;
+
+                auto& sprite = reg.get<SpriteComponent>(ent);
+
+                e << YAML::Key << "SpriteComponent" << YAML::Value << YAML::BeginMap;
+                e << YAML::Key << "textureID" << YAML::Value << sprite.textureID;
+                e << YAML::Key << "color" << YAML::Value
+                    << YAML::Flow << YAML::BeginSeq
+                    << sprite.color.x << sprite.color.y << sprite.color.z << sprite.color.w
+                    << YAML::EndSeq;
+                e << YAML::Key << "renderAs3D" << YAML::Value << sprite.renderAs3D;
+                e << YAML::EndMap;
+            },
+            // ----- DESERIALIZE -----
+            [](const YAML::Node& data, EntityRegistry& reg, EntityID ent, AssetRegistry&)
+            {
+                if (!data || !data.IsMap())
+                    return;
+
+                auto& sprite = reg.get_or_emplace<SpriteComponent>(ent);
+
+                if (auto v = data["textureID"])
+                    sprite.textureID = v.as<uint64_t>(sprite.textureID);
+
+                if (auto c = data["color"]; c && c.IsSequence() && c.size() == 4) {
+                    sprite.color.x = c[0].as<float>(sprite.color.x);
+                    sprite.color.y = c[1].as<float>(sprite.color.y);
+                    sprite.color.z = c[2].as<float>(sprite.color.z);
+                    sprite.color.w = c[3].as<float>(sprite.color.w);
+                }
+
+                // Handle both new 'renderAs3D' and legacy 'uiOverlay' property
+                if (auto v = data["renderAs3D"]) {
+                    sprite.renderAs3D = v.as<bool>(sprite.renderAs3D);
+                }
+                else if (auto v = data["uiOverlay"]) {
+                    // Legacy: uiOverlay=true means 2D (renderAs3D=false)
+                    sprite.renderAs3D = !v.as<bool>(true);
+                }
+            }
+        );
 
         // === MENU COMPONENT ===
         registry.RegisterComponentSerializer(
@@ -615,6 +662,8 @@ namespace Boom
         // === DEACTIVATED COMPONENT ===
         RegisterPropertyComponent<DeactivatedComponent>("DeactivatedComponent");
 
+        // === VIDEO COMPONENT ===
+        RegisterPropertyComponent<VideoComponent>("VideoComponent");
 
         // === SOUND COMPONENT ===
         registry.RegisterComponentSerializer(

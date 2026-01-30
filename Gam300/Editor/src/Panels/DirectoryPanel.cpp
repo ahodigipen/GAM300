@@ -108,6 +108,14 @@ namespace EditorUI {
         }
     }
 
+    void DirectoryPanel::ForceRefresh()
+    {
+        // Synchronously rebuild the directory tree and update asset registry
+        rootNode = BuildDirectoryTree();
+        UpdateAssetRegistry();
+        rTimer = 0.0;  // Reset the auto-refresh timer
+    }
+
     void DirectoryPanel::DeleteUpdate()
     {
         if (!selectedPath.empty() && ImGui::IsKeyPressed(ImGuiKey_Delete, false))
@@ -396,7 +404,7 @@ namespace EditorUI {
         }
     }
 
-    //should only remove .png/.dds, .fbx, and .anim for now
+    //removes stale assets for: .png/.dds, .fbx, .anim, and .wav
     void DirectoryPanel::RemoveStaleAssets(const std::unordered_set<std::filesystem::path>& seen)
     {
         for (auto& [type, map] : m_App->GetAssetRegistry().GetAll()) {
@@ -404,7 +412,7 @@ namespace EditorUI {
                 for (auto it{ map.begin() }; it != map.end(); ) {
                     std::string ext{ GetExtension(it->second->source) };
                     //ignore empty asset
-                    if (ext == "" || (ext != "png" && ext != "dds" && ext != "fbx" && ext != "anim")) {
+                    if (ext == "" || (ext != "png" && ext != "dds" && ext != "fbx" && ext != "anim" && ext != "wav")) {
                         ++it;
                         continue; //ignore wrong types
                     }

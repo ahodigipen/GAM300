@@ -1,35 +1,42 @@
 ﻿using Boom;
+using System.Collections.Generic;
 
 namespace GameScripts
 {
-    /// <summary>
-    /// Singleton manager to handle player instance access for enemy interactions
-    /// </summary>
     public static class PlayerManager
     {
         private static PlayerMovement s_playerInstance = null;
 
-        /// <summary>
-        /// Register the player instance (called from PlayerMovement.OnStart)
-        /// </summary>
+        // NEW: Track all active enemies
+        private static List<IEnemyController> s_activeEnemies = new List<IEnemyController>();
+
         public static void RegisterPlayer(PlayerMovement player)
         {
             s_playerInstance = player;
             API.Log("[PlayerManager] Player instance registered");
         }
 
-        /// <summary>
-        /// Unregister the player instance (called from PlayerMovement.OnDestroy)
-        /// </summary>
         public static void UnregisterPlayer()
         {
             s_playerInstance = null;
             API.Log("[PlayerManager] Player instance unregistered");
         }
 
-        /// <summary>
-        /// Notify the player they were caught by an enemy
-        /// </summary>
+        // NEW: Register enemy for reset on player respawn
+        public static void RegisterEnemy(IEnemyController enemy)
+        {
+            if (!s_activeEnemies.Contains(enemy))
+            {
+                s_activeEnemies.Add(enemy);
+            }
+        }
+
+        // NEW: Unregister enemy
+        public static void UnregisterEnemy(IEnemyController enemy)
+        {
+            s_activeEnemies.Remove(enemy);
+        }
+
         public static void NotifyPlayerCaught(ulong enemyEntity)
         {
             if (s_playerInstance != null)
@@ -43,12 +50,29 @@ namespace GameScripts
             }
         }
 
-        /// <summary>
-        /// Check if player instance exists
-        /// </summary>
+        // NEW: Notify all enemies that player has respawned
+        public static void NotifyPlayerRespawned()
+        {
+            API.Log($"[PlayerManager] Notifying {s_activeEnemies.Count} enemies of player respawn");
+
+            // Create a copy to avoid modification during iteration
+            var enemiesCopy = new List<IEnemyController>(s_activeEnemies);
+
+            foreach (var enemy in enemiesCopy)
+            {
+                enemy?.OnPlayerRespawned();
+            }
+        }
+
         public static bool HasPlayer()
         {
             return s_playerInstance != null;
         }
+    }
+
+    // NEW: Interface that all enemy controllers must implement
+    public interface IEnemyController
+    {
+        void OnPlayerRespawned();
     }
 }

@@ -3,18 +3,19 @@ using Boom;
 
 namespace GameScripts
 {
-
     public static class Entry
     {
-        // public const string LEVEL_SCENE_NAME = "FreezeTestPatrol";
         public const string LEVEL_SCENE_NAME = "M3 GAMEPLAY";
         public const string PAUSE_SCENE_NAME = "PauseMenu";
         public const string MAIN_MENU_SCENE_NAME = "MainMenu";
         public const string HOW_TO_PLAY_SCENE_NAME = "HowToPlay";
         public const string DEATH_SCENE_NAME = "DeathMenu";
+        public const string END_SCENE_NAME = "EndMenu";
+
         public static string _currentSceneName;
         public static bool IsGamePaused = false;
         public static bool IsPlayerDead = false;
+        public static bool IsGameEnded = false;
 
         // GLFW key constants
         public const int KEY_ESCAPE = 256;
@@ -35,13 +36,23 @@ namespace GameScripts
             MainMenu
         }
 
-        public static PauseMenuAction s_RequestedAction = PauseMenuAction.None;
+        public enum EndMenuAction
+        {
+            None,
+            Restart,
+            MainMenu
+        }
+
+        public static PauseMenuAction s_RequestedPauseAction = PauseMenuAction.None;
         public static DeathMenuAction s_RequestedDeathAction = DeathMenuAction.None;
+        public static EndMenuAction s_RequestedEndAction = EndMenuAction.None;
 
         private static bool _p_KeyWasDown = false;
         private static bool _escape_KeyWasDown = false;
+
         public static PauseMenu s_ActivePauseMenuInstance = null;
         public static DeathMenu s_ActiveDeathMenuInstance = null;
+        public static EndMenu s_ActiveEndMenuInstance = null;
 
         public static void Start()
         {
@@ -50,15 +61,22 @@ namespace GameScripts
 
             IsGamePaused = false;
             IsPlayerDead = false;
+            IsGameEnded = false;
 
-            s_RequestedAction = PauseMenuAction.None;
+            s_RequestedPauseAction = PauseMenuAction.None;
             s_RequestedDeathAction = DeathMenuAction.None;
+            s_RequestedEndAction = EndMenuAction.None;
 
             _currentSceneName = API.GetCurrentSceneName();
             API.EnableFileWatcher(true);
             API.SetGameLogicPaused(false);
+            API.SetGameEnd(false);
+
             s_ActivePauseMenuInstance = null;
             s_ActiveDeathMenuInstance = null;
+            s_ActiveEndMenuInstance = null;
+
+            SettingsManager.LoadSettings();
 
             API.Log("[C#] Entry.Start() called for scene: " + _currentSceneName);
 
@@ -67,6 +85,7 @@ namespace GameScripts
                 API.Log("Pre-loading pause menu additively...");
                 API.LoadSceneAdditive(PAUSE_SCENE_NAME);
                 API.LoadSceneAdditive(DEATH_SCENE_NAME);
+                API.LoadSceneAdditive(END_SCENE_NAME);
             }
         }
 
@@ -75,39 +94,61 @@ namespace GameScripts
             // CRITICAL FIX: Always update game logic pause state FIRST (before any early returns)
             API.SetGameLogicPaused(IsGamePaused);
             API.SetPlayerDead(IsPlayerDead);
+            API.SetGameEnd(IsGameEnded);
 
+            // End Game
+            if (s_RequestedEndAction != EndMenuAction.None)
+            {
+                UpdateEndMenu(dt);
+                return;
+            }
+            if (IsGameEnded)
+            {
+                if (API.IsEndMenuLoaded()) UpdateEndMenu(dt);
+                return;
+            }
+
+            // Death
             if (s_RequestedDeathAction != DeathMenuAction.None)
             {
                 UpdateDeathMenu(dt);
                 return;
             }
+            if (IsPlayerDead)
+            {
+                if (API.IsDeathMenuLoaded()) UpdateDeathMenu(dt);
+                return;
+            }
 
-            if (s_RequestedAction == PauseMenuAction.MainMenu ||
-                s_RequestedAction == PauseMenuAction.Restart ||
-                s_RequestedAction == PauseMenuAction.Quit)
+            // Pause
+            if (s_RequestedPauseAction == PauseMenuAction.MainMenu ||
+                s_RequestedPauseAction == PauseMenuAction.Restart ||
+                s_RequestedPauseAction == PauseMenuAction.Quit)
             {
                 UpdatePauseMenu(dt);
                 return;
             }
-
-            if (IsPlayerDead)
-            {
-                if (API.IsDeathMenuLoaded())
-                {
-                    UpdateDeathMenu(dt);
-                }
-            }
             else if (IsGamePaused)
             {
-                if (API.IsPauseMenuLoaded())
-                {
-                    UpdatePauseMenu(dt);
-                }
+                if (API.IsPauseMenuLoaded()) UpdatePauseMenu(dt);
             }
             else
             {
                 UpdateGame(dt);
             }
+        }
+        public static void TriggerGameEnd()
+        {
+            if (IsGameEnded) return;
+
+            API.Log("Level Complete! Triggering End Menu...");
+            IsGameEnded = true;
+            IsGamePaused = false;
+            IsPlayerDead = false;
+
+            API.SetGameEnd(true);
+            API.ShowEndMenu();
+            API.EnableFileWatcher(false);
         }
 
         public static void TriggerPlayerDeath()
@@ -160,6 +201,31 @@ namespace GameScripts
             }
         }
 
+        private static void UpdateEndMenu(float dt)
+        {
+            switch (s_RequestedEndAction)
+            {
+                case EndMenuAction.MainMenu:
+                    API.Log("EndMenu: Returning to Main Menu...");
+                    IsGameEnded = false;
+                    API.SetGameEnd(false);
+                    API.EnableFileWatcher(true);
+                    s_RequestedEndAction = EndMenuAction.None;
+                    API.LoadScene(MAIN_MENU_SCENE_NAME);
+                    return;
+
+                case EndMenuAction.Restart:
+                    API.Log("EndMenu: Restarting scene...");
+                    IsGameEnded = false;
+                    API.SetGameEnd(false);
+                    PlayerInventory.Reset();
+                    API.EnableFileWatcher(true);
+                    s_RequestedEndAction = EndMenuAction.None;
+                    API.LoadScene(_currentSceneName);
+                    return;
+            }
+        }
+
         private static void UpdateDeathMenu(float dt)
         {
             switch (s_RequestedDeathAction)
@@ -192,16 +258,16 @@ namespace GameScripts
             if (escape_KeyDown && !_escape_KeyWasDown)
             {
                 API.Log("Resuming game (Escape key)...");
-                s_RequestedAction = PauseMenuAction.Resume;
+                s_RequestedPauseAction = PauseMenuAction.Resume;
                 _escape_KeyWasDown = escape_KeyDown;
                 return;
             }
             _escape_KeyWasDown = escape_KeyDown;
 
-            switch (s_RequestedAction)
+            switch (s_RequestedPauseAction)
             {
                 case PauseMenuAction.Resume:
-                    s_RequestedAction = PauseMenuAction.None;
+                    s_RequestedPauseAction = PauseMenuAction.None;
                     ResumeGame();
                     return;
 
@@ -209,7 +275,7 @@ namespace GameScripts
                     API.Log("Returning to Main Menu (Button Click)...");
                     IsGamePaused = false;
                     API.EnableFileWatcher(true);
-                    s_RequestedAction = PauseMenuAction.None;
+                    s_RequestedPauseAction = PauseMenuAction.None;
                     API.LoadScene(MAIN_MENU_SCENE_NAME);
                     return;
 
@@ -218,13 +284,13 @@ namespace GameScripts
                     IsGamePaused = false;
                     PlayerInventory.Reset();
                     API.EnableFileWatcher(true);
-                    s_RequestedAction = PauseMenuAction.None;
+                    s_RequestedPauseAction = PauseMenuAction.None;
                     API.LoadScene(_currentSceneName);
                     return;
 
                 case PauseMenuAction.Quit:
                     API.Log("Quitting game (Button Click)...");
-                    s_RequestedAction = PauseMenuAction.None;
+                    s_RequestedPauseAction = PauseMenuAction.None;
                     API.ShutdownApplication();
                     return;
             }
