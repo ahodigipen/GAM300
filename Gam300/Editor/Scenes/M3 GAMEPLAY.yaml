@@ -11,17 +11,17 @@ ENTITIES:
         IsTrigger: true
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: WOOD
+        SurfaceType: STONE
         Type: BOX
     InfoComponent:
       Parent: 0
-      Name: Mini_Tatami_Level1
-      UID: 4388766450973729723
+      Name: Stone_Stairs_Right
+      UID: 12252970625562623435
     TransformComponent:
       Transform:
-        Translate: [-1.57363784, 2.71989751, -18.2379436]
-        Rotate: [-9.38925648, 0, 0]
-        Scale: [8, 2, 4]
+        Translate: [10.9185543, 5.7363534, -17.7784405]
+        Rotate: [0, -0, 0]
+        Scale: [10, 18, 4]
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -31,7 +31,29 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: true
-        ShowPhysicsDebug: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: WOOD
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: Mini_Tatami_Level1
+      UID: 4388766450973729723
+    TransformComponent:
+      Transform:
+        Translate: [0.0321748853, 2.71989751, -17.972702]
+        Rotate: [-9.38925648, 0, 0]
+        Scale: [9, 2, 4]
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: WOOD
         Type: BOX
@@ -1715,8 +1737,8 @@ ENTITIES:
       UID: 14807325083218498713
     TransformComponent:
       Transform:
-        Translate: [-12.0617018, 3.17116499, -19.325325]
-        Rotate: [180, 5.00895658e-06, 180]
+        Translate: [-12.0617018, 3.17116499, -19.2377338]
+        Rotate: [-180, 5.00895658e-06, -180]
         Scale: [1.28400004, 1.34300005, 1.28799999]
     RigidBodyComponent:
       RigidBody:
@@ -1925,8 +1947,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-4.7701354, 5.67976665, -15.9940519]
-        Rotate: [-229.375, -136.750061, 180]
+        Translate: [2.38433647, 17.8062572, -17.0168228]
+        Rotate: [-240, -161.750061, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -10097,3 +10119,25 @@ ENTITIES:
         Translate: [0, 0, 0]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: STONE
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: Stone_Stairs_Left
+      UID: 18307948141547307247
+    TransformComponent:
+      Transform:
+        Translate: [-11.2100706, 2.26809382, -18.1583977]
+        Rotate: [0, -0, 0]
+        Scale: [10, 23, 4]
