@@ -167,11 +167,7 @@
       <AdditionalLibraryDirectories>$(SolutionDir)x64\$(Configuration);$(SolutionDir)Engine\BoomEngine\Vendors\Detour\Include;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>BoomEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy /Y /D "$(SolutionDir)x64\$(Configuration)\BoomEngine.dll" "$(OutDir)"
-if exist "$(glfw_BIN_DIRS)" xcopy /y /i "$(glfw_BIN_DIRS)\*.dll" "$(TargetDir)"
-if exist "$(glew_BIN_DIRS)" xcopy /y /i "$(glew_BIN_DIRS)\*.dll" "$(TargetDir)"</Command>
-    </PostBuildEvent>
+
   </ItemDefinitionGroup>
   <!-- Release | x64 -->
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -202,7 +198,7 @@ if exist "$(glew_BIN_DIRS)" xcopy /y /i "$(glew_BIN_DIRS)\*.dll" "$(TargetDir)"<
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="Engine\BoomEngine\BoomEngine.vcxproj">
+    <ProjectReference Include="..\Engine\BoomEngine\BoomEngine.vcxproj">
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -212,6 +208,7 @@ if exist "$(glew_BIN_DIRS)" xcopy /y /i "$(glew_BIN_DIRS)\*.dll" "$(TargetDir)"<
     <ClCompile Include="src\Editor.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Panels\AnimatorGraphPanel.cpp" />
+    <ClCompile Include="src\Panels\CutsceneSequencerPanel.cpp" />
     <ClCompile Include="src\Panels\ModelPreviewPanel.cpp" />
     <ClCompile Include="src\Panels\AnimationTimelinePanel.cpp" />
     <ClCompile Include="src\Panels\AnimationTimelinePanel_Timeline.cpp" />
@@ -263,6 +260,7 @@ if exist "$(glew_BIN_DIRS)" xcopy /y /i "$(glew_BIN_DIRS)\*.dll" "$(TargetDir)"<
     <ClInclude Include="src\Editor.h" />
     <ClInclude Include="src\EditorPCH.h" />
     <ClInclude Include="src\Panels\AnimatorGraphPanel.h" />
+    <ClInclude Include="src\Panels\CutsceneSequencerPanel.h" />
     <ClInclude Include="src\Panels\ModelPreviewPanel.h" />
     <ClInclude Include="src\Panels\AnimationTimelinePanel.h" />
     <ClInclude Include="src\Panels\AudioPanel.h" />

@@ -153,6 +153,15 @@ namespace EditorUI {
             if (m.showAnimatorGraph)    ImGui::MenuItem("Animator Graph", nullptr, m.showAnimatorGraph);
             if (m.showModelPreview)     ImGui::MenuItem("Model Preview", nullptr, m.showModelPreview);
             if (m.showAnimationTimeline) ImGui::MenuItem("Animation Timeline", nullptr, m.showAnimationTimeline);
+            
+            // Check if Editor class has exposed the boolean directly or if we need to access via Editor pointer
+            // Since we modified Editor.h to add m_ShowCutsceneSequencer, we can access it if MenuBarPanel uses the pointer logic
+            // But MenuBarPanel.cpp uses a struct `m` to hold pointers. We need to check if we can add it there or strictly use m_Owner.
+            // Looking at `MenuBarPanel.cpp`'s `Render` method, it uses `m.showX`.
+            // Let's modify the struct initialization in the constructor first (which we can't easily do via Replace).
+            // Actually, we can just use m_Owner->m_ShowCutsceneSequencer since m_Owner is available!
+            if (m_Owner) ImGui::MenuItem("Cutscene Sequencer", nullptr, &m_Owner->m_ShowCutsceneSequencer);
+
             ImGui::EndMenu();
         }
 
