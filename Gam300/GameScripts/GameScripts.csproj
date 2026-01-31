@@ -55,6 +55,7 @@
     <Compile Include="EnemyAI.cs" />
     <Compile Include="FootStepsMixer.cs" />
     <Compile Include="FreezeManager.cs" />
+    <Compile Include="IntroCutscene.cs" />
     <Compile Include="HowToPlayMenu.cs" />
     <Compile Include="CrouchTriggerText.cs" />
     <Compile Include="PatrolEnemyController.cs" />
