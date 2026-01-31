@@ -39,7 +39,7 @@ namespace GameScripts
         private float _delayTimer = 0f;
         private int _duration = 600;
 
-        private class KeyFrame
+        public class KeyFrame
         {
             public int frame;
             public float time; // frame / 60.0f
@@ -47,14 +47,25 @@ namespace GameScripts
             public string valStr = ""; // Animation Name
         }
 
-        private class Track
+        public class Track
         {
             public string label; // "EntityName : Type"
             public string targetEntityName;
-            public int type; // 0=Pos, 1=Rot, 2=Scale, 3=Anim
+            public int type; // 0=Pos, 1=Rot, 2=Scale, 3=Anim, 4=LookAt
             public List<KeyFrame> keyframes = new List<KeyFrame>();
             public ulong cachedEntityID = 0;
             public string lastAnim = ""; // Cache to prevent spamming Play
+        }
+
+        public void AddTrack(Track t)
+        {
+            _tracks.Add(t);
+        }
+
+        public void ClearTracks()
+        {
+            _tracks.Clear();
+            _duration = 0;
         }
 
         private List<Track> _tracks = new List<Track>();
@@ -187,6 +198,7 @@ namespace GameScripts
 
         public void Play()
         {
+            API.Log("[CutsceneSequencer] Play() Called!");
             _isPlaying = true;
             _currentTime = 0f;
             
@@ -271,7 +283,6 @@ namespace GameScripts
 
         private void ApplyTracks(float currentFrame)
         {
-            // API.Log($"[CutsceneDebug] ApplyTracks Frame: {currentFrame}, TrackCount: {_tracks.Count}");
             foreach (var track in _tracks)
             {
                  // Find entity (cache it)
@@ -281,9 +292,6 @@ namespace GameScripts
                          // Throttle error
                          if ((int)currentFrame % 60 == 0) API.Log($"[CutsceneDebug] FAIL: Could not find entity '{track.targetEntityName}' for track '{track.label}'");
                          continue;
-                     }
-                     else {
-                         API.Log($"[CutsceneDebug] SUCCESS: Found entity '{track.targetEntityName}' (ID: {track.cachedEntityID})");
                      }
                  }
                  
@@ -312,6 +320,45 @@ namespace GameScripts
                              API.AnimatorSetStateMachineEnabled(track.cachedEntityID, false);
                              API.AnimatorPlay(track.cachedEntityID, activeKF.valStr);
                              track.lastAnim = activeKF.valStr;
+                         }
+                     }
+                     continue;
+                 }
+
+
+                 // LOOK AT TRACK (Type 4)
+                 if (track.type == 4)
+                 {
+                     if (track.keyframes.Count < 1) continue;
+                     
+                     // Find active keyframe
+                     KeyFrame activeKF = null;
+                     for (int i = 0; i < track.keyframes.Count; i++)
+                     {
+                         if (currentFrame >= track.keyframes[i].frame) activeKF = track.keyframes[i];
+                         else break;
+                     }
+
+                     if (activeKF != null && !string.IsNullOrEmpty(activeKF.valStr) && activeKF.valStr != "None")
+                     {
+                         ulong targetID = API.FindEntity(activeKF.valStr);
+                         if (targetID != 0)
+                         {
+                             Vec3 targetPos = API.GetPosition(targetID);
+                             Vec3 camPos = API.GetPosition(track.cachedEntityID);
+                             
+                             float dx = targetPos.X - camPos.X;
+                             float dz = targetPos.Z - camPos.Z;
+                             float dy = targetPos.Y - camPos.Y;
+                             
+                             // Yaw
+                             float yaw = (float)(Math.Atan2(dx, dz) * 180.0 / Math.PI);
+                             // Pitch
+                             float dist = (float)Math.Sqrt(dx*dx + dz*dz);
+                             float pitch = (float)(Math.Atan2(dy, dist) * 180.0 / Math.PI);
+                             
+                             // X=Pitch, Y=Yaw, Z=Roll
+                             API.SetRotation(track.cachedEntityID, new Vec3(-pitch, yaw, 0f));
                          }
                      }
                      continue;
@@ -370,11 +417,11 @@ namespace GameScripts
 
                      if (track.type == 0) // Pos
                      {
-                         // DEBUG: Log the position we are forcibly setting
-                         // if (((int)currentFrame) % 60 == 0) API.Log($"[CutsceneDebug] Applying Pos to {track.targetEntityName}: {x:F2}, {y:F2}, {z:F2}");
+                         // DEBUG: Log the position we are setting
+                         if (((int)currentFrame) % 120 == 0) API.Log($"[CutsceneDebug] Moving '{track.targetEntityName}' to {x:F2}, {y:F2}, {z:F2}");
                          
-                         // Use Teleport for Physics objects (Player)
-                         API.TeleportRigidBody(track.cachedEntityID, new Vec3(x, y, z));
+                         // Use SetPosition for generic objects (works for Camera too)
+                         API.SetPosition(track.cachedEntityID, new Vec3(x, y, z));
                      }
                      else if (track.type == 1) // Rot
                      {
@@ -387,7 +434,6 @@ namespace GameScripts
                  }
             }
         }
-
         private float Lerp(float a, float b, float t)
         {
             return a + (b - a) * t;
