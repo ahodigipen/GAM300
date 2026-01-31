@@ -35,6 +35,7 @@
 #include <GLFW/glfw3.h>
 #include "Vendors/imgui/backends/imgui_impl_glfw.h"
 #include "Vendors/imgui/backends/imgui_impl_opengl3.h"
+#include "Graphics/Text/FontManager.h"
 
 
 namespace {
@@ -141,6 +142,13 @@ namespace EditorUI {
             // Note: Pass 0 as numThreads to auto-detect CPU cores, or specify a number like 4 or 8
         }
 
+        // Initialize Font System (TEST)
+        if (Boom::FontManager::GetInstance().Init()) {
+             Boom::FontManager::GetInstance().LoadFont("Roboto-Regular", "Resources/Fonts/Roboto-Regular.ttf", 48);
+        } else {
+             BOOM_ERROR("Failed to init FontManager");
+        }
+
         // Construct panels here; they persist across frames.
         // We pass `this` so panels can call owner->GetContext() etc.
         m_MenuBar = std::make_unique<MenuBarPanel>(this);
@@ -222,6 +230,9 @@ namespace EditorUI {
         if (m_ShowAnimationTimeline && m_AnimationTimeline) m_AnimationTimeline->Render();
         // --- End frame / draw ---
         EndImguiFrame();
+
+        // Render Test Text REMOVED from Editor::Render overlay
+        // Boom::FontManager::GetInstance().RenderText("Roboto", "Hello World", 200.0f, 200.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
     }
 
     void Editor::HandleGlobalShortcuts()

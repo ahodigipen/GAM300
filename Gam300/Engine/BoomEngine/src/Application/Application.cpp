@@ -2,6 +2,7 @@
 #pragma warning(disable : 4834) // Disable [[nodiscard]] warnings for exception::what() in logging
 #include "Application/Application.h"
 #include "Audio/SoundSystem.hpp" // <-- added for per-entity sound updates
+#include "Graphics/Text/FontManager.h"
 
 namespace Boom
 {
@@ -930,6 +931,11 @@ namespace Boom
                 if (texture)
                     m_Context->renderer->DrawQuad(texture->data, std::get<1>(gui), std::get<0>(gui).color);
             }
+        }
+
+        // --- TEST TEXT RENDERING ---
+        if (!isPicking) {
+             Boom::FontManager::GetInstance().RenderText("Roboto-Regular", "Hello Boom Engine Viewport!", 50.0f, 50.0f, 1.0f, glm::vec3(1.0f, 1.0f, 0.0f));
         }
     }
 
