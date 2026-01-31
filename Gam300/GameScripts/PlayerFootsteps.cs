@@ -46,13 +46,34 @@ namespace Boom
 
         // Wood surface sounds
         [EditorExposed("Wood Sound 1", "Wood footstep sound variant 1")]
-        private string _woodSound1 = "Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_01.wav";
+        private string _woodSound1 = "Resources/Audio/footstep_tatami_1.wav";
         [EditorExposed("Wood Sound 2", "Wood footstep sound variant 2")]
-        private string _woodSound2 = "Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_02.wav";
+        private string _woodSound2 = "Resources/Audio/footstep_tatami_2.wav";
         [EditorExposed("Wood Sound 3", "Wood footstep sound variant 3")]
-        private string _woodSound3 = "Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_03.wav";
+        private string _woodSound3 = "Resources/Audio/footstep_tatami_3.wav";
         [EditorExposed("Wood Sound 4", "Wood footstep sound variant 4")]
-        private string _woodSound4 = "Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_04.wav";
+        private string _woodSound4 = "Resources/Audio/footstep_tatami_4.wav";
+        [EditorExposed("Wood Sound 5", "Wood footstep sound variant 5")]
+        private string _woodSound5 = "Resources/Audio/footstep_tatami_5.wav";
+        [EditorExposed("Wood Sound 6", "Wood footstep sound variant 6")]
+        private string _woodSound6 = "Resources/Audio/footstep_tatami_6.wav";
+        [EditorExposed("Wood Sound 7", "Wood footstep sound variant 7")]
+        private string _woodSound7 = "Resources/Audio/footstep_tatami_7.wav";
+        [EditorExposed("Wood Sound 8", "Wood footstep sound variant 8")]
+        private string _woodSound8 = "Resources/Audio/footstep_tatami_8.wav";
+        [EditorExposed("Wood Sound 9", "Wood footstep sound variant 9")]
+        private string _woodSound9 = "Resources/Audio/footstep_tatami_9.wav";
+        [EditorExposed("Wood Sound 10", "Wood footstep sound variant 10")]
+        private string _woodSound10 = "Resources/Audio/footstep_tatami_10.wav";
+        [EditorExposed("Wood Sound 11", "Wood footstep sound variant 11")]
+        private string _woodSound11 = "Resources/Audio/footstep_tatami_11.wav";
+        [EditorExposed("Wood Sound 12", "Wood footstep sound variant 12")]
+        private string _woodSound12 = "Resources/Audio/footstep_tatami_12.wav";
+        [EditorExposed("Wood Sound 13", "Wood footstep sound variant 13")]
+        private string _woodSound13 = "Resources/Audio/footstep_tatami_13.wav";
+        [EditorExposed("Wood Sound 14", "Wood footstep sound variant 14")]
+        private string _woodSound14 = "Resources/Audio/footstep_tatami_14.wav";
+
 
         // Sand surface sounds (fill with sand audio files)
         [EditorExposed("Sand Sound 1", "Sand footstep sound variant 1")]
@@ -129,7 +150,7 @@ namespace Boom
             switch (surface)
             {
                 case API.SurfaceType.WOOD:
-                    return new string[] { _woodSound1, _woodSound2, _woodSound3, _woodSound4 };
+                    return new string[] { _woodSound1, _woodSound2, _woodSound3, _woodSound4, _woodSound5, _woodSound6, _woodSound7, _woodSound8, _woodSound9, _woodSound10, _woodSound11, _woodSound12, _woodSound13, _woodSound14};
                 case API.SurfaceType.SAND:
                     return new string[] { _sandSound1, _sandSound2, _sandSound3, _sandSound4, _sandSound5, _sandSound6, _sandSound7, _sandSound8, _sandSound9, _sandSound10, _sandSound11 };
                 case API.SurfaceType.STONE:

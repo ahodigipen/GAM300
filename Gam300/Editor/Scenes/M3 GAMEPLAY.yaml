@@ -327,7 +327,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 2.53051853, -14.2555885]
-        Rotate: [0, 512.109924, 0]
+        Rotate: [0, 377.343018, 0]
         Scale: [68.965065, 68.9655151, 68.965065]
     ScriptComponent:
       Enabled: true
@@ -566,7 +566,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [2.07987475, 17.7299271, 63.520256]
-        Rotate: [0, 306.263672, 0]
+        Rotate: [0, 216.337372, 0]
         Scale: [0.0145000033, 0.0145000005, 0.0145000033]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -672,8 +672,8 @@ ENTITIES:
       UID: 14450237795829985322
     TransformComponent:
       Transform:
-        Translate: [-58.9771118, 31.6161957, 17.5856152]
-        Rotate: [180, 61.2338905, 180]
+        Translate: [-53.3342171, 31.6161957, 14.4877634]
+        Rotate: [180, 61.2339935, 180]
         Scale: [0.0200004745, 0.0199999996, 0.0200004745]
     RigidBodyComponent:
       RigidBody:
@@ -751,7 +751,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 3.47335076
+        Speed: 3.46514821
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -796,8 +796,8 @@ ENTITIES:
       UID: 263206634475258297
     TransformComponent:
       Transform:
-        Translate: [-32.9486465, 24.3438988, -9.79262733]
-        Rotate: [0, 89.980217, 0]
+        Translate: [-61.3222771, 24.3438988, -9.79262733]
+        Rotate: [0, -89.980217, 0]
         Scale: [0.0200004745, 0.0199999996, 0.0200004745]
     RigidBodyComponent:
       RigidBody:
@@ -875,12 +875,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 4.523314
+        Speed: 4.51511478
       BoolParams:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-31.1600056, 24.8474388, -9.79262638]
+      Target: [-62.5423012, 24.8474388, -9.79262638]
       Speed: 4.55000019
       ArriveRadius: 0.150000006
       Active: true
@@ -896,7 +896,7 @@ ENTITIES:
       PatrolPoints:
         - [-62.5423012, 24.8474388, -9.79262638]
         - [-31.1600056, 24.8474388, -9.79262638]
-      PatrolIndex: 1
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -920,8 +920,8 @@ ENTITIES:
       UID: 9730896463395262189
     TransformComponent:
       Transform:
-        Translate: [-31.8510647, 24.3238983, 20.2910976]
-        Rotate: [180, -5.00895612e-06, 180]
+        Translate: [-31.8510647, 24.3238983, 12.2901192]
+        Rotate: [0, -4.46236008e-05, 0]
         Scale: [0.0200001765, 0.0199999996, 0.0200001765]
     RigidBodyComponent:
       RigidBody:
@@ -999,12 +999,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 4.42214346
+        Speed: 4.41511393
       BoolParams:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-31.8510666, 24.596777, 0.315589666]
+      Target: [-31.8510666, 24.596777, 24.0069332]
       Speed: 4.44999981
       ArriveRadius: 0.150000006
       Active: true
@@ -1020,7 +1020,7 @@ ENTITIES:
       PatrolPoints:
         - [-31.8510666, 24.596777, 24.0069332]
         - [-31.8510666, 24.596777, 0.315589666]
-      PatrolIndex: 1
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -1044,8 +1044,8 @@ ENTITIES:
       UID: 7103488143176582610
     TransformComponent:
       Transform:
-        Translate: [-21.2988949, 13.3755474, 62.1609154]
-        Rotate: [0, 90, 0]
+        Translate: [-30.3794079, 13.3549795, 62.1609154]
+        Rotate: [360, -90, 0]
         Scale: [0.0200004764, 0.0199999996, 0.0200004764]
     RigidBodyComponent:
       RigidBody:
@@ -1123,12 +1123,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.47334886
+        Speed: 2.46494675
       BoolParams:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-13.3622103, 13.4397764, 62.1609154]
+      Target: [-34.7096901, 13.4397764, 62.1609154]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -1145,7 +1145,7 @@ ENTITIES:
         - [-13.3622103, 13.4397764, 62.1609154]
         - [-28.2320347, 13.4397764, 62.1609154]
         - [-34.7096901, 13.4397764, 62.1609154]
-      PatrolIndex: 0
+      PatrolIndex: 2
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -1169,7 +1169,7 @@ ENTITIES:
       UID: 11377284783086712530
     TransformComponent:
       Transform:
-        Translate: [-22.9501438, 13.3755455, 31.8400135]
+        Translate: [-16.2575951, 13.3755455, 31.8400135]
         Rotate: [360, -90, 0]
         Scale: [0.0200004783, 0.0199999996, 0.0200004783]
     RigidBodyComponent:
@@ -1248,7 +1248,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0.00209403457
+        Speed: 2.4651413
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -1269,7 +1269,7 @@ ENTITIES:
       PatrolPoints:
         - [-23.0942459, 13.4397764, 31.8400135]
         - [-12.0609379, 13.4397764, 31.8400135]
-      PatrolIndex: 1
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -1293,8 +1293,8 @@ ENTITIES:
       UID: 4350822310922817577
     TransformComponent:
       Transform:
-        Translate: [-13.3622131, 13.3755474, 52.9277458]
-        Rotate: [180, 0.000158915587, 180]
+        Translate: [-13.3622131, 13.3755465, 46.3495522]
+        Rotate: [180, 3.5972178e-05, 180]
         Scale: [0.0200004783, 0.0199999996, 0.0200004783]
     RigidBodyComponent:
       RigidBody:
@@ -1372,7 +1372,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.4733398
+        Speed: 2.46511817
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -1405,7 +1405,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-32.5929832, 24.2603378, -2.77601147]
-        Rotate: [0, 180, 0]
+        Rotate: [0, 314.766907, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -2042,7 +2042,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-46.1160126, 24.2603378, -18.4139233]
-        Rotate: [0, 0, 0]
+        Rotate: [0, 225.233093, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -2421,8 +2421,8 @@ ENTITIES:
       UID: 9778697280815915040
     TransformComponent:
       Transform:
-        Translate: [12.4887571, 13.4210215, -9.57754326]
-        Rotate: [180, 89.980217, 180]
+        Translate: [7.85274649, 13.4210215, -9.57754135]
+        Rotate: [180, 90, 180]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -2500,7 +2500,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.47330689
+        Speed: 2.46513653
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -2545,8 +2545,8 @@ ENTITIES:
       UID: 3476234535713046263
     TransformComponent:
       Transform:
-        Translate: [-5.06937408, 13.4210215, 19.3370743]
-        Rotate: [360, -90, 0]
+        Translate: [-9.83028316, 13.4210205, 19.3370743]
+        Rotate: [0, 89.980217, 0]
         Scale: [0.0200004801, 0.0199999996, 0.0200004801]
     RigidBodyComponent:
       RigidBody:
@@ -2624,12 +2624,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.47333336
+        Speed: 2.46511412
       BoolParams:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-22.7366295, 13.404274, 19.3370762]
+      Target: [10.9044418, 13.404274, 19.3370762]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -2645,7 +2645,7 @@ ENTITIES:
       PatrolPoints:
         - [-22.7366295, 13.404274, 19.3370762]
         - [10.9044418, 13.404274, 19.3370762]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -2669,8 +2669,8 @@ ENTITIES:
       UID: 7568830222834310318
     TransformComponent:
       Transform:
-        Translate: [-8.9820261, 13.4210224, -9.97168255]
-        Rotate: [180, 7.69533144e-05, 180]
+        Translate: [-8.98202515, 13.4210215, -1.06765163]
+        Rotate: [0, -0, 0]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -2748,12 +2748,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.47334218
+        Speed: 2.46511412
       BoolParams:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-8.98202515, 13.2056856, -10.6896248]
+      Target: [-8.98202515, 13.2056856, 7.27203894]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -2769,7 +2769,7 @@ ENTITIES:
       PatrolPoints:
         - [-8.98202515, 13.2056856, -10.6896248]
         - [-8.98202515, 13.2056856, 7.27203894]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -3003,7 +3003,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-56.9920845, 24.2603378, -2.19607687]
-        Rotate: [0, 0, 0]
+        Rotate: [0, 225.233093, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3139,7 +3139,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-14.5949755, 13.3514919, 22.6192093]
-        Rotate: [0, 0, 0]
+        Rotate: [0, 225.233093, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3233,7 +3233,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [17.540493, 13.4146328, 3.31294298]
-        Rotate: [5.00895476e-06, 0, 5.00895476e-06]
+        Rotate: [5.00895476e-06, 225.233093, 5.00895476e-06]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3327,7 +3327,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [9.27553558, 0.550991118, -14.2555885]
-        Rotate: [0, 0, 0]
+        Rotate: [0, 225.233093, 0]
         Scale: [0.0145000955, 0.0145000005, 0.0145000955]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3421,7 +3421,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 0.530518472, -14.2555885]
-        Rotate: [0, 332.109924, 0]
+        Rotate: [0, 197.343018, 0]
         Scale: [0.0144997435, 0.0145000005, 0.0144997435]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -8160,8 +8160,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [0.0429861844, 5.04840326, 13.1853313]
-        Rotate: [85.0000076, 28.0000648, 0]
+        Translate: [-6.96587276, 6.07839155, 1.36239135]
+        Rotate: [1.62496948, -0.312515259, -2.27722667e-05]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -8174,8 +8174,8 @@ ENTITIES:
       Current Distance: 1
       Min Distance: 1
       Max Distance: 5
-      Current Yaw: -2672
-      Current Pitch: -85
+      Current Yaw: -1903
+      Current Pitch: -84
       Mouse Sensitivity: 1
       Scroll Sensitivity: 1
   - InfoComponent:
@@ -9338,8 +9338,8 @@ ENTITIES:
       UID: 2377197601835279376
     TransformComponent:
       Transform:
-        Translate: [0.00364892487, 1.61266565, 13.1301565]
-        Rotate: [0, -51.0000305, 0]
+        Translate: [-7.58176374, 1.61266565, 9.59280205]
+        Rotate: [0, -88.0001221, 0]
         Scale: [0.0164999887, 0.0164999999, 0.0164999887]
     CharacterControllerComponent:
       Radius: 0.800000012
@@ -9493,7 +9493,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 1.05414758e-20
+        Speed: 1.14850971e-16
       BoolParams:
         IsMoving: false
         Sprint: false
@@ -9616,7 +9616,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 2.53051853, -14.2555885]
-        Rotate: [0, 512.109924, 0]
+        Rotate: [0, 377.343018, 0]
         Scale: [136.157349, 68.9649124, 68.9648361]
     ScriptComponent:
       Enabled: true
@@ -9693,8 +9693,8 @@ ENTITIES:
       UID: 11344090768170482118
     TransformComponent:
       Transform:
-        Translate: [-22.2951088, 13.4210224, -7.14507341]
-        Rotate: [-0, 1.00179122e-05, -0]
+        Translate: [-22.2951069, 13.4210224, -10.1534166]
+        Rotate: [180, -5.00895612e-06, 180]
         Scale: [0.0199999977, 0.0199999996, 0.0199999977]
     RigidBodyComponent:
       RigidBody:
@@ -9772,12 +9772,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.47334218
+        Speed: 2.46514153
       BoolParams:
         {}
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-22.2951069, 13.404274, 7.21938944]
+      Target: [-22.2951069, 13.404274, -14.4732275]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -9793,7 +9793,7 @@ ENTITIES:
       PatrolPoints:
         - [-22.2951069, 13.404274, 7.21938944]
         - [-22.2951069, 13.404274, -14.4732275]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -10062,9 +10062,9 @@ ENTITIES:
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: true
-        ShowPhysicsDebug: false
+        ShowPhysicsDebug: true
         PhysicsMesh: 0
-        SurfaceType: SAND
+        SurfaceType: WOOD
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -10072,6 +10072,6 @@ ENTITIES:
       UID: 3510211931949444765
     TransformComponent:
       Transform:
-        Translate: [-6.96380043, 2.64538646, 1.58923185]
+        Translate: [0.854861081, 2.49743152, -6.92689991]
         Rotate: [0, -0, 0]
-        Scale: [10, 10, 10]
+        Scale: [40, 5, 16]
