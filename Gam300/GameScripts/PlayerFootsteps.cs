@@ -237,7 +237,7 @@ namespace Boom
             string[] triggerPrefixes = {
                 "SurfaceTrigger", "Surface_", "Ground_", "Floor_",
                 "TestTrigger", "Trigger_", "SandTrigger", "WoodTrigger",
-                "StoneTrigger", "MetalTrigger", "GrassTrigger"
+                "StoneTrigger", "MetalTrigger", "GrassTrigger","Tatami_Level1","Mini_Tatami_Level1"
             };
 
             for (int i = 0; i < 50; i++) // Check up to 50 of each type
@@ -251,8 +251,8 @@ namespace Boom
             }
 
             // Also try some specific names that might be used
-            TryRegisterSurfaceTrigger("TestTriggerSAnd");
-            TryRegisterSurfaceTrigger("testsandtrigger");
+            //TryRegisterSurfaceTrigger("TestTriggerSAnd");
+            //TryRegisterSurfaceTrigger("testsandtrigger");
 
             API.Log($"[FootstepComponent] Registered {_activeSurfaceTriggers.Count} potential surface triggers");
         }
