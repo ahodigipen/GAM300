@@ -5,9 +5,11 @@ using System.Collections.Generic;
 namespace GameScripts
 {
     /// <summary>
-    /// Generates a maze by lowering wall pillars that form the path.
+    /// Generates a maze with a two-phase animation:
+    /// Phase 1: All 100 pillars rise up in a diagonal wave and stay up
+    /// Phase 2: Path pillars sink down layer by layer (walls 1-10, 11-20, ..., 91-100)
     /// Walls labeled 1-100 are already placed in the scene.
-    /// When the player enters the trigger, the maze generates and animates path walls downward.
+    /// When the player enters the trigger, the maze generates and animates.
     /// </summary>
     public class MazeGeneration
     {
@@ -26,11 +28,11 @@ namespace GameScripts
         [EditorExposed("Wave Height", "How high walls rise during initial wave", 0f, 10f, true)]
         private float _waveHeight = 3f;
 
-        [EditorExposed("Wall Rise Speed", "Speed at which maze walls rise", 1f, 30f, true)]
-        private float _wallRiseSpeed = 20f;
+        [EditorExposed("Layer Sink Speed", "Speed at which layers sink down", 1f, 30f, true)]
+        private float _layerSinkSpeed = 15f;
 
-        [EditorExposed("Wall Height", "Final height for maze walls", 0f, 15f, true)]
-        private float _wallHeight = 5f;
+        [EditorExposed("Layer Sink Delay", "Delay between each layer sinking (seconds)", 0f, 2f, true)]
+        private float _layerSinkDelay = 0.2f;
 
         [EditorExposed("Auto Generate", "Generate maze on start (ignore trigger)")]
         private bool _autoGenerate = false;
@@ -51,10 +53,11 @@ namespace GameScripts
         private int _animatingFrameCount = 0;
 
         // Animation phases
-        private enum AnimPhase { WaveUp, Flatten, WallRise, Complete }
+        private enum AnimPhase { WaveUp, LayerSink, Complete }
         private AnimPhase _currentPhase = AnimPhase.WaveUp;
         private float _waveProgress = 0f;
-        private float _wallRiseWaveProgress = 0f;
+        private int _currentSinkingLayer = 0;
+        private float _layerSinkProgress = 0f;
 
         // Static instance tracking for trigger callbacks
         private static readonly Dictionary<ulong, MazeGeneration> s_instances = new Dictionary<ulong, MazeGeneration>();
@@ -436,46 +439,46 @@ namespace GameScripts
         }
 
         /// <summary>
-        /// Start the three-phase construction animation:
-        /// Phase 1: Wave rises across all walls
-        /// Phase 2: All walls flatten back to original
-        /// Phase 3: Maze walls rise up (paths stay flat)
+        /// Start the two-phase construction animation:
+        /// Phase 1: Diagonal wave rises across all walls and stays up
+        /// Phase 2: Path walls sink down layer by layer (10 at a time)
         /// </summary>
         private void StartWallAnimation()
         {
-            API.Log("[MazeGeneration] Starting three-phase construction animation...");
+            API.Log("[MazeGeneration] Starting two-phase construction animation...");
 
             _currentPhase = AnimPhase.WaveUp;
             _waveProgress = 0f;
+            _currentSinkingLayer = 0;
+            _layerSinkProgress = 0f;
             _animatingFrameCount = 0;
             _isAnimating = true;
 
-            // Set target positions for NON-path walls (they rise up in phase 3)
+            // Set target positions
             foreach (var kvp in _walls)
             {
                 WallState wall = kvp.Value;
-                if (!wall.IsPath) // Walls (obstacles) rise up
+                if (!wall.IsPath) // Non-path walls stay at wave height
                 {
                     wall.TargetPosition = new Vec3(
                         wall.OriginalPosition.X,
-                        wall.OriginalPosition.Y + _wallHeight,
+                        wall.OriginalPosition.Y + _waveHeight,
                         wall.OriginalPosition.Z
                     );
                 }
-                else // Paths stay at original position
+                else // Path walls will sink back to original
                 {
                     wall.TargetPosition = wall.OriginalPosition;
                 }
             }
 
-            API.Log($"[MazeGeneration] Will raise {_walls.Count - _pathWallIndices.Count} walls, leaving {_pathWallIndices.Count} as paths");
+            API.Log($"[MazeGeneration] Will keep {_walls.Count - _pathWallIndices.Count} walls up, sinking {_pathWallIndices.Count} path walls in layers");
         }
 
         /// <summary>
-        /// Update wall animations each frame with three phases:
-        /// Phase 1: Wave rises (walls go up in sequence)
-        /// Phase 2: Flatten (all walls return to original)
-        /// Phase 3: Wall rise wave (maze walls rise up, revealing paths)
+        /// Update wall animations each frame with two phases:
+        /// Phase 1: Wave rises (walls go up and stay up)
+        /// Phase 2: Layer sink (path walls sink down layer by layer)
         /// </summary>
         private void UpdateWallAnimations(float deltaTime)
         {
@@ -487,12 +490,8 @@ namespace GameScripts
                     UpdateWaveUpPhase(deltaTime);
                     break;
 
-                case AnimPhase.Flatten:
-                    UpdateFlattenPhase(deltaTime);
-                    break;
-
-                case AnimPhase.WallRise:
-                    UpdateWallRisePhase(deltaTime);
+                case AnimPhase.LayerSink:
+                    UpdateLayerSinkPhase(deltaTime);
                     break;
 
                 case AnimPhase.Complete:
@@ -503,8 +502,9 @@ namespace GameScripts
         }
 
         /// <summary>
-        /// Phase 1: Diagonal wave animation - walls rise in diagonal pattern from corner
+        /// Phase 1: Diagonal wave animation - walls rise in diagonal pattern and stay up
         /// Starting from wall 1, spreading to 2+11, then 3+12+21, etc.
+        /// Once touched by the wave, each pillar rises to full height and stays there.
         /// </summary>
         private void UpdateWaveUpPhase(float deltaTime)
         {
@@ -526,32 +526,50 @@ namespace GameScripts
                 // Calculate diagonal index (walls on same diagonal have same value)
                 int diagonalIndex = row + col; // 0 to 18
 
-                // Current wave diagonal position
-                float waveDiagonal = _waveProgress;
+                // Full target height (same for all walls)
+                float fullHeight = wall.OriginalPosition.Y + _waveHeight;
 
-                // Wave width (how many diagonals are affected at once)
-                float waveWidth = 3f;
-
-                // Calculate how much this wall should be raised based on diagonal
-                float distanceFromWave = Math.Abs(diagonalIndex - waveDiagonal);
-                float waveInfluence = Math.Max(0f, 1f - (distanceFromWave / waveWidth));
-
-                // Smooth the wave with a sine function
-                waveInfluence = (float)Math.Sin(waveInfluence * Math.PI / 2);
-
-                float targetY = wall.OriginalPosition.Y + (_waveHeight * waveInfluence);
-                float newY = Mathf.MoveTowards(wall.CurrentPosition.Y, targetY, _waveSpeed * 2f * deltaTime);
-
-                Vec3 newPos = new Vec3(wall.CurrentPosition.X, newY, wall.CurrentPosition.Z);
-                API.SetPosition(wall.EntityHandle, newPos);
-                wall.CurrentPosition = newPos;
+                // If wave has reached or passed this diagonal, wall should rise to full height
+                if (diagonalIndex <= _waveProgress)
+                {
+                    // This wall has been touched by the wave - rise to full height and stay
+                    if (wall.CurrentPosition.Y < fullHeight)
+                    {
+                        float newY = Mathf.MoveTowards(wall.CurrentPosition.Y, fullHeight, _waveSpeed * 2f * deltaTime);
+                        Vec3 newPos = new Vec3(wall.CurrentPosition.X, newY, wall.CurrentPosition.Z);
+                        API.TeleportRigidBody(wall.EntityHandle, newPos);
+                        wall.CurrentPosition = newPos;
+                    }
+                    else
+                    {
+                        // Already at full height - ensure it stays there
+                        if (Math.Abs(wall.CurrentPosition.Y - fullHeight) > 0.01f)
+                        {
+                            Vec3 newPos = new Vec3(wall.CurrentPosition.X, fullHeight, wall.CurrentPosition.Z);
+                            API.TeleportRigidBody(wall.EntityHandle, newPos);
+                            wall.CurrentPosition = newPos;
+                        }
+                    }
+                }
+                // Walls ahead of the wave stay at original position
             }
 
-            // Move to flatten phase when wave has passed all diagonals
-            if (_waveProgress > maxDiagonal + 3f)
+            // Move to layer sink phase when wave has passed all diagonals
+            if (_waveProgress > maxDiagonal + 2f)
             {
-                API.Log("[MazeGeneration] Diagonal wave complete, starting flatten phase...");
-                _currentPhase = AnimPhase.Flatten;
+                // Ensure all walls are at exact full height before moving to next phase
+                foreach (var kvp in _walls)
+                {
+                    WallState wall = kvp.Value;
+                    float fullHeight = wall.OriginalPosition.Y + _waveHeight;
+                    Vec3 targetPos = new Vec3(wall.CurrentPosition.X, fullHeight, wall.CurrentPosition.Z);
+                    API.TeleportRigidBody(wall.EntityHandle, targetPos);
+                    wall.CurrentPosition = targetPos;
+                }
+
+                API.Log("[MazeGeneration] Diagonal wave complete, all walls are at same height. Starting layer sink phase...");
+                _currentPhase = AnimPhase.LayerSink;
+                _layerSinkProgress = 0f;
             }
 
             if (_animatingFrameCount % 30 == 0)
@@ -561,112 +579,83 @@ namespace GameScripts
         }
 
         /// <summary>
-        /// Phase 2: Flatten - all walls return to original height
+        /// Phase 2: Layer Sink - path walls sink down layer by layer (walls 1-10, 11-20, etc.)
         /// </summary>
-        private void UpdateFlattenPhase(float deltaTime)
+        private void UpdateLayerSinkPhase(float deltaTime)
         {
-            bool allFlat = true;
+            _layerSinkProgress += deltaTime;
 
-            foreach (var kvp in _walls)
+            int layerSize = 10;
+            int totalLayers = 10; // 100 walls / 10 per layer
+
+            // Check if we should move to next layer
+            if (_layerSinkProgress > _layerSinkDelay && _currentSinkingLayer < totalLayers)
             {
-                WallState wall = kvp.Value;
+                _layerSinkProgress = 0f;
+                _currentSinkingLayer++;
 
-                float targetY = wall.OriginalPosition.Y;
-                float newY = Mathf.MoveTowards(wall.CurrentPosition.Y, targetY, _waveSpeed * deltaTime);
-
-                if (Math.Abs(newY - targetY) > 0.01f)
+                if (_currentSinkingLayer <= totalLayers)
                 {
-                    allFlat = false;
-                }
+                    API.Log($"[MazeGeneration] Sinking layer {_currentSinkingLayer} (walls {(_currentSinkingLayer - 1) * layerSize + 1} to {_currentSinkingLayer * layerSize})");
 
-                Vec3 newPos = new Vec3(wall.CurrentPosition.X, newY, wall.CurrentPosition.Z);
-                API.SetPosition(wall.EntityHandle, newPos);
-                wall.CurrentPosition = newPos;
-            }
+                    // Mark walls in this layer for sinking
+                    int layerStartWall = (_currentSinkingLayer - 1) * layerSize + 1;
+                    int layerEndWall = _currentSinkingLayer * layerSize;
 
-            if (allFlat)
-            {
-                API.Log("[MazeGeneration] Flatten complete, raising maze walls...");
-                _currentPhase = AnimPhase.WallRise;
-                _wallRiseWaveProgress = 0f;
-
-                // Mark NON-path walls for animation (these will rise)
-                foreach (var kvp in _walls)
-                {
-                    if (!kvp.Value.IsPath)
+                    foreach (var kvp in _walls)
                     {
-                        kvp.Value.IsAnimating = true;
+                        int wallIndex = kvp.Key;
+                        WallState wall = kvp.Value;
+
+                        // If this wall is in the current layer and is a path, mark it for animation
+                        if (wallIndex >= layerStartWall && wallIndex <= layerEndWall && wall.IsPath)
+                        {
+                            wall.IsAnimating = true;
+                        }
                     }
                 }
             }
-        }
 
-        /// <summary>
-        /// Phase 3: Sequential wall rise - maze walls rise one at a time in quick succession
-        /// </summary>
-        private void UpdateWallRisePhase(float deltaTime)
-        {
-            _wallRiseWaveProgress += _wallRiseSpeed * deltaTime;
-
-            int wallCount = _walls.Count;
-            int currentWallIndex = (int)_wallRiseWaveProgress;
-
+            // Animate sinking walls
+            bool anyAnimating = false;
             foreach (var kvp in _walls)
             {
-                int wallIndex = kvp.Key;
                 WallState wall = kvp.Value;
 
-                // Skip path walls - they stay flat
-                if (wall.IsPath)
-                    continue;
-
-                if (!wall.IsAnimating)
-                    continue;
-
-                // Only animate the current wall (or walls very close to it)
-                float distanceFromCurrent = Math.Abs(wallIndex - _wallRiseWaveProgress);
-
-                // Very tight range - essentially one wall at a time
-                if (distanceFromCurrent < 2f)
+                if (wall.IsAnimating && wall.IsPath)
                 {
-                    // This wall should be rising
-                    float targetY = wall.TargetPosition.Y;
-                    float newY = Mathf.MoveTowards(wall.CurrentPosition.Y, targetY, _wallHeight * 10f * deltaTime);
+                    float targetY = wall.TargetPosition.Y; // Original position (lowered)
+                    float newY = Mathf.MoveTowards(wall.CurrentPosition.Y, targetY, _layerSinkSpeed * deltaTime);
 
                     Vec3 newPos = new Vec3(wall.CurrentPosition.X, newY, wall.CurrentPosition.Z);
-                    API.SetPosition(wall.EntityHandle, newPos);
+                    API.TeleportRigidBody(wall.EntityHandle, newPos);
                     wall.CurrentPosition = newPos;
 
                     // Check if reached target
                     if (Math.Abs(newY - targetY) < 0.01f)
                     {
                         wall.CurrentPosition = new Vec3(wall.CurrentPosition.X, targetY, wall.CurrentPosition.Z);
-                        API.SetPosition(wall.EntityHandle, wall.CurrentPosition);
+                        API.TeleportRigidBody(wall.EntityHandle, wall.CurrentPosition);
                         wall.IsAnimating = false;
+                        wall.IsLowered = true;
                     }
-                }
-                else if (wallIndex < _wallRiseWaveProgress - 2f)
-                {
-                    // Wave has passed, ensure wall is at final height
-                    if (Math.Abs(wall.CurrentPosition.Y - wall.TargetPosition.Y) > 0.01f)
+                    else
                     {
-                        wall.CurrentPosition = new Vec3(wall.CurrentPosition.X, wall.TargetPosition.Y, wall.CurrentPosition.Z);
-                        API.SetPosition(wall.EntityHandle, wall.CurrentPosition);
+                        anyAnimating = true;
                     }
-                    wall.IsAnimating = false;
                 }
             }
 
-            // Complete when sequence has passed all walls
-            if (_wallRiseWaveProgress > wallCount + 5f)
+            // Complete when all layers have been processed
+            if (_currentSinkingLayer >= totalLayers && !anyAnimating)
             {
-                API.Log("[MazeGeneration] Wall rise complete! Maze is ready.");
+                API.Log("[MazeGeneration] Layer sink complete! Maze is ready.");
                 _currentPhase = AnimPhase.Complete;
             }
 
-            if (_animatingFrameCount % 30 == 0)
+            if (_animatingFrameCount % 30 == 0 && (_currentSinkingLayer > 0 || anyAnimating))
             {
-                API.Log($"[MazeGeneration] Wall rise phase: wall {currentWallIndex} of {wallCount}");
+                API.Log($"[MazeGeneration] Layer sink phase: layer {_currentSinkingLayer} of {totalLayers}");
             }
         }
 
@@ -680,7 +669,7 @@ namespace GameScripts
             foreach (var kvp in _walls)
             {
                 WallState wall = kvp.Value;
-                API.SetPosition(wall.EntityHandle, wall.OriginalPosition);
+                API.TeleportRigidBody(wall.EntityHandle, wall.OriginalPosition);
                 wall.CurrentPosition = wall.OriginalPosition;
                 wall.IsLowered = false;
                 wall.IsPath = false;
@@ -692,7 +681,8 @@ namespace GameScripts
             _isAnimating = false;
             _currentPhase = AnimPhase.WaveUp;
             _waveProgress = 0f;
-            _wallRiseWaveProgress = 0f;
+            _currentSinkingLayer = 0;
+            _layerSinkProgress = 0f;
             _animatingFrameCount = 0;
 
             API.Log("[MazeGeneration] Maze reset complete!");
