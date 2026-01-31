@@ -2262,6 +2262,32 @@ namespace EditorUI {
                     ImGui::SetTooltip("Triggers do not produce collision response.\nThey only fire collision events.");
                 }
 
+                // Surface Type dropdown for footstep sounds
+                ImGui::Spacing();
+                Collider3D::SurfaceType currentSurface = collider->surfaceType;
+                const char* surfaceNames[] = { "Default", "Wood", "Stone", "Metal", "Sand", "Grass", "Water", "Carpet", "Tile" };
+                const char* currentSurfaceName = surfaceNames[static_cast<int>(currentSurface)];
+
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Surface Type");
+                ImGui::SameLine(150);
+                ImGui::SetNextItemWidth(-1);
+
+                if (ImGui::BeginCombo("##SurfaceType", currentSurfaceName))
+                {
+                    for (int i = 0; i < IM_ARRAYSIZE(surfaceNames); ++i) {
+                        bool isSelected = (currentSurface == static_cast<Collider3D::SurfaceType>(i));
+                        if (ImGui::Selectable(surfaceNames[i], isSelected)) {
+                            collider->surfaceType = static_cast<Collider3D::SurfaceType>(i);
+                        }
+                        if (isSelected) ImGui::SetItemDefaultFocus();
+                    }
+                    ImGui::EndCombo();
+                }
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Surface type for footstep sounds and other surface-dependent effects");
+                }
+
                 ImGui::Spacing();
                 ImGui::SeparatorText("Shape");
                 ImGui::Spacing();

@@ -64,7 +64,8 @@ namespace GameScripts
 
         public void OnStart(string json)
         {
-            if (!API.HasTransform(Entity)) { API.Log("[PatrolEnemyController] Missing Transform."); return; }
+            if (!API.HasTransform(Entity)) { //("[PatrolEnemyController] Missing Transform."); return;
+                                             }
 
             _yaw = API.GetRotation(Entity).Y;
 
@@ -187,7 +188,7 @@ namespace GameScripts
                         _leftNext = !_leftNext;
 
                         // play one-shot at position
-                        API.PlaySoundAt(chName, _footstepSoundPath, pos, loop: false);
+                     //   API.PlaySoundAt(chName, _footstepSoundPath, pos, loop: false);
 
                         float jitter = (float)(Random01() * 2.0 - 1.0) * VOL_JITTER;
                         float vol = Clamp01(VOL_BASE + jitter);
@@ -215,7 +216,7 @@ namespace GameScripts
             {
                 _debugTimer = 0f;
                 var r = API.GetRotation(Entity);
-                API.Log($"[PatrolEnemyController] yaw={_yaw:F1}°, rotY={r.Y:F1}°, speed={speedXZ:F2} m/s");
+                //($"[PatrolEnemyController] yaw={_yaw:F1}°, rotY={r.Y:F1}°, speed={speedXZ:F2} m/s");
             }
 
             if (_hasDealtDamage)
@@ -225,7 +226,7 @@ namespace GameScripts
                 {
                     _hasDealtDamage = false;
                     _damageResetTimer = 0f;
-                    API.Log("[PatrolEnemyController] Damage flag reset - can damage again");
+                    //("[PatrolEnemyController] Damage flag reset - can damage again");
                 }
             }
         }
@@ -272,7 +273,7 @@ namespace GameScripts
             {
                 _hasDealtDamage = true;
                 _damageResetTimer = 0f;  // Start timer
-                API.Log($"[PatrolEnemyController] Dealing damage (vision detection)!");
+                //($"[PatrolEnemyController] Dealing damage (vision detection)!");
                 PlayerManager.NotifyPlayerCaught(Entity);
             }
         }
@@ -303,11 +304,11 @@ namespace GameScripts
             // Check if detection is enabled
             if (!EnemyDetection)
             {
-                API.Log("[PatrolEnemyController] Proximity detection disabled - ignoring detection event");
+                //("[PatrolEnemyController] Proximity detection disabled - ignoring detection event");
                 return;
             }
 
-            API.Log(">>> PATROL ENEMY ALERTED BY PROXIMITY! <<<");
+            //(">>> PATROL ENEMY ALERTED BY PROXIMITY! <<<");
 
             _isAlert = true;
             var self = API.GetPosition(Entity);
@@ -322,7 +323,7 @@ namespace GameScripts
             {
                 _hasDealtDamage = true;
                 _damageResetTimer = 0f;  // Start timer
-                API.Log($"[PatrolEnemyController] Dealing damage (proximity detection)!");
+                //($"[PatrolEnemyController] Dealing damage (proximity detection)!");
                 PlayerManager.NotifyPlayerCaught(Entity);
             }
         }
@@ -338,7 +339,7 @@ namespace GameScripts
             // Reset proximity
             _proximityDetection?.ResetDetection();
 
-            API.Log("[PatrolEnemyController] Player respawned - all states reset");
+            //("[PatrolEnemyController] Player respawned - all states reset");
         }
 
         public void OnDestroy()

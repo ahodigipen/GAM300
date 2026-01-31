@@ -785,6 +785,17 @@ namespace Boom {
         }
     }
 
+    static int ICALL_API_GetSurfaceType(uint64_t handle) {
+        if (!s_Ctx) return 0; // DEFAULT
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return 0;
+
+        if (!s_Ctx->scene.any_of<ColliderComponent>(e)) return 0;
+
+        auto& collider = s_Ctx->scene.get<ColliderComponent>(e);
+        return static_cast<int>(collider.Collider.surfaceType);
+    }
+
     // Store GC handles to delegate objects instead of raw function pointers
     static std::unordered_map<uint64_t, uint32_t> s_TriggerEnterCallbackHandles;
     static std::unordered_map<uint64_t, uint32_t> s_TriggerExitCallbackHandles;
@@ -2023,6 +2034,7 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_HasCollider", (const void*)ICALL_API_HasCollider);
         mono_add_internal_call("Boom.Native::Boom_API_IsTrigger", (const void*)ICALL_API_IsTrigger);
         mono_add_internal_call("Boom.Native::Boom_API_SetTrigger", (const void*)ICALL_API_SetTrigger);
+        mono_add_internal_call("Boom.Native::Boom_API_GetSurfaceType", (const void*)ICALL_API_GetSurfaceType);
         mono_add_internal_call("Boom.Native::Boom_API_RegisterTriggerEnterCallback", (const void*)ICALL_API_RegisterTriggerEnterCallback);
         mono_add_internal_call("Boom.Native::Boom_API_RegisterTriggerExitCallback", (const void*)ICALL_API_RegisterTriggerExitCallback);
         mono_add_internal_call("Boom.Native::Boom_API_UnregisterTriggerCallbacks", (const void*)ICALL_API_UnregisterTriggerCallbacks);
