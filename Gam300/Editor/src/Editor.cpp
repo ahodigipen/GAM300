@@ -142,12 +142,10 @@ namespace EditorUI {
             // Note: Pass 0 as numThreads to auto-detect CPU cores, or specify a number like 4 or 8
         }
 
-        // Initialize Font System (TEST)
-        if (Boom::FontManager::GetInstance().Init()) {
-             Boom::FontManager::GetInstance().LoadFont("Roboto-Regular", "Resources/Fonts/Roboto-Regular.ttf", 48);
-        } else {
-             BOOM_ERROR("Failed to init FontManager");
-        }
+        // NOTE: Font System is now initialized in Application::RunContext()
+        // This ensures fonts work in both Editor and Runtime (exported) builds
+        // The initialization was moved there to avoid issues when ImGui is disabled
+        // See: FontSystemImplementation.md for details
 
         // Construct panels here; they persist across frames.
         // We pass `this` so panels can call owner->GetContext() etc.

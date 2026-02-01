@@ -29,6 +29,21 @@ namespace Boom
         std::cout << "[RunContext] Scene loaded successfully" << std::endl;
         std::cout.flush();
 
+        // -- INITIALIZE FONT SYSTEM --
+        // This must be initialized before any text rendering occurs
+        // Initialize here so it works in both Editor and Runtime builds
+        std::cout << "[RunContext] Initializing Font System..." << std::endl;
+        std::cout.flush();
+
+        if (Boom::FontManager::GetInstance().Init()) {
+            Boom::FontManager::GetInstance().LoadFont("Roboto-Regular", "Resources/Fonts/Roboto-Regular.ttf", 48);
+            std::cout << "[RunContext] Font System initialized successfully" << std::endl;
+        } else {
+            BOOM_ERROR("Failed to initialize Font Manager");
+            std::cout << "[RunContext] ERROR: Failed to initialize Font System" << std::endl;
+        }
+        std::cout.flush();
+
         // -- LOADING in MONO --
         const std::string exeDir = GetExeDir();
 
