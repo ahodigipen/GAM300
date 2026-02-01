@@ -1,28 +1,51 @@
 Version: 1.0
 ENTITIES:
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0.5
+        Restitution: 0
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
       Parent: 0
-      Name: TEXTTEST
-      UID: 897306371591058426
+      Name: Ground
+      UID: 10000000000000000002
     TransformComponent:
       Transform:
-        Translate: [0, 0, 0]
+        Translate: [0, -1.29999995, 0]
         Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    TextComponent:
-      text: New Text
-      fontName: Roboto-Regular
-      color: [0.372548997, 0.107747011, 0.107747011, 1]
-      scale: 3
-      screenPosition: [632, 494]
-      renderAs3D: false
+        Scale: [20, 0.200000003, 20]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 0
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [20, 0.200000003, 20]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 11573253777835523025
+      ModelName: Cube
+      MaterialName: ""
+      ModelSource: Resources/Models/Cube.fbx
+      MaterialSource: Marble
   - InfoComponent:
       Parent: 0
       Name: Scene Settings
       UID: 1048599
     SceneNavmeshComponent:
       NavmeshFile: ""
-      AmbientStrength: 0.0890000015
+      AmbientStrength: 0.0729999989
   - InfoComponent:
       Parent: 0
       Name: Spot Light
@@ -71,8 +94,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-9.85163021, 5.28916359, 8.39739704]
-        Rotate: [157.4375, -115.5625, 180]
+        Translate: [-6.81523418, 4.27253294, 7.02968216]
+        Rotate: [128.625, -132.625, 180]
         Scale: [1, 1, 1]
     CameraComponent:
       Camera:
@@ -90,42 +113,23 @@ ENTITIES:
         Scale: [1, 1, 1]
     SkyboxComponent:
       SkyboxID: 10427935764841817814
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0.5
-        Restitution: 0
-        IsTrigger: false
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
+  - InfoComponent:
       Parent: 0
-      Name: Ground
-      UID: 10000000000000000002
+      Name: TEXT
+      UID: 10606645242484776513
     TransformComponent:
       Transform:
-        Translate: [0, -1.29999995, 0]
+        Translate: [0, 0, 0]
         Rotate: [0, 0, 0]
-        Scale: [20, 0.200000003, 20]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 0
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [20, 0.200000003, 20]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 7633162898494281895
-      MaterialID: 11573253777835523025
-      ModelName: Cube
-      MaterialName: ""
-      ModelSource: Resources/Models/Cube.fbx
-      MaterialSource: Marble
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.TextTest
+      ParamsJSON: "{}"
+    TextComponent:
+      text: "TextComponent API Test\nPress SPACE to add score"
+      fontName: Roboto-Regular
+      color: [1, 1, 1, 1]
+      scale: 1
+      screenPosition: [429, 366]
+      renderAs3D: false

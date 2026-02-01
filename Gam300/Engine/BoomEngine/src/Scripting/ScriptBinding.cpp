@@ -990,6 +990,104 @@ namespace Boom {
         s_Ctx->scene.get<SpriteComponent>(e).color.a = glm::clamp(alpha, 0.0f, 1.0f);
     }
 
+    // ========= TEXT COMPONENT INTERNAL CALLS =========
+    static bool ICALL_API_HasText(uint64_t handle)
+    {
+        if (!s_Ctx) return false;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        return (e != entt::null && s_Ctx->scene.valid(e) && s_Ctx->scene.any_of<TextComponent>(e));
+    }
+
+    static void ICALL_API_GetText(uint64_t handle, MonoString** outText)
+    {
+        if (!outText || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            *outText = mono_string_new(mono_domain_get(), "");
+            return;
+        }
+        const std::string& text = s_Ctx->scene.get<TextComponent>(e).text;
+        *outText = mono_string_new(mono_domain_get(), text.c_str());
+    }
+
+    static void ICALL_API_SetText(uint64_t handle, MonoString* newText)
+    {
+        if (!newText || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetText: Entity doesn't have TextComponent");
+            return;
+        }
+        char* cStr = mono_string_to_utf8(newText);
+        s_Ctx->scene.get<TextComponent>(e).text = std::string(cStr);
+        mono_free(cStr);
+    }
+
+    static void ICALL_API_GetTextColor(uint64_t handle, glm::vec4* outColor)
+    {
+        if (!outColor || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            *outColor = glm::vec4(1.0f);
+            return;
+        }
+        *outColor = s_Ctx->scene.get<TextComponent>(e).color;
+    }
+
+    static void ICALL_API_SetTextColor(uint64_t handle, glm::vec4* color)
+    {
+        if (!color || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetTextColor: Entity doesn't have TextComponent");
+            return;
+        }
+        s_Ctx->scene.get<TextComponent>(e).color = *color;
+    }
+
+    static float ICALL_API_GetTextScale(uint64_t handle)
+    {
+        if (!s_Ctx) return 1.0f;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            return 1.0f;
+        }
+        return s_Ctx->scene.get<TextComponent>(e).scale;
+    }
+
+    static void ICALL_API_SetTextScale(uint64_t handle, float scale)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetTextScale: Entity doesn't have TextComponent");
+            return;
+        }
+        s_Ctx->scene.get<TextComponent>(e).scale = scale;
+    }
+
+    static void ICALL_API_GetTextPosition(uint64_t handle, glm::vec2* outPos)
+    {
+        if (!outPos || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            *outPos = glm::vec2(0.0f);
+            return;
+        }
+        *outPos = s_Ctx->scene.get<TextComponent>(e).screenPosition;
+    }
+
+    static void ICALL_API_SetTextPosition(uint64_t handle, glm::vec2* pos)
+    {
+        if (!pos || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetTextPosition: Entity doesn't have TextComponent");
+            return;
+        }
+        s_Ctx->scene.get<TextComponent>(e).screenPosition = *pos;
+    }
+
     // ========= SPOTLIGHT COMPONENT INTERNAL CALLS =========
     static bool ICALL_API_HasSpotLight(uint64_t handle)
     {
@@ -2104,6 +2202,17 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_GetSpriteAlpha", (const void*)ICALL_API_GetSpriteAlpha);
         mono_add_internal_call("Boom.Native::Boom_API_SetSpriteAlpha", (const void*)ICALL_API_SetSpriteAlpha);
         mono_add_internal_call("Boom.Native::Boom_API_SetSpriteTexture", (const void*)ICALL_API_SetSpriteTexture);
+
+        // Text Component functions
+        mono_add_internal_call("Boom.Native::Boom_API_HasText", (const void*)ICALL_API_HasText);
+        mono_add_internal_call("Boom.Native::Boom_API_GetText", (const void*)ICALL_API_GetText);
+        mono_add_internal_call("Boom.Native::Boom_API_SetText", (const void*)ICALL_API_SetText);
+        mono_add_internal_call("Boom.Native::Boom_API_GetTextColor", (const void*)ICALL_API_GetTextColor);
+        mono_add_internal_call("Boom.Native::Boom_API_SetTextColor", (const void*)ICALL_API_SetTextColor);
+        mono_add_internal_call("Boom.Native::Boom_API_GetTextScale", (const void*)ICALL_API_GetTextScale);
+        mono_add_internal_call("Boom.Native::Boom_API_SetTextScale", (const void*)ICALL_API_SetTextScale);
+        mono_add_internal_call("Boom.Native::Boom_API_GetTextPosition", (const void*)ICALL_API_GetTextPosition);
+        mono_add_internal_call("Boom.Native::Boom_API_SetTextPosition", (const void*)ICALL_API_SetTextPosition);
 
         // SpotLight component internal calls
         mono_add_internal_call("Boom.Native::Boom_API_HasSpotLight", (const void*)ICALL_API_HasSpotLight);

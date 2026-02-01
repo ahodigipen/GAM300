@@ -68,6 +68,7 @@
     <Compile Include="BloodOverlayController.cs" />
     <Compile Include="SettingsManager.cs" />
     <Compile Include="SpotlightFollower.cs" />
+    <Compile Include="TextTest.cs" />
     <Compile Include="UIEndController.cs" />
     <Compile Include="UIFreezeController.cs" />
     <Compile Include="UIHoldController.cs" />
