@@ -62,11 +62,11 @@ namespace GameScripts
 
         public void OnStart(string jsonParams)
         {
-            API.Log($"[EnemyController] OnStart() - Entity: {Entity}");
+            //($"[EnemyController] OnStart() - Entity: {Entity}");
 
             if (!API.HasTransform(Entity))
             {
-                API.Log("[EnemyController] ERROR: Entity missing TransformComponent!");
+                //("[EnemyController] ERROR: Entity missing TransformComponent!");
                 return;
             }
 
@@ -87,7 +87,7 @@ namespace GameScripts
                 }
                 catch { }
             }
-            API.Log($"[EnemyController] Entity name: {_entityName}");
+            //($"[EnemyController] Entity name: {_entityName}");
 
             // Initialize vision system
             _vision = new VisionComponent { Entity = Entity };
@@ -112,7 +112,7 @@ namespace GameScripts
             // NEW: Register with PlayerManager
             PlayerManager.RegisterEnemy(this);
 
-            API.Log("[EnemyController] Controller initialized with vision and proximity systems");
+            //("[EnemyController] Controller initialized with vision and proximity systems");
 
             _vision.EnableDebugReasons(true);
             _vision.EnableDebugLOS(true);
@@ -157,7 +157,7 @@ namespace GameScripts
                 {
                     _hasDealtDamage = false;
                     _damageResetTimer = 0f;
-                    API.Log("[EnemyController] Damage flag auto-reset - can damage again");
+                    //("[EnemyController] Damage flag auto-reset - can damage again");
                 }
             }
         }
@@ -192,7 +192,7 @@ namespace GameScripts
                         _targetYRotation += 360f;
 
                     _isRotating = true;
-                    API.Log($"[EnemyController] Starting rotation to {_targetYRotation}°");
+                    //($"[EnemyController] Starting rotation to {_targetYRotation}°");
 
                     try
                     {
@@ -220,15 +220,15 @@ namespace GameScripts
                         }
 
                         Vec3 enemyPos = API.GetPosition(Entity);
-                        API.Log($"[EnemyController] Playing turn sound {index} at {enemyPos} ({clipPath})");
+                        //($"[EnemyController] Playing turn sound {index} at {enemyPos} ({clipPath})");
 
-                        API.PlaySoundAt(soundId, clipPath, enemyPos, false);
+                      //  API.PlaySoundAt(soundId, clipPath, enemyPos, false);
                         API.SetSoundVolume(soundId, 0.5f);
                         API.Set3DMinMaxDistance(soundId, 1.0f, 25.0f);
                     }
                     catch (Exception ex)
                     {
-                        API.Log($"[EnemyController] ERROR while playing rotation sound: {ex.Message}");
+                        //($"[EnemyController] ERROR while playing rotation sound: {ex.Message}");
                     }
                 }
             }
@@ -247,7 +247,7 @@ namespace GameScripts
                 {
                     _currentYRotation = _targetYRotation;
                     _isRotating = false;
-                    API.Log($"[EnemyController] Completed rotation at {_currentYRotation}°");
+                    //($"[EnemyController] Completed rotation at {_currentYRotation}°");
                 }
                 else
                 {
@@ -266,7 +266,7 @@ namespace GameScripts
         // === VISION EVENT HANDLERS ===
         private void OnPlayerDetected(ulong target, Vec3 position)
         {
-            API.Log(">>> ENEMY ALERTED BY VISION! STOPPING PATROL! <<<");
+            //(">>> ENEMY ALERTED BY VISION! STOPPING PATROL! <<<");
 
             // Set spotlight to alert (red) color
             var spotlight = SpotlightFollower.GetByTargetName(_entityName);
@@ -299,7 +299,7 @@ namespace GameScripts
                 rot.Y = _currentYRotation;
                 API.SetRotation(Entity, rot);
 
-                API.Log($"[EnemyController] Snapped to face player at {_currentYRotation:F1}°");
+                //($"[EnemyController] Snapped to face player at {_currentYRotation:F1}°");
             }
 
             // Play alert sound
@@ -312,14 +312,14 @@ namespace GameScripts
             {
                 _hasDealtDamage = true;
                 _damageResetTimer = 0f;  // Start timer
-                API.Log($"[EnemyController] Dealing damage to player (vision detection)!");
+                //($"[EnemyController] Dealing damage to player (vision detection)!");
                 PlayerManager.NotifyPlayerCaught(Entity);
             }
         }
 
         private void OnPlayerLost(ulong target, Vec3 lastKnownPosition)
         {
-            API.Log("[EnemyController] Lost sight of player, searching...");
+            //("[EnemyController] Lost sight of player, searching...");
 
             // Reset spotlight to original color
             var spotlight = SpotlightFollower.GetByTargetName(_entityName);
@@ -372,11 +372,11 @@ namespace GameScripts
             // Check if proximity detection is enabled
             if (!EnemyDetection)
             {
-                API.Log("[EnemyController] Proximity detection disabled - ignoring detection event");
+                //("[EnemyController] Proximity detection disabled - ignoring detection event");
                 return;
             }
 
-            API.Log(">>> ENEMY ALERTED BY PROXIMITY! PLAYER TOO CLOSE! <<<");
+            //(">>> ENEMY ALERTED BY PROXIMITY! PLAYER TOO CLOSE! <<<");
 
             // Similar to vision detection, but don't rotate immediately
             // Enemy "senses" player behind them and turns to attack
@@ -404,7 +404,7 @@ namespace GameScripts
                 rot.Y = _currentYRotation;
                 API.SetRotation(Entity, rot);
 
-                API.Log($"[EnemyController] Turned to face player (proximity) at {_currentYRotation:F1}°");
+                //($"[EnemyController] Turned to face player (proximity) at {_currentYRotation:F1}°");
             }
 
             // Damage player (only once per detection)
@@ -412,7 +412,7 @@ namespace GameScripts
             {
                 _hasDealtDamage = true;
                 _damageResetTimer = 0f;  // Start timer
-                API.Log($"[EnemyController] Dealing damage to player (proximity detection)!");
+                //($"[EnemyController] Dealing damage to player (proximity detection)!");
                 PlayerManager.NotifyPlayerCaught(Entity);
             }
         }
@@ -421,19 +421,19 @@ namespace GameScripts
         public void SetRotationSpeed(float degreesPerSecond)
         {
             _rotationSpeed = degreesPerSecond;
-            API.Log($"[EnemyController] Rotation speed set to {_rotationSpeed}°/s");
+            //($"[EnemyController] Rotation speed set to {_rotationSpeed}°/s");
         }
 
         public void SetRotationInterval(float seconds)
         {
             _rotationInterval = seconds;
-            API.Log($"[EnemyController] Rotation interval set to {_rotationInterval}s");
+            //($"[EnemyController] Rotation interval set to {_rotationInterval}s");
         }
 
         public void SetRotationAngle(float degrees)
         {
             _rotationAngle = degrees;
-            API.Log($"[EnemyController] Rotation angle set to {_rotationAngle}°");
+            //($"[EnemyController] Rotation angle set to {_rotationAngle}°");
         }
 
         // NEW: Proximity configuration
@@ -457,7 +457,7 @@ namespace GameScripts
             // Reset proximity detection
             _proximityDetection?.ResetDetection();
 
-            API.Log("[EnemyController] Player respawned - all detection states reset");
+            //("[EnemyController] Player respawned - all detection states reset");
         }
         public void OnDestroy()
         {
@@ -467,7 +467,7 @@ namespace GameScripts
             // NEW: Unregister from PlayerManager
             PlayerManager.UnregisterEnemy(this);
 
-            API.Log($"[EnemyController] OnDestroy() - Entity: {Entity}");
+            //($"[EnemyController] OnDestroy() - Entity: {Entity}");
         }
     }
 }

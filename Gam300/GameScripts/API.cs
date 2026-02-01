@@ -102,6 +102,9 @@ namespace Boom
         internal static extern void Boom_API_SetTrigger(ulong handle, bool isTrigger);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern int Boom_API_GetSurfaceType(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_RegisterTriggerEnterCallback(ulong triggerHandle, object delegateObj);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -655,6 +658,32 @@ namespace Boom
         public static void SetTrigger(ulong entity, bool isTrigger)
         {
             Native.Boom_API_SetTrigger(entity, isTrigger);
+        }
+
+        // ===== Surface Types =====
+        /// <summary>
+        /// Surface type enum matching Collider3D::SurfaceType in C++
+        /// </summary>
+        public enum SurfaceType
+        {
+            DEFAULT = 0,
+            WOOD,
+            STONE,
+            METAL,
+            SAND,
+            GRASS,
+            WATER,
+            CARPET,
+            TILE
+        }
+
+        /// <summary>
+        /// Get the surface type of an entity's collider (for footstep sounds, etc.)
+        /// </summary>
+        public static SurfaceType GetSurfaceType(ulong entity)
+        {
+            if (!HasCollider(entity)) return SurfaceType.DEFAULT;
+            return (SurfaceType)Native.Boom_API_GetSurfaceType(entity);
         }
 
         public static void RegisterTriggerEnterCallback(ulong triggerEntity, TriggerCallback callback)

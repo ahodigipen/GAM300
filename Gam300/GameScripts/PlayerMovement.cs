@@ -97,24 +97,24 @@ namespace GameScripts
         // ==== DEBUG: Helper to log crouch state ====
         private static void DebugCrouch(string message)
         {
-            if (DEBUG_CROUCH)
-            {
-                //API.Log($"[CROUCH_DEBUG] {message}");
-            }
+            //if (DEBUG_CROUCH)
+            //{
+            //    API.Log($"[CROUCH_DEBUG] {message}");
+            //}
         }
 
         private void DebugLogCrouchState(string context)
         {
-            if (DEBUG_CROUCH)
-            {
-                //API.Log($"[CROUCH_DEBUG] === STATE ({context}) ===");
-                //API.Log($"[CROUCH_DEBUG]   _inCrouchZone:        {_inCrouchZone}");
-                //API.Log($"[CROUCH_DEBUG]   _isCrouching:         {_isCrouching}");
-                //API.Log($"[CROUCH_DEBUG]   s_isStealthInvisible: {s_isStealthInvisible}");
-                //API.Log($"[CROUCH_DEBUG]   _isInvulnerable:      {_isInvulnerable}");
-                //API.Log($"[CROUCH_DEBUG]   IsPlayerInvisibleToEnemies(): {IsPlayerInvisibleToEnemies()}");
-                //API.Log($"[CROUCH_DEBUG]   Registered zones: {_crouchZoneIDs.Count}");
-            }
+            //if (DEBUG_CROUCH)
+            //{
+            //    API.Log($"[CROUCH_DEBUG] === STATE ({context}) ===");
+            //    API.Log($"[CROUCH_DEBUG]   _inCrouchZone:        {_inCrouchZone}");
+            //    API.Log($"[CROUCH_DEBUG]   _isCrouching:         {_isCrouching}");
+            //    API.Log($"[CROUCH_DEBUG]   s_isStealthInvisible: {s_isStealthInvisible}");
+            //    API.Log($"[CROUCH_DEBUG]   _isInvulnerable:      {_isInvulnerable}");
+            //    API.Log($"[CROUCH_DEBUG]   IsPlayerInvisibleToEnemies(): {IsPlayerInvisibleToEnemies()}");
+            //    API.Log($"[CROUCH_DEBUG]   Registered zones: {_crouchZoneIDs.Count}");
+            //}
         }
 
         public void OnStart(string jsonParams)
