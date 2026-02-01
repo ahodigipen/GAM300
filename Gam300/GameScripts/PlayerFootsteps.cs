@@ -237,7 +237,7 @@ namespace Boom
             string[] triggerPrefixes = {
                 "SurfaceTrigger", "Surface_", "Ground_", "Floor_",
                 "TestTrigger", "Trigger_", "SandTrigger", "WoodTrigger",
-                "StoneTrigger", "MetalTrigger", "GrassTrigger","Tatami_Level1","Mini_Tatami_Level1","Stone_Stairs_Left","Stone_Stairs_Right"
+                "StoneTrigger", "MetalTrigger", "GrassTrigger","Tatami_Level1","Mini_Tatami_Level1","Stone_Stairs_Left","Stone_Stairs_Right","Sand_Floor_Level2"
             };
 
             for (int i = 0; i < 50; i++) // Check up to 50 of each type
