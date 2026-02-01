@@ -948,9 +948,27 @@ namespace Boom
             }
         }
 
-        // --- TEST TEXT RENDERING ---
+        // --- RENDER ALL TEXT COMPONENTS ---
         if (!isPicking) {
-             Boom::FontManager::GetInstance().RenderText("Roboto-Regular", "Hello Boom Engine Viewport!", 50.0f, 50.0f, 1.0f, glm::vec3(1.0f, 1.0f, 0.0f));
+            // Iterate through all entities with TextComponent
+            auto textView = m_Context->scene.view<TextComponent>();
+            for (auto entity : textView) {
+                auto& textComp = textView.get<TextComponent>(entity);
+
+                // Skip 3D world-space text for now (not yet implemented)
+                if (textComp.renderAs3D) continue;
+
+                // Render 2D screen-space text using FontManager
+                Boom::FontManager::GetInstance().RenderText(
+                    textComp.fontName,                  // Font name (must be loaded)
+                    textComp.text,                      // Text content
+                    textComp.screenPosition.x,          // X position (pixels from left)
+                    textComp.screenPosition.y,          // Y position (pixels from bottom)
+                    textComp.scale,                     // Size multiplier
+                    glm::vec3(textComp.color),          // RGB color
+                    textComp.color.a                    // Alpha transparency
+                );
+            }
         }
     }
 

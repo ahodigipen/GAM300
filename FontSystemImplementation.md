@@ -673,6 +673,7 @@ BOOM_INFO("GL State: DepthTest={}, Blend={}, Scissor={}",
 ## See Also
 
 - **BoomFontSystem_Guide.md** - User-facing usage guide
+- **TextComponentSystem_CreationGuide.md** - Complete guide to building Unity-like Text Component system
 - **Boom::Shader** - Shader system documentation
 - **FreeType Documentation** - https://freetype.org/freetype2/docs/
 - **Learn OpenGL Text Rendering** - https://learnopengl.com/In-Practice/Text-Rendering
