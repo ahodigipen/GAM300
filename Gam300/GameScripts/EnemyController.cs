@@ -37,7 +37,13 @@ namespace GameScripts
         private string _turnSoundPath3 = "Resources/Audio/StatueTurn_03.wav";
 
         [Boom.EditorExposed("Alert Sound", "Sound played when enemy detects player")]
-        private string _alertSoundPath = "Resources/Audio/playerPunch_1.wav";
+        private string _alertSoundPath = "Resources/Audio/VO_Statue_003.wav";
+        private string _alertSoundPath2 = "Resources/Audio/VO_Statue_004.wav";
+        private string _alertSoundPath3 = "Resources/Audio/VO_Statue_007.wav";
+        private string _alertSoundPath4 = "Resources/Audio/VO_Statue_008.wav";
+        private string _alertSoundPath5 = "Resources/Audio/VO_Statue_009.wav";
+        private string _alertSoundPath6 = "Resources/Audio/VO_Statue_010.wav";
+        private string _alertSoundPath7 = "Resources/Audio/VO_Statue_011.wav";
 
         [Boom.EditorExposed("Proximity Detection", "Enable/Disable proximity detection")]
         private bool EnemyDetection = true;
@@ -59,6 +65,11 @@ namespace GameScripts
         private const float DAMAGE_RESET_DELAY = 3.0f;
         // Entity name for spotlight lookup (matches SpotlightFollower's targetName)
         private string _entityName = "Sentry_1";  // Default name, can be overridden via jsonParams
+
+        // Alert sound tracking
+        private bool _alertSoundPlayed = false;
+        private Random _random = new Random();
+        private string _alertSoundName;
 
         public void OnStart(string jsonParams)
         {
@@ -116,6 +127,10 @@ namespace GameScripts
 
             _vision.EnableDebugReasons(true);
             _vision.EnableDebugLOS(true);
+
+            // Preload alert sounds
+            _alertSoundName = "alert_" + Entity.ToString();
+            PreloadAlertSounds();
         }
 
         public void OnUpdate(float dt)
@@ -222,7 +237,7 @@ namespace GameScripts
                         Vec3 enemyPos = API.GetPosition(Entity);
                         //($"[EnemyController] Playing turn sound {index} at {enemyPos} ({clipPath})");
 
-                      //  API.PlaySoundAt(soundId, clipPath, enemyPos, false);
+                        API.PlaySoundAt(soundId, clipPath, enemyPos, false);
                         API.SetSoundVolume(soundId, 0.5f);
                         API.Set3DMinMaxDistance(soundId, 1.0f, 25.0f);
                     }
@@ -302,10 +317,8 @@ namespace GameScripts
                 //($"[EnemyController] Snapped to face player at {_currentYRotation:F1}°");
             }
 
-            // Play alert sound
-            API.PlaySoundAt("enemy_alert", _alertSoundPath, enemyPos, false);
-            API.SetSoundVolume("enemy_alert", 0.8f);
-            API.Set3DMinMaxDistance("enemy_alert", 1.0f, 25.0f);
+            // Play random alert sound (only once per detection)
+            PlayRandomAlertSound(enemyPos);
 
             // Damage player (only once per detection)
             if (!_hasDealtDamage)
@@ -330,6 +343,7 @@ namespace GameScripts
 
             // Reset damage flag so player can be caught again
             _hasDealtDamage = false;
+            _alertSoundPlayed = false; // Reset so alert can play again next detection
 
             // NEW: Reset proximity detection when player is lost
             _proximityDetection?.ResetDetection();
@@ -453,12 +467,48 @@ namespace GameScripts
             // Force reset all detection states
             _hasDealtDamage = false;
             _damageResetTimer = 0f;
+            _alertSoundPlayed = false; // Reset so alert can play again
 
             // Reset proximity detection
             _proximityDetection?.ResetDetection();
 
             //("[EnemyController] Player respawned - all detection states reset");
         }
+
+        // ====== AUDIO HELPER METHODS ======
+        private string[] GetAlertSounds()
+        {
+            return new string[] {
+                _alertSoundPath, _alertSoundPath2, _alertSoundPath3, _alertSoundPath4,
+                _alertSoundPath5, _alertSoundPath6, _alertSoundPath7
+            };
+        }
+
+        private void PreloadAlertSounds()
+        {
+            string[] sounds = GetAlertSounds();
+            for (int i = 0; i < sounds.Length; i++)
+            {
+                string soundName = _alertSoundName + "_" + i;
+                API.PreloadSound(soundName, sounds[i], loop: false);
+            }
+        }
+
+        private void PlayRandomAlertSound(Vec3 position)
+        {
+            if (_alertSoundPlayed) return; // Only play once per detection
+
+            string[] sounds = GetAlertSounds();
+            int index = _random.Next(sounds.Length);
+            string soundName = _alertSoundName + "_" + index;
+
+            API.PlaySoundAt(soundName, sounds[index], position, loop: false);
+            API.SetSoundVolume(soundName, 1.0f);
+            API.Set3DMinMaxDistance(soundName, 1.0f, 25.0f);
+
+            _alertSoundPlayed = true;
+        }
+
         public void OnDestroy()
         {
             _vision?.OnDestroy();
