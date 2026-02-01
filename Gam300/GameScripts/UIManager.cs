@@ -177,7 +177,7 @@ namespace GameScripts
         }
 
         /// <summary>
-        /// Show a tutorial popup sprite (backward compatible)
+        /// Show a tutorial popup sprite
         /// </summary>
         public static void ShowTutorialPopup(ulong spriteEntity)
         {
@@ -192,7 +192,7 @@ namespace GameScripts
         }
 
         /// <summary>
-        /// Hide the tutorial popup sprite (backward compatible)
+        /// Hide the tutorial popup sprite
         /// </summary>
         public static void HideTutorialPopup()
         {
@@ -205,38 +205,7 @@ namespace GameScripts
                 API.Log("[UIManager] No instance registered - cannot hide tutorial popup");
             }
         }
-
-        /// <summary>
-        /// Show a tutorial popup sprite from a specific zone
-        /// Supports multiple tutorial zones
-        /// </summary>
-        public static void ShowTutorialPopupZone(ulong zoneEntity, ulong spriteEntity)
-        {
-            if (s_instance != null)
-            {
-                s_instance._tutorialUI?.ShowZone(zoneEntity, spriteEntity);
-            }
-            else
-            {
-                API.Log("[UIManager] No instance registered - cannot show tutorial popup");
-            }
-        }
-
-        /// <summary>
-        /// Hide a tutorial popup sprite from a specific zone
-        /// Supports multiple tutorial zones - only hides when all zones are exited
-        /// </summary>
-        public static void HideTutorialPopupZone(ulong zoneEntity)
-        {
-            if (s_instance != null)
-            {
-                s_instance._tutorialUI?.HideZone(zoneEntity);
-            }
-            else
-            {
-                API.Log("[UIManager] No instance registered - cannot hide tutorial popup");
-            }
-        }
     }
 }
+
 

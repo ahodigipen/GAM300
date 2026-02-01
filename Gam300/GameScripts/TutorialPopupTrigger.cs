@@ -8,7 +8,6 @@ namespace GameScripts
     /// Attach to a trigger zone where a tutorial popup should appear
     /// Shows a tutorial UI sprite when player enters
     /// Hides the tutorial UI when player exits
-    /// Similar to CrouchTriggerZone
     /// </summary>
     public class TutorialPopupTrigger
     {
@@ -27,8 +26,6 @@ namespace GameScripts
         [Boom.EditorExposed("Enter Sound", "Sound played when player enters the tutorial zone")]
         private string _enterSound = "Resources/Audio/ambient_notification.wav";
 
-        private ulong _tutorialSprite = 0;
-
         public void OnStart(string jsonParams)
         {
             s_instances[Entity] = this;
@@ -46,21 +43,9 @@ namespace GameScripts
                 API.Log("[TutorialPopupTrigger] Collider set to IsTrigger = true.");
             }
 
-            // Find the tutorial sprite
-            _tutorialSprite = API.FindEntity(_tutorialSpriteName);
-            if (_tutorialSprite == 0)
-            {
-                API.Log($"[TutorialPopupTrigger] WARNING: Could not find tutorial sprite '{_tutorialSpriteName}'");
-            }
-            else if (API.HasSprite(_tutorialSprite))
-            {
-                API.SetSpriteAlpha(_tutorialSprite, 0f);
-                API.Log($"[TutorialPopupTrigger] Found and initialized tutorial sprite: {_tutorialSpriteName}");
-            }
-
             API.RegisterTriggerEnterCallback(Entity, OnTriggerEnter);
             API.RegisterTriggerExitCallback(Entity, OnTriggerExit);
-            API.Log($"[TutorialPopupTrigger] Registered trigger callbacks for sprite: {_tutorialSpriteName}");
+            API.Log("[TutorialPopupTrigger] Registered trigger callbacks.");
         }
 
         public void OnUpdate(float dt)
@@ -83,11 +68,8 @@ namespace GameScripts
             // Only react when the player enters this trigger
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
 
-            // *** Show the tutorial popup via UIManager, passing this zone's entity ***
-            if (inst._tutorialSprite != 0)
-            {
-                UIManager.ShowTutorialPopupZone(triggerEntity, inst._tutorialSprite);
-            }
+            // *** Show the tutorial UI prompt ***
+            UIManager.ShowTutorialPopup(API.FindEntity(inst._tutorialSpriteName));
 
             // Optional: Play notification sound
             if (inst._playSoundOnEnter && API.HasTransform(inst.Entity))
@@ -98,7 +80,7 @@ namespace GameScripts
                 API.Set3DMinMaxDistance("sfx_tutorial_enter", 1.0f, 12.0f);
             }
 
-            API.Log($"[TutorialPopupTrigger] Player entered tutorial zone - showing sprite: {inst._tutorialSpriteName}");
+            API.Log("[TutorialPopupTrigger] Player entered tutorial zone - showing UI popup");
         }
 
         private static void OnTriggerExit(ulong triggerEntity, ulong otherEntity)
@@ -109,10 +91,10 @@ namespace GameScripts
             // Only react when the player exits this trigger
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
 
-            // *** Hide the tutorial popup from this zone via UIManager ***
-            UIManager.HideTutorialPopupZone(triggerEntity);
+            // *** Hide the tutorial UI prompt ***
+            UIManager.HideTutorialPopup();
 
-            API.Log($"[TutorialPopupTrigger] Player exited tutorial zone - hiding sprite");
+            API.Log("[TutorialPopupTrigger] Player exited tutorial zone - hiding UI popup");
         }
     }
 }
