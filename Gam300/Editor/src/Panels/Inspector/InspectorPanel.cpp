@@ -757,7 +757,15 @@ namespace EditorUI {
                 // Render mode checkbox
                 ImGui::Checkbox("Render as 3D", &textComp.renderAs3D);
                 if (ImGui::IsItemHovered()) {
-                    ImGui::SetTooltip("2D overlay (false) or 3D world-space (true - not yet implemented)");
+                    ImGui::SetTooltip("2D overlay (false) or 3D world-space (true)");
+                }
+
+                // Billboard mode checkbox (only relevant for 3D text)
+                if (textComp.renderAs3D) {
+                    ImGui::Checkbox("Billboard Mode (Face Camera)", &textComp.billboardMode);
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip("true = Always face camera | false = Fixed world rotation (uses entity's Transform rotation)");
+                    }
                 }
             }
             ImGui::PopID();

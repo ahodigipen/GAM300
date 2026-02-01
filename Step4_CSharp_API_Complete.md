@@ -447,21 +447,105 @@ API.SetTextPosition(scoreEntity, TextLayout.TopRight);
 API.SetTextPosition(timerEntity, TextLayout.TopCenter);
 ```
 
+### 3D World-Space Text (renderAs3D)
+
+**IMPORTANT**: The `renderAs3D` and `billboardMode` properties must be set in the **Inspector** (not yet exposed to C# API).
+
+When `renderAs3D = true`:
+- Text position is determined by the entity's **TransformComponent** world position
+- Text is automatically projected to screen space using the active camera
+- Text is culled if behind camera or outside view frustum
+- `screenPosition` is **ignored** (use Transform position instead)
+
+**Billboard Mode** (only relevant when `renderAs3D = true`):
+- `billboardMode = true` (default): Text **always faces the camera** (like MMO nametags)
+- `billboardMode = false`: Text has **fixed world rotation** ⚠️ **NOT YET IMPLEMENTED** - will not render
+
+**Use Cases:**
+- Floating damage numbers above enemies
+- Player nametags in 3D space
+- Interactive object labels
+- Quest markers
+
+**Example Setup (Inspector):**
+1. Create entity with TextComponent
+2. Set `renderAs3D = true` (checkbox in Inspector)
+3. Add TransformComponent (if not present)
+4. Set Transform position to world location (e.g., `(5, 10, -3)`)
+5. Text will appear at that 3D position, projected to screen
+
+**C# Example - Enemy Health Bar:**
+```csharp
+namespace GameScripts
+{
+    public class EnemyHealthDisplay
+    {
+        public ulong Entity;  // This is the TEXT entity
+
+        [EditorExposed]
+        public ulong enemyEntity;  // Link to enemy entity
+
+        [EditorExposed]
+        public Vec3 offset = new Vec3(0, 2, 0);  // Offset above enemy head
+
+        private int health = 100;
+
+        public void OnUpdate(float dt)
+        {
+            if (enemyEntity == 0 || !API.HasTransform(enemyEntity))
+                return;
+
+            // Get enemy position
+            Vec3 enemyPos = API.GetPosition(enemyEntity);
+
+            // Position text above enemy (renderAs3D uses this)
+            API.SetPosition(Entity, enemyPos + offset);
+
+            // Update health text
+            API.SetText(Entity, $"HP: {health}");
+
+            // Color based on health percentage
+            float healthPercent = health / 100.0f;
+            if (healthPercent > 0.5f)
+                API.SetTextColor(Entity, new Vec4(0, 1, 0, 1));  // Green
+            else if (healthPercent > 0.2f)
+                API.SetTextColor(Entity, new Vec4(1, 1, 0, 1));  // Yellow
+            else
+                API.SetTextColor(Entity, new Vec4(1, 0, 0, 1));  // Red
+        }
+
+        public void TakeDamage(int amount)
+        {
+            health = Math.Max(0, health - amount);
+        }
+    }
+}
+```
+
+**Note**: Currently `renderAs3D` can only be set in the Inspector. If you need to toggle it at runtime, request that feature.
+
 ---
 
 ## 📊 Complete Feature Matrix
 
-| Feature | Inspector | C# API | Status |
-|---------|-----------|--------|--------|
-| Text Content | ✅ Multi-line editor | ✅ `SetText()` | ✅ |
-| Font Name | ✅ Input field | ❌ Not exposed | ⚠️ |
-| Color (RGBA) | ✅ Color picker | ✅ `SetTextColor()` | ✅ |
-| Scale | ✅ Drag slider | ✅ `SetTextScale()` | ✅ |
-| Position | ✅ Vec2 input | ✅ `SetTextPosition()` | ✅ |
-| Render Mode | ✅ Checkbox | ❌ Not exposed | ⚠️ |
-| Alignment | ❌ Not implemented | ❌ Not exposed | ❌ |
+| Feature | Inspector | C# API | Status | Notes |
+|---------|-----------|--------|--------|-------|
+| Text Content | ✅ Multi-line editor | ✅ `SetText()` | ✅ | Supports `\n` newlines |
+| Font Name | ✅ Input field | ❌ Not exposed | ⚠️ | Can be added if needed |
+| Color (RGBA) | ✅ Color picker | ✅ `SetTextColor()` | ✅ | Full RGBA support |
+| Scale | ✅ Drag slider | ✅ `SetTextScale()` | ✅ | Multiplier (1.0 = normal) |
+| Position (2D) | ✅ Vec2 input | ✅ `SetTextPosition()` | ✅ | Screen-space pixels |
+| Position (3D) | ✅ Via Transform | ✅ Via `SetPosition()` | ✅ | When renderAs3D = true |
+| Render Mode | ✅ Checkbox | ❌ Not exposed | ✅ | 3D rendering fully works! |
+| Billboard Mode | ✅ Checkbox | ❌ Not exposed | ⚠️ | **NEW**: true = face camera (works), false = fixed rotation (TODO) |
+| Alignment | ❌ Not implemented | ❌ Not exposed | ❌ | Defined in struct but unused |
 
-**Note**: Font name and render mode can be added to the API if needed (simple additions).
+**New in This Update:**
+- ✅ **3D World-Space Text** - Full implementation with automatic camera projection
+- ✅ **Distance Scaling** - Text automatically scales based on camera distance
+- ✅ **Frustum Culling** - Text outside camera view is culled (performance optimization)
+
+**Note**: `renderAs3D` flag works perfectly but must be set in Inspector (not C# API yet). Can be exposed if needed.
 
 ---
 

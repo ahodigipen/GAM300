@@ -94,8 +94,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-6.81523418, 4.27253294, 7.02968216]
-        Rotate: [128.625, -132.625, 180]
+        Translate: [-5.45709085, 4.14931107, 3.79090023]
+        Rotate: [162.125, -78.1875, 180]
         Scale: [1, 1, 1]
     CameraComponent:
       Camera:
@@ -133,3 +133,4 @@ ENTITIES:
       scale: 1
       screenPosition: [429, 366]
       renderAs3D: false
+      billboardMode: true
