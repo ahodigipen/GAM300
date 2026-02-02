@@ -2,6 +2,7 @@
 #pragma warning(disable : 4834) // Disable [[nodiscard]] warnings for exception::what() in logging
 #include "Application/Application.h"
 #include "Audio/SoundSystem.hpp" // <-- added for per-entity sound updates
+#include "Graphics/Text/FontManager.h"
 
 namespace Boom
 {
@@ -26,6 +27,21 @@ namespace Boom
         
 
         std::cout << "[RunContext] Scene loaded successfully" << std::endl;
+        std::cout.flush();
+
+        // -- INITIALIZE FONT SYSTEM --
+        // This must be initialized before any text rendering occurs
+        // Initialize here so it works in both Editor and Runtime builds
+        std::cout << "[RunContext] Initializing Font System..." << std::endl;
+        std::cout.flush();
+
+        if (Boom::FontManager::GetInstance().Init()) {
+            Boom::FontManager::GetInstance().LoadFont("Roboto-Regular", "Resources/Fonts/Roboto-Regular.ttf", 48);
+            std::cout << "[RunContext] Font System initialized successfully" << std::endl;
+        } else {
+            BOOM_ERROR("Failed to initialize Font Manager");
+            std::cout << "[RunContext] ERROR: Failed to initialize Font System" << std::endl;
+        }
         std::cout.flush();
 
         // -- LOADING in MONO --
@@ -929,6 +945,103 @@ namespace Boom
                 TextureAsset* texture{ m_Context->assets->TryGet<TextureAsset>(std::get<0>(gui).textureID) };
                 if (texture)
                     m_Context->renderer->DrawQuad(texture->data, std::get<1>(gui), std::get<0>(gui).color);
+            }
+        }
+
+        // --- RENDER ALL TEXT COMPONENTS ---
+        if (!isPicking) {
+            // Get active camera for 3D text projection
+            Camera3D* textActiveCam = nullptr;
+            Transform3D textCamTransform{};
+            EnttView<Entity, CameraComponent>([&](auto en, CameraComponent& comp) {
+                if (!textActiveCam && comp.camera.cameraType == Camera3D::CameraType::Main) {
+                    textCamTransform = en.Get<TransformComponent>().transform;
+                    textActiveCam = &comp.camera;
+                }
+            });
+
+            // Get screen dimensions
+            int screenWidth = m_Context->window->Width();
+            int screenHeight = m_Context->window->Height();
+            float aspect = (float)screenWidth / (float)screenHeight;
+
+            // Iterate through all entities with TextComponent
+            auto textView = m_Context->scene.view<TextComponent>();
+            for (auto entity : textView) {
+                auto& textComp = textView.get<TextComponent>(entity);
+
+                float screenX, screenY;
+                float finalScale = textComp.scale;
+
+                if (textComp.renderAs3D && textActiveCam) {
+                    // 3D WORLD-SPACE TEXT: Project entity's world position to screen space
+
+                    // Get entity's world position and rotation
+                    Entity ent(&m_Context->scene, entity);
+                    if (!ent.Has<TransformComponent>()) continue;  // Skip if no transform
+
+                    auto& transform = ent.Get<TransformComponent>().transform;
+                    glm::vec3 worldPos = transform.translate;
+
+                    // NON-BILLBOARD MODE: Text with fixed world rotation (not yet implemented)
+                    if (!textComp.billboardMode) {
+                        // TODO: Implement true 3D text rendering with rotation
+                        // Requires rendering each character as a 3D quad with entity's transform applied
+                        // For now, skip rendering non-billboard text
+                        static bool warnedOnce = false;
+                        if (!warnedOnce) {
+                            BOOM_WARN("Non-billboard 3D text not yet implemented - text will not render");
+                            warnedOnce = true;
+                        }
+                        continue;
+                    }
+
+                    // Compute view-projection matrix
+                    glm::mat4 viewMatrix = textActiveCam->View(textCamTransform);
+                    glm::mat4 projMatrix = textActiveCam->Projection(aspect);
+                    glm::mat4 viewProj = projMatrix * viewMatrix;
+
+                    // Project to clip space
+                    glm::vec4 clipPos = viewProj * glm::vec4(worldPos, 1.0f);
+
+                    // Perform perspective divide to get NDC (Normalized Device Coordinates)
+                    if (clipPos.w <= 0.0f) continue;  // Behind camera, skip
+                    glm::vec3 ndc = glm::vec3(clipPos) / clipPos.w;
+
+                    // Check if text is within visible frustum
+                    if (ndc.x < -1.0f || ndc.x > 1.0f ||
+                        ndc.y < -1.0f || ndc.y > 1.0f ||
+                        ndc.z < -1.0f || ndc.z > 1.0f) {
+                        continue;  // Outside view frustum
+                    }
+
+                    // Convert NDC to screen coordinates
+                    // NDC: -1 to 1, Screen: 0 to width/height
+                    // FontManager uses bottom-left origin (0,0), same as OpenGL NDC, so NO Y-flip needed
+                    screenX = ((ndc.x + 1.0f) * 0.5f) * screenWidth;
+                    screenY = ((ndc.y + 1.0f) * 0.5f) * screenHeight;  // Bottom-left origin, Y increases upward
+
+                    // Optional: Scale based on distance (more conservative formula)
+                    // Scale stays constant at base scale - no automatic distance scaling
+                    // User can implement custom distance scaling in scripts if needed
+                    finalScale = textComp.scale;
+                }
+                else {
+                    // 2D SCREEN-SPACE TEXT: Use direct screen position
+                    screenX = textComp.screenPosition.x;
+                    screenY = textComp.screenPosition.y;
+                }
+
+                // Render text using FontManager
+                Boom::FontManager::GetInstance().RenderText(
+                    textComp.fontName,                  // Font name (must be loaded)
+                    textComp.text,                      // Text content
+                    screenX,                            // X position (pixels from left)
+                    screenY,                            // Y position (pixels from bottom)
+                    finalScale,                         // Size multiplier
+                    glm::vec3(textComp.color),          // RGB color
+                    textComp.color.a                    // Alpha transparency
+                );
             }
         }
     }

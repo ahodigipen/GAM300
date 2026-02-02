@@ -35,6 +35,7 @@
 #include <GLFW/glfw3.h>
 #include "Vendors/imgui/backends/imgui_impl_glfw.h"
 #include "Vendors/imgui/backends/imgui_impl_opengl3.h"
+#include "Graphics/Text/FontManager.h"
 
 
 namespace {
@@ -141,6 +142,11 @@ namespace EditorUI {
             // Note: Pass 0 as numThreads to auto-detect CPU cores, or specify a number like 4 or 8
         }
 
+        // NOTE: Font System is now initialized in Application::RunContext()
+        // This ensures fonts work in both Editor and Runtime (exported) builds
+        // The initialization was moved there to avoid issues when ImGui is disabled
+        // See: FontSystemImplementation.md for details
+
         // Construct panels here; they persist across frames.
         // We pass `this` so panels can call owner->GetContext() etc.
         m_MenuBar = std::make_unique<MenuBarPanel>(this);
@@ -222,6 +228,9 @@ namespace EditorUI {
         if (m_ShowAnimationTimeline && m_AnimationTimeline) m_AnimationTimeline->Render();
         // --- End frame / draw ---
         EndImguiFrame();
+
+        // Render Test Text REMOVED from Editor::Render overlay
+        // Boom::FontManager::GetInstance().RenderText("Roboto", "Hello World", 200.0f, 200.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
     }
 
     void Editor::HandleGlobalShortcuts()

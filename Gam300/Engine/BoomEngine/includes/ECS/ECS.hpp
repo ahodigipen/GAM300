@@ -23,6 +23,7 @@ namespace Boom {
  NAV_AGENT_COMPONENT,
  AI_COMPONENT,
  SPRITE,
+ TEXT,
  MENU_COMPONENT,
  DEACTIVATED_TAG,
  VIDEO,
@@ -46,12 +47,13 @@ namespace Boom {
  "Nav Agent Component",  //13
  "AI Component",         //14
  "Sprite",               //15
- "Menu Component",       //16
- "Deactivated Tag",      //17
- "Video",
- "Character Controller", 
+ "Text",                 //16
+ "Menu Component",       //17
+ "Deactivated Tag",      //18
+ "Video",                //19
+ "Character Controller", //20
  "Count"
- 
+
  };
 
  // transform component
@@ -769,6 +771,40 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
  obj_member<"color", &SpriteComponent::color>,
  obj_member<"renderAs3D", &SpriteComponent::renderAs3D>
  )
+ };
+
+ // Text Component - Unity-like text rendering using FontManager
+ struct TextComponent {
+     BOOM_INLINE TextComponent(const TextComponent&) = default;
+     BOOM_INLINE TextComponent() = default;
+
+     std::string text = "New Text";               // The actual text to display
+     std::string fontName = "Roboto-Regular";     // Font to use (must be loaded in FontManager)
+     glm::vec4 color{ 1.0f, 1.0f, 1.0f, 1.0f };  // RGBA color
+     float scale = 1.0f;                          // Size multiplier
+     glm::vec2 screenPosition{ 100.0f, 100.0f };  // Screen space position (pixels from bottom-left)
+     bool renderAs3D = false;                     // false = 2D overlay, true = 3D world space
+     bool billboardMode = true;                   // true = always face camera (billboard), false = fixed world rotation
+
+     // Text alignment (for future implementation)
+     enum class Alignment : int32_t {
+         Left = 0,
+         Center = 1,
+         Right = 2
+     };
+     Alignment alignment = Alignment::Left;
+
+     XPROPERTY_DEF(
+         "TextComponent", TextComponent,
+         obj_member<"text", &TextComponent::text>,
+         obj_member<"fontName", &TextComponent::fontName>,
+         obj_member<"color", &TextComponent::color>,
+         obj_member<"scale", &TextComponent::scale>,
+         obj_member<"screenPosition", &TextComponent::screenPosition>,
+         obj_member<"renderAs3D", &TextComponent::renderAs3D>,
+         obj_member<"billboardMode", &TextComponent::billboardMode>
+         // Note: alignment enum requires custom serialization (not included for now)
+     )
  };
 
 

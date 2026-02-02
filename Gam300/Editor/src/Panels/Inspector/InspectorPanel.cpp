@@ -702,6 +702,75 @@ namespace EditorUI {
             ImGui::PopID();
         }
 
+        // === TEXT COMPONENT ===
+        if (selected.Has<Boom::TextComponent>()) {
+            ImGui::PushID("Text");
+            if (ImGui::CollapsingHeader("Text", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap)) {
+                if (ComponentSettings<Boom::TextComponent>(ctx)) {
+                    ImGui::PopID();
+                    return; // Component was removed, exit early
+                }
+
+                auto& textComp = selected.Get<Boom::TextComponent>();
+
+                // Text content input (multi-line)
+                char textBuffer[1024];
+                strncpy_s(textBuffer, textComp.text.c_str(), sizeof(textBuffer) - 1);
+                textBuffer[sizeof(textBuffer) - 1] = '\0';
+
+                ImGui::Text("Text Content:");
+                if (ImGui::InputTextMultiline("##text", textBuffer, sizeof(textBuffer), ImVec2(-1, 60))) {
+                    textComp.text = std::string(textBuffer);
+                }
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Use \\n for newlines");
+                }
+
+                // Font name input
+                char fontBuffer[256];
+                strncpy_s(fontBuffer, textComp.fontName.c_str(), sizeof(fontBuffer) - 1);
+                fontBuffer[sizeof(fontBuffer) - 1] = '\0';
+
+                ImGui::Text("Font Name:");
+                if (ImGui::InputText("##fontName", fontBuffer, sizeof(fontBuffer))) {
+                    textComp.fontName = std::string(fontBuffer);
+                }
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("e.g., 'Roboto-Regular' (must be loaded in FontManager)");
+                }
+
+                // Color picker
+                ImGui::Text("Color:");
+                ImGui::ColorEdit4("##color", &textComp.color[0]);
+
+                // Scale slider
+                ImGui::Text("Scale:");
+                ImGui::DragFloat("##scale", &textComp.scale, 0.05f, 0.1f, 10.0f);
+
+                // Screen position
+                ImGui::Text("Screen Position:");
+                ImGui::DragFloat2("##screenPosition", &textComp.screenPosition[0], 1.0f);
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Pixel coordinates (0,0 = bottom-left)");
+                }
+
+                // Render mode checkbox
+                ImGui::Checkbox("Render as 3D", &textComp.renderAs3D);
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("2D overlay (false) or 3D world-space (true)");
+                }
+
+                // Billboard mode checkbox (only relevant for 3D text)
+                if (textComp.renderAs3D) {
+                    ImGui::Checkbox("Billboard Mode (Face Camera)", &textComp.billboardMode);
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip("true = Always face camera | false = Fixed world rotation (uses entity's Transform rotation)");
+                    }
+                }
+            }
+            ImGui::PopID();
+        }
+
         // === CHARACTER CONTROLLER COMPONENT ===
         if (selected.Has<Boom::CharacterControllerComponent>()) {
             ImGui::PushID("CharacterController");
@@ -2262,6 +2331,32 @@ namespace EditorUI {
                     ImGui::SetTooltip("Triggers do not produce collision response.\nThey only fire collision events.");
                 }
 
+                // Surface Type dropdown for footstep sounds
+                ImGui::Spacing();
+                Collider3D::SurfaceType currentSurface = collider->surfaceType;
+                const char* surfaceNames[] = { "Default", "Wood", "Stone", "Metal", "Sand", "Grass", "Water", "Carpet", "Tile" };
+                const char* currentSurfaceName = surfaceNames[static_cast<int>(currentSurface)];
+
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Surface Type");
+                ImGui::SameLine(150);
+                ImGui::SetNextItemWidth(-1);
+
+                if (ImGui::BeginCombo("##SurfaceType", currentSurfaceName))
+                {
+                    for (int i = 0; i < IM_ARRAYSIZE(surfaceNames); ++i) {
+                        bool isSelected = (currentSurface == static_cast<Collider3D::SurfaceType>(i));
+                        if (ImGui::Selectable(surfaceNames[i], isSelected)) {
+                            collider->surfaceType = static_cast<Collider3D::SurfaceType>(i);
+                        }
+                        if (isSelected) ImGui::SetItemDefaultFocus();
+                    }
+                    ImGui::EndCombo();
+                }
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Surface type for footstep sounds and other surface-dependent effects");
+                }
+
                 ImGui::Spacing();
                 ImGui::SeparatorText("Shape");
                 ImGui::Spacing();
@@ -3540,6 +3635,7 @@ namespace EditorUI {
                     UpdateComponent<Boom::AIComponent>(Boom::ComponentID::AI_COMPONENT, selected);
                     UpdateComponent<Boom::ThirdPersonCameraComponent>(Boom::ComponentID::THIRD_PERSON_CAMERA, selected);
 					UpdateComponent<Boom::SpriteComponent>(Boom::ComponentID::SPRITE, selected);
+                    UpdateComponent<Boom::TextComponent>(Boom::ComponentID::TEXT, selected);
                     UpdateComponent<Boom::MenuComponent>(Boom::ComponentID::MENU_COMPONENT, selected);
                     UpdateComponent<Boom::DeactivatedComponent>(Boom::ComponentID::DEACTIVATED_TAG, selected);
                     UpdateComponent<Boom::VideoComponent>(Boom::ComponentID::VIDEO, selected);

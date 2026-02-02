@@ -240,6 +240,7 @@
     <ClInclude Include="includes\Graphics\Shaders\SkyMap.h" />
     <ClInclude Include="includes\Graphics\Textures\Compression.h" />
     <ClInclude Include="includes\Graphics\Textures\Texture.h" />
+    <ClInclude Include="includes\Graphics\Text\FontManager.h" />
     <ClInclude Include="includes\Graphics\Utilities\Culling.h" />
     <ClInclude Include="includes\Graphics\Utilities\Data.h" />
     <ClInclude Include="includes\Graphics\Utilities\Quad.h" />
@@ -304,6 +305,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Graphics\Text\FontManager.cpp" />
     <ClCompile Include="src\Graphics\Video\VideoPlayer.cpp" />
     <ClCompile Include="src\Graphics\Video\VideoSystem.cpp" />
     <ClCompile Include="src\Models\ModelLoader.cpp">
