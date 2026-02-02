@@ -625,8 +625,8 @@ ENTITIES:
           filePaths:
             - Resources/Audio/StatueTurn_01.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.500999987
+          priority: 115
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -638,13 +638,13 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.2999992
         - name: _turnSoundPath2
           filePaths:
             - Resources/Audio/StatueTurn_02.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.518000007
+          priority: 112
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -656,13 +656,13 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.7999992
         - name: _turnSoundPath3
           filePaths:
             - Resources/Audio/StatueTurn_03.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.504000008
+          priority: 110
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -674,16 +674,16 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.7999992
         - name: _alertSoundPath
           filePaths:
-            - Resources/Audio/playerPunch_1.wav
+            - Resources/Audio/VO_Statue_003.wav
           loop: false
           volume: 1
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.5
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -740,9 +740,9 @@ ENTITIES:
       Entries:
         - name: _footstepSoundPath
           filePaths:
-            - Resources/Audio/playerRun_02.wav
+            - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 1
+          volume: 0.675999999
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -755,16 +755,16 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.7999992
         - name: _alertSoundPath
           filePaths:
-            - Resources/Audio/enemyHurt_2.wav
+            - Resources/Audio/VO_Patrol_Alert_020.wav
           loop: false
-          volume: 1
+          volume: 0.819999993
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.5
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -774,6 +774,24 @@ ENTITIES:
           animTrigger: ""
           minDistance: 1
           maxDistance: 50
+        - name: _gruntSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_001.wav
+          loop: false
+          volume: 0.54400003
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.620999992
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 15
     AnimatorComponent:
       Clips:
         - name: mixamo.com
@@ -795,7 +813,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 3.46997857
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -864,9 +882,9 @@ ENTITIES:
       Entries:
         - name: _footstepSoundPath
           filePaths:
-            - Resources/Audio/playerRun_02.wav
+            - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 1
+          volume: 0.675999999
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -879,16 +897,16 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.2999992
         - name: _alertSoundPath
           filePaths:
-            - Resources/Audio/enemyHurt_2.wav
+            - Resources/Audio/VO_Patrol_Alert_020.wav
           loop: false
-          volume: 1
+          volume: 0.819999993
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.5
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -898,6 +916,24 @@ ENTITIES:
           animTrigger: ""
           minDistance: 1
           maxDistance: 50
+        - name: _gruntSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_001.wav
+          loop: false
+          volume: 0.532000005
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.535000026
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 15
     AnimatorComponent:
       Clips:
         - name: mixamo.com
@@ -919,7 +955,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 4.51996183
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -988,9 +1024,9 @@ ENTITIES:
       Entries:
         - name: _footstepSoundPath
           filePaths:
-            - Resources/Audio/playerRun_02.wav
+            - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 1
+          volume: 0.662
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -1003,16 +1039,16 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.7999992
         - name: _alertSoundPath
           filePaths:
-            - Resources/Audio/enemyHurt_2.wav
+            - Resources/Audio/VO_Patrol_Alert_020.wav
           loop: false
-          volume: 1
+          volume: 0.819999993
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.5
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -1022,6 +1058,24 @@ ENTITIES:
           animTrigger: ""
           minDistance: 1
           maxDistance: 50
+        - name: _gruntSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_001.wav
+          loop: false
+          volume: 0.532000005
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.699999988
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 15
     AnimatorComponent:
       Clips:
         - name: mixamo.com
@@ -1043,7 +1097,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0.00661349576
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -1112,9 +1166,9 @@ ENTITIES:
       Entries:
         - name: _footstepSoundPath
           filePaths:
-            - Resources/Audio/playerRun_02.wav
+            - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 1
+          volume: 0.67900002
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -1127,16 +1181,16 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 30.1000004
         - name: _alertSoundPath
           filePaths:
-            - Resources/Audio/enemyHurt_2.wav
+            - Resources/Audio/VO_Patrol_Alert_020.wav
           loop: false
-          volume: 1
+          volume: 0.819999993
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.5
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -1146,6 +1200,24 @@ ENTITIES:
           animTrigger: ""
           minDistance: 1
           maxDistance: 50
+        - name: _gruntSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_001.wav
+          loop: false
+          volume: 0.563000023
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.639999986
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 15.6000004
     AnimatorComponent:
       Clips:
         - name: mixamo.com
@@ -1167,7 +1239,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.4699738
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -1237,9 +1309,9 @@ ENTITIES:
       Entries:
         - name: _footstepSoundPath
           filePaths:
-            - Resources/Audio/playerRun_02.wav
+            - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 1
+          volume: 0.67900002
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -1252,12 +1324,30 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.2999992
         - name: _alertSoundPath
           filePaths:
-            - Resources/Audio/enemyHurt_2.wav
+            - Resources/Audio/VO_Patrol_Alert_020.wav
           loop: false
-          volume: 1
+          volume: 0.819999993
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 0.5
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _gruntSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_001.wav
+          loop: false
+          volume: 0.528999984
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -1270,7 +1360,7 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 15
     AnimatorComponent:
       Clips:
         - name: mixamo.com
@@ -1292,7 +1382,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.47000527
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -1361,9 +1451,9 @@ ENTITIES:
       Entries:
         - name: _footstepSoundPath
           filePaths:
-            - Resources/Audio/playerRun_02.wav
+            - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 1
+          volume: 0.653999984
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -1376,16 +1466,16 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.7999992
         - name: _alertSoundPath
           filePaths:
-            - Resources/Audio/enemyHurt_2.wav
+            - Resources/Audio/VO_Patrol_Alert_020.wav
           loop: false
-          volume: 1
+          volume: 0.819999993
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.5
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -1395,6 +1485,24 @@ ENTITIES:
           animTrigger: ""
           minDistance: 1
           maxDistance: 50
+        - name: _gruntSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_001.wav
+          loop: false
+          volume: 0.52700001
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.550000012
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 15
     AnimatorComponent:
       Clips:
         - name: mixamo.com
@@ -1416,7 +1524,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.46997428
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -1464,8 +1572,8 @@ ENTITIES:
           filePaths:
             - Resources/Audio/StatueTurn_01.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.521000028
+          priority: 108
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -1477,13 +1585,13 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.7999992
         - name: _turnSoundPath2
           filePaths:
             - Resources/Audio/StatueTurn_02.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.513000011
+          priority: 115
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -1495,13 +1603,13 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.7999992
         - name: _turnSoundPath3
           filePaths:
             - Resources/Audio/StatueTurn_03.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.50999999
+          priority: 111
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -1513,16 +1621,16 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.7999992
         - name: _alertSoundPath
           filePaths:
-            - Resources/Audio/playerPunch_1.wav
+            - Resources/Audio/VO_Statue_003.wav
           loop: false
           volume: 1
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.5
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -1684,7 +1792,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/Kairos_Cave-Vuk_Loop.wav
           loop: true
-          volume: 0.395999998
+          volume: 0.109999999
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -2101,8 +2209,8 @@ ENTITIES:
           filePaths:
             - Resources/Audio/StatueTurn_01.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.500999987
+          priority: 109
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -2114,13 +2222,13 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.2999992
         - name: _turnSoundPath2
           filePaths:
             - Resources/Audio/StatueTurn_02.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.518000007
+          priority: 103
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -2132,13 +2240,13 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.2999992
         - name: _turnSoundPath3
           filePaths:
             - Resources/Audio/StatueTurn_03.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.495999992
+          priority: 104
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -2150,16 +2258,16 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.2000008
         - name: _alertSoundPath
           filePaths:
-            - Resources/Audio/playerPunch_1.wav
+            - Resources/Audio/VO_Statue_003.wav
           loop: false
           volume: 1
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.5
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -2489,9 +2597,9 @@ ENTITIES:
       Entries:
         - name: _footstepSoundPath
           filePaths:
-            - Resources/Audio/playerRun_02.wav
+            - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 1
+          volume: 0.672999978
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -2504,12 +2612,30 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 36.2999992
         - name: _alertSoundPath
           filePaths:
-            - Resources/Audio/enemyHurt_2.wav
+            - Resources/Audio/VO_Patrol_Alert_020.wav
           loop: false
-          volume: 1
+          volume: 0.723999977
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 0.5
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50.9000015
+        - name: _gruntSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_001.wav
+          loop: false
+          volume: 0.52700001
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -2519,10 +2645,10 @@ ENTITIES:
           triggerKey: -1
           playOnMove: false
           moveThreshold: 0.100000001
-          repeatInterval: 0.5
+          repeatInterval: 0.560000002
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 4.9000001
     AnimatorComponent:
       Clips:
         - name: mixamo.com
@@ -2544,7 +2670,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.46999145
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -2613,10 +2739,10 @@ ENTITIES:
       Entries:
         - name: _footstepSoundPath
           filePaths:
-            - Resources/Audio/playerRun_02.wav
+            - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.670000017
+          priority: 114
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -2631,9 +2757,27 @@ ENTITIES:
           maxDistance: 50
         - name: _alertSoundPath
           filePaths:
-            - Resources/Audio/enemyHurt_2.wav
+            - Resources/Audio/VO_Patrol_Alert_020.wav
           loop: false
-          volume: 1
+          volume: 0.749000013
+          priority: 130
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 0.5
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _gruntSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_001.wav
+          loop: false
+          volume: 0.565999985
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -2643,7 +2787,7 @@ ENTITIES:
           triggerKey: -1
           playOnMove: false
           moveThreshold: 0.100000001
-          repeatInterval: 0.5
+          repeatInterval: 0.620000005
           animTrigger: ""
           minDistance: 1
           maxDistance: 50
@@ -2668,7 +2812,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 1.83219337
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -2737,9 +2881,9 @@ ENTITIES:
       Entries:
         - name: _footstepSoundPath
           filePaths:
-            - Resources/Audio/playerRun_02.wav
+            - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 1
+          volume: 0.670000017
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -2752,12 +2896,30 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 38.5
         - name: _alertSoundPath
           filePaths:
-            - Resources/Audio/enemyHurt_2.wav
+            - Resources/Audio/VO_Patrol_Alert_020.wav
           loop: false
-          volume: 1
+          volume: 0.819999993
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 0.5
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50.9000015
+        - name: _gruntSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_001.wav
+          loop: false
+          volume: 0.579999983
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -2770,7 +2932,7 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 3.79999995
     AnimatorComponent:
       Clips:
         - name: mixamo.com
@@ -2792,7 +2954,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.4699738
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -3198,8 +3360,8 @@ ENTITIES:
           filePaths:
             - Resources/Audio/StatueTurn_01.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.504000008
+          priority: 112
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -3211,13 +3373,13 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.2000008
         - name: _turnSoundPath2
           filePaths:
             - Resources/Audio/StatueTurn_02.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.499000013
+          priority: 109
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -3229,13 +3391,13 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.7999992
         - name: _turnSoundPath3
           filePaths:
             - Resources/Audio/StatueTurn_03.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.514999986
+          priority: 109
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -3247,16 +3409,16 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.7999992
         - name: _alertSoundPath
           filePaths:
-            - Resources/Audio/playerPunch_1.wav
+            - Resources/Audio/VO_Statue_003.wav
           loop: false
           volume: 1
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.5
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -3277,8 +3439,8 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [17.540493, 13.4146328, 3.31294298]
-        Rotate: [5.00895476e-06, 283.408813, 5.00895476e-06]
-        Scale: [0.0144999959, 0.0145000005, 0.0144999959]
+        Rotate: [5.00895339e-06, -76.5911713, 5.00895339e-06]
+        Scale: [0.0144999949, 0.0145000005, 0.0144999949]
     ModelComponent:
       ModelID: 12373711864448078618
       MaterialID: 1781146247448718189
@@ -3292,8 +3454,8 @@ ENTITIES:
           filePaths:
             - Resources/Audio/StatueTurn_01.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.500999987
+          priority: 111
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -3305,13 +3467,13 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.2999992
         - name: _turnSoundPath2
           filePaths:
             - Resources/Audio/StatueTurn_02.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.513000011
+          priority: 110
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -3323,13 +3485,13 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.2000008
         - name: _turnSoundPath3
           filePaths:
             - Resources/Audio/StatueTurn_03.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.513000011
+          priority: 107
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -3341,16 +3503,16 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.2999992
         - name: _alertSoundPath
           filePaths:
-            - Resources/Audio/playerPunch_1.wav
+            - Resources/Audio/VO_Statue_003.wav
           loop: false
           volume: 1
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.5
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -3386,8 +3548,8 @@ ENTITIES:
           filePaths:
             - Resources/Audio/StatueTurn_01.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.504000008
+          priority: 113
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -3404,8 +3566,8 @@ ENTITIES:
           filePaths:
             - Resources/Audio/StatueTurn_02.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.514999986
+          priority: 111
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -3422,8 +3584,8 @@ ENTITIES:
           filePaths:
             - Resources/Audio/StatueTurn_03.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.507000029
+          priority: 110
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -3438,13 +3600,13 @@ ENTITIES:
           maxDistance: 50
         - name: _alertSoundPath
           filePaths:
-            - Resources/Audio/playerPunch_1.wav
+            - Resources/Audio/VO_Statue_003.wav
           loop: false
           volume: 1
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.5
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -3480,8 +3642,8 @@ ENTITIES:
           filePaths:
             - Resources/Audio/StatueTurn_01.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.495999992
+          priority: 108
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -3493,13 +3655,13 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.8999996
         - name: _turnSoundPath2
           filePaths:
             - Resources/Audio/StatueTurn_02.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.514999986
+          priority: 108
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -3511,13 +3673,13 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.7999992
         - name: _turnSoundPath3
           filePaths:
             - Resources/Audio/StatueTurn_03.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.495999992
+          priority: 111
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -3529,16 +3691,16 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 31.7999992
         - name: _alertSoundPath
           filePaths:
-            - Resources/Audio/playerPunch_1.wav
+            - Resources/Audio/VO_Statue_003.wav
           loop: false
           volume: 1
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.5
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -8204,14 +8366,14 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [10.8223066, 25.1182499, 20.5184116]
-        Rotate: [-65.4375, 130.562439, 0]
+        Translate: [1.97365177, 35.4846306, -5.87736607]
+        Rotate: [-55.875, 1593.6875, 0]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.00100000005
         FarPlane: 935.47998
-        FOV: 100
+        FOV: 73
     ThirdPersonCameraComponent:
       Target UID: 2377197601835279376
       Offset: [0.00999999978, 4.1500001, 0]
@@ -9761,9 +9923,9 @@ ENTITIES:
       Entries:
         - name: _footstepSoundPath
           filePaths:
-            - Resources/Audio/playerRun_02.wav
+            - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 1
+          volume: 0.67900002
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -9776,16 +9938,16 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 38.5999985
         - name: _alertSoundPath
           filePaths:
-            - Resources/Audio/enemyHurt_2.wav
+            - Resources/Audio/VO_Patrol_Alert_020.wav
           loop: false
-          volume: 1
+          volume: 0.772000015
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.5
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -9794,7 +9956,25 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 50.2999992
+        - name: _gruntSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_001.wav
+          loop: false
+          volume: 0.579999983
+          priority: 129
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.699999988
+          animTrigger: ""
+          minDistance: 0.899999976
+          maxDistance: 3.20000005
     AnimatorComponent:
       Clips:
         - name: mixamo.com
@@ -9816,7 +9996,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.47000527
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
