@@ -5,6 +5,9 @@
 
 #include "Panels/AnimationTimelinePanel.h"
 #include "Editor.h"
+
+// Static variable for new audio event timestamp (set during right-click)
+static float s_NewEventTimestamp = 0.0f;
 #include "Application/Interface.h"
 #include "Application/Context.h"
 #include "Commands/UndoRedo.h"
@@ -16,8 +19,51 @@
 #include "common/Core.h"
 #include <cmath>
 #include <algorithm>
+#include <filesystem>
 
 using namespace EditorUI;
+
+// ========== Audio File Browser Helper ==========
+
+// Get list of audio files from Resources/Audio directory
+static std::vector<std::string> GetAvailableAudioFiles()
+{
+    std::vector<std::string> audioFiles;
+    const std::string audioDir = "Resources/Audio";
+
+    try
+    {
+        if (std::filesystem::exists(audioDir))
+        {
+            for (const auto& entry : std::filesystem::recursive_directory_iterator(audioDir))
+            {
+                if (entry.is_regular_file())
+                {
+                    std::string ext = entry.path().extension().string();
+                    // Convert to lowercase for comparison
+                    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+                    if (ext == ".wav" || ext == ".mp3" || ext == ".ogg" || ext == ".flac")
+                    {
+                        // Store path relative to Resources/Audio
+                        std::string relativePath = entry.path().string();
+                        // Normalize path separators
+                        std::replace(relativePath.begin(), relativePath.end(), '\\', '/');
+                        audioFiles.push_back(relativePath);
+                    }
+                }
+            }
+        }
+    }
+    catch (const std::exception& e)
+    {
+        BOOM_WARN("[AudioBrowser] Failed to scan audio directory: {}", e.what());
+    }
+
+    // Sort alphabetically
+    std::sort(audioFiles.begin(), audioFiles.end());
+    return audioFiles;
+}
 
 // ========== Helper Functions ==========
 
@@ -248,6 +294,12 @@ void AnimationTimelinePanel::RenderTimelineRuler()
         {
             m_IsDraggingTimeline = true;
             m_IsPlaying = false;  // Pause playback when scrubbing
+
+            // Disable audio events while scrubbing to prevent spam
+            if (m_Animator)
+            {
+                m_Animator->SetAudioEventsEnabled(false);
+            }
         }
     }
 
@@ -274,6 +326,13 @@ void AnimationTimelinePanel::RenderTimelineRuler()
         {
             // Mouse released - stop dragging
             m_IsDraggingTimeline = false;
+
+            // Re-enable audio events and reset triggers after scrubbing
+            if (m_Animator)
+            {
+                m_Animator->ResetAudioEventTriggers();
+                m_Animator->SetAudioEventsEnabled(true);
+            }
         }
     }
 
@@ -307,12 +366,14 @@ void AnimationTimelinePanel::RenderTrackList()
         }
     }
 
-    // Clear keyframe screen positions for this frame (used for box selection)
+    // Clear keyframe and audio marker screen positions for this frame
     m_KeyframeScreenPositions.clear();
+    m_AudioMarkerScreenPositions.clear();
 
-    // Reset hover state each frame (important for box selection detection)
+    // Reset hover state each frame (important for selection detection)
     m_HoveredKeyframeIndex = -1;
     m_HoveredBoneName.clear();
+    m_HoveredAudioEventIndex = -1;
 
     if (ImGui::BeginChild("TrackListScroll", ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar))
     {
@@ -323,6 +384,9 @@ void AnimationTimelinePanel::RenderTrackList()
         boneNameWidth = (boneNameWidth < 150.0f) ? 150.0f : (boneNameWidth > 300.0f) ? 300.0f : boneNameWidth;
         ImGui::Columns(2, "BoneTrackColumns", true);
         ImGui::SetColumnWidth(0, boneNameWidth);
+
+        // ========== AUDIO EVENTS TRACK (before bone tracks) ==========
+        RenderAudioTrack(duration);
 
         // Reduce indentation spacing to show more of bone names
         ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 10.0f);  // Default is ~21
@@ -409,10 +473,494 @@ void AnimationTimelinePanel::RenderTrackList()
                 }
             }
         }
+
+        // ========== AUDIO EVENT POPUPS ==========
+
+        // Add Audio Event Popup
+        if (ImGui::BeginPopup("AddAudioEventPopup"))
+        {
+            static char soundFile[256] = "";
+            static char eventName[128] = "";
+            static float volume = 1.0f;
+            static float pitch = 1.0f;
+            static bool is3D = false;
+            static bool loop = false;
+            static int groupIndex = 0;
+            const char* groups[] = { "SFX", "Music", "Ambience", "Voice" };
+            static std::vector<std::string> cachedAudioFiles;
+            static bool audioFilesLoaded = false;
+
+            ImGui::Text("Add Audio Event");
+            ImGui::Separator();
+
+            ImGui::InputText("Event Name", eventName, sizeof(eventName));
+
+            // Sound file input with Browse button
+            ImGui::InputText("Sound File", soundFile, sizeof(soundFile));
+            ImGui::SameLine();
+            if (ImGui::Button("Browse...##AddBrowse"))
+            {
+                // Cache audio files on first browse
+                if (!audioFilesLoaded)
+                {
+                    cachedAudioFiles = GetAvailableAudioFiles();
+                    audioFilesLoaded = true;
+                }
+                ImGui::OpenPopup("AudioFileBrowser##Add");
+            }
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::SetTooltip("Browse audio files from Resources/Audio");
+            }
+
+            // Audio file browser popup
+            if (ImGui::BeginPopup("AudioFileBrowser##Add"))
+            {
+                ImGui::Text("Select Audio File");
+                ImGui::Separator();
+
+                // Refresh button
+                if (ImGui::Button("Refresh"))
+                {
+                    cachedAudioFiles = GetAvailableAudioFiles();
+                }
+                ImGui::SameLine();
+                ImGui::TextDisabled("(%zu files)", cachedAudioFiles.size());
+
+                ImGui::BeginChild("AudioFileList", ImVec2(350, 200), true);
+                for (const auto& file : cachedAudioFiles)
+                {
+                    // Show just the filename, with full path on hover
+                    std::string filename = std::filesystem::path(file).filename().string();
+                    if (ImGui::Selectable(filename.c_str()))
+                    {
+                        strncpy_s(soundFile, sizeof(soundFile), file.c_str(), _TRUNCATE);
+                        ImGui::CloseCurrentPopup();
+                    }
+                    if (ImGui::IsItemHovered())
+                    {
+                        ImGui::SetTooltip("%s", file.c_str());
+                    }
+                }
+                ImGui::EndChild();
+
+                ImGui::EndPopup();
+            }
+
+            ImGui::SliderFloat("Volume", &volume, 0.0f, 1.0f, "%.2f");
+            ImGui::SliderFloat("Pitch", &pitch, 0.5f, 2.0f, "%.2f");
+
+            ImGui::Checkbox("3D Sound", &is3D);
+            ImGui::SameLine();
+            ImGui::Checkbox("Loop", &loop);
+
+            ImGui::Combo("Group", &groupIndex, groups, IM_ARRAYSIZE(groups));
+
+            ImGui::Spacing();
+
+            if (ImGui::Button("Add", ImVec2(120, 0)))
+            {
+                if (m_Animator && m_SelectedClipIndex >= 0)
+                {
+                    // Create new audio event with timestamp from right-click
+                    Boom::AudioEventMarker newEvent;
+                    newEvent.timeStamp = s_NewEventTimestamp;
+                    newEvent.soundFile = std::string(soundFile);
+                    newEvent.eventName = std::string(eventName);
+                    newEvent.volume = volume;
+                    newEvent.pitch = pitch;
+                    newEvent.is3D = is3D;
+                    newEvent.loop = loop;
+                    newEvent.groupName = std::string(groups[groupIndex]);
+
+                    // Use command system for undo/redo support
+                    KeyframeCommand cmd;
+                    cmd.type = KeyframeCommand::AUDIO_ADD;
+                    cmd.audioEvent = newEvent;
+                    ExecuteCommand(cmd);
+
+                    // Reset form
+                    soundFile[0] = '\0';
+                    eventName[0] = '\0';
+                    volume = 1.0f;
+                    pitch = 1.0f;
+                    is3D = false;
+                    loop = false;
+                    groupIndex = 0;
+                }
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::SameLine();
+            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            {
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
+        }
+
+        // Edit Audio Event Popup
+        if (ImGui::BeginPopup("EditAudioEventPopup"))
+        {
+            if (m_Animator && m_SelectedClipIndex >= 0 && m_SelectedAudioEventIndex >= 0)
+            {
+                auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+                if (clip && m_SelectedAudioEventIndex < (int)clip->audioEvents.size())
+                {
+                    auto& audioEvent = clip->audioEvents[m_SelectedAudioEventIndex];
+
+                    static char soundFile[256] = "";
+                    static char eventName[128] = "";
+                    static float volume = 1.0f;
+                    static float pitch = 1.0f;
+                    static bool is3D = false;
+                    static bool loop = false;
+                    static int groupIndex = 0;
+                    const char* groups[] = { "SFX", "Music", "Ambience", "Voice" };
+                    static bool initialized = false;
+                    static Boom::AudioEventMarker originalEvent;  // Store original for undo
+                    static std::vector<std::string> cachedAudioFiles;
+                    static bool audioFilesLoaded = false;
+
+                    // Initialize form with current event data on first open
+                    if (!initialized || ImGui::IsWindowAppearing())
+                    {
+                        // Capture original state for undo
+                        originalEvent = audioEvent;
+
+                        strncpy_s(soundFile, sizeof(soundFile), audioEvent.soundFile.c_str(), _TRUNCATE);
+                        strncpy_s(eventName, sizeof(eventName), audioEvent.eventName.c_str(), _TRUNCATE);
+                        volume = audioEvent.volume;
+                        pitch = audioEvent.pitch;
+                        is3D = audioEvent.is3D;
+                        loop = audioEvent.loop;
+
+                        // Find group index
+                        groupIndex = 0;
+                        for (int i = 0; i < IM_ARRAYSIZE(groups); i++)
+                        {
+                            if (audioEvent.groupName == groups[i])
+                            {
+                                groupIndex = i;
+                                break;
+                            }
+                        }
+                        initialized = true;
+                    }
+
+                    ImGui::Text("Edit Audio Event");
+                    ImGui::Separator();
+
+                    ImGui::Text("Time: %.2fs", audioEvent.timeStamp);
+
+                    ImGui::InputText("Event Name", eventName, sizeof(eventName));
+
+                    // Sound file input with Browse button
+                    ImGui::InputText("Sound File", soundFile, sizeof(soundFile));
+                    ImGui::SameLine();
+                    if (ImGui::Button("Browse...##EditBrowse"))
+                    {
+                        // Cache audio files on first browse
+                        if (!audioFilesLoaded)
+                        {
+                            cachedAudioFiles = GetAvailableAudioFiles();
+                            audioFilesLoaded = true;
+                        }
+                        ImGui::OpenPopup("AudioFileBrowser##Edit");
+                    }
+                    if (ImGui::IsItemHovered())
+                    {
+                        ImGui::SetTooltip("Browse audio files from Resources/Audio");
+                    }
+
+                    // Audio file browser popup
+                    if (ImGui::BeginPopup("AudioFileBrowser##Edit"))
+                    {
+                        ImGui::Text("Select Audio File");
+                        ImGui::Separator();
+
+                        // Refresh button
+                        if (ImGui::Button("Refresh"))
+                        {
+                            cachedAudioFiles = GetAvailableAudioFiles();
+                        }
+                        ImGui::SameLine();
+                        ImGui::TextDisabled("(%zu files)", cachedAudioFiles.size());
+
+                        ImGui::BeginChild("AudioFileListEdit", ImVec2(350, 200), true);
+                        for (const auto& file : cachedAudioFiles)
+                        {
+                            // Show just the filename, with full path on hover
+                            std::string filename = std::filesystem::path(file).filename().string();
+                            if (ImGui::Selectable(filename.c_str()))
+                            {
+                                strncpy_s(soundFile, sizeof(soundFile), file.c_str(), _TRUNCATE);
+                                ImGui::CloseCurrentPopup();
+                            }
+                            if (ImGui::IsItemHovered())
+                            {
+                                ImGui::SetTooltip("%s", file.c_str());
+                            }
+                        }
+                        ImGui::EndChild();
+
+                        ImGui::EndPopup();
+                    }
+
+                    ImGui::SliderFloat("Volume", &volume, 0.0f, 1.0f, "%.2f");
+                    ImGui::SliderFloat("Pitch", &pitch, 0.5f, 2.0f, "%.2f");
+
+                    ImGui::Checkbox("3D Sound", &is3D);
+                    ImGui::SameLine();
+                    ImGui::Checkbox("Loop", &loop);
+
+                    ImGui::Combo("Group", &groupIndex, groups, IM_ARRAYSIZE(groups));
+
+                    ImGui::Spacing();
+
+                    if (ImGui::Button("Save", ImVec2(120, 0)))
+                    {
+                        // Create new event with updated values
+                        Boom::AudioEventMarker newEvent;
+                        newEvent.timeStamp = audioEvent.timeStamp;  // Keep original timestamp
+                        newEvent.soundFile = std::string(soundFile);
+                        newEvent.eventName = std::string(eventName);
+                        newEvent.volume = volume;
+                        newEvent.pitch = pitch;
+                        newEvent.is3D = is3D;
+                        newEvent.loop = loop;
+                        newEvent.groupName = std::string(groups[groupIndex]);
+
+                        // Use command system for undo/redo support
+                        KeyframeCommand cmd;
+                        cmd.type = KeyframeCommand::AUDIO_EDIT;
+                        cmd.audioEventIndex = static_cast<size_t>(m_SelectedAudioEventIndex);
+                        cmd.oldAudioEvent = originalEvent;
+                        cmd.audioEvent = newEvent;
+                        ExecuteCommand(cmd);
+
+                        initialized = false;
+                        ImGui::CloseCurrentPopup();
+                    }
+
+                    ImGui::SameLine();
+                    if (ImGui::Button("Delete", ImVec2(120, 0)))
+                    {
+                        // Use command system for undo/redo support
+                        KeyframeCommand cmd;
+                        cmd.type = KeyframeCommand::AUDIO_REMOVE;
+                        cmd.audioEventIndex = static_cast<size_t>(m_SelectedAudioEventIndex);
+                        cmd.audioEvent = audioEvent;  // Store for undo
+                        ExecuteCommand(cmd);
+
+                        m_SelectedAudioEventIndex = -1;
+                        initialized = false;
+                        ImGui::CloseCurrentPopup();
+                    }
+
+                    ImGui::SameLine();
+                    if (ImGui::Button("Cancel", ImVec2(120, 0)))
+                    {
+                        initialized = false;
+                        ImGui::CloseCurrentPopup();
+                    }
+                }
+            }
+
+            ImGui::EndPopup();
+        }
     }
     ImGui::EndChild();
 
     ImGui::EndGroup();
+}
+
+// ========== Audio Events Track ==========
+
+void AnimationTimelinePanel::RenderAudioTrack(float duration)
+{
+    // Skip if no clip selected
+    if (m_SelectedClipIndex < 0 || !m_Animator) return;
+
+    const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
+    if (!clip) return;
+
+    // === COLUMN 0: Track Label ===
+    ImVec2 rowStartPos = ImGui::GetCursorScreenPos();
+    float rowHeight = ImGui::GetTextLineHeightWithSpacing();
+
+    // Audio track label (not a tree node, just text)
+    ImGui::Text("Audio Events");
+
+    // Show count of audio events
+    if (!clip->audioEvents.empty())
+    {
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "(%zu)", clip->audioEvents.size());
+    }
+
+    // === COLUMN 1: Timeline Track ===
+    ImGui::NextColumn();
+
+    // Get the timeline area dimensions
+    ImVec2 timelineStartPos = ImGui::GetCursorScreenPos();
+    float timelineWidth = ImGui::GetColumnWidth(1) - 10.0f; // Leave some padding
+
+    // Adjust vertical position to match the label row
+    timelineStartPos.y = rowStartPos.y;
+
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+    // Timeline background - slightly different color to differentiate from bone tracks
+    ImVec2 timelineMin = timelineStartPos;
+    ImVec2 timelineMax(timelineMin.x + timelineWidth, timelineMin.y + rowHeight);
+
+    // Audio track background (darker purple/blue tint)
+    drawList->AddRectFilled(timelineMin, timelineMax, IM_COL32(50, 40, 60, 255));
+
+    // Draw grid lines for time markers (every second)
+    if (duration > 0.0f)
+    {
+        for (float t = 0.0f; t <= duration; t += 1.0f)
+        {
+            float x = timelineMin.x + (t / duration) * timelineWidth;
+            drawList->AddLine(
+                ImVec2(x, timelineMin.y),
+                ImVec2(x, timelineMax.y),
+                IM_COL32(80, 80, 80, 255)
+            );
+        }
+    }
+
+    // Draw current time indicator (red line)
+    if (duration > 0.0f && m_CurrentTime >= 0.0f)
+    {
+        float normalizedTime = m_CurrentTime / duration;
+        normalizedTime = (normalizedTime < 0.0f) ? 0.0f : (normalizedTime > 1.0f) ? 1.0f : normalizedTime;
+        float x = timelineMin.x + normalizedTime * timelineWidth;
+        drawList->AddLine(
+            ImVec2(x, timelineMin.y),
+            ImVec2(x, timelineMax.y),
+            IM_COL32(255, 0, 0, 255),
+            2.0f
+        );
+    }
+
+    // Draw and interact with audio event markers
+    if (duration > 0.0f && !clip->audioEvents.empty())
+    {
+        ImVec2 mousePos = ImGui::GetMousePos();
+        ImGuiIO& io = ImGui::GetIO();
+
+        for (size_t i = 0; i < clip->audioEvents.size(); ++i)
+        {
+            const auto& audioEvent = clip->audioEvents[i];
+
+            // Calculate X position based on timestamp
+            float normalizedTime = audioEvent.timeStamp / duration;
+            float x = timelineMin.x + normalizedTime * timelineWidth;
+
+            // Marker center (vertically centered in row)
+            ImVec2 center(x, timelineMin.y + rowHeight * 0.5f);
+            float size = 5.0f; // Larger than keyframe diamonds
+            float hitTestSize = 8.0f; // Larger hit area for easier clicking
+
+            // Store marker position for click detection
+            AudioMarkerScreenPos markerScreenPos;
+            markerScreenPos.eventIndex = i;
+            markerScreenPos.screenPos = center;
+            m_AudioMarkerScreenPositions.push_back(markerScreenPos);
+
+            // Circle shape for audio markers (different from keyframe diamonds)
+            bool isSelected = (m_SelectedAudioEventIndex == (int)i);
+            bool isHovered = (mousePos.x >= center.x - hitTestSize && mousePos.x <= center.x + hitTestSize &&
+                             mousePos.y >= center.y - hitTestSize && mousePos.y <= center.y + hitTestSize);
+
+            if (isHovered)
+            {
+                m_HoveredAudioEventIndex = (int)i;
+            }
+
+            // Determine color based on state
+            ImU32 fillColor = IM_COL32(255, 165, 0, 255);  // Orange default
+            ImU32 outlineColor = IM_COL32(200, 130, 0, 255);
+
+            if (isSelected)
+            {
+                // Selected - bright cyan
+                fillColor = IM_COL32(0, 255, 255, 255);
+                outlineColor = IM_COL32(0, 200, 200, 255);
+                size = 6.0f; // Slightly larger when selected
+            }
+            else if (isHovered)
+            {
+                // Hovered - bright yellow
+                fillColor = IM_COL32(255, 255, 0, 255);
+                outlineColor = IM_COL32(200, 200, 0, 255);
+                size = 5.5f; // Slightly larger when hovered
+            }
+
+            // Color coding by type
+            if (audioEvent.is3D)
+            {
+                // 3D sounds - green tint
+                fillColor = IM_COL32(100, 255, 100, 255);
+                outlineColor = IM_COL32(50, 200, 50, 255);
+            }
+
+            // Draw circle marker
+            drawList->AddCircleFilled(center, size, fillColor);
+            drawList->AddCircle(center, size, outlineColor, 12, 2.0f);
+
+            // Show event name on hover (tooltip)
+            if (isHovered)
+            {
+                ImGui::BeginTooltip();
+                ImGui::Text("Audio Event: %s", audioEvent.eventName.empty() ? "Unnamed" : audioEvent.eventName.c_str());
+                ImGui::Text("Time: %.2fs", audioEvent.timeStamp);
+                ImGui::Text("Sound: %s", audioEvent.soundFile.c_str());
+                ImGui::Text("Volume: %.0f%%", audioEvent.volume * 100.0f);
+                ImGui::Text("Type: %s", audioEvent.is3D ? "3D" : "2D");
+                ImGui::EndTooltip();
+            }
+
+            // Handle selection
+            if (isHovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+            {
+                m_SelectedAudioEventIndex = (int)i;
+            }
+
+            // Double-click to edit
+            if (isHovered && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+            {
+                m_SelectedAudioEventIndex = (int)i;
+                ImGui::OpenPopup("EditAudioEventPopup");
+            }
+        }
+    }
+
+    // Right-click on audio track to add new event
+    if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+    {
+        ImVec2 mousePos = ImGui::GetMousePos();
+        if (mousePos.x >= timelineMin.x && mousePos.x <= timelineMax.x &&
+            mousePos.y >= timelineMin.y && mousePos.y <= timelineMax.y)
+        {
+            // Calculate timestamp based on click position
+            float clickX = mousePos.x - timelineMin.x;
+            float newTimestamp = (clickX / timelineWidth) * duration;
+            newTimestamp = glm::clamp(newTimestamp, 0.0f, duration);
+
+            // Store the timestamp for the popup (uses file-scope static variable)
+            s_NewEventTimestamp = newTimestamp;
+
+            ImGui::OpenPopup("AddAudioEventPopup");
+        }
+    }
+
+    // Back to column 0 for next track
+    ImGui::NextColumn();
 }
 
 void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float duration)

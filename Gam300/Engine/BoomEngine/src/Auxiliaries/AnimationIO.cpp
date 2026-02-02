@@ -52,6 +52,22 @@ bool SaveAnimationClip(const AnimationClip& clip, const std::string& filepath) {
         }
         out << YAML::EndSeq;  // end tracks
 
+        // Audio events
+        out << YAML::Key << "audioEvents" << YAML::Value << YAML::BeginSeq;
+        for (const auto& audioEvent : clip.audioEvents) {
+            out << YAML::BeginMap;
+            out << YAML::Key << "timeStamp" << YAML::Value << audioEvent.timeStamp;
+            out << YAML::Key << "soundFile" << YAML::Value << audioEvent.soundFile;
+            out << YAML::Key << "volume" << YAML::Value << audioEvent.volume;
+            out << YAML::Key << "pitch" << YAML::Value << audioEvent.pitch;
+            out << YAML::Key << "is3D" << YAML::Value << audioEvent.is3D;
+            out << YAML::Key << "loop" << YAML::Value << audioEvent.loop;
+            out << YAML::Key << "groupName" << YAML::Value << audioEvent.groupName;
+            out << YAML::Key << "eventName" << YAML::Value << audioEvent.eventName;
+            out << YAML::EndMap;
+        }
+        out << YAML::EndSeq;  // end audioEvents
+
         out << YAML::EndMap;  // end AnimationClip
         out << YAML::EndMap;  // end root
 
@@ -138,8 +154,25 @@ std::shared_ptr<AnimationClip> LoadAnimationClip(const std::string& filepath) {
             }
         }
 
-        BOOM_INFO("[AnimationIO] Loaded animation clip '{}' from {} ({} tracks)",
-                  clip->name, filepath, clip->tracks.size());
+        // Load audio events
+        if (data["audioEvents"]) {
+            for (const auto& eventNode : data["audioEvents"]) {
+                AudioEventMarker event;
+                event.timeStamp = eventNode["timeStamp"].as<float>(0.0f);
+                event.soundFile = eventNode["soundFile"].as<std::string>("");
+                event.volume = eventNode["volume"].as<float>(1.0f);
+                event.pitch = eventNode["pitch"].as<float>(1.0f);
+                event.is3D = eventNode["is3D"].as<bool>(false);
+                event.loop = eventNode["loop"].as<bool>(false);
+                event.groupName = eventNode["groupName"].as<std::string>("SFX");
+                event.eventName = eventNode["eventName"].as<std::string>("");
+
+                clip->audioEvents.push_back(event);
+            }
+        }
+
+        BOOM_INFO("[AnimationIO] Loaded animation clip '{}' from {} ({} tracks, {} audio events)",
+                  clip->name, filepath, clip->tracks.size(), clip->audioEvents.size());
         return clip;
     }
     catch (const std::exception& e) {
