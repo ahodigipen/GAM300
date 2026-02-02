@@ -681,6 +681,7 @@ namespace Boom
                 e << YAML::Key << "Volume" << YAML::Value << vc.volume;
                 e << YAML::Key << "PlaybackSpeed" << YAML::Value << vc.playbackSpeed;
                 e << YAML::Key << "RenderAs3D" << YAML::Value << vc.renderAs3D;
+                e << YAML::Key << "RemoveBlackBackground" << YAML::Value << vc.removeBlackBackground;
 
                 // Serialize Color manually as a sequence
                 e << YAML::Key << "TintColor" << YAML::Value
@@ -703,6 +704,7 @@ namespace Boom
                 if (auto v = data["Volume"])        vc.volume = v.as<float>();
                 if (auto v = data["PlaybackSpeed"]) vc.playbackSpeed = v.as<float>();
                 if (auto v = data["RenderAs3D"])    vc.renderAs3D = v.as<bool>();
+                if (auto v = data["RemoveBlackBackground"]) vc.removeBlackBackground = v.as<bool>();
 
                 // Deserialize Color manually
                 if (auto v = data["TintColor"]) {

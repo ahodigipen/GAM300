@@ -172,8 +172,12 @@ namespace Boom {
         // Check for audio track
         m_HasAudioTrack = (plm_get_num_audio_streams(m_PLM) > 0) && (m_SampleRate > 0);
 
-        // Allocate frame buffer (RGB format: 3 bytes per pixel)
-        m_FrameBufferSize = static_cast<size_t>(m_Width) * m_Height * 3;
+        // 1. Raw Buffer: RGB (3 bytes) for the decoder to write into
+        size_t rgbSize = static_cast<size_t>(m_Width) * m_Height * 3;
+        m_RawRGBBuffer = std::make_unique<uint8_t[]>(rgbSize);
+
+        // 2. Texture Buffer: RGBA (4 bytes) for OpenGL upload
+        m_FrameBufferSize = static_cast<size_t>(m_Width) * m_Height * 4;
         m_FrameBuffer = std::make_unique<uint8_t[]>(m_FrameBufferSize);
 
         // Set loop behavior
@@ -401,7 +405,7 @@ namespace Boom {
 
             frame = plm_decode_video(m_PLM);
             if (frame) {
-                plm_frame_to_rgb(frame, m_FrameBuffer.get(), m_Width * 3);
+                plm_frame_to_rgb(frame, m_RawRGBBuffer.get(), m_Width * 3);
                 m_HasNewFrame = true;
             }
         } else {
@@ -416,7 +420,7 @@ namespace Boom {
                 // Decode one video frame
                 frame = plm_decode_video(m_PLM);
                 if (frame) {
-                    plm_frame_to_rgb(frame, m_FrameBuffer.get(), m_Width * 3);
+                    plm_frame_to_rgb(frame, m_RawRGBBuffer.get(), m_Width * 3);
                     m_HasNewFrame = true;
                 }
 
@@ -458,7 +462,7 @@ namespace Boom {
         plm_frame_t* frame = plm_decode_video(m_PLM);
         if (frame) {
             // Convert YCrCb to RGB
-            plm_frame_to_rgb(frame, m_FrameBuffer.get(), m_Width * 3);
+            plm_frame_to_rgb(frame, m_RawRGBBuffer.get(), m_Width * 3);
             m_HasNewFrame = true;
         }
     }
@@ -631,7 +635,7 @@ namespace Boom {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
         // Allocate texture storage (RGB format)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 
         glBindTexture(GL_TEXTURE_2D, 0);
         m_TextureCreated = true;
@@ -648,12 +652,49 @@ namespace Boom {
     }
 
     void VideoPlayer::UpdateTexture() {
-        if (!m_TextureCreated || !m_HasNewFrame || !m_FrameBuffer) {
+        if (!m_TextureCreated || !m_HasNewFrame || !m_RawRGBBuffer || !m_FrameBuffer) {
             return;
         }
 
+        // --- CPU CHROMA KEY LOGIC ---
+        int pixelCount = m_Width * m_Height;
+
+        // Loop through pixels
+        for (int i = 0; i < pixelCount; ++i) {
+            // Indices
+            int rgbIndex = i * 3;
+            int rgbaIndex = i * 4;
+
+            // Read RGB
+            uint8_t r = m_RawRGBBuffer[rgbIndex + 0];
+            uint8_t g = m_RawRGBBuffer[rgbIndex + 1];
+            uint8_t b = m_RawRGBBuffer[rgbIndex + 2];
+
+            // Write RGB
+            m_FrameBuffer[rgbaIndex + 0] = r;
+            m_FrameBuffer[rgbaIndex + 1] = g;
+            m_FrameBuffer[rgbaIndex + 2] = b;
+
+            // Calculate Alpha
+            if (m_RemoveBlack) {
+                // Simple luminance check: (R+G+B) < threshold
+                // You can tune '30' to be more or less aggressive (0-765 range)
+                if ((r + g + b) < 30) {
+                    m_FrameBuffer[rgbaIndex + 3] = 0; // Transparent
+                }
+                else {
+                    m_FrameBuffer[rgbaIndex + 3] = 255; // Opaque
+                }
+            }
+            else {
+                m_FrameBuffer[rgbaIndex + 3] = 255; // Always Opaque
+            }
+        }
+        // ----------------------------
+
         glBindTexture(GL_TEXTURE_2D, m_TextureID);
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height, GL_RGB, GL_UNSIGNED_BYTE, m_FrameBuffer.get());
+        // --- UPLOAD AS RGBA ---
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height, GL_RGBA, GL_UNSIGNED_BYTE, m_FrameBuffer.get());
         glBindTexture(GL_TEXTURE_2D, 0);
 
         m_HasNewFrame = false;

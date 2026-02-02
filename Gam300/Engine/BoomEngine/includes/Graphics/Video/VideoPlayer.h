@@ -122,6 +122,8 @@ namespace Boom {
         // Audio buffer access for FMOD callback (returns samples read)
         size_t ReadAudioSamples(float* outBuffer, size_t samplesRequested);
 
+        void SetRemoveBlackBackground(bool enable) { m_RemoveBlack = enable; }
+
     private:
         void CreateTexture();
         void DestroyTexture();
@@ -150,6 +152,7 @@ namespace Boom {
 
         // Frame buffer (RGB data)
         std::unique_ptr<uint8_t[]> m_FrameBuffer;
+        std::unique_ptr<uint8_t[]> m_RawRGBBuffer; // NEW: Raw decode buffer
         size_t m_FrameBufferSize = 0;
         bool m_HasNewFrame = false;
 
@@ -180,12 +183,15 @@ namespace Boom {
         std::atomic<bool> m_AudioBufferReady{false};
         mutable std::mutex m_AudioMutex;
 
+
         // Track audio state
         int m_AudioChannels = 2; // Stereo
 
         // Video timing - accumulate time and decode at proper framerate
         double m_AccumulatedTime = 0.0;
         double m_SecondsPerFrame = 0.0;  // 1.0 / framerate
+
+        bool m_RemoveBlack = false;
     };
 
 } // namespace Boom
