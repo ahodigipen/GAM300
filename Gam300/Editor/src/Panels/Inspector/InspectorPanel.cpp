@@ -469,53 +469,33 @@ namespace EditorUI {
                         // Helper to perform alignment
                         auto DoAlign = [&](const char* name, int axis, int mode) {
                             // Modes: 
-                            // 0: Min-to-Max (Place Right/Top/Front of Target)
-                            // 1: Max-to-Min (Place Left/Bottom/Back of Target)
-                            // 2: Min-to-Min (Flush Min)
-                            // 3: Max-to-Max (Flush Max)
+                            // 0: Min-to-Max (Snap High - Place Right/Top/Front of Target)
+                            // 1: Max-to-Min (Snap Low - Place Left/Bottom/Back of Target)
+                            // 2: Min-to-Min (Align Low - Flush Left/Bottom/Back)
+                            // 3: Max-to-Max (Align High - Flush Right/Top/Front)
                             // 4: Center-to-Center
 
                             glm::vec3 selMin, selMax, tarMin, tarMax;
                             GetEntityAABB(selected, selMin, selMax);
                             GetEntityAABB(targetEntity, tarMin, tarMax);
 
-                            // Calculate current world position offset
-                            glm::vec3 selCenter = (selMin + selMax) * 0.5f;
-                            glm::vec3 selSize = selMax - selMin;
-                            glm::vec3 tarCenter = (tarMin + tarMax) * 0.5f;
-                            glm::vec3 tarSize = tarMax - tarMin;
-
-                            // We modify the transform position directly
-                            // But AABB is in world space, so we calculate the world space shift needed
                             float shift = 0.0f;
-                            float currentPos = tc.transform.translate[axis]; 
-                            
-                            // To make this accurate, we need the difference between the AABB edge and the pivot
-                            // Pivot World Pos = tc.transform.translate (assuming no parent for simplicity, or handle local later)
-                            // Let's assume World Space calculation for now.
-                            
-                            // Re-getting AABBs to be safe (GetEntityAABB returns world space AABB)
-                            
                             float selEdgeMin = selMin[axis];
                             float selEdgeMax = selMax[axis];
                             float tarEdgeMin = tarMin[axis];
                             float tarEdgeMax = tarMax[axis];
 
-                            float targetWorldPos = 0.0f;
-
                             switch (mode) {
-                                case 0: // Min (Self) to Max (Target) -> "Next To (Positive)"
-                                    // New Min should be Tar Max
-                                    // NewPos = OldPos + (TarMax - SelMin)
+                                case 0: // Min (Self) to Max (Target) -> "Snap Right/Top/Front"
                                     shift = tarEdgeMax - selEdgeMin;
                                     break;
-                                case 1: // Max (Self) to Min (Target) -> "Next To (Negative)"
+                                case 1: // Max (Self) to Min (Target) -> "Snap Left/Bottom/Back"
                                     shift = tarEdgeMin - selEdgeMax;
                                     break;
-                                case 2: // Min to Min (Flush Low)
+                                case 2: // Min to Min (Align Low)
                                     shift = tarEdgeMin - selEdgeMin;
                                     break;
-                                case 3: // Max to Max (Flush High)
+                                case 3: // Max to Max (Align High)
                                     shift = tarEdgeMax - selEdgeMax;
                                     break;
                                 case 4: // Center to Center
@@ -523,11 +503,30 @@ namespace EditorUI {
                                     break;
                             }
 
+                            // Calculate World Shift Vector
+                            glm::vec3 worldShift(0.0f);
+                            worldShift[axis] = shift;
+
+                            // Get Current World Position
+                            glm::mat4 worldMatrix = Boom::GetWorldMatrix(ctx->scene, m_App->SelectedEntity());
+                            glm::vec3 currentWorldPos = glm::vec3(worldMatrix[3]);
+                            glm::vec3 newWorldPos = currentWorldPos + worldShift;
+
                             // Apply Undo
                             auto* history = m_Owner->GetCommandHistory();
                             Boom::Transform3D oldTrans = tc.transform;
-                            
-                            tc.transform.translate[axis] += shift;
+
+                            // Convert New World Position to Local Position
+                            entt::entity parent = Boom::GetParentEntity(ctx->scene, m_App->SelectedEntity());
+                            if (parent != entt::null) {
+                                glm::mat4 parentWorld = Boom::GetWorldMatrix(ctx->scene, parent);
+                                glm::mat4 parentInverse = glm::inverse(parentWorld);
+                                glm::vec4 localPos = parentInverse * glm::vec4(newWorldPos, 1.0f);
+                                tc.transform.translate = glm::vec3(localPos);
+                            }
+                            else {
+                                tc.transform.translate = newWorldPos;
+                            }
 
                             if (history) {
                                 auto cmd = std::make_unique<TransformCommand>(
@@ -538,49 +537,96 @@ namespace EditorUI {
                             }
                         };
 
-                        ImGui::Spacing();
-                        ImGui::TextDisabled("Place Next To Target (Adjacency)");
+                        // --- UI Layout ---
                         
-                        // X Axis
-                        if (ImGui::Button("Left##Adj", ImVec2(60, 0))) DoAlign("Left", 0, 1);
-                        ImGui::SameLine();
-                        if (ImGui::Button("Right##Adj", ImVec2(60, 0))) DoAlign("Right", 0, 0);
-                        
-                        // Y Axis
-                        ImGui::SameLine();
-                        if (ImGui::Button("Below##Adj", ImVec2(60, 0))) DoAlign("Below", 1, 1);
-                        ImGui::SameLine();
-                        if (ImGui::Button("Above##Adj", ImVec2(60, 0))) DoAlign("Above", 1, 0);
-
-                        // Z Axis
-                        ImGui::SameLine();
-                        if (ImGui::Button("Back##Adj", ImVec2(60, 0))) DoAlign("Back", 2, 1);
-                        ImGui::SameLine();
-                        if (ImGui::Button("Front##Adj", ImVec2(60, 0))) DoAlign("Front", 2, 0);
-
+                        // Align (Flush) Table
                         ImGui::Spacing();
-                        ImGui::TextDisabled("Align Faces (Flush)");
+                        ImGui::TextDisabled("Align (Flush)");
+                        if (ImGui::BeginTable("##AlignTable", 4, ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_BordersInnerV)) {
+                            ImGui::TableSetupColumn("Axis", ImGuiTableColumnFlags_WidthFixed, 30.0f);
+                            ImGui::TableSetupColumn("Min", ImGuiTableColumnFlags_None);
+                            ImGui::TableSetupColumn("Center", ImGuiTableColumnFlags_None);
+                            ImGui::TableSetupColumn("Max", ImGuiTableColumnFlags_None);
+                            
+                            // X Axis
+                            ImGui::TableNextRow();
+                            ImGui::TableSetColumnIndex(0); ImGui::Text("X");
+                            
+                            ImGui::TableSetColumnIndex(1); 
+                            if (ImGui::Button("Left##FlushX", ImVec2(-1, 0))) DoAlign("Left", 0, 2); 
+                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Left Edges (Min X)");
 
-                        // X Axis
-                        if (ImGui::Button("Left##Fl", ImVec2(60, 0))) DoAlign("Flush Left", 0, 2);
-                        ImGui::SameLine();
-                        if (ImGui::Button("Right##Fl", ImVec2(60, 0))) DoAlign("Flush Right", 0, 3);
-                        ImGui::SameLine();
-                        if (ImGui::Button("Center X", ImVec2(60, 0))) DoAlign("Center X", 0, 4);
+                            ImGui::TableSetColumnIndex(2); 
+                            if (ImGui::Button("Center##FlushX", ImVec2(-1, 0))) DoAlign("Center X", 0, 4);
+                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Centers (Center X)");
 
-                        // Y Axis
-                        if (ImGui::Button("Bottom##Fl", ImVec2(60, 0))) DoAlign("Flush Bottom", 1, 2);
-                        ImGui::SameLine();
-                        if (ImGui::Button("Top##Fl", ImVec2(60, 0))) DoAlign("Flush Top", 1, 3); // "Top of stairs to Top of wall"
-                        ImGui::SameLine();
-                        if (ImGui::Button("Center Y", ImVec2(60, 0))) DoAlign("Center Y", 1, 4);
+                            ImGui::TableSetColumnIndex(3); 
+                            if (ImGui::Button("Right##FlushX", ImVec2(-1, 0))) DoAlign("Right", 0, 3);
+                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Right Edges (Max X)");
 
-                        // Z Axis
-                        if (ImGui::Button("Back##Fl", ImVec2(60, 0))) DoAlign("Flush Back", 2, 2);
-                        ImGui::SameLine();
-                        if (ImGui::Button("Front##Fl", ImVec2(60, 0))) DoAlign("Flush Front", 2, 3);
-                        ImGui::SameLine();
-                        if (ImGui::Button("Center Z", ImVec2(60, 0))) DoAlign("Center Z", 2, 4);
+                            // Y Axis
+                            ImGui::TableNextRow();
+                            ImGui::TableSetColumnIndex(0); ImGui::Text("Y");
+                            
+                            ImGui::TableSetColumnIndex(1); 
+                            if (ImGui::Button("Bottom##FlushY", ImVec2(-1, 0))) DoAlign("Bottom", 1, 2);
+                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Bottom Edges (Min Y)");
+
+                            ImGui::TableSetColumnIndex(2); 
+                            if (ImGui::Button("Center##FlushY", ImVec2(-1, 0))) DoAlign("Center Y", 1, 4);
+                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Centers (Center Y)");
+
+                            ImGui::TableSetColumnIndex(3); 
+                            if (ImGui::Button("Top##FlushY", ImVec2(-1, 0))) DoAlign("Top", 1, 3);
+                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Top Edges (Max Y)");
+
+                            // Z Axis
+                            ImGui::TableNextRow();
+                            ImGui::TableSetColumnIndex(0); ImGui::Text("Z");
+                            
+                            ImGui::TableSetColumnIndex(1); 
+                            if (ImGui::Button("Back##FlushZ", ImVec2(-1, 0))) DoAlign("Back", 2, 2);
+                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Back Edges (Min Z)");
+
+                            ImGui::TableSetColumnIndex(2); 
+                            if (ImGui::Button("Center##FlushZ", ImVec2(-1, 0))) DoAlign("Center Z", 2, 4);
+                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Centers (Center Z)");
+
+                            ImGui::TableSetColumnIndex(3); 
+                            if (ImGui::Button("Front##FlushZ", ImVec2(-1, 0))) DoAlign("Front", 2, 3);
+                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Front Edges (Max Z)");
+
+                            ImGui::EndTable();
+                        }
+
+                        // Snap (Adjacency) Table
+                        ImGui::Spacing();
+                        ImGui::TextDisabled("Snap (Adjacency)");
+                        if (ImGui::BeginTable("##SnapTable", 3, ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_BordersInnerV)) {
+                            ImGui::TableSetupColumn("Axis", ImGuiTableColumnFlags_WidthFixed, 30.0f);
+                            ImGui::TableSetupColumn("Low", ImGuiTableColumnFlags_None);
+                            ImGui::TableSetupColumn("High", ImGuiTableColumnFlags_None);
+                            
+                            // X Axis
+                            ImGui::TableNextRow();
+                            ImGui::TableSetColumnIndex(0); ImGui::Text("X");
+                            ImGui::TableSetColumnIndex(1); if (ImGui::Button("Left Of##Snap", ImVec2(-1, 0))) DoAlign("Left Of", 0, 1);
+                            ImGui::TableSetColumnIndex(2); if (ImGui::Button("Right Of##Snap", ImVec2(-1, 0))) DoAlign("Right Of", 0, 0);
+
+                            // Y Axis
+                            ImGui::TableNextRow();
+                            ImGui::TableSetColumnIndex(0); ImGui::Text("Y");
+                            ImGui::TableSetColumnIndex(1); if (ImGui::Button("Below##Snap", ImVec2(-1, 0))) DoAlign("Below", 1, 1);
+                            ImGui::TableSetColumnIndex(2); if (ImGui::Button("Above##Snap", ImVec2(-1, 0))) DoAlign("Above", 1, 0);
+
+                            // Z Axis
+                            ImGui::TableNextRow();
+                            ImGui::TableSetColumnIndex(0); ImGui::Text("Z");
+                            ImGui::TableSetColumnIndex(1); if (ImGui::Button("Behind##Snap", ImVec2(-1, 0))) DoAlign("Behind", 2, 1);
+                            ImGui::TableSetColumnIndex(2); if (ImGui::Button("In Front##Snap", ImVec2(-1, 0))) DoAlign("In Front", 2, 0);
+
+                            ImGui::EndTable();
+                        }
                     }
                     else {
                         ImGui::TextColored(ImVec4(1, 1, 0, 1), "Select a target entity to enable alignment tools.");
