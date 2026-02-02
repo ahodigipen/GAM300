@@ -433,13 +433,15 @@ namespace Boom {
             PxController* ctrl = it->second;
             if (!ctrl) return false;
 
-            // Local filter class to ignore the controller's own actor
+            // Local filter class to ignore the controller's own actor and triggers
             class IgnoreSelfFilter : public PxQueryFilterCallback {
                 PxRigidActor* m_Self;
             public:
                 IgnoreSelfFilter(PxRigidActor* self) : m_Self(self) {}
-                PxQueryHitType::Enum preFilter(const PxFilterData&, const PxShape*, const PxRigidActor* actor, PxHitFlags&) override {
-                    return (actor == m_Self) ? PxQueryHitType::eNONE : PxQueryHitType::eBLOCK;
+                PxQueryHitType::Enum preFilter(const PxFilterData&, const PxShape* shape, const PxRigidActor* actor, PxHitFlags&) override {
+                    if (actor == m_Self) return PxQueryHitType::eNONE;
+                    if (shape && (shape->getFlags() & PxShapeFlag::eTRIGGER_SHAPE)) return PxQueryHitType::eNONE;
+                    return PxQueryHitType::eBLOCK;
                 }
                 PxQueryHitType::Enum postFilter(const PxFilterData&, const PxQueryHit&) override { return PxQueryHitType::eBLOCK; }
             };
