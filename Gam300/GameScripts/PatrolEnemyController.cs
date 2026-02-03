@@ -34,16 +34,57 @@ namespace GameScripts
 
         // ====== AUDIO ======
         [Boom.EditorExposed("Footstep Sound", "Sound played for enemy footsteps")]
-        private string _footstepSoundPath = "Resources/Audio/playerRun_02.wav";
+        private string _footstepSoundPath = "Resources/Audio/footstep_stone_1.wav";
+        private string _footstepSoundPath2 = "Resources/Audio/footstep_stone_2.wav";
+        private string _footstepSoundPath3 = "Resources/Audio/footstep_stone_3.wav";
+        private string _footstepSoundPath4 = "Resources/Audio/footstep_stone_4.wav";
+        private string _footstepSoundPath5 = "Resources/Audio/footstep_stone_5.wav";
+        private string _footstepSoundPath6 = "Resources/Audio/footstep_stone_6.wav";
+        private string _footstepSoundPath7 = "Resources/Audio/footstep_stone_7.wav";
+        private string _footstepSoundPath8 = "Resources/Audio/footstep_stone_8.wav";
+        private string _footstepSoundPath9 = "Resources/Audio/footstep_stone_9.wav";
+        private string _footstepSoundPath10 = "Resources/Audio/footstep_stone_10.wav";
+
 
         [Boom.EditorExposed("Alert Sound", "Sound played when enemy detects player")]
-        private string _alertSoundPath = "Resources/Audio/enemyHurt_2.wav";
+        private string _alertSoundPath = "Resources/Audio/VO_Patrol_Alert_020.wav";
+        private string _alertSoundPath2 = "Resources/Audio/VO_Patrol_Alert_030.wav";
+        private string _alertSoundPath3 = "Resources/Audio/VO_Patrol_Alert_021.wav";
+        private string _alertSoundPath4 = "Resources/Audio/VO_Patrol_Alert_024.wav";
+        private string _alertSoundPath5 = "Resources/Audio/VO_Patrol_Alert_027.wav";
+
+        [Boom.EditorExposed("Grunts", "Grunt Sounds for real experience")]
+        private string _gruntSoundPath = "Resources/Audio/VO_Patrol_001.wav";
+        private string _gruntSoundPath2 = "Resources/Audio/VO_Patrol_002.wav";
+        private string _gruntSoundPath3 = "Resources/Audio/VO_Patrol_003.wav";
+        private string _gruntSoundPath4 = "Resources/Audio/VO_Patrol_004.wav";
+        private string _gruntSoundPath5 = "Resources/Audio/VO_Patrol_005.wav";
+        private string _gruntSoundPath6 = "Resources/Audio/VO_Patrol_006.wav";
+        private string _gruntSoundPath7 = "Resources/Audio/VO_Patrol_008.wav";
+        private string _gruntSoundPath8 = "Resources/Audio/VO_Patrol_009.wav";
+        private string _gruntSoundPath9 = "Resources/Audio/VO_Patrol_012.wav";
+        private string _gruntSoundPath10 = "Resources/Audio/VO_Patrol_015.wav";
+        private string _gruntSoundPath11 = "Resources/Audio/VO_Patrol_016.wav";
+        private string _gruntSoundPath12 = "Resources/Audio/VO_Patrol_017.wav";
+        private string _gruntSoundPath13 = "Resources/Audio/VO_Patrol_018.wav";
+        private string _gruntSoundPath14 = "Resources/Audio/VO_Patrol_019.wav";
+        private string _gruntSoundPath15 = "Resources/Audio/VO_Patrol_031.wav";
 
         [Boom.EditorExposed("Detection", "For Enemy detection")]
         private bool EnemyDetection = true;
 
         private string _footBase;
         private string _alertName;
+        private string _gruntName;
+        private bool _alertSoundPlayed = false; // Track if alert sound was already played this detection
+
+        private Random _random = new Random();
+
+        // Grunt timing settings
+        private const float GRUNT_MIN_INTERVAL = 4.0f;  // Minimum seconds between grunts
+        private const float GRUNT_MAX_INTERVAL = 10.0f; // Maximum seconds between grunts
+        private float _gruntTimer = 0f;
+        private float _nextGruntTime = 0f;
 
         // cadence settings
         private const float MOVE_START_SPEED = 0.25f;
@@ -55,7 +96,6 @@ namespace GameScripts
         private const float VOL_JITTER = 0.07f;
 
         private float _stepTimer = 0f;
-        private bool _leftNext = true;
         private float _debugTimer;
 
         // detection damage reset
@@ -64,7 +104,8 @@ namespace GameScripts
 
         public void OnStart(string json)
         {
-            if (!API.HasTransform(Entity)) { API.Log("[PatrolEnemyController] Missing Transform."); return; }
+            if (!API.HasTransform(Entity)) { //("[PatrolEnemyController] Missing Transform."); return;
+                                             }
 
             _yaw = API.GetRotation(Entity).Y;
 
@@ -93,11 +134,17 @@ namespace GameScripts
 
             _footBase = "foot_" + Entity.ToString();
             _alertName = "alert_" + Entity.ToString();
+            _gruntName = "grunt_" + Entity.ToString();
 
-            // optional: preload step clip once (non-loop)
-            API.PreloadSound(_footBase + "_L", _footstepSoundPath, loop: false);
-            API.PreloadSound(_footBase + "_R", _footstepSoundPath, loop: false);
-            API.PreloadSound(_alertName, _alertSoundPath, loop: false);
+            // Preload all footstep sound variants
+            PreloadFootstepSounds();
+            // Preload all alert sound variants
+            PreloadAlertSounds();
+            // Preload all grunt sound variants
+            PreloadGruntSounds();
+
+            // Initialize first grunt timer with random delay
+            _nextGruntTime = GRUNT_MIN_INTERVAL + (float)(_random.NextDouble() * (GRUNT_MAX_INTERVAL - GRUNT_MIN_INTERVAL));
 
             // NEW: Register with PlayerManager
             PlayerManager.RegisterEnemy(this);
@@ -183,16 +230,7 @@ namespace GameScripts
 
                     if (shouldPlayFootstep)
                     {
-                        string chName = _footBase + (_leftNext ? "_L" : "_R");
-                        _leftNext = !_leftNext;
-
-                        // play one-shot at position
-                        API.PlaySoundAt(chName, _footstepSoundPath, pos, loop: false);
-
-                        float jitter = (float)(Random01() * 2.0 - 1.0) * VOL_JITTER;
-                        float vol = Clamp01(VOL_BASE + jitter);
-                        API.SetSoundVolume(chName, vol);
-                        API.Set3DMinMaxDistance(chName, 6.0f, 30.0f);
+                        PlayRandomFootstep(pos);
                     }
 
                     _stepTimer += interval;
@@ -210,12 +248,28 @@ namespace GameScripts
                 _proximityDetection?.OnUpdate(dt);
             }
 
+            // ======= OCCASIONAL GRUNT SOUNDS =======
+            // Only grunt while patrolling (not alert) and moving
+            if (!_isAlert && moving)
+            {
+                _gruntTimer += dt;
+                if (_gruntTimer >= _nextGruntTime)
+                {
+                    var pos = API.GetPosition(Entity);
+                    PlayRandomGrunt(pos);
+
+                    // Reset timer with new random interval
+                    _gruntTimer = 0f;
+                    _nextGruntTime = GRUNT_MIN_INTERVAL + (float)(_random.NextDouble() * (GRUNT_MAX_INTERVAL - GRUNT_MIN_INTERVAL));
+                }
+            }
+
             _debugTimer += dt;
             if (_debugTimer >= 1f)
             {
                 _debugTimer = 0f;
                 var r = API.GetRotation(Entity);
-                API.Log($"[PatrolEnemyController] yaw={_yaw:F1}°, rotY={r.Y:F1}°, speed={speedXZ:F2} m/s");
+                //($"[PatrolEnemyController] yaw={_yaw:F1}°, rotY={r.Y:F1}°, speed={speedXZ:F2} m/s");
             }
 
             if (_hasDealtDamage)
@@ -225,7 +279,7 @@ namespace GameScripts
                 {
                     _hasDealtDamage = false;
                     _damageResetTimer = 0f;
-                    API.Log("[PatrolEnemyController] Damage flag reset - can damage again");
+                    //("[PatrolEnemyController] Damage flag reset - can damage again");
                 }
             }
         }
@@ -264,15 +318,13 @@ namespace GameScripts
             _yaw = Wrap360(baseYaw);
             API.SetRotationY(Entity, _yaw);
 
-            API.PlaySoundAt(_alertName, _alertSoundPath, self, loop: false);
-            API.SetSoundVolume(_alertName, 0.5f);
-            API.Set3DMinMaxDistance(_alertName, 1.0f, 25.0f);
+            PlayRandomAlertSound(self);
 
             if (!_hasDealtDamage)
             {
                 _hasDealtDamage = true;
                 _damageResetTimer = 0f;  // Start timer
-                API.Log($"[PatrolEnemyController] Dealing damage (vision detection)!");
+                //($"[PatrolEnemyController] Dealing damage (vision detection)!");
                 PlayerManager.NotifyPlayerCaught(Entity);
             }
         }
@@ -281,6 +333,7 @@ namespace GameScripts
         {
             _isAlert = false;
             _hasDealtDamage = false;
+            _alertSoundPlayed = false; // Reset so alert can play again next detection
 
             // NEW: Reset proximity when player lost
             _proximityDetection?.ResetDetection();
@@ -303,11 +356,11 @@ namespace GameScripts
             // Check if detection is enabled
             if (!EnemyDetection)
             {
-                API.Log("[PatrolEnemyController] Proximity detection disabled - ignoring detection event");
+                //("[PatrolEnemyController] Proximity detection disabled - ignoring detection event");
                 return;
             }
 
-            API.Log(">>> PATROL ENEMY ALERTED BY PROXIMITY! <<<");
+            //(">>> PATROL ENEMY ALERTED BY PROXIMITY! <<<");
 
             _isAlert = true;
             var self = API.GetPosition(Entity);
@@ -322,7 +375,7 @@ namespace GameScripts
             {
                 _hasDealtDamage = true;
                 _damageResetTimer = 0f;  // Start timer
-                API.Log($"[PatrolEnemyController] Dealing damage (proximity detection)!");
+                //($"[PatrolEnemyController] Dealing damage (proximity detection)!");
                 PlayerManager.NotifyPlayerCaught(Entity);
             }
         }
@@ -334,11 +387,12 @@ namespace GameScripts
             _hasDealtDamage = false;
             _damageResetTimer = 0f;
             _isAlert = false;
+            _alertSoundPlayed = false; // Reset so alert can play again
 
             // Reset proximity
             _proximityDetection?.ResetDetection();
 
-            API.Log("[PatrolEnemyController] Player respawned - all states reset");
+            //("[PatrolEnemyController] Player respawned - all states reset");
         }
 
         public void OnDestroy()
@@ -350,11 +404,105 @@ namespace GameScripts
             PlayerManager.UnregisterEnemy(this);
         }
 
+        // ====== AUDIO HELPER METHODS ======
+        private string[] GetFootstepSounds()
+        {
+            return new string[] {
+                _footstepSoundPath, _footstepSoundPath2, _footstepSoundPath3, _footstepSoundPath4, _footstepSoundPath5,
+                _footstepSoundPath6, _footstepSoundPath7, _footstepSoundPath8, _footstepSoundPath9, _footstepSoundPath10
+            };
+        }
+
+        private string[] GetAlertSounds()
+        {
+            return new string[] {
+                _alertSoundPath, _alertSoundPath2, _alertSoundPath3, _alertSoundPath4, _alertSoundPath5
+            };
+        }
+
+        private void PreloadFootstepSounds()
+        {
+            string[] sounds = GetFootstepSounds();
+            for (int i = 0; i < sounds.Length; i++)
+            {
+                string soundName = _footBase + "_" + i;
+                API.PreloadSound(soundName, sounds[i], loop: false);
+            }
+        }
+
+        private void PreloadAlertSounds()
+        {
+            string[] sounds = GetAlertSounds();
+            for (int i = 0; i < sounds.Length; i++)
+            {
+                string soundName = _alertName + "_" + i;
+                API.PreloadSound(soundName, sounds[i], loop: false);
+            }
+        }
+
+        private void PlayRandomFootstep(Vec3 position)
+        {
+            string[] sounds = GetFootstepSounds();
+            int index = _random.Next(sounds.Length);
+            string soundName = _footBase + "_" + index;
+
+            API.PlaySoundAt(soundName, sounds[index], position, loop: false);
+
+            float jitter = (float)(_random.NextDouble() * 2.0 - 1.0) * VOL_JITTER;
+            float vol = Clamp01(VOL_BASE + jitter);
+            API.SetSoundVolume(soundName, vol);
+            API.Set3DMinMaxDistance(soundName, 6.0f, 30.0f);
+        }
+
+        private void PlayRandomAlertSound(Vec3 position)
+        {
+            if (_alertSoundPlayed) return; // Only play once per detection
+
+            string[] sounds = GetAlertSounds();
+            int index = _random.Next(sounds.Length);
+            string soundName = _alertName + "_" + index;
+
+            API.PlaySoundAt(soundName, sounds[index], position, loop: false);
+            API.SetSoundVolume(soundName, 0.5f);
+            API.Set3DMinMaxDistance(soundName, 1.0f, 25.0f);
+
+            _alertSoundPlayed = true;
+        }
+
+        private string[] GetGruntSounds()
+        {
+            return new string[] {
+                _gruntSoundPath, _gruntSoundPath2, _gruntSoundPath3, _gruntSoundPath4, _gruntSoundPath5,
+                _gruntSoundPath6, _gruntSoundPath7, _gruntSoundPath8, _gruntSoundPath9, _gruntSoundPath10,
+                _gruntSoundPath11, _gruntSoundPath12, _gruntSoundPath13, _gruntSoundPath14, _gruntSoundPath15
+            };
+        }
+
+        private void PreloadGruntSounds()
+        {
+            string[] sounds = GetGruntSounds();
+            for (int i = 0; i < sounds.Length; i++)
+            {
+                string soundName = _gruntName + "_" + i;
+                API.PreloadSound(soundName, sounds[i], loop: false);
+            }
+        }
+
+        private void PlayRandomGrunt(Vec3 position)
+        {
+            string[] sounds = GetGruntSounds();
+            int index = _random.Next(sounds.Length);
+            string soundName = _gruntName + "_" + index;
+
+            API.PlaySoundAt(soundName, sounds[index], position, loop: false);
+            API.SetSoundVolume(soundName, 0.6f);
+            API.Set3DMinMaxDistance(soundName, 3.0f, 20.0f);
+        }
+
         // utils
         private static double Min(double a, double b) => (a < b) ? a : b;
         private static float Wrap360(float a) { while (a >= 360f) a -= 360f; while (a < 0f) a += 360f; return a; }
         private static float Wrap180(float a) { while (a > 180f) a -= 360f; while (a <= -180f) a += 360f; return a; }
-        private static double Random01() => new Random().NextDouble();
         private static float Clamp01(float v) => v < 0f ? 0f : (v > 1f ? 1f : v);
     }
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "Core.h"
+#include "GlobalConstants.h"
 #include <iostream>
 
 namespace Boom {

@@ -89,6 +89,19 @@ namespace Boom {
         bool isTrigger = false; // New: Make this a trigger volume (no collision response)
         bool showPhysicsDebug = false; // Per-entity physics debug visualization
 
+        // Surface type for footstep sounds and other surface-dependent effects
+        enum SurfaceType {
+            DEFAULT = 0,
+            WOOD,
+            STONE,
+            METAL,
+            SAND,
+            GRASS,
+            WATER,
+            CARPET,
+            TILE
+        } surfaceType = DEFAULT;
+
         // Update XPROPERTY_DEF to include the new field
         XPROPERTY_DEF(
             "Collider3D", Boom::Collider3D,
@@ -101,6 +114,17 @@ namespace Boom {
             obj_member<"IsTrigger", &Boom::Collider3D::isTrigger>,
             obj_member<"ShowPhysicsDebug", &Boom::Collider3D::showPhysicsDebug>,
             obj_member<"PhysicsMesh", &Boom::Collider3D::physicsMeshID>,
+            obj_member<"SurfaceType", &Boom::Collider3D::surfaceType,
+            member_enum_value<"DEFAULT", Boom::Collider3D::SurfaceType::DEFAULT>,
+            member_enum_value<"WOOD", Boom::Collider3D::SurfaceType::WOOD>,
+            member_enum_value<"STONE", Boom::Collider3D::SurfaceType::STONE>,
+            member_enum_value<"METAL", Boom::Collider3D::SurfaceType::METAL>,
+            member_enum_value<"SAND", Boom::Collider3D::SurfaceType::SAND>,
+            member_enum_value<"GRASS", Boom::Collider3D::SurfaceType::GRASS>,
+            member_enum_value<"WATER", Boom::Collider3D::SurfaceType::WATER>,
+            member_enum_value<"CARPET", Boom::Collider3D::SurfaceType::CARPET>,
+            member_enum_value<"TILE", Boom::Collider3D::SurfaceType::TILE>
+            >,
             obj_member<"Type", &Boom::Collider3D::type,
             member_enum_value<"BOX", Boom::Collider3D::Type::BOX>,
             member_enum_value<"SPHERE", Boom::Collider3D::Type::SPHERE>,

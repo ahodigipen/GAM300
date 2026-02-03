@@ -629,6 +629,9 @@ namespace Boom
             }
         );
 
+        // === TEXT COMPONENT ===
+        RegisterPropertyComponent<TextComponent>("TextComponent");
+
         // === MENU COMPONENT ===
         registry.RegisterComponentSerializer(
             "MenuComponent",
