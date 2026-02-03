@@ -54,8 +54,8 @@ static FMOD_RESULT F_CALL FMODPCMReadCallback(
         player = static_cast<Boom::VideoPlayer*>(userData);
     }
 
-    if (!player) {
-        // No player, fill with silence
+    if (!player || player->IsAudioShuttingDown()) {
+        // No player or shutting down, fill with silence
         std::memset(data, 0, datalen);
         return FMOD_OK;
     }
@@ -81,8 +81,10 @@ namespace Boom {
     }
 
     VideoPlayer::~VideoPlayer() {
+        ShutdownAudio();
         Unload();
         DestroyTexture();
+
     }
 
     VideoPlayer::VideoPlayer(VideoPlayer&& other) noexcept {
@@ -122,7 +124,17 @@ namespace Boom {
             m_AudioWritePos.store(other.m_AudioWritePos.load());
             m_AudioReadPos.store(other.m_AudioReadPos.load());
             m_AudioBufferReady.store(other.m_AudioBufferReady.load());
+            m_AudioShuttingDown.store(other.m_AudioShuttingDown.load());
             m_AudioChannels = other.m_AudioChannels;
+
+            // CRITICAL: Update callback user data to point to this object
+            // instead of the moved-from object, so callbacks access the correct instance
+            if (m_FMODSound && GetFMODSystemInternal()) {
+                m_FMODSound->setUserData(this);
+            }
+            if (m_PLM) {
+                plm_set_audio_decode_callback(m_PLM, PLMAudioCallback, this);
+            }
 
             // Timing members
             m_AccumulatedTime = other.m_AccumulatedTime;
@@ -134,6 +146,7 @@ namespace Boom {
             other.m_TextureCreated = false;
             other.m_FMODSound = nullptr;
             other.m_FMODChannel = nullptr;
+            other.m_AudioShuttingDown.store(true, std::memory_order_release);
         }
         return *this;
     }
@@ -209,6 +222,9 @@ namespace Boom {
             return;
         }
 
+        // Clear shutdown flag - we're initializing fresh
+        m_AudioShuttingDown.store(false, std::memory_order_release);
+
         // Reset audio buffer
         m_AudioWritePos.store(0, std::memory_order_release);
         m_AudioReadPos.store(0, std::memory_order_release);
@@ -263,21 +279,32 @@ namespace Boom {
     }
 
     void VideoPlayer::ShutdownAudio() {
-        // First: disable pl_mpeg audio callback so pl_mpeg won't try to call back into us
-        if (m_PLM) {
-            plm_set_audio_decode_callback(m_PLM, nullptr, nullptr);
-            plm_set_audio_enabled(m_PLM, 0);
-        }
+        // Signal shutdown FIRST - this tells the FMOD callback to stop
+        // accessing this VideoPlayer immediately and return silence instead.
+        // This must happen before any other cleanup to prevent race conditions.
+        m_AudioShuttingDown.store(true, std::memory_order_release);
 
-        // Stop FMOD channel if present
+        // Check if FMOD system is still valid - if not, the sounds have already
+        // been cleaned up when the system was destroyed, so just clear our pointers
+        FMOD::System* fmodSystem = GetFMODSystemInternal();
+
+        // Stop and release FMOD channel/sound only if FMOD system is still alive
         if (m_FMODChannel) {
-            m_FMODChannel->stop();
+            if (fmodSystem) {
+                m_FMODChannel->stop();
+            }
             m_FMODChannel = nullptr;
         }
 
         // If we have a FMOD sound, clear its user data so any in-flight callbacks won't reference 'this'
         if (m_FMODSound) {
-            FMOD::System* fmodSystem = GetFMODSystemInternal();
+            if (fmodSystem) {
+                // Clear user data as additional safety
+                m_FMODSound->setUserData(nullptr);
+                m_FMODSound->release();
+            }
+            m_FMODSound = nullptr;
+        }
 
             // Clear the user data if possible (defensive)
             // This prevents the callback from finding a dangling pointer to this object.
@@ -387,7 +414,7 @@ namespace Boom {
 
     void VideoPlayer::Unload() {
         // Shutdown audio first
-        ShutdownAudio();
+        
 
         if (m_PLM) {
             plm_destroy(m_PLM);
@@ -463,14 +490,14 @@ namespace Boom {
         if (plm_has_ended(m_PLM)) {
             if (m_Loop) {
                 Rewind();
-                // Restart audio playback for looped video
-                if (m_FMODChannel) {
+                // Restart audio playback for looped video (only if FMOD system is still valid)
+                if (m_FMODChannel && GetFMODSystemInternal()) {
                     m_FMODChannel->setPaused(false);
                 }
             } else {
                 m_State = VideoState::Stopped;
-                // Stop audio
-                if (m_FMODChannel) {
+                // Stop audio (only if FMOD system is still valid)
+                if (m_FMODChannel && GetFMODSystemInternal()) {
                     m_FMODChannel->setPaused(true);
                 }
             }
@@ -524,8 +551,8 @@ namespace Boom {
         if (m_State == VideoState::Playing) {
             m_State = VideoState::Paused;
 
-            // Pause audio
-            if (m_FMODChannel) {
+            // Pause audio (only if FMOD system is still valid)
+            if (m_FMODChannel && GetFMODSystemInternal()) {
                 m_FMODChannel->setPaused(true);
             }
         }
@@ -536,9 +563,12 @@ namespace Boom {
 
         m_State = VideoState::Stopped;
 
-        // Stop audio
+        // Stop audio (only if FMOD system is still valid)
         if (m_FMODChannel) {
-            m_FMODChannel->stop();
+            FMOD::System* fmodSystem = GetFMODSystemInternal();
+            if (fmodSystem) {
+                m_FMODChannel->stop();
+            }
             m_FMODChannel = nullptr;
         }
 
@@ -561,7 +591,7 @@ namespace Boom {
 
     void VideoPlayer::SetVolume(float volume) {
         m_Volume = glm::clamp(volume, 0.0f, 1.0f);
-        if (m_FMODChannel) {
+        if (m_FMODChannel && GetFMODSystemInternal()) {
             m_FMODChannel->setVolume(m_Volume);
         }
     }
@@ -590,10 +620,13 @@ namespace Boom {
         // Clamp to valid range
         time = glm::clamp(time, 0.0, m_Duration);
 
-        // Stop audio during seek
+        // Stop audio during seek (only if FMOD system is still valid)
         bool wasPlaying = (m_State == VideoState::Playing);
+        FMOD::System* fmodSystem = GetFMODSystemInternal();
         if (m_FMODChannel) {
-            m_FMODChannel->stop();
+            if (fmodSystem) {
+                m_FMODChannel->stop();
+            }
             m_FMODChannel = nullptr;
         }
 
@@ -609,14 +642,11 @@ namespace Boom {
         plm_seek(m_PLM, time, 1);
         m_CurrentTime = plm_get_time(m_PLM);
 
-        // Resume audio if was playing
-        if (wasPlaying && m_FMODSound && m_HasAudioTrack && m_AudioEnabled) {
-            FMOD::System* fmodSystem = GetFMODSystemInternal();
-            if (fmodSystem) {
-                fmodSystem->playSound(m_FMODSound, nullptr, false, &m_FMODChannel);
-                if (m_FMODChannel) {
-                    m_FMODChannel->setVolume(m_Volume);
-                }
+        // Resume audio if was playing (only if FMOD system is still valid)
+        if (wasPlaying && m_FMODSound && m_HasAudioTrack && m_AudioEnabled && fmodSystem) {
+            fmodSystem->playSound(m_FMODSound, nullptr, false, &m_FMODChannel);
+            if (m_FMODChannel) {
+                m_FMODChannel->setVolume(m_Volume);
             }
         }
     }
@@ -625,8 +655,12 @@ namespace Boom {
         if (!m_PLM) return;
 
         // Stop audio channel (will be restarted when Play is called)
+        // Only interact with FMOD if the system is still valid
         if (m_FMODChannel) {
-            m_FMODChannel->stop();
+            FMOD::System* fmodSystem = GetFMODSystemInternal();
+            if (fmodSystem) {
+                m_FMODChannel->stop();
+            }
             m_FMODChannel = nullptr;
         }
 

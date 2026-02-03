@@ -642,10 +642,17 @@ namespace Boom
             m_Context->profiler.End("Renderer End Frame");
 
             //picking logic
-            m_Context->renderer->StartPickFrame();
-            m_Context->renderer->SetPickCamera(*mainCam, mainCamT);
-            RenderScene(true);
-            m_Context->renderer->EndPickFrame();
+            if (mainCam)  // ADD THIS CHECK
+            {
+                m_Context->renderer->StartPickFrame();
+                m_Context->renderer->SetPickCamera(*mainCam, mainCamT);
+                RenderScene(true);
+                m_Context->renderer->EndPickFrame();
+            }
+            else
+            {
+                BOOM_WARN("No main camera found for picking pass");
+            }
 
             m_Context->renderer->ShowFrame(showFrame);
 

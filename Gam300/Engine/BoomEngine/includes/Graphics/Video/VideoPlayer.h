@@ -123,6 +123,8 @@ namespace Boom {
         size_t ReadAudioSamples(float* outBuffer, size_t samplesRequested);
 
         void SetRemoveBlackBackground(bool enable) { m_RemoveBlack = enable; }
+        // Check if audio is shutting down (for callback safety)
+        bool IsAudioShuttingDown() const { return m_AudioShuttingDown.load(std::memory_order_acquire); }
 
     private:
         void CreateTexture();
@@ -181,6 +183,7 @@ namespace Boom {
         std::atomic<size_t> m_AudioWritePos{0};
         std::atomic<size_t> m_AudioReadPos{0};
         std::atomic<bool> m_AudioBufferReady{false};
+        std::atomic<bool> m_AudioShuttingDown{false};  // Prevents callback access during shutdown
         mutable std::mutex m_AudioMutex;
 
 
