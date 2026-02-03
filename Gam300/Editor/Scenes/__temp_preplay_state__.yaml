@@ -2,16 +2,390 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
+      Name: End_ReturnButton
+      UID: 15731111703162505266
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.300000012, 1.10000002]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.100000001, 1]
+    SpriteComponent:
+      textureID: 1920245529432086823
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 4
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: End Menu Script
+      UID: 9314872925983614062
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.EndMenu
+      ParamsJSON: "{}"
+    MenuComponent:
+      MenuType: 4
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: End_Background
+      UID: 3080625518488956998
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 1]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    SpriteComponent:
+      textureID: 5109979046645362819
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 4
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Death_ReturnButton
+      UID: 15993560601461334781
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.600000024, 0]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.100000001, 1]
+    SpriteComponent:
+      textureID: 1920245529432086823
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 1
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Death_RestartButton
+      UID: 3023727914892643418
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.400000006, 0]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.100000001, 1]
+    SpriteComponent:
+      textureID: 1815887354929855275
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 1
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Death Menu Script
+      UID: 12489556233822804325
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.DeathMenu
+      ParamsJSON: "{}"
+    MenuComponent:
+      MenuType: 1
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Death_Background
+      UID: 6565047407581518351
+    TransformComponent:
+      Transform:
+        Translate: [0, 0.200000003, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 0.699999988, 1]
+    SpriteComponent:
+      textureID: 12520623694830483264
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 1
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause Menu Script
+      UID: 12608398802596728943
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PauseMenu
+      ParamsJSON: "{}"
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_Scroll
+      UID: 10224819476113975430
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 0.100000001]
+    SpriteComponent:
+      textureID: 13415878511549165281
+      color: [0.431372523, 0.425401956, 0.363706261, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_RestartButton
+      UID: 5904394800213603709
+    TransformComponent:
+      Transform:
+        Translate: [-0.280000001, 0.0500000007, 0.100000001]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.100000001, 1]
+    SpriteComponent:
+      textureID: 1815887354929855275
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_ReturnButton
+      UID: 5566590049786588666
+    TransformComponent:
+      Transform:
+        Translate: [-0.280000001, -0.200000003, 0.100000001]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.100000001, 1]
+    SpriteComponent:
+      textureID: 1920245529432086823
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_QuitButton
+      UID: 8948746535193059584
+    TransformComponent:
+      Transform:
+        Translate: [-0.280000001, -0.449999988, 0.100000001]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.100000001, 1]
+    SpriteComponent:
+      textureID: 13358858626374697893
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_ResumeButton
+      UID: 6722159140985515173
+    TransformComponent:
+      Transform:
+        Translate: [-0.280000001, 0.300000012, 0.100000001]
+        Rotate: [0, -0, 0]
+        Scale: [0.200000003, 0.100000001, 0.00999999978]
+    SpriteComponent:
+      textureID: 18005541902257493201
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_Master_BG
+      UID: 4671019080698985014
+    TransformComponent:
+      Transform:
+        Translate: [0.200000003, 0.170000002, 0.100000001]
+        Rotate: [0, 0, 0]
+        Scale: [0.204999998, 0.0299999993, 1]
+    SpriteComponent:
+      textureID: 15235968341662935537
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_Master_Fill
+      UID: 3931286615731204042
+    TransformComponent:
+      Transform:
+        Translate: [0.200000003, 0.170000002, 0.109999999]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.0199999996, 1]
+    SpriteComponent:
+      textureID: 10258411235812800368
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_Master_Handle
+      UID: 5003664612044735175
+    TransformComponent:
+      Transform:
+        Translate: [0.400000006, 0.170000002, 0.120000005]
+        Rotate: [0, 0, 0]
+        Scale: [0.0199999996, 0.0399999991, 1]
+    SpriteComponent:
+      textureID: 12879034172909871896
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_BGM_Fill
+      UID: 5852252158042436991
+    TransformComponent:
+      Transform:
+        Translate: [0.200000003, -0.0700000003, 0.109999999]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.0199999996, 1]
+    SpriteComponent:
+      textureID: 10258411235812800368
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_BGM_Handle
+      UID: 16675060374144871009
+    TransformComponent:
+      Transform:
+        Translate: [0.400000006, -0.0700000003, 0.120000005]
+        Rotate: [0, 0, 0]
+        Scale: [0.0199999996, 0.0399999991, 1]
+    SpriteComponent:
+      textureID: 12879034172909871896
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_BGM_BG
+      UID: 4971574730537095685
+    TransformComponent:
+      Transform:
+        Translate: [0.200000003, -0.0700000003, 0.100000001]
+        Rotate: [0, 0, 0]
+        Scale: [0.204999998, 0.0299999993, 1]
+    SpriteComponent:
+      textureID: 15235968341662935537
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_SFX_Handle
+      UID: 8554026230313328365
+    TransformComponent:
+      Transform:
+        Translate: [0.400000006, -0.300000012, 0.120000005]
+        Rotate: [0, 0, 0]
+        Scale: [0.0199999996, 0.0399999991, 1]
+    SpriteComponent:
+      textureID: 12879034172909871896
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_SFX_BG
+      UID: 4852565405374371737
+    TransformComponent:
+      Transform:
+        Translate: [0.200000003, -0.300000012, 0.100000001]
+        Rotate: [0, 0, 0]
+        Scale: [0.204999998, 0.0299999993, 1]
+    SpriteComponent:
+      textureID: 15235968341662935537
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_SFX_Fill
+      UID: 1900361381046245117
+    TransformComponent:
+      Transform:
+        Translate: [0.200000003, -0.300000012, 0.109999999]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.0199999996, 1]
+    SpriteComponent:
+      textureID: 10258411235812800368
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
       Name: UI_Stance
       UID: 10500341996070685860
     TransformComponent:
       Transform:
-        Translate: [-0.791313827, -0.770739496, 0]
+        Translate: [-0.796772301, -0.770739496, 0]
         Rotate: [0, -0, 0]
         Scale: [0.100000001, 0.100000001, 0.5]
     SpriteComponent:
       textureID: 7848094390213021062
-      color: [1, 1, 1, 0.708511055]
+      color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 15030438282683852635
@@ -397,7 +771,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 2.53051853, -14.2555885]
-        Rotate: [0, 510.163116, 0]
+        Rotate: [0, 183.546143, 0]
         Scale: [68.965065, 68.9655151, 68.965065]
     ScriptComponent:
       Enabled: true
@@ -636,7 +1010,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [2.07987475, 17.7299271, 63.520256]
-        Rotate: [0, 217.037476, 0]
+        Rotate: [0, 253.332321, 0]
         Scale: [0.0145000033, 0.0145000005, 0.0145000033]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -743,7 +1117,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-46.6716766, 31.6161919, 10.8301497]
-        Rotate: [180, 61.2336655, 180]
+        Rotate: [-180, 61.2336655, -180]
         Scale: [0.0200004745, 0.0199999996, 0.0200004745]
     RigidBodyComponent:
       RigidBody:
@@ -821,7 +1195,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.78372937e-07
+        Speed: 2.91548048e-07
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -867,7 +1241,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-62.4279785, 24.3438969, -9.79262638]
-        Rotate: [360, -90, 0]
+        Rotate: [-360, -90, 0]
         Scale: [0.0200004745, 0.0199999996, 0.0200004745]
     RigidBodyComponent:
       RigidBody:
@@ -945,7 +1319,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 6.224316e-08
+        Speed: 6.72451321e-08
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -990,8 +1364,8 @@ ENTITIES:
       UID: 9730896463395262189
     TransformComponent:
       Transform:
-        Translate: [-31.8510666, 24.3239002, 24.0886307]
-        Rotate: [180, -5.00895612e-06, 180]
+        Translate: [-31.8510666, 24.3238983, 24.0886307]
+        Rotate: [-180, -5.00895612e-06, -180]
         Scale: [0.0200001765, 0.0199999996, 0.0200001765]
     RigidBodyComponent:
       RigidBody:
@@ -1069,7 +1443,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 1.24441087e-07
+        Speed: 4.31624542e-10
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -1193,7 +1567,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 5.76475777e-11
+        Speed: 3.12377035e-09
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -1239,8 +1613,8 @@ ENTITIES:
       UID: 11377284783086712530
     TransformComponent:
       Transform:
-        Translate: [-23.2404804, 13.3755455, 31.8400173]
-        Rotate: [0, 90, 0]
+        Translate: [-19.0667648, 13.3755455, 31.4179897]
+        Rotate: [180, 84.2261658, 180]
         Scale: [0.0200004783, 0.0199999996, 0.0200004783]
     RigidBodyComponent:
       RigidBody:
@@ -1318,7 +1692,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.33525248e-11
+        Speed: 2.35822225
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -1363,8 +1737,8 @@ ENTITIES:
       UID: 4350822310922817577
     TransformComponent:
       Transform:
-        Translate: [-13.3622103, 13.3755474, 58.5007629]
-        Rotate: [0, -0, 0]
+        Translate: [-10.9250298, 13.3755474, 58.5007629]
+        Rotate: [0, -17.0928955, 0]
         Scale: [0.0200004783, 0.0199999996, 0.0200004783]
     RigidBodyComponent:
       RigidBody:
@@ -1442,7 +1816,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.39538268e-11
+        Speed: 2.41357231
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -1475,7 +1849,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-32.5929832, 24.2603378, -2.77601147]
-        Rotate: [0, 181.946716, 0]
+        Rotate: [0, 58.5637207, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -1774,7 +2148,7 @@ ENTITIES:
         Type: BOX
     InfoComponent:
       Parent: 0
-      Name: CrouchTriggerZone
+      Name: CrouchTriggerZoneR
       UID: 16121302333992579556
     TransformComponent:
       Transform:
@@ -2132,7 +2506,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-46.1160126, 24.2603378, -18.4139233]
-        Rotate: [0, 358.053253, 0]
+        Rotate: [0, 121.436279, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -2511,8 +2885,8 @@ ENTITIES:
       UID: 9778697280815915040
     TransformComponent:
       Transform:
-        Translate: [22.8887367, 13.4210215, -11.9729786]
-        Rotate: [180, 73.5697327, 180]
+        Translate: [22.8801174, 13.4210205, -11.970438]
+        Rotate: [-180, 73.5700073, -180]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -2590,7 +2964,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 1.24461167e-07
+        Speed: 2.25641293e-06
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -2635,8 +3009,8 @@ ENTITIES:
       UID: 3476234535713046263
     TransformComponent:
       Transform:
-        Translate: [-21.612793, 13.4208803, 25.9112625]
-        Rotate: [180, -6.20004129, 180]
+        Translate: [-22.9406147, 13.3954363, 28.9645424]
+        Rotate: [0, 46.5855865, 0]
         Scale: [0.0200004801, 0.0199999996, 0.0200004801]
     RigidBodyComponent:
       RigidBody:
@@ -2714,7 +3088,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0.608269215
+        Speed: 0.420932442
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -2759,8 +3133,8 @@ ENTITIES:
       UID: 7568830222834310318
     TransformComponent:
       Transform:
-        Translate: [-8.98203373, 13.4210224, -9.36661434]
-        Rotate: [-180, 0.000322840118, -180]
+        Translate: [-8.98203373, 13.4970112, -9.36661434]
+        Rotate: [180, 0.000322840118, 180]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -2838,7 +3212,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 1.39143012e-07
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -3093,7 +3467,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-56.9920845, 24.2603378, -2.19607687]
-        Rotate: [0, 358.053253, 0]
+        Rotate: [0, 121.436279, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3229,7 +3603,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-14.5949755, 13.3514919, 22.6192093]
-        Rotate: [0, 358.053253, 0]
+        Rotate: [0, 121.436279, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3323,7 +3697,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [17.540493, 13.4146328, 3.31294298]
-        Rotate: [5.00895476e-06, 358.053253, 5.00895476e-06]
+        Rotate: [5.00895476e-06, 121.436279, 5.00895476e-06]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3417,7 +3791,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [9.27553558, 0.550991118, -14.2555885]
-        Rotate: [0, 336.258636, 0]
+        Rotate: [0, 99.6416626, 0]
         Scale: [0.0145000955, 0.0145000005, 0.0145000955]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3511,7 +3885,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 0.530518472, -14.2555885]
-        Rotate: [0, 330.163116, 0]
+        Rotate: [0, 3.54614258, 0]
         Scale: [0.0144997435, 0.0145000005, 0.0144997435]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -8250,8 +8624,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [4.1699152, 7.95452023, 14.1467352]
-        Rotate: [-26.0000038, 70.9999924, -2.62240951e-06]
+        Translate: [-12.7118578, 3.67509556, 0.00575518608]
+        Rotate: [-6.99999905, -61.9999695, -9.09291259e-07]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -8264,8 +8638,8 @@ ENTITIES:
       Current Distance: 5
       Min Distance: 1
       Max Distance: 5
-      Current Yaw: 1691
-      Current Pitch: 26
+      Current Yaw: 1558
+      Current Pitch: 7
       Mouse Sensitivity: 1
       Scroll Sensitivity: 1
   - InfoComponent:
@@ -9428,8 +9802,8 @@ ENTITIES:
       UID: 2377197601835279376
     TransformComponent:
       Transform:
-        Translate: [-0.0892163217, 1.61266494, 12.6836405]
-        Rotate: [0, -177.000061, 0]
+        Translate: [-6.2891016, 1.61266494, 10.039484]
+        Rotate: [0, 77.0000992, 0]
         Scale: [0.0164999887, 0.0164999999, 0.0164999887]
     CharacterControllerComponent:
       Radius: 0.800000012
@@ -9706,7 +10080,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 2.53051853, -14.2555885]
-        Rotate: [0, 508.614166, 0]
+        Rotate: [0, 183.546143, 0]
         Scale: [136.157349, 68.9649124, 68.9648361]
     ScriptComponent:
       Enabled: true
@@ -9783,8 +10157,8 @@ ENTITIES:
       UID: 11344090768170482118
     TransformComponent:
       Transform:
-        Translate: [-22.1587296, 13.4209652, 8.647892]
-        Rotate: [180, -0.00460855616, 180]
+        Translate: [-21.7166977, 13.4210215, 25.9117832]
+        Rotate: [0, 9.96836281, 0]
         Scale: [0.0199999977, 0.0199999996, 0.0199999977]
     RigidBodyComponent:
       RigidBody:
@@ -9862,7 +10236,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0.504044414
+        Speed: 0.0520291217
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -9987,13 +10361,33 @@ ENTITIES:
         Type: BOX
     InfoComponent:
       Parent: 0
-      Name: CrouchTriggerZone
+      Name: CrouchTriggerZoneL
       UID: 17470992432161037172
     TransformComponent:
       Transform:
         Translate: [-8.49653721, 2.8389039, -2.23557353]
         Rotate: [0, -0, 0]
         Scale: [3.78999996, 4.80999994, 4.01999998]
+    SoundComponent:
+      Entries:
+        - name: _enterSound
+          filePaths:
+            - Resources/Audio/ambient_warning.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.CrouchTriggerZone
@@ -10257,375 +10651,86 @@ ENTITIES:
       ParamsJSON: "{\n  \"_tutorialSpriteName\": \"UI_Tutorial\"\n}"
   - InfoComponent:
       Parent: 0
-      Name: Pause_SFX_Fill
-      UID: 1900361381046245117
+      Name: FreezeVFXManager
+      UID: 4921143958973744307
     TransformComponent:
       Transform:
-        Translate: [0.200000003, -0.300000012, 0.109999999]
+        Translate: [-0.26146245, -0.298543572, -0.5]
         Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.0199999996, 1]
-    SpriteComponent:
-      textureID: 10258411235812800368
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 0
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: Pause_SFX_BG
-      UID: 4852565405374371737
-    TransformComponent:
-      Transform:
-        Translate: [0.200000003, -0.300000012, 0.100000001]
-        Rotate: [0, 0, 0]
-        Scale: [0.204999998, 0.0299999993, 1]
-    SpriteComponent:
-      textureID: 15235968341662935537
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 0
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: Pause_SFX_Handle
-      UID: 8554026230313328365
-    TransformComponent:
-      Transform:
-        Translate: [0.400000006, -0.300000012, 0.120000005]
-        Rotate: [0, 0, 0]
-        Scale: [0.0199999996, 0.0399999991, 1]
-    SpriteComponent:
-      textureID: 12879034172909871896
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 0
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: Pause_BGM_BG
-      UID: 4971574730537095685
-    TransformComponent:
-      Transform:
-        Translate: [0.200000003, -0.0700000003, 0.100000001]
-        Rotate: [0, 0, 0]
-        Scale: [0.204999998, 0.0299999993, 1]
-    SpriteComponent:
-      textureID: 15235968341662935537
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 0
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: Pause_BGM_Handle
-      UID: 16675060374144871009
-    TransformComponent:
-      Transform:
-        Translate: [0.400000006, -0.0700000003, 0.120000005]
-        Rotate: [0, 0, 0]
-        Scale: [0.0199999996, 0.0399999991, 1]
-    SpriteComponent:
-      textureID: 12879034172909871896
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 0
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: Pause_BGM_Fill
-      UID: 5852252158042436991
-    TransformComponent:
-      Transform:
-        Translate: [0.200000003, -0.0700000003, 0.109999999]
-        Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.0199999996, 1]
-    SpriteComponent:
-      textureID: 10258411235812800368
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 0
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: Pause_Master_Handle
-      UID: 5003664612044735175
-    TransformComponent:
-      Transform:
-        Translate: [0.400000006, 0.170000002, 0.120000005]
-        Rotate: [0, 0, 0]
-        Scale: [0.0199999996, 0.0399999991, 1]
-    SpriteComponent:
-      textureID: 12879034172909871896
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 0
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: Pause_Master_Fill
-      UID: 3931286615731204042
-    TransformComponent:
-      Transform:
-        Translate: [0.200000003, 0.170000002, 0.109999999]
-        Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.0199999996, 1]
-    SpriteComponent:
-      textureID: 10258411235812800368
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 0
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: Pause_Master_BG
-      UID: 4671019080698985014
-    TransformComponent:
-      Transform:
-        Translate: [0.200000003, 0.170000002, 0.100000001]
-        Rotate: [0, 0, 0]
-        Scale: [0.204999998, 0.0299999993, 1]
-    SpriteComponent:
-      textureID: 15235968341662935537
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 0
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: Pause_ResumeButton
-      UID: 6722159140985515173
-    TransformComponent:
-      Transform:
-        Translate: [-0.280000001, 0.300000012, 0.100000001]
-        Rotate: [0, -0, 0]
-        Scale: [0.200000003, 0.100000001, 0.00999999978]
-    SpriteComponent:
-      textureID: 18005541902257493201
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 0
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: Pause_QuitButton
-      UID: 8948746535193059584
-    TransformComponent:
-      Transform:
-        Translate: [-0.280000001, -0.449999988, 0.100000001]
-        Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.100000001, 1]
-    SpriteComponent:
-      textureID: 13358858626374697893
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 0
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: Pause_ReturnButton
-      UID: 5566590049786588666
-    TransformComponent:
-      Transform:
-        Translate: [-0.280000001, -0.200000003, 0.100000001]
-        Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.100000001, 1]
-    SpriteComponent:
-      textureID: 1920245529432086823
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 0
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: Pause_RestartButton
-      UID: 5904394800213603709
-    TransformComponent:
-      Transform:
-        Translate: [-0.280000001, 0.0500000007, 0.100000001]
-        Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.100000001, 1]
-    SpriteComponent:
-      textureID: 1815887354929855275
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 0
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: Pause_Scroll
-      UID: 10224819476113975430
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 0.100000001]
-    SpriteComponent:
-      textureID: 13415878511549165281
-      color: [0.431372523, 0.425401956, 0.363706261, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 0
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: Pause Menu Script
-      UID: 12608398802596728943
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [0, 0, 0]
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.PauseMenu
-      ParamsJSON: "{}"
-    MenuComponent:
-      MenuType: 0
-    DeactivatedComponent:
-      {}
+      TypeName: GameScripts.FreezeOverlayBehavior
+      ParamsJSON: "{\n  \"_forwardOffset\": 1.0,\n  \"_heightOffset\": 2.5999999046325684,\n  \"_scaleX\": 1.850000023841858,\n  \"_scaleY\": 1.850000023841858\n}"
+    VideoComponent:
+      VideoPath: FreezeVFX.mpeg
+      PlayOnStart: false
+      Loop: false
+      Volume: 1
+      PlaybackSpeed: 1
+      RenderAs3D: true
+      RemoveBlackBackground: true
+      TintColor: [1, 1, 1, 1]
   - InfoComponent:
       Parent: 0
-      Name: Death_Background
-      UID: 6565047407581518351
-    TransformComponent:
-      Transform:
-        Translate: [0, 0.200000003, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 0.699999988, 1]
-    SpriteComponent:
-      textureID: 12520623694830483264
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 1
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: Death Menu Script
-      UID: 12489556233822804325
+      Name: UI_Stance_Text
+      UID: 799560869092660199
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.DeathMenu
-      ParamsJSON: "{}"
-    MenuComponent:
-      MenuType: 1
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: Death_RestartButton
-      UID: 3023727914892643418
-    TransformComponent:
-      Transform:
-        Translate: [0, -0.400000006, 0]
-        Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.100000001, 1]
-    SpriteComponent:
-      textureID: 1815887354929855275
+    TextComponent:
+      text: CTRL
+      fontName: Roboto-Regular
       color: [1, 1, 1, 1]
+      scale: 0.699999988
+      screenPosition: [143, 22]
       renderAs3D: false
-    MenuComponent:
-      MenuType: 1
-    DeactivatedComponent:
-      {}
+      billboardMode: true
   - InfoComponent:
       Parent: 0
-      Name: Death_ReturnButton
-      UID: 15993560601461334781
-    TransformComponent:
-      Transform:
-        Translate: [0, -0.600000024, 0]
-        Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.100000001, 1]
-    SpriteComponent:
-      textureID: 1920245529432086823
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 1
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: End_Background
-      UID: 3080625518488956998
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 1]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    SpriteComponent:
-      textureID: 5109979046645362819
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 4
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
-      Parent: 0
-      Name: End Menu Script
-      UID: 9314872925983614062
+      Name: UI_Freeze_Text
+      UID: 14281033186002033227
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.EndMenu
-      ParamsJSON: "{}"
-    MenuComponent:
-      MenuType: 4
-    DeactivatedComponent:
-      {}
-  - InfoComponent:
+    TextComponent:
+      text: E
+      fontName: Roboto-Regular
+      color: [1, 1, 1, 1]
+      scale: 0.699999988
+      screenPosition: [1677, 22]
+      renderAs3D: false
+      billboardMode: true
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [10, 20, 5]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
       Parent: 0
-      Name: End_ReturnButton
-      UID: 15731111703162505266
+      Name: FreezePowerUp_2
+      UID: 9989597242904224189
     TransformComponent:
       Transform:
-        Translate: [0, -0.300000012, 1.10000002]
+        Translate: [-4.4000001, 3.49000001, 12.1000004]
         Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.100000001, 1]
-    SpriteComponent:
-      textureID: 1920245529432086823
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 4
-    DeactivatedComponent:
-      {}
+        Scale: [0.0799999982, 0.140000001, 0.230000004]
+    ModelComponent:
+      ModelID: 600481613562228247
+      MaterialID: 1773827607540986892
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
