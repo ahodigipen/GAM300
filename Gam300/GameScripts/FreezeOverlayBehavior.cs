@@ -11,16 +11,15 @@ namespace GameScripts
         [Boom.EditorExposed("Height Offset", "World units to offset above target")]
         private float _heightOffset = 1.6f;
 
-        // Separate X and Y Scale 
+        [Boom.EditorExposed("Forward Offset", "World units to offset forward (+) or backward (-) from target")]
+        private float _forwardOffset = 0.0f;
+
+        // Separate X and Y Scale
         [Boom.EditorExposed("Scale X", "Width scale of the video")]
         private float _scaleX = 0.25f;
 
         [Boom.EditorExposed("Scale Y", "Height scale of the video")]
         private float _scaleY = 0.45f;
-
-        // Set Z position
-        [Boom.EditorExposed("Z Depth", "Layer depth (0 is default, use -0.1 to bring forward)")]
-        private float _zIndex = -0.5f;
 
         private bool _isVisible = true;
 
@@ -101,30 +100,53 @@ namespace GameScripts
 
         private void UpdateScreenPosition(Vec3 worldPos)
         {
-            worldPos.Y += _heightOffset;
+            // Get player position first
+            Vec3 playerPos = API.GetPosition(_playerID);
 
-            // 1. Get Pixel Coordinates
-            Vec2 screenPos;
-            bool onScreen = API.ProjectWorldToViewport(worldPos, out screenPos);
+            // Calculate direction from enemy to player
+            Vec3 direction = new Vec3(
+                playerPos.X - worldPos.X,
+                playerPos.Y - worldPos.Y,
+                playerPos.Z - worldPos.Z
+            );
 
-            if (onScreen)
+            // Normalize direction
+            float length = (float)System.Math.Sqrt(
+                direction.X * direction.X +
+                direction.Y * direction.Y +
+                direction.Z * direction.Z
+            );
+
+            if (length > 0.001f)
             {
-                // 2. Get Screen Size
-                float screenW, screenH;
-                API.GetViewportSize(out screenW, out screenH);
+                direction.X /= length;
+                direction.Y /= length;
+                direction.Z /= length;
 
-                if (screenW <= 1.0f || screenH <= 1.0f) return;
+                // Apply height offset
+                worldPos.Y += _heightOffset;
 
-                // 3. Convert Pixels to NDC (-1 to 1)
-                float ndcX = (screenPos.X / screenW) * 2.0f - 1.0f;
-                float ndcY = (screenPos.Y / screenH) * 2.0f - 1.0f;
+                // Apply forward offset in the direction towards the player
+                worldPos.X += direction.X * _forwardOffset;
+                worldPos.Z += direction.Z * _forwardOffset;
 
-                API.SetPosition(Entity, new Vec3(ndcX, ndcY, _zIndex));
+                // Set the position
+                API.SetPosition(Entity, worldPos);
+
+                // Calculate yaw (rotation around Y axis)
+                float yaw = (float)System.Math.Atan2(direction.X, direction.Z);
+
+                // Convert radians to degrees
+                float yawDegrees = yaw * (180f / (float)System.Math.PI);
+
+                // Set rotation (Y rotation only for billboard effect, keeps video upright)
+                API.SetRotation(Entity, new Vec3(0f, yawDegrees, 0f));
             }
             else
             {
-                // Hide if off-screen
-                API.SetScale(Entity, new Vec3(0f, 0f, 0f));
+                // Fallback if player is at same position as enemy
+                worldPos.Y += _heightOffset;
+                API.SetPosition(Entity, worldPos);
             }
         }
 

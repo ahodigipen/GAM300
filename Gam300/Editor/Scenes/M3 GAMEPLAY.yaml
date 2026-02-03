@@ -1,5 +1,34 @@
 Version: 1.0
 ENTITIES:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [10, 20, 5]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: FreezePowerUp_2
+      UID: 9989597242904224189
+    TransformComponent:
+      Transform:
+        Translate: [-4.4000001, 3.49000001, 12.1000004]
+        Rotate: [0, 0, 0]
+        Scale: [0.0799999982, 0.140000001, 0.230000004]
+    ModelComponent:
+      ModelID: 600481613562228247
+      MaterialID: 1773827607540986892
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
       Parent: 0
       Name: UI_Freeze_Text
@@ -42,18 +71,18 @@ ENTITIES:
       Transform:
         Translate: [-0.26146245, -0.298543572, -0.5]
         Rotate: [0, 0, 0]
-        Scale: [0, 0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FreezeOverlayBehavior
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_forwardOffset\": 1.0,\n  \"_heightOffset\": 2.5999999046325684,\n  \"_scaleX\": 1.850000023841858,\n  \"_scaleY\": 1.850000023841858\n}"
     VideoComponent:
       VideoPath: FreezeVFX.mpeg
       PlayOnStart: false
       Loop: false
       Volume: 1
       PlaybackSpeed: 1
-      RenderAs3D: false
+      RenderAs3D: true
       RemoveBlackBackground: true
       TintColor: [1, 1, 1, 1]
   - ColliderComponent:
@@ -521,7 +550,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 8.62171098e-11
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -877,7 +906,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 1.32899019e-12
+        Speed: 0
       BoolParams:
         IsMoving: false
         IsCrouching: false
@@ -2049,8 +2078,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-10.6609325, 6.37201166, 12.3693476]
-        Rotate: [-6.99999905, -61.9999695, -9.09291259e-07]
+        Translate: [-6.1942935, 7.67241573, 17.1924915]
+        Rotate: [155.5625, -141.687469, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -7669,7 +7698,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 8.29044472e-11
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
