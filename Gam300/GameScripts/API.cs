@@ -163,6 +163,12 @@ namespace Boom
         internal extern static void Boom_API_ShutdownApplication(); // CORRECT QUIT
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetCutsceneMode(bool active);
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_DrawDebugLine(Vec3 start, Vec3 end, Vec3 color);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_LoadSceneAdditive(string name);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -403,6 +409,7 @@ namespace Boom
     {
         public float X, Y;
         public Vec2(float x, float y) { X = x; Y = y; }
+        public override string ToString() => $"({X:F2}, {Y:F2})";
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -416,6 +423,7 @@ namespace Boom
             Y = y;
             Z = z;
         }
+        public override string ToString() => $"({X:F2}, {Y:F2}, {Z:F2})";
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -432,6 +440,7 @@ namespace Boom
         public static Vec4 operator -(Vec4 a, Vec4 b) => new Vec4(a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W - b.W);
         public static Vec4 operator *(Vec4 a, float s) => new Vec4(a.X * s, a.Y * s, a.Z * s, a.W * s);
         public static Vec4 operator /(Vec4 a, float s) => new Vec4(a.X / s, a.Y / s, a.Z / s, a.W / s);
+        public override string ToString() => $"({X:F2}, {Y:F2}, {Z:F2}, {W:F2})";
     }
 
     // RENAMED to avoid conflict with the static class below
@@ -473,6 +482,12 @@ namespace Boom
 
         // ===== Entity queries =====
         public static ulong FindEntity(string name) => Native.Boom_API_FindEntity(name);
+
+        // ===== Cutscene Control =====
+        public static void SetCutsceneMode(bool active) => Native.Boom_API_SetCutsceneMode(active);
+        
+        // ===== Debug Drawing =====
+        public static void DrawDebugLine(Vec3 start, Vec3 end, Vec3 color) => Native.Boom_API_DrawDebugLine(start, end, color);
 
         //AI Helpers
         public enum AIMode

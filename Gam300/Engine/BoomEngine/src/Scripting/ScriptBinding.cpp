@@ -568,6 +568,25 @@ namespace Boom {
         return (int)s_Ctx->app->GetState();
     }
 
+    static void ICALL_API_SetCutsceneMode(bool active) {
+        if (s_Ctx && s_Ctx->app) {
+            s_Ctx->app->SetCutsceneMode(active);
+            BOOM_INFO("[ScriptBinding] SetCutsceneMode called: {}", active ? "TRUE" : "FALSE");
+        } else {
+             BOOM_ERROR("[ScriptBinding] SetCutsceneMode FAILED: Context or App is null!");
+        }
+    }
+
+    static void ICALL_API_DrawDebugLine(Boom::Vec3 start, Boom::Vec3 end, Boom::Vec3 color) {
+        if (s_Ctx && s_Ctx->app) {
+             s_Ctx->app->DrawScriptLine(
+                 glm::vec3(start.x, start.y, start.z),
+                 glm::vec3(end.x, end.y, end.z),
+                 glm::vec3(color.x, color.y, color.z)
+             );
+        }
+    }
+
 	//AI Component functions
     static int ICALL_API_AI_GetPatrolPointCount(uint64_t entityHandle)
     {
@@ -2104,5 +2123,8 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetSpotLightColor", (const void*)ICALL_API_SetSpotLightColor);
         mono_add_internal_call("Boom.Native::Boom_API_GetSpotLightIntensity", (const void*)ICALL_API_GetSpotLightIntensity);
         mono_add_internal_call("Boom.Native::Boom_API_SetSpotLightIntensity", (const void*)ICALL_API_SetSpotLightIntensity);
+
+        mono_add_internal_call("Boom.Native::Boom_API_SetCutsceneMode", (const void*)ICALL_API_SetCutsceneMode);
+        mono_add_internal_call("Boom.Native::Boom_API_DrawDebugLine", (const void*)ICALL_API_DrawDebugLine);
     }
 }

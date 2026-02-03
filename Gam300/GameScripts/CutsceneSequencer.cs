@@ -30,6 +30,9 @@ namespace GameScripts
         public bool PlayOnStart = false;
         public bool Loop = false;
         public bool BlockInput = true; // Default to TRUE for cinematic feel
+        public bool ConsoleDebug = true; // Default ON: Logs position/target every sec
+        public bool VisualDebug = false; // Default OFF: Draws lines
+        private bool Debug = false; // Deprecated helper
 
         public float StartDelay = 0.0f;
 
@@ -37,6 +40,7 @@ namespace GameScripts
         private bool _isPlaying = false;
         private bool _pendingPlay = false;
         private float _delayTimer = 0f;
+        private float _logTimer = 0f;
         private int _duration = 600;
 
         public class KeyFrame
@@ -208,8 +212,26 @@ namespace GameScripts
                 API.Log("[Cutscene] Player Input BLOCKED.");
             }
 
+            // NEW: Disable Engine ThirdPersonCamera logic
+            API.SetCutsceneMode(true);
+
+            // Recalculate duration in case tracks were added programmatically
+            RecalculateDuration();
+
             // Reset animation cache on play
             foreach(var t in _tracks) t.lastAnim = "";
+        }
+        
+        public void RecalculateDuration()
+        {
+             int lastKeyFrame = 0;
+             foreach(var t in _tracks) {
+                 foreach(var k in t.keyframes) {
+                     if (k.frame > lastKeyFrame) lastKeyFrame = k.frame;
+                 }
+             }
+             _duration = lastKeyFrame;
+             API.Log($"[CutsceneSequencer] Recalculated Duration: {_duration}");
         }
 
         public void Stop()
@@ -218,6 +240,11 @@ namespace GameScripts
             _currentTime = 0f;
             
             PlayerMovement.CutsceneMode = false;
+
+            // NEW: Re-enable Engine ThirdPersonCamera logic
+            API.SetCutsceneMode(false);
+
+            // Re-enable state machines for all affected entities
 
             // Re-enable state machines for all affected entities
             foreach(var t in _tracks)
@@ -237,48 +264,100 @@ namespace GameScripts
         public void OnUpdate(float dt)
         {
             try {
-            if (_pendingPlay)
-            {
-                _delayTimer -= dt;
-                if (_delayTimer <= 0f)
-                {
-                    _pendingPlay = false;
-                    Play();
+                if (_pendingPlay) {
+                    _delayTimer -= dt;
+                    if (_delayTimer <= 0f) {
+                        _pendingPlay = false;
+                        Play();
+                    }
+                    return;
                 }
-                return;
-            }
 
-            if (!_isPlaying) return;
+                if (!_isPlaying) return;
 
-            _currentTime += dt * 60.0f; // Convert time to frames (60fps base)
+                _currentTime += dt * 60.0f; // Convert time to frames
 
-            if (_currentTime >= _duration)
-            {
-                API.Log($"[CutsceneDebug] Reached End! Time: {_currentTime}, Duration: {_duration}");
-                if (Loop) {
-                    _currentTime = 0f;
-                    foreach(var t in _tracks) t.lastAnim = ""; // Reset cache on loop
+                if (_currentTime >= _duration) {
+                     API.Log($"[CutsceneDebug] Reached End! Time: {_currentTime}, Duration: {_duration}");
+                     if (Loop) {
+                         _currentTime = 0f;
+                         foreach(var t in _tracks) t.lastAnim = ""; 
+                     } else {
+                         _currentTime = _duration;
+                         Stop();
+                         return; 
+                     }
                 }
-                else {
-                    _currentTime = _duration;
-                    Stop(); 
-                    return; // EXIT IMMEDIATELY to prevent ApplyTracks
-                }
-            }
-
-            try 
-            {
+                
                 ApplyTracks(_currentTime);
+
+                if (ConsoleDebug) {
+                    _logTimer += dt;
+                    if (_logTimer >= 1.0f) {
+                        LogCameraStatus();
+                        _logTimer = 0f;
+                    }
+                }
+                if (VisualDebug) DrawDebugVisuals();
             }
-            catch (Exception ex)
+            catch (Exception ex) {
+                 API.Log($"[CutsceneDebug] CRITICAL ERROR in OnUpdate: {ex.Message}");
+            }
+        }
+
+        private void LogCameraStatus()
+        {
+             // Try to find the camera by common names
+             ulong camID = API.FindEntity("Camera");
+             if (camID == 0) camID = API.FindEntity("Main Camera");
+             if (camID == 0) camID = API.FindEntity("MainCamera");
+             
+             // If still not found, try to grab it from the first track
+             if (camID == 0 && _tracks.Count > 0) camID = _tracks[0].cachedEntityID;
+
+             // Fallback to self
+             Vec3 camPos = (camID != 0) ? API.GetPosition(camID) : API.GetPosition(Entity);
+
+             string targetInfo = "None";
+             foreach(var t in _tracks) {
+                 if (t.type == 4) {
+                     foreach(var k in t.keyframes) {
+                         if (_currentTime >= k.frame) targetInfo = k.valStr;
+                     }
+                 }
+             }
+             API.Log($"[CutsceneStatus] Frame: {(int)_currentTime} | CamPos: {camPos.ToString()} | Target: {targetInfo}");
+        }
+
+        private void DrawDebugVisuals()
+        {
+            if (!_isPlaying) return;
+            foreach(var t in _tracks)
             {
-                API.Log($"[CutsceneDebug] CRITICAL ERROR in ApplyTracks: {ex.Message}\n{ex.StackTrace}");
-                _isPlaying = false; // Stop playing on error
+                if (t.type == 0 && t.keyframes.Count > 1)
+                {
+                    for(int i=0; i < t.keyframes.Count - 1; i++)
+                    {
+                        var k1 = t.keyframes[i];
+                        var k2 = t.keyframes[i+1];
+                        API.DrawDebugLine(new Vec3(k1.vX, k1.vY, k1.vZ), new Vec3(k2.vX, k2.vY, k2.vZ), new Vec3(1f, 1f, 0f));
+                    }
+                }
+                if (t.type == 4)
+                {
+                     string targetName = "";
+                     foreach(var k in t.keyframes) if (_currentTime >= k.frame) targetName = k.valStr;
+                     
+                     if (!string.IsNullOrEmpty(targetName)) {
+                         ulong targetID = API.FindEntity(targetName);
+                         if (targetID != 0) {
+                             Vec3 camPos = API.GetPosition(t.cachedEntityID);
+                             Vec3 targetPos = API.GetPosition(targetID);
+                             API.DrawDebugLine(camPos, targetPos, new Vec3(0f, 0.5f, 1f));
+                         }
+                     }
+                }
             }
-        }
-        catch (Exception ex) {
-             API.Log($"[CutsceneDebug] CRITICAL ERROR in OnUpdate: {ex.Message}");
-        }
         }
 
         private void ApplyTracks(float currentFrame)
@@ -345,17 +424,29 @@ namespace GameScripts
                          if (targetID != 0)
                          {
                              Vec3 targetPos = API.GetPosition(targetID);
+                             // Offset to look at Head/Chest (approx 1.5m up) instead of feet/pivot
+                             targetPos.Y += 1.5f; 
+
                              Vec3 camPos = API.GetPosition(track.cachedEntityID);
                              
                              float dx = targetPos.X - camPos.X;
                              float dz = targetPos.Z - camPos.Z;
                              float dy = targetPos.Y - camPos.Y;
                              
-                             // Yaw
-                             float yaw = (float)(Math.Atan2(dx, dz) * 180.0 / Math.PI);
                              // Pitch
                              float dist = (float)Math.Sqrt(dx*dx + dz*dz);
-                             float pitch = (float)(Math.Atan2(dy, dist) * 180.0 / Math.PI);
+                             // TRY RADIANS (Remove 180/PI)
+                             float pitch = (float)(Math.Atan2(dy, dist));
+
+                             // Yaw
+                             float yaw;
+                             // SINGULARITY CHECK
+                             if (dist < 0.5f) {
+                                  yaw = API.GetRotation(track.cachedEntityID).Y;
+                             } else {
+                                  // TRY RADIANS (Remove 180/PI)
+                                  yaw = (float)(Math.Atan2(dx, dz));
+                             }
                              
                              // X=Pitch, Y=Yaw, Z=Roll
                              API.SetRotation(track.cachedEntityID, new Vec3(-pitch, yaw, 0f));

@@ -132,6 +132,18 @@ namespace Boom
 		* BOOM_INLINE hints to the compiler to inline this small constructor
 		* to avoid function-call overhead during startup.
 		*/
+
+		struct ScriptLine {
+			glm::vec3 p0;
+			glm::vec3 p1;
+			glm::vec3 color;
+		};
+		std::vector<ScriptLine> m_ScriptLines;
+
+		void DrawScriptLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec3& color) {
+			m_ScriptLines.push_back({ p0, p1, color });
+		}
+
 		BOOM_INLINE Application()
 		{
 			m_LayerID = TypeID<Application>();
@@ -1038,6 +1050,9 @@ namespace Boom
 		*/
 		BOOM_INLINE bool IsSceneLoaded() const { return m_SceneLoaded; }
 
+
+		void SetCutsceneMode(bool active);
+
 		BOOM_INLINE void UpdateKinematicTransforms()
 		{
 			EnttView<Entity, RigidBodyComponent>(
@@ -1241,6 +1256,7 @@ namespace Boom
 		bool m_IsInPlayMode = true;
 		bool m_IsPlayerDead = false;	// For Death Menu
 		bool m_IsEnd = false;			// For End Menu
+		bool m_IsCutsceneMode = false;
 
 		Boom::AISystem                         m_AIagents;
 		Boom::NavAgentSystem                   m_NavAgents;

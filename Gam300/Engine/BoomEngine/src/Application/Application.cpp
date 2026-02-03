@@ -447,6 +447,13 @@ namespace Boom
                         lineVerts.push_back(Boom::LineVert{ l.p1, l.c1 });
                     }
 
+                    // Append Script Debug Lines
+                    for (const auto& l : m_ScriptLines) {
+                        lineVerts.push_back(Boom::LineVert{ l.p0, glm::vec4(l.color, 1.0f) });
+                        lineVerts.push_back(Boom::LineVert{ l.p1, glm::vec4(l.color, 1.0f) });
+                    }
+                    m_ScriptLines.clear();
+
                     std::vector<Boom::LineVert> filtered;
                     filtered.reserve(lineVerts.size());
                     const float camCullRadius = 0.6f;
@@ -933,9 +940,27 @@ namespace Boom
         }
     }
 
+    void Application::SetCutsceneMode(bool active) {
+        m_IsCutsceneMode = active;
+        BOOM_INFO("[Application] SetCutsceneMode({}) called on Instance: {}", active, (void*)this);
+    }
+
     void Application::UpdateThirdPersonCameras()
 
     {
+        // Debug Log to confirm this function is running and on which instance
+        static int debugCounter = 0;
+        if (debugCounter++ % 120 == 0) {
+             BOOM_INFO("[Application] UpdateThirdPersonCameras RUNNING on Instance: {}, CutsceneMode: {}", (void*)this, m_IsCutsceneMode);
+        }
+
+        if (m_IsCutsceneMode) {
+             // Rate limit logging to avoid spam
+             static int logCounter = 0;
+             if (logCounter++ % 60 == 0) BOOM_INFO("[Application] UpdateThirdPersonCameras SKIPPED (Cutscene Mode Active)");
+             return;
+        }
+
         // 1. Get input
         glm::vec2 mouseDelta = m_Context->window->input.mouseDeltaLast();
         glm::vec2 scrollDelta = m_Context->window->input.scrollDelta();
