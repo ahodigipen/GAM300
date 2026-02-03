@@ -701,11 +701,21 @@ namespace Boom {
 
             // Calculate Alpha
             if (m_RemoveBlack) {
-                // Simple luminance check: (R+G+B) < threshold
-                // You can tune '30' to be more or less aggressive (0-765 range)
-                if ((r + g + b) < 30) {
-                    m_FrameBuffer[rgbaIndex + 3] = 0; // Transparent
+                // Sum of channels (Max 765)
+                float brightness = (float)(r + g + b);
+
+                // Threshold 1: Absolute Black (Delete compression noise)
+                // Increase to remove the "dirty pixels"
+                if (brightness < 60.0f) {
+                    m_FrameBuffer[rgbaIndex + 3] = 0; // Fully Transparent
                 }
+                // Threshold 2: Smooth Transition (Fade out edges)
+                // Pixels between brightness 60 and 100 will fade from 0% to 100% alpha
+                else if (brightness < 100.0f) {
+                    float alpha = (brightness - 60.0f) / 40.0f;
+                    m_FrameBuffer[rgbaIndex + 3] = static_cast<uint8_t>(alpha * 255.0f);
+                }
+                // Threshold 3: Visible Content
                 else {
                     m_FrameBuffer[rgbaIndex + 3] = 255; // Opaque
                 }

@@ -10141,13 +10141,26 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (1)
+      Name: FreezeVFXManager
       UID: 9054217741465614535
     TransformComponent:
       Transform:
-        Translate: [0, 0, 0]
+        Translate: [0, 0, -0.5]
         Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.FreezeOverlayBehavior
+      ParamsJSON: "{}"
+    VideoComponent:
+      VideoPath: FreezeVFX.mpeg
+      PlayOnStart: false
+      Loop: false
+      Volume: 1
+      PlaybackSpeed: 1
+      RenderAs3D: false
+      RemoveBlackBackground: true
+      TintColor: [1, 1, 1, 1]
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -10192,3 +10205,12 @@ ENTITIES:
         Translate: [-5.53177166, 14.124135, 4.82432461]
         Rotate: [0, -0, 0]
         Scale: [60, 1, 40]
+  - InfoComponent:
+      Parent: 0
+      Name: New Entity
+      UID: 15944196154365350580
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
