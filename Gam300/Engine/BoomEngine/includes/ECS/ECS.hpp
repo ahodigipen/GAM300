@@ -1099,13 +1099,17 @@ struct MenuComponent {
             auto& srcRB = reg.get<RigidBodyComponent>(source);
             auto& dstRB = reg.emplace<RigidBodyComponent>(duplicate);
             dstRB = srcRB;
+            dstRB.RigidBody.actor = nullptr;
             // Note: Physics actor will be created by physics system on next update
         }
 
         // Copy ColliderComponent
         if (reg.all_of<ColliderComponent>(source)) {
             auto& srcCol = reg.get<ColliderComponent>(source);
-            reg.emplace<ColliderComponent>(duplicate, srcCol);
+            auto& dstCol = reg.emplace<ColliderComponent>(duplicate, srcCol);
+            dstCol.Collider.Shape = nullptr;
+            dstCol.Collider.material = nullptr;
+            dstCol.Collider.actor = nullptr;
         }
 
         // Copy Light Components
