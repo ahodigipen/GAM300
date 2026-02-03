@@ -20,6 +20,9 @@ uniform vec4 tintColor;
 
 void main() {
     vec4 videoColor = texture(videoTex, uvs).rgba;
+
+    if (videoColor.a < 0.01) discard;
+
     FragColor = tintColor * videoColor;
 }
 ==FRAGMENT==

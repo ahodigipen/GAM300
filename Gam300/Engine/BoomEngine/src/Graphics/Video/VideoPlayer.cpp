@@ -224,6 +224,7 @@ namespace Boom {
         if (!fmodSystem) {
             BOOM_WARN("[VideoPlayer] FMOD system not available, audio disabled");
             plm_set_audio_enabled(m_PLM, 0);
+            plm_set_audio_decode_callback(m_PLM, nullptr, nullptr);
             return;
         }
 
@@ -247,31 +248,54 @@ namespace Boom {
 
         if (result != FMOD_OK || !m_FMODSound) {
             BOOM_WARN("[VideoPlayer] Failed to create FMOD sound for video audio: {}", static_cast<int>(result));
+            // Disable pl_mpeg audio callback if we failed to setup FMOD
             plm_set_audio_enabled(m_PLM, 0);
+            plm_set_audio_decode_callback(m_PLM, nullptr, nullptr);
             m_FMODSound = nullptr;
             return;
         }
 
+        // Defensive: ensure FMOD sound user data is set to this instance so callbacks can find us.
+        m_FMODSound->setUserData(this);
+
         BOOM_INFO("[VideoPlayer] Audio initialized (sample rate: {}, channels: {})",
-                  exinfo.defaultfrequency, m_AudioChannels);
+            exinfo.defaultfrequency, m_AudioChannels);
     }
 
     void VideoPlayer::ShutdownAudio() {
-        // Stop and release FMOD channel/sound
+        // First: disable pl_mpeg audio callback so pl_mpeg won't try to call back into us
+        if (m_PLM) {
+            plm_set_audio_decode_callback(m_PLM, nullptr, nullptr);
+            plm_set_audio_enabled(m_PLM, 0);
+        }
+
+        // Stop FMOD channel if present
         if (m_FMODChannel) {
             m_FMODChannel->stop();
             m_FMODChannel = nullptr;
         }
 
+        // If we have a FMOD sound, clear its user data so any in-flight callbacks won't reference 'this'
         if (m_FMODSound) {
-            m_FMODSound->release();
-            m_FMODSound = nullptr;
-        }
+            FMOD::System* fmodSystem = GetFMODSystemInternal();
 
-        // Disable audio in pl_mpeg
-        if (m_PLM) {
-            plm_set_audio_enabled(m_PLM, 0);
-            plm_set_audio_decode_callback(m_PLM, nullptr, nullptr);
+            // Clear the user data if possible (defensive)
+            // This prevents the callback from finding a dangling pointer to this object.
+            // Only call FMOD methods if the FMOD system is still valid.
+            if (fmodSystem) {
+                // ignore result - best-effort clear
+                m_FMODSound->setUserData(nullptr);
+
+                // Now release the sound normally
+                m_FMODSound->release();
+            }
+            else {
+                // FMOD system already gone: cannot safely call into FMOD implementation.
+                // Skip release to avoid access violations. Avoid further FMOD calls.
+                BOOM_WARN("[VideoPlayer] FMOD system already shut down; skipping sound release to avoid crash.");
+            }
+
+            m_FMODSound = nullptr;
         }
 
         // Reset buffer
