@@ -4,6 +4,7 @@
 #include "Utilities.h"
 #include "Auxiliaries/Assets.h"
 #include <iostream>
+#include <limits>
 #include <unordered_map>
 #include "PxPhysicsAPI.h"
 #include <foundation/PxMath.h>
@@ -746,6 +747,32 @@ namespace Boom {
             auto& collider = entity.Get<ColliderComponent>().Collider;
             if (collider.type == newType) return;
 
+            // Auto-resize logic when switching to primitive types
+            if (newType == Collider3D::BOX || newType == Collider3D::SPHERE ||
+                newType == Collider3D::CAPSULE || newType == Collider3D::CYLINDER)
+            {
+                if (entity.Has<ModelComponent>()) {
+                    auto& modelComp = entity.Get<ModelComponent>();
+                    if (modelComp.modelID != EMPTY_ASSET) {
+                        auto bounds = ComputeModelBounds(assetRegistry, modelComp.modelID);
+                        glm::vec3 center = (bounds.first + bounds.second) * 0.5f;
+                        glm::vec3 size = bounds.second - bounds.first;
+
+                        // Prevent zero/negative size
+                        size = glm::max(size, glm::vec3(0.01f));
+
+                        collider.localScale = size;
+                        
+                        // Center needs to be scaled because CreatePxShape uses localPosition as an absolute offset
+                        if (entity.Has<TransformComponent>()) {
+                            collider.localPosition = center * entity.Get<TransformComponent>().transform.scale;
+                        } else {
+                            collider.localPosition = center;
+                        }
+                    }
+                }
+            }
+
             collider.type = newType;
             UpdateColliderShape(entity, assetRegistry);
         }
@@ -871,6 +898,7 @@ namespace Boom {
             m_Scene->setVisualizationParameter(PxVisualizationParameter::eACTOR_AXES, 1.0f);
             m_Scene->setVisualizationParameter(PxVisualizationParameter::eCONTACT_POINT, 1.0f);
             m_Scene->setVisualizationParameter(PxVisualizationParameter::eCONTACT_NORMAL, 1.0f);
+            m_Scene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_SHAPES, 1.0f);
         }
 
         BOOM_INLINE void CollectDebugLines(std::vector<DebugLine>& outLines) const {
@@ -898,6 +926,37 @@ namespace Boom {
         // ====================================================================================
         // REGION: PRIVATE HELPERS
         // ====================================================================================
+
+        // Helper to compute model bounds for auto-sizing colliders
+        BOOM_INLINE std::pair<glm::vec3, glm::vec3> ComputeModelBounds(AssetRegistry& assetRegistry, AssetID modelID) {
+            glm::vec3 min(std::numeric_limits<float>::max());
+            glm::vec3 max(std::numeric_limits<float>::lowest());
+
+            if (modelID == EMPTY_ASSET) return { glm::vec3(-0.5f), glm::vec3(0.5f) };
+
+            auto* modelAsset = assetRegistry.TryGet<ModelAsset>(modelID);
+            if (!modelAsset || !modelAsset->data) return { glm::vec3(-0.5f), glm::vec3(0.5f) };
+
+            auto staticModel = std::dynamic_pointer_cast<StaticModel>(modelAsset->data);
+            if (staticModel) {
+                const auto& physicsData = staticModel->GetMeshData();
+                if (physicsData.empty()) return { glm::vec3(-0.5f), glm::vec3(0.5f) };
+
+                bool found = false;
+                for (const auto& meshData : physicsData) {
+                    for (const auto& v : meshData.vtx) {
+                        min = glm::min(min, v.pos);
+                        max = glm::max(max, v.pos);
+                        found = true;
+                    }
+                }
+
+                if (!found) return { glm::vec3(-0.5f), glm::vec3(0.5f) };
+                return { min, max };
+            }
+
+            return { glm::vec3(-0.5f), glm::vec3(0.5f) };
+        }
 
         // Centralized Shape Creation to avoid code duplication in AddRigidBody/AddColliderOnly
                 // Centralized Shape Creation to avoid code duplication in AddRigidBody/AddColliderOnly
