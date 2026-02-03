@@ -118,20 +118,27 @@ void DataSerializer::DeserializeAsync(AssetRegistry& registry, const std::string
                         );
                     }
                     else if (type == AssetType::MODEL) {
+                        ModelAsset* modelAsset = nullptr;
                         if (context.skeletalModelContext && context.skeletalModelContext->loadSuccess) {
-                            asset = static_cast<Asset*>(
-                                registry.AddSkeletalModelFromContext(uid, source, *context.skeletalModelContext).get()
-                            );
+                            modelAsset = registry.AddSkeletalModelFromContext(uid, source, *context.skeletalModelContext).get();
+                            asset = static_cast<Asset*>(modelAsset);
                         }
                         else if (context.staticModelContext && context.staticModelContext->loadSuccess) {
-                            asset = static_cast<Asset*>(
-                                registry.AddModelFromContext(uid, source, *context.staticModelContext).get()
-                            );
+                            modelAsset = registry.AddModelFromContext(uid, source, *context.staticModelContext).get();
+                            asset = static_cast<Asset*>(modelAsset);
                         }
                         else {
                             BOOM_ERROR("[DataSerializer] Model '{}' failed to load on worker thread", name);
                             failCount++;
                             continue;
+                        }
+
+                        // Apply properties from YAML (transform, etc.) to the pre-loaded model
+                        if (modelAsset && props.IsMap()) {
+                            xproperty::settings::context ctx;
+                            if (auto* pObj = xproperty::getObject(*modelAsset)) {
+                                DeserializeObjectFromYAML(props, pObj, (void*)modelAsset, ctx);
+                            }
                         }
                     }
                 }
