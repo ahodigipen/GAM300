@@ -9,7 +9,7 @@ namespace GameScripts
         public ulong Entity;
 
         [Boom.EditorExposed("Height Offset", "World units to offset above target")]
-        private float _heightOffset = 1.0f;
+        private float _heightOffset = 1.6f;
 
         // Separate X and Y Scale 
         [Boom.EditorExposed("Scale X", "Width scale of the video")]
