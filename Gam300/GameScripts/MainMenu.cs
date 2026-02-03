@@ -105,8 +105,8 @@ namespace GameScripts
         {
             if (_clickedButtonID == _newGameButtonID)
             {
-                API.Log(">> New Game Button Clicked! Fading to game scene...");
-                _sceneToLoad = Entry.LEVEL_SCENE_NAME;
+                API.Log(">> New Game Button Clicked! Fading to cutscene...");
+                _sceneToLoad = Entry.CUTSCENE_SCENE_NAME;
                 _currentState = MenuState.FadingOut;
                 _fadeTimer = 0f;
             }

@@ -1139,6 +1139,80 @@ namespace Boom {
         s_Ctx->scene.get<SpotLightComponent>(e).light.intensity = intensity;
     }
 
+    // ========= VIDEO COMPONENT INTERNAL CALLS =========
+    static bool ICALL_API_HasVideoComponent(uint64_t handle)
+    {
+        if (!s_Ctx) return false;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        return (e != entt::null && s_Ctx->scene.valid(e) && s_Ctx->scene.any_of<VideoComponent>(e));
+    }
+
+    static bool ICALL_API_IsVideoPlaying(uint64_t handle)
+    {
+        if (!s_Ctx || !s_Ctx->videoSystem) return false;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<VideoComponent>(e)) {
+            return false;
+        }
+        auto* player = s_Ctx->videoSystem->GetPlayer(e);
+        return player && player->IsPlaying();
+    }
+
+    static bool ICALL_API_HasVideoEnded(uint64_t handle)
+    {
+        if (!s_Ctx || !s_Ctx->videoSystem) return true;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<VideoComponent>(e)) {
+            return true;
+        }
+        auto* player = s_Ctx->videoSystem->GetPlayer(e);
+        return player ? player->HasEnded() : true;
+    }
+
+    static void ICALL_API_PlayVideo(uint64_t handle)
+    {
+        if (!s_Ctx || !s_Ctx->videoSystem) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<VideoComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] PlayVideo: Entity doesn't have VideoComponent");
+            return;
+        }
+        s_Ctx->videoSystem->Play(e);
+    }
+
+    static void ICALL_API_StopVideo(uint64_t handle)
+    {
+        if (!s_Ctx || !s_Ctx->videoSystem) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<VideoComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] StopVideo: Entity doesn't have VideoComponent");
+            return;
+        }
+        s_Ctx->videoSystem->Stop(e);
+    }
+
+    static double ICALL_API_GetVideoDuration(uint64_t handle)
+    {
+        if (!s_Ctx || !s_Ctx->videoSystem) return 0.0;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<VideoComponent>(e)) {
+            return 0.0;
+        }
+        auto* player = s_Ctx->videoSystem->GetPlayer(e);
+        return player ? player->GetDuration() : 0.0;
+    }
+
+    static double ICALL_API_GetVideoCurrentTime(uint64_t handle)
+    {
+        if (!s_Ctx || !s_Ctx->videoSystem) return 0.0;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<VideoComponent>(e)) {
+            return 0.0;
+        }
+        auto* player = s_Ctx->videoSystem->GetPlayer(e);
+        return player ? player->GetTickCount() : 0.0;
+    }
+
     struct ScriptTransform {
         float posX, posY, posZ;
         float rotX, rotY, rotZ;
@@ -2220,5 +2294,14 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetSpotLightColor", (const void*)ICALL_API_SetSpotLightColor);
         mono_add_internal_call("Boom.Native::Boom_API_GetSpotLightIntensity", (const void*)ICALL_API_GetSpotLightIntensity);
         mono_add_internal_call("Boom.Native::Boom_API_SetSpotLightIntensity", (const void*)ICALL_API_SetSpotLightIntensity);
+
+        // Video component internal calls
+        mono_add_internal_call("Boom.Native::Boom_API_HasVideoComponent", (const void*)ICALL_API_HasVideoComponent);
+        mono_add_internal_call("Boom.Native::Boom_API_IsVideoPlaying", (const void*)ICALL_API_IsVideoPlaying);
+        mono_add_internal_call("Boom.Native::Boom_API_HasVideoEnded", (const void*)ICALL_API_HasVideoEnded);
+        mono_add_internal_call("Boom.Native::Boom_API_PlayVideo", (const void*)ICALL_API_PlayVideo);
+        mono_add_internal_call("Boom.Native::Boom_API_StopVideo", (const void*)ICALL_API_StopVideo);
+        mono_add_internal_call("Boom.Native::Boom_API_GetVideoDuration", (const void*)ICALL_API_GetVideoDuration);
+        mono_add_internal_call("Boom.Native::Boom_API_GetVideoCurrentTime", (const void*)ICALL_API_GetVideoCurrentTime);
     }
 }

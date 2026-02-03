@@ -418,6 +418,28 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_SetSpotLightIntensity(ulong handle, float intensity);
 
+        // ========= VIDEO COMPONENT INTERNAL CALLS =========
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Boom_API_HasVideoComponent(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Boom_API_IsVideoPlaying(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Boom_API_HasVideoEnded(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_PlayVideo(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_StopVideo(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static double Boom_API_GetVideoDuration(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static double Boom_API_GetVideoCurrentTime(ulong handle);
+
     }
 
     // ========= DELEGATES =========
@@ -1145,6 +1167,43 @@ namespace Boom
         {
             Native.Boom_API_SetSpotLightIntensity(entity, intensity);
         }
+
+        // ========== VIDEO COMPONENT API ==========
+
+        /// <summary>
+        /// Check if entity has a VideoComponent
+        /// </summary>
+        public static bool HasVideoComponent(ulong entity) => Native.Boom_API_HasVideoComponent(entity);
+
+        /// <summary>
+        /// Check if the video is currently playing
+        /// </summary>
+        public static bool IsVideoPlaying(ulong entity) => Native.Boom_API_IsVideoPlaying(entity);
+
+        /// <summary>
+        /// Check if the video has finished playing (reached the end)
+        /// </summary>
+        public static bool HasVideoEnded(ulong entity) => Native.Boom_API_HasVideoEnded(entity);
+
+        /// <summary>
+        /// Start playing the video
+        /// </summary>
+        public static void PlayVideo(ulong entity) => Native.Boom_API_PlayVideo(entity);
+
+        /// <summary>
+        /// Stop the video playback
+        /// </summary>
+        public static void StopVideo(ulong entity) => Native.Boom_API_StopVideo(entity);
+
+        /// <summary>
+        /// Get the total duration of the video in seconds
+        /// </summary>
+        public static double GetVideoDuration(ulong entity) => Native.Boom_API_GetVideoDuration(entity);
+
+        /// <summary>
+        /// Get the current playback time in seconds
+        /// </summary>
+        public static double GetVideoCurrentTime(ulong entity) => Native.Boom_API_GetVideoCurrentTime(entity);
 
         // ========== TEXT COMPONENT API ==========
 

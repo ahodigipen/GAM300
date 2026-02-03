@@ -5,7 +5,11 @@ namespace GameScripts
 {
     public static class Entry
     {
-        public const string LEVEL_SCENE_NAME = "M3 GAMEPLAY";
+        // Scene flow: MainMenu -> Cutscene -> Gameplay
+        public const string CUTSCENE_SCENE_NAME = "START CUTSCENE";
+        public const string GAMEPLAY_SCENE_NAME = "M3 GAMEPLAY";
+        public const string LEVEL_SCENE_NAME = GAMEPLAY_SCENE_NAME; // Alias for compatibility
+
         public const string PAUSE_SCENE_NAME = "PauseMenu";
         public const string MAIN_MENU_SCENE_NAME = "MainMenu";
         public const string HOW_TO_PLAY_SCENE_NAME = "HowToPlay";
@@ -80,7 +84,8 @@ namespace GameScripts
 
             API.Log("[C#] Entry.Start() called for scene: " + _currentSceneName);
 
-            if (_currentSceneName == LEVEL_SCENE_NAME)
+            // Only pre-load menus for gameplay scene, not for cutscene
+            if (_currentSceneName == GAMEPLAY_SCENE_NAME)
             {
                 API.Log("Pre-loading pause menu additively...");
                 API.LoadSceneAdditive(PAUSE_SCENE_NAME);
@@ -171,7 +176,8 @@ namespace GameScripts
             bool escape_KeyDown = API.IsKeyDown(KEY_ESCAPE);
             bool ctrl_KeyDown = API.IsKeyDown(API.KEY_LEFT_CONTROL);
 
-            if (_currentSceneName == LEVEL_SCENE_NAME)
+            // Only allow pausing in gameplay scene (not in cutscene or menus)
+            if (_currentSceneName == GAMEPLAY_SCENE_NAME)
             {
                 // Handle Escape key to pause
                 if (escape_KeyDown && !_escape_KeyWasDown)
