@@ -13,7 +13,6 @@ namespace EditorUI {
 
     void InspectorPanel::AnimatorComponentUI(Boom::Entity& selected)
     {
-        Boom::AppContext* ctx = GetContext();
         if (!ctx) return;
         if (!selected.Has<Boom::AnimatorComponent>()) return;
 
@@ -476,11 +475,6 @@ namespace EditorUI {
                 ImGui::Checkbox("Show Skeleton", &ctx->ShowSkeleton);
                 if (ImGui::IsItemHovered()) {
                     ImGui::SetTooltip("Visualize bone hierarchy as colored lines");
-                }
-
-                ImGui::Checkbox("Show Physics Debug", &ctx->ShowPhysicsDebug);
-                if (ImGui::IsItemHovered()) {
-                    ImGui::SetTooltip("Show/hide physics collision debug lines");
                 }
 
                 ImGui::Checkbox("Show Mesh Debug", &ctx->ShowMeshDebug);

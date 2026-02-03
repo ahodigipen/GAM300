@@ -1,9 +1,11 @@
 #pragma once
 #include "Animation.h"
 #include "AnimationIO.h"
+#include "Audio/Audio.hpp"  // For audio event playback
 #include <assimp/postprocess.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
+#include <set>
 
 namespace Boom
 {
@@ -71,6 +73,9 @@ namespace Boom
 
         BOOM_INLINE auto& Animate(float deltaTime)
         {
+            // Store time before update for audio event processing
+            float timeBeforeUpdate = m_Time;
+
             // State machine mode
             if (!m_States.empty() && m_CurrentStateIndex < m_States.size())
             {
@@ -107,16 +112,21 @@ namespace Boom
                     {
                         // Single clip mode
                         auto& clip = m_Clips[currentState.clipIndex];
-                        m_Time += clip->ticksPerSecond * currentState.speed * deltaTime;
+                        float timeAfterAdvance = m_Time + clip->ticksPerSecond * currentState.speed * deltaTime;
+                        bool looped = false;
 
                         if (currentState.loop)
                         {
-                            m_Time = fmod(m_Time, clip->duration);
+                            looped = (timeAfterAdvance >= clip->duration);
+                            m_Time = fmod(timeAfterAdvance, clip->duration);
                         }
                         else
                         {
-                            m_Time = std::min(m_Time, clip->duration);
+                            m_Time = std::min(timeAfterAdvance, clip->duration);
                         }
+
+                        // Process audio events for this clip
+                        ProcessAudioEvents(clip.get(), timeBeforeUpdate, m_Time, looped);
 
                         UpdateJoints(m_Root, glm::identity<glm::mat4>());
                     }
@@ -125,10 +135,20 @@ namespace Boom
             // Legacy clip-based mode (fallback)
             else if (m_CurrentClip < m_Clips.size())
             {
-                m_Time += m_Clips[m_CurrentClip]->ticksPerSecond * deltaTime;
-                m_Time = fmod(m_Time, m_Clips[m_CurrentClip]->duration);
+                auto& clip = m_Clips[m_CurrentClip];
+                float timeAfterAdvance = m_Time + clip->ticksPerSecond * deltaTime;
+                bool looped = (timeAfterAdvance >= clip->duration);
+
+                m_Time = fmod(timeAfterAdvance, clip->duration);
+
+                // Process audio events for this clip
+                ProcessAudioEvents(clip.get(), timeBeforeUpdate, m_Time, looped);
+
                 UpdateJoints(m_Root, glm::identity<glm::mat4>());
             }
+
+            // Update last processed time
+            m_LastProcessedTime = m_Time;
 
             // Clear triggers after each frame
             m_Triggers.clear();
@@ -283,10 +303,6 @@ namespace Boom
             return m_Triggers.count(name) > 0;
         }
 
-        // Root motion control
-        BOOM_INLINE void SetStripRootMotion(bool strip) { m_StripRootMotion = strip; }
-        BOOM_INLINE bool GetStripRootMotion() const { return m_StripRootMotion; }
-
         // Access to all parameters (for editor UI)
         // Floats
         BOOM_INLINE const auto& GetFloatParams() const { return m_FloatParams; }
@@ -384,7 +400,121 @@ namespace Boom
             return true;
         }
 
+        // === AUDIO EVENT API ===
+
+        // Enable/disable audio event triggering (useful when scrubbing timeline)
+        BOOM_INLINE void SetAudioEventsEnabled(bool enabled)
+        {
+            m_AudioEventsEnabled = enabled;
+            if (!enabled)
+            {
+                m_TriggeredAudioEvents.clear();  // Reset when disabling
+            }
+        }
+
+        BOOM_INLINE bool GetAudioEventsEnabled() const { return m_AudioEventsEnabled; }
+
+        // Set position for 3D audio events (call from entity's transform update)
+        BOOM_INLINE void SetAudioSourcePosition(const glm::vec3& position)
+        {
+            m_AudioSourcePosition = position;
+        }
+
+        BOOM_INLINE const glm::vec3& GetAudioSourcePosition() const { return m_AudioSourcePosition; }
+
+        // Process audio events for a time range (for editor use when not calling Animate())
+        // Call this when manually advancing time (e.g., in editor timeline playback)
+        BOOM_INLINE void ProcessAudioEventsForClip(size_t clipIndex, float lastTime, float currentTime, bool looped)
+        {
+            if (clipIndex < m_Clips.size())
+            {
+                ProcessAudioEvents(m_Clips[clipIndex].get(), lastTime, currentTime, looped);
+            }
+        }
+
+        // Reset triggered events (call when restarting animation or seeking)
+        BOOM_INLINE void ResetAudioEventTriggers()
+        {
+            m_TriggeredAudioEvents.clear();
+            m_LastProcessedTime = m_Time;
+        }
+
     private:
+        // === AUDIO EVENT PROCESSING ===
+
+        BOOM_INLINE void ProcessAudioEvents(const AnimationClip* clip, float lastTime, float currentTime, bool looped)
+        {
+            if (!m_AudioEventsEnabled || !clip || clip->audioEvents.empty())
+                return;
+
+            // Generate a unique prefix for this animator's sounds to avoid conflicts
+            // Use pointer address as unique ID
+            std::string soundPrefix = "anim_" + std::to_string(reinterpret_cast<uintptr_t>(this)) + "_";
+
+            for (size_t i = 0; i < clip->audioEvents.size(); ++i)
+            {
+                const AudioEventMarker& event = clip->audioEvents[i];
+
+                // Check if this event should trigger
+                bool shouldTrigger = false;
+
+                if (looped)
+                {
+                    // Animation looped - reset triggers and check if we crossed this event
+                    // Event triggers if: (lastTime <= duration AND event.timeStamp > lastTime) OR event.timeStamp <= currentTime
+                    if (event.timeStamp > lastTime || event.timeStamp <= currentTime)
+                    {
+                        shouldTrigger = true;
+                    }
+                }
+                else
+                {
+                    // Normal playback - event triggers if we crossed its timestamp
+                    // Forward: lastTime < event.timeStamp <= currentTime
+                    if (lastTime < event.timeStamp && event.timeStamp <= currentTime)
+                    {
+                        shouldTrigger = true;
+                    }
+                }
+
+                // Skip if already triggered this cycle (prevents double-triggering)
+                if (shouldTrigger && m_TriggeredAudioEvents.find(i) == m_TriggeredAudioEvents.end())
+                {
+                    // Mark as triggered
+                    m_TriggeredAudioEvents.insert(i);
+
+                    // Generate unique sound name for this event
+                    std::string soundName = soundPrefix + (event.eventName.empty() ? std::to_string(i) : event.eventName);
+
+                    // Play the sound
+                    if (event.is3D)
+                    {
+                        // PlaySoundAt signature: (name, filePath, position, loop)
+                        SoundEngine::Instance().PlaySoundAt(soundName, event.soundFile, m_AudioSourcePosition, event.loop);
+                    }
+                    else
+                    {
+                        SoundEngine::Instance().PlaySound(soundName, event.soundFile, event.loop, event.groupName);
+                    }
+
+                    // Apply volume and pitch
+                    SoundEngine::Instance().SetVolume(soundName, event.volume);
+                    SoundEngine::Instance().SetPitch(soundName, event.pitch);
+
+                    BOOM_INFO("[AudioEvent] Triggered '{}' at {:.2f}s (sound: {})",
+                              event.eventName.empty() ? "Unnamed" : event.eventName,
+                              event.timeStamp,
+                              event.soundFile);
+                }
+            }
+
+            // If looped, clear triggered events for next cycle
+            if (looped)
+            {
+                m_TriggeredAudioEvents.clear();
+            }
+        }
+
          // === STATE MACHINE HELPERS ===
 
          BOOM_INLINE void EvaluateTransitions([[maybe_unused]] float deltaTime)
@@ -509,16 +639,25 @@ namespace Boom
              auto& lowerClip = m_Clips[lowerClipIdx];
              auto& upperClip = m_Clips[upperClipIdx];
 
+             // Store time before advance for audio events
+             float timeBeforeAdvance = m_Time;
+
              // Advance time
-             m_Time += lowerClip->ticksPerSecond * state.speed * deltaTime;
+             float timeAfterAdvance = m_Time + lowerClip->ticksPerSecond * state.speed * deltaTime;
+             bool looped = false;
+
              if (state.loop)
              {
-                 m_Time = fmod(m_Time, lowerClip->duration);
+                 looped = (timeAfterAdvance >= lowerClip->duration);
+                 m_Time = fmod(timeAfterAdvance, lowerClip->duration);
              }
              else
              {
-                 m_Time = std::min(m_Time, lowerClip->duration);
+                 m_Time = std::min(timeAfterAdvance, lowerClip->duration);
              }
+
+             // Process audio events from the primary (lower) clip
+             ProcessAudioEvents(lowerClip.get(), timeBeforeAdvance, m_Time, looped);
 
              // Blend the two animations
              if (blendWeight < 0.001f)
@@ -622,13 +761,6 @@ namespace Boom
              glm::quat blendedRot = glm::slerp(fromRot, toRot, weight);
              glm::vec3 blendedScale = glm::mix(fromScale, toScale, weight);
 
-             // Strip root motion if enabled
-             if (m_StripRootMotion && joint.name == m_Root.name)
-             {
-                 blendedPos.x = 0.0f;
-                 blendedPos.z = 0.0f;
-             }
-
              glm::mat4 localTransform = glm::translate(glm::mat4(1.0f), blendedPos) *
                  glm::toMat4(blendedRot) *
                  glm::scale(glm::mat4(1.0f), blendedScale);
@@ -702,13 +834,6 @@ namespace Boom
              glm::vec3 blendedPos = glm::mix(pos1, pos2, weight);
              glm::quat blendedRot = glm::slerp(rot1, rot2, weight);
              glm::vec3 blendedScale = glm::mix(scale1, scale2, weight);
-
-             // Strip root motion if enabled
-             if (m_StripRootMotion && joint.name == m_Root.name)
-             {
-                 blendedPos.x = 0.0f;
-                 blendedPos.z = 0.0f;
-             }
 
              glm::mat4 localTransform = glm::translate(glm::mat4(1.0f), blendedPos) *
                  glm::toMat4(blendedRot) *
@@ -819,20 +944,6 @@ namespace Boom
                         glm::toMat4(key.rotation) *
                         glm::scale(glm::mat4(1.0f), key.scale);
                 }
-            }
-
-            // Strip root motion if enabled (zero out XZ translation on root bone)
-            if (m_StripRootMotion && joint.name == m_Root.name)
-            {
-                glm::vec3 pos, scale;
-                glm::quat rot;
-                DecomposeMatrix(localTransform, pos, rot, scale);
-                pos.x = 0.0f;  // Strip X movement
-                pos.z = 0.0f;  // Strip Z movement
-                // Keep Y for crouching/jumping animations
-                localTransform = glm::translate(glm::mat4(1.0f), pos) *
-                    glm::toMat4(rot) *
-                    glm::scale(glm::mat4(1.0f), scale);
             }
 
             // Combine with parent transform
@@ -969,8 +1080,11 @@ namespace Boom
             clone->m_BoolParams = m_BoolParams;
             clone->m_Triggers = m_Triggers;
 
-            // Root motion
-            clone->m_StripRootMotion = m_StripRootMotion;
+            // Audio event state
+            clone->m_LastProcessedTime = m_LastProcessedTime;
+            clone->m_TriggeredAudioEvents = m_TriggeredAudioEvents;
+            clone->m_AudioEventsEnabled = m_AudioEventsEnabled;
+            clone->m_AudioSourcePosition = m_AudioSourcePosition;
 
             return clone;
         }
@@ -1103,15 +1217,18 @@ namespace Boom
         std::unordered_map<std::string, bool> m_BoolParams;
         std::unordered_set<std::string> m_Triggers;
 
-        // Root motion control - when true, strips XZ translation from root bone
-        bool m_StripRootMotion = true;
-
         std::vector<std::shared_ptr<AnimationClip>> m_Clips{}; // Now we store clips, not raw Animation structs
         std::vector<glm::mat4> m_Transforms{};
         glm::mat4 m_GlobalTransform{};
         Joint m_Root;
         size_t m_CurrentClip = 0;
         float m_Time = 0.0f;
+
+        // === AUDIO EVENT TRACKING ===
+        float m_LastProcessedTime = 0.0f;           // Previous frame's time (for detecting crossings)
+        std::set<size_t> m_TriggeredAudioEvents;    // Events already triggered this loop cycle
+        bool m_AudioEventsEnabled = true;           // Allow disabling audio during scrubbing
+        glm::vec3 m_AudioSourcePosition = glm::vec3(0.0f);  // Position for 3D sounds
 
         friend struct SkeletalModel;
     };

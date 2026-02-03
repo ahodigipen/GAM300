@@ -24,9 +24,9 @@ namespace EditorUI {
     class Editor;
     class CommandHistory;  // Forward declaration
 
-    // Undo/Redo command for keyframe and bone pose operations
+    // Undo/Redo command for keyframe, bone pose, and audio event operations
     struct KeyframeCommand {
-        enum Type { ADD, REMOVE, MOVE, BONE_POSE, BATCH };
+        enum Type { ADD, REMOVE, MOVE, BONE_POSE, BATCH, AUDIO_ADD, AUDIO_EDIT, AUDIO_REMOVE };
 
         Type type;
         std::string boneName;
@@ -45,6 +45,11 @@ namespace EditorUI {
 
         // For BATCH operations (groups multiple commands into one undo)
         std::vector<KeyframeCommand> batchCommands;
+
+        // For AUDIO_ADD, AUDIO_EDIT, AUDIO_REMOVE operations
+        Boom::AudioEventMarker audioEvent;      // The audio event data (for ADD/REMOVE, or new state for EDIT)
+        Boom::AudioEventMarker oldAudioEvent;   // Previous state (for EDIT undo)
+        size_t audioEventIndex = 0;             // Index in audioEvents vector (for EDIT/REMOVE)
     };
 
     // Bone pose for undo/redo
@@ -104,6 +109,9 @@ namespace EditorUI {
         // Bone track helpers
         void RenderBoneTrack(const Boom::Joint& joint, float duration);
 
+        // Audio track helper
+        void RenderAudioTrack(float duration);
+
         // 3D Viewport Rendering
         void UpdateCamera();
         void HandleCameraControls();
@@ -148,6 +156,13 @@ namespace EditorUI {
         GLuint m_TextureID = 0;
         GLuint m_DepthBufferID = 0;
         ImVec2 m_ViewportSize = { 800.0f, 400.0f };
+
+        // Viewport splitter (resizable viewport/timeline split)
+        float m_ViewportHeightRatio = 0.45f;  // User-adjustable ratio (0.2 to 0.8)
+        bool m_IsDraggingSplitter = false;     // Is user dragging the splitter bar?
+
+        // Compact mode (hides less-used controls for smaller screens)
+        bool m_CompactMode = false;
 
         // Orbit camera
         glm::vec3 m_CameraPosition = glm::vec3(0.0f, 1.5f, 3.0f);
@@ -226,6 +241,19 @@ namespace EditorUI {
             ImVec2 screenPos;  // Center of the keyframe diamond
         };
         std::vector<KeyframeScreenPos> m_KeyframeScreenPositions;  // Cleared each frame
+
+        // Audio event interaction state
+        int m_SelectedAudioEventIndex = -1;  // -1 = no selection
+        int m_HoveredAudioEventIndex = -1;   // -1 = no hover
+        bool m_IsDraggingAudioEvent = false;
+        float m_DraggedAudioEventOriginalTime = 0.0f;
+
+        // Audio marker screen positions (for click detection)
+        struct AudioMarkerScreenPos {
+            size_t eventIndex;
+            ImVec2 screenPos;  // Center of the marker
+        };
+        std::vector<AudioMarkerScreenPos> m_AudioMarkerScreenPositions;  // Cleared each frame
 
         // Undo/Redo system
         std::vector<KeyframeCommand> m_UndoStack;

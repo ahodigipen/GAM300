@@ -433,6 +433,19 @@ namespace Boom {
             PxController* ctrl = it->second;
             if (!ctrl) return false;
 
+            // Local filter class to ignore the controller's own actor and triggers
+            class IgnoreSelfFilter : public PxQueryFilterCallback {
+                PxRigidActor* m_Self;
+            public:
+                IgnoreSelfFilter(PxRigidActor* self) : m_Self(self) {}
+                PxQueryHitType::Enum preFilter(const PxFilterData&, const PxShape* shape, const PxRigidActor* actor, PxHitFlags&) override {
+                    if (actor == m_Self) return PxQueryHitType::eNONE;
+                    if (shape && (shape->getFlags() & PxShapeFlag::eTRIGGER_SHAPE)) return PxQueryHitType::eNONE;
+                    return PxQueryHitType::eBLOCK;
+                }
+                PxQueryHitType::Enum postFilter(const PxFilterData&, const PxQueryHit&) override { return PxQueryHitType::eBLOCK; }
+            };
+
             // Get controller position and dimensions
             PxExtendedVec3 pos = ctrl->getPosition();
             float radius = 0.0f;
@@ -448,10 +461,15 @@ namespace Boom {
             float skinWidth = ctrl->getContactOffset();
             PxVec3 origin((float)pos.x, (float)pos.y - halfHeight - radius + skinWidth, (float)pos.z);
             PxVec3 dir(0, -1, 0);
-            float maxDist = skinWidth + 0.1f;  // Small distance below feet
+            float maxDist = skinWidth + 0.25f;  // Probe distance below feet
 
             PxRaycastBuffer hit;
-            if (m_Scene->raycast(origin, dir, maxDist, hit)) {
+            PxQueryFilterData filterData;
+            filterData.flags = PxQueryFlag::eSTATIC | PxQueryFlag::eDYNAMIC | PxQueryFlag::ePREFILTER;
+            
+            IgnoreSelfFilter filter(ctrl->getActor());
+
+            if (m_Scene->raycast(origin, dir, maxDist, hit, PxHitFlag::eDEFAULT, filterData, &filter)) {
                 return true;
             }
 

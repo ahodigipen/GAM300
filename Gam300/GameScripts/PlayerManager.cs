@@ -22,6 +22,12 @@ namespace GameScripts
             API.Log("[PlayerManager] Player instance unregistered");
         }
 
+        // Returns the registered player instance (or null if not registered)
+        public static PlayerMovement GetPlayer()
+        {
+            return s_playerInstance;
+        }
+
         // NEW: Register enemy for reset on player respawn
         public static void RegisterEnemy(IEnemyController enemy)
         {

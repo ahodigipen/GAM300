@@ -54,6 +54,43 @@ namespace Boom
     };
 
     /**
+    * @brief Audio event marker for triggering sounds at specific animation timestamps
+    *
+    * Audio events allow sounds to be synchronized with animation playback.
+    * Each event triggers at a specific time during the animation (e.g., footstep
+    * sounds, impact sounds, etc.)
+    *
+    * @note timeStamp is in seconds, matching the animation clip's duration
+    * @see AnimationClip, SoundEngine
+    */
+    struct AudioEventMarker
+    {
+        /** @brief When to trigger this sound (in seconds) */
+        float timeStamp = 0.0f;
+
+        /** @brief Path to audio file (relative to Resources/Audio) */
+        std::string soundFile;
+
+        /** @brief Volume level (0.0 to 1.0) */
+        float volume = 1.0f;
+
+        /** @brief Pitch multiplier (0.5 = half speed, 2.0 = double speed) */
+        float pitch = 1.0f;
+
+        /** @brief Whether this is a 3D spatial sound (true) or 2D sound (false) */
+        bool is3D = false;
+
+        /** @brief Whether to loop this sound */
+        bool loop = false;
+
+        /** @brief Channel group name (e.g., "SFX", "Music", "Ambience") */
+        std::string groupName = "SFX";
+
+        /** @brief Optional label/name for the event marker (for editor display) */
+        std::string eventName;
+    };
+
+    /**
     * @brief Animation clip that stores keyframes per joint name
     *
     * Instead of storing keyframes IN the joints, we store them here
@@ -69,6 +106,9 @@ namespace Boom
 
         // Map of joint name -> keyframes for that joint
         std::unordered_map<std::string, std::vector<KeyFrame>> tracks;
+
+        // Audio event markers (sounds triggered at specific times)
+        std::vector<AudioEventMarker> audioEvents;
 
         // Get keyframes for a specific joint
         const std::vector<KeyFrame>* GetTrack(const std::string& jointName) const

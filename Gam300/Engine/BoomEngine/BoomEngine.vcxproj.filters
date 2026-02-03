@@ -31,6 +31,7 @@
     <ClCompile Include="src\Graphics\Video\VideoPlayer.cpp" />
     <ClCompile Include="src\Graphics\Video\VideoSystem.cpp" />
     <ClCompile Include="src\Graphics\Instancing\InstanceManager.cpp" />
+    <ClCompile Include="src\Graphics\Text\FontManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\Application\Application.h" />
@@ -56,9 +57,9 @@
     <ClInclude Include="includes\Graphics\Buffers\Mesh.h" />
     <ClInclude Include="includes\Graphics\Buffers\Vertex.h" />
     <ClInclude Include="includes\Graphics\Instancing\InstanceBatch.h" />
+    <ClInclude Include="includes\Graphics\Instancing\AnimatedInstanceBatch.h" />
     <ClInclude Include="includes\Graphics\Instancing\InstanceManager.h" />
     <ClInclude Include="includes\Graphics\Models\Animation.h" />
-    <ClInclude Include="includes\Graphics\Models\AnimationIO.h" />
     <ClInclude Include="includes\Graphics\Models\Animator.h" />
     <ClInclude Include="includes\Graphics\Models\Helper.h" />
     <ClInclude Include="includes\Graphics\Models\Model.h" />
@@ -111,6 +112,7 @@
     <ClInclude Include="includes\Graphics\Video\VideoSystem.h" />
     <ClInclude Include="..\..\..\..\..\..\Downloads\pl_mpeg-master\pl_mpeg-master\pl_mpeg.h" />
     <ClInclude Include="includes\Graphics\Video\pl_mpeg.h" />
+    <ClInclude Include="includes\Graphics\Text\FontManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="VendorSettings.props" />

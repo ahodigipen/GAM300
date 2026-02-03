@@ -2,6 +2,7 @@
 #pragma warning(disable : 4834) // Disable [[nodiscard]] warnings for exception::what() in logging
 #include "Application/Application.h"
 #include "Audio/SoundSystem.hpp" // <-- added for per-entity sound updates
+#include "Graphics/Text/FontManager.h"
 
 namespace Boom
 {
@@ -16,16 +17,37 @@ namespace Boom
         std::cout << "[RunContext] Loading scene MainMenu..." << std::endl;
         std::cout.flush();
 
+        AppWindow::SetLoadingVideo("Deathless_LoadingScreen.mpeg", true);
+        AppWindow::SetShowLoadingBar(false); // Video only, no loading bar
+
         if (!showFrame) { //for runtime game.exe
             DataSerializer serializer;
             serializer.DeserializeAsync(*m_Context->assets, "Resources/assets.yaml", GetWindowHandle().get());
         }
+
+        // Clear loading video after assets are loaded (optional - keeps video for scene loading)
+        // AppWindow::ClearLoadingVideo();
 
         //LoadScene("level");
         LoadScene("MainMenu");
         
 
         std::cout << "[RunContext] Scene loaded successfully" << std::endl;
+        std::cout.flush();
+
+        // -- INITIALIZE FONT SYSTEM --
+        // This must be initialized before any text rendering occurs
+        // Initialize here so it works in both Editor and Runtime builds
+        std::cout << "[RunContext] Initializing Font System..." << std::endl;
+        std::cout.flush();
+
+        if (Boom::FontManager::GetInstance().Init()) {
+            Boom::FontManager::GetInstance().LoadFont("Roboto-Regular", "Resources/Fonts/Roboto-Regular.ttf", 48);
+            std::cout << "[RunContext] Font System initialized successfully" << std::endl;
+        } else {
+            BOOM_ERROR("Failed to initialize Font Manager");
+            std::cout << "[RunContext] ERROR: Failed to initialize Font System" << std::endl;
+        }
         std::cout.flush();
 
         // -- LOADING in MONO --
@@ -423,10 +445,10 @@ namespace Boom
             RenderScene();
             //DrawDebugTPC();
 
-            // Sync physics debug viz with context flag
+            // Sync physics debug viz with context flag (bidirectional)
             if (m_PhysDebugViz != m_Context->ShowPhysicsDebug)
             {
-                m_PhysDebugViz = m_Context->ShowPhysicsDebug;
+                m_Context->ShowPhysicsDebug = m_PhysDebugViz;
                 m_Context->physics->EnableDebugVisualization(m_PhysDebugViz, 1.0f);
             }
 
@@ -467,6 +489,66 @@ namespace Boom
                         m_DebugLinesShader->Draw(dbgView, dbgProj, filtered, 50.5f);
                 }
             }
+            // Per-entity physics debug visualization
+            if (m_DebugLinesShader)
+            {
+                std::vector<Boom::LineVert> perEntityPhysLines;
+
+                // Collect debug lines only for entities with showPhysicsDebug enabled
+                EnttView<Entity, ColliderComponent, TransformComponent>([this, &perEntityPhysLines, &dbgCamPos](auto entity, ColliderComponent& col, TransformComponent& tc) {
+                    if (!col.Collider.showPhysicsDebug) return;
+
+                    // Get the physics actor for this entity
+                    PxRigidActor* actor = nullptr;
+                    if (entity.Has<RigidBodyComponent>()) {
+                        actor = entity.Get<RigidBodyComponent>().RigidBody.actor;
+                    }
+                    else if (col.Collider.actor) {
+                        actor = col.Collider.actor;
+                    }
+
+                    if (!actor) return;
+
+                    // Get shapes and draw debug wireframes
+                    PxU32 numShapes = actor->getNbShapes();
+                    std::vector<PxShape*> shapes(numShapes);
+                    actor->getShapes(shapes.data(), numShapes);
+
+                    PxTransform actorPose = actor->getGlobalPose();
+                    glm::vec4 debugColor(0.0f, 1.0f, 0.0f, 1.0f); // Green for per-entity debug
+
+                    for (PxShape* shape : shapes) {
+                        PxTransform shapePose = actorPose * shape->getLocalPose();
+                        PxGeometryHolder geom = shape->getGeometry();
+
+                        switch (geom.getType()) {
+                        case PxGeometryType::eBOX:
+                            AppendBoxWire(geom.box(), shapePose, perEntityPhysLines, debugColor);
+                            break;
+                        case PxGeometryType::eSPHERE:
+                            AppendSphereWire(geom.sphere().radius, shapePose, perEntityPhysLines, debugColor);
+                            break;
+                        case PxGeometryType::eCAPSULE:
+                            AppendCapsuleWire(geom.capsule().radius, geom.capsule().halfHeight, shapePose, perEntityPhysLines, debugColor);
+                            break;
+                        case PxGeometryType::eCONVEXMESH:
+                            AppendConvexMeshWire(geom.convexMesh(), shapePose, perEntityPhysLines, debugColor);
+                            break;
+                        case PxGeometryType::eTRIANGLEMESH:
+                            AppendTriangleMeshWire(geom.triangleMesh(), shapePose, perEntityPhysLines, debugColor);
+                            break;
+                        default:
+                            break;
+                        }
+                    }
+                    });
+
+                // Draw per-entity debug lines
+                if (!perEntityPhysLines.empty()) {
+                    m_DebugLinesShader->Draw(dbgView, dbgProj, perEntityPhysLines, 2.0f);
+                }
+            }
+
             if (m_PhysDebugViz && m_DebugLinesShader) {
                 DrawRigidBodiesDebugOnly(dbgView, dbgProj);
             }
@@ -611,7 +693,7 @@ namespace Boom
         }
 
         //pbr ecs (always render)
-        EnttView<Entity, TransformComponent>([this, &guiList, &isPicking, &transparentObjects, &immediateDraws, &cameraPos](auto entity, TransformComponent& t) {
+        EnttView<Entity, TransformComponent>([this, &guiList, &isPicking, &transparentObjects, &immediateDraws, &cameraPos](auto entity, TransformComponent&) {
             if (entity.Has<DeactivatedComponent>()) return;
 
             if (entity.Has<ModelComponent>()) {
@@ -683,8 +765,18 @@ namespace Boom
                         bool isTransparent = (material.data.opacity < 1.0f) || (material.opacityMapID != EMPTY_ASSET);
 
                         if (isTransparent) {
-                            // Defer transparent object rendering (cannot be instanced)
                             float dist = glm::length(worldTransform.translate - cameraPos);
+
+                            if (!isAnimated) {
+                                // Static transparent object - try to batch it
+                                glm::mat4 finalMatrix = worldMatrix * model.data->modelTransform.Matrix();
+                                if (m_Context->renderer->AddTransparentInstance(comp.modelID, comp.materialID, finalMatrix, dist)) {
+                                    // Successfully batched - skip immediate draw
+                                    return;
+                                }
+                            }
+
+                            // Animated transparent object or batching failed - defer for individual rendering
                             transparentObjects.push_back({
                                 model.data,
                                 worldTransform,
@@ -706,7 +798,13 @@ namespace Boom
                             m_Context->renderer->Draw(model.data, worldTransform, material.data);
                         }
                         else {
-                            // Animated opaque object - must use immediate draw
+                            // Animated opaque object - try to batch with joints
+                            glm::mat4 finalMatrix = worldMatrix * model.data->modelTransform.Matrix();
+                            if (m_Context->renderer->AddAnimatedInstance(comp.modelID, comp.materialID, finalMatrix, currentJoints)) {
+                                // Successfully batched animated instance - skip immediate draw
+                                return;
+                            }
+                            // Failed to batch (shouldn't happen) - fall through to immediate draw
                             m_Context->renderer->Draw(model.data, worldTransform, material.data);
                         }
                     }
@@ -796,13 +894,8 @@ namespace Boom
         }
 
         // === TRANSPARENT OBJECTS PASS ===
-        // Sort transparent objects back-to-front (farthest first)
-        if (!transparentObjects.empty() && !isPicking) {
-            std::sort(transparentObjects.begin(), transparentObjects.end(),
-                [](const TransparentRenderData& a, const TransparentRenderData& b) {
-                    return a.distanceToCamera > b.distanceToCamera; // Sort back-to-front
-                });
-
+        // Render transparent objects (batched + individual)
+        if (!isPicking) {
             // Ensure depth testing is enabled, disable depth writing
             glEnable(GL_DEPTH_TEST);
             glDepthFunc(GL_LESS);
@@ -814,12 +907,23 @@ namespace Boom
                 glCullFace(GL_BACK);
             }
 
-            for (auto& obj : transparentObjects) {
-                // Set joints if the model has them
-                if (obj.hasJoints && !obj.joints.empty()) {
-                    m_Context->renderer->SetJoints(obj.joints);
+            // Render batched transparent instances (already sorted back-to-front)
+            m_Context->renderer->RenderTransparentBatches(*m_Context->assets);
+
+            // Sort and render individual transparent objects (animated transparent or batching failed)
+            if (!transparentObjects.empty()) {
+                std::sort(transparentObjects.begin(), transparentObjects.end(),
+                    [](const TransparentRenderData& a, const TransparentRenderData& b) {
+                        return a.distanceToCamera > b.distanceToCamera; // Sort back-to-front
+                    });
+
+                for (auto& obj : transparentObjects) {
+                    // Set joints if the model has them
+                    if (obj.hasJoints && !obj.joints.empty()) {
+                        m_Context->renderer->SetJoints(obj.joints);
+                    }
+                    m_Context->renderer->Draw(obj.model, obj.transform, obj.material);
                 }
-                m_Context->renderer->Draw(obj.model, obj.transform, obj.material);
             }
 
             // Restore state
@@ -847,6 +951,103 @@ namespace Boom
                 TextureAsset* texture{ m_Context->assets->TryGet<TextureAsset>(std::get<0>(gui).textureID) };
                 if (texture)
                     m_Context->renderer->DrawQuad(texture->data, std::get<1>(gui), std::get<0>(gui).color);
+            }
+        }
+
+        // --- RENDER ALL TEXT COMPONENTS ---
+        if (!isPicking) {
+            // Get active camera for 3D text projection
+            Camera3D* textActiveCam = nullptr;
+            Transform3D textCamTransform{};
+            EnttView<Entity, CameraComponent>([&](auto en, CameraComponent& comp) {
+                if (!textActiveCam && comp.camera.cameraType == Camera3D::CameraType::Main) {
+                    textCamTransform = en.Get<TransformComponent>().transform;
+                    textActiveCam = &comp.camera;
+                }
+            });
+
+            // Get screen dimensions
+            int screenWidth = m_Context->window->Width();
+            int screenHeight = m_Context->window->Height();
+            float aspect = (float)screenWidth / (float)screenHeight;
+
+            // Iterate through all entities with TextComponent
+            auto textView = m_Context->scene.view<TextComponent>();
+            for (auto entity : textView) {
+                auto& textComp = textView.get<TextComponent>(entity);
+
+                float screenX, screenY;
+                float finalScale = textComp.scale;
+
+                if (textComp.renderAs3D && textActiveCam) {
+                    // 3D WORLD-SPACE TEXT: Project entity's world position to screen space
+
+                    // Get entity's world position and rotation
+                    Entity ent(&m_Context->scene, entity);
+                    if (!ent.Has<TransformComponent>()) continue;  // Skip if no transform
+
+                    auto& transform = ent.Get<TransformComponent>().transform;
+                    glm::vec3 worldPos = transform.translate;
+
+                    // NON-BILLBOARD MODE: Text with fixed world rotation (not yet implemented)
+                    if (!textComp.billboardMode) {
+                        // TODO: Implement true 3D text rendering with rotation
+                        // Requires rendering each character as a 3D quad with entity's transform applied
+                        // For now, skip rendering non-billboard text
+                        static bool warnedOnce = false;
+                        if (!warnedOnce) {
+                            BOOM_WARN("Non-billboard 3D text not yet implemented - text will not render");
+                            warnedOnce = true;
+                        }
+                        continue;
+                    }
+
+                    // Compute view-projection matrix
+                    glm::mat4 viewMatrix = textActiveCam->View(textCamTransform);
+                    glm::mat4 projMatrix = textActiveCam->Projection(aspect);
+                    glm::mat4 viewProj = projMatrix * viewMatrix;
+
+                    // Project to clip space
+                    glm::vec4 clipPos = viewProj * glm::vec4(worldPos, 1.0f);
+
+                    // Perform perspective divide to get NDC (Normalized Device Coordinates)
+                    if (clipPos.w <= 0.0f) continue;  // Behind camera, skip
+                    glm::vec3 ndc = glm::vec3(clipPos) / clipPos.w;
+
+                    // Check if text is within visible frustum
+                    if (ndc.x < -1.0f || ndc.x > 1.0f ||
+                        ndc.y < -1.0f || ndc.y > 1.0f ||
+                        ndc.z < -1.0f || ndc.z > 1.0f) {
+                        continue;  // Outside view frustum
+                    }
+
+                    // Convert NDC to screen coordinates
+                    // NDC: -1 to 1, Screen: 0 to width/height
+                    // FontManager uses bottom-left origin (0,0), same as OpenGL NDC, so NO Y-flip needed
+                    screenX = ((ndc.x + 1.0f) * 0.5f) * screenWidth;
+                    screenY = ((ndc.y + 1.0f) * 0.5f) * screenHeight;  // Bottom-left origin, Y increases upward
+
+                    // Optional: Scale based on distance (more conservative formula)
+                    // Scale stays constant at base scale - no automatic distance scaling
+                    // User can implement custom distance scaling in scripts if needed
+                    finalScale = textComp.scale;
+                }
+                else {
+                    // 2D SCREEN-SPACE TEXT: Use direct screen position
+                    screenX = textComp.screenPosition.x;
+                    screenY = textComp.screenPosition.y;
+                }
+
+                // Render text using FontManager
+                Boom::FontManager::GetInstance().RenderText(
+                    textComp.fontName,                  // Font name (must be loaded)
+                    textComp.text,                      // Text content
+                    screenX,                            // X position (pixels from left)
+                    screenY,                            // Y position (pixels from bottom)
+                    finalScale,                         // Size multiplier
+                    glm::vec3(textComp.color),          // RGB color
+                    textComp.color.a                    // Alpha transparency
+                );
             }
         }
     }

@@ -568,14 +568,10 @@ namespace Boom
 
 			// CRITICAL: Load all assets from assets.yaml BEFORE loading the scene
 			// This ensures textures, models, etc. are available when scene references them
-			//BOOM_INFO("[Scene] Loading assets from Resources/assets.yaml");
-			//serializer.DeserializeAsync(*m_Context->assets, "Resources/assets.yaml", m_Context->window->Handle().get());
 			serializer.Deserialize(m_Context->scene, *m_Context->assets, sceneFilePath);
 
-			// *** ADD THIS LINE - Clear all trigger callbacks before loading new scene ***
+			// Clear all trigger callbacks before loading new scene
 			Boom::ClearAllTriggerCallbacks();
-
-			//serializer.Deserialize(m_Context->scene, *m_Context->assets, sceneFilePath);
 
 			// Update tracking
 			strncpy_s(m_CurrentScenePath, sizeof(m_CurrentScenePath), sceneFilePath.c_str(), _TRUNCATE);
@@ -583,8 +579,10 @@ namespace Boom
 
 			// Reinitialize systems that need it
 			ReinitializeSceneSystems();
+
 			m_NavInitialized = false;
 			ApplySceneNavmeshFromScene();
+
 			BOOM_INFO("[Scene] Successfully loaded scene '{}'", sceneName);
 			return true;
 		}

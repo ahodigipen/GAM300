@@ -35,6 +35,7 @@
 #include <GLFW/glfw3.h>
 #include "Vendors/imgui/backends/imgui_impl_glfw.h"
 #include "Vendors/imgui/backends/imgui_impl_opengl3.h"
+#include "Graphics/Text/FontManager.h"
 
 
 namespace {
@@ -141,6 +142,11 @@ namespace EditorUI {
             // Note: Pass 0 as numThreads to auto-detect CPU cores, or specify a number like 4 or 8
         }
 
+        // NOTE: Font System is now initialized in Application::RunContext()
+        // This ensures fonts work in both Editor and Runtime (exported) builds
+        // The initialization was moved there to avoid issues when ImGui is disabled
+        // See: FontSystemImplementation.md for details
+
         // Construct panels here; they persist across frames.
         // We pass `this` so panels can call owner->GetContext() etc.
         m_MenuBar = std::make_unique<MenuBarPanel>(this);
@@ -222,6 +228,9 @@ namespace EditorUI {
         if (m_ShowAnimationTimeline && m_AnimationTimeline) m_AnimationTimeline->Render();
         // --- End frame / draw ---
         EndImguiFrame();
+
+        // Render Test Text REMOVED from Editor::Render overlay
+        // Boom::FontManager::GetInstance().RenderText("Roboto", "Hello World", 200.0f, 200.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
     }
 
     void Editor::HandleGlobalShortcuts()
@@ -374,10 +383,44 @@ namespace EditorUI {
                 // Apply to physics system
                 m_Context->physics->EnableDebugVisualization(newState, 1.0f);
 
-                // Update the Application's state
+                // Update both the Application's state AND the context flag
                 m_App->m_PhysDebugViz = newState;
+                m_Context->ShowPhysicsDebug = newState;  // Keep context in sync
 
                 BOOM_INFO("[Shortcut] Physics Debug Visualization (F9): {}", newState ? "ON" : "OFF");
+            }
+        }
+
+        // ===== Entity Shortcuts (Global - work when any entity is selected) =====
+
+       // Ctrl+D: Duplicate selected entity (works globally, not just in Hierarchy)
+        if (ctrl && !shift && ImGui::IsKeyPressed(ImGuiKey_D, false))
+        {
+            entt::entity selected = SelectedEntity();
+            auto& registry = m_Context->scene;
+
+            if (selected != entt::null && registry.valid(selected)) {
+                auto* history = GetCommandHistory();
+                if (history) {
+                    auto command = std::make_unique<DuplicateEntityCommand>(&registry, selected);
+                    history->Execute(std::move(command));
+
+                    if (registry.all_of<Boom::InfoComponent>(selected)) {
+                        BOOM_INFO("[Shortcut] Duplicated '{}' with Ctrl+D (global)",
+                            registry.get<Boom::InfoComponent>(selected).name);
+                    }
+                }
+                else {
+                    // Fallback
+                    entt::entity duplicated = Boom::DuplicateEntity(registry, selected, true);
+                    if (duplicated != entt::null) {
+                        SelectedEntity(true) = duplicated;
+                        if (registry.all_of<Boom::InfoComponent>(selected)) {
+                            BOOM_INFO("[Shortcut] Duplicated '{}' with Ctrl+D",
+                                registry.get<Boom::InfoComponent>(selected).name);
+                        }
+                    }
+                }
             }
         }
 

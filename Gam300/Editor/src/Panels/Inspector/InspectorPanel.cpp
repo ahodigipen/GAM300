@@ -32,9 +32,9 @@ namespace EditorUI {
         : m_Owner(owner)
         , m_ShowInspector(showFlag)
         , m_App(dynamic_cast<Boom::AppInterface*>(owner))
+        , ctx(m_Owner->GetContext())
     {
         DEBUG_POINTER(m_App, "AppInterface");
-        ctx = m_Owner->GetContext();
         DEBUG_POINTER(ctx, "AppContext");
         // Initialize asset picker icons
         if (m_App) {
@@ -205,7 +205,6 @@ namespace EditorUI {
     {
         if (m_ShowInspector && !*m_ShowInspector) return;
 
-        Boom::AppContext* ctx = GetContext();
         if (!ctx) return;
 
         ImGui::Begin("Inspector", m_ShowInspector);
@@ -228,10 +227,12 @@ namespace EditorUI {
     }
 
     void InspectorPanel::EntityUpdate() {
-        Boom::AppContext* ctx = GetContext();
         // NOTE: adjust Entity wrapper to your real type/ctor signature
             // Assuming: Entity(Boom::Scene*, entt::entity)
         Boom::Entity selected{ &ctx->scene, m_App->SelectedEntity() };
+
+        // Push ID to prevent field edit state leaking to other entities when selection changes
+        ImGui::PushID((int)m_App->SelectedEntity());
 
         // ===== ENTITY NAME =====
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(8, 6));
@@ -368,6 +369,271 @@ namespace EditorUI {
                 }
                 ImGui::Spacing();
                 ImGui::SeparatorText("Utilities");
+
+                // --- SNAP TO GRID ---
+                if (ImGui::TreeNode("Grid Snapping")) {
+                    ImGui::DragFloat("Pos Step", &m_GridSnapValues.x, 0.1f, 0.01f, 10.0f);
+                    ImGui::DragFloat("Rot Step", &m_GridSnapValues.y, 1.0f, 1.0f, 90.0f);
+                    ImGui::DragFloat("Scale Step", &m_GridSnapValues.z, 0.1f, 0.01f, 2.0f);
+
+                    if (ImGui::Button("Snap to Grid", ImVec2(-1, 0))) {
+                        // Capture state for Undo
+                        auto* history = m_Owner->GetCommandHistory();
+                        Boom::Transform3D transformBefore = tc.transform;
+
+                        // Apply Snap
+                        // Position
+                        if (m_GridSnapValues.x > 0.001f) {
+                            tc.transform.translate.x = round(tc.transform.translate.x / m_GridSnapValues.x) * m_GridSnapValues.x;
+                            tc.transform.translate.y = round(tc.transform.translate.y / m_GridSnapValues.x) * m_GridSnapValues.x;
+                            tc.transform.translate.z = round(tc.transform.translate.z / m_GridSnapValues.x) * m_GridSnapValues.x;
+                        }
+                        // Rotation
+                        if (m_GridSnapValues.y > 0.001f) {
+                            tc.transform.rotate.x = round(tc.transform.rotate.x / m_GridSnapValues.y) * m_GridSnapValues.y;
+                            tc.transform.rotate.y = round(tc.transform.rotate.y / m_GridSnapValues.y) * m_GridSnapValues.y;
+                            tc.transform.rotate.z = round(tc.transform.rotate.z / m_GridSnapValues.y) * m_GridSnapValues.y;
+                        }
+                        // Scale
+                        if (m_GridSnapValues.z > 0.001f) {
+                            tc.transform.scale.x = round(tc.transform.scale.x / m_GridSnapValues.z) * m_GridSnapValues.z;
+                            tc.transform.scale.y = round(tc.transform.scale.y / m_GridSnapValues.z) * m_GridSnapValues.z;
+                            tc.transform.scale.z = round(tc.transform.scale.z / m_GridSnapValues.z) * m_GridSnapValues.z;
+                        }
+
+                        // Record Undo if changed
+                        if (history && (transformBefore.translate != tc.transform.translate || 
+                                        transformBefore.rotate != tc.transform.rotate || 
+                                        transformBefore.scale != tc.transform.scale)) 
+                        {
+                            auto command = std::make_unique<TransformCommand>(
+                                &ctx->scene,
+                                m_App->SelectedEntity(),
+                                transformBefore,
+                                tc.transform,
+                                "Snap to Grid"
+                            );
+                            history->Execute(std::move(command));
+                            BOOM_INFO("[Inspector] Snapped entity to grid");
+                        }
+                    }
+                    ImGui::TreePop();
+                }
+
+                // --- ALIGNMENT TOOL ---
+                if (ImGui::TreeNode("Alignment Tool")) {
+                    // 1. Target Picker
+                    std::string targetName = "None";
+                    if (m_AlignTarget != entt::null && ctx->scene.valid(m_AlignTarget) && ctx->scene.all_of<Boom::InfoComponent>(m_AlignTarget)) {
+                        targetName = ctx->scene.get<Boom::InfoComponent>(m_AlignTarget).name;
+                    } else {
+                        m_AlignTarget = entt::null; // Reset if invalid
+                    }
+
+                    if (ImGui::BeginCombo("Target", targetName.c_str())) {
+                        // Search Box
+                        ImGui::InputTextWithHint("##AlignSearch", "Search...", m_AlignSearchBuffer, sizeof(m_AlignSearchBuffer));
+                        
+                        // Convert search to lowercase for case-insensitive matching
+                        std::string searchLower = m_AlignSearchBuffer;
+                        std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), 
+                            [](unsigned char c){ return std::tolower(c); });
+
+                        auto view = ctx->scene.view<Boom::InfoComponent>();
+                        for (auto e : view) {
+                            if (e == m_App->SelectedEntity()) continue; // Skip self
+                            const auto& info = view.get<Boom::InfoComponent>(e);
+                            
+                            // Filter logic
+                            if (!searchLower.empty()) {
+                                std::string nameLower = info.name;
+                                std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), 
+                                    [](unsigned char c){ return std::tolower(c); });
+                                if (nameLower.find(searchLower) == std::string::npos) {
+                                    continue; // Skip if doesn't match
+                                }
+                            }
+
+                            bool isSelected = (m_AlignTarget == e);
+                            if (ImGui::Selectable(info.name.c_str(), isSelected)) {
+                                m_AlignTarget = e;
+                            }
+                            if (isSelected) ImGui::SetItemDefaultFocus();
+                        }
+                        ImGui::EndCombo();
+                    }
+
+                    if (m_AlignTarget != entt::null) {
+                        Boom::Entity targetEntity{ &ctx->scene, m_AlignTarget };
+                        
+                        // Helper to perform alignment
+                        auto DoAlign = [&](const char* name, int axis, int mode) {
+                            // Modes: 
+                            // 0: Min-to-Max (Snap High - Place Right/Top/Front of Target)
+                            // 1: Max-to-Min (Snap Low - Place Left/Bottom/Back of Target)
+                            // 2: Min-to-Min (Align Low - Flush Left/Bottom/Back)
+                            // 3: Max-to-Max (Align High - Flush Right/Top/Front)
+                            // 4: Center-to-Center
+
+                            glm::vec3 selMin, selMax, tarMin, tarMax;
+                            GetEntityAABB(selected, selMin, selMax);
+                            GetEntityAABB(targetEntity, tarMin, tarMax);
+
+                            float shift = 0.0f;
+                            float selEdgeMin = selMin[axis];
+                            float selEdgeMax = selMax[axis];
+                            float tarEdgeMin = tarMin[axis];
+                            float tarEdgeMax = tarMax[axis];
+
+                            switch (mode) {
+                                case 0: // Min (Self) to Max (Target) -> "Snap Right/Top/Front"
+                                    shift = tarEdgeMax - selEdgeMin;
+                                    break;
+                                case 1: // Max (Self) to Min (Target) -> "Snap Left/Bottom/Back"
+                                    shift = tarEdgeMin - selEdgeMax;
+                                    break;
+                                case 2: // Min to Min (Align Low)
+                                    shift = tarEdgeMin - selEdgeMin;
+                                    break;
+                                case 3: // Max to Max (Align High)
+                                    shift = tarEdgeMax - selEdgeMax;
+                                    break;
+                                case 4: // Center to Center
+                                    shift = ((tarEdgeMin + tarEdgeMax) * 0.5f) - ((selEdgeMin + selEdgeMax) * 0.5f);
+                                    break;
+                            }
+
+                            // Calculate World Shift Vector
+                            glm::vec3 worldShift(0.0f);
+                            worldShift[axis] = shift;
+
+                            // Get Current World Position
+                            glm::mat4 worldMatrix = Boom::GetWorldMatrix(ctx->scene, m_App->SelectedEntity());
+                            glm::vec3 currentWorldPos = glm::vec3(worldMatrix[3]);
+                            glm::vec3 newWorldPos = currentWorldPos + worldShift;
+
+                            // Apply Undo
+                            auto* history = m_Owner->GetCommandHistory();
+                            Boom::Transform3D oldTrans = tc.transform;
+
+                            // Convert New World Position to Local Position
+                            entt::entity parent = Boom::GetParentEntity(ctx->scene, m_App->SelectedEntity());
+                            if (parent != entt::null) {
+                                glm::mat4 parentWorld = Boom::GetWorldMatrix(ctx->scene, parent);
+                                glm::mat4 parentInverse = glm::inverse(parentWorld);
+                                glm::vec4 localPos = parentInverse * glm::vec4(newWorldPos, 1.0f);
+                                tc.transform.translate = glm::vec3(localPos);
+                            }
+                            else {
+                                tc.transform.translate = newWorldPos;
+                            }
+
+                            if (history) {
+                                auto cmd = std::make_unique<TransformCommand>(
+                                    &ctx->scene, m_App->SelectedEntity(), oldTrans, tc.transform, 
+                                    std::string("Align ") + name
+                                );
+                                history->Execute(std::move(cmd));
+                            }
+                        };
+
+                        // --- UI Layout ---
+                        
+                        // Align (Flush) Table
+                        ImGui::Spacing();
+                        ImGui::TextDisabled("Align (Flush)");
+                        if (ImGui::BeginTable("##AlignTable", 4, ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_BordersInnerV)) {
+                            ImGui::TableSetupColumn("Axis", ImGuiTableColumnFlags_WidthFixed, 30.0f);
+                            ImGui::TableSetupColumn("Min", ImGuiTableColumnFlags_None);
+                            ImGui::TableSetupColumn("Center", ImGuiTableColumnFlags_None);
+                            ImGui::TableSetupColumn("Max", ImGuiTableColumnFlags_None);
+                            
+                            // X Axis
+                            ImGui::TableNextRow();
+                            ImGui::TableSetColumnIndex(0); ImGui::Text("X");
+                            
+                            ImGui::TableSetColumnIndex(1); 
+                            if (ImGui::Button("Left##FlushX", ImVec2(-1, 0))) DoAlign("Left", 0, 2); 
+                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Left Edges (Min X)");
+
+                            ImGui::TableSetColumnIndex(2); 
+                            if (ImGui::Button("Center##FlushX", ImVec2(-1, 0))) DoAlign("Center X", 0, 4);
+                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Centers (Center X)");
+
+                            ImGui::TableSetColumnIndex(3); 
+                            if (ImGui::Button("Right##FlushX", ImVec2(-1, 0))) DoAlign("Right", 0, 3);
+                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Right Edges (Max X)");
+
+                            // Y Axis
+                            ImGui::TableNextRow();
+                            ImGui::TableSetColumnIndex(0); ImGui::Text("Y");
+                            
+                            ImGui::TableSetColumnIndex(1); 
+                            if (ImGui::Button("Bottom##FlushY", ImVec2(-1, 0))) DoAlign("Bottom", 1, 2);
+                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Bottom Edges (Min Y)");
+
+                            ImGui::TableSetColumnIndex(2); 
+                            if (ImGui::Button("Center##FlushY", ImVec2(-1, 0))) DoAlign("Center Y", 1, 4);
+                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Centers (Center Y)");
+
+                            ImGui::TableSetColumnIndex(3); 
+                            if (ImGui::Button("Top##FlushY", ImVec2(-1, 0))) DoAlign("Top", 1, 3);
+                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Top Edges (Max Y)");
+
+                            // Z Axis
+                            ImGui::TableNextRow();
+                            ImGui::TableSetColumnIndex(0); ImGui::Text("Z");
+                            
+                            ImGui::TableSetColumnIndex(1); 
+                            if (ImGui::Button("Back##FlushZ", ImVec2(-1, 0))) DoAlign("Back", 2, 2);
+                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Back Edges (Min Z)");
+
+                            ImGui::TableSetColumnIndex(2); 
+                            if (ImGui::Button("Center##FlushZ", ImVec2(-1, 0))) DoAlign("Center Z", 2, 4);
+                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Centers (Center Z)");
+
+                            ImGui::TableSetColumnIndex(3); 
+                            if (ImGui::Button("Front##FlushZ", ImVec2(-1, 0))) DoAlign("Front", 2, 3);
+                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Front Edges (Max Z)");
+
+                            ImGui::EndTable();
+                        }
+
+                        // Snap (Adjacency) Table
+                        ImGui::Spacing();
+                        ImGui::TextDisabled("Snap (Adjacency)");
+                        if (ImGui::BeginTable("##SnapTable", 3, ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_BordersInnerV)) {
+                            ImGui::TableSetupColumn("Axis", ImGuiTableColumnFlags_WidthFixed, 30.0f);
+                            ImGui::TableSetupColumn("Low", ImGuiTableColumnFlags_None);
+                            ImGui::TableSetupColumn("High", ImGuiTableColumnFlags_None);
+                            
+                            // X Axis
+                            ImGui::TableNextRow();
+                            ImGui::TableSetColumnIndex(0); ImGui::Text("X");
+                            ImGui::TableSetColumnIndex(1); if (ImGui::Button("Left Of##Snap", ImVec2(-1, 0))) DoAlign("Left Of", 0, 1);
+                            ImGui::TableSetColumnIndex(2); if (ImGui::Button("Right Of##Snap", ImVec2(-1, 0))) DoAlign("Right Of", 0, 0);
+
+                            // Y Axis
+                            ImGui::TableNextRow();
+                            ImGui::TableSetColumnIndex(0); ImGui::Text("Y");
+                            ImGui::TableSetColumnIndex(1); if (ImGui::Button("Below##Snap", ImVec2(-1, 0))) DoAlign("Below", 1, 1);
+                            ImGui::TableSetColumnIndex(2); if (ImGui::Button("Above##Snap", ImVec2(-1, 0))) DoAlign("Above", 1, 0);
+
+                            // Z Axis
+                            ImGui::TableNextRow();
+                            ImGui::TableSetColumnIndex(0); ImGui::Text("Z");
+                            ImGui::TableSetColumnIndex(1); if (ImGui::Button("Behind##Snap", ImVec2(-1, 0))) DoAlign("Behind", 2, 1);
+                            ImGui::TableSetColumnIndex(2); if (ImGui::Button("In Front##Snap", ImVec2(-1, 0))) DoAlign("In Front", 2, 0);
+
+                            ImGui::EndTable();
+                        }
+                    }
+                    else {
+                        ImGui::TextColored(ImVec4(1, 1, 0, 1), "Select a target entity to enable alignment tools.");
+                    }
+
+                    ImGui::TreePop();
+                }
 
                 // We use -1 width to make the buttons span the whole panel
                 if (ImGui::Button("Snap to Floor", ImVec2(-1, 0))) {
@@ -696,6 +962,75 @@ namespace EditorUI {
                         BOOM_INFO("[Undo] Created command: Change Sprite Color");
                     }
                     m_IsSpriteBeingEdited = false;
+                }
+            }
+            ImGui::PopID();
+        }
+
+        // === TEXT COMPONENT ===
+        if (selected.Has<Boom::TextComponent>()) {
+            ImGui::PushID("Text");
+            if (ImGui::CollapsingHeader("Text", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap)) {
+                if (ComponentSettings<Boom::TextComponent>(ctx)) {
+                    ImGui::PopID();
+                    return; // Component was removed, exit early
+                }
+
+                auto& textComp = selected.Get<Boom::TextComponent>();
+
+                // Text content input (multi-line)
+                char textBuffer[1024];
+                strncpy_s(textBuffer, textComp.text.c_str(), sizeof(textBuffer) - 1);
+                textBuffer[sizeof(textBuffer) - 1] = '\0';
+
+                ImGui::Text("Text Content:");
+                if (ImGui::InputTextMultiline("##text", textBuffer, sizeof(textBuffer), ImVec2(-1, 60))) {
+                    textComp.text = std::string(textBuffer);
+                }
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Use \\n for newlines");
+                }
+
+                // Font name input
+                char fontBuffer[256];
+                strncpy_s(fontBuffer, textComp.fontName.c_str(), sizeof(fontBuffer) - 1);
+                fontBuffer[sizeof(fontBuffer) - 1] = '\0';
+
+                ImGui::Text("Font Name:");
+                if (ImGui::InputText("##fontName", fontBuffer, sizeof(fontBuffer))) {
+                    textComp.fontName = std::string(fontBuffer);
+                }
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("e.g., 'Roboto-Regular' (must be loaded in FontManager)");
+                }
+
+                // Color picker
+                ImGui::Text("Color:");
+                ImGui::ColorEdit4("##color", &textComp.color[0]);
+
+                // Scale slider
+                ImGui::Text("Scale:");
+                ImGui::DragFloat("##scale", &textComp.scale, 0.05f, 0.1f, 10.0f);
+
+                // Screen position
+                ImGui::Text("Screen Position:");
+                ImGui::DragFloat2("##screenPosition", &textComp.screenPosition[0], 1.0f);
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Pixel coordinates (0,0 = bottom-left)");
+                }
+
+                // Render mode checkbox
+                ImGui::Checkbox("Render as 3D", &textComp.renderAs3D);
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("2D overlay (false) or 3D world-space (true)");
+                }
+
+                // Billboard mode checkbox (only relevant for 3D text)
+                if (textComp.renderAs3D) {
+                    ImGui::Checkbox("Billboard Mode (Face Camera)", &textComp.billboardMode);
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip("true = Always face camera | false = Fixed world rotation (uses entity's Transform rotation)");
+                    }
                 }
             }
             ImGui::PopID();
@@ -1449,7 +1784,8 @@ namespace EditorUI {
                             std::sort(mpgFiles.begin(), mpgFiles.end());
                         }
                         catch (const std::filesystem::filesystem_error& e) {
-                            BOOM_ERROR("Failed to scan video directory: {}", e.what());
+                            auto w = e.what();
+                            BOOM_ERROR("Failed to scan video directory: {}", w);
                         }
                     }
                     filesScanned = true;
@@ -2206,6 +2542,8 @@ namespace EditorUI {
                 ImGui::EndPopup();
             }
 
+
+
             // 3. Reset cursor
             ImGui::SetCursorScreenPos(ImVec2(headerMin.x, headerMax.y + ImGui::GetStyle().ItemSpacing.y));
 
@@ -2231,6 +2569,12 @@ namespace EditorUI {
                 ImGui::SeparatorText("Behavior");
                 ImGui::Spacing();
 
+                // Per-entity physics debug toggle
+                ImGui::Checkbox("Show Physics Debug", &col.Collider.showPhysicsDebug);
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Show physics collision debug lines for THIS entity only");
+                }
+
                 bool isTrigger = collider->isTrigger;
                 if (ImGui::Checkbox("Is Trigger", &isTrigger)) {
                     collider->isTrigger = isTrigger;
@@ -2250,6 +2594,32 @@ namespace EditorUI {
 
                 if (ImGui::IsItemHovered()) {
                     ImGui::SetTooltip("Triggers do not produce collision response.\nThey only fire collision events.");
+                }
+
+                // Surface Type dropdown for footstep sounds
+                ImGui::Spacing();
+                Collider3D::SurfaceType currentSurface = collider->surfaceType;
+                const char* surfaceNames[] = { "Default", "Wood", "Stone", "Metal", "Sand", "Grass", "Water", "Carpet", "Tile" };
+                const char* currentSurfaceName = surfaceNames[static_cast<int>(currentSurface)];
+
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Surface Type");
+                ImGui::SameLine(150);
+                ImGui::SetNextItemWidth(-1);
+
+                if (ImGui::BeginCombo("##SurfaceType", currentSurfaceName))
+                {
+                    for (int i = 0; i < IM_ARRAYSIZE(surfaceNames); ++i) {
+                        bool isSelected = (currentSurface == static_cast<Collider3D::SurfaceType>(i));
+                        if (ImGui::Selectable(surfaceNames[i], isSelected)) {
+                            collider->surfaceType = static_cast<Collider3D::SurfaceType>(i);
+                        }
+                        if (isSelected) ImGui::SetItemDefaultFocus();
+                    }
+                    ImGui::EndCombo();
+                }
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Surface type for footstep sounds and other surface-dependent effects");
                 }
 
                 ImGui::Spacing();
@@ -3233,6 +3603,8 @@ namespace EditorUI {
             ImGui::OpenPopup("AddComponentPopup");
         }
         ComponentSelector(selected);
+
+        ImGui::PopID();
     }
 
     void InspectorPanel::AssetUpdate() {
@@ -3528,6 +3900,7 @@ namespace EditorUI {
                     UpdateComponent<Boom::AIComponent>(Boom::ComponentID::AI_COMPONENT, selected);
                     UpdateComponent<Boom::ThirdPersonCameraComponent>(Boom::ComponentID::THIRD_PERSON_CAMERA, selected);
 					UpdateComponent<Boom::SpriteComponent>(Boom::ComponentID::SPRITE, selected);
+                    UpdateComponent<Boom::TextComponent>(Boom::ComponentID::TEXT, selected);
                     UpdateComponent<Boom::MenuComponent>(Boom::ComponentID::MENU_COMPONENT, selected);
                     UpdateComponent<Boom::DeactivatedComponent>(Boom::ComponentID::DEACTIVATED_TAG, selected);
                     UpdateComponent<Boom::VideoComponent>(Boom::ComponentID::VIDEO, selected);
@@ -3542,7 +3915,6 @@ namespace EditorUI {
 
     void InspectorPanel::SnapEntity(Boom::Entity& entity, glm::vec3 direction)
     {
-        Boom::AppContext* ctx = GetContext();
         if (!ctx || !entity.Has<Boom::TransformComponent>()) return;
 
         auto& tc = entity.Get<Boom::TransformComponent>();
@@ -3636,7 +4008,8 @@ namespace EditorUI {
                 hitName = ctx->scene.get<Boom::InfoComponent>(hitEntity).name;
             }
 
-            BOOM_INFO("[Snap] Snapped entity to '{}' (distance: {:.2f})", hitName, glm::distance(entityWorldPos, newWorldPos));
+            auto dout = glm::distance(entityWorldPos, newWorldPos);
+            BOOM_INFO("[Snap] Snapped entity to '{}' (distance: {:.2f})", hitName, dout);
         }
         else {
             BOOM_WARN("[Snap] No surface found in direction ({:.1f}, {:.1f}, {:.1f})", direction.x, direction.y, direction.z);
@@ -3644,18 +4017,18 @@ namespace EditorUI {
     }
 
     // Helper: Get AABB for any entity (model or collider)
-    void InspectorPanel::GetEntityAABBForSnap(Boom::AppContext* ctx, entt::entity entity, glm::vec3& outMin, glm::vec3& outMax)
+    void InspectorPanel::GetEntityAABBForSnap(Boom::AppContext* context, entt::entity entity, glm::vec3& outMin, glm::vec3& outMax)
     {
-        auto& tc = ctx->scene.get<Boom::TransformComponent>(entity);
-        glm::mat4 worldMatrix = Boom::GetWorldMatrix(ctx->scene, entity);
+        //auto& tc = context->scene.get<Boom::TransformComponent>(entity);
+        glm::mat4 worldMatrix = Boom::GetWorldMatrix(context->scene, entity);
 
         glm::vec3 localMin(-0.5f), localMax(0.5f); // Default 1x1x1 box
 
         // Try to get model bounds
-        if (ctx->scene.any_of<Boom::ModelComponent>(entity)) {
-            auto& mc = ctx->scene.get<Boom::ModelComponent>(entity);
+        if (context->scene.any_of<Boom::ModelComponent>(entity)) {
+            auto& mc = context->scene.get<Boom::ModelComponent>(entity);
             if (mc.modelID != EMPTY_ASSET) {
-                auto* modelAsset = ctx->assets->TryGet<ModelAsset>(mc.modelID);
+                auto* modelAsset = context->assets->TryGet<ModelAsset>(mc.modelID);
                 if (modelAsset && modelAsset->data) {
                     auto staticModel = std::dynamic_pointer_cast<Boom::StaticModel>(modelAsset->data);
                     if (staticModel) {
@@ -3675,8 +4048,8 @@ namespace EditorUI {
             }
         }
         // Or use collider bounds
-        else if (ctx->scene.any_of<Boom::ColliderComponent>(entity)) {
-            auto& cc = ctx->scene.get<Boom::ColliderComponent>(entity);
+        else if (context->scene.any_of<Boom::ColliderComponent>(entity)) {
+            auto& cc = context->scene.get<Boom::ColliderComponent>(entity);
             glm::vec3 halfSize = cc.Collider.localScale * 0.5f;
             localMin = cc.Collider.localPosition - halfSize;
             localMax = cc.Collider.localPosition + halfSize;
@@ -3705,7 +4078,6 @@ namespace EditorUI {
 
     void InspectorPanel::GetEntityAABB(Boom::Entity& entity, glm::vec3& outMin, glm::vec3& outMax)
     {
-        Boom::AppContext* ctx = GetContext();
         if (!ctx) {
             outMin = outMax = glm::vec3(0.0f);
             return;
@@ -3735,7 +4107,6 @@ namespace EditorUI {
 
     glm::vec3 InspectorPanel::CalculateAABBHitNormal(const glm::vec3& hitPoint, const glm::vec3& aabbMin, const glm::vec3& aabbMax)
     {
-        const float epsilon = 0.001f;
         glm::vec3 center = (aabbMin + aabbMax) * 0.5f;
         glm::vec3 halfSize = (aabbMax - aabbMin) * 0.5f;
         glm::vec3 localHit = hitPoint - center;

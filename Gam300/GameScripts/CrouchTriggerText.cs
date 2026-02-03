@@ -4,7 +4,7 @@ using Boom;
 
 namespace GameScripts
 {
-    /// <summary>
+    /// <summary>                                                                                               
     /// Attach to a trigger zone where the player needs to crouch to pass
     /// Shows "Hold to Crouch" UI prompt when player enters
     /// Hides the prompt when player exits
@@ -41,7 +41,7 @@ namespace GameScripts
 
             API.RegisterTriggerEnterCallback(Entity, OnTriggerEnter);
             API.RegisterTriggerExitCallback(Entity, OnTriggerExit);
-            API.Log("[CrouchTriggerZone] Registered trigger callbacks.");
+            API.Log($"[CrouchTriggerZone] Registered trigger callbacks for entity {Entity}.");
         }
 
         public void OnUpdate(float dt)
@@ -64,6 +64,9 @@ namespace GameScripts
             // Only react when the player enters this trigger
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
 
+            // *** CRITICAL: Notify PlayerMovement that we're in a crouch zone ***
+            PlayerMovement.SetInCrouchZone(true);
+
             // *** Show the "Hold to Crouch" UI prompt ***
             UIManager.ShowHoldPrompt();
 
@@ -73,10 +76,10 @@ namespace GameScripts
                 var p = API.GetPosition(inst.Entity);
                 API.PlaySoundAt("sfx_crouch_zone_enter", inst._enterSound, p, false);
                 API.SetSoundVolume("sfx_crouch_zone_enter", 0.5f);
-                API.Set3DMinMaxDistance("sfx_crouch_zone_enter", 1.0f, 12.0f);  // Zone trigger sound
+                API.Set3DMinMaxDistance("sfx_crouch_zone_enter", 1.0f, 12.0f);
             }
 
-            API.Log("[CrouchTriggerZone] Player entered crouch zone - showing UI prompt");
+            API.Log("[CrouchTriggerZone] Player entered crouch zone - showing UI prompt + notifying PlayerMovement");
         }
 
         private static void OnTriggerExit(ulong triggerEntity, ulong otherEntity)
@@ -87,10 +90,13 @@ namespace GameScripts
             // Only react when the player exits this trigger
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
 
+            // *** CRITICAL: Notify PlayerMovement that we left the crouch zone ***
+            PlayerMovement.SetInCrouchZone(false);
+
             // *** Hide the "Hold to Crouch" UI prompt ***
             UIManager.HideHoldPrompt();
 
-            API.Log("[CrouchTriggerZone] Player exited crouch zone - hiding UI prompt");
+            API.Log("[CrouchTriggerZone] Player exited crouch zone - hiding UI prompt + notifying PlayerMovement");
         }
     }
 }

@@ -24,39 +24,63 @@ layout (location = 2) out vec4 fragPosLight;
 uniform mat4 modelMat;
 uniform mat4 frustumMat; // proj * view
 
+// Per-object joint matrices (used for non-instanced animated rendering)
 uniform mat4 jointsMat[MAX_JOINTS];
 uniform bool hasJoints = false;
 uniform mat4 u_lightSpace;
 
-// Instancing support - SSBO containing per-instance model matrices
+// Instancing support - SSBO containing per-instance model matrices (binding 3)
 layout(std430, binding = 3) buffer InstanceBuffer {
     mat4 instanceMatrices[];
 };
 
-// Instancing uniforms
-uniform bool u_useInstancing = false;
-uniform uint u_baseInstance = 0;
+// Animated instancing support - SSBO containing per-instance joint matrices (binding 4)
+// Layout: [instance0_joint0, instance0_joint1, ..., instance0_joint99, instance1_joint0, ...]
+// Access: instanceJointMatrices[(gl_InstanceID + u_baseInstance) * MAX_JOINTS + jointIndex]
+layout(std430, binding = 4) buffer JointBuffer {
+    mat4 instanceJointMatrices[];
+};
+
+// Instancing mode: 0 = none, 1 = static, 2 = animated
+uniform int u_instancingMode = 0;
+uniform uint u_baseInstance = 0;        // Base instance for transform SSBO lookup
+uniform uint u_jointBaseInstance = 0;   // Base instance for joint SSBO lookup (animated only)
 
 out vec4 fragPosLightSpace;
 
 void main() {
     mat4 transform = mat4(1.0);
+    mat4 worldMatrix;
 
-    if(hasJoints)
-    {
-        transform = mat4(0.0);
-        for(int i = 0; i < MAX_WEIGHTS && joints[i] > -1; i++)
-        {
-            transform += jointsMat[joints[i]] * weights[i];
+    if (u_instancingMode == 2) {
+        // ANIMATED INSTANCING: world matrix from SSBO, joints from joint SSBO
+        worldMatrix = instanceMatrices[gl_InstanceID + u_baseInstance];
+
+        if (hasJoints) {
+            transform = mat4(0.0);
+            // Joint SSBO only contains animated instances, so use separate base
+            uint jointBase = (gl_InstanceID + u_jointBaseInstance) * MAX_JOINTS;
+
+            for (int i = 0; i < MAX_WEIGHTS && joints[i] > -1; i++) {
+                transform += instanceJointMatrices[jointBase + uint(joints[i])] * weights[i];
+            }
         }
     }
-
-    // Choose model matrix: from SSBO for instanced rendering, from uniform otherwise
-    mat4 worldMatrix;
-    if (u_useInstancing) {
+    else if (u_instancingMode == 1) {
+        // STATIC INSTANCING: world matrix from SSBO, no joints
         worldMatrix = instanceMatrices[gl_InstanceID + u_baseInstance];
-    } else {
+        // transform stays as identity (no skeletal animation)
+    }
+    else {
+        // NON-INSTANCED (mode 0): use uniforms for both world matrix and joints
         worldMatrix = modelMat;
+
+        if (hasJoints) {
+            transform = mat4(0.0);
+            for (int i = 0; i < MAX_WEIGHTS && joints[i] > -1; i++) {
+                transform += jointsMat[joints[i]] * weights[i];
+            }
+        }
     }
 
     vertex.uv = vec2(uv.x, uv.y); //flip vertically due to opengl rendering logic
