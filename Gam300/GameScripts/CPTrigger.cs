@@ -37,6 +37,14 @@ namespace GameScripts
             // Register this instance
             s_instances[Entity] = this;
 
+            // Initialize text as hidden if it exists on this entity
+            if (API.HasText(Entity))
+            {
+                Vec4 color = API.GetTextColor(Entity);
+                color.W = 0.0f;
+                API.SetTextColor(Entity, color);
+            }
+
             // Ensure trigger is configured
             if (!API.HasCollider(Entity))
             {
@@ -94,6 +102,15 @@ namespace GameScripts
             {
                 player.UpdateCheckpoint(spawnPos);
                 _activated = true;
+
+                // Hide text permanently if it exists on this entity
+                if (API.HasText(Entity))
+                {
+                    Vec4 color = API.GetTextColor(Entity);
+                    color.W = 0.0f;
+                    API.SetTextColor(Entity, color);
+                }
+
                 API.Log($"[CPTrigger] Checkpoint saved at ({spawnPos.X:F2}, {spawnPos.Y:F2}, {spawnPos.Z:F2})");
             }
             else
@@ -121,6 +138,13 @@ namespace GameScripts
 
             if (!inst._activated)
             {
+                // Show text if it exists on this entity
+                if (API.HasText(inst.Entity))
+                {
+                    Vec4 color = API.GetTextColor(inst.Entity);
+                    color.W = 1.0f;
+                    API.SetTextColor(inst.Entity, color);
+                }
                 API.Log("[CPTrigger] Player entered checkpoint zone. Press Q to save checkpoint.");
             }
         }
@@ -134,6 +158,15 @@ namespace GameScripts
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
 
             inst._playerInZone = false;
+
+            // Hide text if it exists on this entity
+            if (API.HasText(inst.Entity))
+            {
+                Vec4 color = API.GetTextColor(inst.Entity);
+                color.W = 0.0f;
+                API.SetTextColor(inst.Entity, color);
+            }
+
             API.Log("[CPTrigger] Player left checkpoint zone.");
         }
     }

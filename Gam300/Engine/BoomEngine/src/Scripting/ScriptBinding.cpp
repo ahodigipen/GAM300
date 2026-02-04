@@ -2104,6 +2104,14 @@ namespace Boom {
         s_Ctx->videoSystem->Play(e);
     }
 
+    static void ICALL_API_StopVideoComponent(uint64_t handle) {
+        if (!s_Ctx || !s_Ctx->videoSystem) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+
+        // Call Stop on the video system
+        s_Ctx->videoSystem->Stop(e);
+    }
+
     // Get the current viewport size (handles both Editor and Standalone)
     static void ICALL_API_GetViewportSize(float* width, float* height) {
         if (!s_Ctx || !s_Ctx->window) {
@@ -2335,6 +2343,7 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_GetVideoCurrentTime", (const void*)ICALL_API_GetVideoCurrentTime);
         // Video
         mono_add_internal_call("Boom.Native::Boom_API_PlayVideoComponent", (void*)ICALL_API_PlayVideoComponent);
+        mono_add_internal_call("Boom.Native::Boom_API_StopVideoComponent", (void*)ICALL_API_StopVideoComponent);
         mono_add_internal_call("Boom.Native::Boom_API_GetViewportSize", (void*)ICALL_API_GetViewportSize);
 
     }

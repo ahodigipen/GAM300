@@ -545,6 +545,10 @@ namespace Boom
                 e << YAML::Key << "SceneNavmeshComponent" << YAML::Value << YAML::BeginMap;
                 e << YAML::Key << "NavmeshFile" << YAML::Value << sn.navmeshFile;
                 e << YAML::Key << "AmbientStrength" << YAML::Value << sn.ambientStrength;
+                e << YAML::Key << "BloomEnabled" << YAML::Value << sn.bloomEnabled;
+                e << YAML::Key << "BloomIntensity" << YAML::Value << sn.bloomIntensity;
+                e << YAML::Key << "BloomThreshold" << YAML::Value << sn.bloomThreshold;
+                e << YAML::Key << "BloomIterations" << YAML::Value << sn.bloomIterations;
                 e << YAML::EndMap;
             },
             // ----- DESERIALIZE -----
@@ -560,6 +564,18 @@ namespace Boom
 
                 if (auto v = data["AmbientStrength"])
                     sn.ambientStrength = v.as<float>(sn.ambientStrength);
+
+                if (auto v = data["BloomEnabled"])
+                    sn.bloomEnabled = v.as<bool>(sn.bloomEnabled);
+
+                if (auto v = data["BloomIntensity"])
+                    sn.bloomIntensity = v.as<float>(sn.bloomIntensity);
+
+                if (auto v = data["BloomThreshold"])
+                    sn.bloomThreshold = v.as<float>(sn.bloomThreshold);
+
+                if (auto v = data["BloomIterations"])
+                    sn.bloomIterations = v.as<int>(sn.bloomIterations);
             }
         );
 
