@@ -452,7 +452,7 @@ namespace Boom
             StopAllFootstepVariants();
 
             // Play the footstep sound at the entity's position (3D sound)
-            API.PlaySoundAt(soundName, soundFile, position, false);
+            API.PlaySound(soundName, soundFile, false);
             API.SetSoundVolume(soundName, _footstepVolume);
         }
 
