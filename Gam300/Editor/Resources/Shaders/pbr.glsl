@@ -144,7 +144,7 @@ uniform float u_bloomThreshold = 1.0; // Brightness threshold for bloom extracti
 //must also change in PBR.h limits
 #define MAX_POINT_LIGHTS 128
 #define MAX_DIR_LIGHTS   128
-#define MAX_SPOT_LIGHTS  128
+#define MAX_SPOT_LIGHTS  256
 
 // GPU-friendly packed structs (std140-friendly: only vec4)
 struct GPUPointLight {
