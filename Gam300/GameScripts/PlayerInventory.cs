@@ -87,7 +87,7 @@ namespace GameScripts
             }
 
             s_hasFreezeCharge = true;
-            API.Log("[PlayerInventory] Freeze Charge Acquired! Press F to use.");
+            API.Log("[PlayerInventory] Freeze Charge Acquired! Press E to use.");
             return true;
         }
 

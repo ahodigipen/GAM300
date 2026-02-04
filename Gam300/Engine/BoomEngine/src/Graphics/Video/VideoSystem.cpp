@@ -55,6 +55,7 @@ namespace Boom {
                 player.SetLoop(videoComp.loop);
                 player.SetVolume(videoComp.volume);
                 player.SetPlaybackSpeed(videoComp.playbackSpeed);
+                player.SetRemoveBlackBackground(videoComp.removeBlackBackground);
 
                 // Update the player (decodes frames)
                 player.Update(deltaTime);

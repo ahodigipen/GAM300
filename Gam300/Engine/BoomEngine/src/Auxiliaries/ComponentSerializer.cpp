@@ -629,6 +629,9 @@ namespace Boom
             }
         );
 
+        // === TEXT COMPONENT ===
+        RegisterPropertyComponent<TextComponent>("TextComponent");
+
         // === MENU COMPONENT ===
         registry.RegisterComponentSerializer(
             "MenuComponent",
@@ -663,13 +666,13 @@ namespace Boom
         RegisterPropertyComponent<DeactivatedComponent>("DeactivatedComponent");
 
         // === VIDEO COMPONENT ===
+        // RegisterPropertyComponent<VideoComponent>("VideoComponent");
         registry.RegisterComponentSerializer(
             "VideoComponent",
             // ----- SERIALIZE -----
             [](YAML::Emitter& e, EntityRegistry& reg, EntityID ent)
             {
-                if (!reg.all_of<VideoComponent>(ent))
-                    return;
+                if (!reg.all_of<VideoComponent>(ent)) return;
 
                 auto& vc = reg.get<VideoComponent>(ent);
 
@@ -679,37 +682,44 @@ namespace Boom
                 e << YAML::Key << "Loop" << YAML::Value << vc.loop;
                 e << YAML::Key << "Volume" << YAML::Value << vc.volume;
                 e << YAML::Key << "PlaybackSpeed" << YAML::Value << vc.playbackSpeed;
-                
+                e << YAML::Key << "RenderAs3D" << YAML::Value << vc.renderAs3D;
+                e << YAML::Key << "RemoveBlackBackground" << YAML::Value << vc.removeBlackBackground;
+
+                // Serialize Color manually as a sequence
                 e << YAML::Key << "TintColor" << YAML::Value
                     << YAML::Flow << YAML::BeginSeq
                     << vc.tintColor.r << vc.tintColor.g << vc.tintColor.b << vc.tintColor.a
                     << YAML::EndSeq;
-                
-                e << YAML::Key << "RenderAs3D" << YAML::Value << vc.renderAs3D;
                 e << YAML::EndMap;
             },
             // ----- DESERIALIZE -----
             [](const YAML::Node& data, EntityRegistry& reg, EntityID ent, AssetRegistry&)
             {
-                if (!data || !data.IsMap())
-                    return;
+                if (!data || !data.IsMap()) return;
 
                 auto& vc = reg.get_or_emplace<VideoComponent>(ent);
 
-                if (auto v = data["VideoPath"]) vc.videoPath = v.as<std::string>(vc.videoPath);
-                if (auto v = data["PlayOnStart"]) vc.playOnStart = v.as<bool>(vc.playOnStart);
-                if (auto v = data["Loop"]) vc.loop = v.as<bool>(vc.loop);
-                if (auto v = data["Volume"]) vc.volume = v.as<float>(vc.volume);
-                if (auto v = data["PlaybackSpeed"]) vc.playbackSpeed = v.as<float>(vc.playbackSpeed);
-                
-                if (auto c = data["TintColor"]; c && c.IsSequence() && c.size() == 4) {
-                    vc.tintColor.r = c[0].as<float>(vc.tintColor.r);
-                    vc.tintColor.g = c[1].as<float>(vc.tintColor.g);
-                    vc.tintColor.b = c[2].as<float>(vc.tintColor.b);
-                    vc.tintColor.a = c[3].as<float>(vc.tintColor.a);
+                if (auto v = data["VideoPath"])     vc.videoPath = v.as<std::string>();
+                if (auto v = data["PlayOnStart"])   vc.playOnStart = v.as<bool>();
+                if (auto v = data["Loop"])          vc.loop = v.as<bool>();
+                if (auto v = data["Volume"])        vc.volume = v.as<float>();
+                if (auto v = data["PlaybackSpeed"]) vc.playbackSpeed = v.as<float>();
+                if (auto v = data["RenderAs3D"])    vc.renderAs3D = v.as<bool>();
+                if (auto v = data["RemoveBlackBackground"]) vc.removeBlackBackground = v.as<bool>();
+
+                // Deserialize Color manually
+                if (auto v = data["TintColor"]) {
+                    if (v.IsSequence() && v.size() == 4) {
+                        vc.tintColor.r = v[0].as<float>();
+                        vc.tintColor.g = v[1].as<float>();
+                        vc.tintColor.b = v[2].as<float>();
+                        vc.tintColor.a = v[3].as<float>();
+                    }
                 }
-                
-                if (auto v = data["RenderAs3D"]) vc.renderAs3D = v.as<bool>(vc.renderAs3D);
+
+                // Reset runtime state
+                vc.isPlaying = false;
+                vc.currentTime = 0.0;
             }
         );
 

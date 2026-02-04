@@ -37,7 +37,13 @@ namespace GameScripts
         private string _turnSoundPath3 = "Resources/Audio/StatueTurn_03.wav";
 
         [Boom.EditorExposed("Alert Sound", "Sound played when enemy detects player")]
-        private string _alertSoundPath = "Resources/Audio/playerPunch_1.wav";
+        private string _alertSoundPath = "Resources/Audio/VO_Statue_003.wav";
+        private string _alertSoundPath2 = "Resources/Audio/VO_Statue_004.wav";
+        private string _alertSoundPath3 = "Resources/Audio/VO_Statue_007.wav";
+        private string _alertSoundPath4 = "Resources/Audio/VO_Statue_008.wav";
+        private string _alertSoundPath5 = "Resources/Audio/VO_Statue_009.wav";
+        private string _alertSoundPath6 = "Resources/Audio/VO_Statue_010.wav";
+        private string _alertSoundPath7 = "Resources/Audio/VO_Statue_011.wav";
 
         [Boom.EditorExposed("Proximity Detection", "Enable/Disable proximity detection")]
         private bool EnemyDetection = true;
@@ -60,13 +66,18 @@ namespace GameScripts
         // Entity name for spotlight lookup (matches SpotlightFollower's targetName)
         private string _entityName = "Sentry_1";  // Default name, can be overridden via jsonParams
 
+        // Alert sound tracking
+        private bool _alertSoundPlayed = false;
+        private Random _random = new Random();
+        private string _alertSoundName;
+
         public void OnStart(string jsonParams)
         {
-            API.Log($"[EnemyController] OnStart() - Entity: {Entity}");
+            //($"[EnemyController] OnStart() - Entity: {Entity}");
 
             if (!API.HasTransform(Entity))
             {
-                API.Log("[EnemyController] ERROR: Entity missing TransformComponent!");
+                //("[EnemyController] ERROR: Entity missing TransformComponent!");
                 return;
             }
 
@@ -87,7 +98,7 @@ namespace GameScripts
                 }
                 catch { }
             }
-            API.Log($"[EnemyController] Entity name: {_entityName}");
+            //($"[EnemyController] Entity name: {_entityName}");
 
             // Initialize vision system
             _vision = new VisionComponent { Entity = Entity };
@@ -112,10 +123,14 @@ namespace GameScripts
             // NEW: Register with PlayerManager
             PlayerManager.RegisterEnemy(this);
 
-            API.Log("[EnemyController] Controller initialized with vision and proximity systems");
+            //("[EnemyController] Controller initialized with vision and proximity systems");
 
             _vision.EnableDebugReasons(true);
             _vision.EnableDebugLOS(true);
+
+            // Preload alert sounds
+            _alertSoundName = "alert_" + Entity.ToString();
+            PreloadAlertSounds();
         }
 
         public void OnUpdate(float dt)
@@ -157,7 +172,7 @@ namespace GameScripts
                 {
                     _hasDealtDamage = false;
                     _damageResetTimer = 0f;
-                    API.Log("[EnemyController] Damage flag auto-reset - can damage again");
+                    //("[EnemyController] Damage flag auto-reset - can damage again");
                 }
             }
         }
@@ -192,7 +207,7 @@ namespace GameScripts
                         _targetYRotation += 360f;
 
                     _isRotating = true;
-                    API.Log($"[EnemyController] Starting rotation to {_targetYRotation}°");
+                    //($"[EnemyController] Starting rotation to {_targetYRotation}°");
 
                     try
                     {
@@ -220,7 +235,7 @@ namespace GameScripts
                         }
 
                         Vec3 enemyPos = API.GetPosition(Entity);
-                        API.Log($"[EnemyController] Playing turn sound {index} at {enemyPos} ({clipPath})");
+                        //($"[EnemyController] Playing turn sound {index} at {enemyPos} ({clipPath})");
 
                         API.PlaySoundAt(soundId, clipPath, enemyPos, false);
                         API.SetSoundVolume(soundId, 0.5f);
@@ -228,7 +243,7 @@ namespace GameScripts
                     }
                     catch (Exception ex)
                     {
-                        API.Log($"[EnemyController] ERROR while playing rotation sound: {ex.Message}");
+                        //($"[EnemyController] ERROR while playing rotation sound: {ex.Message}");
                     }
                 }
             }
@@ -247,7 +262,7 @@ namespace GameScripts
                 {
                     _currentYRotation = _targetYRotation;
                     _isRotating = false;
-                    API.Log($"[EnemyController] Completed rotation at {_currentYRotation}°");
+                    //($"[EnemyController] Completed rotation at {_currentYRotation}°");
                 }
                 else
                 {
@@ -266,7 +281,7 @@ namespace GameScripts
         // === VISION EVENT HANDLERS ===
         private void OnPlayerDetected(ulong target, Vec3 position)
         {
-            API.Log(">>> ENEMY ALERTED BY VISION! STOPPING PATROL! <<<");
+            //(">>> ENEMY ALERTED BY VISION! STOPPING PATROL! <<<");
 
             // Set spotlight to alert (red) color
             var spotlight = SpotlightFollower.GetByTargetName(_entityName);
@@ -299,27 +314,25 @@ namespace GameScripts
                 rot.Y = _currentYRotation;
                 API.SetRotation(Entity, rot);
 
-                API.Log($"[EnemyController] Snapped to face player at {_currentYRotation:F1}°");
+                //($"[EnemyController] Snapped to face player at {_currentYRotation:F1}°");
             }
 
-            // Play alert sound
-            API.PlaySoundAt("enemy_alert", _alertSoundPath, enemyPos, false);
-            API.SetSoundVolume("enemy_alert", 0.8f);
-            API.Set3DMinMaxDistance("enemy_alert", 1.0f, 25.0f);
+            // Play random alert sound (only once per detection)
+            PlayRandomAlertSound(enemyPos);
 
             // Damage player (only once per detection)
             if (!_hasDealtDamage)
             {
                 _hasDealtDamage = true;
                 _damageResetTimer = 0f;  // Start timer
-                API.Log($"[EnemyController] Dealing damage to player (vision detection)!");
+                //($"[EnemyController] Dealing damage to player (vision detection)!");
                 PlayerManager.NotifyPlayerCaught(Entity);
             }
         }
 
         private void OnPlayerLost(ulong target, Vec3 lastKnownPosition)
         {
-            API.Log("[EnemyController] Lost sight of player, searching...");
+            //("[EnemyController] Lost sight of player, searching...");
 
             // Reset spotlight to original color
             var spotlight = SpotlightFollower.GetByTargetName(_entityName);
@@ -330,6 +343,7 @@ namespace GameScripts
 
             // Reset damage flag so player can be caught again
             _hasDealtDamage = false;
+            _alertSoundPlayed = false; // Reset so alert can play again next detection
 
             // NEW: Reset proximity detection when player is lost
             _proximityDetection?.ResetDetection();
@@ -372,11 +386,11 @@ namespace GameScripts
             // Check if proximity detection is enabled
             if (!EnemyDetection)
             {
-                API.Log("[EnemyController] Proximity detection disabled - ignoring detection event");
+                //("[EnemyController] Proximity detection disabled - ignoring detection event");
                 return;
             }
 
-            API.Log(">>> ENEMY ALERTED BY PROXIMITY! PLAYER TOO CLOSE! <<<");
+            //(">>> ENEMY ALERTED BY PROXIMITY! PLAYER TOO CLOSE! <<<");
 
             // Similar to vision detection, but don't rotate immediately
             // Enemy "senses" player behind them and turns to attack
@@ -404,7 +418,7 @@ namespace GameScripts
                 rot.Y = _currentYRotation;
                 API.SetRotation(Entity, rot);
 
-                API.Log($"[EnemyController] Turned to face player (proximity) at {_currentYRotation:F1}°");
+                //($"[EnemyController] Turned to face player (proximity) at {_currentYRotation:F1}°");
             }
 
             // Damage player (only once per detection)
@@ -412,7 +426,7 @@ namespace GameScripts
             {
                 _hasDealtDamage = true;
                 _damageResetTimer = 0f;  // Start timer
-                API.Log($"[EnemyController] Dealing damage to player (proximity detection)!");
+                //($"[EnemyController] Dealing damage to player (proximity detection)!");
                 PlayerManager.NotifyPlayerCaught(Entity);
             }
         }
@@ -421,19 +435,19 @@ namespace GameScripts
         public void SetRotationSpeed(float degreesPerSecond)
         {
             _rotationSpeed = degreesPerSecond;
-            API.Log($"[EnemyController] Rotation speed set to {_rotationSpeed}°/s");
+            //($"[EnemyController] Rotation speed set to {_rotationSpeed}°/s");
         }
 
         public void SetRotationInterval(float seconds)
         {
             _rotationInterval = seconds;
-            API.Log($"[EnemyController] Rotation interval set to {_rotationInterval}s");
+            //($"[EnemyController] Rotation interval set to {_rotationInterval}s");
         }
 
         public void SetRotationAngle(float degrees)
         {
             _rotationAngle = degrees;
-            API.Log($"[EnemyController] Rotation angle set to {_rotationAngle}°");
+            //($"[EnemyController] Rotation angle set to {_rotationAngle}°");
         }
 
         // NEW: Proximity configuration
@@ -453,12 +467,48 @@ namespace GameScripts
             // Force reset all detection states
             _hasDealtDamage = false;
             _damageResetTimer = 0f;
+            _alertSoundPlayed = false; // Reset so alert can play again
 
             // Reset proximity detection
             _proximityDetection?.ResetDetection();
 
-            API.Log("[EnemyController] Player respawned - all detection states reset");
+            //("[EnemyController] Player respawned - all detection states reset");
         }
+
+        // ====== AUDIO HELPER METHODS ======
+        private string[] GetAlertSounds()
+        {
+            return new string[] {
+                _alertSoundPath, _alertSoundPath2, _alertSoundPath3, _alertSoundPath4,
+                _alertSoundPath5, _alertSoundPath6, _alertSoundPath7
+            };
+        }
+
+        private void PreloadAlertSounds()
+        {
+            string[] sounds = GetAlertSounds();
+            for (int i = 0; i < sounds.Length; i++)
+            {
+                string soundName = _alertSoundName + "_" + i;
+                API.PreloadSound(soundName, sounds[i], loop: false);
+            }
+        }
+
+        private void PlayRandomAlertSound(Vec3 position)
+        {
+            if (_alertSoundPlayed) return; // Only play once per detection
+
+            string[] sounds = GetAlertSounds();
+            int index = _random.Next(sounds.Length);
+            string soundName = _alertSoundName + "_" + index;
+
+            API.PlaySoundAt(soundName, sounds[index], position, loop: false);
+            API.SetSoundVolume(soundName, 1.0f);
+            API.Set3DMinMaxDistance(soundName, 1.0f, 25.0f);
+
+            _alertSoundPlayed = true;
+        }
+
         public void OnDestroy()
         {
             _vision?.OnDestroy();
@@ -467,7 +517,7 @@ namespace GameScripts
             // NEW: Unregister from PlayerManager
             PlayerManager.UnregisterEnemy(this);
 
-            API.Log($"[EnemyController] OnDestroy() - Entity: {Entity}");
+            //($"[EnemyController] OnDestroy() - Entity: {Entity}");
         }
     }
 }

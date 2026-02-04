@@ -102,6 +102,9 @@ namespace Boom
         internal static extern void Boom_API_SetTrigger(ulong handle, bool isTrigger);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern int Boom_API_GetSurfaceType(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_RegisterTriggerEnterCallback(ulong triggerHandle, object delegateObj);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -362,6 +365,34 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_SetSpriteTexture(ulong handle, string texturePath);
 
+        // ========= TEXT COMPONENT INTERNAL CALLS =========
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Boom_API_HasText(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_GetText(ulong handle, out string text);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetText(ulong handle, string text);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_GetTextColor(ulong handle, out Vec4 color);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetTextColor(ulong handle, ref Vec4 color);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static float Boom_API_GetTextScale(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetTextScale(ulong handle, float scale);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_GetTextPosition(ulong handle, out Vec2 pos);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetTextPosition(ulong handle, ref Vec2 pos);
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_CreateController(ulong handle, float radius, float height);
 
@@ -387,6 +418,12 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_SetSpotLightIntensity(ulong handle, float intensity);
 
+
+        // Video
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_PlayVideoComponent(ulong handle);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_GetViewportSize(out float width, out float height);
     }
 
     // ========= DELEGATES =========
@@ -655,6 +692,32 @@ namespace Boom
         public static void SetTrigger(ulong entity, bool isTrigger)
         {
             Native.Boom_API_SetTrigger(entity, isTrigger);
+        }
+
+        // ===== Surface Types =====
+        /// <summary>
+        /// Surface type enum matching Collider3D::SurfaceType in C++
+        /// </summary>
+        public enum SurfaceType
+        {
+            DEFAULT = 0,
+            WOOD,
+            STONE,
+            METAL,
+            SAND,
+            GRASS,
+            WATER,
+            CARPET,
+            TILE
+        }
+
+        /// <summary>
+        /// Get the surface type of an entity's collider (for footstep sounds, etc.)
+        /// </summary>
+        public static SurfaceType GetSurfaceType(ulong entity)
+        {
+            if (!HasCollider(entity)) return SurfaceType.DEFAULT;
+            return (SurfaceType)Native.Boom_API_GetSurfaceType(entity);
         }
 
         public static void RegisterTriggerEnterCallback(ulong triggerEntity, TriggerCallback callback)
@@ -1087,6 +1150,93 @@ namespace Boom
         public static void SetSpotLightIntensity(ulong entity, float intensity)
         {
             Native.Boom_API_SetSpotLightIntensity(entity, intensity);
+        }
+
+        // ========== TEXT COMPONENT API ==========
+
+        /// <summary>
+        /// Check if entity has a TextComponent
+        /// </summary>
+        public static bool HasText(ulong entity) => Native.Boom_API_HasText(entity);
+
+        /// <summary>
+        /// Get the text content from a TextComponent
+        /// </summary>
+        public static string GetText(ulong entity)
+        {
+            Native.Boom_API_GetText(entity, out string text);
+            return text;
+        }
+
+        /// <summary>
+        /// Set the text content of a TextComponent
+        /// </summary>
+        public static void SetText(ulong entity, string text)
+        {
+            if (!HasText(entity))
+            {
+                Console.WriteLine($"[API] Warning: Entity {entity} has no TextComponent");
+                return;
+            }
+            Native.Boom_API_SetText(entity, text);
+        }
+
+        /// <summary>
+        /// Get the color of a TextComponent (RGBA)
+        /// </summary>
+        public static Vec4 GetTextColor(ulong entity)
+        {
+            Native.Boom_API_GetTextColor(entity, out Vec4 color);
+            return color;
+        }
+
+        /// <summary>
+        /// Set the color of a TextComponent (RGBA)
+        /// </summary>
+        public static void SetTextColor(ulong entity, Vec4 color)
+        {
+            Native.Boom_API_SetTextColor(entity, ref color);
+        }
+
+        /// <summary>
+        /// Get the scale/size multiplier of text
+        /// </summary>
+        public static float GetTextScale(ulong entity) => Native.Boom_API_GetTextScale(entity);
+
+        /// <summary>
+        /// Set the scale/size multiplier of text
+        /// </summary>
+        public static void SetTextScale(ulong entity, float scale)
+        {
+            Native.Boom_API_SetTextScale(entity, scale);
+        }
+
+        /// <summary>
+        /// Get the screen position of text (2D pixel coordinates)
+        /// </summary>
+        public static Vec2 GetTextPosition(ulong entity)
+        {
+            Native.Boom_API_GetTextPosition(entity, out Vec2 pos);
+            return pos;
+        }
+
+        /// <summary>
+        /// Set the screen position of text (2D pixel coordinates)
+        /// </summary>
+        public static void SetTextPosition(ulong entity, Vec2 pos)
+        {
+            Native.Boom_API_SetTextPosition(entity, ref pos);
+        }
+
+        public static void PlayVideo(ulong entity)
+        {
+            if (HasTransform(entity)) // Simple check to ensure entity is valid
+                Native.Boom_API_PlayVideoComponent(entity);
+        }
+
+        public static void GetViewportSize(out float width, out float height)
+        {
+            Native.Boom_API_GetViewportSize(out width, out height);
         }
 
 

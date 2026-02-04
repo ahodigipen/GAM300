@@ -87,8 +87,8 @@ namespace GameScripts
         private HashSet<ulong> _freezePickupIDs = new HashSet<ulong>();
         private const int MAX_PICKUPS_TO_CHECK = 10;
 
-        // ==== Gravity constant ====
-        private const float GRAVITY = 20f;
+        // ==== Gravity constant ====a
+        private const float GRAVITY = 50f;
         private const float GROUND_STICK = -5.0f;
 
         // ==== CRITICAL: Manual vertical velocity tracking for Character Controller ====
@@ -97,24 +97,24 @@ namespace GameScripts
         // ==== DEBUG: Helper to log crouch state ====
         private static void DebugCrouch(string message)
         {
-            if (DEBUG_CROUCH)
-            {
-                API.Log($"[CROUCH_DEBUG] {message}");
-            }
+            //if (DEBUG_CROUCH)
+            //{
+            //    API.Log($"[CROUCH_DEBUG] {message}");
+            //}
         }
 
         private void DebugLogCrouchState(string context)
         {
-            if (DEBUG_CROUCH)
-            {
-                API.Log($"[CROUCH_DEBUG] === STATE ({context}) ===");
-                API.Log($"[CROUCH_DEBUG]   _inCrouchZone:        {_inCrouchZone}");
-                API.Log($"[CROUCH_DEBUG]   _isCrouching:         {_isCrouching}");
-                API.Log($"[CROUCH_DEBUG]   s_isStealthInvisible: {s_isStealthInvisible}");
-                API.Log($"[CROUCH_DEBUG]   _isInvulnerable:      {_isInvulnerable}");
-                API.Log($"[CROUCH_DEBUG]   IsPlayerInvisibleToEnemies(): {IsPlayerInvisibleToEnemies()}");
-                API.Log($"[CROUCH_DEBUG]   Registered zones: {_crouchZoneIDs.Count}");
-            }
+            //if (DEBUG_CROUCH)
+            //{
+            //    API.Log($"[CROUCH_DEBUG] === STATE ({context}) ===");
+            //    API.Log($"[CROUCH_DEBUG]   _inCrouchZone:        {_inCrouchZone}");
+            //    API.Log($"[CROUCH_DEBUG]   _isCrouching:         {_isCrouching}");
+            //    API.Log($"[CROUCH_DEBUG]   s_isStealthInvisible: {s_isStealthInvisible}");
+            //    API.Log($"[CROUCH_DEBUG]   _isInvulnerable:      {_isInvulnerable}");
+            //    API.Log($"[CROUCH_DEBUG]   IsPlayerInvisibleToEnemies(): {IsPlayerInvisibleToEnemies()}");
+            //    API.Log($"[CROUCH_DEBUG]   Registered zones: {_crouchZoneIDs.Count}");
+            //}
         }
 
         public void OnStart(string jsonParams)
@@ -201,7 +201,8 @@ namespace GameScripts
         {
             _isRespawning = true;
             _verticalVelocity = 0f;
-            _spawnPoint = new Vec3(0.914043128f, 1.5f, 13.9171219f);
+            // REMOVED: Don't overwrite _spawnPoint here - it should keep the checkpoint value
+            // _spawnPoint = new Vec3(0.914043128f, 1.5f, 13.9171219f);
             API.MoveController(Entity, new Vec3(0, 0, 0), 0.001f, 0.016f);
             _fadeState = FadeState.FadingOut;
             _fadeTimer = 0f;
@@ -473,27 +474,27 @@ namespace GameScripts
                 }
                 return;
             }
-
             bool allowMove = !API.IsMouseDown(API.MOUSE_RIGHT);
 
+            // --- Gravity Handling ---
             if (!isGrounded)
             {
+                // Airborne: apply gravity acceleration
                 _verticalVelocity -= GRAVITY * dt;
             }
             else
             {
-                if (_verticalVelocity < GROUND_STICK)
-                {
-                    _verticalVelocity = GROUND_STICK;
-                }
-                else
+                // Grounded: use small stick force to maintain ground contact
+                // Only reset if falling (preserves upward velocity for jumps if added later)
+                if (_verticalVelocity < 0f)
                 {
                     _verticalVelocity = GROUND_STICK;
                 }
             }
 
-            if (_verticalVelocity < -50f) _verticalVelocity = -50f;
-            if (_verticalVelocity > 15f) _verticalVelocity = 15f;
+            // Clamp terminal velocity
+            _verticalVelocity = Math.Max(_verticalVelocity, -50f);
+            _verticalVelocity = Math.Min(_verticalVelocity, 15f);
 
             float inputX = 0f, inputZ = 0f;
             if (allowMove)
@@ -616,6 +617,9 @@ namespace GameScripts
 
         private bool IsPlayerGrounded()
         {
+            // Use the engine's native controller grounded check.
+            // The previous raycast with 0.4f distance was causing false positives while airborne,
+            // resulting in "sticky" gravity (constant fall speed) instead of proper acceleration.
             return API.IsControllerGrounded(Entity);
         }
 

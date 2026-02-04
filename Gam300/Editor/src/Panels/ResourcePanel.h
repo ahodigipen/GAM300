@@ -36,6 +36,13 @@ namespace EditorUI {
         uint64_t selected{};
         bool showNamePopup{};
 
+        // Delete confirmation popup state
+        bool m_ShowDeletePopup{};
+        uint64_t m_AssetToDeleteUID{};
+        uint8_t m_AssetToDeleteType{};
+        std::string m_AssetToDeleteName{};
+        std::string m_AssetToDeletePath{};
+
         // Fixed camera angles for material thumbnail preview
         static constexpr float PREVIEW_YAW = 0.5f;
         static constexpr float PREVIEW_PITCH = 0.3f;

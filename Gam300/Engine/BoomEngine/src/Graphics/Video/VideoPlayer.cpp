@@ -54,8 +54,8 @@ static FMOD_RESULT F_CALL FMODPCMReadCallback(
         player = static_cast<Boom::VideoPlayer*>(userData);
     }
 
-    if (!player) {
-        // No player, fill with silence
+    if (!player || player->IsAudioShuttingDown()) {
+        // No player or shutting down, fill with silence
         std::memset(data, 0, datalen);
         return FMOD_OK;
     }
@@ -81,8 +81,10 @@ namespace Boom {
     }
 
     VideoPlayer::~VideoPlayer() {
+        ShutdownAudio();
         Unload();
         DestroyTexture();
+
     }
 
     VideoPlayer::VideoPlayer(VideoPlayer&& other) noexcept {
@@ -122,7 +124,17 @@ namespace Boom {
             m_AudioWritePos.store(other.m_AudioWritePos.load());
             m_AudioReadPos.store(other.m_AudioReadPos.load());
             m_AudioBufferReady.store(other.m_AudioBufferReady.load());
+            m_AudioShuttingDown.store(other.m_AudioShuttingDown.load());
             m_AudioChannels = other.m_AudioChannels;
+
+            // CRITICAL: Update callback user data to point to this object
+            // instead of the moved-from object, so callbacks access the correct instance
+            if (m_FMODSound && GetFMODSystemInternal()) {
+                m_FMODSound->setUserData(this);
+            }
+            if (m_PLM) {
+                plm_set_audio_decode_callback(m_PLM, PLMAudioCallback, this);
+            }
 
             // Timing members
             m_AccumulatedTime = other.m_AccumulatedTime;
@@ -134,6 +146,7 @@ namespace Boom {
             other.m_TextureCreated = false;
             other.m_FMODSound = nullptr;
             other.m_FMODChannel = nullptr;
+            other.m_AudioShuttingDown.store(true, std::memory_order_release);
         }
         return *this;
     }
@@ -172,8 +185,12 @@ namespace Boom {
         // Check for audio track
         m_HasAudioTrack = (plm_get_num_audio_streams(m_PLM) > 0) && (m_SampleRate > 0);
 
-        // Allocate frame buffer (RGB format: 3 bytes per pixel)
-        m_FrameBufferSize = static_cast<size_t>(m_Width) * m_Height * 3;
+        // 1. Raw Buffer: RGB (3 bytes) for the decoder to write into
+        size_t rgbSize = static_cast<size_t>(m_Width) * m_Height * 3;
+        m_RawRGBBuffer = std::make_unique<uint8_t[]>(rgbSize);
+
+        // 2. Texture Buffer: RGBA (4 bytes) for OpenGL upload (supports transparency)
+        m_FrameBufferSize = static_cast<size_t>(m_Width) * m_Height * 4;
         m_FrameBuffer = std::make_unique<uint8_t[]>(m_FrameBufferSize);
 
         // Set loop behavior
@@ -204,6 +221,9 @@ namespace Boom {
         if (!m_PLM || !m_HasAudioTrack || m_FMODSound) {
             return;
         }
+
+        // Clear shutdown flag - we're initializing fresh
+        m_AudioShuttingDown.store(false, std::memory_order_release);
 
         // Reset audio buffer
         m_AudioWritePos.store(0, std::memory_order_release);
@@ -249,18 +269,33 @@ namespace Boom {
         }
 
         BOOM_INFO("[VideoPlayer] Audio initialized (sample rate: {}, channels: {})",
-                  exinfo.defaultfrequency, m_AudioChannels);
+            exinfo.defaultfrequency, m_AudioChannels);
     }
 
     void VideoPlayer::ShutdownAudio() {
-        // Stop and release FMOD channel/sound
+        // Signal shutdown FIRST - this tells the FMOD callback to stop
+        // accessing this VideoPlayer immediately and return silence instead.
+        // This must happen before any other cleanup to prevent race conditions.
+        m_AudioShuttingDown.store(true, std::memory_order_release);
+
+        // Check if FMOD system is still valid - if not, the sounds have already
+        // been cleaned up when the system was destroyed, so just clear our pointers
+        FMOD::System* fmodSystem = GetFMODSystemInternal();
+
+        // Stop and release FMOD channel/sound only if FMOD system is still alive
         if (m_FMODChannel) {
-            m_FMODChannel->stop();
+            if (fmodSystem) {
+                m_FMODChannel->stop();
+            }
             m_FMODChannel = nullptr;
         }
 
         if (m_FMODSound) {
-            m_FMODSound->release();
+            if (fmodSystem) {
+                // Clear user data as additional safety
+                m_FMODSound->setUserData(nullptr);
+                m_FMODSound->release();
+            }
             m_FMODSound = nullptr;
         }
 
@@ -359,7 +394,7 @@ namespace Boom {
 
     void VideoPlayer::Unload() {
         // Shutdown audio first
-        ShutdownAudio();
+        
 
         if (m_PLM) {
             plm_destroy(m_PLM);
@@ -401,7 +436,7 @@ namespace Boom {
 
             frame = plm_decode_video(m_PLM);
             if (frame) {
-                plm_frame_to_rgb(frame, m_FrameBuffer.get(), m_Width * 3);
+                plm_frame_to_rgb(frame, m_RawRGBBuffer.get(), m_Width * 3);
                 m_HasNewFrame = true;
             }
         } else {
@@ -416,7 +451,7 @@ namespace Boom {
                 // Decode one video frame
                 frame = plm_decode_video(m_PLM);
                 if (frame) {
-                    plm_frame_to_rgb(frame, m_FrameBuffer.get(), m_Width * 3);
+                    plm_frame_to_rgb(frame, m_RawRGBBuffer.get(), m_Width * 3);
                     m_HasNewFrame = true;
                 }
 
@@ -435,14 +470,14 @@ namespace Boom {
         if (plm_has_ended(m_PLM)) {
             if (m_Loop) {
                 Rewind();
-                // Restart audio playback for looped video
-                if (m_FMODChannel) {
+                // Restart audio playback for looped video (only if FMOD system is still valid)
+                if (m_FMODChannel && GetFMODSystemInternal()) {
                     m_FMODChannel->setPaused(false);
                 }
             } else {
                 m_State = VideoState::Stopped;
-                // Stop audio
-                if (m_FMODChannel) {
+                // Stop audio (only if FMOD system is still valid)
+                if (m_FMODChannel && GetFMODSystemInternal()) {
                     m_FMODChannel->setPaused(true);
                 }
             }
@@ -458,7 +493,7 @@ namespace Boom {
         plm_frame_t* frame = plm_decode_video(m_PLM);
         if (frame) {
             // Convert YCrCb to RGB
-            plm_frame_to_rgb(frame, m_FrameBuffer.get(), m_Width * 3);
+            plm_frame_to_rgb(frame, m_RawRGBBuffer.get(), m_Width * 3);
             m_HasNewFrame = true;
         }
     }
@@ -496,8 +531,8 @@ namespace Boom {
         if (m_State == VideoState::Playing) {
             m_State = VideoState::Paused;
 
-            // Pause audio
-            if (m_FMODChannel) {
+            // Pause audio (only if FMOD system is still valid)
+            if (m_FMODChannel && GetFMODSystemInternal()) {
                 m_FMODChannel->setPaused(true);
             }
         }
@@ -508,9 +543,12 @@ namespace Boom {
 
         m_State = VideoState::Stopped;
 
-        // Stop audio
+        // Stop audio (only if FMOD system is still valid)
         if (m_FMODChannel) {
-            m_FMODChannel->stop();
+            FMOD::System* fmodSystem = GetFMODSystemInternal();
+            if (fmodSystem) {
+                m_FMODChannel->stop();
+            }
             m_FMODChannel = nullptr;
         }
 
@@ -533,7 +571,7 @@ namespace Boom {
 
     void VideoPlayer::SetVolume(float volume) {
         m_Volume = glm::clamp(volume, 0.0f, 1.0f);
-        if (m_FMODChannel) {
+        if (m_FMODChannel && GetFMODSystemInternal()) {
             m_FMODChannel->setVolume(m_Volume);
         }
     }
@@ -562,10 +600,13 @@ namespace Boom {
         // Clamp to valid range
         time = glm::clamp(time, 0.0, m_Duration);
 
-        // Stop audio during seek
+        // Stop audio during seek (only if FMOD system is still valid)
         bool wasPlaying = (m_State == VideoState::Playing);
+        FMOD::System* fmodSystem = GetFMODSystemInternal();
         if (m_FMODChannel) {
-            m_FMODChannel->stop();
+            if (fmodSystem) {
+                m_FMODChannel->stop();
+            }
             m_FMODChannel = nullptr;
         }
 
@@ -581,14 +622,11 @@ namespace Boom {
         plm_seek(m_PLM, time, 1);
         m_CurrentTime = plm_get_time(m_PLM);
 
-        // Resume audio if was playing
-        if (wasPlaying && m_FMODSound && m_HasAudioTrack && m_AudioEnabled) {
-            FMOD::System* fmodSystem = GetFMODSystemInternal();
-            if (fmodSystem) {
-                fmodSystem->playSound(m_FMODSound, nullptr, false, &m_FMODChannel);
-                if (m_FMODChannel) {
-                    m_FMODChannel->setVolume(m_Volume);
-                }
+        // Resume audio if was playing (only if FMOD system is still valid)
+        if (wasPlaying && m_FMODSound && m_HasAudioTrack && m_AudioEnabled && fmodSystem) {
+            fmodSystem->playSound(m_FMODSound, nullptr, false, &m_FMODChannel);
+            if (m_FMODChannel) {
+                m_FMODChannel->setVolume(m_Volume);
             }
         }
     }
@@ -597,8 +635,12 @@ namespace Boom {
         if (!m_PLM) return;
 
         // Stop audio channel (will be restarted when Play is called)
+        // Only interact with FMOD if the system is still valid
         if (m_FMODChannel) {
-            m_FMODChannel->stop();
+            FMOD::System* fmodSystem = GetFMODSystemInternal();
+            if (fmodSystem) {
+                m_FMODChannel->stop();
+            }
             m_FMODChannel = nullptr;
         }
 
@@ -631,7 +673,7 @@ namespace Boom {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
         // Allocate texture storage (RGB format)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 
         glBindTexture(GL_TEXTURE_2D, 0);
         m_TextureCreated = true;
@@ -648,12 +690,59 @@ namespace Boom {
     }
 
     void VideoPlayer::UpdateTexture() {
-        if (!m_TextureCreated || !m_HasNewFrame || !m_FrameBuffer) {
+        if (!m_TextureCreated || !m_HasNewFrame || !m_RawRGBBuffer || !m_FrameBuffer) {
             return;
         }
 
+        // --- CPU CHROMA KEY LOGIC ---
+        int pixelCount = m_Width * m_Height;
+
+        // Loop through pixels
+        for (int i = 0; i < pixelCount; ++i) {
+            // Indices
+            int rgbIndex = i * 3;
+            int rgbaIndex = i * 4;
+
+            // Read RGB
+            uint8_t r = m_RawRGBBuffer[rgbIndex + 0];
+            uint8_t g = m_RawRGBBuffer[rgbIndex + 1];
+            uint8_t b = m_RawRGBBuffer[rgbIndex + 2];
+
+            // Write RGB
+            m_FrameBuffer[rgbaIndex + 0] = r;
+            m_FrameBuffer[rgbaIndex + 1] = g;
+            m_FrameBuffer[rgbaIndex + 2] = b;
+
+            // Calculate Alpha
+            if (m_RemoveBlack) {
+                // Sum of channels (Max 765)
+                float brightness = (float)(r + g + b);
+
+                // Threshold 1: Absolute Black (Delete compression noise)
+                // Increase to remove the "dirty pixels"
+                if (brightness < 60.0f) {
+                    m_FrameBuffer[rgbaIndex + 3] = 0; // Fully Transparent
+                }
+                // Threshold 2: Smooth Transition (Fade out edges)
+                // Pixels between brightness 60 and 100 will fade from 0% to 100% alpha
+                else if (brightness < 100.0f) {
+                    float alpha = (brightness - 60.0f) / 40.0f;
+                    m_FrameBuffer[rgbaIndex + 3] = static_cast<uint8_t>(alpha * 255.0f);
+                }
+                // Threshold 3: Visible Content
+                else {
+                    m_FrameBuffer[rgbaIndex + 3] = 255; // Opaque
+                }
+            }
+            else {
+                m_FrameBuffer[rgbaIndex + 3] = 255; // Always Opaque
+            }
+        }
+        // ----------------------------
+
         glBindTexture(GL_TEXTURE_2D, m_TextureID);
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height, GL_RGB, GL_UNSIGNED_BYTE, m_FrameBuffer.get());
+        // --- UPLOAD AS RGBA ---
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height, GL_RGBA, GL_UNSIGNED_BYTE, m_FrameBuffer.get());
         glBindTexture(GL_TEXTURE_2D, 0);
 
         m_HasNewFrame = false;

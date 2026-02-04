@@ -35,13 +35,12 @@ using namespace EditorUI;
 void AnimationTimelinePanel::RenderViewport()
 {
     ImVec2 availableSize = ImGui::GetContentRegionAvail();
-    // Take portion of remaining space for viewport
-    // Use 45% for larger windows, but ensure minimum height of 200px
-    // and maximum of 60% to leave room for timeline
-    float viewportRatio = 0.45f;
-    float viewportHeight = availableSize.y * viewportRatio;
+
+    // Use user-adjustable viewport ratio (stored in m_ViewportHeightRatio)
+    // Clamp to ensure both viewport and timeline have minimum usable space
+    float viewportHeight = availableSize.y * m_ViewportHeightRatio;
     viewportHeight = (viewportHeight < 200.0f) ? 200.0f : viewportHeight;
-    viewportHeight = (viewportHeight > availableSize.y * 0.6f) ? availableSize.y * 0.6f : viewportHeight;
+    viewportHeight = (viewportHeight > availableSize.y - 150.0f) ? availableSize.y - 150.0f : viewportHeight;
     ImVec2 viewportSize = ImVec2(availableSize.x, viewportHeight);
 
     // Resize framebuffer if viewport size changed
@@ -224,6 +223,79 @@ void AnimationTimelinePanel::RenderViewport()
     // Render transform gizmo at selected bone
     // NOTE: Gizmo draws on top of the image, but we already rendered with updated poses
     HandleGizmo(viewportPos, m_ViewportSize);
+
+    // ========== RESIZABLE SPLITTER BAR ==========
+    // Add a draggable splitter between viewport and timeline
+    // IMPORTANT: This must come AFTER all viewport interactions to avoid stealing mouse events
+    const float splitterHeight = 6.0f;  // Thickness of draggable area
+    ImVec2 splitterPos = ImGui::GetCursorScreenPos();
+    ImVec2 splitterSize = ImVec2(ImGui::GetContentRegionAvail().x, splitterHeight);
+
+    // Invisible button for interaction
+    ImGui::InvisibleButton("##ViewportSplitter", splitterSize);
+    bool isSplitterHovered = ImGui::IsItemHovered();
+    bool isSplitterActive = ImGui::IsItemActive();
+
+    // Change cursor to resize when hovering
+    if (isSplitterHovered || m_IsDraggingSplitter)
+    {
+        ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNS);
+    }
+
+    // Handle dragging
+    if (isSplitterActive)
+    {
+        if (!m_IsDraggingSplitter)
+        {
+            m_IsDraggingSplitter = true;
+        }
+
+        // Update ratio based on mouse drag
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.MouseDelta.y != 0.0f)
+        {
+            // Calculate new ratio based on total available height
+            ImVec2 totalAvailable = ImGui::GetContentRegionAvail();
+            totalAvailable.y += viewportHeight;  // Add back the viewport height we already used
+
+            float newHeight = viewportHeight + io.MouseDelta.y;
+            m_ViewportHeightRatio = newHeight / totalAvailable.y;
+
+            // Clamp ratio to reasonable bounds (20% to 80%)
+            m_ViewportHeightRatio = glm::clamp(m_ViewportHeightRatio, 0.2f, 0.8f);
+        }
+    }
+    else
+    {
+        m_IsDraggingSplitter = false;
+    }
+
+    // Draw the visual splitter bar with appropriate color
+    ImDrawList* splitterDrawList = ImGui::GetWindowDrawList();
+    ImU32 splitterColor = IM_COL32(80, 80, 80, 255);  // Default gray
+    ImU32 splitterHoverColor = IM_COL32(120, 150, 200, 255);  // Blue when hovered
+    ImU32 splitterActiveColor = IM_COL32(150, 180, 230, 255);  // Bright blue when dragging
+
+    ImU32 currentSplitterColor = isSplitterActive ? splitterActiveColor : (isSplitterHovered ? splitterHoverColor : splitterColor);
+    splitterDrawList->AddRectFilled(
+        splitterPos,
+        ImVec2(splitterPos.x + splitterSize.x, splitterPos.y + splitterHeight),
+        currentSplitterColor
+    );
+
+    // Add subtle shadow/border for depth
+    splitterDrawList->AddLine(
+        ImVec2(splitterPos.x, splitterPos.y),
+        ImVec2(splitterPos.x + splitterSize.x, splitterPos.y),
+        IM_COL32(60, 60, 60, 255),
+        1.0f
+    );
+    splitterDrawList->AddLine(
+        ImVec2(splitterPos.x, splitterPos.y + splitterHeight),
+        ImVec2(splitterPos.x + splitterSize.x, splitterPos.y + splitterHeight),
+        IM_COL32(100, 100, 100, 255),
+        1.0f
+    );
 }
 
 // ========== Camera Functions ==========

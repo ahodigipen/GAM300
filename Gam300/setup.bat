@@ -132,10 +132,13 @@ if not exist profiles mkdir profiles
     echo os=Windows
     echo arch=x86_64
     echo compiler=msvc
-    echo compiler.version=193
+    echo compiler.version=194
     echo compiler.runtime=dynamic
     echo compiler.cppstd=17
     echo build_type=Release
+    echo.
+    echo [conf]
+    echo tools.microsoft.msbuild:vs_version=17
 ) > profiles\msvc17
 
 echo [STEP] Installing dependencies for Release...

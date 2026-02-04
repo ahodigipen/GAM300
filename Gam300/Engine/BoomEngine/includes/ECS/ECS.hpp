@@ -23,6 +23,7 @@ namespace Boom {
  NAV_AGENT_COMPONENT,
  AI_COMPONENT,
  SPRITE,
+ TEXT,
  MENU_COMPONENT,
  DEACTIVATED_TAG,
  VIDEO,
@@ -46,12 +47,13 @@ namespace Boom {
  "Nav Agent Component",  //13
  "AI Component",         //14
  "Sprite",               //15
- "Menu Component",       //16
- "Deactivated Tag",      //17
- "Video",
- "Character Controller", 
+ "Text",                 //16
+ "Menu Component",       //17
+ "Deactivated Tag",      //18
+ "Video",                //19
+ "Character Controller", //20
  "Count"
- 
+
  };
 
  // transform component
@@ -771,6 +773,40 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
  )
  };
 
+ // Text Component - Unity-like text rendering using FontManager
+ struct TextComponent {
+     BOOM_INLINE TextComponent(const TextComponent&) = default;
+     BOOM_INLINE TextComponent() = default;
+
+     std::string text = "New Text";               // The actual text to display
+     std::string fontName = "Roboto-Regular";     // Font to use (must be loaded in FontManager)
+     glm::vec4 color{ 1.0f, 1.0f, 1.0f, 1.0f };  // RGBA color
+     float scale = 1.0f;                          // Size multiplier
+     glm::vec2 screenPosition{ 100.0f, 100.0f };  // Screen space position (pixels from bottom-left)
+     bool renderAs3D = false;                     // false = 2D overlay, true = 3D world space
+     bool billboardMode = true;                   // true = always face camera (billboard), false = fixed world rotation
+
+     // Text alignment (for future implementation)
+     enum class Alignment : int32_t {
+         Left = 0,
+         Center = 1,
+         Right = 2
+     };
+     Alignment alignment = Alignment::Left;
+
+     XPROPERTY_DEF(
+         "TextComponent", TextComponent,
+         obj_member<"text", &TextComponent::text>,
+         obj_member<"fontName", &TextComponent::fontName>,
+         obj_member<"color", &TextComponent::color>,
+         obj_member<"scale", &TextComponent::scale>,
+         obj_member<"screenPosition", &TextComponent::screenPosition>,
+         obj_member<"renderAs3D", &TextComponent::renderAs3D>,
+         obj_member<"billboardMode", &TextComponent::billboardMode>
+         // Note: alignment enum requires custom serialization (not included for now)
+     )
+ };
+
 
 enum class MenuType { Pause = 0, Death = 1, Settings = 2, Main = 3, End = 4 };
 struct MenuComponent {
@@ -819,6 +855,8 @@ struct MenuComponent {
         glm::vec4 tintColor = glm::vec4(1.0f);  // Tint/multiply color
         bool renderAs3D = false;                 // true = 3D quad in world, false = 2D UI overlay
 
+        bool removeBlackBackground = false;
+
         // Runtime state (not serialized)
         bool isPlaying = false;
         double currentTime = 0.0;
@@ -832,6 +870,7 @@ struct MenuComponent {
             j["playbackSpeed"] = playbackSpeed;
             j["tintColor"] = { tintColor.r, tintColor.g, tintColor.b, tintColor.a };
             j["renderAs3D"] = renderAs3D;
+            j["removeBlackBackground"] = removeBlackBackground;
         }
 
         void deserialize(const nlohmann::json& j) {
@@ -847,6 +886,7 @@ struct MenuComponent {
                 tintColor.a = j.at("tintColor")[3];
             }
             if (j.contains("renderAs3D")) j.at("renderAs3D").get_to(renderAs3D);
+            if (j.contains("removeBlackBackground")) j.at("removeBlackBackground").get_to(removeBlackBackground);
 
             // Reset runtime state
             isPlaying = false;
@@ -861,7 +901,8 @@ struct MenuComponent {
             obj_member<"Volume", &VideoComponent::volume>,
             obj_member<"PlaybackSpeed", &VideoComponent::playbackSpeed>,
             obj_member<"TintColor", &VideoComponent::tintColor>,
-            obj_member<"RenderAs3D", &VideoComponent::renderAs3D>
+            obj_member<"RenderAs3D", &VideoComponent::renderAs3D>,
+            obj_member<"RemoveBlackBackground", &VideoComponent::removeBlackBackground>
             )
     };
 
@@ -1063,13 +1104,17 @@ struct MenuComponent {
             auto& srcRB = reg.get<RigidBodyComponent>(source);
             auto& dstRB = reg.emplace<RigidBodyComponent>(duplicate);
             dstRB = srcRB;
+            dstRB.RigidBody.actor = nullptr;
             // Note: Physics actor will be created by physics system on next update
         }
 
         // Copy ColliderComponent
         if (reg.all_of<ColliderComponent>(source)) {
             auto& srcCol = reg.get<ColliderComponent>(source);
-            reg.emplace<ColliderComponent>(duplicate, srcCol);
+            auto& dstCol = reg.emplace<ColliderComponent>(duplicate, srcCol);
+            dstCol.Collider.Shape = nullptr;
+            dstCol.Collider.material = nullptr;
+            dstCol.Collider.actor = nullptr;
         }
 
         // Copy Light Components

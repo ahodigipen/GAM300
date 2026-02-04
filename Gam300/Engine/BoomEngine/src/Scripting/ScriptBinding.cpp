@@ -644,17 +644,8 @@ namespace Boom {
     static bool Boom_API_IsControllerGrounded(uint64_t handle) {
         if (!s_Ctx || !s_Ctx->physics) return false;
 
-        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
-        if (e == entt::null || !s_Ctx->scene.valid(e)) return false;
-
-        // Use a short raycast downward to detect ground
-        if (!s_Ctx->scene.any_of<TransformComponent>(e)) return false;
-
-        auto& tc = s_Ctx->scene.get<TransformComponent>(e);
-        glm::vec3 origin = tc.transform.translate + glm::vec3(0, 0.1f, 0);
-        glm::vec3 dir(0, -1, 0);
-        auto result = s_Ctx->physics->Raycast(origin, dir, 0.3f);
-        return result.hitFound;
+        uint32_t entityID = static_cast<uint32_t>(handle);
+        return s_Ctx->physics->IsControllerGrounded(entityID);
     }
 
     static float ICALL_API_GetThirdPersonCameraYaw() {
@@ -792,6 +783,17 @@ namespace Boom {
                 collider.Collider.Shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, false);
             }
         }
+    }
+
+    static int ICALL_API_GetSurfaceType(uint64_t handle) {
+        if (!s_Ctx) return 0; // DEFAULT
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return 0;
+
+        if (!s_Ctx->scene.any_of<ColliderComponent>(e)) return 0;
+
+        auto& collider = s_Ctx->scene.get<ColliderComponent>(e);
+        return static_cast<int>(collider.Collider.surfaceType);
     }
 
     // Store GC handles to delegate objects instead of raw function pointers
@@ -986,6 +988,104 @@ namespace Boom {
             return;
         }
         s_Ctx->scene.get<SpriteComponent>(e).color.a = glm::clamp(alpha, 0.0f, 1.0f);
+    }
+
+    // ========= TEXT COMPONENT INTERNAL CALLS =========
+    static bool ICALL_API_HasText(uint64_t handle)
+    {
+        if (!s_Ctx) return false;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        return (e != entt::null && s_Ctx->scene.valid(e) && s_Ctx->scene.any_of<TextComponent>(e));
+    }
+
+    static void ICALL_API_GetText(uint64_t handle, MonoString** outText)
+    {
+        if (!outText || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            *outText = mono_string_new(mono_domain_get(), "");
+            return;
+        }
+        const std::string& text = s_Ctx->scene.get<TextComponent>(e).text;
+        *outText = mono_string_new(mono_domain_get(), text.c_str());
+    }
+
+    static void ICALL_API_SetText(uint64_t handle, MonoString* newText)
+    {
+        if (!newText || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetText: Entity doesn't have TextComponent");
+            return;
+        }
+        char* cStr = mono_string_to_utf8(newText);
+        s_Ctx->scene.get<TextComponent>(e).text = std::string(cStr);
+        mono_free(cStr);
+    }
+
+    static void ICALL_API_GetTextColor(uint64_t handle, glm::vec4* outColor)
+    {
+        if (!outColor || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            *outColor = glm::vec4(1.0f);
+            return;
+        }
+        *outColor = s_Ctx->scene.get<TextComponent>(e).color;
+    }
+
+    static void ICALL_API_SetTextColor(uint64_t handle, glm::vec4* color)
+    {
+        if (!color || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetTextColor: Entity doesn't have TextComponent");
+            return;
+        }
+        s_Ctx->scene.get<TextComponent>(e).color = *color;
+    }
+
+    static float ICALL_API_GetTextScale(uint64_t handle)
+    {
+        if (!s_Ctx) return 1.0f;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            return 1.0f;
+        }
+        return s_Ctx->scene.get<TextComponent>(e).scale;
+    }
+
+    static void ICALL_API_SetTextScale(uint64_t handle, float scale)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetTextScale: Entity doesn't have TextComponent");
+            return;
+        }
+        s_Ctx->scene.get<TextComponent>(e).scale = scale;
+    }
+
+    static void ICALL_API_GetTextPosition(uint64_t handle, glm::vec2* outPos)
+    {
+        if (!outPos || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            *outPos = glm::vec2(0.0f);
+            return;
+        }
+        *outPos = s_Ctx->scene.get<TextComponent>(e).screenPosition;
+    }
+
+    static void ICALL_API_SetTextPosition(uint64_t handle, glm::vec2* pos)
+    {
+        if (!pos || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetTextPosition: Entity doesn't have TextComponent");
+            return;
+        }
+        s_Ctx->scene.get<TextComponent>(e).screenPosition = *pos;
     }
 
     // ========= SPOTLIGHT COMPONENT INTERNAL CALLS =========
@@ -1634,15 +1734,15 @@ namespace Boom {
         // 4. Project the point
         glm::vec3 screenPos = glm::project(*worldPos, viewMat, projMat, viewportRect);
 
-        // 5. Return the 2D coordinates
-        // We only care about x and y. Z is depth (0 to 1).
-        outViewportPos->x = screenPos.x;
-        outViewportPos->y = screenPos.y;
-
-        // 6. Check if it's behind the camera
+        // 5. Check if it's behind the camera
         if (screenPos.z > 1.0f || screenPos.z < 0.0f) {
             return false;
         }
+
+        // 6. Return Local Viewport Coordinates (subtract the offset)
+        // This makes (0,0) the bottom-left of the GAME VIEW, not the window.
+        outViewportPos->x = screenPos.x - vX;
+        outViewportPos->y = screenPos.y - vY;
 
         return true;
     }
@@ -1921,6 +2021,36 @@ namespace Boom {
         sprite.textureID = textureAssetID;
     }
 
+    // Video
+    static void ICALL_API_PlayVideoComponent(uint64_t handle) {
+        if (!s_Ctx || !s_Ctx->videoSystem) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+
+        // Call Play on the video system
+        s_Ctx->videoSystem->Play(e);
+    }
+
+    // Get the current viewport size (handles both Editor and Standalone)
+    static void ICALL_API_GetViewportSize(float* width, float* height) {
+        if (!s_Ctx || !s_Ctx->window) {
+            *width = 1.0f; *height = 1.0f;
+            return;
+        }
+
+        auto* win = s_Ctx->window.get();
+        float vW = win->GetViewportW();
+        float vH = win->GetViewportH();
+
+        // Standalone fallback (if viewport is not set by editor)
+        if (vW <= 1.0f || vH <= 1.0f) {
+            vW = (float)win->getWidth();
+            vH = (float)win->getHeight();
+        }
+
+        *width = vW;
+        *height = vH;
+    }
+
     static void ICALL_API_ShutdownApplication()
     {
         if (!s_Ctx || !s_Ctx->window)
@@ -2032,6 +2162,7 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_HasCollider", (const void*)ICALL_API_HasCollider);
         mono_add_internal_call("Boom.Native::Boom_API_IsTrigger", (const void*)ICALL_API_IsTrigger);
         mono_add_internal_call("Boom.Native::Boom_API_SetTrigger", (const void*)ICALL_API_SetTrigger);
+        mono_add_internal_call("Boom.Native::Boom_API_GetSurfaceType", (const void*)ICALL_API_GetSurfaceType);
         mono_add_internal_call("Boom.Native::Boom_API_RegisterTriggerEnterCallback", (const void*)ICALL_API_RegisterTriggerEnterCallback);
         mono_add_internal_call("Boom.Native::Boom_API_RegisterTriggerExitCallback", (const void*)ICALL_API_RegisterTriggerExitCallback);
         mono_add_internal_call("Boom.Native::Boom_API_UnregisterTriggerCallbacks", (const void*)ICALL_API_UnregisterTriggerCallbacks);
@@ -2102,11 +2233,27 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetSpriteAlpha", (const void*)ICALL_API_SetSpriteAlpha);
         mono_add_internal_call("Boom.Native::Boom_API_SetSpriteTexture", (const void*)ICALL_API_SetSpriteTexture);
 
+        // Text Component functions
+        mono_add_internal_call("Boom.Native::Boom_API_HasText", (const void*)ICALL_API_HasText);
+        mono_add_internal_call("Boom.Native::Boom_API_GetText", (const void*)ICALL_API_GetText);
+        mono_add_internal_call("Boom.Native::Boom_API_SetText", (const void*)ICALL_API_SetText);
+        mono_add_internal_call("Boom.Native::Boom_API_GetTextColor", (const void*)ICALL_API_GetTextColor);
+        mono_add_internal_call("Boom.Native::Boom_API_SetTextColor", (const void*)ICALL_API_SetTextColor);
+        mono_add_internal_call("Boom.Native::Boom_API_GetTextScale", (const void*)ICALL_API_GetTextScale);
+        mono_add_internal_call("Boom.Native::Boom_API_SetTextScale", (const void*)ICALL_API_SetTextScale);
+        mono_add_internal_call("Boom.Native::Boom_API_GetTextPosition", (const void*)ICALL_API_GetTextPosition);
+        mono_add_internal_call("Boom.Native::Boom_API_SetTextPosition", (const void*)ICALL_API_SetTextPosition);
+
         // SpotLight component internal calls
         mono_add_internal_call("Boom.Native::Boom_API_HasSpotLight", (const void*)ICALL_API_HasSpotLight);
         mono_add_internal_call("Boom.Native::Boom_API_GetSpotLightColor", (const void*)ICALL_API_GetSpotLightColor);
         mono_add_internal_call("Boom.Native::Boom_API_SetSpotLightColor", (const void*)ICALL_API_SetSpotLightColor);
         mono_add_internal_call("Boom.Native::Boom_API_GetSpotLightIntensity", (const void*)ICALL_API_GetSpotLightIntensity);
         mono_add_internal_call("Boom.Native::Boom_API_SetSpotLightIntensity", (const void*)ICALL_API_SetSpotLightIntensity);
+
+        // Video
+        mono_add_internal_call("Boom.Native::Boom_API_PlayVideoComponent", (void*)ICALL_API_PlayVideoComponent);
+        mono_add_internal_call("Boom.Native::Boom_API_GetViewportSize", (void*)ICALL_API_GetViewportSize);
+
     }
 }
