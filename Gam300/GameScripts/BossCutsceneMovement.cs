@@ -44,6 +44,24 @@ namespace GameScripts
         [EditorExposed("Maze Entity Name", "Name of the entity with MazeGeneration script")]
         public string mazeEntityName = "MazeTrigger";
 
+        [EditorExposed("Spotlight Entity Name", "Name of spotlight to control (optional)")]
+        public string spotlightEntityName = "";
+
+        [EditorExposed("Enable Spotlight Control", "Control a red/green spotlight during cutscene")]
+        public bool enableSpotlightControl = false;
+
+        [EditorExposed("Spotlight Interval", "How often spotlight switches colors (seconds)")]
+        public float spotlightInterval = 3.0f;
+
+        [EditorExposed("Play Spotlight Audio", "Play red/green light audio")]
+        public bool playSpotlightAudio = false;
+
+        [EditorExposed("Red Light Audio Path", "Path to red light audio")]
+        public string redLightAudioPath = "Resources/Audio/Redlight.wav";
+
+        [EditorExposed("Green Light Audio Path", "Path to green light audio")]
+        public string greenLightAudioPath = "Resources/Audio/Greenlight.wav";
+
         // Internal state
         private float _elapsedTime = 0f;
         private bool _movementComplete = false;
@@ -62,6 +80,13 @@ namespace GameScripts
 
         // Store previous position for movement delta
         private Vec3 _previousPosition;
+
+        // Spotlight control
+        private ulong _spotlightEntity = 0;
+        private bool _spotlightIsRed = true;
+        private float _spotlightTimer = 0f;
+        private Vec3 _redColor = new Vec3(1f, 0f, 0f);
+        private Vec3 _greenColor = new Vec3(0f, 1f, 0f);
 
         public void OnStart(string paramsJson)
         {
@@ -113,6 +138,24 @@ namespace GameScripts
                 API.AnimatorSetFloat(Entity, "Speed", 0f);
                 API.AnimatorSetBool(Entity, "Sprint", false);
                 API.AnimatorSetBool(Entity, "IsSneaking", false);
+            }
+
+            // Initialize spotlight control if enabled
+            if (enableSpotlightControl && !string.IsNullOrEmpty(spotlightEntityName))
+            {
+                _spotlightEntity = API.FindEntity(spotlightEntityName);
+                if (_spotlightEntity != 0 && API.HasSpotLight(_spotlightEntity))
+                {
+                    API.Log($"[BossCutsceneMovement] Found spotlight: {spotlightEntityName}");
+                    _spotlightIsRed = true;
+                    _spotlightTimer = 0f;
+                    API.SetSpotLightColor(_spotlightEntity, _redColor);
+                }
+                else
+                {
+                    API.Log($"[BossCutsceneMovement] WARNING: Could not find spotlight '{spotlightEntityName}' or it has no spotlight component");
+                    _spotlightEntity = 0;
+                }
             }
 
             API.Log($"[BossCutsceneMovement] Cutscene initialized. Start delay: {startDelay}s, Movement: {movementDuration}s, Total: {totalDuration}s");
@@ -189,6 +232,12 @@ namespace GameScripts
                     API.LoadScene(Entry.MAIN_MENU_SCENE_NAME);
                 }
                 return;
+            }
+
+            // Update spotlight cycling (happens even during start delay)
+            if (enableSpotlightControl && _spotlightEntity != 0)
+            {
+                UpdateSpotlight(deltaTime);
             }
 
             // Don't move during start delay
@@ -322,6 +371,48 @@ namespace GameScripts
         private static float Clamp01(float v)
         {
             return v < 0f ? 0f : (v > 1f ? 1f : v);
+        }
+
+        /// <summary>
+        /// Update the spotlight color cycling
+        /// </summary>
+        private void UpdateSpotlight(float deltaTime)
+        {
+            _spotlightTimer += deltaTime;
+
+            if (_spotlightTimer >= spotlightInterval)
+            {
+                _spotlightTimer = 0f;
+                _spotlightIsRed = !_spotlightIsRed;
+
+                if (API.HasSpotLight(_spotlightEntity))
+                {
+                    if (_spotlightIsRed)
+                    {
+                        API.SetSpotLightColor(_spotlightEntity, _redColor);
+                        API.Log("[BossCutsceneMovement] Spotlight -> RED");
+
+                        if (playSpotlightAudio)
+                        {
+                            Vec3 pos = API.GetPosition(_spotlightEntity);
+                            API.PlaySoundAt("cutscene_redlight", redLightAudioPath, pos, false);
+                            API.SetSoundVolume("cutscene_redlight", 0.8f);
+                        }
+                    }
+                    else
+                    {
+                        API.SetSpotLightColor(_spotlightEntity, _greenColor);
+                        API.Log("[BossCutsceneMovement] Spotlight -> GREEN");
+
+                        if (playSpotlightAudio)
+                        {
+                            Vec3 pos = API.GetPosition(_spotlightEntity);
+                            API.PlaySoundAt("cutscene_greenlight", greenLightAudioPath, pos, false);
+                            API.SetSoundVolume("cutscene_greenlight", 0.8f);
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
