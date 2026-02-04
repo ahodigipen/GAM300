@@ -65,18 +65,25 @@ namespace Boom
             // bind shader program
             glUseProgram(shaderId);
 
-            // set brightness map
+            // set brightness map and generate mipmaps for proper area filtering at 1/5 resolution
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, brightnessMap);
+            glGenerateMipmap(GL_TEXTURE_2D);
             glUniform1i(u_BrightnessMap, 0);
 
             // set frame size
             glUniform1i(u_FrameHeight, m_Height);
             glUniform1i(u_FrameWidth, m_Width);
 
-            // set viewport a clear buffer
+            // set viewport
             glViewport(0, 0, m_Width, m_Height);
-            glClear(GL_COLOR_BUFFER_BIT);
+
+            // clear both bloom FBOs to prevent stale data
+            for (int i = 0; i < 2; i++)
+            {
+                glBindFramebuffer(GL_FRAMEBUFFER, m_GausianFBO[i]);
+                glClear(GL_COLOR_BUFFER_BIT);
+            }
 
             bool horizontal = true;
 
@@ -143,5 +150,8 @@ namespace Boom
         int32_t m_Scale = 5;
         int m_LastTarget = 0;
         Quad2D m_Quad;
+
+    public:
+        float bloomIntensity = 1.0f;  // Exposed for adjustable bloom strength
     };
 }

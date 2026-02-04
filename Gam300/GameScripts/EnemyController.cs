@@ -63,8 +63,10 @@ namespace GameScripts
         // NEW: Auto-reset timer for damage flag
         private float _damageResetTimer = 0f;
         private const float DAMAGE_RESET_DELAY = 3.0f;
+
         // Entity name for spotlight lookup (matches SpotlightFollower's targetName)
-        private string _entityName = "Sentry_1";  // Default name, can be overridden via jsonParams
+        [Boom.EditorExposed("Entity Name", "Name of this sentry for spotlight lookup")]
+        private string _entityName = "Sentry_1";
 
         // Alert sound tracking
         private bool _alertSoundPlayed = false;
@@ -81,24 +83,7 @@ namespace GameScripts
                 return;
             }
 
-            // Parse entityName from jsonParams if provided
-            if (!string.IsNullOrEmpty(jsonParams) && jsonParams != "{}")
-            {
-                try
-                {
-                    if (jsonParams.Contains("entityName"))
-                    {
-                        int start = jsonParams.IndexOf("entityName") + 13;
-                        int end = jsonParams.IndexOf("\"", start);
-                        if (end > start)
-                        {
-                            _entityName = jsonParams.Substring(start, end - start);
-                        }
-                    }
-                }
-                catch { }
-            }
-            //($"[EnemyController] Entity name: {_entityName}");
+            // _entityName is now set via EditorExposed attribute in the Inspector
 
             // Initialize vision system
             _vision = new VisionComponent { Entity = Entity };

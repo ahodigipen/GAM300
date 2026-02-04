@@ -7,7 +7,13 @@ namespace GameScripts
         public ulong Entity;  // Set by the engine
 
         private ulong targetHandle;
-        private string targetName = "Sentry_1";  // Name of entity to follow
+
+        [Boom.EditorExposed("Target Name", "Name of sentry entity to follow")]
+        private string targetName = "Sentry_1";
+
+        [Boom.EditorExposed("Position Offset Y", "Height offset above target", 0f, 10f, true)]
+        private float positionOffsetY = 2.0f;
+
         private Vec3 positionOffset = new Vec3(0, 2, 0);  // Offset from target (e.g., above the head)
         private bool followRotation = true;
 
@@ -24,24 +30,8 @@ namespace GameScripts
         {
             API.Log($"[SpotlightFollower] OnStart() - Entity: {Entity}");
 
-            // Parse params if provided
-            if (!string.IsNullOrEmpty(jsonParams) && jsonParams != "{}")
-            {
-                try
-                {
-                    // Simple JSON parsing for targetName
-                    if (jsonParams.Contains("targetName"))
-                    {
-                        int start = jsonParams.IndexOf("targetName") + 13;
-                        int end = jsonParams.IndexOf("\"", start);
-                        if (end > start)
-                        {
-                            targetName = jsonParams.Substring(start, end - start);
-                        }
-                    }
-                }
-                catch { }
-            }
+            // Apply the exposed positionOffsetY to the offset vector
+            positionOffset.Y = positionOffsetY;
 
             // Find the target entity
             targetHandle = API.FindEntity(targetName);

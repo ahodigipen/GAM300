@@ -570,6 +570,7 @@ namespace Boom {
     public: // ---------------------- Frame lifecycle ----------------------
         BOOM_INLINE void NewFrame() {
             pbrShader->showDither = showLowPoly;
+            pbrShader->bloomThreshold = bloomThreshold;
             if (showLowPoly) {
                 lowPolyFrame->Begin();
             }
@@ -586,11 +587,11 @@ namespace Boom {
             pbrShader->UnUse();
             if (showLowPoly) {
                 lowPolyFrame->End();
-                bloom->Compute(lowPolyFrame->GetBrightnessMap(), 10);
+                bloom->Compute(lowPolyFrame->GetBrightnessMap(), bloomIterations);
             }
             else {
                 frame->End();
-                bloom->Compute(frame->GetBrightnessMap(), 10);
+                bloom->Compute(frame->GetBrightnessMap(), bloomIterations);
             }
         }
 
@@ -629,13 +630,26 @@ namespace Boom {
 
             if (showLowPoly) {
                 if (m_TouchViewport) glViewport(0, 0, lowPolyFrame->GetWidth(), lowPolyFrame->GetHeight());
-                finalShader->Render(lowPolyFrame->GetTexture(), bloom->GetMap(), useFBO, enabledBloom);
+                finalShader->Render(lowPolyFrame->GetTexture(), bloom->GetMap(), useFBO, enabledBloom, bloomIntensity);
             }
             else {
                 if (m_TouchViewport) glViewport(0, 0, frame->GetWidth(), frame->GetHeight());
                 //shadowShader->GetDepthMap() //frame->GetTexture()
-                finalShader->Render(isDepthBufferView ? shadowShader->GetDepthMap() : frame->GetTexture(), bloom->GetMap(), useFBO, enabledBloom); // toggle bloom inside final if needed
+                finalShader->Render(isDepthBufferView ? shadowShader->GetDepthMap() : frame->GetTexture(), bloom->GetMap(), useFBO, enabledBloom, bloomIntensity); // toggle bloom inside final if needed
             }
+        }
+
+    public: // ---- Full-res overlay (for text on top of composited frame) ----
+        BOOM_INLINE void BeginFullResOverlay(bool useFBO) {
+            glBindFramebuffer(GL_FRAMEBUFFER, useFBO ? finalShader->GetFBOId() : 0);
+            glViewport(0, 0, m_Width, m_Height);
+            glDisable(GL_DEPTH_TEST);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        }
+
+        BOOM_INLINE void EndFullResOverlay() {
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
         }
 
     public: // ---------------------- Utilities / helpers -------------------
@@ -762,6 +776,9 @@ namespace Boom {
         bool isPickIgnoreGUI{};
         bool isDepthBufferView{};
         bool enableTransparentBackfaceCulling{ true };
+        float bloomIntensity{ 1.0f };
+        float bloomThreshold{ 1.0f };
+        int bloomIterations{ 10 };
 
     public: // ---------------------- Material Preview ----------------------
         // Call this to reset the material preview (e.g., after scene change)

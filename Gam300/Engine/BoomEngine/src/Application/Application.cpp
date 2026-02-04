@@ -17,10 +17,16 @@ namespace Boom
         std::cout << "[RunContext] Loading scene MainMenu..." << std::endl;
         std::cout.flush();
 
+        AppWindow::SetLoadingVideo("Deathless_LoadingScreen.mpeg", true);
+        AppWindow::SetShowLoadingBar(false); // Video only, no loading bar
+
         if (!showFrame) { //for runtime game.exe
             DataSerializer serializer;
             serializer.DeserializeAsync(*m_Context->assets, "Resources/assets.yaml", GetWindowHandle().get());
         }
+
+        // Clear loading video after assets are loaded (optional - keeps video for scene loading)
+        // AppWindow::ClearLoadingVideo();
 
         //LoadScene("level");
         LoadScene("MainMenu");
@@ -636,12 +642,26 @@ namespace Boom
             m_Context->profiler.End("Renderer End Frame");
 
             //picking logic
-            m_Context->renderer->StartPickFrame();
-            m_Context->renderer->SetPickCamera(*mainCam, mainCamT);
-            RenderScene(true);
-            m_Context->renderer->EndPickFrame();
+            if (mainCam)  // ADD THIS CHECK
+            {
+                m_Context->renderer->StartPickFrame();
+                m_Context->renderer->SetPickCamera(*mainCam, mainCamT);
+                RenderScene(true);
+                m_Context->renderer->EndPickFrame();
+            }
+            else
+            {
+                BOOM_WARN("No main camera found for picking pass");
+            }
 
             m_Context->renderer->ShowFrame(showFrame);
+
+            // Render text at full resolution on top of the composited frame when in low poly mode
+            if (m_Context->renderer->showLowPoly) {
+                m_Context->renderer->BeginFullResOverlay(showFrame);
+                RenderTextOverlay();
+                m_Context->renderer->EndFullResOverlay();
+            }
 
             for (auto layer : m_Context->layers) {
                 layer->OnUpdate();
@@ -949,7 +969,8 @@ namespace Boom
         }
 
         // --- RENDER ALL TEXT COMPONENTS ---
-        if (!isPicking) {
+        // Skip text when low poly is active; text will be rendered at full resolution after compositing
+        if (!isPicking && !m_Context->renderer->showLowPoly) {
             // Get active camera for 3D text projection
             Camera3D* textActiveCam = nullptr;
             Transform3D textCamTransform{};
@@ -1043,6 +1064,75 @@ namespace Boom
                     textComp.color.a                    // Alpha transparency
                 );
             }
+        }
+    }
+
+    void Application::RenderTextOverlay()
+    {
+        Camera3D* textActiveCam = nullptr;
+        Transform3D textCamTransform{};
+        EnttView<Entity, CameraComponent>([&](auto en, CameraComponent& comp) {
+            if (!textActiveCam && comp.camera.cameraType == Camera3D::CameraType::Main) {
+                textCamTransform = en.Get<TransformComponent>().transform;
+                textActiveCam = &comp.camera;
+            }
+        });
+
+        int screenWidth = m_Context->window->Width();
+        int screenHeight = m_Context->window->Height();
+        float aspect = (float)screenWidth / (float)screenHeight;
+
+        auto textView = m_Context->scene.view<TextComponent>();
+        for (auto entity : textView) {
+            auto& textComp = textView.get<TextComponent>(entity);
+
+            float screenX, screenY;
+            float finalScale = textComp.scale;
+
+            if (textComp.renderAs3D && textActiveCam) {
+                Entity ent(&m_Context->scene, entity);
+                if (!ent.Has<TransformComponent>()) continue;
+
+                auto& transform = ent.Get<TransformComponent>().transform;
+                glm::vec3 worldPos = transform.translate;
+
+                if (!textComp.billboardMode) {
+                    continue;
+                }
+
+                glm::mat4 viewMatrix = textActiveCam->View(textCamTransform);
+                glm::mat4 projMatrix = textActiveCam->Projection(aspect);
+                glm::mat4 viewProj = projMatrix * viewMatrix;
+
+                glm::vec4 clipPos = viewProj * glm::vec4(worldPos, 1.0f);
+
+                if (clipPos.w <= 0.0f) continue;
+                glm::vec3 ndc = glm::vec3(clipPos) / clipPos.w;
+
+                if (ndc.x < -1.0f || ndc.x > 1.0f ||
+                    ndc.y < -1.0f || ndc.y > 1.0f ||
+                    ndc.z < -1.0f || ndc.z > 1.0f) {
+                    continue;
+                }
+
+                screenX = ((ndc.x + 1.0f) * 0.5f) * screenWidth;
+                screenY = ((ndc.y + 1.0f) * 0.5f) * screenHeight;
+                finalScale = textComp.scale;
+            }
+            else {
+                screenX = textComp.screenPosition.x;
+                screenY = textComp.screenPosition.y;
+            }
+
+            Boom::FontManager::GetInstance().RenderText(
+                textComp.fontName,
+                textComp.text,
+                screenX,
+                screenY,
+                finalScale,
+                glm::vec3(textComp.color),
+                textComp.color.a
+            );
         }
     }
 

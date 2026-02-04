@@ -821,9 +821,20 @@ struct MenuComponent {
     struct SceneNavmeshComponent {
         std::string navmeshFile;   // e.g. "Resources/NavData/level1.bin"
         float ambientStrength = 0.5f;  // Default ambient light strength for the scene
+
+        // Bloom settings
+        bool bloomEnabled = false;
+        float bloomIntensity = 1.0f;
+        float bloomThreshold = 1.0f;  // Brightness threshold for bloom extraction
+        int bloomIterations = 10;     // Number of blur passes (default 10)
+
         XPROPERTY_DEF("SceneNavmeshComponent", SceneNavmeshComponent,
             obj_member<"NavmeshFile", &SceneNavmeshComponent::navmeshFile>,
-            obj_member<"AmbientStrength", &SceneNavmeshComponent::ambientStrength>)
+            obj_member<"AmbientStrength", &SceneNavmeshComponent::ambientStrength>,
+            obj_member<"BloomEnabled", &SceneNavmeshComponent::bloomEnabled>,
+            obj_member<"BloomIntensity", &SceneNavmeshComponent::bloomIntensity>,
+            obj_member<"BloomThreshold", &SceneNavmeshComponent::bloomThreshold>,
+            obj_member<"BloomIterations", &SceneNavmeshComponent::bloomIterations>)
     };
 
     struct DeactivatedComponent {
@@ -855,6 +866,8 @@ struct MenuComponent {
         glm::vec4 tintColor = glm::vec4(1.0f);  // Tint/multiply color
         bool renderAs3D = false;                 // true = 3D quad in world, false = 2D UI overlay
 
+        bool removeBlackBackground = false;
+
         // Runtime state (not serialized)
         bool isPlaying = false;
         double currentTime = 0.0;
@@ -868,6 +881,7 @@ struct MenuComponent {
             j["playbackSpeed"] = playbackSpeed;
             j["tintColor"] = { tintColor.r, tintColor.g, tintColor.b, tintColor.a };
             j["renderAs3D"] = renderAs3D;
+            j["removeBlackBackground"] = removeBlackBackground;
         }
 
         void deserialize(const nlohmann::json& j) {
@@ -883,6 +897,7 @@ struct MenuComponent {
                 tintColor.a = j.at("tintColor")[3];
             }
             if (j.contains("renderAs3D")) j.at("renderAs3D").get_to(renderAs3D);
+            if (j.contains("removeBlackBackground")) j.at("removeBlackBackground").get_to(removeBlackBackground);
 
             // Reset runtime state
             isPlaying = false;
@@ -897,7 +912,8 @@ struct MenuComponent {
             obj_member<"Volume", &VideoComponent::volume>,
             obj_member<"PlaybackSpeed", &VideoComponent::playbackSpeed>,
             obj_member<"TintColor", &VideoComponent::tintColor>,
-            obj_member<"RenderAs3D", &VideoComponent::renderAs3D>
+            obj_member<"RenderAs3D", &VideoComponent::renderAs3D>,
+            obj_member<"RemoveBlackBackground", &VideoComponent::removeBlackBackground>
             )
     };
 
@@ -1099,13 +1115,17 @@ struct MenuComponent {
             auto& srcRB = reg.get<RigidBodyComponent>(source);
             auto& dstRB = reg.emplace<RigidBodyComponent>(duplicate);
             dstRB = srcRB;
+            dstRB.RigidBody.actor = nullptr;
             // Note: Physics actor will be created by physics system on next update
         }
 
         // Copy ColliderComponent
         if (reg.all_of<ColliderComponent>(source)) {
             auto& srcCol = reg.get<ColliderComponent>(source);
-            reg.emplace<ColliderComponent>(duplicate, srcCol);
+            auto& dstCol = reg.emplace<ColliderComponent>(duplicate, srcCol);
+            dstCol.Collider.Shape = nullptr;
+            dstCol.Collider.material = nullptr;
+            dstCol.Collider.actor = nullptr;
         }
 
         // Copy Light Components

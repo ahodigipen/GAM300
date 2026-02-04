@@ -3,11 +3,18 @@
 #include <string_view>
 #include <glm/vec3.hpp>
 
+// Forward declare BOOM_API for DLL export/import
+#ifdef BOOM_EXPORT
+	#define BOOM_API __declspec(dllexport)
+#else
+	#define BOOM_API __declspec(dllimport)
+#endif
+
 namespace Boom {
 
 	using EntityId = std::uint32_t;
 	using Vec3 = glm::vec3;
-	extern float g_ScreenFadeAlpha;
+	extern BOOM_API float g_ScreenFadeAlpha;
 
 	namespace CONSTANTS {
 		int const CHAR_BUFFER_SIZE{ 256 };
