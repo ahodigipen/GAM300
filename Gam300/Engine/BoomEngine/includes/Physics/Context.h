@@ -826,13 +826,84 @@ namespace Boom {
         BOOM_INLINE glm::vec3 ResolveThirdPersonCameraPosition(glm::vec3 const& playerEye, glm::vec3 const& idealCamPosition, float minDist = 0.5f) {
             PxVec3 targetPos = ToPxVec3(playerEye);
             PxVec3 idealCamPos = ToPxVec3(idealCamPosition);
+            
+            // 1. START POINT SAFETY (Look-at point resolution)
+            // If the target eye/pivot is inside or too close to a ceiling, push it down.
+            // This prevents the camera from trying to orbit a point that is "illegal".
+            PxRaycastBuffer eyeHit;
+            PxVec3 up(0, 1, 0);
+            if (m_Scene->raycast(targetPos + PxVec3(0, -0.5f, 0), up, 1.0f, eyeHit)) {
+                float distToCeiling = eyeHit.block.distance - 0.5f;
+                if (distToCeiling < 0.4f) {
+                    targetPos.y -= (0.4f - distToCeiling);
+                }
+            }
+
             PxVec3 dir = (idealCamPos - targetPos).getNormalized();
             PxReal maxDist = (idealCamPos - targetPos).magnitude();
+            PxVec3 finalPos = idealCamPos;
 
-            PxRaycastBuffer hit;
-            if (m_Scene->raycast(targetPos, dir, maxDist, hit))
-                return ToGLMVec3(targetPos + dir * PxMax(hit.block.distance - 0.05f, minDist));
-            return ToGLMVec3(idealCamPos);
+            // 2. MULTI-RAY CLUSTER PROBE
+            // Use 5 rays to catch narrow edges and corners
+            float probeRadius = 0.35f;
+            struct ProbeOffset { float x, y; };
+            ProbeOffset offsets[] = { {0,0}, {1,0}, {-1,0}, {0,1}, {0,-1} };
+            
+            float closestHitDist = maxDist;
+            bool anyHit = false;
+
+            PxVec3 worldUp(0, 1, 0);
+            PxVec3 rightVec = dir.cross(worldUp).getNormalized();
+            if (rightVec.magnitude() < 0.1f) rightVec = PxVec3(1, 0, 0);
+            PxVec3 upVec = rightVec.cross(dir).getNormalized();
+
+            for (auto& off : offsets) {
+                PxVec3 start = targetPos + (rightVec * off.x + upVec * off.y) * probeRadius;
+                PxRaycastBuffer hit;
+                if (m_Scene->raycast(start, dir, maxDist, hit)) {
+                    if (hit.block.distance < closestHitDist) {
+                        closestHitDist = hit.block.distance;
+                        anyHit = true;
+                    }
+                }
+            }
+
+            if (anyHit) {
+                // Resolved position along the ray cluster
+                finalPos = targetPos + dir * PxMax(closestHitDist - 0.2f, minDist);
+            }
+
+            // 3. OMNI-DIRECTIONAL REPULSION (Force Away)
+            // Check 6 directions around the final position and push away from any hits.
+            // This specifically handles the "pan up into ceiling" or "walk into wall" cases.
+            PxVec3 repulsionDirs[] = { 
+                PxVec3(0, 1, 0), PxVec3(0, -1, 0),   // Up/Down
+                rightVec, -rightVec,                // Left/Right
+                dir, -dir                           // Forward/Back
+            };
+            
+            float personalSpace = 0.45f; // Radius around camera that must be clear
+            for (int i = 0; i < 5; i++) { // Max 5 nudge iterations
+                bool adjusted = false;
+                for (auto& rDir : repulsionDirs) {
+                    PxRaycastBuffer rHit;
+                    // Cast a short ray to see if we're too close to a surface
+                    if (m_Scene->raycast(finalPos, rDir, personalSpace, rHit)) {
+                        float nudgeDist = personalSpace - rHit.block.distance + 0.05f;
+                        finalPos -= rDir * nudgeDist;
+                        adjusted = true;
+                    }
+                }
+                if (!adjusted) break;
+            }
+
+            // Final fallback: Ensure we aren't pushed behind the player
+            PxVec3 finalToPlayer = targetPos - finalPos;
+            if (finalToPlayer.dot(dir) > 0) {
+                finalPos = targetPos + dir * minDist;
+            }
+
+            return ToGLMVec3(finalPos);
         }
 
 #pragma endregion
