@@ -639,6 +639,19 @@ namespace Boom {
             }
         }
 
+    public: // ---- Full-res overlay (for text on top of composited frame) ----
+        BOOM_INLINE void BeginFullResOverlay(bool useFBO) {
+            glBindFramebuffer(GL_FRAMEBUFFER, useFBO ? finalShader->GetFBOId() : 0);
+            glViewport(0, 0, m_Width, m_Height);
+            glDisable(GL_DEPTH_TEST);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        }
+
+        BOOM_INLINE void EndFullResOverlay() {
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        }
+
     public: // ---------------------- Utilities / helpers -------------------
         BOOM_INLINE void Resize(int32_t w, int32_t h) {
             if (w <= 0 || h <= 0) return;

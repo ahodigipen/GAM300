@@ -82,6 +82,11 @@ namespace Boom {
 			return m_Final;
 		}
 
+		BOOM_INLINE uint32_t GetFBOId() const
+		{
+			return m_FBO;
+		}
+
 		BOOM_INLINE void CreateBuffer(int32_t width, int32_t height)
 		{
 			// create frame buffer
