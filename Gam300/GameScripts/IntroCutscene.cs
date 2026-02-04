@@ -69,9 +69,19 @@ namespace GameScripts
             
             API.Log($"[IntroCutscene] LookTrack Target: '{lookTrack.targetEntityName}' ID: {lookTrack.cachedEntityID}");
             
+            CutsceneSequencer.Track rotTrack = new CutsceneSequencer.Track();
+            rotTrack.label = "CameraRot";
+            rotTrack.targetEntityName = "Camera";
+            rotTrack.cachedEntityID = cameraID;
+            rotTrack.type = 1; // Rotation
+            
             // Define Keyframes
             int fps = 60;
             int frame = 0;
+            
+            // Safety: Add a Neutral Key at Frame 0 for Rotation
+            // so it doesn't apply the future Map rotation to the start
+            AddRotKey(rotTrack, 0, new Vec3(0f, 0f, 0f));
             
             // 1. Enemy 3
             ulong enemy3ID = API.FindEntity("patrol enemy 3");
@@ -80,8 +90,6 @@ namespace GameScripts
             if (enemy3ID != 0) {
                  API.Log("[IntroCutscene] Found 'patrol enemy 3'. Adding keys.");
                  Vec3 ePos = API.GetPosition(enemy3ID);
-                 // Camera Position relative to enemy
-                 // Front View for Enemy 3
                  // Raised Y to look over rocks, modified Z to be closer
                  Vec3 camPos = new Vec3(ePos.X + 5.0f, ePos.Y + 5.0f, ePos.Z + 5.0f );
                  
@@ -92,7 +100,7 @@ namespace GameScripts
                  // Wait 5 seconds & Pull Back
                  frame += 5 * fps;
                  // End Pos: Move BACK (Z - 12.0f) to create a dolly-out effect
-                 Vec3 camPosEnd = new Vec3(ePos.X, ePos.Y + 5.0f, ePos.Z + 13.0f);
+                 Vec3 camPosEnd = new Vec3(ePos.X, ePos.Y + 5.0f, ePos.Z - 13.0f);
                  AddPosKey(posTrack, frame, camPosEnd); 
                  AddLookKey(lookTrack, frame, "patrol enemy 3");
             } else { API.Log("[IntroCutscene] WARNING: 'patrol enemy 3' not found!"); }
@@ -116,26 +124,28 @@ namespace GameScripts
                  AddLookKey(lookTrack, frame, "Sentry_2");
             } else { API.Log("[IntroCutscene] WARNING: 'Sentry_2' not found!"); }
             
-            // 3. Key
-            ulong keyID = API.FindEntity("Key");
+            // 3. Level 1 Map
+            ulong keyID = API.FindEntity("Level 1 Map (CutScene)");
             if (keyID != 0) {
                  Vec3 ePos = API.GetPosition(keyID);
-                 // Diagonal Front View for Key - Flipping to opposite side to see "Front"
-                 Vec3 camPos = new Vec3(ePos.X, ePos.Y, ePos.Z + 5.0f); 
+                 // Diagonal Front View for Key
+                 Vec3 camPos = new Vec3(ePos.X + 10.0f, ePos.Y + 2.0f, ePos.Z + 18.0f);
                  
                  // CUT to Key (No Pan)
-                 AddLookKey(lookTrack, frame, "Key");
+                 // Safety: Hold Neutral Rotation until this exact frame
+                 AddRotKey(rotTrack, frame - 1, new Vec3(0.0f, 0.0f, 0.0f));
+                 
+                 // MANUAL ROTATION for map: Pitch 85 (Down), Yaw 0
+                 AddRotKey(rotTrack, frame, new Vec3(-60.0f, 20.0f, 0.0f));
+                 // DISABLE LookAt so Manual Rotation prevents being overwritten
+                 AddLookKey(lookTrack, frame, "None");
                  AddPosKey(posTrack, frame, camPos);
                  
                  // Wait 3 seconds
                  frame += 3 * fps;
                  AddPosKey(posTrack, frame, camPos);
-                 AddLookKey(lookTrack, frame, "Key");
-                 
-                 // Wait 5 seconds
-                 frame += 5 * fps;
-                 AddPosKey(posTrack, frame, camPos);
-                 AddLookKey(lookTrack, frame, "Key");
+                 AddRotKey(rotTrack, frame, new Vec3(-60.0f, 20.0f, 0.0f)); // Hold Rotation
+                 AddLookKey(lookTrack, frame, "None");
             } else { API.Log("[IntroCutscene] WARNING: 'Key' not found!"); }
             
             // 4. Back to Player
@@ -148,16 +158,15 @@ namespace GameScripts
                  Vec3 ePos = API.GetPosition(playerID);
                  Vec3 camPos = new Vec3(ePos.X, ePos.Y + 4.0f, ePos.Z - 6.0f); // Back up a bit
                  
-                 int panFrames = 2 * fps;
-                 frame += panFrames;
-                 
                  AddPosKey(posTrack, frame, camPos);
                  AddPosKey(posTrack, frame, camPos);
                  AddLookKey(lookTrack, frame, "Player");
             } else { API.Log("[IntroCutscene] WARNING: Player not found!"); }
             
+            // Add RotTrack FIRST so it is applied as "Base Layer"
+            _sequencer.AddTrack(rotTrack);
             _sequencer.AddTrack(posTrack);
-            _sequencer.AddTrack(lookTrack);
+            _sequencer.AddTrack(lookTrack); // LookTrack "Overwrites" RotTrack if active
             
             
             API.Log($"[IntroCutscene] Built sequence. Duration: {frame} frames. Tracks Added: Pos & Look.");
@@ -180,6 +189,17 @@ namespace GameScripts
             kf.frame = frame;
             kf.time = frame / 60.0f;
             kf.valStr = targetName;
+            t.keyframes.Add(kf);
+        }
+
+        private void AddRotKey(CutsceneSequencer.Track t, int frame, Vec3 rot)
+        {
+            CutsceneSequencer.KeyFrame kf = new CutsceneSequencer.KeyFrame();
+            kf.frame = frame;
+            kf.time = frame / 60.0f;
+            kf.vX = rot.X;
+            kf.vY = rot.Y;
+            kf.vZ = rot.Z;
             t.keyframes.Add(kf);
         }
 

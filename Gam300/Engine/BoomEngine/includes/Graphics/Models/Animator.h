@@ -327,9 +327,6 @@ namespace Boom
         BOOM_INLINE void SetStateMachineEnabled(bool enabled) { m_EnableStateMachine = enabled; }
         BOOM_INLINE bool IsStateMachineEnabled() const { return m_EnableStateMachine; }
 
-        BOOM_INLINE void SetStateMachineEnabled(bool enabled) { m_EnableStateMachine = enabled; }
-        BOOM_INLINE bool IsStateMachineEnabled() const { return m_EnableStateMachine; }
-
         BOOM_INLINE void RemoveClip(size_t index) {
             if (index < m_Clips.size()) {
                 m_Clips.erase(m_Clips.begin() + index);

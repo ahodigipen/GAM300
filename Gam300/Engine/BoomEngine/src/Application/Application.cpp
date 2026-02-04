@@ -1071,11 +1071,6 @@ namespace Boom
         BOOM_INFO("[Application] SetCutsceneMode({}) called on Instance: {}", active, (void*)this);
     }
 
-    void Application::SetCutsceneMode(bool active) {
-        m_IsCutsceneMode = active;
-        BOOM_INFO("[Application] SetCutsceneMode({}) called on Instance: {}", active, (void*)this);
-    }
-
     void Application::UpdateThirdPersonCameras()
 
     {
