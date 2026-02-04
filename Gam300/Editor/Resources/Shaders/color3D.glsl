@@ -17,7 +17,8 @@ void main() {
 #version 450 core
 
 layout (location = 2) in vec2 uvs;
-out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;
+layout(location = 1) out vec4 out_brightness;  // Brightness for bloom (always zero for 3D GUI)
 uniform vec4 color;
 uniform sampler2D texMap;
 void main() {
@@ -26,5 +27,6 @@ void main() {
     if (result.a < 0.01) discard;
 
     FragColor = color * result;
+    out_brightness = vec4(0.0, 0.0, 0.0, 1.0);  // 3D GUI quads should NOT contribute to bloom
 }
 ==FRAGMENT==
