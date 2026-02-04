@@ -196,37 +196,34 @@ namespace GameScripts
             bool escape_KeyDown = API.IsKeyDown(KEY_ESCAPE);
             bool ctrl_KeyDown = API.IsKeyDown(API.KEY_LEFT_CONTROL);
 
-            // Handle Start Pop-up Interaction ---
+            // Handle Start Pop-up Interaction
             if (IsStartPopupActive)
             {
-                //if (escape_KeyDown && !_escape_KeyWasDown)
-                if (p_KeyDown && !_p_KeyWasDown)
-                {
-                    API.Log("Closing Start Pop-up...");
+                // Trigger close on ESC (Primary) OR P (Fallback)
+                bool closeTriggered = (escape_KeyDown && !_escape_KeyWasDown) ||
+                                      (p_KeyDown && !_p_KeyWasDown);
 
-                    // 1. Find the UI entity by name and destroy it to remove it from screen
+                if (closeTriggered)
+                {
+                    API.Log("Closing Level 1 Pop-up...");
+
+                    // 1. Find the UI entity by name and destroy it
                     ulong popupEntity = API.FindEntity(LEVEL_1_UI);
-                    if (popupEntity != 0)
-                    {
-                        API.DestroyEntity(popupEntity);
-                    }
-                    else
-                    {
-                        API.Log("[Warning] Could not find Pop-up Entity to destroy: " + POPUP_SCENE_NAME);
-                    }
+                    if (popupEntity != 0) API.DestroyEntity(popupEntity);
+                    else API.Log("[Warning] Could not find Pop-up Entity to destroy: " + POPUP_SCENE_NAME);
 
                     // 2. Unpause the game and update state
                     IsStartPopupActive = false;
                     API.SetGameLogicPaused(false);
 
-                    // 3. Consume the key press so it doesn't trigger Pause Menu in the next frame
-                    // _escape_KeyWasDown = true;
+                    // 3. Consume the key press so it doesn't trigger Pause Menu in the very next frame
+                    _escape_KeyWasDown = true;
                     _p_KeyWasDown = true;
                     return;
                 }
 
-                // Keep tracking key state to prevent spam
-                //_escape_KeyWasDown = escape_KeyDown;
+                // Keep tracking key state while popup is active to prevent bleed-through
+                _escape_KeyWasDown = escape_KeyDown;
                 _p_KeyWasDown = p_KeyDown;
                 return;
             }
