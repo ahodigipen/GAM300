@@ -181,34 +181,45 @@ namespace EditorUI {
                     info.name = "Scene Settings";
                     info.uid = static_cast<Boom::AssetID>(sceneSettings); // Use entity ID as UID
 
-                    // Add SceneNavmeshComponent with default ambient strength
+                    // Add SceneNavmeshComponent with default values
                     auto& sceneComp = m.ctx->scene.emplace<Boom::SceneNavmeshComponent>(sceneSettings);
-                    sceneComp.ambientStrength = 0.5f; // Default value
+                    sceneComp.ambientStrength = 0.5f;
+                    sceneComp.bloomEnabled = false;
+                    sceneComp.bloomIntensity = 1.0f;
+                    sceneComp.bloomThreshold = 1.0f;
+                    sceneComp.bloomIterations = 10;
                 }
                 auto& settings = m.ctx->scene.get<Boom::SceneNavmeshComponent>(sceneSettings);
 
+                // Keep renderer in sync with scene settings (for loaded scenes)
+                // This ensures that when a scene is loaded, the renderer reflects the saved settings
+                m.ctx->renderer->AmbientStrength() = settings.ambientStrength;
+                m.ctx->renderer->enabledBloom = settings.bloomEnabled;
+                m.ctx->renderer->bloomIntensity = settings.bloomIntensity;
+                m.ctx->renderer->bloomThreshold = settings.bloomThreshold;
+                m.ctx->renderer->bloomIterations = settings.bloomIterations;
+
                 // Slider modifies the scene component
                 if (ImGui::SliderFloat("Ambient Strength", &settings.ambientStrength, 0.0f, 1.0f)) {
-                    // Apply to renderer in real-time for immediate visual feedback
-                    m.ctx->renderer->AmbientStrength() = settings.ambientStrength;
+                    // Value updated above in sync block
                 }
 
                 // Bloom controls with serialization to scene
                 if (ImGui::BeginMenu("Bloom Settings")) {
                     if (ImGui::Checkbox("Enable Bloom", &settings.bloomEnabled)) {
-                        m.ctx->renderer->enabledBloom = settings.bloomEnabled;
+                        // Value updated above in sync block
                     }
 
                     if (ImGui::SliderFloat("Bloom Intensity", &settings.bloomIntensity, 0.0f, 3.0f)) {
-                        m.ctx->renderer->bloomIntensity = settings.bloomIntensity;
+                        // Value updated above in sync block
                     }
 
                     if (ImGui::SliderFloat("Bloom Threshold", &settings.bloomThreshold, 0.1f, 5.0f)) {
-                        m.ctx->renderer->bloomThreshold = settings.bloomThreshold;
+                        // Value updated above in sync block
                     }
 
                     if (ImGui::SliderInt("Bloom Iterations", &settings.bloomIterations, 1, 20)) {
-                        m.ctx->renderer->bloomIterations = settings.bloomIterations;
+                        // Value updated above in sync block
                     }
 
                     ImGui::EndMenu();
