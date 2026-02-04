@@ -69,6 +69,7 @@
     <Compile Include="DoorTriggerLeft.cs" />
     <Compile Include="PlayerInventory.cs" />
     <Compile Include="BloodOverlayController.cs" />
+    <Compile Include="RedGreenLightSpotlight.cs" />
     <Compile Include="SettingsManager.cs" />
     <Compile Include="SpotlightFollower.cs" />
     <Compile Include="UIStanceController.cs" />

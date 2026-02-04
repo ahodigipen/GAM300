@@ -29,6 +29,9 @@ namespace GameScripts
         [EditorExposed("Fade Duration", "Duration of fade out before scene transition")]
         public float fadeDuration = 1.0f;
 
+        [EditorExposed("Start Delay", "Delay before movement starts (allows scene to load)")]
+        public float startDelay = 2.0f;
+
         [EditorExposed("Use Smooth Movement", "Use smooth easing for movement")]
         public bool useSmoothMovement = true;
 
@@ -52,6 +55,10 @@ namespace GameScripts
         // Fade in state
         private bool _isFadingIn = true;
         private float _fadeInTimer = 0f;
+
+        // Start delay state
+        private bool _isWaitingToStart = true;
+        private float _startDelayTimer = 0f;
 
         // Store previous position for movement delta
         private Vec3 _previousPosition;
@@ -82,6 +89,8 @@ namespace GameScripts
             _isFading = false;
             _transitionTriggered = false;
             _mazeTriggered = false;
+            _isWaitingToStart = true;
+            _startDelayTimer = 0f;
 
             // Set player to start position
             if (API.HasTransform(Entity))
@@ -97,21 +106,43 @@ namespace GameScripts
                 API.TeleportController(Entity, startPosition);
             }
 
-            // Play walking animation if animator exists
+            // Don't play animation yet - wait for start delay
             if (API.HasAnimator(Entity))
             {
-                API.AnimatorSetBool(Entity, "IsMoving", true);
-                API.AnimatorSetFloat(Entity, "Speed", 3.0f);
+                API.AnimatorSetBool(Entity, "IsMoving", false);
+                API.AnimatorSetFloat(Entity, "Speed", 0f);
                 API.AnimatorSetBool(Entity, "Sprint", false);
                 API.AnimatorSetBool(Entity, "IsSneaking", false);
             }
 
-            API.Log($"[BossCutsceneMovement] Cutscene started. Movement: {movementDuration}s, Total: {totalDuration}s");
+            API.Log($"[BossCutsceneMovement] Cutscene initialized. Start delay: {startDelay}s, Movement: {movementDuration}s, Total: {totalDuration}s");
         }
 
         public void OnUpdate(float deltaTime)
         {
             if (Entity == 0 || _transitionTriggered) return;
+
+            // Handle start delay - wait before beginning movement
+            if (_isWaitingToStart)
+            {
+                _startDelayTimer += deltaTime;
+
+                if (_startDelayTimer >= startDelay)
+                {
+                    _isWaitingToStart = false;
+                    API.Log("[BossCutsceneMovement] Start delay complete, beginning movement");
+
+                    // Now start walking animation
+                    if (API.HasAnimator(Entity))
+                    {
+                        API.AnimatorSetBool(Entity, "IsMoving", true);
+                        API.AnimatorSetFloat(Entity, "Speed", 3.0f);
+                        API.AnimatorSetBool(Entity, "Sprint", false);
+                        API.AnimatorSetBool(Entity, "IsSneaking", false);
+                    }
+                }
+                // During start delay, just handle fade-in but don't move
+            }
 
             // Handle fade-in from black (when scene first loads)
             if (_isFadingIn && enableFadeEffects)
@@ -157,6 +188,12 @@ namespace GameScripts
                     API.Log("[BossCutsceneMovement] Loading MainMenu scene (no fade)");
                     API.LoadScene(Entry.MAIN_MENU_SCENE_NAME);
                 }
+                return;
+            }
+
+            // Don't move during start delay
+            if (_isWaitingToStart)
+            {
                 return;
             }
 
