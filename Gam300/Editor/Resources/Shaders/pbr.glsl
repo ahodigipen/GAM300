@@ -398,13 +398,10 @@ void main() {
     // Add emissive (not affected by lighting or shadows)
     color += emissive;
 
-    // Extract bright areas for bloom based on configurable threshold
-    if (dot(color, BLOOM_THRESHOLD) > u_bloomThreshold) {
-        out_brightness = vec4(color, 1.0);
-    }
-    else {
-        out_brightness = vec4(0.0, 0.0, 0.0, 1.0);
-    }
+    // Extract bright areas for bloom with soft threshold to prevent flickering
+    float brightness = dot(color, BLOOM_THRESHOLD);
+    float soft = clamp((brightness - u_bloomThreshold) / max(u_bloomThreshold, 0.001), 0.0, 1.0);
+    out_brightness = vec4(color * soft, 1.0);
 
     //simulate low bit depth
     float colorDepth = 32.0;

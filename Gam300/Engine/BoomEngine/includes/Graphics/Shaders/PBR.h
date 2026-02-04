@@ -208,6 +208,7 @@ namespace Boom {
 			SetUniform(isDebugModeLoc, false);
 			SetUniform(ditherThresholdLoc, showDither ? ditherThreshold : 0.f);
 			SetUniform(showNormalTextureLoc, false);
+			SetUniform(bloomThresholdLoc, bloomThreshold);
 			SetUniform(modelMatLoc, transform.Matrix());
 			SetWorldSpaceUV(false, 1.0f); // Default to mesh UVs for raw mesh draws
 			mesh->Draw(GL_TRIANGLES);
@@ -273,6 +274,7 @@ namespace Boom {
 			SetUniform(ditherThresholdLoc, showDither ? ditherThreshold : 0.f);
 			SetUniform(showNormalTextureLoc, showNormal);
 			SetUniform(ambientStrengthLoc, ambientStrength);
+			SetUniform(bloomThresholdLoc, bloomThreshold);
 			//world transformation * model transformation
 			SetUniform(modelMatLoc, transform.Matrix() * model->modelTransform.Matrix());
 
@@ -291,6 +293,7 @@ namespace Boom {
 			SetUniform(isDebugModeLoc, true);
 			SetUniform(ditherThresholdLoc, showDither ? ditherThreshold : 0.f);
 			SetUniform(showNormalTextureLoc, showNormal);
+			SetUniform(bloomThresholdLoc, bloomThreshold);
 			SetUniform(modelMatLoc, transform.Matrix() * model->modelTransform.Matrix());
 			SetUniform(albedoLoc, albedo);
 			SetUniform(ambientStrengthLoc, ambientStrength);
