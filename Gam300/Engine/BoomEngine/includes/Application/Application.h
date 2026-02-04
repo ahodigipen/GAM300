@@ -615,6 +615,7 @@ namespace Boom
 			else if (sceneName.find("Settings") != std::string::npos) targetType = MenuType::Settings;
 			else if (sceneName.find("Main") != std::string::npos) targetType = MenuType::Main;
 			else if (sceneName.find("End") != std::string::npos) targetType = MenuType::End;
+			else if (sceneName.find("PopUp") != std::string::npos) targetType = MenuType::PopUp;
 
 			// 2. Check if objects of this MenuType *already exist*
 			bool alreadyLoaded = false;
@@ -626,8 +627,11 @@ namespace Boom
 				{
 					alreadyLoaded = true;
 					// Ensure it is deactivated if we found it existing
-					if (!reg.all_of<DeactivatedComponent>(entity))
-						reg.emplace_or_replace<DeactivatedComponent>(entity);
+					if (targetType != MenuType::PopUp)
+					{
+						if (!reg.all_of<DeactivatedComponent>(entity))
+							reg.emplace_or_replace<DeactivatedComponent>(entity);
+					}
 				}
 			}
 
@@ -700,7 +704,10 @@ namespace Boom
 				if (menu.menuType != targetType) continue;
 
 				// 1. Deactivate (Start hidden)
-				reg.emplace_or_replace<DeactivatedComponent>(entity);
+				if (targetType != MenuType::PopUp)
+				{
+					reg.emplace_or_replace<DeactivatedComponent>(entity);
+				}
 
 				// 2. Init RigidBody
 				if (reg.all_of<RigidBodyComponent>(entity))
