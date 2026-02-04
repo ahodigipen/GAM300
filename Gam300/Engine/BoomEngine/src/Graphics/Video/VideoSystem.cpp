@@ -55,7 +55,6 @@ namespace Boom {
                 player.SetLoop(videoComp.loop);
                 player.SetVolume(videoComp.volume);
                 player.SetPlaybackSpeed(videoComp.playbackSpeed);
-                player.SetRemoveBlackBackground(videoComp.removeBlackBackground);
 
                 // Update the player (decodes frames)
                 player.Update(deltaTime);
@@ -168,24 +167,6 @@ namespace Boom {
         if (player) {
             player->Stop();
         }
-    }
-
-    void VideoSystem::OnSceneChange() {
-        BOOM_INFO("[VideoSystem] Scene change - resetting video system state");
-
-        // Stop and unload all current videos
-        for (auto& [entityId, player] : m_Players) {
-            if (player) {
-                player->Stop();
-                player->Unload();
-            }
-        }
-
-        // Clear all tracking
-        m_Players.clear();
-        m_InitializedEntities.clear();
-
-        BOOM_INFO("[VideoSystem] Video system state reset complete");
     }
 
     void VideoSystem::SyncWithScene(EntityRegistry& scene) {

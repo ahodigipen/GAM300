@@ -47,8 +47,6 @@
     <Compile Include="AttackSquash.cs" />
     <Compile Include="CharacterAnimation.cs" />
     <Compile Include="CPTrigger.cs" />
-    <Compile Include="CutsceneController.cs" />
-    <Compile Include="FreezeOverlayBehavior.cs" />
     <Compile Include="MazeGeneration.cs" />
     <Compile Include="ProximityDetectionComponent.cs" />
     <Compile Include="DeathMenu.cs" />
@@ -70,9 +68,6 @@
     <Compile Include="BloodOverlayController.cs" />
     <Compile Include="SettingsManager.cs" />
     <Compile Include="SpotlightFollower.cs" />
-    <Compile Include="UIStanceController.cs" />
-    <Compile Include="UITutorialController.cs" />
-    <Compile Include="TutorialPopupTrigger.cs" />
     <Compile Include="TextTest.cs" />
     <Compile Include="UIEndController.cs" />
     <Compile Include="UIFreezeController.cs" />

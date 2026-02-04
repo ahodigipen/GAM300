@@ -17,7 +17,6 @@ void main() {
 
 #version 450 core
 layout (location = 0) out vec4 fragColor;
-layout (location = 1) out vec4 out_brightness;  // Brightness for bloom (always zero for skybox)
 
 in vec3 worldPosition;
 
@@ -26,6 +25,5 @@ uniform samplerCube map;
 void main() {
     vec3 flipYPos = vec3(worldPosition.x, -worldPosition.y, worldPosition.z);
     fragColor = vec4(texture(map, flipYPos).rgb, 1.0);
-    out_brightness = vec4(0.0, 0.0, 0.0, 1.0);  // Skybox should NOT contribute to bloom
 }
 ==FRAGMENT==

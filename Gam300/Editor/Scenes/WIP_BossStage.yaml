@@ -1,74 +1,5 @@
 Version: 1.0
 ENTITIES:
-  - InfoComponent:
-      Parent: 0
-      Name: LightPoint
-      UID: 2106348438969185543
-    TransformComponent:
-      Transform:
-        Translate: [0.479864597, 36.6479073, 14.0310001]
-        Rotate: [-89.9999847, 0, 0]
-        Scale: [0.999990106, 0.999887764, 0.999880552]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.0784313679, 1, 0.105536163]
-        Intensity: 23.1900005
-        FallOff: 0.765999973
-        CutOff: 0.108999997
-  - InfoComponent:
-      Parent: 0
-      Name: New Entity (3)
-      UID: 171651767026794635
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-  - InfoComponent:
-      Parent: 0
-      Name: LightDirection
-      UID: 4212835681801812632
-    TransformComponent:
-      Transform:
-        Translate: [-4.45847368, 36.1773148, 3.22756481]
-        Rotate: [-30.4769993, -44.9300003, -403.432007]
-        Scale: [1, 1, 0.999999881]
-    DirectLightComponent:
-      Light:
-        Radiance: [1, 1, 1]
-        Intensity: 0.25999999
-  - InfoComponent:
-      Parent: 0
-      Name: BOSS
-      UID: 10561426511897708155
-    TransformComponent:
-      Transform:
-        Translate: [0.458766937, 47.5283012, 28.9570103]
-        Rotate: [180, -5.00895612e-06, 180]
-        Scale: [1.41999996, 0.649999976, 1.42140651]
-    ModelComponent:
-      ModelID: 17047777006874206768
-      MaterialID: 14891281585286011240
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Wall (Copy) (Copy)
-      UID: 10520009349331699836
-    TransformComponent:
-      Transform:
-        Translate: [-9.15594006, 15.867569, 26.5350285]
-        Rotate: [0, 89.980217, 0]
-        Scale: [1, 10.908102, 7.84341812]
-    ModelComponent:
-      ModelID: 7633162898494281895
-      MaterialID: 6104124486273075758
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -80,7 +11,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 12807707659119185110
-        SurfaceType: DEFAULT
         Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
@@ -88,7 +18,7 @@ ENTITIES:
       UID: 6895475612116251577
     TransformComponent:
       Transform:
-        Translate: [4.02488136, 10.5092125, -7.53782845]
+        Translate: [3.31252527, 10.5092125, -7.53782845]
         Rotate: [0, -0, 0]
         Scale: [1.58099997, 1.08500004, 0.66960001]
     RigidBodyComponent:
@@ -114,7 +44,7 @@ ENTITIES:
       UID: 108
     SceneNavmeshComponent:
       NavmeshFile: ""
-      AmbientStrength: 0
+      AmbientStrength: 0.0890000015
   - InfoComponent:
       Parent: 0
       Name: New Entity (1)
@@ -154,7 +84,6 @@ ENTITIES:
         IsTrigger: true
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -180,7 +109,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -214,7 +142,7 @@ ENTITIES:
       UID: 2377197601835279376
     TransformComponent:
       Transform:
-        Translate: [11.1268368, 18.5216599, -7.61680603]
+        Translate: [10.5483112, 18.0161285, -7.63332987]
         Rotate: [0, 2.99976134, 0]
         Scale: [0.0164999887, 0.0164999999, 0.0164999887]
     CharacterControllerComponent:
@@ -398,8 +326,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [9.03206635, 20.4161282, -6.95903397]
-        Rotate: [151.062485, 283.124756, 180]
+        Translate: [4.32057428, 22.8734207, 2.40589714]
+        Rotate: [119.749985, -118.562737, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -427,7 +355,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 7787570810725283553
-        SurfaceType: DEFAULT
         Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
@@ -466,7 +393,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -505,7 +431,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -544,7 +469,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -583,7 +507,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -622,7 +545,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -661,7 +583,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -700,7 +621,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -739,7 +659,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -778,7 +697,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -817,7 +735,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -856,7 +773,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -895,7 +811,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -934,7 +849,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -973,7 +887,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1012,7 +925,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1051,7 +963,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1090,7 +1001,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1129,7 +1039,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1168,7 +1077,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1207,7 +1115,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1246,7 +1153,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1285,7 +1191,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1324,7 +1229,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1363,7 +1267,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1402,7 +1305,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1441,7 +1343,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1480,7 +1381,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1519,7 +1419,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1558,7 +1457,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1597,7 +1495,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1636,7 +1533,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1675,7 +1571,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1714,7 +1609,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1753,7 +1647,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1792,7 +1685,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1831,7 +1723,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1870,7 +1761,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1909,7 +1799,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1948,7 +1837,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -1987,7 +1875,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2026,7 +1913,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2065,7 +1951,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2104,7 +1989,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2143,7 +2027,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2182,7 +2065,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2221,7 +2103,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2260,7 +2141,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2299,7 +2179,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2338,7 +2217,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2377,7 +2255,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2416,7 +2293,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2455,7 +2331,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2494,7 +2369,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2533,7 +2407,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2572,7 +2445,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2611,7 +2483,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2650,7 +2521,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2689,7 +2559,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2728,7 +2597,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2767,7 +2635,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2806,7 +2673,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2845,7 +2711,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2884,7 +2749,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2923,7 +2787,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -2962,7 +2825,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3001,7 +2863,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3040,7 +2901,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3079,7 +2939,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3118,7 +2977,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3157,7 +3015,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3196,7 +3053,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3235,7 +3091,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3274,7 +3129,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3313,7 +3167,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3352,7 +3205,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3391,7 +3243,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3430,7 +3281,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3469,7 +3319,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3508,7 +3357,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3547,7 +3395,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3586,7 +3433,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3625,7 +3471,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3664,7 +3509,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3703,7 +3547,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3742,7 +3585,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3781,7 +3623,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3820,7 +3661,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3859,7 +3699,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3898,7 +3737,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3937,7 +3775,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -3976,7 +3813,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -4015,7 +3851,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -4054,7 +3889,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -4093,7 +3927,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -4132,7 +3965,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -4171,7 +4003,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -4210,7 +4041,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -4249,7 +4079,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -4288,7 +4117,6 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
@@ -4312,134 +4140,6 @@ ENTITIES:
     ModelComponent:
       ModelID: 7633162898494281895
       MaterialID: 1299006059024419860
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Wall
-      UID: 8261118590240462762
-    TransformComponent:
-      Transform:
-        Translate: [12.8325434, 20.0008335, 10.3848152]
-        Rotate: [0, -0, 0]
-        Scale: [1, 20.8787899, 33.8737335]
-    ModelComponent:
-      ModelID: 7633162898494281895
-      MaterialID: 6104124486273075758
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Wall (Copy)
-      UID: 8459617508951873888
-    TransformComponent:
-      Transform:
-        Translate: [-13.3995094, 20.0008335, 7.19802809]
-        Rotate: [0, -0, 0]
-        Scale: [1, 20.8787899, 39.3113823]
-    ModelComponent:
-      ModelID: 7633162898494281895
-      MaterialID: 6104124486273075758
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Wall (Copy)
-      UID: 13541143157355054466
-    TransformComponent:
-      Transform:
-        Translate: [-1.10840631, 18.0913982, -9.37438869]
-        Rotate: [0, 89.980217, 0]
-        Scale: [1, 20.8787899, 28.5447407]
-    ModelComponent:
-      ModelID: 7633162898494281895
-      MaterialID: 6104124486273075758
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Roof_1
-      UID: 13904237265309682321
-    TransformComponent:
-      Transform:
-        Translate: [-12.5889997, 25.6593513, -12.2508068]
-        Rotate: [180, -5.00895612e-06, 180]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
-    ModelComponent:
-      ModelID: 2720699287626206402
-      MaterialID: 16051879611138255440
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Roof_1 (Copy)
-      UID: 4433475918073630714
-    TransformComponent:
-      Transform:
-        Translate: [-22.3067341, 25.6593513, 26.1579895]
-        Rotate: [0, -89.980217, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
-    ModelComponent:
-      ModelID: 2720699287626206402
-      MaterialID: 16051879611138255440
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Roof_1 (Copy)
-      UID: 3003759369631847308
-    TransformComponent:
-      Transform:
-        Translate: [12.2674084, 25.6593513, 33.6734085]
-        Rotate: [0, -0, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
-    ModelComponent:
-      ModelID: 2720699287626206402
-      MaterialID: 16051879611138255440
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Wall (Copy) (Copy) (Copy)
-      UID: 17575956581514532657
-    TransformComponent:
-      Transform:
-        Translate: [-0.744352579, 25.3435612, 26.5350285]
-        Rotate: [0, 89.980217, 0]
-        Scale: [0.99999994, 8.57234478, 27.2301006]
-    ModelComponent:
-      ModelID: 7633162898494281895
-      MaterialID: 6104124486273075758
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Wall (Copy) (Copy) (Copy)
-      UID: 13604432045869299143
-    TransformComponent:
-      Transform:
-        Translate: [8.43278599, 15.867569, 26.5350285]
-        Rotate: [0, 89.980217, 0]
-        Scale: [1, 10.908102, 7.84341812]
-    ModelComponent:
-      ModelID: 7633162898494281895
-      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""

@@ -11,7 +11,6 @@ namespace Boom {
 			, bloom{ GetUniformVar("u_bloom") }
 			, bloomEnabled{ GetUniformVar("u_enableBloom") }
 			, fadeAlpha{ GetUniformVar("u_fadeAlpha") } // NEW
-			, bloomIntensity{ GetUniformVar("u_bloomIntensity") }
 			, quad{ CreateQuad2D() }
 			, color{ col }
 		{
@@ -41,18 +40,16 @@ namespace Boom {
 		BOOM_INLINE ~FinalShader()
 		{
 			glDeleteTextures(1, &m_Final);
-			glDeleteFramebuffers(1, &m_FBO);
 		}
 
-		BOOM_INLINE void Render(uint32_t vmap, uint32_t vbloom, bool useFBO, bool enableBloom = false, float intensity = 1.0f)
+		BOOM_INLINE void Render(uint32_t vmap, uint32_t vbloom, bool useFBO, bool enableBloom = false)
 		{
-			glBindFramebuffer(GL_FRAMEBUFFER, useFBO ? m_FBO : 0);
-			glClearColor(0, 0, 0, 1);
+			glBindFramebuffer(GL_FRAMEBUFFER, useFBO ? m_Final : 0);
 			glClear(GL_COLOR_BUFFER_BIT);
+			glClearColor(0, 0, 0, 1);
 			Use();
 
 			SetUniform(bloomEnabled, enableBloom);
-			SetUniform(bloomIntensity, intensity);
 			SetSceneMap(vmap, vbloom);
 
 			// NEW: apply screen fade
@@ -80,11 +77,6 @@ namespace Boom {
 		BOOM_INLINE uint32_t GetMap()
 		{
 			return m_Final;
-		}
-
-		BOOM_INLINE uint32_t GetFBOId() const
-		{
-			return m_FBO;
 		}
 
 		BOOM_INLINE void CreateBuffer(int32_t width, int32_t height)
@@ -115,7 +107,6 @@ namespace Boom {
 
 	private:
 		int32_t fadeAlpha; // NEW
-		int32_t bloomIntensity;
 
 		Quad2D quad;
 		int32_t bloom = 0u;

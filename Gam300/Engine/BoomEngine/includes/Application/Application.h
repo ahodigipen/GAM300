@@ -35,7 +35,6 @@
 #include "AI/AISystem.h"
 #include "Input/RayCast.h"
 #include "Graphics/Video/VideoPlayer.h"
-#include "GlobalConstants.h"
 
 namespace std {
 	template<>
@@ -181,7 +180,6 @@ namespace Boom
 		BOOM_API void RunContext(bool showFrame = false);
 
 		void RenderScene(bool isPicking = false);
-		void RenderTextOverlay();
 
 		/**
 		* @brief Enters play mode (like Unity's Play button)
@@ -523,18 +521,6 @@ namespace Boom
 
 			auto& sn = reg.get<SceneNavmeshComponent>(settings);
 
-			// Apply scene settings to renderer
-			if (m_Context->renderer)
-			{
-				m_Context->renderer->AmbientStrength() = sn.ambientStrength;
-				m_Context->renderer->enabledBloom = sn.bloomEnabled;
-				m_Context->renderer->bloomIntensity = sn.bloomIntensity;
-				m_Context->renderer->bloomThreshold = sn.bloomThreshold;
-				m_Context->renderer->bloomIterations = sn.bloomIterations;
-				BOOM_INFO("[Scene] Applied scene settings: ambient={}, bloom={}, intensity={}, threshold={}, iterations={}",
-					sn.ambientStrength, sn.bloomEnabled, sn.bloomIntensity, sn.bloomThreshold, sn.bloomIterations);
-			}
-
 			if (sn.navmeshFile.empty())
 			{
 				BOOM_INFO("[Nav] SceneNavmeshComponent.navmeshFile is empty; skipping navmesh load");
@@ -582,10 +568,14 @@ namespace Boom
 
 			// CRITICAL: Load all assets from assets.yaml BEFORE loading the scene
 			// This ensures textures, models, etc. are available when scene references them
+			//BOOM_INFO("[Scene] Loading assets from Resources/assets.yaml");
+			//serializer.DeserializeAsync(*m_Context->assets, "Resources/assets.yaml", m_Context->window->Handle().get());
 			serializer.Deserialize(m_Context->scene, *m_Context->assets, sceneFilePath);
 
-			// Clear all trigger callbacks before loading new scene
+			// *** ADD THIS LINE - Clear all trigger callbacks before loading new scene ***
 			Boom::ClearAllTriggerCallbacks();
+
+			//serializer.Deserialize(m_Context->scene, *m_Context->assets, sceneFilePath);
 
 			// Update tracking
 			strncpy_s(m_CurrentScenePath, sizeof(m_CurrentScenePath), sceneFilePath.c_str(), _TRUNCATE);
@@ -593,10 +583,8 @@ namespace Boom
 
 			// Reinitialize systems that need it
 			ReinitializeSceneSystems();
-
 			m_NavInitialized = false;
 			ApplySceneNavmeshFromScene();
-
 			BOOM_INFO("[Scene] Successfully loaded scene '{}'", sceneName);
 			return true;
 		}
@@ -1375,15 +1363,6 @@ namespace Boom
 
 			// *** ADD THIS - Clear trigger callbacks to prevent stale delegates ***
 			Boom::ClearAllTriggerCallbacks();
-
-			// Reset video system for scene change (clears players and playOnStart tracking)
-			if (m_Context->videoSystem) {
-				m_Context->videoSystem->OnSceneChange();
-			}
-
-			// Reset screen fade to transparent so new scene isn't covered by black
-			// (Each scene's scripts can fade in/out as needed)
-			g_ScreenFadeAlpha = 0.0f;
 
 			// Clear the ECS scene
 			m_Context->scene.clear();

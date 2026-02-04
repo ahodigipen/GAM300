@@ -370,271 +370,6 @@ namespace EditorUI {
                 ImGui::Spacing();
                 ImGui::SeparatorText("Utilities");
 
-                // --- SNAP TO GRID ---
-                if (ImGui::TreeNode("Grid Snapping")) {
-                    ImGui::DragFloat("Pos Step", &m_GridSnapValues.x, 0.1f, 0.01f, 10.0f);
-                    ImGui::DragFloat("Rot Step", &m_GridSnapValues.y, 1.0f, 1.0f, 90.0f);
-                    ImGui::DragFloat("Scale Step", &m_GridSnapValues.z, 0.1f, 0.01f, 2.0f);
-
-                    if (ImGui::Button("Snap to Grid", ImVec2(-1, 0))) {
-                        // Capture state for Undo
-                        auto* history = m_Owner->GetCommandHistory();
-                        Boom::Transform3D transformBefore = tc.transform;
-
-                        // Apply Snap
-                        // Position
-                        if (m_GridSnapValues.x > 0.001f) {
-                            tc.transform.translate.x = round(tc.transform.translate.x / m_GridSnapValues.x) * m_GridSnapValues.x;
-                            tc.transform.translate.y = round(tc.transform.translate.y / m_GridSnapValues.x) * m_GridSnapValues.x;
-                            tc.transform.translate.z = round(tc.transform.translate.z / m_GridSnapValues.x) * m_GridSnapValues.x;
-                        }
-                        // Rotation
-                        if (m_GridSnapValues.y > 0.001f) {
-                            tc.transform.rotate.x = round(tc.transform.rotate.x / m_GridSnapValues.y) * m_GridSnapValues.y;
-                            tc.transform.rotate.y = round(tc.transform.rotate.y / m_GridSnapValues.y) * m_GridSnapValues.y;
-                            tc.transform.rotate.z = round(tc.transform.rotate.z / m_GridSnapValues.y) * m_GridSnapValues.y;
-                        }
-                        // Scale
-                        if (m_GridSnapValues.z > 0.001f) {
-                            tc.transform.scale.x = round(tc.transform.scale.x / m_GridSnapValues.z) * m_GridSnapValues.z;
-                            tc.transform.scale.y = round(tc.transform.scale.y / m_GridSnapValues.z) * m_GridSnapValues.z;
-                            tc.transform.scale.z = round(tc.transform.scale.z / m_GridSnapValues.z) * m_GridSnapValues.z;
-                        }
-
-                        // Record Undo if changed
-                        if (history && (transformBefore.translate != tc.transform.translate || 
-                                        transformBefore.rotate != tc.transform.rotate || 
-                                        transformBefore.scale != tc.transform.scale)) 
-                        {
-                            auto command = std::make_unique<TransformCommand>(
-                                &ctx->scene,
-                                m_App->SelectedEntity(),
-                                transformBefore,
-                                tc.transform,
-                                "Snap to Grid"
-                            );
-                            history->Execute(std::move(command));
-                            BOOM_INFO("[Inspector] Snapped entity to grid");
-                        }
-                    }
-                    ImGui::TreePop();
-                }
-
-                // --- ALIGNMENT TOOL ---
-                if (ImGui::TreeNode("Alignment Tool")) {
-                    // 1. Target Picker
-                    std::string targetName = "None";
-                    if (m_AlignTarget != entt::null && ctx->scene.valid(m_AlignTarget) && ctx->scene.all_of<Boom::InfoComponent>(m_AlignTarget)) {
-                        targetName = ctx->scene.get<Boom::InfoComponent>(m_AlignTarget).name;
-                    } else {
-                        m_AlignTarget = entt::null; // Reset if invalid
-                    }
-
-                    if (ImGui::BeginCombo("Target", targetName.c_str())) {
-                        // Search Box
-                        ImGui::InputTextWithHint("##AlignSearch", "Search...", m_AlignSearchBuffer, sizeof(m_AlignSearchBuffer));
-                        
-                        // Convert search to lowercase for case-insensitive matching
-                        std::string searchLower = m_AlignSearchBuffer;
-                        std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), 
-                            [](unsigned char c){ return std::tolower(c); });
-
-                        auto view = ctx->scene.view<Boom::InfoComponent>();
-                        for (auto e : view) {
-                            if (e == m_App->SelectedEntity()) continue; // Skip self
-                            const auto& info = view.get<Boom::InfoComponent>(e);
-                            
-                            // Filter logic
-                            if (!searchLower.empty()) {
-                                std::string nameLower = info.name;
-                                std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), 
-                                    [](unsigned char c){ return std::tolower(c); });
-                                if (nameLower.find(searchLower) == std::string::npos) {
-                                    continue; // Skip if doesn't match
-                                }
-                            }
-
-                            bool isSelected = (m_AlignTarget == e);
-                            if (ImGui::Selectable(info.name.c_str(), isSelected)) {
-                                m_AlignTarget = e;
-                            }
-                            if (isSelected) ImGui::SetItemDefaultFocus();
-                        }
-                        ImGui::EndCombo();
-                    }
-
-                    if (m_AlignTarget != entt::null) {
-                        Boom::Entity targetEntity{ &ctx->scene, m_AlignTarget };
-                        
-                        // Helper to perform alignment
-                        auto DoAlign = [&](const char* name, int axis, int mode) {
-                            // Modes: 
-                            // 0: Min-to-Max (Snap High - Place Right/Top/Front of Target)
-                            // 1: Max-to-Min (Snap Low - Place Left/Bottom/Back of Target)
-                            // 2: Min-to-Min (Align Low - Flush Left/Bottom/Back)
-                            // 3: Max-to-Max (Align High - Flush Right/Top/Front)
-                            // 4: Center-to-Center
-
-                            glm::vec3 selMin, selMax, tarMin, tarMax;
-                            GetEntityAABB(selected, selMin, selMax);
-                            GetEntityAABB(targetEntity, tarMin, tarMax);
-
-                            float shift = 0.0f;
-                            float selEdgeMin = selMin[axis];
-                            float selEdgeMax = selMax[axis];
-                            float tarEdgeMin = tarMin[axis];
-                            float tarEdgeMax = tarMax[axis];
-
-                            switch (mode) {
-                                case 0: // Min (Self) to Max (Target) -> "Snap Right/Top/Front"
-                                    shift = tarEdgeMax - selEdgeMin;
-                                    break;
-                                case 1: // Max (Self) to Min (Target) -> "Snap Left/Bottom/Back"
-                                    shift = tarEdgeMin - selEdgeMax;
-                                    break;
-                                case 2: // Min to Min (Align Low)
-                                    shift = tarEdgeMin - selEdgeMin;
-                                    break;
-                                case 3: // Max to Max (Align High)
-                                    shift = tarEdgeMax - selEdgeMax;
-                                    break;
-                                case 4: // Center to Center
-                                    shift = ((tarEdgeMin + tarEdgeMax) * 0.5f) - ((selEdgeMin + selEdgeMax) * 0.5f);
-                                    break;
-                            }
-
-                            // Calculate World Shift Vector
-                            glm::vec3 worldShift(0.0f);
-                            worldShift[axis] = shift;
-
-                            // Get Current World Position
-                            glm::mat4 worldMatrix = Boom::GetWorldMatrix(ctx->scene, m_App->SelectedEntity());
-                            glm::vec3 currentWorldPos = glm::vec3(worldMatrix[3]);
-                            glm::vec3 newWorldPos = currentWorldPos + worldShift;
-
-                            // Apply Undo
-                            auto* history = m_Owner->GetCommandHistory();
-                            Boom::Transform3D oldTrans = tc.transform;
-
-                            // Convert New World Position to Local Position
-                            entt::entity parent = Boom::GetParentEntity(ctx->scene, m_App->SelectedEntity());
-                            if (parent != entt::null) {
-                                glm::mat4 parentWorld = Boom::GetWorldMatrix(ctx->scene, parent);
-                                glm::mat4 parentInverse = glm::inverse(parentWorld);
-                                glm::vec4 localPos = parentInverse * glm::vec4(newWorldPos, 1.0f);
-                                tc.transform.translate = glm::vec3(localPos);
-                            }
-                            else {
-                                tc.transform.translate = newWorldPos;
-                            }
-
-                            if (history) {
-                                auto cmd = std::make_unique<TransformCommand>(
-                                    &ctx->scene, m_App->SelectedEntity(), oldTrans, tc.transform, 
-                                    std::string("Align ") + name
-                                );
-                                history->Execute(std::move(cmd));
-                            }
-                        };
-
-                        // --- UI Layout ---
-                        
-                        // Align (Flush) Table
-                        ImGui::Spacing();
-                        ImGui::TextDisabled("Align (Flush)");
-                        if (ImGui::BeginTable("##AlignTable", 4, ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_BordersInnerV)) {
-                            ImGui::TableSetupColumn("Axis", ImGuiTableColumnFlags_WidthFixed, 30.0f);
-                            ImGui::TableSetupColumn("Min", ImGuiTableColumnFlags_None);
-                            ImGui::TableSetupColumn("Center", ImGuiTableColumnFlags_None);
-                            ImGui::TableSetupColumn("Max", ImGuiTableColumnFlags_None);
-                            
-                            // X Axis
-                            ImGui::TableNextRow();
-                            ImGui::TableSetColumnIndex(0); ImGui::Text("X");
-                            
-                            ImGui::TableSetColumnIndex(1); 
-                            if (ImGui::Button("Left##FlushX", ImVec2(-1, 0))) DoAlign("Left", 0, 2); 
-                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Left Edges (Min X)");
-
-                            ImGui::TableSetColumnIndex(2); 
-                            if (ImGui::Button("Center##FlushX", ImVec2(-1, 0))) DoAlign("Center X", 0, 4);
-                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Centers (Center X)");
-
-                            ImGui::TableSetColumnIndex(3); 
-                            if (ImGui::Button("Right##FlushX", ImVec2(-1, 0))) DoAlign("Right", 0, 3);
-                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Right Edges (Max X)");
-
-                            // Y Axis
-                            ImGui::TableNextRow();
-                            ImGui::TableSetColumnIndex(0); ImGui::Text("Y");
-                            
-                            ImGui::TableSetColumnIndex(1); 
-                            if (ImGui::Button("Bottom##FlushY", ImVec2(-1, 0))) DoAlign("Bottom", 1, 2);
-                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Bottom Edges (Min Y)");
-
-                            ImGui::TableSetColumnIndex(2); 
-                            if (ImGui::Button("Center##FlushY", ImVec2(-1, 0))) DoAlign("Center Y", 1, 4);
-                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Centers (Center Y)");
-
-                            ImGui::TableSetColumnIndex(3); 
-                            if (ImGui::Button("Top##FlushY", ImVec2(-1, 0))) DoAlign("Top", 1, 3);
-                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Top Edges (Max Y)");
-
-                            // Z Axis
-                            ImGui::TableNextRow();
-                            ImGui::TableSetColumnIndex(0); ImGui::Text("Z");
-                            
-                            ImGui::TableSetColumnIndex(1); 
-                            if (ImGui::Button("Back##FlushZ", ImVec2(-1, 0))) DoAlign("Back", 2, 2);
-                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Back Edges (Min Z)");
-
-                            ImGui::TableSetColumnIndex(2); 
-                            if (ImGui::Button("Center##FlushZ", ImVec2(-1, 0))) DoAlign("Center Z", 2, 4);
-                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Centers (Center Z)");
-
-                            ImGui::TableSetColumnIndex(3); 
-                            if (ImGui::Button("Front##FlushZ", ImVec2(-1, 0))) DoAlign("Front", 2, 3);
-                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("Align Front Edges (Max Z)");
-
-                            ImGui::EndTable();
-                        }
-
-                        // Snap (Adjacency) Table
-                        ImGui::Spacing();
-                        ImGui::TextDisabled("Snap (Adjacency)");
-                        if (ImGui::BeginTable("##SnapTable", 3, ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_BordersInnerV)) {
-                            ImGui::TableSetupColumn("Axis", ImGuiTableColumnFlags_WidthFixed, 30.0f);
-                            ImGui::TableSetupColumn("Low", ImGuiTableColumnFlags_None);
-                            ImGui::TableSetupColumn("High", ImGuiTableColumnFlags_None);
-                            
-                            // X Axis
-                            ImGui::TableNextRow();
-                            ImGui::TableSetColumnIndex(0); ImGui::Text("X");
-                            ImGui::TableSetColumnIndex(1); if (ImGui::Button("Left Of##Snap", ImVec2(-1, 0))) DoAlign("Left Of", 0, 1);
-                            ImGui::TableSetColumnIndex(2); if (ImGui::Button("Right Of##Snap", ImVec2(-1, 0))) DoAlign("Right Of", 0, 0);
-
-                            // Y Axis
-                            ImGui::TableNextRow();
-                            ImGui::TableSetColumnIndex(0); ImGui::Text("Y");
-                            ImGui::TableSetColumnIndex(1); if (ImGui::Button("Below##Snap", ImVec2(-1, 0))) DoAlign("Below", 1, 1);
-                            ImGui::TableSetColumnIndex(2); if (ImGui::Button("Above##Snap", ImVec2(-1, 0))) DoAlign("Above", 1, 0);
-
-                            // Z Axis
-                            ImGui::TableNextRow();
-                            ImGui::TableSetColumnIndex(0); ImGui::Text("Z");
-                            ImGui::TableSetColumnIndex(1); if (ImGui::Button("Behind##Snap", ImVec2(-1, 0))) DoAlign("Behind", 2, 1);
-                            ImGui::TableSetColumnIndex(2); if (ImGui::Button("In Front##Snap", ImVec2(-1, 0))) DoAlign("In Front", 2, 0);
-
-                            ImGui::EndTable();
-                        }
-                    }
-                    else {
-                        ImGui::TextColored(ImVec4(1, 1, 0, 1), "Select a target entity to enable alignment tools.");
-                    }
-
-                    ImGui::TreePop();
-                }
-
                 // We use -1 width to make the buttons span the whole panel
                 if (ImGui::Button("Snap to Floor", ImVec2(-1, 0))) {
                     SnapEntity(selected, glm::vec3(0.0f, -1.0f, 0.0f));
@@ -2046,14 +1781,6 @@ namespace EditorUI {
                         ImGui::SetTooltip(
                             "3D Mode: Renders as a quad in world space with transform\n"
                             "2D Mode: Renders as UI overlay"
-                        );
-                    }
-
-                    ImGui::Checkbox("Remove Black Background", &vc.removeBlackBackground);
-                    if (ImGui::IsItemHovered()) {
-                        ImGui::SetTooltip(
-                            "Treats black pixels (brightness < 0.1) as transparent.\n"
-                            "Useful for overlay effects like explosions or holograms."
                         );
                     }
 
@@ -3926,118 +3653,79 @@ namespace EditorUI {
         if (!ctx || !entity.Has<Boom::TransformComponent>()) return;
 
         auto& tc = entity.Get<Boom::TransformComponent>();
-        const float maxDistance = 1000.0f;
+        const float maxDistance = 100.0f;
 
-        // Get entity's current world position (Pivot)
+        // Get entity's current world position
         glm::mat4 worldMatrix = Boom::GetWorldMatrix(ctx->scene, entity.ID());
-        glm::vec3 entityWorldPos = glm::vec3(worldMatrix[3]);
+        glm::vec3 entityWorldPos;
+        glm::vec3 unused1, unused2;
+        Boom::DecomposeMatrix(worldMatrix, entityWorldPos, unused1, unused2);
 
-        // Get entity's AABB
-        glm::vec3 entityAABBMin, entityAABBMax;
-        GetEntityAABB(entity, entityAABBMin, entityAABBMax);
-        glm::vec3 aabbCenter = (entityAABBMin + entityAABBMax) * 0.5f;
-
-        // Start ray from AABB center
-        glm::vec3 rayOrigin = aabbCenter;
+        // Calculate ray origin - start from entity center, offset slightly in opposite direction
+        // to avoid self-intersection
+        glm::vec3 rayOrigin = entityWorldPos - direction * 0.1f;
         glm::vec3 rayDir = glm::normalize(direction);
 
-        // Try physics raycast first
+        // Get entity's own AABB for offset calculation
+        glm::vec3 entityAABBMin, entityAABBMax;
+        GetEntityAABB(entity, entityAABBMin, entityAABBMax);
+
+        // Calculate entity half-size in the snap direction
+        glm::vec3 entityHalfSize = (entityAABBMax - entityAABBMin) * 0.5f;
+        float entityOffset = glm::abs(glm::dot(entityHalfSize, rayDir));
+
+        // Try physics raycast first (works if actors exist)
         auto physResult = ctx->physics->Raycast(rayOrigin, rayDir, maxDistance);
 
         bool hitFound = false;
         glm::vec3 hitPoint;
+        glm::vec3 hitNormal;
         entt::entity hitEntity = entt::null;
 
         if (physResult.hitFound && physResult.hitEntity != entity.ID()) {
             hitFound = true;
             hitPoint = physResult.position;
+            hitNormal = physResult.normal;
             hitEntity = physResult.hitEntity;
         }
 
-        // Fallback: Check against scene bounds (OBB check)
+        // Fallback: Check against all entities with models or colliders (for edit mode)
         if (!hitFound) {
             float closestDist = maxDistance;
 
             auto view = ctx->scene.view<Boom::TransformComponent>();
             for (auto e : view) {
-                if (e == entity.ID()) continue;
+                if (e == entity.ID()) continue; // Skip self
 
-                // Only check entities with models or colliders
                 bool hasModel = ctx->scene.any_of<Boom::ModelComponent>(e);
                 bool hasCollider = ctx->scene.any_of<Boom::ColliderComponent>(e);
                 if (!hasModel && !hasCollider) continue;
 
-                // --- Calculate Local AABB ---
-                glm::vec3 localMin(-0.5f), localMax(0.5f);
-                if (hasModel) {
-                    auto& mc = ctx->scene.get<Boom::ModelComponent>(e);
-                    if (mc.modelID != EMPTY_ASSET) {
-                        auto* modelAsset = ctx->assets->TryGet<ModelAsset>(mc.modelID);
-                        if (modelAsset && modelAsset->data) {
-                            auto staticModel = std::dynamic_pointer_cast<Boom::StaticModel>(modelAsset->data);
-                            if (staticModel) {
-                                const auto& meshData = staticModel->GetMeshData();
-                                if (!meshData.empty()) {
-                                    localMin = glm::vec3(FLT_MAX);
-                                    localMax = glm::vec3(-FLT_MAX);
-                                    for (const auto& mesh : meshData) {
-                                        for (const auto& vertex : mesh.vtx) {
-                                            localMin = glm::min(localMin, vertex.pos);
-                                            localMax = glm::max(localMax, vertex.pos);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } else if (hasCollider) {
-                    auto& cc = ctx->scene.get<Boom::ColliderComponent>(e);
-                    glm::vec3 halfSize = cc.Collider.localScale * 0.5f;
-                    localMin = cc.Collider.localPosition - halfSize;
-                    localMax = cc.Collider.localPosition + halfSize;
-                }
+                // Get target entity's AABB
+                glm::vec3 targetMin, targetMax;
+                GetEntityAABBForSnap(ctx, e, targetMin, targetMax);
 
-                // Transform Ray to Local Space
-                glm::mat4 targetWorld = Boom::GetWorldMatrix(ctx->scene, e);
-                glm::mat4 worldToLocal = glm::inverse(targetWorld);
-
-                glm::vec3 localRayOrigin = glm::vec3(worldToLocal * glm::vec4(rayOrigin, 1.0f));
-                glm::vec3 localRayDir = glm::vec3(worldToLocal * glm::vec4(rayDir, 0.0f));
-
+                // Ray-AABB intersection
                 float t;
-                if (RayAABBIntersection(localRayOrigin, localRayDir, localMin, localMax, t)) {
-                    if (t > 0.0f) {
-                        glm::vec3 localHit = localRayOrigin + localRayDir * t;
-                        glm::vec3 worldHit = glm::vec3(targetWorld * glm::vec4(localHit, 1.0f));
-                        float dist = glm::distance(rayOrigin, worldHit);
+                if (RayAABBIntersection(rayOrigin, rayDir, targetMin, targetMax, t)) {
+                    if (t > 0.0f && t < closestDist) {
+                        closestDist = t;
+                        hitFound = true;
+                        hitPoint = rayOrigin + rayDir * t;
+                        hitEntity = e;
 
-                        if (dist < closestDist) {
-                            closestDist = dist;
-                            hitFound = true;
-                            hitPoint = worldHit;
-                            hitEntity = e;
-                        }
+                        // Calculate approximate normal based on which face was hit
+                        hitNormal = CalculateAABBHitNormal(hitPoint, targetMin, targetMax);
                     }
                 }
             }
         }
 
         if (hitFound) {
-            // Find the support point on the AABB in the direction of the ray
-            // (The point that should touch the hit surface)
-            glm::vec3 supportPoint;
-            for (int i = 0; i < 3; ++i) {
-                supportPoint[i] = (rayDir[i] > 0.0f) ? entityAABBMax[i] : entityAABBMin[i];
-            }
+            // Calculate new position: hit point + offset so entity sits on surface
+            glm::vec3 newWorldPos = hitPoint - rayDir * entityOffset;
 
-            // Calculate distance to move along the ray direction
-            // We project the vector (HitPoint - SupportPoint) onto RayDir
-            float dist = glm::dot(hitPoint - supportPoint, rayDir);
-
-            // Apply the shift to the entity's pivot
-            glm::vec3 newWorldPos = entityWorldPos + rayDir * dist;
-
-            // Convert to local space if parented
+            // If entity has a parent, convert world position to local
             entt::entity parent = Boom::GetParentEntity(ctx->scene, entity.ID());
             if (parent != entt::null) {
                 glm::mat4 parentWorld = Boom::GetWorldMatrix(ctx->scene, parent);
@@ -4055,7 +3743,8 @@ namespace EditorUI {
                 hitName = ctx->scene.get<Boom::InfoComponent>(hitEntity).name;
             }
 
-            BOOM_INFO("[Snap] Snapped entity to '{}' (Shift: {:.2f})", hitName, dist);
+            auto dout = glm::distance(entityWorldPos, newWorldPos);
+            BOOM_INFO("[Snap] Snapped entity to '{}' (distance: {:.2f})", hitName, dout);
         }
         else {
             BOOM_WARN("[Snap] No surface found in direction ({:.1f}, {:.1f}, {:.1f})", direction.x, direction.y, direction.z);

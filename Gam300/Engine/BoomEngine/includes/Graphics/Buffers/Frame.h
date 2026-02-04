@@ -61,7 +61,6 @@ namespace Boom {
 			//resize brightness attachment
 			glBindTexture(GL_TEXTURE_2D, brightness);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, tw, th, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-			glGenerateMipmap(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, 0);
 
 			//resize render buffer
@@ -75,7 +74,7 @@ namespace Boom {
 		
 		BOOM_INLINE void SBind() {
 			glBindFramebuffer(GL_FRAMEBUFFER, buffId);
-			glViewport(0, 0, targetW(), targetH());
+			glViewport(0, 0, width, height);
 		}
 		BOOM_INLINE void Begin() {
 			glBindFramebuffer(GL_FRAMEBUFFER, buffId);
@@ -147,12 +146,11 @@ namespace Boom {
 		BOOM_INLINE void CreateBrightnessAttachment() {
 			glGenTextures(1, &brightness);
 			glBindTexture(GL_TEXTURE_2D, brightness);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, isLowPoly ? GL_NEAREST : GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, isLowPoly ? GL_NEAREST : GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, targetW(), targetH(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-			glGenerateMipmap(GL_TEXTURE_2D);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, brightness, 0);
 		}
 		//lowpoly needs to resize using this, not width/height directly

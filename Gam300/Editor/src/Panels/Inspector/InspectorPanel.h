@@ -103,12 +103,6 @@ namespace EditorUI {
         float          m_MatPreviewPitch = 0.3f;
         float          m_MatPreviewDistance = 1.5f;
 
-        // Grid Snap settings
-        bool           m_UseGridSnap = false;
-        glm::vec3      m_GridSnapValues = glm::vec3(1.0f, 15.0f, 0.5f); // Pos, Rot, Scale
-        entt::entity   m_AlignTarget = entt::null; // Target entity for alignment tools
-        char           m_AlignSearchBuffer[128]{}; // Search buffer for alignment target
-
         void RenderMaterialPreview(Boom::MaterialAsset* mat);
 
         template<typename TComponent, typename GetPropsFn>

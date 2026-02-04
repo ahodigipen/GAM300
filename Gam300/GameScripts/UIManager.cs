@@ -19,8 +19,6 @@ namespace GameScripts
         private UILocationController _locationUI;
         private UIHeartController _heartUI;  // *** NEW: Heart UI controller ***
         private UIFreezeController _freezeUI; // *** NEW ***
-        private UITutorialController _tutorialUI; // *** NEW: Tutorial UI controller ***
-        private UIStanceController _stanceUI; // *** NEW: Crouch/Run UI controller ***
 
         public void OnStart(string jsonParams)
         {
@@ -47,16 +45,7 @@ namespace GameScripts
             _freezeUI = new UIFreezeController { Entity = Entity };
             _freezeUI.OnStart(jsonParams);
 
-            // *** NEW: Initialize stance UI (crouch/run) ***
-            _stanceUI = new UIStanceController { Entity = Entity };
-            _stanceUI.OnStart(jsonParams);
-
-            // *** NEW: Initialize tutorial UI ***
-            _tutorialUI = new UITutorialController { Entity = Entity };
-            _tutorialUI.OnStart(jsonParams);
-
-            API.Log("[UIManager] All UI systems initialized (including hearts and tutorials)");
-
+            API.Log("[UIManager] All UI systems initialized (including hearts)");
         }
 
         public void OnUpdate(float dt)
@@ -68,10 +57,7 @@ namespace GameScripts
             _locationUI?.OnUpdate(dt);
             _heartUI?.OnUpdate(dt);  // *** NEW: Update heart UI ***
             _freezeUI?.OnUpdate(dt);
-            _stanceUI?.OnUpdate(dt); // *** NEW: Update crouch/run UI ***
-            _tutorialUI?.OnUpdate(dt);  // *** NEW: Update tutorial UI ***
         }
-
 
         public void OnDestroy()
         {
@@ -100,7 +86,7 @@ namespace GameScripts
         }
 
         /// <summary>
-        /// Show the "Hold to Crouch" prompt (backward compatible)
+        /// Show the "Hold to Crouch" prompt
         /// </summary>
         public static void ShowHoldPrompt()
         {
@@ -115,7 +101,7 @@ namespace GameScripts
         }
 
         /// <summary>
-        /// Hide the "Hold to Crouch" prompt (backward compatible)
+        /// Hide the "Hold to Crouch" prompt
         /// </summary>
         public static void HideHoldPrompt()
         {
@@ -181,37 +167,5 @@ namespace GameScripts
         {
             return s_instance != null;
         }
-
-        /// <summary>
-        /// Show a tutorial popup sprite
-        /// </summary>
-        public static void ShowTutorialPopup(ulong spriteEntity)
-        {
-            if (s_instance != null)
-            {
-                s_instance._tutorialUI?.Show(spriteEntity);
-            }
-            else
-            {
-                API.Log("[UIManager] No instance registered - cannot show tutorial popup");
-            }
-        }
-
-        /// <summary>
-        /// Hide the tutorial popup sprite
-        /// </summary>
-        public static void HideTutorialPopup()
-        {
-            if (s_instance != null)
-            {
-                s_instance._tutorialUI?.Hide();
-            }
-            else
-            {
-                API.Log("[UIManager] No instance registered - cannot hide tutorial popup");
-            }
-        }
     }
 }
-
-
