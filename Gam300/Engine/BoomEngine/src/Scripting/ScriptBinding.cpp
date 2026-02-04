@@ -785,6 +785,13 @@ namespace Boom {
         }
     }
 
+    static uint64_t ICALL_API_GetControllerStandingOn(uint64_t handle) {
+        if (!s_Ctx || !s_Ctx->physics) return 0;
+
+        uint32_t entityID = static_cast<uint32_t>(handle);
+        return static_cast<uint64_t>(s_Ctx->physics->GetControllerStandingOn(entityID));
+    }
+
     static int ICALL_API_GetSurfaceType(uint64_t handle) {
         if (!s_Ctx) return 0; // DEFAULT
         entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
@@ -1984,6 +1991,18 @@ namespace Boom {
         return false;
     }
 
+    static uint64_t ICALL_API_Raycast(glm::vec3* from, glm::vec3* dir, float maxDist)
+    {
+        if (!s_Ctx || !from || !dir) return 0;
+        if (!s_Ctx->physics) return 0;
+
+        auto result = s_Ctx->physics->Raycast(*from, *dir, maxDist);
+        if (result.hitFound && result.hitEntity != entt::null) {
+            return static_cast<uint64_t>(static_cast<uint32_t>(result.hitEntity));
+        }
+        return 0;
+    }
+
     static void ICALL_API_TeleportRigidBody(uint64_t handle, glm::vec3* pos) {
         if (!pos || !s_Ctx) return;
         entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
@@ -2290,6 +2309,7 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_ProjectWorldToViewport", (const void*)ICALL_API_ProjectWorldToViewport);
         mono_add_internal_call("Boom.Native::Boom_API_Check2DViewportClick", (const void*)ICALL_API_Check2DViewportClick);
 
+        mono_add_internal_call("Boom.Native::Boom_API_Raycast", (const void*)ICALL_API_Raycast);
         mono_add_internal_call("Boom.Native::Boom_API_Linecast", (const void*)ICALL_API_Linecast);
 
         mono_add_internal_call("Boom.Native::Boom_API_SetRotationY", (const void*)ICALL_API_SetRotationY);
@@ -2306,6 +2326,7 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_CreateController", (const void*)ICALL_API_CreateController);
         mono_add_internal_call("Boom.Native::Boom_API_TeleportController", (void*)ICALL_API_TeleportController);
         mono_add_internal_call("Boom.Native::Boom_API_GetControllerTriggerOverlaps", (const void*)ICALL_API_GetControllerTriggerOverlaps);
+        mono_add_internal_call("Boom.Native::Boom_API_GetControllerStandingOn", (const void*)ICALL_API_GetControllerStandingOn);
 
         // Sprite component internal calls
         mono_add_internal_call("Boom.Native::Boom_API_HasSprite", (const void*)ICALL_API_HasSprite);
