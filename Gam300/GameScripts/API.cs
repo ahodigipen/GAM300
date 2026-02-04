@@ -423,6 +423,8 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_PlayVideoComponent(ulong handle);
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_StopVideoComponent(ulong handle);
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_GetViewportSize(out float width, out float height);
     }
 
@@ -1232,6 +1234,12 @@ namespace Boom
         {
             if (HasTransform(entity)) // Simple check to ensure entity is valid
                 Native.Boom_API_PlayVideoComponent(entity);
+        }
+
+        public static void StopVideo(ulong entity)
+        {
+            if (HasTransform(entity)) // Simple check to ensure entity is valid
+                Native.Boom_API_StopVideoComponent(entity);
         }
 
         public static void GetViewportSize(out float width, out float height)

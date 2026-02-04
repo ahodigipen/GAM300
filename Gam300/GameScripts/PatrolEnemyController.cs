@@ -39,9 +39,13 @@ namespace GameScripts
         [Boom.EditorExposed("Alert Video Offset Y", "Vertical offset for the alert video")]
         private float _alertVideoOffsetY = 5.0f;
 
-        private ulong _alertVideoEntity = 0;
-        private Vec3 _alertVideoBaseScale = new Vec3(1, 1, 1);
-        private bool _isVideoVisible = false;
+        // Shared static video entity
+        private static ulong _sharedVideoEntity = 0;
+        private static ulong _videoOwnerID = 0;
+        private static Vec3 _sharedVideoBaseScale = new Vec3(1, 1, 1);
+        
+        // Local state
+        private bool _isMyVideoVisible = false;
 
         // ====== AUDIO ======
         [Boom.EditorExposed("Footstep Sound", "Sound played for enemy footsteps")]
@@ -160,39 +164,33 @@ namespace GameScripts
             // NEW: Register with PlayerManager
             PlayerManager.RegisterEnemy(this);
 
-            // Initialize Alert Video
-            if (!string.IsNullOrEmpty(_alertVideoName))
+            // Initialize Alert Video (Shared)
+            if (_sharedVideoEntity == 0 && !string.IsNullOrEmpty(_alertVideoName))
             {
-                _alertVideoEntity = API.FindEntity(_alertVideoName);
-                if (_alertVideoEntity != 0)
+                _sharedVideoEntity = API.FindEntity(_alertVideoName);
+                if (_sharedVideoEntity != 0)
                 {
-                    API.Log($"[PatrolEnemyController] Found alert video entity: '{_alertVideoName}' (ID: {_alertVideoEntity})");
-                    _alertVideoBaseScale = API.GetScale(_alertVideoEntity);
+                    API.Log($"[PatrolEnemyController] Found shared alert video entity: '{_alertVideoName}' (ID: {_sharedVideoEntity})");
+                    _sharedVideoBaseScale = API.GetScale(_sharedVideoEntity);
                     
                     // Improved scale check - if it's too small/hidden, default to 1s
-                    if (Math.Abs(_alertVideoBaseScale.X) < 0.01f || Math.Abs(_alertVideoBaseScale.Y) < 0.01f) 
+                    if (Math.Abs(_sharedVideoBaseScale.X) < 0.01f || Math.Abs(_sharedVideoBaseScale.Y) < 0.01f) 
                     {
-                        API.Log($"[PatrolEnemyController] Video entity scale was near zero ({_alertVideoBaseScale.X:F2}, {_alertVideoBaseScale.Y:F2}). Defaulting to (1,1,1).");
-                        _alertVideoBaseScale = new Vec3(1, 1, 1);
+                        API.Log($"[PatrolEnemyController] Video entity scale was near zero ({_sharedVideoBaseScale.X:F2}, {_sharedVideoBaseScale.Y:F2}). Defaulting to (1,1,1).");
+                        _sharedVideoBaseScale = new Vec3(1, 1, 1);
                     }
                     else
                     {
-                         API.Log($"[PatrolEnemyController] Captured base scale: {_alertVideoBaseScale.X:F2}, {_alertVideoBaseScale.Y:F2}, {_alertVideoBaseScale.Z:F2}");
+                         API.Log($"[PatrolEnemyController] Captured base scale: {_sharedVideoBaseScale.X:F2}, {_sharedVideoBaseScale.Y:F2}, {_sharedVideoBaseScale.Z:F2}");
                     }
                         
                     // Default State: Hidden
-                    API.SetScale(_alertVideoEntity, new Vec3(0, 0, 0));
-                    _isVideoVisible = false;
+                    API.SetScale(_sharedVideoEntity, new Vec3(0, 0, 0));
                 }
                 else
                 {
                     API.Log($"[PatrolEnemyController] ERROR: Could not find entity named '{_alertVideoName}'!");
-                    API.Log($"[PatrolEnemyController] ACTION REQUIRED: Create an entity named '{_alertVideoName}', add a VideoComponent with 'zoro.mpeg', and check 'Play On Start'.");
                 }
-            }
-            else
-            {
-                API.Log("[PatrolEnemyController] Alert Video Name is empty. Please set it to 'AlertVideo' in the Inspector.");
             }
 
         }
@@ -294,85 +292,86 @@ namespace GameScripts
                 _proximityDetection?.OnUpdate(dt);
             }
 
-            // Update Alert Video
-            if (_alertVideoEntity != 0)
+            // Update Alert Video (Shared)
+            if (_sharedVideoEntity != 0)
             {
-                // 1. Position Update (Follow)
-                Vec3 myPos = API.GetPosition(Entity);
-                API.SetPosition(_alertVideoEntity, new Vec3(myPos.X, myPos.Y + _alertVideoOffsetY, myPos.Z));
-
-                // 2. Rotation Update (Face Camera)
-                // Use camera yaw to ensure 2D video always faces the screen (billboard)
-                float camYaw = API.GetThirdPersonCameraYaw();
-                
-                // The camera looks towards 'camYaw'. We want the video to look AT the camera,
-                // so we face the opposite direction (camYaw + 180).
-                float billboardYaw = camYaw + 180.0f; 
-                
-                API.SetRotationY(_alertVideoEntity, billboardYaw);
-
-                // 3. Visibility Update
+                // Visibility Update
                 bool isInProximity = (_proximityDetection != null && _proximityDetection.IsPlayerInProximity());
                 bool isVisible = _isAlert || isInProximity;
 
-                // DEBUG LOGGING
-                // API.Log($"[Debug] Prox: {isInProximity}, Alert: {_isAlert}, Visible: {_isVideoVisible}");
-
                 if (isVisible)
                 {
-                    if (!_isVideoVisible)
+                    // Claim ownership
+                    _videoOwnerID = Entity;
+
+                    // 1. Position Update (Follow)
+                    Vec3 myPos = API.GetPosition(Entity);
+                    API.SetPosition(_sharedVideoEntity, new Vec3(myPos.X, myPos.Y + _alertVideoOffsetY, myPos.Z));
+
+                    // 2. Rotation Update (Face Camera)
+                    float camYaw = API.GetThirdPersonCameraYaw();
+                    float billboardYaw = camYaw + 180.0f;
+                    API.SetRotationY(_sharedVideoEntity, billboardYaw);
+
+                    if (!_isMyVideoVisible)
                     {
-                        API.Log($"[PatrolEnemyController] Showing video '{_alertVideoName}'. Reason: Prox={isInProximity}, Alert={_isAlert}. Target Scale: {_alertVideoBaseScale.X}, {_alertVideoBaseScale.Y}");
-                        API.SetScale(_alertVideoEntity, _alertVideoBaseScale);
-                        _isVideoVisible = true;
+                        API.Log($"[PatrolEnemyController] Enemy {Entity} showing shared video.");
+                        API.SetScale(_sharedVideoEntity, _sharedVideoBaseScale);
+                        API.PlayVideo(_sharedVideoEntity);
+                        _isMyVideoVisible = true;
                     }
-                    // Force scale every frame to ensure it stays visible against any other systems
-                    // API.SetScale(_alertVideoEntity, _alertVideoBaseScale); 
                 }
                 else
                 {
-                    if (_isVideoVisible)
+                    if (_isMyVideoVisible)
                     {
-                        API.Log($"[PatrolEnemyController] Hiding video '{_alertVideoName}'");
-                        API.SetScale(_alertVideoEntity, new Vec3(0, 0, 0));
-                        _isVideoVisible = false;
+                        // Only hide if I am the owner
+                        if (_videoOwnerID == Entity)
+                        {
+                            API.Log($"[PatrolEnemyController] Enemy {Entity} hiding shared video.");
+                            API.StopVideo(_sharedVideoEntity);
+                            API.SetScale(_sharedVideoEntity, new Vec3(0, 0, 0));
+                            _videoOwnerID = 0;
+                        }
+                        _isMyVideoVisible = false;
                     }
-            // ======= OCCASIONAL GRUNT SOUNDS =======
-            // Only grunt while patrolling (not alert) and moving
-            if (!_isAlert && moving)
-            {
-                _gruntTimer += dt;
-                if (_gruntTimer >= _nextGruntTime)
-                {
-                    var pos = API.GetPosition(Entity);
-                    PlayRandomGrunt(pos);
+                    // ======= OCCASIONAL GRUNT SOUNDS =======
+                    // Only grunt while patrolling (not alert) and moving
+                    if (!_isAlert && moving)
+                    {
+                        _gruntTimer += dt;
+                        if (_gruntTimer >= _nextGruntTime)
+                        {
+                            var pos = API.GetPosition(Entity);
+                            PlayRandomGrunt(pos);
 
-                    // Reset timer with new random interval
-                    _gruntTimer = 0f;
-                    _nextGruntTime = GRUNT_MIN_INTERVAL + (float)(_random.NextDouble() * (GRUNT_MAX_INTERVAL - GRUNT_MIN_INTERVAL));
-                }
-            }
+                            // Reset timer with new random interval
+                            _gruntTimer = 0f;
+                            _nextGruntTime = GRUNT_MIN_INTERVAL + (float)(_random.NextDouble() * (GRUNT_MAX_INTERVAL - GRUNT_MIN_INTERVAL));
+                        }
+                    }
 
-            _debugTimer += dt;
-            if (_debugTimer >= 1f)
-            {
-                _debugTimer = 0f;
-                var r = API.GetRotation(Entity);
-                //($"[PatrolEnemyController] yaw={_yaw:F1}°, rotY={r.Y:F1}°, speed={speedXZ:F2} m/s");
-            }
+                    _debugTimer += dt;
+                    if (_debugTimer >= 1f)
+                    {
+                        _debugTimer = 0f;
+                        var r = API.GetRotation(Entity);
+                        //($"[PatrolEnemyController] yaw={_yaw:F1}°, rotY={r.Y:F1}°, speed={speedXZ:F2} m/s");
+                    }
 
-            if (_hasDealtDamage)
-            {
-                _damageResetTimer += dt;
-                if (_damageResetTimer >= DAMAGE_RESET_DELAY)
-                {
-                    _hasDealtDamage = false;
-                    _damageResetTimer = 0f;
-                    //("[PatrolEnemyController] Damage flag reset - can damage again");
+                    if (_hasDealtDamage)
+                    {
+                        _damageResetTimer += dt;
+                        if (_damageResetTimer >= DAMAGE_RESET_DELAY)
+                        {
+                            _hasDealtDamage = false;
+                            _damageResetTimer = 0f;
+                            //("[PatrolEnemyController] Damage flag reset - can damage again");
+                        }
+                    }
                 }
             }
         }
-
         private void FaceVelocity(float dt, float vx, float vz)
         {
             float speedXZ = (float)Math.Sqrt(vx * vx + vz * vz);
