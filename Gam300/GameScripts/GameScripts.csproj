@@ -57,6 +57,7 @@
     <Compile Include="FootStepsMixer.cs" />
     <Compile Include="FreezeManager.cs" />
     <Compile Include="IntroCutscene.cs" />
+    <Compile Include="LevelTransitionCutscene.cs" />
     <Compile Include="HowToPlayMenu.cs" />
     <Compile Include="CrouchTriggerText.cs" />
     <Compile Include="PatrolEnemyController.cs" />
