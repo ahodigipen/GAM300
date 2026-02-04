@@ -6,9 +6,9 @@
 
 namespace Boom {
 	//UBO must also change in pbr.glsl limits
-	inline constexpr int MAX_POINT_LIGHTS = 32;
-	inline constexpr int MAX_DIR_LIGHTS = 32;
-	inline constexpr int MAX_SPOT_LIGHTS = 128;
+	inline constexpr int MAX_POINT_LIGHTS = 128;
+	inline constexpr int MAX_DIR_LIGHTS = 128;
+	inline constexpr int MAX_SPOT_LIGHTS = 256;
 	struct GPUPointLight {
 		glm::vec4 position_range;       // xyz = position, w = range
 		glm::vec4 radiance_intensity;   // rgb = radiance, w = intensity
@@ -71,6 +71,7 @@ namespace Boom {
 			, instancingModeLoc{ GetUniformVar("u_instancingMode") }
 			, baseInstanceLoc{ GetUniformVar("u_baseInstance") }
 			, jointBaseInstanceLoc{ GetUniformVar("u_jointBaseInstance") }
+			, bloomThresholdLoc{ GetUniformVar("u_bloomThreshold") }
 		{
 			GLuint prog = shaderId; 
 
@@ -315,6 +316,7 @@ namespace Boom {
 			SetUniform(ditherThresholdLoc, showDither ? ditherThreshold : 0.f);
 			SetUniform(showNormalTextureLoc, showNormal);
 			SetUniform(ambientStrengthLoc, ambientStrength);
+			SetUniform(bloomThresholdLoc, bloomThreshold);
 
 			// For instancing, we only use the model's internal transform as a base
 			// The world transform comes from the SSBO
@@ -351,6 +353,7 @@ namespace Boom {
 			SetUniform(ditherThresholdLoc, showDither ? ditherThreshold : 0.f);
 			SetUniform(showNormalTextureLoc, showNormal);
 			SetUniform(ambientStrengthLoc, ambientStrength);
+			SetUniform(bloomThresholdLoc, bloomThreshold);
 
 			// For instancing, model transform is identity (baked into world matrices)
 			SetUniform(modelMatLoc, model->modelTransform.Matrix());
@@ -384,6 +387,7 @@ namespace Boom {
 			SetUniform(ditherThresholdLoc, showDither ? ditherThreshold : 0.f);
 			SetUniform(showNormalTextureLoc, showNormal);
 			SetUniform(ambientStrengthLoc, ambientStrength);
+			SetUniform(bloomThresholdLoc, bloomThreshold);
 
 			// For instancing, model transform is identity (baked into world matrices)
 			SetUniform(modelMatLoc, model->modelTransform.Matrix());
@@ -471,5 +475,11 @@ namespace Boom {
 		int32_t instancingModeLoc;
 		int32_t baseInstanceLoc;
 		int32_t jointBaseInstanceLoc;
+
+		// Bloom settings
+		int32_t bloomThresholdLoc;
+
+	public:
+		float bloomThreshold = 1.0f;  // Exposed for runtime adjustment
 	};
 }
