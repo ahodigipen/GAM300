@@ -102,6 +102,13 @@ namespace GameScripts
         private float _damageResetTimer = 0f;
         private const float DAMAGE_RESET_DELAY = 3.0f; // 3 seconds after damage
 
+        // Entity name for spotlight lookup (matches SpotlightFollower's targetName)
+        [Boom.EditorExposed("Entity Name", "Name of this patrol enemy for spotlight lookup")]
+        private string _entityName = "Patrol_1";
+
+        [Boom.EditorExposed("Spotlight Offset Y", "Height offset for spotlight above entity", 0f, 10f, true)]
+        private float _spotlightOffsetY = 2.0f;
+
         public void OnStart(string json)
         {
             if (!API.HasTransform(Entity)) { //("[PatrolEnemyController] Missing Transform."); return;
@@ -310,6 +317,14 @@ namespace GameScripts
         private void OnPlayerDetected(ulong target, Vec3 pos)
         {
             _isAlert = true;
+
+            // Set spotlight to alert (red) color
+            var spotlight = SpotlightFollower.GetByTargetName(_entityName);
+            if (spotlight != null)
+            {
+                spotlight.SetAlert(true);
+            }
+
             var self = API.GetPosition(Entity);
             float dx = pos.X - self.X, dz = pos.Z - self.Z;
             float baseYaw = WORLD_FORWARD_IS_NEG_Z
@@ -334,6 +349,13 @@ namespace GameScripts
             _isAlert = false;
             _hasDealtDamage = false;
             _alertSoundPlayed = false; // Reset so alert can play again next detection
+
+            // Reset spotlight to original color
+            var spotlight = SpotlightFollower.GetByTargetName(_entityName);
+            if (spotlight != null)
+            {
+                spotlight.SetAlert(false);
+            }
 
             // NEW: Reset proximity when player lost
             _proximityDetection?.ResetDetection();
