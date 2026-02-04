@@ -138,7 +138,8 @@ uniform float textureScale = 1.0;
 const float PI = 3.14159265358979323846;
 layout (location=0) out vec4 out_fragment;
 layout(location=1) out vec4 out_brightness; //for bloom
-const vec3 BLOOM_THRESHOLD = vec3(0.2126, 0.7152, 0.0722) ;
+const vec3 BLOOM_THRESHOLD = vec3(0.2126, 0.7152, 0.0722);
+uniform float u_bloomThreshold = 1.0; // Brightness threshold for bloom extraction
 
 //must also change in PBR.h limits
 #define MAX_POINT_LIGHTS 32
@@ -397,11 +398,12 @@ void main() {
     // Add emissive (not affected by lighting or shadows)
     color += emissive;
 
-    if (dot(color,BLOOM_THRESHOLD)>1.0) {
-        out_brightness=vec4(color,1.0);
+    // Extract bright areas for bloom based on configurable threshold
+    if (dot(color, BLOOM_THRESHOLD) > u_bloomThreshold) {
+        out_brightness = vec4(color, 1.0);
     }
     else {
-        out_brightness=vec4(0.0,0.0,0.0,1.0);
+        out_brightness = vec4(0.0, 0.0, 0.0, 1.0);
     }
 
     //simulate low bit depth

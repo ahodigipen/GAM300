@@ -192,6 +192,28 @@ namespace EditorUI {
                     // Apply to renderer in real-time for immediate visual feedback
                     m.ctx->renderer->AmbientStrength() = settings.ambientStrength;
                 }
+
+                // Bloom controls with serialization to scene
+                if (ImGui::BeginMenu("Bloom Settings")) {
+                    if (ImGui::Checkbox("Enable Bloom", &settings.bloomEnabled)) {
+                        m.ctx->renderer->enabledBloom = settings.bloomEnabled;
+                    }
+
+                    if (ImGui::SliderFloat("Bloom Intensity", &settings.bloomIntensity, 0.0f, 3.0f)) {
+                        m.ctx->renderer->bloomIntensity = settings.bloomIntensity;
+                    }
+
+                    if (ImGui::SliderFloat("Bloom Threshold", &settings.bloomThreshold, 0.1f, 5.0f)) {
+                        m.ctx->renderer->bloomThreshold = settings.bloomThreshold;
+                    }
+
+                    if (ImGui::SliderInt("Bloom Iterations", &settings.bloomIterations, 1, 20)) {
+                        m.ctx->renderer->bloomIterations = settings.bloomIterations;
+                    }
+
+                    ImGui::EndMenu();
+                }
+
                 if (m.ctx->physics && m_Owner && m_Owner->GetApp()) {
                     // Get current state from Application
                     bool physDebugViz = m_Owner->GetApp()->m_PhysDebugViz;

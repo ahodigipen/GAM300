@@ -821,9 +821,20 @@ struct MenuComponent {
     struct SceneNavmeshComponent {
         std::string navmeshFile;   // e.g. "Resources/NavData/level1.bin"
         float ambientStrength = 0.5f;  // Default ambient light strength for the scene
+
+        // Bloom settings
+        bool bloomEnabled = false;
+        float bloomIntensity = 1.0f;
+        float bloomThreshold = 1.0f;  // Brightness threshold for bloom extraction
+        int bloomIterations = 10;     // Number of blur passes (default 10)
+
         XPROPERTY_DEF("SceneNavmeshComponent", SceneNavmeshComponent,
             obj_member<"NavmeshFile", &SceneNavmeshComponent::navmeshFile>,
-            obj_member<"AmbientStrength", &SceneNavmeshComponent::ambientStrength>)
+            obj_member<"AmbientStrength", &SceneNavmeshComponent::ambientStrength>,
+            obj_member<"BloomEnabled", &SceneNavmeshComponent::bloomEnabled>,
+            obj_member<"BloomIntensity", &SceneNavmeshComponent::bloomIntensity>,
+            obj_member<"BloomThreshold", &SceneNavmeshComponent::bloomThreshold>,
+            obj_member<"BloomIterations", &SceneNavmeshComponent::bloomIterations>)
     };
 
     struct DeactivatedComponent {
