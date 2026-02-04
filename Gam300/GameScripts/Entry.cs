@@ -16,7 +16,7 @@ namespace GameScripts
         public const string DEATH_SCENE_NAME = "DeathMenu";
         public const string END_SCENE_NAME = "EndMenu";
 
-        public const string POPUP_SCENE_NAME = "PopUpUI";
+        public const string POPUP_SCENE_NAME = "PopUpMenu";
         public const string LEVEL_1_UI = "Level1PopUp";
 
         public static string _currentSceneName;
