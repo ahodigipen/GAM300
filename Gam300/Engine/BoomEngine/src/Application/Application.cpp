@@ -1277,7 +1277,9 @@ namespace Boom
                     if (!dyn) return;
 
                     // Convert glm velocity to PhysX and apply directly
-                    physx::PxVec3 pxVel(navAgent.velocity.x, navAgent.velocity.y, navAgent.velocity.z);
+                    // FIX: Preserve existing Y velocity to allow gravity and other vertical forces to work correctly
+                    physx::PxVec3 currentVel = dyn->getLinearVelocity();
+                    physx::PxVec3 pxVel(navAgent.velocity.x, currentVel.y, navAgent.velocity.z);
                     dyn->setLinearVelocity(pxVel);
 
                     // OPTIONAL: Lock Y rotation so the agent doesn't tip over

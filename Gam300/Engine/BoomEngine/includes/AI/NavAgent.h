@@ -92,14 +92,17 @@ namespace Boom {
                 const glm::vec3 pos = tr.transform.translate;
                 const glm::vec3 goal = ag.path[ag.waypoint];
 
-                //  FIX: Use only XZ plane distance (ignore Y)
+                //  Calculate distance
                 const glm::vec3 posXZ = glm::vec3(pos.x, 0.0f, pos.z);
                 const glm::vec3 goalXZ = glm::vec3(goal.x, 0.0f, goal.z);
                 const glm::vec3 toXZ = goalXZ - posXZ;
                 const float dXZ = glm::length(toXZ);
+                const float dY = glm::abs(pos.y - goal.y);
 
-                // Check if we've reached the waypoint (horizontal distance only)
-                if (dXZ <= ag.arrive) {
+                // Check if we've reached the waypoint
+                // We use a tight tolerance for XZ (arrive radius) and a reasonable threshold for Y (1.0m)
+                // to prevent agents on different floors from 'reaching' waypoints above/below them.
+                if (dXZ <= ag.arrive && dY < 1.0f) {
                     ++ag.waypoint;
                     if (ag.waypoint >= (int)ag.path.size()) {
                         ag.path.clear();
