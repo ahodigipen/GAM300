@@ -242,12 +242,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-    SpotLightComponent:
+    PointLightComponent:
       Light:
-        Radiance: [0.867647052, 0.323866546, 0.182886392]
+        Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
-        FallOff: 4.66599989
-        CutOff: -16.6410007
+        Range: 4
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_Dead
@@ -311,7 +310,7 @@ ENTITIES:
         Scale: [0.300000012, 0.349999994, 0.300000012]
     SpriteComponent:
       textureID: 13937156857161099910
-      color: [1, 1, 1, 4.20389539e-45]
+      color: [1, 1, 1, 0]
       renderAs3D: false
   - ColliderComponent:
       Collider:
@@ -409,7 +408,7 @@ ENTITIES:
         Scale: [0.0419672243, 0.0800000429, 0.0800000429]
     SpriteComponent:
       textureID: 9683671951523272381
-      color: [1, 1, 1, 0]
+      color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 0
@@ -540,6 +539,8 @@ ENTITIES:
           maxDistance: 50
     AnimatorComponent:
       Clips:
+        - name: mixamo.com
+          filePath: ""
         - name: Patrol Walk
           filePath: Resources/Models/Patrol Walk.fbx
         - name: patrol_head_up
@@ -559,7 +560,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.39886022
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -650,19 +651,6 @@ ENTITIES:
         Intensity: 6.67000008
         FallOff: -3.10599995
         CutOff: 0.769999981
-  - InfoComponent:
-      Parent: 0
-      Name: Directional Light 6
-      UID: 2183066615299545163
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, -7.85500002]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 0.5
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -712,7 +700,7 @@ ENTITIES:
         Restitution: 0.100000001
         IsTrigger: false
         ShowPhysicsDebug: false
-        PhysicsMesh: 0
+        PhysicsMesh: 6568928825965890083
         SurfaceType: DEFAULT
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -741,19 +729,6 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Lamp Wall Direction Light
-      UID: 4905365268385423906
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [9, 0, -90]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0.166522428, 0.754901946, 0.633764923]
-        Intensity: 0.129999995
   - InfoComponent:
       Parent: 0
       Name: Samurai
@@ -915,7 +890,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 4.75929976e-23
+        Speed: 0
       BoolParams:
         IsMoving: false
         IsCrouching: false
@@ -1583,6 +1558,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3
@@ -1599,6 +1579,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3
@@ -1615,6 +1600,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Right_Roof
@@ -1725,6 +1715,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1819,6 +1814,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -2014,21 +2014,6 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Spot Light
-      UID: 12363776012929465708
-    TransformComponent:
-      Transform:
-        Translate: [5, 5, 5]
-        Rotate: [0, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.699999988, 0.800000012, 1]
-        Intensity: 15
-        FallOff: 1.05592418
-        CutOff: 0.34906584
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -2087,14 +2072,14 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-39.3257294, 33.9915733, -19.9408913]
-        Rotate: [-13.6250153, 133.999939, -3.62225092e-06]
+        Translate: [0.967262864, 20.7961102, 31.2150917]
+        Rotate: [-202, 381.8125, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.00100000005
         FarPlane: 935.47998
-        FOV: 100
+        FOV: 97
     ThirdPersonCameraComponent:
       Target UID: 2377197601835279376
       Offset: [0.00999999978, 4.1500001, 0]
@@ -2203,6 +2188,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Floor
@@ -2336,6 +2326,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Hanging_Lantern_Outside_Hut_2
@@ -2352,6 +2347,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Wall_Divider_Floor_1
@@ -2999,6 +2999,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1.29999995, 0.795000017, 0.442000002]
+        Intensity: 1.13
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 1.57000005]
@@ -3038,6 +3043,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Outdoor_Hanging_Lamp_Right
@@ -3054,6 +3064,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.745098054, 0.423529416]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Outdoor_Hanging_Lamp_Left
@@ -3070,6 +3085,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.701960802, 0.423529416]
+        Intensity: 1.63
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 1.57000005]
@@ -3687,6 +3707,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -3742,6 +3767,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -4031,6 +4061,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Sliding_Door_3
@@ -4057,7 +4092,7 @@ ENTITIES:
         Restitution: 0.100000001
         IsTrigger: false
         ShowPhysicsDebug: false
-        PhysicsMesh: 3835169672366958006
+        PhysicsMesh: 6568928825965890083
         SurfaceType: DEFAULT
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -4180,12 +4215,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-    SpotLightComponent:
+    PointLightComponent:
       Light:
-        Radiance: [0.867647052, 0.323866546, 0.182886392]
+        Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
-        FallOff: 4.66599989
-        CutOff: -16.6410007
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -4363,13 +4397,13 @@ ENTITIES:
       Transform:
         Translate: [8.51709747, 2.34984994, -5.37112951]
         Rotate: [0, 89.980217, 0]
-        Scale: [0.0236424934, 0.0236425009, 0.0236424934]
+        Scale: [0.0299999993, 0.0299999993, 0.0299999993]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0236424934, 0.0236425009, 0.0236424934]
+        Previous Scale: [0.0299999993, 0.0299999993, 0.0299999993]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -4397,6 +4431,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -4457,6 +4496,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Indoor_Lantern_Right3_Floor_1
@@ -4473,6 +4517,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Indoor_Lantern_Right4_Floor_1
@@ -4489,6 +4538,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Indoor_Lantern_Left4_Floor_1
@@ -4505,6 +4559,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -5998,6 +6057,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -6053,6 +6117,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Stairs_To_Level_3
@@ -6069,6 +6138,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Stairs_To_Level_3
@@ -6085,6 +6159,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3
@@ -6101,6 +6180,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -6195,6 +6279,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3
@@ -6211,6 +6300,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Hut
@@ -6227,6 +6321,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Hut
@@ -6243,6 +6342,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Hut
@@ -6259,6 +6363,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Hut
@@ -6275,6 +6384,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Path
@@ -6291,6 +6405,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Path
@@ -6307,6 +6426,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Path
@@ -6323,6 +6447,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Path
@@ -6339,6 +6468,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Path
@@ -6355,6 +6489,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Path
@@ -6371,6 +6510,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Path
@@ -6387,6 +6531,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Pagoda_Stone_Lamp
@@ -6483,6 +6632,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Pagoda_Lantern
@@ -6499,6 +6653,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -7168,7 +7327,7 @@ ENTITIES:
       MaterialSource: ""
   - SceneNavmeshComponent:
       NavmeshFile: Resources/NavData/solo_navmesh.bin
-      AmbientStrength: 0.193000004
+      AmbientStrength: 0.0939999968
   - InfoComponent:
       Parent: 0
       Name: Sentry_level2_2
@@ -7265,64 +7424,12 @@ ENTITIES:
       ParamsJSON: "{}"
   - InfoComponent:
       Parent: 0
-      Name: Directional Light 1
-      UID: 2250221566052664554
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, -0.560000002]
-        Rotate: [90, 0, 79.8069992]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 0.5
-  - InfoComponent:
-      Parent: 0
       Name: Directional Light 2
       UID: 13973321056421727476
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
-        Rotate: [0, 0, -45.3829994]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 0.5
-  - InfoComponent:
-      Parent: 0
-      Name: Directional Light 3
-      UID: 6219555142064879949
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 0.5
-  - InfoComponent:
-      Parent: 0
-      Name: Directional Light 4
-      UID: 3565128362037849487
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 90, 0]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 0.5
-  - InfoComponent:
-      Parent: 0
-      Name: Directional Light 5
-      UID: 10328415102628916040
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, -90, 0]
+        Rotate: [25.1359997, 0, -37.5279999]
         Scale: [1, 1, 1]
     DirectLightComponent:
       Light:
@@ -7582,6 +7689,8 @@ ENTITIES:
           maxDistance: 50
     AnimatorComponent:
       Clips:
+        - name: mixamo.com
+          filePath: ""
         - name: patrol_head_up
           filePath: Resources/Animations/patrol_head_up.anim
         - name: mixamo.com
@@ -7601,7 +7710,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.39885092
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -7646,8 +7755,8 @@ ENTITIES:
       UID: 3476234535713046263
     TransformComponent:
       Transform:
-        Translate: [-22.7366619, 13.3955441, 29.6618061]
-        Rotate: [0, 8.07947254, 0]
+        Translate: [-22.7366619, 14.154706, 14.126318]
+        Rotate: [0, 8.07946968, 0]
         Scale: [0.0200004801, 0.0199999996, 0.0200004801]
     RigidBodyComponent:
       RigidBody:
@@ -7743,7 +7852,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 3.55899026e-08
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -7885,7 +7994,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.39885783
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -7987,7 +8096,7 @@ ENTITIES:
         Scale: [0.0419672243, 0.0800000429, 0.0800000429]
     SpriteComponent:
       textureID: 9683671951523272381
-      color: [1, 1, 1, 0]
+      color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
@@ -8166,7 +8275,7 @@ ENTITIES:
         Scale: [0.0419672243, 0.0800000429, 0.0800000429]
     SpriteComponent:
       textureID: 9683671951523272381
-      color: [1, 1, 1, 0]
+      color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 0
@@ -8184,6 +8293,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Sentry_level2_3
@@ -8328,7 +8442,7 @@ ENTITIES:
         Scale: [0.0419672243, 0.0800000429, 0.0800000429]
     SpriteComponent:
       textureID: 9683671951523272381
-      color: [1, 1, 1, 0]
+      color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
@@ -8954,15 +9068,15 @@ ENTITIES:
       UID: 4350822310922817577
     TransformComponent:
       Transform:
-        Translate: [-11.9138002, 13.375247, 52.8005295]
-        Rotate: [0, -33.4200287, 0]
-        Scale: [0.0200004783, 0.0199999996, 0.0200004783]
+        Translate: [-13.4935226, 13.375247, 52.8005295]
+        Rotate: [0, -33.4200401, 0]
+        Scale: [0.020000482, 0.0199999996, 0.020000482]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0200004783, 0.0199999996, 0.0200004783]
+        Previous Scale: [0.020000482, 0.0199999996, 0.020000482]
         FreezeRotationX: true
         FreezeRotationY: true
         FreezeRotationZ: true
@@ -9193,7 +9307,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.39886022
+        Speed: 0
       BoolParams:
         {}
       CurrentStateIndex: 0
@@ -10131,7 +10245,7 @@ ENTITIES:
         Rotate: [0, -0, 0]
         Scale: [0.0500000007, 0.100000001, 0.5]
     SpriteComponent:
-      textureID: 17435015903446098353
+      textureID: 3615061789617660208
       color: [1, 1, 1, 1]
       renderAs3D: false
   - ColliderComponent:
