@@ -169,6 +169,24 @@ namespace Boom {
         }
     }
 
+    void VideoSystem::OnSceneChange() {
+        BOOM_INFO("[VideoSystem] Scene change - resetting video system state");
+
+        // Stop and unload all current videos
+        for (auto& [entityId, player] : m_Players) {
+            if (player) {
+                player->Stop();
+                player->Unload();
+            }
+        }
+
+        // Clear all tracking
+        m_Players.clear();
+        m_InitializedEntities.clear();
+
+        BOOM_INFO("[VideoSystem] Video system state reset complete");
+    }
+
     void VideoSystem::SyncWithScene(EntityRegistry& scene) {
         // Get all current entities with VideoComponent
         std::unordered_set<uint32_t> currentEntities;
