@@ -1,6 +1,91 @@
 Version: 1.0
 ENTITIES:
   - InfoComponent:
+      Parent: 14909493107942851076
+      Name: Sentry Vision Cone 8
+      UID: 17778255159458948583
+    TransformComponent:
+      Transform:
+        Translate: [17.540493, 15.4146328, 3.31294298]
+        Rotate: [5.00895476e-06, 440.36792, 5.00895476e-06]
+        Scale: [0.465116262, 0.50000006, 0.714285791]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.SpotlightFollower
+      ParamsJSON: "{\n  \"targetName\": \"Sentry_3\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [1, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 5648346527941532950
+      Name: Sentry Vision Cone 7
+      UID: 14183844314391113747
+    TransformComponent:
+      Transform:
+        Translate: [-46.1160126, 26.2603378, -18.4139233]
+        Rotate: [0, 440.36792, 0]
+        Scale: [66.4224167, 48.3170547, 102.520752]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.SpotlightFollower
+      ParamsJSON: "{\n  \"targetName\": \"Sentry_level2_3\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [1, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 7127256712868942196
+      Name: Sentry Vision Cone 6
+      UID: 775872690826725368
+    TransformComponent:
+      Transform:
+        Translate: [-32.5929832, 26.2603378, -2.77601147]
+        Rotate: [0, 459.63205, 0]
+        Scale: [66.4224243, 48.3170776, 102.520737]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.SpotlightFollower
+      ParamsJSON: "{\n  \"targetName\": \"Sentry_level2_1\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [1, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 7684206646313759860
+      Name: Sentry Vision Cone 5
+      UID: 4830657238726851453
+    TransformComponent:
+      Transform:
+        Translate: [-56.9920845, 26.2603378, -2.19607687]
+        Rotate: [0, 440.36792, 0]
+        Scale: [66.4224243, 48.3170776, 102.520729]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.SpotlightFollower
+      ParamsJSON: "{\n  \"targetName\": \"Sentry_level2_2\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [1, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 0
+      Name: New Entity
+      UID: 11874897706277067581
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+  - InfoComponent:
       Parent: 0
       Name: UI_Freeze_Text
       UID: 14281033186002033227
@@ -54,8 +139,9 @@ ENTITIES:
       Volume: 1
       PlaybackSpeed: 1
       RenderAs3D: true
-      RemoveBlackBackground: true
+      RemoveBlackBackground: false
       TintColor: [1, 1, 1, 1]
+      RenderAs3D: true
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -194,6 +280,14 @@ ENTITIES:
       Enabled: true
       TypeName: GameScripts.CPTrigger
       ParamsJSON: "{}"
+    TextComponent:
+      text: Press Q for Checkpoint
+      fontName: Roboto-Regular
+      color: [1, 1, 1, 0]
+      scale: 1
+      screenPosition: [655, 834]
+      renderAs3D: false
+      billboardMode: true
   - InfoComponent:
       Parent: 0
       Name: Sliding_Door_3 (Copy) (Copy)
@@ -242,12 +336,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-    SpotLightComponent:
+    PointLightComponent:
       Light:
-        Radiance: [0.867647052, 0.323866546, 0.182886392]
+        Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
-        FallOff: 4.66599989
-        CutOff: -16.6410007
+        Range: 4
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_Dead
@@ -311,7 +404,7 @@ ENTITIES:
         Scale: [0.300000012, 0.349999994, 0.300000012]
     SpriteComponent:
       textureID: 13937156857161099910
-      color: [1, 1, 1, 4.20389539e-45]
+      color: [1, 1, 1, 0]
       renderAs3D: false
   - ColliderComponent:
       Collider:
@@ -409,7 +502,7 @@ ENTITIES:
         Scale: [0.0419672243, 0.0800000429, 0.0800000429]
     SpriteComponent:
       textureID: 9683671951523272381
-      color: [1, 1, 1, 0]
+      color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 0
@@ -462,8 +555,8 @@ ENTITIES:
       UID: 11344090768170482118
     TransformComponent:
       Transform:
-        Translate: [-22.295105, 13.4210224, -0.990651608]
-        Rotate: [180, -5.00895612e-06, 180]
+        Translate: [-22.3080883, -9.51514721, 8.96244144]
+        Rotate: [0, 5.04118967, 0]
         Scale: [0.0199999977, 0.0199999996, 0.0199999977]
     RigidBodyComponent:
       RigidBody:
@@ -540,6 +633,8 @@ ENTITIES:
           maxDistance: 50
     AnimatorComponent:
       Clips:
+        - name: mixamo.com
+          filePath: ""
         - name: Patrol Walk
           filePath: Resources/Models/Patrol Walk.fbx
         - name: patrol_head_up
@@ -559,12 +654,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.39886022
+        Speed: 0
       BoolParams:
-        {}
+        ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-22.2951069, 13.404274, -14.4732275]
+      Target: [-22.2951069, 13.404274, 7.21938944]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -580,7 +675,7 @@ ENTITIES:
       PatrolPoints:
         - [-22.2951069, 13.404274, 7.21938944]
         - [-22.2951069, 13.404274, -14.4732275]
-      PatrolIndex: 1
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -638,7 +733,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 2.53051853, -14.2555885]
-        Rotate: [0, 377.020264, 0]
+        Rotate: [0, 270.208344, 0]
         Scale: [136.157349, 68.9649124, 68.9648361]
     ScriptComponent:
       Enabled: true
@@ -650,19 +745,6 @@ ENTITIES:
         Intensity: 6.67000008
         FallOff: -3.10599995
         CutOff: 0.769999981
-  - InfoComponent:
-      Parent: 0
-      Name: Directional Light 6
-      UID: 2183066615299545163
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, -7.85500002]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 0.5
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -712,7 +794,7 @@ ENTITIES:
         Restitution: 0.100000001
         IsTrigger: false
         ShowPhysicsDebug: false
-        PhysicsMesh: 0
+        PhysicsMesh: 6568928825965890083
         SurfaceType: DEFAULT
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -743,26 +825,13 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Lamp Wall Direction Light
-      UID: 4905365268385423906
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [9, 0, -90]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0.166522428, 0.754901946, 0.633764923]
-        Intensity: 0.129999995
-  - InfoComponent:
-      Parent: 0
       Name: Samurai
       UID: 2377197601835279376
     TransformComponent:
       Transform:
-        Translate: [-3.33152556, 18.7437134, 49.2998505]
-        Rotate: [0, -93.9998932, 0]
-        Scale: [0.0164999887, 0.0164999999, 0.0164999887]
+        Translate: [1.51744437, 0.926436245, 11.6198883]
+        Rotate: [-180, -28.0001106, -180]
+        Scale: [0.0165000018, 0.0164999999, 0.0165000018]
     CharacterControllerComponent:
       Radius: 0.800000012
       Height: 4.80000019
@@ -775,7 +844,7 @@ ENTITIES:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0164999887, 0.0164999999, 0.0164999887]
+        Previous Scale: [0.0165000018, 0.0164999999, 0.0165000018]
         FreezeRotationX: true
         FreezeRotationY: true
         FreezeRotationZ: true
@@ -915,7 +984,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 4.75929976e-23
+        Speed: 0
       BoolParams:
         IsMoving: false
         IsCrouching: false
@@ -1583,6 +1652,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3
@@ -1599,6 +1673,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3
@@ -1615,6 +1694,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Right_Roof
@@ -1725,6 +1809,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1819,6 +1908,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -2014,21 +2108,6 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Spot Light
-      UID: 12363776012929465708
-    TransformComponent:
-      Transform:
-        Translate: [5, 5, 5]
-        Rotate: [0, 0, 0]
-        Scale: [2.5, 2.5, 2.5]
-    SpotLightComponent:
-      Light:
-        Radiance: [0.699999988, 0.800000012, 1]
-        Intensity: 15
-        FallOff: 1.05592418
-        CutOff: 0.34906584
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -2087,22 +2166,22 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-39.3257294, 33.9915733, -19.9408913]
-        Rotate: [-13.6250153, 133.999939, -3.62225092e-06]
+        Translate: [9.27204514, 4.50627518, 13.4016371]
+        Rotate: [-195.999985, 83.1874695, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.00100000005
         FarPlane: 935.47998
-        FOV: 100
+        FOV: 97
     ThirdPersonCameraComponent:
       Target UID: 2377197601835279376
       Offset: [0.00999999978, 4.1500001, 0]
       Current Distance: 5
       Min Distance: 1
       Max Distance: 5
-      Current Yaw: 3825
-      Current Pitch: 36
+      Current Yaw: 1741
+      Current Pitch: -18
       Mouse Sensitivity: 1
       Scroll Sensitivity: 1
   - InfoComponent:
@@ -2203,6 +2282,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Floor
@@ -2336,6 +2420,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Hanging_Lantern_Outside_Hut_2
@@ -2352,6 +2441,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Wall_Divider_Floor_1
@@ -2999,6 +3093,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1.29999995, 0.795000017, 0.442000002]
+        Intensity: 1.13
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 1.57000005]
@@ -3038,6 +3137,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Outdoor_Hanging_Lamp_Right
@@ -3054,6 +3158,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.745098054, 0.423529416]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Outdoor_Hanging_Lamp_Left
@@ -3070,6 +3179,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.701960802, 0.423529416]
+        Intensity: 1.63
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 1.57000005]
@@ -3687,6 +3801,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -3742,6 +3861,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -4031,6 +4155,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Sliding_Door_3
@@ -4057,7 +4186,7 @@ ENTITIES:
         Restitution: 0.100000001
         IsTrigger: false
         ShowPhysicsDebug: false
-        PhysicsMesh: 3835169672366958006
+        PhysicsMesh: 6568928825965890083
         SurfaceType: DEFAULT
         Type: TRIANGLE_MESH
     InfoComponent:
@@ -4180,12 +4309,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-    SpotLightComponent:
+    PointLightComponent:
       Light:
-        Radiance: [0.867647052, 0.323866546, 0.182886392]
+        Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
-        FallOff: 4.66599989
-        CutOff: -16.6410007
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -4363,13 +4491,13 @@ ENTITIES:
       Transform:
         Translate: [8.51709747, 2.34984994, -5.37112951]
         Rotate: [0, 89.980217, 0]
-        Scale: [0.0236424934, 0.0236425009, 0.0236424934]
+        Scale: [0.0299999993, 0.0299999993, 0.0299999993]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0236424934, 0.0236425009, 0.0236424934]
+        Previous Scale: [0.0299999993, 0.0299999993, 0.0299999993]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -4397,6 +4525,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -4457,6 +4590,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Indoor_Lantern_Right3_Floor_1
@@ -4473,6 +4611,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Indoor_Lantern_Right4_Floor_1
@@ -4489,6 +4632,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Indoor_Lantern_Left4_Floor_1
@@ -4505,6 +4653,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -5998,6 +6151,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -6053,6 +6211,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Stairs_To_Level_3
@@ -6069,6 +6232,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Stairs_To_Level_3
@@ -6085,6 +6253,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3
@@ -6101,6 +6274,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -6195,6 +6373,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3
@@ -6211,6 +6394,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Hut
@@ -6227,6 +6415,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Hut
@@ -6243,6 +6436,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Hut
@@ -6259,6 +6457,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Hut
@@ -6275,6 +6478,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Path
@@ -6291,6 +6499,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Path
@@ -6307,6 +6520,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Path
@@ -6323,6 +6541,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Path
@@ -6339,6 +6562,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Path
@@ -6355,6 +6583,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Path
@@ -6371,6 +6604,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Path
@@ -6387,6 +6625,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Pagoda_Stone_Lamp
@@ -6483,6 +6726,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Pagoda_Lantern
@@ -6499,6 +6747,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -6758,426 +7011,8 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 0.530518472, -14.2555885]
-        Rotate: [0, 198.963486, 0]
+        Rotate: [0, 90.2083435, 0]
         Scale: [0.0144997435, 0.0145000005, 0.0144997435]
-    ModelComponent:
-      ModelID: 12373711864448078618
-      MaterialID: 1781146247448718189
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-    SoundComponent:
-      Entries:
-        - name: _turnSoundPath1
-          filePaths:
-            - Resources/Audio/StatueTurn_01.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _turnSoundPath2
-          filePaths:
-            - Resources/Audio/StatueTurn_02.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _turnSoundPath3
-          filePaths:
-            - Resources/Audio/StatueTurn_03.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _alertSoundPath
-          filePaths:
-            - Resources/Audio/playerPunch_1.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.EnemyController
-      ParamsJSON: "{}"
-  - InfoComponent:
-      Parent: 0
-      Name: Sentry_2
-      UID: 15156590934559075775
-    TransformComponent:
-      Transform:
-        Translate: [9.27553558, 0.550991118, -14.2555885]
-        Rotate: [0, 246.041794, 0]
-        Scale: [0.0145000955, 0.0145000005, 0.0145000955]
-    ModelComponent:
-      ModelID: 12373711864448078618
-      MaterialID: 1781146247448718189
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-    SoundComponent:
-      Entries:
-        - name: _turnSoundPath1
-          filePaths:
-            - Resources/Audio/StatueTurn_01.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _turnSoundPath2
-          filePaths:
-            - Resources/Audio/StatueTurn_02.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _turnSoundPath3
-          filePaths:
-            - Resources/Audio/StatueTurn_03.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _alertSoundPath
-          filePaths:
-            - Resources/Audio/playerPunch_1.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.EnemyController
-      ParamsJSON: "{}"
-  - InfoComponent:
-      Parent: 0
-      Name: Sentry_3
-      UID: 5830254891821542999
-    TransformComponent:
-      Transform:
-        Translate: [17.540493, 13.4146328, 3.31294298]
-        Rotate: [5.00895476e-06, 9.12296677, 5.00895476e-06]
-        Scale: [0.0144999959, 0.0145000005, 0.0144999959]
-    ModelComponent:
-      ModelID: 12373711864448078618
-      MaterialID: 1781146247448718189
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-    SoundComponent:
-      Entries:
-        - name: _turnSoundPath1
-          filePaths:
-            - Resources/Audio/StatueTurn_01.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _turnSoundPath2
-          filePaths:
-            - Resources/Audio/StatueTurn_02.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _turnSoundPath3
-          filePaths:
-            - Resources/Audio/StatueTurn_03.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _alertSoundPath
-          filePaths:
-            - Resources/Audio/playerPunch_1.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.EnemyController
-      ParamsJSON: "{}"
-  - InfoComponent:
-      Parent: 0
-      Name: Sentry_4
-      UID: 14023949945871365441
-    TransformComponent:
-      Transform:
-        Translate: [-14.5949755, 13.3514919, 22.6192093]
-        Rotate: [0, 9.12296677, 0]
-        Scale: [0.0145000042, 0.0145000005, 0.0145000042]
-    ModelComponent:
-      ModelID: 12373711864448078618
-      MaterialID: 1781146247448718189
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-    SoundComponent:
-      Entries:
-        - name: _turnSoundPath1
-          filePaths:
-            - Resources/Audio/StatueTurn_01.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _turnSoundPath2
-          filePaths:
-            - Resources/Audio/StatueTurn_02.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _turnSoundPath3
-          filePaths:
-            - Resources/Audio/StatueTurn_03.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _alertSoundPath
-          filePaths:
-            - Resources/Audio/playerPunch_1.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.EnemyController
-      ParamsJSON: "{}"
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        ShowPhysicsDebug: false
-        PhysicsMesh: 7982763225733669098
-        SurfaceType: DEFAULT
-        Type: TRIANGLE_MESH
-    InfoComponent:
-      Parent: 0
-      Name: SPOOFWALL_1
-      UID: 4893602407579985783
-    TransformComponent:
-      Transform:
-        Translate: [-0.707777619, 16.9812908, 10.1362982]
-        Rotate: [89.9999847, -0, 0]
-        Scale: [3.99109054, 2.99499822, 2.03799582]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [3.99109054, 2.99499822, 2.03799582]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 4826384296126717694
-      MaterialID: 12123645547197622302
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - SceneNavmeshComponent:
-      NavmeshFile: Resources/NavData/solo_navmesh.bin
-      AmbientStrength: 0.193000004
-  - InfoComponent:
-      Parent: 0
-      Name: Sentry_level2_2
-      UID: 7684206646313759860
-    TransformComponent:
-      Transform:
-        Translate: [-56.9920845, 24.2603378, -2.19607687]
-        Rotate: [0, 9.12296677, 0]
-        Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
       MaterialID: 1781146247448718189
@@ -7265,17 +7100,426 @@ ENTITIES:
       ParamsJSON: "{}"
   - InfoComponent:
       Parent: 0
-      Name: Directional Light 1
-      UID: 2250221566052664554
+      Name: Sentry_2
+      UID: 15156590934559075775
     TransformComponent:
       Transform:
-        Translate: [0, 0, -0.560000002]
-        Rotate: [90, 0, 79.8069992]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 0.5
+        Translate: [9.27553558, 0.550991118, -14.2555885]
+        Rotate: [0, 137.286743, 0]
+        Scale: [0.0145000955, 0.0145000005, 0.0145000955]
+    ModelComponent:
+      ModelID: 12373711864448078618
+      MaterialID: 1781146247448718189
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _turnSoundPath1
+          filePaths:
+            - Resources/Audio/StatueTurn_01.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath2
+          filePaths:
+            - Resources/Audio/StatueTurn_02.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath3
+          filePaths:
+            - Resources/Audio/StatueTurn_03.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/VO_Statue_003.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.EnemyController
+      ParamsJSON: "{\n  \"_entityName\": \"Sentry_2\"\n}"
+  - InfoComponent:
+      Parent: 0
+      Name: Sentry_3
+      UID: 5830254891821542999
+    TransformComponent:
+      Transform:
+        Translate: [17.540493, 13.4146328, 3.31294298]
+        Rotate: [5.00895476e-06, 260.36792, 5.00895476e-06]
+        Scale: [0.0144999959, 0.0145000005, 0.0144999959]
+    ModelComponent:
+      ModelID: 12373711864448078618
+      MaterialID: 1781146247448718189
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _turnSoundPath1
+          filePaths:
+            - Resources/Audio/StatueTurn_01.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath2
+          filePaths:
+            - Resources/Audio/StatueTurn_02.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath3
+          filePaths:
+            - Resources/Audio/StatueTurn_03.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/VO_Statue_003.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.EnemyController
+      ParamsJSON: "{\n  \"_entityName\": \"Sentry_3\"\n}"
+  - InfoComponent:
+      Parent: 0
+      Name: Sentry_4
+      UID: 14023949945871365441
+    TransformComponent:
+      Transform:
+        Translate: [-14.5949755, 13.3514919, 22.6192093]
+        Rotate: [0, 260.36792, 0]
+        Scale: [0.0145000042, 0.0145000005, 0.0145000042]
+    ModelComponent:
+      ModelID: 12373711864448078618
+      MaterialID: 1781146247448718189
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _turnSoundPath1
+          filePaths:
+            - Resources/Audio/StatueTurn_01.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath2
+          filePaths:
+            - Resources/Audio/StatueTurn_02.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath3
+          filePaths:
+            - Resources/Audio/StatueTurn_03.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/VO_Statue_003.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.EnemyController
+      ParamsJSON: "{\n  \"_entityName\": \"Sentry_4\"\n}"
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 7982763225733669098
+        SurfaceType: DEFAULT
+        Type: TRIANGLE_MESH
+    InfoComponent:
+      Parent: 0
+      Name: SPOOFWALL_1
+      UID: 4893602407579985783
+    TransformComponent:
+      Transform:
+        Translate: [-0.707777619, 16.9812908, 10.1362982]
+        Rotate: [89.9999847, -0, 0]
+        Scale: [3.99109054, 2.99499822, 2.03799582]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [3.99109054, 2.99499822, 2.03799582]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 4826384296126717694
+      MaterialID: 12123645547197622302
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - SceneNavmeshComponent:
+      NavmeshFile: Resources/NavData/solo_navmesh.bin
+      AmbientStrength: 0.156000003
+      BloomEnabled: true
+      BloomIntensity: 1.78100002
+      BloomThreshold: 0.667999983
+      BloomIterations: 16
+  - InfoComponent:
+      Parent: 0
+      Name: Sentry_level2_2
+      UID: 7684206646313759860
+    TransformComponent:
+      Transform:
+        Translate: [-56.9920845, 24.2603378, -2.19607687]
+        Rotate: [0, 260.36792, 0]
+        Scale: [0.0145000042, 0.0145000005, 0.0145000042]
+    ModelComponent:
+      ModelID: 12373711864448078618
+      MaterialID: 1781146247448718189
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _turnSoundPath1
+          filePaths:
+            - Resources/Audio/StatueTurn_01.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath2
+          filePaths:
+            - Resources/Audio/StatueTurn_02.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath3
+          filePaths:
+            - Resources/Audio/StatueTurn_03.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/VO_Statue_003.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.EnemyController
+      ParamsJSON: "{\n  \"_entityName\": \"Sentry_level2_2\"\n}"
   - InfoComponent:
       Parent: 0
       Name: Directional Light 2
@@ -7283,46 +7527,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
-        Rotate: [0, 0, -45.3829994]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 0.5
-  - InfoComponent:
-      Parent: 0
-      Name: Directional Light 3
-      UID: 6219555142064879949
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [-90, 0, 0]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 0.5
-  - InfoComponent:
-      Parent: 0
-      Name: Directional Light 4
-      UID: 3565128362037849487
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 90, 0]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 0.5
-  - InfoComponent:
-      Parent: 0
-      Name: Directional Light 5
-      UID: 10328415102628916040
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, -90, 0]
+        Rotate: [25.1359997, 0, -37.5279999]
         Scale: [1, 1, 1]
     DirectLightComponent:
       Light:
@@ -7504,8 +7709,8 @@ ENTITIES:
       UID: 7568830222834310318
     TransformComponent:
       Transform:
-        Translate: [-8.98202515, 13.4210215, -6.20342731]
-        Rotate: [180, -5.00895612e-06, 180]
+        Translate: [-6.95175791, -14.2128601, -6.89117289]
+        Rotate: [180, -24.5641251, 180]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -7582,6 +7787,8 @@ ENTITIES:
           maxDistance: 50
     AnimatorComponent:
       Clips:
+        - name: mixamo.com
+          filePath: ""
         - name: patrol_head_up
           filePath: Resources/Animations/patrol_head_up.anim
         - name: mixamo.com
@@ -7601,9 +7808,9 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.39885092
+        Speed: 0
       BoolParams:
-        {}
+        ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
       Target: [-8.98202515, 13.2056856, -10.6896248]
@@ -7646,8 +7853,8 @@ ENTITIES:
       UID: 3476234535713046263
     TransformComponent:
       Transform:
-        Translate: [-22.7366619, 13.3955441, 29.6618061]
-        Rotate: [0, 8.07947254, 0]
+        Translate: [-26.3495846, 0.602665544, 19.009655]
+        Rotate: [180, -89.980217, 180]
         Scale: [0.0200004801, 0.0199999996, 0.0200004801]
     RigidBodyComponent:
       RigidBody:
@@ -7743,9 +7950,9 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 3.55899026e-08
+        Speed: 0
       BoolParams:
-        {}
+        ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
       Target: [-22.7366295, 13.404274, 19.3370762]
@@ -7788,8 +7995,8 @@ ENTITIES:
       UID: 9778697280815915040
     TransformComponent:
       Transform:
-        Translate: [2.99746966, 13.4210215, -9.57754421]
-        Rotate: [360, -90, 0]
+        Translate: [-4.68161964, -16.5438366, -26.2325993]
+        Rotate: [180, -62.5987816, 180]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -7885,9 +8092,9 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.39885783
+        Speed: 0
       BoolParams:
-        {}
+        ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
       Target: [-4.79301453, 13.4210176, -9.57754421]
@@ -7987,7 +8194,7 @@ ENTITIES:
         Scale: [0.0419672243, 0.0800000429, 0.0800000429]
     SpriteComponent:
       textureID: 9683671951523272381
-      color: [1, 1, 1, 0]
+      color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
@@ -8166,7 +8373,7 @@ ENTITIES:
         Scale: [0.0419672243, 0.0800000429, 0.0800000429]
     SpriteComponent:
       textureID: 9683671951523272381
-      color: [1, 1, 1, 0]
+      color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 0
@@ -8184,6 +8391,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Sentry_level2_3
@@ -8191,7 +8403,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-46.1160126, 24.2603378, -18.4139233]
-        Rotate: [0, 9.12296677, 0]
+        Rotate: [0, 260.36792, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -8277,7 +8489,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.EnemyController
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_entityName\": \"Sentry_level2_3\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -8328,7 +8540,7 @@ ENTITIES:
         Scale: [0.0419672243, 0.0800000429, 0.0800000429]
     SpriteComponent:
       textureID: 9683671951523272381
-      color: [1, 1, 1, 0]
+      color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 18428452598414175165
@@ -8848,7 +9060,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-32.5929832, 24.2603378, -2.77601147]
-        Rotate: [0, 170.877045, 0]
+        Rotate: [0, 279.63205, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -8915,7 +9127,7 @@ ENTITIES:
           maxDistance: 50
         - name: _alertSoundPath
           filePaths:
-            - Resources/Audio/playerPunch_1.wav
+            - Resources/Audio/VO_Statue_003.wav
           loop: false
           volume: 1
           priority: 128
@@ -8934,7 +9146,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.EnemyController
-      ParamsJSON: "{\n  \"_rotation\": false\n}"
+      ParamsJSON: "{\n  \"_entityName\": \"Sentry_level2_2\",\n  \"_rotation\": false\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 2, 0]
@@ -8954,8 +9166,150 @@ ENTITIES:
       UID: 4350822310922817577
     TransformComponent:
       Transform:
-        Translate: [-11.9138002, 13.375247, 52.8005295]
-        Rotate: [0, -33.4200287, 0]
+        Translate: [-8.50107384, -15.1834488, 38.3442192]
+        Rotate: [180, -5.41033459, 180]
+        Scale: [0.020000482, 0.0199999996, 0.020000482]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.020000482, 0.0199999996, 0.020000482]
+        FreezeRotationX: true
+        FreezeRotationY: true
+        FreezeRotationZ: true
+        Type: DYNAMIC
+    ModelComponent:
+      ModelID: 12439106707269888329
+      MaterialID: 3895109391993840374
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _footstepSoundPath
+          filePaths:
+            - Resources/Audio/footstep_stone_1.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_Alert_020.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _gruntSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_001.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    AnimatorComponent:
+      Clips:
+        - name: mixamo.com
+          filePath: ""
+        - name: patrol_head_up
+          filePath: Resources/Animations/patrol_head_up.anim
+      States:
+        - name: State 0
+          clipIndex: 1
+          speed: 0.330000013
+          loop: false
+          transitions:
+            - targetStateIndex: 0
+              conditionType: 0
+              parameterName: IsWalking
+              floatValue: 0
+              boolValue: false
+              transitionDuration: 0.469999999
+              hasExitTime: false
+              exitTime: 0.899999976
+      FloatParams:
+        Speed: 0
+      BoolParams:
+        ApplyRootMotion: false
+      CurrentStateIndex: 0
+    NavAgentComponent:
+      Target: [-13.3622103, 13.4397764, 39.6917191]
+      Speed: 2.5
+      ArriveRadius: 0.150000006
+      Active: true
+      RepathCooldown: 0.25
+      RetargetDistance: 0.5
+      FollowName: ""
+    AIComponent:
+      Mode: 0
+      PlayerName: ""
+      DetectRadius: 8
+      LoseRadius: 12
+      IdleWait: 1
+      PatrolPoints:
+        - [-13.3622103, 13.4397764, 39.6917191]
+        - [-13.3622103, 13.4397764, 58.4554634]
+      PatrolIndex: 0
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolEnemyController
+      ParamsJSON: "{\n  \"DetectionEnemy\": false\n}"
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 2, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [100, 200, 100]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: CAPSULE
+    InfoComponent:
+      Parent: 0
+      Name: Level2_PatrolEnemy_1
+      UID: 11377284783086712530
+    TransformComponent:
+      Transform:
+        Translate: [-26.0234261, -8.37697697, 30.7100563]
+        Rotate: [180, -89.980217, 180]
         Scale: [0.0200004783, 0.0199999996, 0.0200004783]
     RigidBodyComponent:
       RigidBody:
@@ -9053,149 +9407,7 @@ ENTITIES:
       FloatParams:
         Speed: 0
       BoolParams:
-        {}
-      CurrentStateIndex: 0
-    NavAgentComponent:
-      Target: [-13.3622103, 13.4397764, 39.6917191]
-      Speed: 2.5
-      ArriveRadius: 0.150000006
-      Active: true
-      RepathCooldown: 0.25
-      RetargetDistance: 0.5
-      FollowName: ""
-    AIComponent:
-      Mode: 0
-      PlayerName: ""
-      DetectRadius: 8
-      LoseRadius: 12
-      IdleWait: 1
-      PatrolPoints:
-        - [-13.3622103, 13.4397764, 39.6917191]
-        - [-13.3622103, 13.4397764, 58.4554634]
-      PatrolIndex: 0
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"DetectionEnemy\": false\n}"
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 2, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [100, 200, 100]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: CAPSULE
-    InfoComponent:
-      Parent: 0
-      Name: Level2_PatrolEnemy_1
-      UID: 11377284783086712530
-    TransformComponent:
-      Transform:
-        Translate: [-16.3219109, 13.3755455, 31.8400116]
-        Rotate: [0, 90, 0]
-        Scale: [0.0200004783, 0.0199999996, 0.0200004783]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0200004783, 0.0199999996, 0.0200004783]
-        FreezeRotationX: true
-        FreezeRotationY: true
-        FreezeRotationZ: true
-        Type: DYNAMIC
-    ModelComponent:
-      ModelID: 12439106707269888329
-      MaterialID: 3895109391993840374
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-    SoundComponent:
-      Entries:
-        - name: _footstepSoundPath
-          filePaths:
-            - Resources/Audio/footstep_stone_1.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _alertSoundPath
-          filePaths:
-            - Resources/Audio/VO_Patrol_Alert_020.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _gruntSoundPath
-          filePaths:
-            - Resources/Audio/VO_Patrol_001.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-    AnimatorComponent:
-      Clips:
-        - name: mixamo.com
-          filePath: ""
-        - name: patrol_head_up
-          filePath: Resources/Animations/patrol_head_up.anim
-      States:
-        - name: State 0
-          clipIndex: 1
-          speed: 0.330000013
-          loop: false
-          transitions:
-            - targetStateIndex: 0
-              conditionType: 0
-              parameterName: IsWalking
-              floatValue: 0
-              boolValue: false
-              transitionDuration: 0.469999999
-              hasExitTime: false
-              exitTime: 0.899999976
-      FloatParams:
-        Speed: 2.39886022
-      BoolParams:
-        {}
+        ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
       Target: [-12.0609379, 13.4397764, 31.8400135]
@@ -9238,8 +9450,8 @@ ENTITIES:
       UID: 7103488143176582610
     TransformComponent:
       Transform:
-        Translate: [-17.8095741, 13.3755474, 62.1609154]
-        Rotate: [360, -90, 0]
+        Translate: [-38.0400734, -12.6403284, 70.7405243]
+        Rotate: [0, -42.0223961, 0]
         Scale: [0.0200004764, 0.0199999996, 0.0200004764]
     RigidBodyComponent:
       RigidBody:
@@ -9337,10 +9549,10 @@ ENTITIES:
       FloatParams:
         Speed: 0
       BoolParams:
-        {}
+        ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-28.2320347, 13.4397764, 62.1609154]
+      Target: [-34.7096901, 13.4397764, 62.1609154]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -9357,7 +9569,7 @@ ENTITIES:
         - [-13.3622103, 13.4397764, 62.1609154]
         - [-28.2320347, 13.4397764, 62.1609154]
         - [-34.7096901, 13.4397764, 62.1609154]
-      PatrolIndex: 1
+      PatrolIndex: 2
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -9381,8 +9593,8 @@ ENTITIES:
       UID: 9730896463395262189
     TransformComponent:
       Transform:
-        Translate: [-31.8510666, 24.3238983, 4.67626905]
-        Rotate: [0, -4.46236008e-05, 0]
+        Translate: [-31.8500652, 0.582665682, 18.8797321]
+        Rotate: [0, -0.442149103, 0]
         Scale: [0.0200001765, 0.0199999996, 0.0200001765]
     RigidBodyComponent:
       RigidBody:
@@ -9480,7 +9692,7 @@ ENTITIES:
       FloatParams:
         Speed: 0
       BoolParams:
-        {}
+        ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
       Target: [-31.8510666, 24.596777, 24.0069332]
@@ -9523,8 +9735,8 @@ ENTITIES:
       UID: 263206634475258297
     TransformComponent:
       Transform:
-        Translate: [-56.5258675, 24.3438969, -9.79262638]
-        Rotate: [0, 90, 0]
+        Translate: [-31.2679214, -4.64395714, -26.2645092]
+        Rotate: [180, 76.5354614, 180]
         Scale: [0.0200004745, 0.0199999996, 0.0200004745]
     RigidBodyComponent:
       RigidBody:
@@ -9622,7 +9834,7 @@ ENTITIES:
       FloatParams:
         Speed: 0
       BoolParams:
-        {}
+        ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
       Target: [-31.1600056, 24.8474388, -9.79262638]
@@ -9665,8 +9877,8 @@ ENTITIES:
       UID: 14450237795829985322
     TransformComponent:
       Transform:
-        Translate: [-56.9174309, 31.6161957, 16.4548912]
-        Rotate: [0, -61.2341156, 0]
+        Translate: [-46.6585655, 1.74941146, 10.8229485]
+        Rotate: [-180, 61.23423, -180]
         Scale: [0.0200004745, 0.0199999996, 0.0200004745]
     RigidBodyComponent:
       RigidBody:
@@ -9764,7 +9976,7 @@ ENTITIES:
       FloatParams:
         Speed: 0
       BoolParams:
-        {}
+        ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
       Target: [-64.7831268, 31.8782978, 20.773016]
@@ -9795,7 +10007,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [2.07987475, 17.7299271, 63.520256]
-        Rotate: [0, 18.8141174, 0]
+        Rotate: [0, 58.3596916, 0]
         Scale: [0.0145000033, 0.0145000005, 0.0145000033]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -9862,7 +10074,7 @@ ENTITIES:
           maxDistance: 50
         - name: _alertSoundPath
           filePaths:
-            - Resources/Audio/playerPunch_1.wav
+            - Resources/Audio/VO_Statue_003.wav
           loop: false
           volume: 1
           priority: 128
@@ -10108,19 +10320,19 @@ ENTITIES:
       UID: 9293667924588559209
     TransformComponent:
       Transform:
-        Translate: [-7.15782738, 2.53051853, -14.2555885]
-        Rotate: [0, 378.963501, 0]
+        Translate: [9.27553558, 2.64499116, -14.2555885]
+        Rotate: [0, 317.286743, 0]
         Scale: [68.965065, 68.9655151, 68.965065]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.SpotlightFollower
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"positionOffsetY\": 2.0940001010894775,\n  \"targetName\": \"Sentry_2\"\n}"
     SpotLightComponent:
       Light:
-        Radiance: [0.838235259, 0.189013854, 0.189013854]
-        Intensity: 3.5
-        FallOff: 1.05592418
-        CutOff: 0.34906584
+        Radiance: [1, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
   - InfoComponent:
       Parent: 0
       Name: UI_Freeze
@@ -10131,7 +10343,7 @@ ENTITIES:
         Rotate: [0, -0, 0]
         Scale: [0.0500000007, 0.100000001, 0.5]
     SpriteComponent:
-      textureID: 17435015903446098353
+      textureID: 3615061789617660208
       color: [1, 1, 1, 1]
       renderAs3D: false
   - ColliderComponent:
@@ -10434,13 +10646,23 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (1)
+      Name: AlertVideo
       UID: 9054217741465614535
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
         Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [0, 0, 0]
+    VideoComponent:
+      VideoPath: Detection.mpeg
+      PlayOnStart: true
+      Loop: false
+      Volume: 1
+      PlaybackSpeed: 1
+      RenderAs3D: true
+      RemoveBlackBackground: false
+      TintColor: [1, 1, 1, 1]
+      RenderAs3D: true
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -10496,7 +10718,7 @@ ENTITIES:
         Scale: [0.300000012, 0.349999994, 0.300000012]
     SpriteComponent:
       textureID: 12936131708983895469
-      color: [1, 1, 1, 1.32584984e-34]
+      color: [1, 1, 1, 3.69270509e-07]
       renderAs3D: false
   - InfoComponent:
       Parent: 0
@@ -10511,3 +10733,41 @@ ENTITIES:
       textureID: 883033736161376587
       color: [1, 1, 1, 1]
       renderAs3D: false
+  - InfoComponent:
+      Parent: 5830254891821542999
+      Name: Sentry Vision Cone 3
+      UID: 5945174440261716768
+    TransformComponent:
+      Transform:
+        Translate: [17.540493, 15.4146328, 3.31294298]
+        Rotate: [5.00895476e-06, 440.36792, 5.00895476e-06]
+        Scale: [66.4224625, 48.3170776, 102.520782]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.SpotlightFollower
+      ParamsJSON: "{\n  \"targetName\": \"Sentry_3\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [1, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 14023949945871365441
+      Name: Sentry Vision Cone 4
+      UID: 14440688285386943557
+    TransformComponent:
+      Transform:
+        Translate: [-14.5949755, 15.3514919, 22.6192093]
+        Rotate: [0, 440.36792, 0]
+        Scale: [66.4224243, 48.3170776, 102.520721]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.SpotlightFollower
+      ParamsJSON: "{\n  \"targetName\": \"Sentry_4\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [1, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981

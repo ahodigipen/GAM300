@@ -545,6 +545,10 @@ namespace Boom
                 e << YAML::Key << "SceneNavmeshComponent" << YAML::Value << YAML::BeginMap;
                 e << YAML::Key << "NavmeshFile" << YAML::Value << sn.navmeshFile;
                 e << YAML::Key << "AmbientStrength" << YAML::Value << sn.ambientStrength;
+                e << YAML::Key << "BloomEnabled" << YAML::Value << sn.bloomEnabled;
+                e << YAML::Key << "BloomIntensity" << YAML::Value << sn.bloomIntensity;
+                e << YAML::Key << "BloomThreshold" << YAML::Value << sn.bloomThreshold;
+                e << YAML::Key << "BloomIterations" << YAML::Value << sn.bloomIterations;
                 e << YAML::EndMap;
             },
             // ----- DESERIALIZE -----
@@ -560,6 +564,18 @@ namespace Boom
 
                 if (auto v = data["AmbientStrength"])
                     sn.ambientStrength = v.as<float>(sn.ambientStrength);
+
+                if (auto v = data["BloomEnabled"])
+                    sn.bloomEnabled = v.as<bool>(sn.bloomEnabled);
+
+                if (auto v = data["BloomIntensity"])
+                    sn.bloomIntensity = v.as<float>(sn.bloomIntensity);
+
+                if (auto v = data["BloomThreshold"])
+                    sn.bloomThreshold = v.as<float>(sn.bloomThreshold);
+
+                if (auto v = data["BloomIterations"])
+                    sn.bloomIterations = v.as<int>(sn.bloomIterations);
             }
         );
 
@@ -666,7 +682,6 @@ namespace Boom
         RegisterPropertyComponent<DeactivatedComponent>("DeactivatedComponent");
 
         // === VIDEO COMPONENT ===
-        // RegisterPropertyComponent<VideoComponent>("VideoComponent");
         registry.RegisterComponentSerializer(
             "VideoComponent",
             // ----- SERIALIZE -----
@@ -677,7 +692,6 @@ namespace Boom
                 auto& vc = reg.get<VideoComponent>(ent);
 
                 e << YAML::Key << "VideoComponent" << YAML::Value << YAML::BeginMap;
-
                 e << YAML::Key << "VideoPath" << YAML::Value << vc.videoPath;
                 e << YAML::Key << "PlayOnStart" << YAML::Value << vc.playOnStart;
                 e << YAML::Key << "Loop" << YAML::Value << vc.loop;
@@ -691,35 +705,32 @@ namespace Boom
                     << YAML::Flow << YAML::BeginSeq
                     << vc.tintColor.r << vc.tintColor.g << vc.tintColor.b << vc.tintColor.a
                     << YAML::EndSeq;
-
+                e << YAML::Key << "RenderAs3D" << YAML::Value << vc.renderAs3D;
                 e << YAML::EndMap;
             },
             // ----- DESERIALIZE -----
             [](const YAML::Node& data, EntityRegistry& reg, EntityID ent, AssetRegistry&)
             {
-                if (!data || !data.IsMap()) return;
+                if (!data || !data.IsMap())
+                    return;
 
                 auto& vc = reg.get_or_emplace<VideoComponent>(ent);
 
-                if (auto v = data["VideoPath"])     vc.videoPath = v.as<std::string>();
-                if (auto v = data["PlayOnStart"])   vc.playOnStart = v.as<bool>();
-                if (auto v = data["Loop"])          vc.loop = v.as<bool>();
-                if (auto v = data["Volume"])        vc.volume = v.as<float>();
-                if (auto v = data["PlaybackSpeed"]) vc.playbackSpeed = v.as<float>();
-                if (auto v = data["RenderAs3D"])    vc.renderAs3D = v.as<bool>();
-                if (auto v = data["RemoveBlackBackground"]) vc.removeBlackBackground = v.as<bool>();
+                if (auto v = data["VideoPath"])      vc.videoPath = v.as<std::string>(vc.videoPath);
+                if (auto v = data["PlayOnStart"])    vc.playOnStart = v.as<bool>(vc.playOnStart);
+                if (auto v = data["Loop"])           vc.loop = v.as<bool>(vc.loop);
+                if (auto v = data["Volume"])         vc.volume = v.as<float>(vc.volume);
+                if (auto v = data["PlaybackSpeed"])  vc.playbackSpeed = v.as<float>(vc.playbackSpeed);
+                if (auto v = data["RenderAs3D"])     vc.renderAs3D = v.as<bool>(vc.renderAs3D);
 
-                // Deserialize Color manually
-                if (auto v = data["TintColor"]) {
-                    if (v.IsSequence() && v.size() == 4) {
-                        vc.tintColor.r = v[0].as<float>();
-                        vc.tintColor.g = v[1].as<float>();
-                        vc.tintColor.b = v[2].as<float>();
-                        vc.tintColor.a = v[3].as<float>();
-                    }
+                if (auto c = data["TintColor"]; c && c.IsSequence() && c.size() == 4) {
+                    vc.tintColor.r = c[0].as<float>(vc.tintColor.r);
+                    vc.tintColor.g = c[1].as<float>(vc.tintColor.g);
+                    vc.tintColor.b = c[2].as<float>(vc.tintColor.b);
+                    vc.tintColor.a = c[3].as<float>(vc.tintColor.a);
                 }
 
-                // Reset runtime state
+                // Reset runtime state (not serialized)
                 vc.isPlaying = false;
                 vc.currentTime = 0.0;
             }

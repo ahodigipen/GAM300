@@ -35,6 +35,7 @@
 #include "AI/AISystem.h"
 #include "Input/RayCast.h"
 #include "Graphics/Video/VideoPlayer.h"
+#include "GlobalConstants.h"
 
 namespace std {
 	template<>
@@ -520,6 +521,18 @@ namespace Boom
 			}
 
 			auto& sn = reg.get<SceneNavmeshComponent>(settings);
+
+			// Apply scene settings to renderer
+			if (m_Context->renderer)
+			{
+				m_Context->renderer->AmbientStrength() = sn.ambientStrength;
+				m_Context->renderer->enabledBloom = sn.bloomEnabled;
+				m_Context->renderer->bloomIntensity = sn.bloomIntensity;
+				m_Context->renderer->bloomThreshold = sn.bloomThreshold;
+				m_Context->renderer->bloomIterations = sn.bloomIterations;
+				BOOM_INFO("[Scene] Applied scene settings: ambient={}, bloom={}, intensity={}, threshold={}, iterations={}",
+					sn.ambientStrength, sn.bloomEnabled, sn.bloomIntensity, sn.bloomThreshold, sn.bloomIterations);
+			}
 
 			if (sn.navmeshFile.empty())
 			{
@@ -1361,6 +1374,15 @@ namespace Boom
 
 			// *** ADD THIS - Clear trigger callbacks to prevent stale delegates ***
 			Boom::ClearAllTriggerCallbacks();
+
+			// Reset video system for scene change (clears players and playOnStart tracking)
+			if (m_Context->videoSystem) {
+				m_Context->videoSystem->OnSceneChange();
+			}
+
+			// Reset screen fade to transparent so new scene isn't covered by black
+			// (Each scene's scripts can fade in/out as needed)
+			g_ScreenFadeAlpha = 0.0f;
 
 			// Clear the ECS scene
 			m_Context->scene.clear();

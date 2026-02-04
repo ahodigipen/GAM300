@@ -47,6 +47,7 @@
     <Compile Include="AttackSquash.cs" />
     <Compile Include="CharacterAnimation.cs" />
     <Compile Include="CPTrigger.cs" />
+    <Compile Include="CutsceneController.cs" />
     <Compile Include="FreezeOverlayBehavior.cs" />
     <Compile Include="MazeGeneration.cs" />
     <Compile Include="ProximityDetectionComponent.cs" />
