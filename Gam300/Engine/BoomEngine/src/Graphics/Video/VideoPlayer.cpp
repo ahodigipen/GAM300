@@ -420,32 +420,42 @@ namespace Boom {
 
         plm_frame_t* frame = nullptr;
 
-        // Decode audio if enabled - plm_decode() will call our audio callback
-        // This only advances the audio decoder, not the video decoder
+        // Two different playback modes:
+        // 1. With audio: Use plm_decode() for synchronized A/V playback
+        // 2. Without audio: Use frame-rate limited manual video decoding
+
         if (m_HasAudioTrack && m_AudioEnabled && m_FMODSound) {
+            // plm_decode() handles both audio and video timing internally
+            // It decodes audio frames and calls our callback, and returns video frames
+            // when they're due based on the elapsed time
             plm_decode(m_PLM, adjustedDelta);
-        }
 
-        // Use frame-rate limiting for video playback
-        // This ensures video plays at the correct speed regardless of audio
-        m_AccumulatedTime += adjustedDelta;
-
-        // Only decode video frames at the proper framerate
-        // This prevents fast-forward playback and keeps audio/video in sync
-        while (m_AccumulatedTime >= m_SecondsPerFrame) {
-            m_AccumulatedTime -= m_SecondsPerFrame;
-
-            // Decode one video frame
             frame = plm_decode_video(m_PLM);
             if (frame) {
-                plm_frame_to_rgb(frame, m_RawRGBBuffer.get(), m_Width * 3);
+                plm_frame_to_rgb(frame, m_FrameBuffer.get(), m_Width * 3);
                 m_HasNewFrame = true;
             }
+        } else {
+            // No audio - use manual frame-rate limiting
+            m_AccumulatedTime += adjustedDelta;
 
-            // Prevent infinite loop if video has ended
-            if (plm_has_ended(m_PLM)) {
-                m_AccumulatedTime = 0.0;
-                break;
+            // Only decode video frames at the proper framerate
+            // This prevents fast-forward playback when there's no audio sync
+            while (m_AccumulatedTime >= m_SecondsPerFrame) {
+                m_AccumulatedTime -= m_SecondsPerFrame;
+
+                // Decode one video frame
+                frame = plm_decode_video(m_PLM);
+                if (frame) {
+                    plm_frame_to_rgb(frame, m_FrameBuffer.get(), m_Width * 3);
+                    m_HasNewFrame = true;
+                }
+
+                // Prevent infinite loop if video has ended
+                if (plm_has_ended(m_PLM)) {
+                    m_AccumulatedTime = 0.0;
+                    break;
+                }
             }
         }
 

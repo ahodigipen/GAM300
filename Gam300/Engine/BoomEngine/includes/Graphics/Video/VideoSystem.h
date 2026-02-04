@@ -97,12 +97,6 @@ namespace Boom {
         void Stop(EntityID entity);
 
         /**
-         * Reset the video system for scene changes
-         * Clears all players and initialized tracking so videos can be reloaded
-         */
-        void OnSceneChange();
-
-        /**
          * Get the base path for video resources
          */
         const std::string& GetVideoBasePath() const { return m_VideoBasePath; }

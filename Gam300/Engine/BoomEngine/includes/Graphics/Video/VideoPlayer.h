@@ -119,9 +119,6 @@ namespace Boom {
         // Called by pl_mpeg audio callback - public for callback access
         void OnAudioDecoded(const float* samples, size_t count);
 
-        // Called by pl_mpeg video callback - public for callback access
-        void OnVideoDecoded(void* frame);
-
         // Audio buffer access for FMOD callback (returns samples read)
         size_t ReadAudioSamples(float* outBuffer, size_t samplesRequested);
 

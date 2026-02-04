@@ -46,13 +46,13 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 1
-        metallic: 0
-        occlusion: 0.5
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
         opacity: 1
-        useWorldSpaceUV: true
-        textureScale: 2.0999999
-      AlbedoMapID: 6158403341405184604
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 4789105407518014319
       NormalMapID: 18399105239901256411
       RoughnessMapID: 0
       MetallicMapID: 0
@@ -88,13 +88,13 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
+        roughness: 1
+        metallic: 0
+        occlusion: 0.5
         opacity: 1
-        useWorldSpaceUV: false
-        textureScale: 1
-      AlbedoMapID: 4789105407518014319
+        useWorldSpaceUV: true
+        textureScale: 2.0999999
+      AlbedoMapID: 6158403341405184604
       NormalMapID: 18399105239901256411
       RoughnessMapID: 0
       MetallicMapID: 0
@@ -267,7 +267,7 @@ ASSETS:
       RoughnessMapID: 13175597232551743125
       MetallicMapID: 0
       OcclusionMapID: 0
-      EmissiveMapID: 17639289908748203916
+      EmissiveMapID: 0
       OpacityMapID: 0
   - Type: MATERIAL
     UID: 6104124486273075758
@@ -309,7 +309,7 @@ ASSETS:
       RoughnessMapID: 0
       MetallicMapID: 0
       OcclusionMapID: 0
-      EmissiveMapID: 0
+      EmissiveMapID: 17639289908748203916
       OpacityMapID: 0
   - Type: MATERIAL
     UID: 8235375233612734933
@@ -363,12 +363,12 @@ ASSETS:
         albedo: [1, 1, 1]
         roughness: 1
         metallic: 0
-        occlusion: 0.639999986
+        occlusion: 0.75999999
         opacity: 1
-        useWorldSpaceUV: false
-        textureScale: 1
-      AlbedoMapID: 13725429989173629243
-      NormalMapID: 8080306587810410516
+        useWorldSpaceUV: true
+        textureScale: 2.71000004
+      AlbedoMapID: 7176136387576027842
+      NormalMapID: 0
       RoughnessMapID: 0
       MetallicMapID: 0
       OcclusionMapID: 0
@@ -384,12 +384,12 @@ ASSETS:
         albedo: [1, 1, 1]
         roughness: 1
         metallic: 0
-        occlusion: 0.75999999
+        occlusion: 0.639999986
         opacity: 1
-        useWorldSpaceUV: true
-        textureScale: 2.71000004
-      AlbedoMapID: 7176136387576027842
-      NormalMapID: 0
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 13725429989173629243
+      NormalMapID: 8080306587810410516
       RoughnessMapID: 0
       MetallicMapID: 0
       OcclusionMapID: 0
@@ -459,27 +459,6 @@ ASSETS:
       EmissiveMapID: 0
       OpacityMapID: 0
   - Type: MATERIAL
-    UID: 7210221651131134645
-    Name: Stone Statue (Thick) Texture
-    Source: Stone Statue (Thick) Texture
-    Properties:
-      Data:
-        emissive: [0, 0, 0]
-        albedo: [1, 1, 1]
-        roughness: 0.330000013
-        metallic: 0
-        occlusion: 0.959999979
-        opacity: 1
-        useWorldSpaceUV: false
-        textureScale: 1
-      AlbedoMapID: 82665125486564339
-      NormalMapID: 0
-      RoughnessMapID: 0
-      MetallicMapID: 0
-      OcclusionMapID: 0
-      EmissiveMapID: 0
-      OpacityMapID: 0
-  - Type: MATERIAL
     UID: 10882923977369277709
     Name: Stone Wall Texture
     Source: Stone Wall Texture
@@ -498,6 +477,27 @@ ASSETS:
       RoughnessMapID: 16209169500842126980
       MetallicMapID: 0
       OcclusionMapID: 660614054657113155
+      EmissiveMapID: 0
+      OpacityMapID: 0
+  - Type: MATERIAL
+    UID: 7210221651131134645
+    Name: Stone Statue (Thick) Texture
+    Source: Stone Statue (Thick) Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.330000013
+        metallic: 0
+        occlusion: 0.959999979
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 82665125486564339
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
   - Type: MATERIAL
@@ -753,10 +753,6 @@ ASSETS:
       EmissiveMapID: 0
       OpacityMapID: 0
   - Type: PHYSICS_MESH
-    UID: 2159505294651867228
-    Name: Wall_Slanted (Tri)
-    Source: Resources/Physics/Wall_Slanted_tri.pxm
-  - Type: PHYSICS_MESH
     UID: 8633576229273901496
     Name: Wall_With_Hole (Tri)
     Source: Resources/Physics/Wall_With_Hole_tri.pxm
@@ -785,13 +781,13 @@ ASSETS:
     Name: Outdoor_Stone_Lantern
     Source: Resources/Physics/Outdoor_Stone_Lantern.pxm
   - Type: PHYSICS_MESH
-    UID: 6568928825965890083
-    Name: BIG_Gravestone_low (Tri)
-    Source: Resources/Physics/BIG_Gravestone_low_tri.pxm
-  - Type: PHYSICS_MESH
     UID: 10282509391466741466
     Name: Sliding_Door
     Source: Resources/Physics/Sliding_Door.pxm
+  - Type: PHYSICS_MESH
+    UID: 6568928825965890083
+    Name: BIG_Gravestone_low (Tri)
+    Source: Resources/Physics/BIG_Gravestone_low_tri.pxm
   - Type: PHYSICS_MESH
     UID: 4431181016770564176
     Name: Floor_Cushion
@@ -821,25 +817,29 @@ ASSETS:
     Name: Stairs_Handle
     Source: Resources/Physics/Stairs_Handle.pxm
   - Type: PHYSICS_MESH
-    UID: 53427998423929220
-    Name: Hut_Roof
-    Source: Resources/Physics/Hut_Roof.pxm
+    UID: 11807856327719446838
+    Name: Floating_Platform (Tri)
+    Source: Resources/Physics/Floating_Platform_tri.pxm
   - Type: PHYSICS_MESH
     UID: 745832861092578866
     Name: Floor_new2 (Tri)
     Source: Resources/Physics/Floor_new2_tri.pxm
   - Type: PHYSICS_MESH
+    UID: 53427998423929220
+    Name: Hut_Roof
+    Source: Resources/Physics/Hut_Roof.pxm
+  - Type: PHYSICS_MESH
     UID: 13244744886219103757
     Name: WallTest
     Source: Resources/Physics/WallTest.pxm
   - Type: PHYSICS_MESH
-    UID: 18311705917173916947
-    Name: Japanese_Table
-    Source: Resources/Physics/Japanese_Table.pxm
-  - Type: PHYSICS_MESH
     UID: 13848224013493125637
     Name: Floor_new2
     Source: Resources/Physics/Floor_new2.pxm
+  - Type: PHYSICS_MESH
+    UID: 18311705917173916947
+    Name: Japanese_Table
+    Source: Resources/Physics/Japanese_Table.pxm
   - Type: PHYSICS_MESH
     UID: 12807707659119185110
     Name: Stairs
@@ -1048,17 +1048,6 @@ ASSETS:
       SerializedData: |
 
   - Type: TEXTURE
-    UID: 8077929637821283569
-    Name: detection bar - detected mockup
-    Source: Resources/Textures/EnemyUI/detection bar - detected mockup.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
     UID: 4036289525977957957
     Name: Indoor_Lantern_Hanging_2_openPBR_shader1_Height
     Source: Resources/Models/Props/1_JAN_Lantern Textures/Indoor_Lantern_Hanging_2_openPBR_shader1_Height.png
@@ -1103,20 +1092,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 3241872735777529406
-    Name: Japanese table_openPBR_shader1_Height
-    Source: Resources/Textures/Props Textures/Japanese table_openPBR_shader1_Height.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
-    UID: 6336388213168836440
-    Name: HowToPlayButton
-    Source: Resources/Textures/MenusUI/HowToPlayButton.png
+    UID: 8077929637821283569
+    Name: detection bar - detected mockup
+    Source: Resources/Textures/EnemyUI/detection bar - detected mockup.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1128,6 +1106,17 @@ ASSETS:
     UID: 9587372192931143309
     Name: Outdoor_Stone_Lantern2_midsection_BaseColor
     Source: Resources/Textures/Props Textures/Outdoor_Stone_Lantern2_midsection_BaseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 6336388213168836440
+    Name: HowToPlayButton
+    Source: Resources/Textures/MenusUI/HowToPlayButton.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1157,17 +1146,6 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
-  - Type: TEXTURE
-    UID: 18015433039280727800
-    Name: UI_Running
-    Source: Resources/Textures/PlayerUI/UI_Running.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
   - Type: TEXTURE
     UID: 4669697712673348506
     Name: Scissors_Ninja_Body_Normal
@@ -1202,20 +1180,20 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 4057332924235929833
-    Name: M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Roughness
-    Source: Resources/Models/Enemy/Patrol2Textures/M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Roughness.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
     UID: 1821848361694167965
     Name: Lantern_Hanging_openPBR_shader1_BaseColor
     Source: Resources/Models/Props/1_JAN_Lantern Textures/Lantern_Hanging_openPBR_shader1_BaseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 728858489320520180
+    Name: arrow3
+    Source: Resources/UnityOtherFiles/UI Assets/arrow3.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1334,9 +1312,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 15873517341497826991
-    Name: lantern_colour_2_BaseMap
-    Source: Resources/Models/Props/lantern mat/lantern_colour_2_BaseMap.png
+    UID: 11795212342725236264
+    Name: lantern_colour_2_MaskMap
+    Source: Resources/Models/Props/lantern mat/lantern_colour_2_MaskMap.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1345,9 +1323,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 11795212342725236264
-    Name: lantern_colour_2_MaskMap
-    Source: Resources/Models/Props/lantern mat/lantern_colour_2_MaskMap.png
+    UID: 8398875229619780678
+    Name: Blue_Gem
+    Source: Resources/UnityOtherFiles/UI Assets/Blue_Gem.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1389,9 +1367,20 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 15452675258460406062
-    Name: roof texture
-    Source: Resources/Textures/Wall Textures/roof texture.png
+    UID: 17665476113226354807
+    Name: lantern_openPBR_shader1_BaseMap
+    Source: Resources/Models/Props/lantern mat/lantern_openPBR_shader1_BaseMap.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 13671418689435228455
+    Name: arrow2
+    Source: Resources/UnityOtherFiles/UI Assets/arrow2.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1403,17 +1392,6 @@ ASSETS:
     UID: 1815887354929855275
     Name: RestartButton
     Source: Resources/Textures/MenusUI/RestartButton.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
-    UID: 2779217692485608494
-    Name: Tatami_Indoor
-    Source: Resources/Textures/Floor Texture/Tatami_Indoor.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1499,9 +1477,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 255836083165499956
-    Name: Sliding door long texture
-    Source: Resources/Textures/Wall Textures/Sliding door long texture.png
+    UID: 13725429989173629243
+    Name: Pedastal_baseColor
+    Source: Resources/Models/Enemy/Stationary Sentry/Pedastal_baseColor.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1543,28 +1521,6 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 14485376290015927854
-    Name: blackfadebg
-    Source: Resources/UnityOtherFiles/UI Assets/blackfadebg.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
-    UID: 3489333510165140307
-    Name: seamless sand zen garden texture_Outdoor
-    Source: Resources/Textures/Floor Texture/seamless sand zen garden texture_Outdoor.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
     UID: 284235029935849495
     Name: Outdoor_Stone_Lantern2_Roof_BaseColor
     Source: Resources/Models/Props/Stone_Lantern_Textures/Outdoor_Stone_Lantern2_Roof_BaseColor.png
@@ -1579,6 +1535,28 @@ ASSETS:
     UID: 9401454698162006202
     Name: PauseMenuScroll
     Source: Resources/Textures/PauseMenu/PauseMenuScroll.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 11738458055785486354
+    Name: NewGameButton_Clicked
+    Source: Resources/Textures/MainMenu/NewGameButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 482575242868564674
+    Name: Lantern_Hanging_openPBR_shader1_Normal
+    Source: Resources/Models/Props/1_JAN_Lantern Textures/Lantern_Hanging_openPBR_shader1_Normal.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1752,9 +1730,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 2472626960142953217
-    Name: M4_Sentry_untextured_Sentry_Normal
-    Source: Resources/Models/Enemy/M4_SS/M4_Sentry_untextured_Sentry_Normal.png
+    UID: 9683671951523272381
+    Name: heart_active
+    Source: Resources/Textures/PlayerUI/heart_active.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1774,9 +1752,20 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 9683671951523272381
-    Name: heart_active
-    Source: Resources/Textures/PlayerUI/heart_active.png
+    UID: 2472626960142953217
+    Name: M4_Sentry_untextured_Sentry_Normal
+    Source: Resources/Models/Enemy/M4_SS/M4_Sentry_untextured_Sentry_Normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 14764061358937546911
+    Name: Green_Gem
+    Source: Resources/UnityOtherFiles/UI Assets/Green_Gem.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1928,9 +1917,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 12369697772828963859
-    Name: GameTitleLogo
-    Source: Resources/UnityOtherFiles/UI Assets/GameTitleLogo.png
+    UID: 10509866360653012002
+    Name: ResumeButton
+    Source: Resources/Textures/MenusUI/ResumeButton.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1939,9 +1928,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 10509866360653012002
-    Name: ResumeButton
-    Source: Resources/Textures/MenusUI/ResumeButton.png
+    UID: 12369697772828963859
+    Name: GameTitleLogo
+    Source: Resources/UnityOtherFiles/UI Assets/GameTitleLogo.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2071,17 +2060,6 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 18116571246883620302
-    Name: Scissors_Ninja_Hood_Metallic
-    Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Hood_Metallic.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
     UID: 16738226509792806577
     Name: lantern_colour_1_MaskMap
     Source: Resources/Models/Props/lantern mat/lantern_colour_1_MaskMap.png
@@ -2093,9 +2071,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 3727801128357366120
-    Name: Scissors_Ninja_Hood_Normal
-    Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Hood_Normal.png
+    UID: 18116571246883620302
+    Name: Scissors_Ninja_Hood_Metallic
+    Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Hood_Metallic.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2115,9 +2093,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 7119423401994078713
-    Name: Scissors_Ninja_Hood_Roughness
-    Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Hood_Roughness.png
+    UID: 3727801128357366120
+    Name: Scissors_Ninja_Hood_Normal
+    Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Hood_Normal.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2129,6 +2107,17 @@ ASSETS:
     UID: 10845518425233378224
     Name: RestartButton_Clicked
     Source: Resources/Textures/MenusUI/RestartButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 7119423401994078713
+    Name: Scissors_Ninja_Hood_Roughness
+    Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Hood_Roughness.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2236,9 +2225,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 3615061789617660208
-    Name: UI_Freeze_Unavailable
-    Source: Resources/Textures/PlayerUI/UI_Freeze_Unavailable.png
+    UID: 7684017362689627028
+    Name: Lantern_Hanging_openPBR_shader1_Height
+    Source: Resources/Models/Props/2_KEN_LanternTextures/Lantern_Hanging_openPBR_shader1_Height.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2247,9 +2236,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 7684017362689627028
-    Name: Lantern_Hanging_openPBR_shader1_Height
-    Source: Resources/Models/Props/2_KEN_LanternTextures/Lantern_Hanging_openPBR_shader1_Height.png
+    UID: 3615061789617660208
+    Name: UI_Freeze_Unavailable
+    Source: Resources/Textures/PlayerUI/UI_Freeze_Unavailable.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2379,9 +2368,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 8781181629247619230
-    Name: Lion_Statue2_openPBR_shader1_BaseColor
-    Source: Resources/Models/Props/Lion_Statue/Lion_Statue2_openPBR_shader1_BaseColor.png
+    UID: 4264408264520885961
+    Name: ExitButton
+    Source: Resources/Textures/MenusUI/ExitButton.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2390,9 +2379,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 4264408264520885961
-    Name: ExitButton
-    Source: Resources/Textures/MenusUI/ExitButton.png
+    UID: 8781181629247619230
+    Name: Lion_Statue2_openPBR_shader1_BaseColor
+    Source: Resources/Models/Props/Lion_Statue/Lion_Statue2_openPBR_shader1_BaseColor.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2412,17 +2401,6 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 327234960441928512
-    Name: UI_Key
-    Source: Resources/Textures/PlayerUI/UI_Key.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
     UID: 599280312598501437
     Name: sliding door small texture
     Source: Resources/Textures/Wall Textures/sliding door small texture.png
@@ -2434,9 +2412,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 660614054657113155
-    Name: Wall_Stone_C_AO
-    Source: Resources/Textures/Wall Textures/Wall stone/Wall_Stone_C_AO.png
+    UID: 327234960441928512
+    Name: UI_Key
+    Source: Resources/Textures/PlayerUI/UI_Key.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2456,6 +2434,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 660614054657113155
+    Name: Wall_Stone_C_AO
+    Source: Resources/Textures/Wall Textures/Wall stone/Wall_Stone_C_AO.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 7561553270291559458
     Name: Wall_Stone_C_Metallic
     Source: Resources/Textures/Wall Textures/Wall stone/Wall_Stone_C_Metallic.png
@@ -2466,17 +2455,6 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
-  - Type: TEXTURE
-    UID: 4292453219005343617
-    Name: UI_Crouching
-    Source: Resources/Textures/PlayerUI/UI_Crouching.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
   - Type: TEXTURE
     UID: 16300877889967123005
     Name: asset
@@ -2665,17 +2643,6 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 17435015903446098353
-    Name: UI_Freeze_Available
-    Source: Resources/Textures/PlayerUI/UI_Freeze_Available.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
     UID: 947084306896258002
     Name: heart_inactive
     Source: Resources/Textures/PlayerUI/heart_inactive.png
@@ -2687,9 +2654,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 10672115529321528506
-    Name: UI_End
-    Source: Resources/Textures/PlayerUI/UI_End.png
+    UID: 17435015903446098353
+    Name: UI_Freeze_Available
+    Source: Resources/Textures/PlayerUI/UI_Freeze_Available.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2701,6 +2668,17 @@ ASSETS:
     UID: 15172731084930672394
     Name: script
     Source: Resources/Textures/Icons/script.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 10672115529321528506
+    Name: UI_End
+    Source: Resources/Textures/PlayerUI/UI_End.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2742,17 +2720,6 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 17703832789455133950
-    Name: M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Metallic
-    Source: Resources/Models/Enemy/Patrol2Textures/M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Metallic.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
     UID: 9033368879326419558
     Name: Pillow_openPBR_shader1_Metallic
     Source: Resources/Textures/Props Textures/Pillow_openPBR_shader1_Metallic.png
@@ -2764,9 +2731,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 6305281938924181745
-    Name: Pillow_openPBR_shader1_Roughness
-    Source: Resources/Textures/Props Textures/Pillow_openPBR_shader1_Roughness.png
+    UID: 1460839526354951549
+    Name: gardenfloor1024NormalMap
+    Source: Resources/Textures/Floor Texture/gardenfloor1024NormalMap.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2775,9 +2742,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 1460839526354951549
-    Name: gardenfloor1024NormalMap
-    Source: Resources/Textures/Floor Texture/gardenfloor1024NormalMap.png
+    UID: 6305281938924181745
+    Name: Pillow_openPBR_shader1_Roughness
+    Source: Resources/Textures/Props Textures/Pillow_openPBR_shader1_Roughness.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2808,9 +2775,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 8015819090818401326
-    Name: Japanese table_openPBR_shader1_Normal
-    Source: Resources/Textures/Props Textures/Japanese table_openPBR_shader1_Normal.png
+    UID: 16541366282253303416
+    Name: MainMenuLogo
+    Source: Resources/Textures/MenusUI/MainMenuLogo.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2819,9 +2786,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 16541366282253303416
-    Name: MainMenuLogo
-    Source: Resources/Textures/MenusUI/MainMenuLogo.png
+    UID: 8015819090818401326
+    Name: Japanese table_openPBR_shader1_Normal
+    Source: Resources/Textures/Props Textures/Japanese table_openPBR_shader1_Normal.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2962,9 +2929,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 17527799947353995107
-    Name: detection bar - circle unfilled
-    Source: Resources/Textures/EnemyUI/detection bar - circle unfilled.png
+    UID: 13415878511549165281
+    Name: PauseMenuScroll
+    Source: Resources/Textures/MenusUI/PauseMenuScroll.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2973,9 +2940,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 13415878511549165281
-    Name: PauseMenuScroll
-    Source: Resources/Textures/MenusUI/PauseMenuScroll.png
+    UID: 17527799947353995107
+    Name: detection bar - circle unfilled
+    Source: Resources/Textures/EnemyUI/detection bar - circle unfilled.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3292,17 +3259,6 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 12936131708983895469
-    Name: UI_Tutorial
-    Source: Resources/Textures/PlayerUI/UI_Tutorial.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
     UID: 18426389008356641383
     Name: ReturnButton
     Source: Resources/Textures/MenusUI/ReturnButton.png
@@ -3313,17 +3269,6 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
-  - Type: TEXTURE
-    UID: 5730132691109228952
-    Name: M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Normal
-    Source: Resources/Models/Enemy/Patrol2Textures/M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Normal.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
   - Type: TEXTURE
     UID: 2676478744274535465
     Name: ReturnButton_Clicked
@@ -3412,61 +3357,6 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
-  - Type: TEXTURE
-    UID: 17610262196672489587
-    Name: M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_BaseColor
-    Source: Resources/Models/Enemy/Patrol2Textures/M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_BaseColor.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 12294537066232412532
-    Name: M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Emissive
-    Source: Resources/Models/Enemy/Patrol2Textures/M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Emissive.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 6568004371144359680
-    Name: M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Height
-    Source: Resources/Models/Enemy/Patrol2Textures/M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Height.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 11583444921017572832
-    Name: Level1PopUp
-    Source: Resources/Textures/MenusUI/Level1PopUp.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
-    UID: 17735993601354122583
-    Name: Level2PopUp
-    Source: Resources/Textures/MenusUI/Level2PopUp.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
   - Type: SKYBOX
     UID: 4245843529762785392
     Name: NightSkyHDRI003_8K_HDR
@@ -3638,6 +3528,17 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 4392709820672134661
+    Name: Human Idle
+    Source: Resources/Human Idle.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
       HasJoints: true
   - Type: MODEL
     UID: 3091820953851232485
@@ -3775,17 +3676,6 @@ ASSETS:
     UID: 16876243872413922063
     Name: Desert_Skull_Small_0_1
     Source: Resources/UnityOtherFiles/LowPolyEnv/Cross_Plains/Models/Desert_Skull_Small_0_1.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 4832917157114843538
-    Name: M4_Patrol_Enemy_2_SCISSORS
-    Source: Resources/Models/Enemy/M4_Patrol_Enemy_2_SCISSORS.fbx
     Properties:
       Model Transform:
         transform:
@@ -5147,50 +5037,6 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 8656759194949246369
-    Name: LeftRoof
-    Source: Resources/Models/LeftRoof.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 2720699287626206402
-    Name: LONGROOF
-    Source: Resources/Models/LONGROOF.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 431395556161791294
-    Name: RightRoof
-    Source: Resources/Models/RightRoof.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 9742913552836380910
-    Name: ShortRoof
-    Source: Resources/Models/ShortRoof.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
     UID: 2088400025698853957
     Name: Scissor Ninja Idle (2)
     Source: Resources/Scissor Ninja Idle (2).fbx
@@ -5205,10 +5051,6 @@ ASSETS:
     UID: 12267195745784827679
     Name: Kairos_Cave-Vuk_Loop
     Source: Resources/Audio/Kairos_Cave-Vuk_Loop.wav
-  - Type: AUDIO
-    UID: 2524182844099618786
-    Name: footstep_tatami_4
-    Source: Resources/Audio/footstep_tatami_4.wav
   - Type: AUDIO
     UID: 5064117765438422255
     Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_5
@@ -5226,10 +5068,6 @@ ASSETS:
     Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_1
     Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_1.wav
   - Type: AUDIO
-    UID: 16323725886752035261
-    Name: VO_Patrol_017
-    Source: Resources/Audio/VO_Patrol_017.wav
-  - Type: AUDIO
     UID: 17895200579608756026
     Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_2
     Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_2.wav
@@ -5242,25 +5080,17 @@ ASSETS:
     Name: playerAttack_2
     Source: Resources/Audio/playerAttack_2.wav
   - Type: AUDIO
-    UID: 4647372045134483782
-    Name: VO_Patrol_001
-    Source: Resources/Audio/VO_Patrol_001.wav
+    UID: 4309462336413165516
+    Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_4
+    Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_4.wav
   - Type: AUDIO
     UID: 2194325517801054000
     Name: 10Suns_WalkAbout_BGM1_Loop
     Source: Resources/Audio/10Suns_WalkAbout_BGM1_Loop.wav
   - Type: AUDIO
-    UID: 4309462336413165516
-    Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_4
-    Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_4.wav
-  - Type: AUDIO
     UID: 7418220252929015681
     Name: Footsteps-Stealth-Sneaking-Wood-Socks_8
     Source: Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_8.wav
-  - Type: AUDIO
-    UID: 15958803571243056749
-    Name: playerRun_02
-    Source: Resources/Audio/playerRun_02.wav
   - Type: AUDIO
     UID: 13077478249973297030
     Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_6
@@ -5277,6 +5107,10 @@ ASSETS:
     UID: 8672755277680878936
     Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_8
     Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_8.wav
+  - Type: AUDIO
+    UID: 11333566408096603704
+    Name: playerWalk_03
+    Source: Resources/Audio/playerWalk_03.wav
   - Type: AUDIO
     UID: 12727926029481188102
     Name: 02.Night_Forest_Field_Stars_Loop
@@ -5305,10 +5139,6 @@ ASSETS:
     UID: 7275537931168225468
     Name: Footsteps-Stealth-Sneaking-Wood-Socks_3
     Source: Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_3.wav
-  - Type: AUDIO
-    UID: 5888642589876066344
-    Name: playerHurt_1
-    Source: Resources/Audio/playerHurt_1.wav
   - Type: AUDIO
     UID: 15703267302175957142
     Name: enemyAtk_1
@@ -5354,13 +5184,13 @@ ASSETS:
     Name: Footsteps-Stealth-Sneaking-Wood-Socks_7
     Source: Resources/Audio/Footsteps-Stealth-Sneaking-Wood-Socks_7.wav
   - Type: AUDIO
+    UID: 15658658186560412188
+    Name: Sheathe
+    Source: Resources/Audio/Sheathe.wav
+  - Type: AUDIO
     UID: 962560488053106255
     Name: freeze
     Source: Resources/Audio/freeze.wav
-  - Type: AUDIO
-    UID: 8310855710438236899
-    Name: VO_Patrol_006
-    Source: Resources/Audio/VO_Patrol_006.wav
   - Type: AUDIO
     UID: 14335202497344487855
     Name: unlock mono
@@ -5369,10 +5199,6 @@ ASSETS:
     UID: 5857866727950034211
     Name: HouseOfLanternsBGM1Mstr
     Source: Resources/Audio/HouseOfLanternsBGM1Mstr.wav
-  - Type: AUDIO
-    UID: 5427661732911072210
-    Name: footstep_stone_3
-    Source: Resources/Audio/footstep_stone_3.wav
   - Type: AUDIO
     UID: 545094823311612520
     Name: outdoorAmbience
@@ -5389,10 +5215,6 @@ ASSETS:
     UID: 12744037939485381771
     Name: playerPunch_1
     Source: Resources/Audio/playerPunch_1.wav
-  - Type: AUDIO
-    UID: 11888566966224263255
-    Name: footstep_sand_10
-    Source: Resources/Audio/footstep_sand_10.wav
   - Type: AUDIO
     UID: 10831851872083716194
     Name: playerPunch_2
@@ -5458,277 +5280,33 @@ ASSETS:
     Name: pickup
     Source: Resources/Audio/pickup.wav
   - Type: AUDIO
-    UID: 3268046170651904129
-    Name: StatueTurn_03
-    Source: Resources/Audio/StatueTurn_03.wav
-  - Type: AUDIO
-    UID: 10759890939910205289
-    Name: footstep_sand_1
-    Source: Resources/Audio/footstep_sand_1.wav
-  - Type: AUDIO
     UID: 15768280648375880615
     Name: StatueTurn_01
     Source: Resources/Audio/StatueTurn_01.wav
   - Type: AUDIO
-    UID: 7178681964843569408
-    Name: VO_Player_Death_005
-    Source: Resources/Audio/VO_Player_Death_005.wav
+    UID: 3268046170651904129
+    Name: StatueTurn_03
+    Source: Resources/Audio/StatueTurn_03.wav
   - Type: AUDIO
     UID: 17884820569582633560
     Name: unlock
     Source: Resources/Audio/unlock.wav
-  - Type: AUDIO
-    UID: 3466500265661166484
-    Name: footstep_sand_11
-    Source: Resources/Audio/footstep_sand_11.wav
-  - Type: AUDIO
-    UID: 7096125799629630156
-    Name: footstep_sand_2
-    Source: Resources/Audio/footstep_sand_2.wav
-  - Type: AUDIO
-    UID: 7850781228654886895
-    Name: footstep_sand_3
-    Source: Resources/Audio/footstep_sand_3.wav
-  - Type: AUDIO
-    UID: 2235119969115669050
-    Name: footstep_sand_4
-    Source: Resources/Audio/footstep_sand_4.wav
-  - Type: AUDIO
-    UID: 731657709928276845
-    Name: footstep_sand_5
-    Source: Resources/Audio/footstep_sand_5.wav
-  - Type: AUDIO
-    UID: 8847722464694591088
-    Name: footstep_sand_6
-    Source: Resources/Audio/footstep_sand_6.wav
-  - Type: AUDIO
-    UID: 1080881304783963171
-    Name: footstep_sand_7
-    Source: Resources/Audio/footstep_sand_7.wav
-  - Type: AUDIO
-    UID: 14095485803805920174
-    Name: footstep_sand_8
-    Source: Resources/Audio/footstep_sand_8.wav
-  - Type: AUDIO
-    UID: 13371587216112957777
-    Name: footstep_sand_9
-    Source: Resources/Audio/footstep_sand_9.wav
-  - Type: AUDIO
-    UID: 2710530964777592584
-    Name: footstep_stone_1
-    Source: Resources/Audio/footstep_stone_1.wav
-  - Type: AUDIO
-    UID: 9727789183544272656
-    Name: footstep_stone_10
-    Source: Resources/Audio/footstep_stone_10.wav
-  - Type: AUDIO
-    UID: 10158588711815903749
-    Name: footstep_stone_2
-    Source: Resources/Audio/footstep_stone_2.wav
-  - Type: AUDIO
-    UID: 11043358176822392807
-    Name: footstep_stone_4
-    Source: Resources/Audio/footstep_stone_4.wav
-  - Type: AUDIO
-    UID: 8762228762089175588
-    Name: footstep_stone_5
-    Source: Resources/Audio/footstep_stone_5.wav
-  - Type: AUDIO
-    UID: 10755197059738922177
-    Name: footstep_stone_6
-    Source: Resources/Audio/footstep_stone_6.wav
-  - Type: AUDIO
-    UID: 12545110798182354735
-    Name: footstep_tatami_10
-    Source: Resources/Audio/footstep_tatami_10.wav
-  - Type: AUDIO
-    UID: 17713766360500930334
-    Name: footstep_stone_7
-    Source: Resources/Audio/footstep_stone_7.wav
-  - Type: AUDIO
-    UID: 16850155152161212115
-    Name: footstep_stone_8
-    Source: Resources/Audio/footstep_stone_8.wav
-  - Type: AUDIO
-    UID: 18353617411348604320
-    Name: footstep_stone_9
-    Source: Resources/Audio/footstep_stone_9.wav
-  - Type: AUDIO
-    UID: 13739614035863293841
-    Name: footstep_tatami_1
-    Source: Resources/Audio/footstep_tatami_1.wav
-  - Type: AUDIO
-    UID: 11790736844133920012
-    Name: footstep_tatami_11
-    Source: Resources/Audio/footstep_tatami_11.wav
-  - Type: AUDIO
-    UID: 3241865673820345257
-    Name: footstep_tatami_12
-    Source: Resources/Audio/footstep_tatami_12.wav
-  - Type: AUDIO
-    UID: 2356610438794390214
-    Name: footstep_tatami_13
-    Source: Resources/Audio/footstep_tatami_13.wav
-  - Type: AUDIO
-    UID: 6020094104098143331
-    Name: footstep_tatami_14
-    Source: Resources/Audio/footstep_tatami_14.wav
-  - Type: AUDIO
-    UID: 11746645738213547252
-    Name: footstep_tatami_2
-    Source: Resources/Audio/footstep_tatami_2.wav
-  - Type: AUDIO
-    UID: 8201240832946028471
-    Name: footstep_tatami_3
-    Source: Resources/Audio/footstep_tatami_3.wav
-  - Type: AUDIO
-    UID: 13204085757898542485
-    Name: footstep_tatami_5
-    Source: Resources/Audio/footstep_tatami_5.wav
-  - Type: AUDIO
-    UID: 11827445560647679640
-    Name: footstep_tatami_6
-    Source: Resources/Audio/footstep_tatami_6.wav
-  - Type: AUDIO
-    UID: 4436368911501284363
-    Name: footstep_tatami_7
-    Source: Resources/Audio/footstep_tatami_7.wav
-  - Type: AUDIO
-    UID: 16477051762726810054
-    Name: footstep_tatami_8
-    Source: Resources/Audio/footstep_tatami_8.wav
-  - Type: AUDIO
-    UID: 17362306997752765097
-    Name: footstep_tatami_9
-    Source: Resources/Audio/footstep_tatami_9.wav
-  - Type: AUDIO
-    UID: 14835872404522448303
-    Name: VO_Patrol_002
-    Source: Resources/Audio/VO_Patrol_002.wav
-  - Type: AUDIO
-    UID: 14081498450474013580
-    Name: VO_Patrol_003
-    Source: Resources/Audio/VO_Patrol_003.wav
-  - Type: AUDIO
-    UID: 14196021353674774317
-    Name: VO_Patrol_004
-    Source: Resources/Audio/VO_Patrol_004.wav
-  - Type: AUDIO
-    UID: 16610739088635872937
-    Name: VO_Statue_011
-    Source: Resources/Audio/VO_Statue_011.wav
-  - Type: AUDIO
-    UID: 15699483612862166522
-    Name: VO_Patrol_005
-    Source: Resources/Audio/VO_Patrol_005.wav
-  - Type: AUDIO
-    UID: 1909934318270967569
-    Name: VO_Patrol_008
-    Source: Resources/Audio/VO_Patrol_008.wav
-  - Type: AUDIO
-    UID: 8868503619032975726
-    Name: VO_Patrol_009
-    Source: Resources/Audio/VO_Patrol_009.wav
-  - Type: AUDIO
-    UID: 13009465816303968470
-    Name: VO_Patrol_012
-    Source: Resources/Audio/VO_Patrol_012.wav
-  - Type: AUDIO
-    UID: 10540170386885184179
-    Name: VO_Patrol_015
-    Source: Resources/Audio/VO_Patrol_015.wav
-  - Type: AUDIO
-    UID: 11694409051216890058
-    Name: VO_Patrol_016
-    Source: Resources/Audio/VO_Patrol_016.wav
-  - Type: AUDIO
-    UID: 14472918956471510148
-    Name: VO_Patrol_018
-    Source: Resources/Audio/VO_Patrol_018.wav
-  - Type: AUDIO
-    UID: 16945728247163692743
-    Name: VO_Patrol_019
-    Source: Resources/Audio/VO_Patrol_019.wav
-  - Type: AUDIO
-    UID: 18087093966510858781
-    Name: VO_Patrol_031
-    Source: Resources/Audio/VO_Patrol_031.wav
-  - Type: AUDIO
-    UID: 15654807026827350954
-    Name: VO_Patrol_Alert_020
-    Source: Resources/Audio/VO_Patrol_Alert_020.wav
-  - Type: AUDIO
-    UID: 8018847147894243357
-    Name: VO_Patrol_Alert_021
-    Source: Resources/Audio/VO_Patrol_Alert_021.wav
-  - Type: AUDIO
-    UID: 17161825142850216758
-    Name: VO_Patrol_Alert_024
-    Source: Resources/Audio/VO_Patrol_Alert_024.wav
-  - Type: AUDIO
-    UID: 2823724212657017183
-    Name: VO_Patrol_Alert_027
-    Source: Resources/Audio/VO_Patrol_Alert_027.wav
-  - Type: AUDIO
-    UID: 12232557009907965079
-    Name: VO_Patrol_Alert_030
-    Source: Resources/Audio/VO_Patrol_Alert_030.wav
-  - Type: AUDIO
-    UID: 17693164443615252029
-    Name: VO_Player_Death_006
-    Source: Resources/Audio/VO_Player_Death_006.wav
-  - Type: AUDIO
-    UID: 18315166804026909511
-    Name: VO_Player_Death_008
-    Source: Resources/Audio/VO_Player_Death_008.wav
-  - Type: AUDIO
-    UID: 15842357513334726916
-    Name: VO_Player_Death_009
-    Source: Resources/Audio/VO_Player_Death_009.wav
-  - Type: AUDIO
-    UID: 18354421580209848874
-    Name: VO_Statue_003
-    Source: Resources/Audio/VO_Statue_003.wav
-  - Type: AUDIO
-    UID: 5523338766039515103
-    Name: VO_Statue_004
-    Source: Resources/Audio/VO_Statue_004.wav
-  - Type: AUDIO
-    UID: 1414695622523163062
-    Name: VO_Statue_007
-    Source: Resources/Audio/VO_Statue_007.wav
-  - Type: AUDIO
-    UID: 13769451304924459131
-    Name: VO_Statue_008
-    Source: Resources/Audio/VO_Statue_008.wav
-  - Type: AUDIO
-    UID: 15272913564111851336
-    Name: VO_Statue_009
-    Source: Resources/Audio/VO_Statue_009.wav
-  - Type: AUDIO
-    UID: 15725483853609917894
-    Name: VO_Statue_010
-    Source: Resources/Audio/VO_Statue_010.wav
-  - Type: ANIMATION
-    UID: 4483381614930560572
-    Name: mixamo.com
-    Source: Resources/Animations/mixamo.com.anim
-  - Type: ANIMATION
-    UID: 14897426899183047176
-    Name: samuraiwalkwithsound
-    Source: Resources/Animations/samuraiwalkwithsound.anim
   - Type: ANIMATION
     UID: 8215980923487158352
     Name: apply
     Source: Resources/Animations/apply.anim
   - Type: ANIMATION
-    UID: 13777066594217364824
-    Name: applytest
-    Source: Resources/Animations/applytest.anim
+    UID: 14897426899183047176
+    Name: samuraiwalkwithsound
+    Source: Resources/Animations/samuraiwalkwithsound.anim
   - Type: ANIMATION
     UID: 15559952038956442782
     Name: test
     Source: Resources/Animations/test.anim
+  - Type: ANIMATION
+    UID: 13777066594217364824
+    Name: applytest
+    Source: Resources/Animations/applytest.anim
   - Type: ANIMATION
     UID: 8365196235736041509
     Name: test_idle
@@ -5737,7 +5315,3 @@ ASSETS:
     UID: 18266851779873602972
     Name: test_walk
     Source: Resources/Animations/test_walk.anim
-  - Type: ANIMATION
-    UID: 1916845434327575387
-    Name: patrol_head_up
-    Source: Resources/Animations/patrol_head_up.anim
