@@ -6,6 +6,14 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <set>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <cmath>
+#include <unordered_map>
+#include <unordered_set>
+#include <memory>
+#include <iostream>
 
 namespace Boom
 {
@@ -128,7 +136,14 @@ namespace Boom
                         // Process audio events for this clip
                         ProcessAudioEvents(clip.get(), timeBeforeUpdate, m_Time, looped);
 
-                        UpdateJoints(m_Root, glm::identity<glm::mat4>());
+                        // Check for Root Motion override in parameters
+                        auto it = m_BoolParams.find("ApplyRootMotion");
+                        if (it != m_BoolParams.end())
+                        {
+                            m_ApplyRootMotion = it->second;
+                        }
+
+                        UpdateJoints(m_Root, glm::identity<glm::mat4>(), true);
                     }
                 }
             }
@@ -144,7 +159,14 @@ namespace Boom
                 // Process audio events for this clip
                 ProcessAudioEvents(clip.get(), timeBeforeUpdate, m_Time, looped);
 
-                UpdateJoints(m_Root, glm::identity<glm::mat4>());
+                // Check for Root Motion override in parameters
+                auto it = m_BoolParams.find("ApplyRootMotion");
+                if (it != m_BoolParams.end())
+                {
+                    m_ApplyRootMotion = it->second;
+                }
+
+                UpdateJoints(m_Root, glm::identity<glm::mat4>(), true);
             }
 
             // Update last processed time
@@ -443,6 +465,10 @@ namespace Boom
             m_LastProcessedTime = m_Time;
         }
 
+        // === ROOT MOTION API ===
+        BOOM_INLINE void SetApplyRootMotion(bool apply) { m_ApplyRootMotion = apply; }
+        BOOM_INLINE bool GetApplyRootMotion() const { return m_ApplyRootMotion; }
+
     private:
         // === AUDIO EVENT PROCESSING ===
 
@@ -667,12 +693,12 @@ namespace Boom
              if (blendWeight < 0.001f)
              {
                  // Just use lower clip
-                 UpdateJoints(m_Root, glm::identity<glm::mat4>());
+                 UpdateJoints(m_Root, glm::identity<glm::mat4>(), true);
              }
              else
              {
                  // Blend between clips
-                 BlendJointsFromClips(m_Root, glm::identity<glm::mat4>(), lowerClip.get(), upperClip.get(), blendWeight);
+                 BlendJointsFromClips(m_Root, glm::identity<glm::mat4>(), lowerClip.get(), upperClip.get(), blendWeight, true);
              }
          }
 
@@ -697,11 +723,11 @@ namespace Boom
              m_TargetTime += toClip->ticksPerSecond * toState.speed * deltaTime;
              m_TargetTime = fmod(m_TargetTime, toClip->duration);
 
-             BlendJoints(m_Root, glm::identity<glm::mat4>(), fromClip.get(), toClip.get(), m_BlendProgress);
+             BlendJoints(m_Root, glm::identity<glm::mat4>(), fromClip.get(), toClip.get(), m_BlendProgress, true);
          }
 
          BOOM_INLINE void BlendJoints(Joint& joint, const glm::mat4& parentTransform,
-             const AnimationClip* fromClip, const AnimationClip* toClip, float weight)
+             const AnimationClip* fromClip, const AnimationClip* toClip, float weight, bool isRoot = false)
          {
              glm::mat4 fromTransform = glm::mat4(1.0f);
              glm::mat4 toTransform = glm::mat4(1.0f);
@@ -762,6 +788,13 @@ namespace Boom
              DecomposeMatrix(toTransform, toPos, toRot, toScale);
 
              glm::vec3 blendedPos = glm::mix(fromPos, toPos, weight);
+             
+             // ROOT MOTION STRIPPING
+             if (isRoot && !m_ApplyRootMotion)
+             {
+                 blendedPos = glm::vec3(0.0f); // Zero out translation for root
+             }
+
              glm::quat blendedRot = glm::slerp(fromRot, toRot, weight);
              glm::vec3 blendedScale = glm::mix(fromScale, toScale, weight);
 
@@ -774,12 +807,12 @@ namespace Boom
 
              for (auto& child : joint.children)
              {
-                 BlendJoints(child, worldTransform, fromClip, toClip, weight);
+                 BlendJoints(child, worldTransform, fromClip, toClip, weight, false);
              }
          }
 
          BOOM_INLINE void BlendJointsFromClips(Joint& joint, const glm::mat4& parentTransform,
-             const AnimationClip* clip1, const AnimationClip* clip2, float weight)
+             const AnimationClip* clip1, const AnimationClip* clip2, float weight, bool isRoot = false)
          {
              glm::mat4 transform1 = glm::mat4(1.0f);
              glm::mat4 transform2 = glm::mat4(1.0f);
@@ -836,6 +869,13 @@ namespace Boom
              DecomposeMatrix(transform2, pos2, rot2, scale2);
 
              glm::vec3 blendedPos = glm::mix(pos1, pos2, weight);
+
+             // ROOT MOTION STRIPPING
+             if (isRoot && !m_ApplyRootMotion)
+             {
+                 blendedPos = glm::vec3(0.0f); // Zero out translation for root
+             }
+
              glm::quat blendedRot = glm::slerp(rot1, rot2, weight);
              glm::vec3 blendedScale = glm::mix(scale1, scale2, weight);
 
@@ -848,7 +888,7 @@ namespace Boom
 
              for (auto& child : joint.children)
              {
-                 BlendJointsFromClips(child, worldTransform, clip1, clip2, weight);
+                 BlendJointsFromClips(child, worldTransform, clip1, clip2, weight, false);
              }
          }
 
@@ -905,7 +945,7 @@ namespace Boom
                 glm::scale(glm::mat4(1.0f), glm::mix(prev.scale, next.scale, progression));
         }
 
-        BOOM_INLINE void UpdateJoints(Joint& joint, const glm::mat4& parentTransform)
+        BOOM_INLINE void UpdateJoints(Joint& joint, const glm::mat4& parentTransform, bool isRoot = false)
         {
             glm::mat4 localTransform = glm::mat4(1.0f); // Default to identity
 
@@ -948,6 +988,18 @@ namespace Boom
                         glm::toMat4(key.rotation) *
                         glm::scale(glm::mat4(1.0f), key.scale);
                 }
+
+                // ROOT MOTION STRIPPING
+                if (isRoot && !m_ApplyRootMotion)
+                {
+                    // Decompose to strip position
+                    glm::vec3 pos, scale;
+                    glm::quat rot;
+                    DecomposeMatrix(localTransform, pos, rot, scale);
+
+                    // Rebuild without translation
+                    localTransform = glm::toMat4(rot) * glm::scale(glm::mat4(1.0f), scale);
+                }
             }
 
             // Combine with parent transform
@@ -959,7 +1011,7 @@ namespace Boom
             // Update children
             for (auto& child : joint.children)
             {
-                UpdateJoints(child, worldTransform);
+                UpdateJoints(child, worldTransform, false);
             }
         }
 
@@ -1090,6 +1142,8 @@ namespace Boom
             clone->m_AudioEventsEnabled = m_AudioEventsEnabled;
             clone->m_AudioSourcePosition = m_AudioSourcePosition;
 
+            clone->m_ApplyRootMotion = m_ApplyRootMotion;
+
             return clone;
         }
 
@@ -1116,7 +1170,7 @@ namespace Boom
         {
             // Force joint transform update without advancing time
             // Used when seeking to a specific time position
-            UpdateJoints(m_Root, glm::identity<glm::mat4>());
+            UpdateJoints(m_Root, glm::identity<glm::mat4>(), true);
         }
 
         BOOM_INLINE void LoadAnimationFromFile(const std::string& filepath, const std::string& clipName = "")
@@ -1227,6 +1281,9 @@ namespace Boom
         Joint m_Root;
         size_t m_CurrentClip = 0;
         float m_Time = 0.0f;
+        
+        // Root Motion
+        bool m_ApplyRootMotion = true;
         bool m_EnableStateMachine = true; // New Flag
 
         // === AUDIO EVENT TRACKING ===
