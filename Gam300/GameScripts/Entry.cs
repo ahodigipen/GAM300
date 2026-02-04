@@ -25,6 +25,8 @@ namespace GameScripts
         public static bool IsGameEnded = false;
 
         public static bool IsStartPopupActive = false;
+        private static float _sceneInputDebounceTimer = 0.0f;
+        public static bool CanProcessInput => _sceneInputDebounceTimer <= 0.0f;
 
         // GLFW key constants
         public const int KEY_ESCAPE = 256;
@@ -73,6 +75,7 @@ namespace GameScripts
             IsGameEnded = false;
 
             IsStartPopupActive = false;
+            _sceneInputDebounceTimer = 0.5f;
 
             s_RequestedPauseAction = PauseMenuAction.None;
             s_RequestedDeathAction = DeathMenuAction.None;
@@ -114,6 +117,11 @@ namespace GameScripts
 
         public static void Update(float dt)
         {
+            if (_sceneInputDebounceTimer > 0.0f)
+            {
+                _sceneInputDebounceTimer -= dt;
+            }
+
             // Update game logic pause state
             // If the popup is active, we force the game to stay paused
             API.SetGameLogicPaused(IsGamePaused || IsStartPopupActive);
