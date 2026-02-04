@@ -7,8 +7,9 @@ namespace GameScripts
     {
         private static PlayerMovement s_playerInstance = null;
 
-        // NEW: Track all active enemies
-        private static List<IEnemyController> s_activeEnemies = new List<IEnemyController>();
+        // CHANGED: Made public so FreezeOverlayBehavior can read it
+        // Renamed from s_activeEnemies to ActiveEnemies
+        public static List<IEnemyController> ActiveEnemies = new List<IEnemyController>();
 
         public static void RegisterPlayer(PlayerMovement player)
         {
@@ -31,16 +32,19 @@ namespace GameScripts
         // NEW: Register enemy for reset on player respawn
         public static void RegisterEnemy(IEnemyController enemy)
         {
-            if (!s_activeEnemies.Contains(enemy))
+            if (!ActiveEnemies.Contains(enemy))
             {
-                s_activeEnemies.Add(enemy);
+                ActiveEnemies.Add(enemy);
             }
         }
 
         // NEW: Unregister enemy
         public static void UnregisterEnemy(IEnemyController enemy)
         {
-            s_activeEnemies.Remove(enemy);
+            if (ActiveEnemies.Contains(enemy))
+            {
+                ActiveEnemies.Remove(enemy);
+            }
         }
 
         public static void NotifyPlayerCaught(ulong enemyEntity)
@@ -59,10 +63,10 @@ namespace GameScripts
         // NEW: Notify all enemies that player has respawned
         public static void NotifyPlayerRespawned()
         {
-            API.Log($"[PlayerManager] Notifying {s_activeEnemies.Count} enemies of player respawn");
+            API.Log($"[PlayerManager] Notifying {ActiveEnemies.Count} enemies of player respawn");
 
             // Create a copy to avoid modification during iteration
-            var enemiesCopy = new List<IEnemyController>(s_activeEnemies);
+            var enemiesCopy = new List<IEnemyController>(ActiveEnemies);
 
             foreach (var enemy in enemiesCopy)
             {
@@ -76,7 +80,7 @@ namespace GameScripts
         }
     }
 
-    // NEW: Interface that all enemy controllers must implement
+    // Interface that all enemy controllers must implement
     public interface IEnemyController
     {
         void OnPlayerRespawned();

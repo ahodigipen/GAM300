@@ -533,6 +533,18 @@ namespace Boom
 
 			auto& sn = reg.get<SceneNavmeshComponent>(settings);
 
+			// Apply scene settings to renderer
+			if (m_Context->renderer)
+			{
+				m_Context->renderer->AmbientStrength() = sn.ambientStrength;
+				m_Context->renderer->enabledBloom = sn.bloomEnabled;
+				m_Context->renderer->bloomIntensity = sn.bloomIntensity;
+				m_Context->renderer->bloomThreshold = sn.bloomThreshold;
+				m_Context->renderer->bloomIterations = sn.bloomIterations;
+				BOOM_INFO("[Scene] Applied scene settings: ambient={}, bloom={}, intensity={}, threshold={}, iterations={}",
+					sn.ambientStrength, sn.bloomEnabled, sn.bloomIntensity, sn.bloomThreshold, sn.bloomIterations);
+			}
+
 			if (sn.navmeshFile.empty())
 			{
 				BOOM_INFO("[Nav] SceneNavmeshComponent.navmeshFile is empty; skipping navmesh load");
