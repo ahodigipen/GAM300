@@ -89,6 +89,9 @@ namespace GameScripts
 
             SettingsManager.LoadSettings();
 
+            // Clear stale static registries from previous play session
+            SpotlightFollower.ClearRegistry();
+
             API.Log("[C#] Entry.Start() called for scene: " + _currentSceneName);
 
             // Only pre-load menus for gameplay scene, not for cutscene
