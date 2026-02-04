@@ -24,6 +24,6 @@ void main()
 {
     vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoord).r);
     color = vec4(textColor, textAlpha) * sampled;
-    out_brightness = vec4(0.0, 0.0, 0.0, 1.0);  // Text should NOT contribute to bloom
+    out_brightness = vec4(0.0, 0.0, 0.0, color.a);  // Match visual alpha so bloom is preserved behind translucent text
 }
 ==FRAGMENT==

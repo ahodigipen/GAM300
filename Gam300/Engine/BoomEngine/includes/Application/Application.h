@@ -181,6 +181,7 @@ namespace Boom
 		BOOM_API void RunContext(bool showFrame = false);
 
 		void RenderScene(bool isPicking = false);
+		void RenderTextOverlay();
 
 		/**
 		* @brief Enters play mode (like Unity's Play button)
