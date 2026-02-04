@@ -452,10 +452,7 @@ void AnimationTimelinePanel::RenderControlBar()
                             displayName += " (Skeletal)";
                         }
 
-                        // Use assetID as unique ImGui ID to prevent duplicate ID warnings
-                        // when multiple assets share the same name
-                        std::string uniqueID = displayName + "##" + std::to_string(assetID);
-                        if (ImGui::Selectable(uniqueID.c_str()))
+                        if (ImGui::Selectable(displayName.c_str()))
                         {
                             LoadModel(modelAsset->name);
                             ImGui::CloseCurrentPopup();

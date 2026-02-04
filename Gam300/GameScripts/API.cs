@@ -427,12 +427,6 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_SetSpotLightIntensity(ulong handle, float intensity);
 
-
-        // Video
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void Boom_API_PlayVideoComponent(ulong handle);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void Boom_API_GetViewportSize(out float width, out float height);
     }
 
     // ========= DELEGATES =========
@@ -1245,17 +1239,6 @@ namespace Boom
         public static void SetTextPosition(ulong entity, Vec2 pos)
         {
             Native.Boom_API_SetTextPosition(entity, ref pos);
-        }
-
-        public static void PlayVideo(ulong entity)
-        {
-            if (HasTransform(entity)) // Simple check to ensure entity is valid
-                Native.Boom_API_PlayVideoComponent(entity);
-        }
-
-        public static void GetViewportSize(out float width, out float height)
-        {
-            Native.Boom_API_GetViewportSize(out width, out height);
         }
 
 

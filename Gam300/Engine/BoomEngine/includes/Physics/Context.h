@@ -4,7 +4,6 @@
 #include "Utilities.h"
 #include "Auxiliaries/Assets.h"
 #include <iostream>
-#include <limits>
 #include <unordered_map>
 #include "PxPhysicsAPI.h"
 #include <foundation/PxMath.h>
@@ -747,32 +746,6 @@ namespace Boom {
             auto& collider = entity.Get<ColliderComponent>().Collider;
             if (collider.type == newType) return;
 
-            // Auto-resize logic when switching to primitive types
-            if (newType == Collider3D::BOX || newType == Collider3D::SPHERE ||
-                newType == Collider3D::CAPSULE || newType == Collider3D::CYLINDER)
-            {
-                if (entity.Has<ModelComponent>()) {
-                    auto& modelComp = entity.Get<ModelComponent>();
-                    if (modelComp.modelID != EMPTY_ASSET) {
-                        auto bounds = ComputeModelBounds(assetRegistry, modelComp.modelID);
-                        glm::vec3 center = (bounds.first + bounds.second) * 0.5f;
-                        glm::vec3 size = bounds.second - bounds.first;
-
-                        // Prevent zero/negative size
-                        size = glm::max(size, glm::vec3(0.01f));
-
-                        collider.localScale = size;
-                        
-                        // Center needs to be scaled because CreatePxShape uses localPosition as an absolute offset
-                        if (entity.Has<TransformComponent>()) {
-                            collider.localPosition = center * entity.Get<TransformComponent>().transform.scale;
-                        } else {
-                            collider.localPosition = center;
-                        }
-                    }
-                }
-            }
-
             collider.type = newType;
             UpdateColliderShape(entity, assetRegistry);
         }
@@ -826,84 +799,13 @@ namespace Boom {
         BOOM_INLINE glm::vec3 ResolveThirdPersonCameraPosition(glm::vec3 const& playerEye, glm::vec3 const& idealCamPosition, float minDist = 0.5f) {
             PxVec3 targetPos = ToPxVec3(playerEye);
             PxVec3 idealCamPos = ToPxVec3(idealCamPosition);
-            
-            // 1. START POINT SAFETY (Look-at point resolution)
-            // If the target eye/pivot is inside or too close to a ceiling, push it down.
-            // This prevents the camera from trying to orbit a point that is "illegal".
-            PxRaycastBuffer eyeHit;
-            PxVec3 up(0, 1, 0);
-            if (m_Scene->raycast(targetPos + PxVec3(0, -0.5f, 0), up, 1.0f, eyeHit)) {
-                float distToCeiling = eyeHit.block.distance - 0.5f;
-                if (distToCeiling < 0.4f) {
-                    targetPos.y -= (0.4f - distToCeiling);
-                }
-            }
-
             PxVec3 dir = (idealCamPos - targetPos).getNormalized();
             PxReal maxDist = (idealCamPos - targetPos).magnitude();
-            PxVec3 finalPos = idealCamPos;
 
-            // 2. MULTI-RAY CLUSTER PROBE
-            // Use 5 rays to catch narrow edges and corners
-            float probeRadius = 0.35f;
-            struct ProbeOffset { float x, y; };
-            ProbeOffset offsets[] = { {0,0}, {1,0}, {-1,0}, {0,1}, {0,-1} };
-            
-            float closestHitDist = maxDist;
-            bool anyHit = false;
-
-            PxVec3 worldUp(0, 1, 0);
-            PxVec3 rightVec = dir.cross(worldUp).getNormalized();
-            if (rightVec.magnitude() < 0.1f) rightVec = PxVec3(1, 0, 0);
-            PxVec3 upVec = rightVec.cross(dir).getNormalized();
-
-            for (auto& off : offsets) {
-                PxVec3 start = targetPos + (rightVec * off.x + upVec * off.y) * probeRadius;
-                PxRaycastBuffer hit;
-                if (m_Scene->raycast(start, dir, maxDist, hit)) {
-                    if (hit.block.distance < closestHitDist) {
-                        closestHitDist = hit.block.distance;
-                        anyHit = true;
-                    }
-                }
-            }
-
-            if (anyHit) {
-                // Resolved position along the ray cluster
-                finalPos = targetPos + dir * PxMax(closestHitDist - 0.2f, minDist);
-            }
-
-            // 3. OMNI-DIRECTIONAL REPULSION (Force Away)
-            // Check 6 directions around the final position and push away from any hits.
-            // This specifically handles the "pan up into ceiling" or "walk into wall" cases.
-            PxVec3 repulsionDirs[] = { 
-                PxVec3(0, 1, 0), PxVec3(0, -1, 0),   // Up/Down
-                rightVec, -rightVec,                // Left/Right
-                dir, -dir                           // Forward/Back
-            };
-            
-            float personalSpace = 0.45f; // Radius around camera that must be clear
-            for (int i = 0; i < 5; i++) { // Max 5 nudge iterations
-                bool adjusted = false;
-                for (auto& rDir : repulsionDirs) {
-                    PxRaycastBuffer rHit;
-                    // Cast a short ray to see if we're too close to a surface
-                    if (m_Scene->raycast(finalPos, rDir, personalSpace, rHit)) {
-                        float nudgeDist = personalSpace - rHit.block.distance + 0.05f;
-                        finalPos -= rDir * nudgeDist;
-                        adjusted = true;
-                    }
-                }
-                if (!adjusted) break;
-            }
-
-            // Final fallback: Ensure we aren't pushed behind the player
-            PxVec3 finalToPlayer = targetPos - finalPos;
-            if (finalToPlayer.dot(dir) > 0) {
-                finalPos = targetPos + dir * minDist;
-            }
-
-            return ToGLMVec3(finalPos);
+            PxRaycastBuffer hit;
+            if (m_Scene->raycast(targetPos, dir, maxDist, hit))
+                return ToGLMVec3(targetPos + dir * PxMax(hit.block.distance - 0.05f, minDist));
+            return ToGLMVec3(idealCamPos);
         }
 
 #pragma endregion
@@ -969,7 +871,6 @@ namespace Boom {
             m_Scene->setVisualizationParameter(PxVisualizationParameter::eACTOR_AXES, 1.0f);
             m_Scene->setVisualizationParameter(PxVisualizationParameter::eCONTACT_POINT, 1.0f);
             m_Scene->setVisualizationParameter(PxVisualizationParameter::eCONTACT_NORMAL, 1.0f);
-            m_Scene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_SHAPES, 1.0f);
         }
 
         BOOM_INLINE void CollectDebugLines(std::vector<DebugLine>& outLines) const {
@@ -997,37 +898,6 @@ namespace Boom {
         // ====================================================================================
         // REGION: PRIVATE HELPERS
         // ====================================================================================
-
-        // Helper to compute model bounds for auto-sizing colliders
-        BOOM_INLINE std::pair<glm::vec3, glm::vec3> ComputeModelBounds(AssetRegistry& assetRegistry, AssetID modelID) {
-            glm::vec3 min(std::numeric_limits<float>::max());
-            glm::vec3 max(std::numeric_limits<float>::lowest());
-
-            if (modelID == EMPTY_ASSET) return { glm::vec3(-0.5f), glm::vec3(0.5f) };
-
-            auto* modelAsset = assetRegistry.TryGet<ModelAsset>(modelID);
-            if (!modelAsset || !modelAsset->data) return { glm::vec3(-0.5f), glm::vec3(0.5f) };
-
-            auto staticModel = std::dynamic_pointer_cast<StaticModel>(modelAsset->data);
-            if (staticModel) {
-                const auto& physicsData = staticModel->GetMeshData();
-                if (physicsData.empty()) return { glm::vec3(-0.5f), glm::vec3(0.5f) };
-
-                bool found = false;
-                for (const auto& meshData : physicsData) {
-                    for (const auto& v : meshData.vtx) {
-                        min = glm::min(min, v.pos);
-                        max = glm::max(max, v.pos);
-                        found = true;
-                    }
-                }
-
-                if (!found) return { glm::vec3(-0.5f), glm::vec3(0.5f) };
-                return { min, max };
-            }
-
-            return { glm::vec3(-0.5f), glm::vec3(0.5f) };
-        }
 
         // Centralized Shape Creation to avoid code duplication in AddRigidBody/AddColliderOnly
                 // Centralized Shape Creation to avoid code duplication in AddRigidBody/AddColliderOnly

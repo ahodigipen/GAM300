@@ -24,14 +24,13 @@ uniform sampler2D map;
 uniform sampler2D u_bloom;
 uniform bool u_enableBloom;
 uniform float u_fadeAlpha; // NEW: Fade to black alpha
-uniform float u_bloomIntensity = 1.0; // Bloom intensity multiplier
 
-void main()
-{
+void main() 
+{ 
   vec3 result = texture(map, uvs).rgb;
-
+  
   if (u_enableBloom) {
-      result += texture(u_bloom, uvs).rgb * u_bloomIntensity;
+      result += texture(u_bloom, uvs).rgb;
   }
 
   // gamma correction

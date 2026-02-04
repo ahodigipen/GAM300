@@ -1757,15 +1757,15 @@ namespace Boom {
         // 4. Project the point
         glm::vec3 screenPos = glm::project(*worldPos, viewMat, projMat, viewportRect);
 
-        // 5. Check if it's behind the camera
+        // 5. Return the 2D coordinates
+        // We only care about x and y. Z is depth (0 to 1).
+        outViewportPos->x = screenPos.x;
+        outViewportPos->y = screenPos.y;
+
+        // 6. Check if it's behind the camera
         if (screenPos.z > 1.0f || screenPos.z < 0.0f) {
             return false;
         }
-
-        // 6. Return Local Viewport Coordinates (subtract the offset)
-        // This makes (0,0) the bottom-left of the GAME VIEW, not the window.
-        outViewportPos->x = screenPos.x - vX;
-        outViewportPos->y = screenPos.y - vY;
 
         return true;
     }
@@ -2044,36 +2044,6 @@ namespace Boom {
         sprite.textureID = textureAssetID;
     }
 
-    // Video
-    static void ICALL_API_PlayVideoComponent(uint64_t handle) {
-        if (!s_Ctx || !s_Ctx->videoSystem) return;
-        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
-
-        // Call Play on the video system
-        s_Ctx->videoSystem->Play(e);
-    }
-
-    // Get the current viewport size (handles both Editor and Standalone)
-    static void ICALL_API_GetViewportSize(float* width, float* height) {
-        if (!s_Ctx || !s_Ctx->window) {
-            *width = 1.0f; *height = 1.0f;
-            return;
-        }
-
-        auto* win = s_Ctx->window.get();
-        float vW = win->GetViewportW();
-        float vH = win->GetViewportH();
-
-        // Standalone fallback (if viewport is not set by editor)
-        if (vW <= 1.0f || vH <= 1.0f) {
-            vW = (float)win->getWidth();
-            vH = (float)win->getHeight();
-        }
-
-        *width = vW;
-        *height = vH;
-    }
-
     static void ICALL_API_ShutdownApplication()
     {
         if (!s_Ctx || !s_Ctx->window)
@@ -2275,9 +2245,7 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_GetSpotLightIntensity", (const void*)ICALL_API_GetSpotLightIntensity);
         mono_add_internal_call("Boom.Native::Boom_API_SetSpotLightIntensity", (const void*)ICALL_API_SetSpotLightIntensity);
 
-        // Video
-        mono_add_internal_call("Boom.Native::Boom_API_PlayVideoComponent", (void*)ICALL_API_PlayVideoComponent);
-        mono_add_internal_call("Boom.Native::Boom_API_GetViewportSize", (void*)ICALL_API_GetViewportSize);
-
+        mono_add_internal_call("Boom.Native::Boom_API_SetCutsceneMode", (const void*)ICALL_API_SetCutsceneMode);
+        mono_add_internal_call("Boom.Native::Boom_API_DrawDebugLine", (const void*)ICALL_API_DrawDebugLine);
     }
 }

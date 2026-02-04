@@ -143,8 +143,5 @@ namespace Boom
         int32_t m_Scale = 5;
         int m_LastTarget = 0;
         Quad2D m_Quad;
-
-    public:
-        float bloomIntensity = 1.0f;  // Exposed for adjustable bloom strength
     };
 }
