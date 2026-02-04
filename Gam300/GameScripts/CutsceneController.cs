@@ -8,7 +8,9 @@ namespace GameScripts
     /// </summary>
     public class CutsceneController
     {
-        private ulong _entityHandle;
+        // Entity handle - automatically populated by the engine
+        public ulong Entity;
+
         private bool _videoStarted = false;
         private bool _transitionTriggered = false;
 
@@ -35,17 +37,20 @@ namespace GameScripts
         // Track if we've tried to start the video (handles timing with VideoSystem)
         private bool _videoStartAttempted = false;
 
-        public void OnStart(string entityGuid)
+        // Video duration cache
+        private double _videoDuration = 0.0;
+        private bool _durationCached = false;
+
+        public void OnStart(string paramsJson)
         {
-            _entityHandle = API.FindEntity(entityGuid);
-            if (_entityHandle == 0)
+            if (Entity == 0)
             {
-                API.Log("[CutsceneController] Warning: Could not find entity");
+                API.Log("[CutsceneController] Warning: Entity handle not set by engine");
                 return;
             }
 
             // Check if entity has VideoComponent
-            if (!API.HasVideoComponent(_entityHandle))
+            if (!API.HasVideoComponent(Entity))
             {
                 API.Log("[CutsceneController] Warning: Entity does not have VideoComponent");
                 return;
@@ -56,13 +61,14 @@ namespace GameScripts
             _isFadingIn = true;
             _fadeInTimer = 0f;
             _videoStartAttempted = false;
+            _durationCached = false;
 
             API.Log($"[CutsceneController] Initialized. Next scene: {nextSceneName}");
         }
 
         public void OnUpdate(float deltaTime)
         {
-            if (_entityHandle == 0 || _transitionTriggered) return;
+            if (Entity == 0 || _transitionTriggered) return;
 
             // Handle fade-in from black (when scene first loads)
             if (_isFadingIn)
@@ -99,18 +105,33 @@ namespace GameScripts
 
             // Try to start the video if it hasn't been started yet
             // (VideoSystem may not have loaded the video when OnStart ran)
-            if (!_videoStartAttempted && !API.IsVideoPlaying(_entityHandle))
+            if (!_videoStartAttempted && !API.IsVideoPlaying(Entity))
             {
-                API.PlayVideo(_entityHandle);
+                API.PlayVideo(Entity);
                 _videoStartAttempted = true;
                 API.Log("[CutsceneController] Attempting to start video playback");
             }
 
-            // Check if video has started playing
-            if (!_videoStarted && API.IsVideoPlaying(_entityHandle))
+            // Cache video duration once available
+            if (!_durationCached)
             {
-                _videoStarted = true;
-                API.Log("[CutsceneController] Video started playing");
+                _videoDuration = API.GetVideoDuration(Entity);
+                if (_videoDuration > 0.0)
+                {
+                    _durationCached = true;
+                    API.Log($"[CutsceneController] Video duration: {_videoDuration:F2} seconds");
+                }
+            }
+
+            // Check if video has started playing (via API or by checking current time > 0)
+            double currentTime = API.GetVideoCurrentTime(Entity);
+            if (!_videoStarted)
+            {
+                if (API.IsVideoPlaying(Entity) || currentTime > 0.1)
+                {
+                    _videoStarted = true;
+                    API.Log("[CutsceneController] Video started playing");
+                }
             }
 
             // Check for skip input
@@ -121,10 +142,15 @@ namespace GameScripts
                 return;
             }
 
-            // Check if video has ended
-            if (_videoStarted && API.HasVideoEnded(_entityHandle))
+            // Check if video has ended using multiple methods:
+            // 1. API.HasVideoEnded() - primary method
+            // 2. Time-based check as fallback (currentTime >= duration - 0.1)
+            bool videoEnded = API.HasVideoEnded(Entity);
+            bool timeBasedEnd = _durationCached && _videoDuration > 0 && currentTime >= (_videoDuration - 0.1);
+
+            if (_videoStarted && (videoEnded || timeBasedEnd))
             {
-                API.Log("[CutsceneController] Video ended");
+                API.Log($"[CutsceneController] Video ended (API: {videoEnded}, Time: {currentTime:F2}/{_videoDuration:F2})");
                 StartTransition();
             }
         }
@@ -139,7 +165,7 @@ namespace GameScripts
             _fadeTimer = 0f;
 
             // Stop the video
-            API.StopVideo(_entityHandle);
+            API.StopVideo(Entity);
         }
 
         public void OnDestroy()

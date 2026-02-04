@@ -1192,11 +1192,6 @@ namespace Boom
         public static bool HasVideoEnded(ulong entity) => Native.Boom_API_HasVideoEnded(entity);
 
         /// <summary>
-        /// Start playing the video
-        /// </summary>
-        public static void PlayVideo(ulong entity) => Native.Boom_API_PlayVideo(entity);
-
-        /// <summary>
         /// Stop the video playback
         /// </summary>
         public static void StopVideo(ulong entity) => Native.Boom_API_StopVideo(entity);
