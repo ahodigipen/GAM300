@@ -2049,6 +2049,14 @@ namespace EditorUI {
                         );
                     }
 
+                    ImGui::Checkbox("Remove Black Background", &vc.removeBlackBackground);
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip(
+                            "Treats black pixels (brightness < 0.1) as transparent.\n"
+                            "Useful for overlay effects like explosions or holograms."
+                        );
+                    }
+
                     ImGui::Spacing();
 
                     ImGui::AlignTextToFramePadding();

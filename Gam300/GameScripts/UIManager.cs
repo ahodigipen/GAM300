@@ -20,6 +20,7 @@ namespace GameScripts
         private UIHeartController _heartUI;  // *** NEW: Heart UI controller ***
         private UIFreezeController _freezeUI; // *** NEW ***
         private UITutorialController _tutorialUI; // *** NEW: Tutorial UI controller ***
+        private UIStanceController _stanceUI; // *** NEW: Crouch/Run UI controller ***
 
         public void OnStart(string jsonParams)
         {
@@ -46,6 +47,10 @@ namespace GameScripts
             _freezeUI = new UIFreezeController { Entity = Entity };
             _freezeUI.OnStart(jsonParams);
 
+            // *** NEW: Initialize stance UI (crouch/run) ***
+            _stanceUI = new UIStanceController { Entity = Entity };
+            _stanceUI.OnStart(jsonParams);
+
             // *** NEW: Initialize tutorial UI ***
             _tutorialUI = new UITutorialController { Entity = Entity };
             _tutorialUI.OnStart(jsonParams);
@@ -63,6 +68,7 @@ namespace GameScripts
             _locationUI?.OnUpdate(dt);
             _heartUI?.OnUpdate(dt);  // *** NEW: Update heart UI ***
             _freezeUI?.OnUpdate(dt);
+            _stanceUI?.OnUpdate(dt); // *** NEW: Update crouch/run UI ***
             _tutorialUI?.OnUpdate(dt);  // *** NEW: Update tutorial UI ***
         }
 

@@ -671,8 +671,7 @@ namespace Boom
             // ----- SERIALIZE -----
             [](YAML::Emitter& e, EntityRegistry& reg, EntityID ent)
             {
-                if (!reg.all_of<VideoComponent>(ent))
-                    return;
+                if (!reg.all_of<VideoComponent>(ent)) return;
 
                 auto& vc = reg.get<VideoComponent>(ent);
 
@@ -682,6 +681,10 @@ namespace Boom
                 e << YAML::Key << "Loop" << YAML::Value << vc.loop;
                 e << YAML::Key << "Volume" << YAML::Value << vc.volume;
                 e << YAML::Key << "PlaybackSpeed" << YAML::Value << vc.playbackSpeed;
+                e << YAML::Key << "RenderAs3D" << YAML::Value << vc.renderAs3D;
+                e << YAML::Key << "RemoveBlackBackground" << YAML::Value << vc.removeBlackBackground;
+
+                // Serialize Color manually as a sequence
                 e << YAML::Key << "TintColor" << YAML::Value
                     << YAML::Flow << YAML::BeginSeq
                     << vc.tintColor.r << vc.tintColor.g << vc.tintColor.b << vc.tintColor.a

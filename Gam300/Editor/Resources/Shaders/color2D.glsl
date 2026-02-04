@@ -20,6 +20,9 @@ uniform vec4 color;
 uniform sampler2D texMap;
 void main() {
     vec4 result = texture(texMap, uvs).rgba;
+
+    if (result.a < 0.01) discard;
+
     FragColor = color * result;
 }
 ==FRAGMENT==
