@@ -28,6 +28,13 @@ namespace GameScripts
         private float _fadeTimer = 0f;
         private bool _isFading = false;
 
+        // Fade in state (from black when scene loads)
+        private bool _isFadingIn = true;
+        private float _fadeInTimer = 0f;
+
+        // Track if we've tried to start the video (handles timing with VideoSystem)
+        private bool _videoStartAttempted = false;
+
         public void OnStart(string entityGuid)
         {
             _entityHandle = API.FindEntity(entityGuid);
@@ -44,6 +51,12 @@ namespace GameScripts
                 return;
             }
 
+            // Start faded to black, then fade in (for smooth transition from previous scene)
+            API.SetScreenFadeAlpha(1f);
+            _isFadingIn = true;
+            _fadeInTimer = 0f;
+            _videoStartAttempted = false;
+
             API.Log($"[CutsceneController] Initialized. Next scene: {nextSceneName}");
         }
 
@@ -51,11 +64,27 @@ namespace GameScripts
         {
             if (_entityHandle == 0 || _transitionTriggered) return;
 
-            // Handle fading
+            // Handle fade-in from black (when scene first loads)
+            if (_isFadingIn)
+            {
+                _fadeInTimer += deltaTime;
+                float alpha = 1f - Clamp01(_fadeInTimer / fadeDuration);
+                API.SetScreenFadeAlpha(alpha);
+
+                if (_fadeInTimer >= fadeDuration)
+                {
+                    API.SetScreenFadeAlpha(0f);
+                    _isFadingIn = false;
+                    API.Log("[CutsceneController] Fade-in complete");
+                }
+                // Continue updating while fading in (don't return)
+            }
+
+            // Handle fading out (before scene transition)
             if (_isFading)
             {
                 _fadeTimer += deltaTime;
-                float alpha = _fadeTimer / fadeDuration;
+                float alpha = Clamp01(_fadeTimer / fadeDuration);
                 API.SetScreenFadeAlpha(alpha);
 
                 if (_fadeTimer >= fadeDuration)
@@ -66,6 +95,15 @@ namespace GameScripts
                     API.LoadScene(nextSceneName);
                 }
                 return;
+            }
+
+            // Try to start the video if it hasn't been started yet
+            // (VideoSystem may not have loaded the video when OnStart ran)
+            if (!_videoStartAttempted && !API.IsVideoPlaying(_entityHandle))
+            {
+                API.PlayVideo(_entityHandle);
+                _videoStartAttempted = true;
+                API.Log("[CutsceneController] Attempting to start video playback");
             }
 
             // Check if video has started playing
@@ -90,6 +128,8 @@ namespace GameScripts
                 StartTransition();
             }
         }
+
+        private static float Clamp01(float v) => v < 0f ? 0f : (v > 1f ? 1f : v);
 
         private void StartTransition()
         {

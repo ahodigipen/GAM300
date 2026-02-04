@@ -2113,7 +2113,7 @@ namespace Boom {
     }
 
     // Global fade alpha (0 = transparent, 1 = black)
-    float g_ScreenFadeAlpha = 0.0f;
+    BOOM_API float g_ScreenFadeAlpha = 0.0f;
 
     // C# -> C++ internal call (sets global fade)
     static void ICALL_API_SetScreenFadeAlpha(float alpha)
