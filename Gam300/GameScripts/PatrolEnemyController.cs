@@ -32,6 +32,10 @@ namespace GameScripts
 
         private Vec3 _anchorPos;
 
+        // Animation position tracking - prevents animation from drifting outside collider
+        private Vec3 _lastPhysicsPosition;
+        private bool _positionInitialized = false;
+
         // ====== AUDIO ======
         [Boom.EditorExposed("Footstep Sound", "Sound played for enemy footsteps")]
         private string _footstepSoundPath = "Resources/Audio/footstep_stone_1.wav";
@@ -111,11 +115,17 @@ namespace GameScripts
 
             if (API.HasAnimator(Entity))
             {
+                // IMPORTANT: Disable root motion FIRST before playing any animation
+                // This prevents the character from drifting outside the collider
+                API.AnimatorSetBool(Entity, "ApplyRootMotion", false);
+
                 API.AnimatorPlay(Entity, "walking");
                 if (DRIVE_SPEED_PARAM) API.AnimatorSetFloat(Entity, "Speed", 0f);
             }
 
             _anchorPos = API.GetPosition(Entity);
+            _lastPhysicsPosition = _anchorPos;
+            _positionInitialized = true;
 
             // Initialize vision system
             _vision = new VisionComponent { Entity = Entity };
@@ -190,6 +200,9 @@ namespace GameScripts
             }
 
             // --- NORMAL LOGIC ---
+
+            // Store position at start of frame for drift detection
+            Vec3 frameStartPos = API.GetPosition(Entity);
 
             var v = API.GetLinearVelocity(Entity);
             float speedXZ = (float)Math.Sqrt(v.X * v.X + v.Z * v.Z);
@@ -281,6 +294,43 @@ namespace GameScripts
                     _damageResetTimer = 0f;
                     //("[PatrolEnemyController] Damage flag reset - can damage again");
                 }
+            }
+
+            // === ANIMATION DRIFT CORRECTION ===
+            // Some animations have root motion baked into non-root bones (like hips/pelvis)
+            // which doesn't get stripped by ApplyRootMotion=false. This code detects and
+            // corrects any unexpected drift from animation.
+            if (_positionInitialized)
+            {
+                var currentPos = API.GetPosition(Entity);
+
+                // Calculate expected movement from physics velocity during this frame
+                float expectedDeltaX = v.X * dt;
+                float expectedDeltaZ = v.Z * dt;
+
+                // Calculate actual movement during this frame
+                float actualDeltaX = currentPos.X - frameStartPos.X;
+                float actualDeltaZ = currentPos.Z - frameStartPos.Z;
+
+                // Calculate drift (difference between actual and expected movement)
+                float driftX = actualDeltaX - expectedDeltaX;
+                float driftZ = actualDeltaZ - expectedDeltaZ;
+                float driftMagnitude = (float)Math.Sqrt(driftX * driftX + driftZ * driftZ);
+
+                // If drift exceeds threshold, correct it by removing the drift
+                const float DRIFT_THRESHOLD = 0.005f; // 5mm tolerance
+                if (driftMagnitude > DRIFT_THRESHOLD)
+                {
+                    Vec3 correctedPos = new Vec3(
+                        currentPos.X - driftX,
+                        currentPos.Y,
+                        currentPos.Z - driftZ
+                    );
+                    API.TeleportRigidBody(Entity, correctedPos);
+                }
+
+                // Update tracking for next frame
+                _lastPhysicsPosition = API.GetPosition(Entity);
             }
         }
 
