@@ -311,7 +311,7 @@ namespace GameScripts
                 _hasDealtDamage = true;
                 _damageResetTimer = 0f;  // Start timer
                 //($"[EnemyController] Dealing damage to player (vision detection)!");
-                // PlayerManager.NotifyPlayerCaught(Entity);
+                PlayerManager.NotifyPlayerCaught(Entity);
             }
         }
 
@@ -412,7 +412,7 @@ namespace GameScripts
                 _hasDealtDamage = true;
                 _damageResetTimer = 0f;  // Start timer
                 //($"[EnemyController] Dealing damage to player (proximity detection)!");
-                //PlayerManager.NotifyPlayerCaught(Entity);
+                PlayerManager.NotifyPlayerCaught(Entity);
             }
         }
 
