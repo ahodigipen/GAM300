@@ -19,6 +19,12 @@ namespace GameScripts
         [Boom.EditorExposed("Tutorial Sprite", "Name of the sprite entity to show (e.g., UI_L2_Tutorial)")]
         private string _tutorialSpriteName = "UI_L2_Tutorial";
 
+        [Boom.EditorExposed("Only Show Once", "Whether this tutorial should only show once")]
+        private bool _onlyShowOnce = true;
+
+        private bool _hasTriggered = false;
+        private bool _isCurrentlyShowing = false;
+
         // Optional: Play a sound when entering the zone
         [Boom.EditorExposed("Play Sound On Enter", "Whether to play a sound when player enters the tutorial zone")]
         private bool _playSoundOnEnter = false;
@@ -68,8 +74,13 @@ namespace GameScripts
             // Only react when the player enters this trigger
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
 
+            // Check if we should only show once
+            if (inst._onlyShowOnce && inst._hasTriggered) return;
+
             // *** Show the tutorial UI prompt ***
             UIManager.ShowTutorialPopup(API.FindEntity(inst._tutorialSpriteName));
+            inst._hasTriggered = true;
+            inst._isCurrentlyShowing = true;
 
             // Optional: Play notification sound
             if (inst._playSoundOnEnter && API.HasTransform(inst.Entity))
@@ -91,8 +102,12 @@ namespace GameScripts
             // Only react when the player exits this trigger
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
 
+            // Only hide if we were the ones showing it
+            if (!inst._isCurrentlyShowing) return;
+
             // *** Hide the tutorial UI prompt ***
             UIManager.HideTutorialPopup();
+            inst._isCurrentlyShowing = false;
 
             API.Log("[TutorialPopupTrigger] Player exited tutorial zone - hiding UI popup");
         }
