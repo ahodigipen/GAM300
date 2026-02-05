@@ -49,7 +49,10 @@
     <Compile Include="CharacterAnimation.cs" />
     <Compile Include="CPTrigger.cs" />
     <Compile Include="CutsceneController.cs" />
+    <Compile Include="CutsceneSequencer.cs" />
     <Compile Include="FreezeOverlayBehavior.cs" />
+    <Compile Include="IntroCutscene.cs" />
+    <Compile Include="LevelTransitionCutscene.cs" />
     <Compile Include="MazeGeneration.cs" />
     <Compile Include="ProximityDetectionComponent.cs" />
     <Compile Include="DeathMenu.cs" />

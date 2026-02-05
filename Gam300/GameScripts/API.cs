@@ -140,6 +140,9 @@ namespace Boom
         internal extern static void Boom_API_AnimatorPlay(ulong h, string state);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_AnimatorSetStateMachineEnabled(ulong h, bool enabled);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Boom_API_HasAnimator(ulong handle);
 
         // ========= TRANSFORM STRUCT INTERNAL CALLS =========
@@ -456,6 +459,13 @@ namespace Boom
         internal static extern void Boom_API_GetViewportSize(out float width, out float height);
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_SetVideoRemoveBlack(ulong handle, bool enabled);
+
+        // Cutscene
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetCutsceneMode(bool active);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_DrawDebugLine(Vec3 start, Vec3 end, Vec3 color);
     }
 
     // ========= DELEGATES =========
@@ -469,6 +479,8 @@ namespace Boom
     {
         public float X, Y;
         public Vec2(float x, float y) { X = x; Y = y; }
+        public override string ToString() => $"({X:F2}, {Y:F2})";
+
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -482,6 +494,8 @@ namespace Boom
             Y = y;
             Z = z;
         }
+        public override string ToString() => $"({X:F2}, {Y:F2}, {Z:F2})";
+
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -498,6 +512,8 @@ namespace Boom
         public static Vec4 operator -(Vec4 a, Vec4 b) => new Vec4(a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W - b.W);
         public static Vec4 operator *(Vec4 a, float s) => new Vec4(a.X * s, a.Y * s, a.Z * s, a.W * s);
         public static Vec4 operator /(Vec4 a, float s) => new Vec4(a.X / s, a.Y / s, a.Z / s, a.W / s);
+        public override string ToString() => $"({X:F2}, {Y:F2}, {Z:F2}, {W:F2})";
+
     }
 
     // RENAMED to avoid conflict with the static class below
@@ -845,10 +861,11 @@ namespace Boom
         public static void AnimatorSetBool(ulong h, string n, bool v) => Native.Boom_API_AnimatorSetBool(h, n, v);
         public static void AnimatorSetTrigger(ulong h, string n) => Native.Boom_API_AnimatorSetTrigger(h, n);
         public static void AnimatorPlay(ulong h, string state) => Native.Boom_API_AnimatorPlay(h, state);
+        public static void AnimatorSetStateMachineEnabled(ulong h, bool enabled) => Native.Boom_API_AnimatorSetStateMachineEnabled(h, enabled);
 
         // ===== Input Constants =====
         // ===== SOUND / AUDIO API =====
-        
+
         /// <summary>
         /// Play a 2D sound effect
         /// </summary>
@@ -1297,6 +1314,7 @@ namespace Boom
             Native.Boom_API_SetTextPosition(entity, ref pos);
         }
 
+        // Video
         public static void PlayVideo(ulong entity)
         {
             if (HasTransform(entity)) // Simple check to ensure entity is valid
@@ -1318,6 +1336,11 @@ namespace Boom
         {
             Native.Boom_API_SetVideoRemoveBlack(entity, enabled);
         }
+
+        // Cutscene
+        public static void SetCutsceneMode(bool active) => Native.Boom_API_SetCutsceneMode(active);
+
+        public static void DrawDebugLine(Vec3 start, Vec3 end, Vec3 color) => Native.Boom_API_DrawDebugLine(start, end, color);
 
 
         // ===== GLFW key codes =====

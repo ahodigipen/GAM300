@@ -127,6 +127,17 @@ namespace Boom
 		double m_SphereResetInterval = 5.0;
 		glm::vec3 m_SphereInitialPosition = { 2.5f, 1.2f, 0.0f };
 
+		struct ScriptLine {
+			glm::vec3 p0;
+			glm::vec3 p1;
+			glm::vec3 color;
+		};
+		std::vector<ScriptLine> m_ScriptLines;
+
+		void DrawScriptLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec3& color) {
+			m_ScriptLines.push_back({ p0, p1, color });
+		}
+
 		/**
 		* @brief Constructs the Application, assigns its unique ID, and allocates the AppContext.
 		*
@@ -1057,6 +1068,8 @@ namespace Boom
 		*/
 		BOOM_INLINE bool IsSceneLoaded() const { return m_SceneLoaded; }
 
+		void SetCutsceneMode(bool active);
+
 		BOOM_INLINE void UpdateKinematicTransforms()
 		{
 			EnttView<Entity, RigidBodyComponent>(
@@ -1260,6 +1273,7 @@ namespace Boom
 		bool m_IsInPlayMode = true;
 		bool m_IsPlayerDead = false;	// For Death Menu
 		bool m_IsEnd = false;			// For End Menu
+		bool m_IsCutsceneMode = false;
 
 		Boom::AISystem                         m_AIagents;
 		Boom::NavAgentSystem                   m_NavAgents;

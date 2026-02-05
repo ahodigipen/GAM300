@@ -22,6 +22,8 @@ namespace GameScripts
     {
         public ulong Entity;
 
+        public static bool CutsceneMode = false;
+
         // ==== DEBUG: Enable verbose crouch zone logging ====
         private const bool DEBUG_CROUCH = true;
         private float _debugLogTimer = 0f;
@@ -375,6 +377,13 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
+            if (CutsceneMode)
+            {
+                // Ensure we don't drift
+                if (API.HasTransform(Entity)) API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
+                return;
+            }
+
             UpdateFade(dt);
             if (!API.HasTransform(Entity) || !API.HasScript(Entity)) return;
 
