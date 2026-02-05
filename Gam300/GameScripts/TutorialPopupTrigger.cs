@@ -18,8 +18,8 @@ namespace GameScripts
         private static bool _globalEnabled = false;
 
         // The sprite entity name to show/hide (e.g., "UI_L2_Tutorial")
-        [Boom.EditorExposed("Tutorial Sprite", "Name of the sprite entity to show (e.g., UI_L2_Tutorial)")]
-        private string _tutorialSpriteName = "UI_L2_Tutorial";
+        [Boom.EditorExposed("Tutorial Sprite", "Name of the sprite entity to show (e.g., UI_Tutorial)")]
+        private string _tutorialSpriteName = "UI_Tutorial";
 
         [Boom.EditorExposed("Only Show Once", "Whether this tutorial should only show once")]
         private bool _onlyShowOnce = true;
@@ -91,8 +91,8 @@ namespace GameScripts
         {
             if (_onlyShowOnce && _hasTriggered) return;
 
-            // *** Show the tutorial UI prompt ***
-            UIManager.ShowTutorialPopup(API.FindEntity(_tutorialSpriteName));
+            Entry.TriggerModalPopup(_tutorialSpriteName);
+
             _hasTriggered = true;
             _isCurrentlyShowing = true;
             API.Log("[TutorialPopupTrigger] Showing UI popup.");

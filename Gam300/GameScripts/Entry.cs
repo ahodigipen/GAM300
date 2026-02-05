@@ -18,6 +18,7 @@ namespace GameScripts
 
         public const string POPUP_SCENE_NAME = "PopUpMenu";
         public const string LEVEL_1_UI = "Level1PopUp";
+        public static string _activePopupName = "";
 
         public static string _currentSceneName;
         public static bool IsGamePaused = false;
@@ -99,6 +100,8 @@ namespace GameScripts
 
             API.Log("[C#] Entry.Start() called for scene: " + _currentSceneName);
 
+            _activePopupName = LEVEL_1_UI;
+
             // Only pre-load menus for gameplay scene, not for cutscene
             if (_currentSceneName == GAMEPLAY_SCENE_NAME)
             {
@@ -107,6 +110,30 @@ namespace GameScripts
                 API.LoadSceneAdditive(DEATH_SCENE_NAME);
                 API.LoadSceneAdditive(END_SCENE_NAME);
             }
+        }
+
+        public static void TriggerModalPopup(string uiEntityName)
+        {
+            if (IsStartPopupActive) return; // Don't overlap popups
+
+            API.Log($"[Entry] Triggering Modal Popup: {uiEntityName}");
+
+            _activePopupName = uiEntityName; // Remember what to close
+
+            // Find the UI and make sure it's visible (reset scale if needed)
+            ulong uiID = API.FindEntity(_activePopupName);
+            if (uiID != 0)
+            {
+                // Ensure it's visible if you used scale 0 to hide it previously
+                API.SetScale(uiID, new Vec3(1, 1, 1));
+            }
+            else
+            {
+                API.Log($"[Entry] WARNING: Could not find UI Entity '{_activePopupName}'");
+            }
+
+            IsStartPopupActive = true;
+            API.SetGameLogicPaused(true);
         }
 
         public static void OnCutsceneCompleted()
@@ -225,7 +252,7 @@ namespace GameScripts
                     API.Log("Closing Level 1 Pop-up...");
 
                     // 1. Find the UI entity by name and destroy it
-                    ulong popupEntity = API.FindEntity(LEVEL_1_UI);
+                    ulong popupEntity = API.FindEntity(_activePopupName);
                     if (popupEntity != 0) API.DestroyEntity(popupEntity);
                     else API.Log("[Warning] Could not find Pop-up Entity to destroy: " + POPUP_SCENE_NAME);
 
