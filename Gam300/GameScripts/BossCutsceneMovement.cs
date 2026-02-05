@@ -1,0 +1,325 @@
+using System;
+using Boom;
+
+namespace GameScripts
+{
+    /// <summary>
+    /// Automatically moves the player from start position to end position,
+    /// then transitions to the main menu after a set duration.
+    /// Replaces normal player movement controls during the cutscene.
+    /// </summary>
+    public class BossCutsceneMovement
+    {
+        // Entity handle - automatically populated by the engine
+        public ulong Entity;
+
+        // Movement parameters - configure these in inspector or set programmatically
+        [EditorExposed("Start Position", "Position where player starts (top of steps)")]
+        public Vec3 startPosition = new Vec3(0, 5, 0);
+
+        [EditorExposed("End Position", "Position where player ends (bottom of steps)")]
+        public Vec3 endPosition = new Vec3(0, 0, 10);
+
+        [EditorExposed("Movement Duration", "How long the movement takes (seconds)")]
+        public float movementDuration = 8.0f;
+
+        [EditorExposed("Total Duration", "Total time before loading main menu (seconds)")]
+        public float totalDuration = 10.0f;
+
+        [EditorExposed("Fade Duration", "Duration of fade out before scene transition")]
+        public float fadeDuration = 1.0f;
+
+        [EditorExposed("Use Smooth Movement", "Use smooth easing for movement")]
+        public bool useSmoothMovement = true;
+
+        [EditorExposed("Enable Fade Effects", "Enable fade in/out effects (disable for easier editing)")]
+        public bool enableFadeEffects = true;
+
+        [EditorExposed("Maze Trigger Progress", "Progress % (0-1) when maze generation triggers")]
+        public float mazeTriggerProgress = 0.5f;
+
+        [EditorExposed("Maze Entity Name", "Name of the entity with MazeGeneration script")]
+        public string mazeEntityName = "MazeTrigger";
+
+        // Internal state
+        private float _elapsedTime = 0f;
+        private bool _movementComplete = false;
+        private bool _isFading = false;
+        private float _fadeTimer = 0f;
+        private bool _transitionTriggered = false;
+        private bool _mazeTriggered = false;
+
+        // Fade in state
+        private bool _isFadingIn = true;
+        private float _fadeInTimer = 0f;
+
+        // Store previous position for movement delta
+        private Vec3 _previousPosition;
+
+        public void OnStart(string paramsJson)
+        {
+            if (Entity == 0)
+            {
+                API.Log("[BossCutsceneMovement] Warning: Entity handle not set");
+                return;
+            }
+
+            // Start faded to black (only if fade effects enabled)
+            if (enableFadeEffects)
+            {
+                API.SetScreenFadeAlpha(1f);
+                _isFadingIn = true;
+            }
+            else
+            {
+                API.SetScreenFadeAlpha(0f);
+                _isFadingIn = false;
+            }
+
+            _fadeInTimer = 0f;
+            _elapsedTime = 0f;
+            _movementComplete = false;
+            _isFading = false;
+            _transitionTriggered = false;
+            _mazeTriggered = false;
+
+            // Set player to start position
+            if (API.HasTransform(Entity))
+            {
+                API.SetPosition(Entity, startPosition);
+                _previousPosition = startPosition;
+                API.Log($"[BossCutsceneMovement] Player set to start position: ({startPosition.X}, {startPosition.Y}, {startPosition.Z})");
+            }
+
+            // If the player has a character controller, use TeleportController for initial setup
+            if (API.HasCollider(Entity))
+            {
+                API.TeleportController(Entity, startPosition);
+            }
+
+            // Play walking animation if animator exists
+            if (API.HasAnimator(Entity))
+            {
+                API.AnimatorSetBool(Entity, "IsMoving", true);
+                API.AnimatorSetFloat(Entity, "Speed", 3.0f);
+                API.AnimatorSetBool(Entity, "Sprint", false);
+                API.AnimatorSetBool(Entity, "IsSneaking", false);
+            }
+
+            API.Log($"[BossCutsceneMovement] Cutscene started. Movement: {movementDuration}s, Total: {totalDuration}s");
+        }
+
+        public void OnUpdate(float deltaTime)
+        {
+            if (Entity == 0 || _transitionTriggered) return;
+
+            // Handle fade-in from black (when scene first loads)
+            if (_isFadingIn && enableFadeEffects)
+            {
+                _fadeInTimer += deltaTime;
+                float alpha = 1f - Clamp01(_fadeInTimer / fadeDuration);
+                API.SetScreenFadeAlpha(alpha);
+
+                if (_fadeInTimer >= fadeDuration)
+                {
+                    API.SetScreenFadeAlpha(0f);
+                    _isFadingIn = false;
+                    API.Log("[BossCutsceneMovement] Fade-in complete");
+                }
+            }
+            else if (_isFadingIn && !enableFadeEffects)
+            {
+                // Skip fade-in if disabled
+                _isFadingIn = false;
+            }
+
+            // Handle fading out (before scene transition)
+            if (_isFading)
+            {
+                if (enableFadeEffects)
+                {
+                    _fadeTimer += deltaTime;
+                    float alpha = Clamp01(_fadeTimer / fadeDuration);
+                    API.SetScreenFadeAlpha(alpha);
+
+                    if (_fadeTimer >= fadeDuration)
+                    {
+                        // Transition to main menu
+                        _transitionTriggered = true;
+                        API.Log("[BossCutsceneMovement] Loading MainMenu scene");
+                        API.LoadScene(Entry.MAIN_MENU_SCENE_NAME);
+                    }
+                }
+                else
+                {
+                    // No fade, transition immediately
+                    _transitionTriggered = true;
+                    API.Log("[BossCutsceneMovement] Loading MainMenu scene (no fade)");
+                    API.LoadScene(Entry.MAIN_MENU_SCENE_NAME);
+                }
+                return;
+            }
+
+            // Update elapsed time
+            _elapsedTime += deltaTime;
+
+            // Move the player if movement is still active
+            if (!_movementComplete && _elapsedTime < movementDuration)
+            {
+                // Calculate interpolation factor (0 to 1)
+                float t = _elapsedTime / movementDuration;
+
+                // Apply easing if smooth movement is enabled
+                if (useSmoothMovement)
+                {
+                    // Smooth ease in-out (cubic)
+                    t = t < 0.5f
+                        ? 4f * t * t * t
+                        : 1f - (float)Math.Pow(-2f * t + 2f, 3f) / 2f;
+                }
+
+                // Interpolate position
+                Vec3 currentPosition = new Vec3(
+                    Lerp(startPosition.X, endPosition.X, t),
+                    Lerp(startPosition.Y, endPosition.Y, t),
+                    Lerp(startPosition.Z, endPosition.Z, t)
+                );
+
+                // Calculate movement delta from previous position
+                Vec3 movementDelta = new Vec3(
+                    currentPosition.X - _previousPosition.X,
+                    currentPosition.Y - _previousPosition.Y,
+                    currentPosition.Z - _previousPosition.Z
+                );
+
+                // Use MoveController to move (this triggers collision callbacks)
+                if (API.HasCollider(Entity))
+                {
+                    API.MoveController(Entity, movementDelta, 0.001f, deltaTime);
+                }
+                else if (API.HasTransform(Entity))
+                {
+                    // Fallback to direct position setting if no controller
+                    API.SetPosition(Entity, currentPosition);
+                }
+
+                // Update previous position for next frame
+                _previousPosition = currentPosition;
+
+                // Check if we should trigger the maze generation
+                if (!_mazeTriggered && t >= mazeTriggerProgress)
+                {
+                    TriggerMazeGeneration();
+                    _mazeTriggered = true;
+                }
+
+                // Calculate direction for rotation (look towards movement direction)
+                Vec3 direction = new Vec3(
+                    endPosition.X - startPosition.X,
+                    0,  // Keep Y flat for rotation
+                    endPosition.Z - startPosition.Z
+                );
+                float dirLength = (float)Math.Sqrt(direction.X * direction.X + direction.Z * direction.Z);
+                if (dirLength > 0.001f)
+                {
+                    float targetYaw = (float)(Math.Atan2(direction.X, direction.Z) * 180.0 / Math.PI);
+                    API.SetRotationY(Entity, targetYaw);
+                }
+            }
+            else if (!_movementComplete && _elapsedTime >= movementDuration)
+            {
+                // Movement complete - ensure we're at exact final position
+                _movementComplete = true;
+
+                // Calculate final movement delta to reach exact end position
+                Vec3 currentPos = API.GetPosition(Entity);
+                Vec3 finalDelta = new Vec3(
+                    endPosition.X - currentPos.X,
+                    endPosition.Y - currentPos.Y,
+                    endPosition.Z - currentPos.Z
+                );
+
+                // Move to final position
+                if (API.HasCollider(Entity))
+                {
+                    API.MoveController(Entity, finalDelta, 0.001f, deltaTime);
+                }
+                else if (API.HasTransform(Entity))
+                {
+                    API.SetPosition(Entity, endPosition);
+                }
+
+                _previousPosition = endPosition;
+
+                // Stop walking animation
+                if (API.HasAnimator(Entity))
+                {
+                    API.AnimatorSetBool(Entity, "IsMoving", false);
+                    API.AnimatorSetFloat(Entity, "Speed", 0f);
+                }
+
+                API.Log("[BossCutsceneMovement] Movement complete");
+            }
+
+            // Check if it's time to transition to main menu
+            if (_elapsedTime >= totalDuration && !_isFading)
+            {
+                API.Log("[BossCutsceneMovement] Starting transition to MainMenu");
+                StartTransition();
+            }
+        }
+
+        private void StartTransition()
+        {
+            if (_isFading) return;
+
+            _isFading = true;
+            _fadeTimer = 0f;
+        }
+
+        private static float Lerp(float a, float b, float t)
+        {
+            return a + (b - a) * t;
+        }
+
+        private static float Clamp01(float v)
+        {
+            return v < 0f ? 0f : (v > 1f ? 1f : v);
+        }
+
+        /// <summary>
+        /// Triggers the maze generation via static method call
+        /// </summary>
+        private void TriggerMazeGeneration()
+        {
+            API.Log($"[BossCutsceneMovement] Triggering maze generation at progress {mazeTriggerProgress:F2}");
+
+            try
+            {
+                // If a specific maze entity name is provided, use it; otherwise use the primary instance
+                if (!string.IsNullOrEmpty(mazeEntityName) && mazeEntityName != "MazeTrigger")
+                {
+                    // Trigger specific maze by name
+                    MazeGeneration.TriggerMazeByName(mazeEntityName);
+                    API.Log($"[BossCutsceneMovement] Triggered maze by name: {mazeEntityName}");
+                }
+                else
+                {
+                    // Trigger the primary maze instance
+                    MazeGeneration.TriggerMazeFromExternal();
+                    API.Log($"[BossCutsceneMovement] Triggered primary maze instance");
+                }
+            }
+            catch (Exception ex)
+            {
+                API.Log($"[BossCutsceneMovement] ERROR triggering maze: {ex.Message}");
+            }
+        }
+
+        public void OnDestroy()
+        {
+            // Reset screen fade when destroyed
+            API.SetScreenFadeAlpha(0f);
+        }
+    }
+}

@@ -27,6 +27,6 @@ void main() {
     if (result.a < 0.01) discard;
 
     FragColor = color * result;
-    out_brightness = vec4(0.0, 0.0, 0.0, 1.0);  // 3D GUI quads should NOT contribute to bloom
+    out_brightness = vec4(0.0, 0.0, 0.0, FragColor.a);  // Match visual alpha so bloom is preserved behind translucent sprites
 }
 ==FRAGMENT==

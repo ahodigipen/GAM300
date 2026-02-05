@@ -14,6 +14,8 @@ ENTITIES:
         NearPlane: 0.300000012
         FarPlane: 1000
         FOV: 91
+    MenuComponent:
+      MenuType: 5
   - InfoComponent:
       Parent: 0
       Name: Level1PopUp
@@ -27,3 +29,5 @@ ENTITIES:
       textureID: 11583444921017572832
       color: [0.501960814, 0.501960814, 0.501960814, 1]
       renderAs3D: false
+    MenuComponent:
+      MenuType: 5

@@ -2923,7 +2923,7 @@ namespace EditorUI {
                     // 3. Define the Enum Names for the Dropdown
                     // These must match the order of your 'enum class MenuType'
                     // Pause=0, Death=1, Settings=2, Main=3
-                    const char* menuTypeNames[] = { "Pause", "Death", "Settings", "Main", "End" };
+                    const char* menuTypeNames[] = { "Pause", "Death", "Settings", "Main", "End", "PopUp"};
 
                     // Convert current enum value to int for ImGui
                     int currentSelection = (int)comp->menuType;
@@ -3054,6 +3054,23 @@ namespace EditorUI {
                     scripting->RecreateForEntity(currentEntity, sc);
                     BOOM_INFO("[Inspector] Recreated script instance (Enabled={}, TypeName={})",
                         sc.Enabled, sc.TypeName);
+                }
+
+                // --- CUSTOM TELEPORT BUTTONS FOR PLAYER ---
+                if (sc.TypeName == "GameScripts.PlayerMovement" && sc.InstanceId != 0 && scripting) {
+                    ImGui::Spacing();
+                    ImGui::TextDisabled("Editor Actions:");
+                    
+                    if (ImGui::Button("Teleport to Start", ImVec2(-1, 0))) {
+                        scripting->SetFieldValue(sc.InstanceId, "_teleportToStartTrigger", "true");
+                        BOOM_INFO("[Inspector] Triggered Teleport to Start");
+                    }
+
+                    if (ImGui::Button("Teleport to Last Checkpoint", ImVec2(-1, 0))) {
+                        scripting->SetFieldValue(sc.InstanceId, "_teleportToCPTrigger", "true");
+                        BOOM_INFO("[Inspector] Triggered Teleport to Last Checkpoint");
+                    }
+                    ImGui::Spacing();
                 }
 
                 // ----- Exposed Script Fields -----

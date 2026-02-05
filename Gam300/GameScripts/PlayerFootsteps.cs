@@ -330,6 +330,40 @@ namespace Boom
         }
 
         /// <summary>
+        /// Detect surface type directly beneath the entity using engine ground probe
+        /// </summary>
+        private void DetectSurfaceUnderFeet()
+        {
+            // IF we have trigger overlaps, they take priority
+            if (_activeSurfaceTriggers.Count > 0)
+            {
+                UpdateCurrentSurface();
+                return;
+            }
+
+            // Reuse the engine's built-in grounded check data to find what we're standing on
+            ulong floorEntity = API.GetStandingOnEntity(Entity);
+            
+            if (floorEntity != 0)
+            {
+                API.SurfaceType surface = API.GetSurfaceType(floorEntity);
+                if (surface != _currentSurface)
+                {
+                    //API.Log($"[Footstep] Floor probe detected new surface: {surface} on entity {floorEntity}");
+                    _currentSurface = surface;
+                }
+            }
+            else
+            {
+                // If nothing under feet, fallback to default
+                if (_currentSurface != API.SurfaceType.DEFAULT && _activeSurfaceTriggers.Count == 0)
+                {
+                    _currentSurface = API.SurfaceType.DEFAULT;
+                }
+            }
+        }
+
+        /// <summary>
         /// Update footstep logic every frame
         /// </summary>
         public void OnUpdate(float dt)
@@ -340,9 +374,6 @@ namespace Boom
             // Decrement debug timer
             if (_debugSurfaceTimer > 0f)
                 _debugSurfaceTimer -= dt;
-
-            // Surface detection is now handled by trigger callbacks (OnSurfaceTriggerEnter/Exit)
-            // No need to call DetectCurrentSurface() every frame
 
             // Get current position and calculate movement
             Vec3 currentPosition = API.GetPosition(Entity);
@@ -368,6 +399,9 @@ namespace Boom
 
                 if (_timeSinceLastFootstep >= dynamicInterval)
                 {
+                    // --- OPTIMIZED: Detect surface only when sound is about to play ---
+                    DetectSurfaceUnderFeet();
+
                     PlayFootstepSound(currentPosition);
                     _timeSinceLastFootstep = 0f;
                 }
@@ -452,7 +486,7 @@ namespace Boom
             StopAllFootstepVariants();
 
             // Play the footstep sound at the entity's position (3D sound)
-            API.PlaySoundAt(soundName, soundFile, position, false);
+            API.PlaySound(soundName, soundFile, false);
             API.SetSoundVolume(soundName, _footstepVolume);
         }
 
