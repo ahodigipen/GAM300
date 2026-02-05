@@ -153,7 +153,7 @@ ENTITIES:
       Volume: 1
       PlaybackSpeed: 1
       RenderAs3D: true
-      RemoveBlackBackground: false
+      RemoveBlackBackground: true
       TintColor: [1, 1, 1, 1]
       RenderAs3D: true
   - InfoComponent:
@@ -2823,7 +2823,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"EnemyDetection\": false\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 1.98000002, 0]
@@ -3109,7 +3109,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"EnemyDetection\": false\n}"
   - InfoComponent:
       Parent: 0
       Name: Terrain
@@ -10263,7 +10263,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"EnemyDetection\": false\n}"
   - InfoComponent:
       Parent: 0
       Name: Wall_Texture_Floor_3_Hut
@@ -10678,7 +10678,7 @@ ENTITIES:
       Volume: 1
       PlaybackSpeed: 1
       RenderAs3D: true
-      RemoveBlackBackground: false
+      RemoveBlackBackground: true
       TintColor: [1, 1, 1, 1]
       RenderAs3D: true
   - InfoComponent:

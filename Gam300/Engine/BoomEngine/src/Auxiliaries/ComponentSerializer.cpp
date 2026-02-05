@@ -705,7 +705,6 @@ namespace Boom
                     << YAML::Flow << YAML::BeginSeq
                     << vc.tintColor.r << vc.tintColor.g << vc.tintColor.b << vc.tintColor.a
                     << YAML::EndSeq;
-                e << YAML::Key << "RenderAs3D" << YAML::Value << vc.renderAs3D;
                 e << YAML::EndMap;
             },
             // ----- DESERIALIZE -----
@@ -722,6 +721,7 @@ namespace Boom
                 if (auto v = data["Volume"])         vc.volume = v.as<float>(vc.volume);
                 if (auto v = data["PlaybackSpeed"])  vc.playbackSpeed = v.as<float>(vc.playbackSpeed);
                 if (auto v = data["RenderAs3D"])     vc.renderAs3D = v.as<bool>(vc.renderAs3D);
+                if (auto v = data["RemoveBlackBackground"]) vc.removeBlackBackground = v.as<bool>(vc.removeBlackBackground);
 
                 if (auto c = data["TintColor"]; c && c.IsSequence() && c.size() == 4) {
                     vc.tintColor.r = c[0].as<float>(vc.tintColor.r);
