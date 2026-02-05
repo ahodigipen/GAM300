@@ -33,6 +33,8 @@ namespace GameScripts
 
         [Boom.EditorExposed("Level Start Pos", "Specific coordinates for the 'Teleport to Start' action")]
         private Vec3 _levelStartPos = new Vec3(0.914043128f, 1.8f, 13.9171219f);
+        [Boom.EditorExposed("Level 2 Pos", "Specific coordinates for the 'Teleport to Level 2' action")]
+        private Vec3 _level2Pos = new Vec3(-0.349f, 18.699f, 32.891f);
 
         private int _health = 5;
         private int _maxHealth = 5;
@@ -84,6 +86,11 @@ namespace GameScripts
         private const int USE_FREEZE = API.KEY_E;
         private bool _wasUseFreezeDown = false;
 
+        [Boom.EditorExposed("Freeze Radius", "Range of the freeze effect")]
+        private float _freezeRadius = 6.0f;
+        [Boom.EditorExposed("Freeze Duration", "How long the freeze lasts")]
+        private float _freezeDuration = 3.0f;
+
         private bool _canPickupFreeze = false;
         private ulong _currentPickupEntity = 0;
 
@@ -99,6 +106,7 @@ namespace GameScripts
         private bool _teleportToStartTrigger = false;
         [Boom.EditorExposed("Teleport to CP", "Internal trigger for editor button", 0, 0, false)]
         private bool _teleportToCPTrigger = false;
+        private bool _teleportToLevel2Trigger = false;
 
         // ==== CRITICAL: Manual vertical velocity tracking for Character Controller ====
         private float _verticalVelocity = 0f;
@@ -395,6 +403,11 @@ namespace GameScripts
                 _teleportToCPTrigger = false;
                 TeleportToLastCheckpoint();
             }
+            if (_teleportToLevel2Trigger)
+            {
+                _teleportToLevel2Trigger = false;
+                TeleportTo(_level2Pos);
+            }
 
             FreezeManager.Update(dt);
 
@@ -409,7 +422,10 @@ namespace GameScripts
                 }
             }
 
-            bool isUseFreeze = API.IsKeyDown(USE_FREEZE) || (API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_X));
+            bool isUseFreeze = API.IsKeyDown(USE_FREEZE) || 
+                               (API.IsGamepadConnected() && 
+                               (API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_X) ||
+                               API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_Y)));
             bool isFreezePressed = isUseFreeze && !_wasUseFreezeDown;
             _wasUseFreezeDown = isUseFreeze;
 
@@ -422,10 +438,8 @@ namespace GameScripts
                         if (!FreezeManager.IsFrozen(API.GetPosition(Entity)))
                         {
                             PlayerInventory.ConsumeFreezeCharge();
-                            float radius = 6.0f;
-                            float duration = 3.0f;
                             Vec3 playerPos = API.GetPosition(Entity);
-                            FreezeManager.TriggerFreeze(playerPos, radius, duration);
+                            FreezeManager.TriggerFreeze(playerPos, _freezeRadius, _freezeDuration);
                         }
                         else
                         {

@@ -529,7 +529,10 @@ namespace GameScripts
             // Reset proximity
             _proximityDetection?.ResetDetection();
 
-            //("[PatrolEnemyController] Player respawned - all states reset");
+            // Reset position to anchor
+            API.SetNavAgentPosition(Entity, _anchorPos);
+
+            //("[PatrolEnemyController] Player respawned - all states reset and teleported to anchor");
         }
 
         public void OnDestroy()

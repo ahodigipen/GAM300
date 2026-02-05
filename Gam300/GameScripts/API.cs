@@ -245,6 +245,9 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_SetNavAgentActive(ulong handle, bool active);
 
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetNavAgentPosition(ulong handle, ref Vec3 pos);
+
         //Animator Stuff
 
 
@@ -573,6 +576,11 @@ namespace Boom
         public static void SetNavAgentActive(ulong h, bool active)
         {
             Native.Boom_API_SetNavAgentActive(h, active);
+        }
+
+        public static void SetNavAgentPosition(ulong h, Vec3 pos)
+        {
+            Native.Boom_API_SetNavAgentPosition(h, ref pos);
         }
 
         // ===== Transform with validation =====

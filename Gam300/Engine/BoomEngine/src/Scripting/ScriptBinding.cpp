@@ -644,6 +644,47 @@ namespace Boom {
         }
     }
 
+    static void ICALL_API_SetNavAgentPosition(uint64_t handle, glm::vec3* pos)
+    {
+        if (!s_Ctx || !pos) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+
+        // 1. Teleport Transform
+        if (s_Ctx->scene.any_of<TransformComponent>(e)) {
+            auto& t = s_Ctx->scene.get<TransformComponent>(e).transform;
+            t.translate = *pos;
+        }
+
+        // 2. Teleport RigidBody if present
+        if (s_Ctx->scene.any_of<RigidBodyComponent>(e)) {
+            auto& rb = s_Ctx->scene.get<RigidBodyComponent>(e).RigidBody;
+            if (rb.actor) {
+                PxTransform pose = rb.actor->getGlobalPose();
+                pose.p = PxVec3(pos->x, pos->y, pos->z);
+                
+                if (PxRigidDynamic* dyn = rb.actor->is<PxRigidDynamic>()) {
+                    dyn->setLinearVelocity(PxVec3(0, 0, 0));
+                    dyn->setAngularVelocity(PxVec3(0, 0, 0));
+                    dyn->setGlobalPose(pose);
+                    dyn->wakeUp();
+                } else {
+                    rb.actor->setGlobalPose(pose);
+                }
+            }
+        }
+
+        // 3. Reset Nav Agent internal state
+        if (s_Ctx->scene.any_of<Boom::NavAgentComponent>(e)) {
+            auto& ag = s_Ctx->scene.get<Boom::NavAgentComponent>(e);
+            ag.path.clear();
+            ag.waypoint = 0;
+            ag.dirty = true; // Force it to recalculate path from new position
+            ag.velocity = glm::vec3(0, 0, 0);
+        }
+    }
+
     // Add this internal call function
     static void Boom_API_MoveController(uint64_t handle, glm::vec3* displacement, float minDist, float dt) {
         if (!s_Ctx || !s_Ctx->physics) return;
@@ -2269,6 +2310,8 @@ namespace Boom {
             (const void*)ICALL_API_AI_GetMode);
         mono_add_internal_call("Boom.Native::Boom_API_SetNavAgentActive",
             (const void*)ICALL_API_SetNavAgentActive);
+        mono_add_internal_call("Boom.Native::Boom_API_SetNavAgentPosition",
+            (const void*)ICALL_API_SetNavAgentPosition);
 
 
         // Animator function
