@@ -305,7 +305,7 @@ namespace GameScripts
             // Fallback: Distance Check if Trigger fails
             if (!_hasTriggered && _initialized)
             {
-                ulong playerID = API.FindEntity("Player");
+                ulong playerID = API.FindEntity("Samurai");
                 if (playerID == 0) playerID = PlayerMovement.GetPlayerEntity();
 
                 if (playerID != 0)
