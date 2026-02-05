@@ -15,6 +15,8 @@ namespace GameScripts
 
         private static readonly Dictionary<ulong, TutorialPopupTrigger> s_instances = new Dictionary<ulong, TutorialPopupTrigger>();
 
+        private static bool _globalEnabled = false;
+
         // The sprite entity name to show/hide (e.g., "UI_L2_Tutorial")
         [Boom.EditorExposed("Tutorial Sprite", "Name of the sprite entity to show (e.g., UI_L2_Tutorial)")]
         private string _tutorialSpriteName = "UI_L2_Tutorial";
@@ -24,6 +26,7 @@ namespace GameScripts
 
         private bool _hasTriggered = false;
         private bool _isCurrentlyShowing = false;
+        private bool _isPlayerInside = false;
 
         // Optional: Play a sound when entering the zone
         [Boom.EditorExposed("Play Sound On Enter", "Whether to play a sound when player enters the tutorial zone")]
@@ -31,6 +34,24 @@ namespace GameScripts
 
         [Boom.EditorExposed("Enter Sound", "Sound played when player enters the tutorial zone")]
         private string _enterSound = "Resources/Audio/ambient_notification.wav";
+
+        public static void EnableAllTutorials()
+        {
+            if (_globalEnabled) return; // Already enabled
+
+            API.Log("[TutorialPopupTrigger] Global Tutorials ENABLED.");
+            _globalEnabled = true;
+
+            // Check if player is ALREADY inside any trigger waiting for this
+            foreach (var kvp in s_instances)
+            {
+                TutorialPopupTrigger inst = kvp.Value;
+                if (inst._isPlayerInside && !inst._isCurrentlyShowing)
+                {
+                    inst.ShowPopup(); // Force show immediately
+                }
+            }
+        }
 
         public void OnStart(string jsonParams)
         {
@@ -64,6 +85,17 @@ namespace GameScripts
             // Cleanup
             if (s_instances.ContainsKey(Entity)) s_instances.Remove(Entity);
             API.UnregisterTriggerCallbacks(Entity);
+        }
+
+        private void ShowPopup()
+        {
+            if (_onlyShowOnce && _hasTriggered) return;
+
+            // *** Show the tutorial UI prompt ***
+            UIManager.ShowTutorialPopup(API.FindEntity(_tutorialSpriteName));
+            _hasTriggered = true;
+            _isCurrentlyShowing = true;
+            API.Log("[TutorialPopupTrigger] Showing UI popup.");
         }
 
         private static void OnTriggerEnter(ulong triggerEntity, ulong otherEntity)

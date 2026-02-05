@@ -12,6 +12,11 @@ namespace GameScripts
         private bool _initialized = false;
         private bool _hasTriggered = false;
 
+        private float _totalDuration = 0f;
+        private float _elapsedTime = 0f;
+        private bool _isPlaying = false;
+        private bool _hasFinished = false;
+
         public void OnStart(string jsonParams)
         {
             API.Log("[LevelTransitionCutscene] OnStart. Waiting for Trigger...");
@@ -56,6 +61,10 @@ namespace GameScripts
 
             BuildSequence();
             _sequencer.Play();
+
+            // Start Timer
+            _isPlaying = true;
+            _elapsedTime = 0f;
         }
 
         private void BuildSequence()
@@ -237,6 +246,7 @@ namespace GameScripts
             _sequencer.AddTrack(posTrack);
             _sequencer.AddTrack(lookTrack);
 
+            _totalDuration = frame / (float)fps;
             API.Log($"[LevelTransition] Built sequence. Duration: {frame} frames.");
         }
 
@@ -319,7 +329,24 @@ namespace GameScripts
                 }
             }
 
-            if (_initialized && _sequencer != null) _sequencer.OnUpdate(dt);
+            if (_initialized && _sequencer != null) { 
+                _sequencer.OnUpdate(dt);
+
+                // TRACK COMPLETION
+                if (_isPlaying && !_hasFinished)
+                {
+                    _elapsedTime += dt;
+                    if (_elapsedTime >= _totalDuration)
+                    {
+                        _hasFinished = true;
+                        _isPlaying = false;
+                        API.Log("[LevelTransition] Cutscene Finished. Enabling Level 2 Pop Up.");
+
+                        // *** SIGNAL TUTORIALS TO ENABLE ***
+                        TutorialPopupTrigger.EnableAllTutorials();
+                    }
+                }
+            }
         }
 
         public void OnDestroy() { if (_sequencer != null) _sequencer.OnDestroy(); }
