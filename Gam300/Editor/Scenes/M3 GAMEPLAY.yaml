@@ -1,5 +1,238 @@
 Version: 1.0
 ENTITIES:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: CrouchTriggerM_2
+      UID: 2982542782818259165
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [1.574, 16.0370007, -6.03100061]
+        Rotate: [0, -0, 0]
+        Scale: [13.6540003, 4.80999994, 3.68204975]
+    SoundComponent:
+      Entries:
+        - name: _enterSound
+          filePaths:
+            - Resources/Audio/ambient_warning.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.CrouchTriggerZone
+      ParamsJSON: "{}"
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: CrouchTriggerL2_2
+      UID: 6499351108082182224
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-35.8118172, 26.9060001, 12.5412703]
+        Rotate: [0, 89.980217, 0]
+        Scale: [5.22399998, 6.73999977, 3.68204927]
+    SoundComponent:
+      Entries:
+        - name: _enterSound
+          filePaths:
+            - Resources/Audio/ambient_warning.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.CrouchTriggerZone
+      ParamsJSON: "{}"
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 4356505632757386652
+        SurfaceType: DEFAULT
+        Type: TRIANGLE_MESH
+    InfoComponent:
+      Parent: 0
+      Name: Lion_Statue_Outside_Hut_2 (Copy)
+      UID: 15117222128519998591
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-35.9348679, 26.2983265, 12.3869343]
+        Rotate: [0, 89.980217, 0]
+        Scale: [0.0307193771, 0.0307199992, 0.0307193771]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0307193771, 0.0307199992, 0.0307193771]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 6829728261434427183
+      MaterialID: 9170069941051798259
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [0, 0.529411793, 1]
+        Intensity: 3.3599999
+        Range: 3.61999989
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: CrouchTriggerL2
+      UID: 7355145153866903399
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-51.1995354, 26.9060001, -2.50167274]
+        Rotate: [0, -0, 0]
+        Scale: [5.22399998, 6.73999977, 3.68204927]
+    SoundComponent:
+      Entries:
+        - name: _enterSound
+          filePaths:
+            - Resources/Audio/ambient_warning.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.CrouchTriggerZone
+      ParamsJSON: "{}"
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: CrouchTriggerM
+      UID: 14328143679039752469
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.560535431, 16.0370007, 12.5412703]
+        Rotate: [0, -0, 0]
+        Scale: [17.4341965, 4.80999994, 3.68204975]
+    SoundComponent:
+      Entries:
+        - name: _enterSound
+          filePaths:
+            - Resources/Audio/ambient_warning.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.CrouchTriggerZone
+      ParamsJSON: "{}"
   - InfoComponent:
       Parent: 0
       Name: LightBall_1 (Copy) (Copy) (Copy) (Copy)
@@ -534,7 +767,7 @@ ENTITIES:
       Transform:
         Translate: [-0.26146245, -0.298543572, -0.5]
         Rotate: [0, 0, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+        Scale: [0, 0, 0]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FreezeOverlayBehavior
@@ -938,15 +1171,15 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-32.5522919, 27.4181995, -23.2234497]
-        Rotate: [89.9999847, -3.86755471e-12, -180]
-        Scale: [1.26724064, 0.999901831, 1.69026423]
+        Translate: [-33.2141151, 27.4181995, -22.9724979]
+        Rotate: [-90.0000305, -5.00895749e-06, -5.00895385e-06]
+        Scale: [1.26724064, 0.999885917, 1.6902324]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.26724064, 0.999901831, 1.69026423]
+        Previous Scale: [1.26724064, 0.999885917, 1.6902324]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -1278,8 +1511,8 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.914043128, 1.79999995, 13.9171219]
-        Rotate: [0, -171.000031, 0]
+        Translate: [-0.263619423, 1.05906391, 12.4630013]
+        Rotate: [180, -8.99996948, 180]
         Scale: [0.0164999999, 0.0164999999, 0.0164999999]
     CharacterControllerComponent:
       Radius: 0.800000012
@@ -2587,8 +2820,8 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.0702196509, 9.02639389, 15.3918524]
-        Rotate: [-216.125, 5246.625, 180]
+        Translate: [1.45226216, 27.7889061, -10.7255116]
+        Rotate: [-223.5, 6834.6875, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -2729,6 +2962,11 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.745000005, 0.469999999]
+        Intensity: 1.60000002
+        Range: 4.03000021
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -3099,7 +3337,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [11.8449898, 2.42384171, 3.73498988]
+        Translate: [11.8449898, 1.94813895, 3.73498988]
         Rotate: [0, 89.980217, 0]
         Scale: [0.0249999948, 0.0250000004, 0.0249999948]
     RigidBodyComponent:
@@ -3139,7 +3377,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-11.9532928, 2.38350415, 3.35174274]
+        Translate: [-11.9532928, 1.78661752, 3.35174274]
         Rotate: [0, 89.980217, 0]
         Scale: [0.0249999948, 0.0250000004, 0.0249999948]
     RigidBodyComponent:
@@ -3179,8 +3417,8 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.404028654, 12.0561199, -21.3861027]
-        Rotate: [0, 0, 0]
+        Translate: [-0.404028654, 12.0561199, -21.1720829]
+        Rotate: [0, -0, 0]
         Scale: [1.79999995, 2.53999996, 0.194999993]
     RigidBodyComponent:
       RigidBody:
@@ -3194,7 +3432,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 16257091296667891899
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4657,7 +4895,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-15.2567644, 1.33925223, 6.14814854]
+        Translate: [-15.2567644, 0.468814045, 6.14814854]
         Rotate: [3.32224851e-12, -11.383975, -3.13526762e-05]
         Scale: [0.0149999997, 0.0149999997, 0.0149999997]
     RigidBodyComponent:
@@ -4697,7 +4935,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [15.7273293, 1.14433169, 6.02052069]
+        Translate: [15.7273293, 0.448206991, 6.02052069]
         Rotate: [0, -0, 5.1908959e-05]
         Scale: [0.0149999997, 0.0149999997, 0.0149999997]
     RigidBodyComponent:
@@ -4919,7 +5157,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [8.51709747, 2.34984994, -5.37112951]
+        Translate: [8.51709747, 2.18963528, -5.37112951]
         Rotate: [0, 89.980217, 0]
         Scale: [0.0299999993, 0.0299999993, 0.0299999993]
     RigidBodyComponent:
@@ -4986,7 +5224,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-8.46483231, 2.08591986, -4.61915731]
+        Translate: [-8.46483231, 2.15295863, -4.61915731]
         Rotate: [0, 89.980217, 0]
         Scale: [0.0297599956, 0.0297600012, 0.0297599956]
     RigidBodyComponent:
@@ -6332,8 +6570,8 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-35.9348679, 26.2983265, 12.3869343]
-        Rotate: [0, 89.980217, 0]
+        Translate: [-51.2401581, 26.2983265, -2.86959648]
+        Rotate: [-180, -5.00895612e-06, -180]
         Scale: [0.0307193771, 0.0307199992, 0.0307193771]
     RigidBodyComponent:
       RigidBody:
@@ -6399,15 +6637,15 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-24.0168438, 16.420187, 41.5472527]
-        Rotate: [90, 90, 0]
-        Scale: [4.2750001, 2.5, 1.85000002]
+        Translate: [-24.0168438, 16.5334072, 41.5472527]
+        Rotate: [-89.9555817, -89.944046, -0.0423971936]
+        Scale: [4.27500725, 2.50000143, 1.84999514]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [4.2750001, 2.5, 1.85000002]
+        Previous Scale: [4.27500725, 2.50000143, 1.84999514]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -6527,15 +6765,15 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-28.2738647, 27.1949997, -0.0270000007]
-        Rotate: [90, -90, 0]
-        Scale: [4.2750001, 2.5, 1.5]
+        Translate: [-28.2738647, 26.9361382, 0.0304951668]
+        Rotate: [89.958046, 90, 0]
+        Scale: [4.27499866, 2.50000024, 1.49999535]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [4.2750001, 2.5, 1.5]
+        Previous Scale: [4.27499866, 2.50000024, 1.49999535]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -6567,15 +6805,15 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-28.2740002, 27.1949997, -4.91556978]
-        Rotate: [90, -90, 0]
-        Scale: [4.2750001, 2.5, 1.5]
+        Translate: [-28.2740002, 26.915451, -4.91556978]
+        Rotate: [90, 90, 0]
+        Scale: [4.27499914, 2.49999976, 1.49999726]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [4.2750001, 2.5, 1.5]
+        Previous Scale: [4.27499914, 2.49999976, 1.49999726]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -10959,7 +11197,7 @@ ENTITIES:
       Transform:
         Translate: [0, 0, 0]
         Rotate: [0, 0, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+        Scale: [0.5, 0.5, 0.5]
     VideoComponent:
       VideoPath: Detection.mpeg
       PlayOnStart: true
