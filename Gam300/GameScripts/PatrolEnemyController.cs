@@ -91,6 +91,10 @@ namespace GameScripts
         [Boom.EditorExposed("Detection", "For Enemy detection")]
         private bool EnemyDetection = true;
 
+        // Entity name for spotlight lookup (matches SpotlightFollower's targetName)
+        [Boom.EditorExposed("Entity Name", "Name of this patrol enemy for spotlight lookup")]
+        private string _entityName = "Patrol_1";
+
         private string _footBase;
         private string _alertName;
         private string _gruntName;
@@ -447,6 +451,14 @@ namespace GameScripts
         private void OnPlayerDetected(ulong target, Vec3 pos)
         {
             _isAlert = true;
+
+            // Set spotlight to alert (red) color
+            var spotlight = SpotlightFollower.GetByTargetName(_entityName);
+            if (spotlight != null)
+            {
+                spotlight.SetAlert(true);
+            }
+
             var self = API.GetPosition(Entity);
             float dx = pos.X - self.X, dz = pos.Z - self.Z;
             float baseYaw = WORLD_FORWARD_IS_NEG_Z
@@ -471,6 +483,13 @@ namespace GameScripts
             _isAlert = false;
             _hasDealtDamage = false;
             _alertSoundPlayed = false; // Reset so alert can play again next detection
+
+            // Reset spotlight to original color
+            var spotlight = SpotlightFollower.GetByTargetName(_entityName);
+            if (spotlight != null)
+            {
+                spotlight.SetAlert(false);
+            }
 
             // NEW: Reset proximity when player lost
             _proximityDetection?.ResetDetection();
