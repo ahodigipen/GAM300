@@ -14,6 +14,9 @@ namespace GameScripts
         [Boom.EditorExposed("Position Offset Y", "Height offset above target", 0f, 10f, true)]
         private float positionOffsetY = 2.0f;
 
+        [Boom.EditorExposed("Is Patrol Enemy", "Enable if following a PatrolEnemyController (uses different rotation method)")]
+        private bool isPatrolEnemy = false;
+
         private Vec3 positionOffset = new Vec3(0, 2, 0);  // Offset from target (e.g., above the head)
         private bool followRotation = true;
 
@@ -89,8 +92,19 @@ namespace GameScripts
             if (followRotation)
             {
                 // Add 180 to Y rotation because spotlight points -Z but model faces +Z
-                targetRot.Y += 180f;
-                API.SetRotation(Entity, targetRot);
+                if (isPatrolEnemy)
+                {
+                    // For patrol enemies, use GetRotationY to get the Y value set by SetRotationY
+                    float targetYaw = API.GetRotationY(targetHandle);
+                    float spotlightYaw = targetYaw + 180f;
+                    API.SetRotationY(Entity, spotlightYaw);
+                }
+                else
+                {
+                    // For sentry enemies, use full rotation
+                    targetRot.Y += 180f;
+                    API.SetRotation(Entity, targetRot);
+                }
             }
         }
 
@@ -147,6 +161,17 @@ namespace GameScripts
         public void SetAlertColor(Vec3 color)
         {
             alertColor = color;
+        }
+
+        /// <summary>
+        /// Directly set the spotlight's Y rotation (for PatrolEnemyController)
+        /// </summary>
+        public void SetYaw(float yaw)
+        {
+            if (Entity == 0) return;
+            // Add 180 because spotlight points -Z but model faces +Z
+            float spotlightYaw = yaw + 180f;
+            API.SetRotationY(Entity, spotlightYaw);
         }
 
         // === STATIC METHODS FOR EXTERNAL ACCESS ===
