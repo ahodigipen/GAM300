@@ -11,8 +11,10 @@ namespace Boom
     {
         BOOM_INFO("[Application] RunContext started");
 
-        m_IsInPlayMode = true;
-        m_AppState = ApplicationState::RUNNING;
+        // Runtime builds (showFrame=false) should start in Play mode immediately.
+        // Editor builds (showFrame=true) should start in Stopped mode (Edit mode).
+        m_IsInPlayMode = !showFrame;
+        m_AppState = showFrame ? ApplicationState::STOPPED : ApplicationState::RUNNING;
 
         std::cout << "[RunContext] Loading scene MainMenu..." << std::endl;
         std::cout.flush();
@@ -241,6 +243,9 @@ namespace Boom
 
         std::cout << "[RunContext] Physics debug enabled, entering main game loop..." << std::endl;
         std::cout.flush();
+
+        // Ensure the timer starts clean for the main loop
+        ResetDeltaTime();
 
         //temp input for mouse motion
         glm::dvec2 curMP{};

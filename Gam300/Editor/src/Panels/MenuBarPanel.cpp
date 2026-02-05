@@ -101,17 +101,27 @@ namespace EditorUI {
             ImGui::Separator();
 
             if (ImGui::MenuItem("Save Scene", "Ctrl+S")) {
-                if (m.showSaveDialog) *m.showSaveDialog = true;
-                if (m.app && m.app->IsSceneLoaded()) {
-                    if (m.RefreshSceneList) m.RefreshSceneList(true);
-                    PrefillSceneNameFromCurrent();
+                if (m.app && m.app->IsPlaying()) {
+                    BOOM_WARN("[Editor] Cannot save scene while in Play mode! Stop play mode first to avoid saving simulated positions.");
+                }
+                else {
+                    if (m.showSaveDialog) *m.showSaveDialog = true;
+                    if (m.app && m.app->IsSceneLoaded()) {
+                        if (m.RefreshSceneList) m.RefreshSceneList(true);
+                        PrefillSceneNameFromCurrent();
+                    }
                 }
             }
 
             if (ImGui::MenuItem("Save Scene As...", "Ctrl+Shift+S")) {
-                if (m.showSaveDialog) *m.showSaveDialog = true;
-                if (m.sceneNameBuffer && m.sceneNameBufferSize) {
-                    m.sceneNameBuffer[0] = '\0'; // fresh name
+                if (m.app && m.app->IsPlaying()) {
+                    BOOM_WARN("[Editor] Cannot save scene while in Play mode! Stop play mode first to avoid saving simulated positions.");
+                }
+                else {
+                    if (m.showSaveDialog) *m.showSaveDialog = true;
+                    if (m.sceneNameBuffer && m.sceneNameBufferSize) {
+                        m.sceneNameBuffer[0] = '\0'; // fresh name
+                    }
                 }
             }
 

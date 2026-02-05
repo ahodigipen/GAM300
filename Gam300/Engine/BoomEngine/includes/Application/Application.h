@@ -152,6 +152,7 @@ namespace Boom
 				}
 			);
 
+			m_LastFrameTime = glfwGetTime();
 		}
 
 		/**
@@ -203,15 +204,17 @@ namespace Boom
 			serializer.Serialize(m_Context->scene, m_PrePlayScenePath);
 			BOOM_INFO("[Application] Saved pre-play scene state");
 
-			// Initialize physics actors for all rigid bodies
+			// 1. Initialize collider-only actors first (environment/triggers)
 			EnttView<Entity, ColliderComponent>([this](auto entity, auto&) {
 				if (!entity.Has<RigidBodyComponent>()) {
 					m_Context->physics->AddColliderOnly(entity, *m_Context->assets);
 				}
-				else {
-					m_Context->physics->AddRigidBody(entity, *m_Context->assets);
-				}
-				});
+			});
+
+			// 2. Then initialize all rigid bodies
+			EnttView<Entity, RigidBodyComponent>([this](auto entity, auto&) {
+				m_Context->physics->AddRigidBody(entity, *m_Context->assets);
+			});
 
 			// Create controllers for all entities with CharacterControllerComponent
 			EnttView<Entity, CharacterControllerComponent>([this](auto entity, CharacterControllerComponent& cc) {
@@ -226,6 +229,7 @@ namespace Boom
 			// Reset time tracking
 			m_PausedTime = 0.0;
 			m_LastPauseTime = 0.0;
+			ResetDeltaTime();
 
 			// Enter play mode
 			m_IsInPlayMode = true;
@@ -297,6 +301,7 @@ namespace Boom
 
 				// Add paused time to total paused time
 				m_PausedTime += (glfwGetTime() - m_LastPauseTime);
+				ResetDeltaTime();
 
 				BOOM_INFO("[Application] Resumed");
 
@@ -379,6 +384,7 @@ namespace Boom
 			m_IsGameLogicPaused = false;
 			m_PausedTime = 0.0;
 			m_LastPauseTime = 0.0;
+			ResetDeltaTime();
 
 			// Exit play mode but keep application running
 			m_IsInPlayMode = false;
@@ -597,6 +603,7 @@ namespace Boom
 
 			m_NavInitialized = false;
 			ApplySceneNavmeshFromScene();
+			ResetDeltaTime();
 
 			BOOM_INFO("[Scene] Successfully loaded scene '{}'", sceneName);
 			return true;
@@ -1245,6 +1252,7 @@ namespace Boom
 
 		std::unordered_set<std::pair<uint32_t, uint32_t>> m_ActiveTriggerPairs;
 
+		double m_LastFrameTime = 0.0;
 		glm::vec3 pivotPosition{};
 		bool m_NavInitialized = false;
 		bool m_AIinitialized = false;
@@ -1469,20 +1477,34 @@ namespace Boom
 				BOOM_INFO("[Scene] No scene settings found, using default ambient strength: 0.5");
 			}
 
-			// Reinitialize physics - BOTH RigidBodies AND Collider-Only (Triggers)
-			EnttView<Entity, RigidBodyComponent>([this](auto entity, auto&) {
-				m_Context->physics->AddRigidBody(entity, *m_Context->assets);
-				});
-
-			// *** ADD THIS - Reinitialize collider-only entities (triggers) ***
-			EnttView<Entity, ColliderComponent>([this](auto entity, auto&) {
-				// Skip if it has a RigidBodyComponent (already handled above)
+			// --- PHYSICS INITIALIZATION ORDER IS CRITICAL ---
+			
+			// 1. First, initialize collider-only entities (floors, walls, triggers)
+			// This ensures the static environment exists before any dynamic bodies are added.
+			int collidersCreated = 0;
+			EnttView<Entity, ColliderComponent>([this, &collidersCreated](auto entity, auto&) {
+				// Skip if it has a RigidBodyComponent (handled in next pass)
 				if (entity.Has<RigidBodyComponent>()) return;
 
 				m_Context->physics->AddColliderOnly(entity, *m_Context->assets);
-				BOOM_INFO("[Scene] Reinitialized collider-only actor for entity {}",
-					static_cast<uint32_t>(entity.ID()));
-				});
+				collidersCreated++;
+			});
+			BOOM_INFO("[Scene] Initialized {} collider-only actors (environment/triggers)", collidersCreated);
+
+			// 2. Then, initialize all rigid bodies
+			int rbCreated = 0;
+			EnttView<Entity, RigidBodyComponent>([this, &rbCreated](auto entity, auto& rbComp) {
+				m_Context->physics->AddRigidBody(entity, *m_Context->assets);
+				
+				// Ensure they don't move if we're not running
+				if (m_AppState != ApplicationState::RUNNING && rbComp.RigidBody.actor) {
+					if (auto* dyn = rbComp.RigidBody.actor->is<physx::PxRigidDynamic>()) {
+						dyn->putToSleep();
+					}
+				}
+				rbCreated++;
+			});
+			BOOM_INFO("[Scene] Initialized {} rigid body actors", rbCreated);
 
 			// Creating script instances 
 			int scriptsCreated = 0;
@@ -1633,11 +1655,14 @@ namespace Boom
 
 		BOOM_INLINE void ComputeFrameDeltaTime()
 		{
-			static double sLastTime = glfwGetTime();
 			double currentTime = glfwGetTime();
 
 			// Calculate raw delta time
-			double rawDelta = (currentTime - sLastTime);
+			double rawDelta = (currentTime - m_LastFrameTime);
+
+			// CAP DELTA TIME: Prevent physics "explosions" after long loading or pauses
+			// 0.1s cap (10 FPS minimum) is usually safe for physics
+			if (rawDelta > 0.1) rawDelta = 0.1;
 
 			// Delta time behavior:
 			// - Edit mode: Always update (for smooth camera movement)
@@ -1656,7 +1681,13 @@ namespace Boom
 				m_Context->DeltaTime = 0.0;
 			}
 
-			sLastTime = currentTime;
+			m_LastFrameTime = currentTime;
+		}
+
+		// Reset the last frame time to now (prevents huge jumps after loading)
+		BOOM_INLINE void ResetDeltaTime()
+		{
+			m_LastFrameTime = glfwGetTime();
 		}
 
 

@@ -288,21 +288,26 @@ namespace EditorUI {
         // Ctrl+S: Save Scene
         if (ctrl && !shift && ImGui::IsKeyPressed(ImGuiKey_S, false))
         {
-            m_ShowSaveDialog = true;
-            if (m_App->IsSceneLoaded()) {
-                RefreshSceneList(true);
-                // Prefill current scene name
-                std::string currentPath = m_App->GetCurrentScenePath();
-                if (!currentPath.empty()) {
-                    size_t lastSlash = currentPath.find_last_of("/\\");
-                    size_t lastDot = currentPath.find_last_of(".");
-                    if (lastSlash != std::string::npos && lastDot != std::string::npos && lastDot > lastSlash) {
-                        std::string sceneName = currentPath.substr(lastSlash + 1, lastDot - lastSlash - 1);
-                        strncpy_s(m_SceneNameBuffer, sizeof(m_SceneNameBuffer), sceneName.c_str(), _TRUNCATE);
+            if (m_App->IsPlaying()) {
+                BOOM_WARN("[Editor] Cannot save scene while in Play mode! Stop play mode first to avoid saving simulated positions.");
+            }
+            else {
+                m_ShowSaveDialog = true;
+                if (m_App->IsSceneLoaded()) {
+                    RefreshSceneList(true);
+                    // Prefill current scene name
+                    std::string currentPath = m_App->GetCurrentScenePath();
+                    if (!currentPath.empty()) {
+                        size_t lastSlash = currentPath.find_last_of("/\\");
+                        size_t lastDot = currentPath.find_last_of(".");
+                        if (lastSlash != std::string::npos && lastDot != std::string::npos && lastDot > lastSlash) {
+                            std::string sceneName = currentPath.substr(lastSlash + 1, lastDot - lastSlash - 1);
+                            strncpy_s(m_SceneNameBuffer, sizeof(m_SceneNameBuffer), sceneName.c_str(), _TRUNCATE);
+                        }
                     }
                 }
+                BOOM_INFO("[Shortcut] Save scene dialog (Ctrl+S)");
             }
-            BOOM_INFO("[Shortcut] Save scene dialog (Ctrl+S)");
         }
 
         // Ctrl+Shift+S: Save Scene As (conflicts with Stop play mode, so check if NOT playing)
