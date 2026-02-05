@@ -29,6 +29,14 @@ namespace GameScripts
         private ulong _clickedButtonID = 0;
         private bool _wasDeadLastFrame = false;
 
+        // Controller navigation
+        private int _selectedIndex = 0; // 0: Restart, 1: Main Menu
+        private bool _wasDpadUp = false;
+        private bool _wasDpadDown = false;
+        private bool _wasStickUp = false;
+        private bool _wasStickDown = false;
+        private bool _wasAButtonPressed = false;
+
         private float _buttonDelayTimer = 0.0f;
         private const float CLICK_DELAY_DURATION = 0.1f;
 
@@ -41,6 +49,7 @@ namespace GameScripts
             _mainMenuButtonID = API.FindEntity("Death_ReturnButton");
             _backgroundID = API.FindEntity("Death_Background");
 
+            _selectedIndex = 0;
             ResetButtonState();
         }
 
@@ -59,6 +68,8 @@ namespace GameScripts
 
             if (!Entry.IsPlayerDead) return;
             if (Entry.s_RequestedDeathAction != Entry.DeathMenuAction.None) return;
+
+            Update_ControllerNavigation();
 
             switch (_currentState)
             {
@@ -79,16 +90,66 @@ namespace GameScripts
             }
         }
 
+        private void Update_ControllerNavigation()
+        {
+            if (!API.IsGamepadConnected()) return;
+
+            bool dpadUp = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_DPAD_UP);
+            bool dpadDown = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_DPAD_DOWN);
+            float stickY = API.GetGamepadAxis(API.GAMEPAD_AXIS_LEFT_Y);
+            bool stickUp = stickY < -0.5f;
+            bool stickDown = stickY > 0.5f;
+            bool aPressed = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A);
+
+            if ((dpadUp && !_wasDpadUp) || (stickUp && !_wasStickUp))
+            {
+                _selectedIndex = (_selectedIndex - 1 + 2) % 2;
+                UpdateVisuals();
+            }
+            if ((dpadDown && !_wasDpadDown) || (stickDown && !_wasStickDown))
+            {
+                _selectedIndex = (_selectedIndex + 1) % 2;
+                UpdateVisuals();
+            }
+
+            if (aPressed && !_wasAButtonPressed)
+            {
+                ulong buttonID = 0;
+                if (_selectedIndex == 0) buttonID = _restartButtonID;
+                else if (_selectedIndex == 1) buttonID = _mainMenuButtonID;
+
+                if (buttonID != 0) StartClickDelay(buttonID);
+            }
+
+            _wasDpadUp = dpadUp;
+            _wasDpadDown = dpadDown;
+            _wasStickUp = stickUp;
+            _wasStickDown = stickDown;
+            _wasAButtonPressed = aPressed;
+        }
+
+        private void UpdateVisuals()
+        {
+            // Reset all to normal
+            if (_restartButtonID != 0)
+                API.SetSpriteTexture(_restartButtonID, RESTART_TEX_NORMAL);
+            if (_mainMenuButtonID != 0)
+                API.SetSpriteTexture(_mainMenuButtonID, MAINMENU_TEX_NORMAL);
+
+            // Highlight selected
+            if (_selectedIndex == 0 && _restartButtonID != 0)
+                API.SetSpriteTexture(_restartButtonID, RESTART_TEX_CLICKED);
+            else if (_selectedIndex == 1 && _mainMenuButtonID != 0)
+                API.SetSpriteTexture(_mainMenuButtonID, MAINMENU_TEX_CLICKED);
+        }
+
         public void ResetButtonState()
         {
             _currentState = DeathMenuState.WaitingForMouseUp;
             _clickedButtonID = 0;
             _buttonDelayTimer = 0.0f;
 
-            if (_restartButtonID != 0)
-                API.SetSpriteTexture(_restartButtonID, RESTART_TEX_NORMAL);
-            if (_mainMenuButtonID != 0)
-                API.SetSpriteTexture(_mainMenuButtonID, MAINMENU_TEX_NORMAL);
+            UpdateVisuals();
         }
 
         private void Update_Idle()
@@ -97,10 +158,16 @@ namespace GameScripts
             {
                 if (!API.GetMousePosInViewport(out Vec2 mousePos)) { return; }
 
-                if (API.Check2DViewportClick(_mainMenuButtonID, mousePos.X, mousePos.Y))
-                    StartClickDelay(_mainMenuButtonID);
-                else if (API.Check2DViewportClick(_restartButtonID, mousePos.X, mousePos.Y))
+                if (API.Check2DViewportClick(_restartButtonID, mousePos.X, mousePos.Y))
+                {
+                    _selectedIndex = 0;
                     StartClickDelay(_restartButtonID);
+                }
+                else if (API.Check2DViewportClick(_mainMenuButtonID, mousePos.X, mousePos.Y))
+                {
+                    _selectedIndex = 1;
+                    StartClickDelay(_mainMenuButtonID);
+                }
             }
         }
 

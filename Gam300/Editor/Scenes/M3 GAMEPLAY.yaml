@@ -1,13 +1,162 @@
 Version: 1.0
 ENTITIES:
   - InfoComponent:
+      Parent: 16217385032863444442
+      Name: Patrol Vision Cone 10
+      UID: 7479274772312597537
+    TransformComponent:
+      Transform:
+        Translate: [591.911621, 15.4210815, -160.990173]
+        Rotate: [179.998337, -0.00755275087, 179.981735]
+        Scale: [49.9987793, 49.9999962, 49.9987755]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolSpotlightFollower
+      ParamsJSON: "{\n  \"targetName\": \"Patrol enemy 3\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.975490212, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 14450237795829985322
+      Name: Patrol Vision Cone 9
+      UID: 4378450492672010194
+    TransformComponent:
+      Transform:
+        Translate: [-266.145081, -467.168854, 996.076538]
+        Rotate: [0.0316256806, 61.2416267, 0.0379715934]
+        Scale: [24.9999905, 24.9999981, 24.9999905]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolSpotlightFollower
+      ParamsJSON: "{\n  \"targetName\": \"Level2_PatrolEnemy_6\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.975490212, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 14361277227657285018
+      Name: Patrol Vision Cone 8
+      UID: 15829944425654132245
+    TransformComponent:
+      Transform:
+        Translate: [854.373901, 15.4210205, -889.393066]
+        Rotate: [112.547661, 89.980217, 112.549316]
+        Scale: [49.9988518, 49.9999962, 49.9988556]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolSpotlightFollower
+      ParamsJSON: "{\n  \"targetName\": \"Patrol enemy 1\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.975490212, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 11377284783086712530
+      Name: Patrol Vision Cone 7
+      UID: 17207126084649200590
+    TransformComponent:
+      Transform:
+        Translate: [-739.64856, -11.1525574, -351.429932]
+        Rotate: [-135.012695, -89.980217, 135.015167]
+        Scale: [24.9999924, 25, 24.9999943]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolSpotlightFollower
+      ParamsJSON: "{\n  \"targetName\": \"Level2_PatrolEnemy_1\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.975490212, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 9730896463395262189
+      Name: Patrol Vision Cone 6
+      UID: 16553261442957951333
+    TransformComponent:
+      Transform:
+        Translate: [-573.299805, -284.861511, -44.7728462]
+        Rotate: [-5.00950637e-06, -1.59213175e-06, 0.0197773334]
+        Scale: [24.9999924, 25, 24.9999943]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolSpotlightFollower
+      ParamsJSON: "{\n  \"targetName\": \"Level2_PatrolEnemy_4\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.975490212, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 7103488143176582610
+      Name: Patrol Vision Cone 5
+      UID: 13004693949065280400
+    TransformComponent:
+      Transform:
+        Translate: [-1497.79272, -10.6385498, -590.850159]
+        Rotate: [-90, -89.980217, 90]
+        Scale: [24.9999962, 25, 24.9999962]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolSpotlightFollower
+      ParamsJSON: "{\n  \"targetName\": \"Level2_PatrolEnemy_3\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.975490212, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 4350822310922817577
+      Name: Patrol Vision Cone 4
+      UID: 5626738050018619883
+    TransformComponent:
+      Transform:
+        Translate: [111.078888, -11.1526184, -1194.73303]
+        Rotate: [-180, 1.74258239e-05, -180]
+        Scale: [24.9999924, 25, 24.9999924]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolSpotlightFollower
+      ParamsJSON: "{\n  \"targetName\": \"Level2_PatrolEnemy_2\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.975490212, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 0
+      Name: wakkkker
+      UID: 17630822912627836995
+    TransformComponent:
+      Transform:
+        Translate: [-13.6622381, 19.0557327, 10.1362982]
+        Rotate: [89.9999847, -0, 0]
+        Scale: [25.4209995, 2.99476004, 3.17179823]
+    ModelComponent:
+      ModelID: 4826384296126717694
+      MaterialID: 6104124486273075758
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
       Parent: 263206634475258297
       Name: Patrol Vision Cone 2
       UID: 579238474671125089
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 2.53051853, -14.2555885]
-        Rotate: [0, 203.092896, 0]
+        Rotate: [0, 293.092896, 0]
         Scale: [49.9988136, 50, 49.9988136]
     ScriptComponent:
       Enabled: true
@@ -38,8 +187,8 @@ ENTITIES:
       UID: 2086609460865131994
     TransformComponent:
       Transform:
-        Translate: [-8.7441864, 13.4210215, 4.49539757]
-        Rotate: [180, -5.00895612e-06, 180]
+        Translate: [-8.74418545, 13.4210215, 2.20546246]
+        Rotate: [0, -0.000208548139, 0]
         Scale: [0.0200004783, 0.0199999996, 0.0200004783]
     RigidBodyComponent:
       RigidBody:
@@ -135,12 +284,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 2.46781588
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-8.74418736, 13.5137606, -12.7557554]
+      Target: [-8.74418736, 13.5137606, 8.09904671]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -156,7 +305,7 @@ ENTITIES:
       PatrolPoints:
         - [-8.74418736, 13.5137606, -12.7557554]
         - [-8.74418736, 13.5137606, 8.09904671]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -180,7 +329,7 @@ ENTITIES:
       UID: 14361277227657285018
     TransformComponent:
       Transform:
-        Translate: [-7.58335209, 13.4210215, 19.33708]
+        Translate: [8.86918926, 13.4210215, 19.33708]
         Rotate: [180, 90, 180]
         Scale: [0.0200004522, 0.0199999996, 0.0200004522]
     RigidBodyComponent:
@@ -302,7 +451,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_entityName\": \"Patrol enemy 1\"\n}"
   - InfoComponent:
       Parent: 5830254891821542999
       Name: Sentry Vision Cone 3
@@ -310,7 +459,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [17.540493, 15.4146328, 3.31294298]
-        Rotate: [5.00895476e-06, 373.252594, 5.00895476e-06]
+        Rotate: [5.00895476e-06, 463.252594, 5.00895476e-06]
         Scale: [66.4224625, 48.3170776, 102.520782]
     ScriptComponent:
       Enabled: true
@@ -346,7 +495,7 @@ ENTITIES:
         Scale: [0.300000012, 0.349999994, 0.300000012]
     SpriteComponent:
       textureID: 12936131708983895469
-      color: [1, 1, 1, 3.69270509e-07]
+      color: [1, 1, 1, 1.63056921e-32]
       renderAs3D: false
   - ColliderComponent:
       Collider:
@@ -410,7 +559,6 @@ ENTITIES:
       RenderAs3D: true
       RemoveBlackBackground: false
       TintColor: [1, 1, 1, 1]
-      RenderAs3D: true
   - InfoComponent:
       Parent: 0
       Name: Top_Ceiling
@@ -680,35 +828,6 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 1.80999994, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [30, 82, 3]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: true
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: FreezePowerUp_1
-      UID: 17139095997387898276
-    TransformComponent:
-      Transform:
-        Translate: [-5.86000013, 17.6000004, 32]
-        Rotate: [0, 0, 0]
-        Scale: [0.0399999991, 0.0399999991, 0.0399999991]
-    ModelComponent:
-      ModelID: 5551161321672247114
-      MaterialID: 16305148809392937752
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
   - InfoComponent:
       Parent: 0
       Name: UI_Freeze
@@ -719,7 +838,7 @@ ENTITIES:
         Rotate: [0, -0, 0]
         Scale: [0.0500000007, 0.100000001, 0.5]
     SpriteComponent:
-      textureID: 3615061789617660208
+      textureID: 17435015903446098353
       color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
@@ -729,7 +848,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [9.27553558, 2.64499116, -14.2555885]
-        Rotate: [0, 250.171265, 0]
+        Rotate: [0, 340.171265, 0]
         Scale: [68.965065, 68.9655151, 68.965065]
     ScriptComponent:
       Enabled: true
@@ -968,7 +1087,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [2.07987475, 17.7299271, 63.520256]
-        Rotate: [0, 243.154327, 0]
+        Rotate: [0, 292.874115, 0]
         Scale: [0.0145000033, 0.0145000005, 0.0145000033]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -1074,8 +1193,8 @@ ENTITIES:
       UID: 14450237795829985322
     TransformComponent:
       Transform:
-        Translate: [-46.6253014, 31.6161919, 10.8046885]
-        Rotate: [180, 61.2338333, 180]
+        Translate: [-48.9683151, 32.4161949, 12.0909557]
+        Rotate: [180, 61.234066, 180]
         Scale: [0.0399999991, 0.0399999991, 0.0399999991]
     RigidBodyComponent:
       RigidBody:
@@ -1192,11 +1311,11 @@ ENTITIES:
       PatrolPoints:
         - [-64.7831268, 31.8782978, 20.773016]
         - [-46.5436516, 31.8782978, 10.7598639]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_entityName\": \"Level2_PatrolEnemy_6\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 1.98000002, 0]
@@ -1216,7 +1335,7 @@ ENTITIES:
       UID: 263206634475258297
     TransformComponent:
       Transform:
-        Translate: [-46.8829498, 24.3438988, -9.79262638]
+        Translate: [-48.4157066, 25.143898, -9.79262638]
         Rotate: [360, -90, 0]
         Scale: [0.0399999991, 0.0399999991, 0.0399999991]
     RigidBodyComponent:
@@ -1313,12 +1432,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 4.51778555
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-31.1600056, 24.8474388, -9.79262638]
+      Target: [-62.5423012, 24.8474388, -9.79262638]
       Speed: 4.55000019
       ArriveRadius: 0.150000006
       Active: true
@@ -1334,7 +1453,7 @@ ENTITIES:
       PatrolPoints:
         - [-62.5423012, 24.8474388, -9.79262638]
         - [-31.1600056, 24.8474388, -9.79262638]
-      PatrolIndex: 1
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -1358,8 +1477,8 @@ ENTITIES:
       UID: 9730896463395262189
     TransformComponent:
       Transform:
-        Translate: [-31.8510647, 25.1238995, 20.4141693]
-        Rotate: [0, -4.46236008e-05, 0]
+        Translate: [-31.8510666, 25.1238995, 0.45830518]
+        Rotate: [180, -5.00895612e-06, 180]
         Scale: [0.0399999991, 0.0399999991, 0.0399999991]
     RigidBodyComponent:
       RigidBody:
@@ -1460,7 +1579,7 @@ ENTITIES:
         ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-31.8510666, 24.596777, 24.0069332]
+      Target: [-31.8510666, 24.596777, 0.315589666]
       Speed: 4.44999981
       ArriveRadius: 0.150000006
       Active: true
@@ -1476,11 +1595,11 @@ ENTITIES:
       PatrolPoints:
         - [-31.8510666, 24.596777, 24.0069332]
         - [-31.8510666, 24.596777, 0.315589666]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_entityName\": \"Level2_PatrolEnemy_4\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 2, 0]
@@ -1500,8 +1619,8 @@ ENTITIES:
       UID: 7103488143176582610
     TransformComponent:
       Transform:
-        Translate: [-15.9896011, 13.3755474, 62.1609192]
-        Rotate: [180, 89.980217, 180]
+        Translate: [-32.5530701, 14.1549797, 62.1609192]
+        Rotate: [180, -90, 180]
         Scale: [0.0399999991, 0.0399999991, 0.0399999991]
     RigidBodyComponent:
       RigidBody:
@@ -1602,7 +1721,7 @@ ENTITIES:
         ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-13.3622103, 13.4397764, 62.1609154]
+      Target: [-34.7096901, 13.4397764, 62.1609154]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -1619,11 +1738,11 @@ ENTITIES:
         - [-13.3622103, 13.4397764, 62.1609154]
         - [-28.2320347, 13.4397764, 62.1609154]
         - [-34.7096901, 13.4397764, 62.1609154]
-      PatrolIndex: 0
+      PatrolIndex: 2
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"DetectionEnemy\": false,\n  \"EnemyDetection\": true\n}"
+      ParamsJSON: "{\n  \"DetectionEnemy\": false,\n  \"EnemyDetection\": true,\n  \"_entityName\": \"Level2_PatrolEnemy_3\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 2, 0]
@@ -1643,7 +1762,7 @@ ENTITIES:
       UID: 11377284783086712530
     TransformComponent:
       Transform:
-        Translate: [-18.4490623, 13.3755455, 31.8400116]
+        Translate: [-22.9660511, 14.1755447, 31.8400116]
         Rotate: [0, -89.980217, 0]
         Scale: [0.0399999991, 0.0399999991, 0.0399999991]
     RigidBodyComponent:
@@ -1761,11 +1880,11 @@ ENTITIES:
       PatrolPoints:
         - [-23.0942459, 13.4397764, 31.8400135]
         - [-12.0609379, 13.4397764, 31.8400135]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"EnemyDetection\": true\n}"
+      ParamsJSON: "{\n  \"EnemyDetection\": true,\n  \"_entityName\": \"Level2_PatrolEnemy_1\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 2, 0]
@@ -1785,8 +1904,8 @@ ENTITIES:
       UID: 4350822310922817577
     TransformComponent:
       Transform:
-        Translate: [-14.7599678, 13.3755465, 39.7988853]
-        Rotate: [180, 0.000623368484, 180]
+        Translate: [-13.3622122, 14.1755466, 50.0385361]
+        Rotate: [0, 2.08392557e-05, 0]
         Scale: [0.0399999991, 0.0399999991, 0.0399999991]
     RigidBodyComponent:
       RigidBody:
@@ -1887,7 +2006,7 @@ ENTITIES:
         ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-13.3622103, 13.4397764, 39.6917191]
+      Target: [-13.3622103, 13.4397764, 58.4554634]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -1907,7 +2026,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"DetectionEnemy\": false\n}"
+      ParamsJSON: "{\n  \"DetectionEnemy\": false,\n  \"_entityName\": \"Level2_PatrolEnemy_2\"\n}"
   - InfoComponent:
       Parent: 0
       Name: Sentry_level2_1
@@ -1915,7 +2034,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-32.5929832, 24.2603378, -2.77601147]
-        Rotate: [0, 346.747498, 0]
+        Rotate: [0, 256.747498, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -2524,7 +2643,7 @@ ENTITIES:
         Scale: [0.0419672243, 0.0800000429, 0.0800000429]
     SpriteComponent:
       textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
+      color: [1, 1, 1, 0]
       renderAs3D: false
   - ColliderComponent:
       Collider:
@@ -2572,7 +2691,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-46.1160126, 24.2603378, -18.4139233]
-        Rotate: [0, 193.252594, 0]
+        Rotate: [0, 283.252594, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -2956,7 +3075,7 @@ ENTITIES:
       UID: 3476234535713046263
     TransformComponent:
       Transform:
-        Translate: [-7.45439434, 13.4210224, -10.1728048]
+        Translate: [12.4840193, 13.4210224, -10.172802]
         Rotate: [180, -89.980217, 180]
         Scale: [0.0200004745, 0.0199999996, 0.0200004745]
     RigidBodyComponent:
@@ -3078,7 +3197,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"EnemyDetection\": false\n}"
+      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Patrol enemy 2\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 1.98000002, 0]
@@ -3098,7 +3217,7 @@ ENTITIES:
       UID: 16217385032863444442
     TransformComponent:
       Transform:
-        Translate: [-20.7575817, 13.4210215, -3.26378131]
+        Translate: [-20.7575817, 13.4210215, 5.46909618]
         Rotate: [0, -0, 0]
         Scale: [0.0200004783, 0.0199999996, 0.0200004783]
     RigidBodyComponent:
@@ -3220,7 +3339,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_entityName\": \"Patrol enemy 3\"\n}"
   - InfoComponent:
       Parent: 0
       Name: Terrain
@@ -3256,7 +3375,7 @@ ENTITIES:
       UID: 1377313242926581139
     TransformComponent:
       Transform:
-        Translate: [-0.213325948, 23.2418137, 11.6280107]
+        Translate: [-0.213325948, -100, 11.6280107]
         Rotate: [27.5745697, 43.9666595, 53.7106781]
         Scale: [0.0312000178, 0.0404912941, 0.0897001177]
     ModelComponent:
@@ -3354,7 +3473,7 @@ ENTITIES:
       UID: 16163120983566193923
     TransformComponent:
       Transform:
-        Translate: [-4.6207695, 20.6671638, 50.6341934]
+        Translate: [0.879230499, 20.6671638, 50.6341934]
         Rotate: [89.9999695, 7.51037669e-06, 180]
         Scale: [1.20635819, 0.948498309, 1.68733394]
     RigidBodyComponent:
@@ -3398,7 +3517,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-56.9920845, 24.2603378, -2.19607687]
-        Rotate: [0, 193.252594, 0]
+        Rotate: [0, 283.252594, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3487,7 +3606,7 @@ ENTITIES:
       ParamsJSON: "{\n  \"_entityName\": \"Sentry_level2_2\"\n}"
   - SceneNavmeshComponent:
       NavmeshFile: Resources/NavData/solo_navmesh.bin
-      AmbientStrength: 0.286000013
+      AmbientStrength: 0.0719999969
       BloomEnabled: true
       BloomIntensity: 1.78100002
       BloomThreshold: 0.667999983
@@ -3538,7 +3657,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-14.5949755, 13.3514919, 22.6192093]
-        Rotate: [0, 193.252594, 0]
+        Rotate: [0, 283.252594, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3632,7 +3751,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [17.540493, 13.4146328, 3.31294298]
-        Rotate: [5.00895476e-06, 193.252594, 5.00895476e-06]
+        Rotate: [5.00895476e-06, 283.252594, 5.00895476e-06]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3726,7 +3845,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [9.27553558, 0.550991118, -14.2555885]
-        Rotate: [0, 70.1712646, 0]
+        Rotate: [0, 160.171265, 0]
         Scale: [0.0145000955, 0.0145000005, 0.0145000955]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3820,7 +3939,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 0.530518472, -14.2555885]
-        Rotate: [0, 23.0928955, 0]
+        Rotate: [0, 113.092896, 0]
         Scale: [0.0144997435, 0.0145000005, 0.0144997435]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -8694,8 +8813,8 @@ ENTITIES:
       UID: 9201024860084647067
     TransformComponent:
       Transform:
-        Translate: [-26.9630203, 37.9101105, 65.3887558]
-        Rotate: [-196, 175.312561, -180]
+        Translate: [-7.31667423, 35.093483, -11.0409899]
+        Rotate: [-57.6250076, 173.125076, 5.67464895e-06]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -8703,13 +8822,13 @@ ENTITIES:
         FarPlane: 935.47998
         FOV: 78
     ThirdPersonCameraComponent:
-      Target UID: 0
+      Target UID: 2377197601835279376
       Offset: [0.00999999978, 4.1500001, 0]
       Current Distance: 5
       Min Distance: 1
       Max Distance: 5
-      Current Yaw: -21
-      Current Pitch: -85
+      Current Yaw: -1313
+      Current Pitch: -63
       Mouse Sensitivity: 1
       Scroll Sensitivity: 1
   - InfoComponent:
@@ -9882,8 +10001,8 @@ ENTITIES:
       UID: 2377197601835279376
     TransformComponent:
       Transform:
-        Translate: [-1.72465169, 0.895145655, 15.2012625]
-        Rotate: [0, -37.7950134, 0]
+        Translate: [0.914043128, 0.329999924, 13.9171219]
+        Rotate: [0, -69.9999695, 0]
         Scale: [0.0164999999, 0.0164999999, 0.0164999999]
     CharacterControllerComponent:
       Radius: 0.800000012
@@ -10088,45 +10207,25 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        ShowPhysicsDebug: false
-        PhysicsMesh: 7982763225733669098
-        SurfaceType: DEFAULT
-        Type: TRIANGLE_MESH
-    InfoComponent:
-      Parent: 0
-      Name: PatrolEnemy2
-      UID: 17630822912627836995
+  - InfoComponent:
+      Parent: 3476234535713046263
+      Name: Patrol Vision Cone 3
+      UID: 12748229014291956908
     TransformComponent:
       Transform:
-        Translate: [-13.6622381, 19.0557327, 10.1362982]
-        Rotate: [89.9999847, -0, 0]
-        Scale: [25.4209995, 2.99476004, 3.17179823]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [25.4209995, 2.99476004, 3.17179823]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 4826384296126717694
-      MaterialID: 6104124486273075758
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+        Translate: [621.4552, 15.4210815, 1069.91479]
+        Rotate: [-0.0148149105, -89.980217, 0.0148199201]
+        Scale: [49.9987984, 50, 49.9987984]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolSpotlightFollower
+      ParamsJSON: "{\n  \"targetName\": \"Patrol enemy 2\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.975490212, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
   - InfoComponent:
       Parent: 13685181942599758823
       Name: VisionConeFake 1
@@ -10134,7 +10233,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 2.53051853, -14.2555885]
-        Rotate: [0, 203.092896, 0]
+        Rotate: [0, 293.092896, 0]
         Scale: [136.157349, 68.9649124, 68.9648361]
     ScriptComponent:
       Enabled: true
@@ -10165,7 +10264,7 @@ ENTITIES:
       UID: 18225839841380023019
     TransformComponent:
       Transform:
-        Translate: [0.272120237, 16.5778847, 26.3222256]
+        Translate: [5.77212048, 16.5778847, 26.3222256]
         Rotate: [0, 0, 0]
         Scale: [2.55416727, 1.88259518, 1.83383286]
     SoundComponent:
@@ -10199,7 +10298,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-14.5949755, 15.3514919, 22.6192093]
-        Rotate: [0, 373.252594, 0]
+        Rotate: [0, 463.252594, 0]
         Scale: [66.4224243, 48.3170776, 102.520721]
     ScriptComponent:
       Enabled: true
@@ -10352,7 +10451,7 @@ ENTITIES:
         Scale: [0.300000012, 0.349999994, 0.300000012]
     SpriteComponent:
       textureID: 13937156857161099910
-      color: [1, 1, 1, 0]
+      color: [1, 1, 1, 8.40779079e-45]
       renderAs3D: false
   - InfoComponent:
       Parent: 15030438282683852635
@@ -10627,7 +10726,6 @@ ENTITIES:
       RenderAs3D: true
       RemoveBlackBackground: false
       TintColor: [1, 1, 1, 1]
-      RenderAs3D: true
   - InfoComponent:
       Parent: 0
       Name: UI_Stance_Text
@@ -10678,7 +10776,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-56.9920845, 26.2603378, -2.19607687]
-        Rotate: [0, 373.252594, 0]
+        Rotate: [0, 463.252594, 0]
         Scale: [66.4224243, 48.3170776, 102.520729]
     ScriptComponent:
       Enabled: true
@@ -10697,7 +10795,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-32.5929832, 26.2603378, -2.77601147]
-        Rotate: [0, 526.747498, 0]
+        Rotate: [0, 436.747498, 0]
         Scale: [66.4224243, 48.3170776, 102.520737]
     ScriptComponent:
       Enabled: true
@@ -10716,7 +10814,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-46.1160126, 26.2603378, -18.4139233]
-        Rotate: [0, 373.252594, 0]
+        Rotate: [0, 463.252594, 0]
         Scale: [66.4224167, 48.3170547, 102.520752]
     ScriptComponent:
       Enabled: true
@@ -10792,8 +10890,8 @@ ENTITIES:
       UID: 5615154073566744542
     TransformComponent:
       Transform:
-        Translate: [-8.7441864, 15.4210215, 4.56566906]
-        Rotate: [180, -180, 180]
+        Translate: [-8.74418545, 15.4210215, 2.18726182]
+        Rotate: [180, -359.999786, 180]
         Scale: [49.9987907, 50, 49.9987907]
     ScriptComponent:
       Enabled: true

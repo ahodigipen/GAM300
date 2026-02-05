@@ -1143,9 +1143,25 @@ namespace Boom
         glm::vec2 mouseDelta = m_Context->window->input.mouseDeltaLast();
         glm::vec2 scrollDelta = m_Context->window->input.scrollDelta();
 
+        // Gamepad camera input (Right stick)
+        glm::vec2 gamepadCamDelta{ 0.0f, 0.0f };
+        float gamepadZoomDelta = 0.0f;
+        if (m_Context->window->input.isGamepadConnected()) {
+            float gpRX = m_Context->window->input.gamepadAxis(GLFW_GAMEPAD_AXIS_RIGHT_X);
+            float gpRY = m_Context->window->input.gamepadAxis(GLFW_GAMEPAD_AXIS_RIGHT_Y);
+
+            // Deadzone and scaling (gamepad needs some sensitivity boost compared to raw mouse delta)
+            if (std::abs(gpRX) > 0.15f) gamepadCamDelta.x = gpRX * 2.5f;
+            if (std::abs(gpRY) > 0.15f) gamepadCamDelta.y = gpRY * 2.5f;
+
+            // Gamepad zoom (DPAD Up/Down)
+            if (m_Context->window->input.gamepadButtonDown(GLFW_GAMEPAD_BUTTON_DPAD_UP)) gamepadZoomDelta += 1.0f;
+            if (m_Context->window->input.gamepadButtonDown(GLFW_GAMEPAD_BUTTON_DPAD_DOWN)) gamepadZoomDelta -= 1.0f;
+        }
+
         // 2. Iterate over all third-person cameras
         EnttView<Entity, ThirdPersonCameraComponent, TransformComponent>(
-            [this, &mouseDelta, &scrollDelta](Entity, ThirdPersonCameraComponent& cam, TransformComponent& tc)
+            [this, &mouseDelta, &gamepadCamDelta, &scrollDelta, &gamepadZoomDelta](Entity, ThirdPersonCameraComponent& cam, TransformComponent& tc)
             {
                 // 3. Find the target entity by its UID
                 if (cam.targetUID == 0) return; // No target UID set
@@ -1173,13 +1189,14 @@ namespace Boom
                 Transform3D& targetTransform = target.Get<TransformComponent>().transform;
                 glm::vec3 targetPosition = targetTransform.translate;
 
-                //camera movement
-                cam.currentYaw -= mouseDelta.x * cam.mouseSensitivity;
-                cam.currentPitch += mouseDelta.y * cam.mouseSensitivity;
+                //camera movement (combine mouse and gamepad)
+                cam.currentYaw -= (mouseDelta.x + gamepadCamDelta.x) * cam.mouseSensitivity;
+                cam.currentPitch += (mouseDelta.y + gamepadCamDelta.y) * cam.mouseSensitivity;
                 cam.currentPitch = glm::clamp(cam.currentPitch, -85.f, 85.f);
 
-                // zoom
-                cam.currentDistance -= scrollDelta.y * cam.scrollSensitivity;
+                // zoom (combine scroll and gamepad dpad)
+                float dt = static_cast<float>(m_Context->DeltaTime);
+                cam.currentDistance -= (scrollDelta.y + gamepadZoomDelta * 5.0f * dt) * cam.scrollSensitivity;
                 cam.currentDistance = glm::clamp(cam.currentDistance, cam.minDistance, cam.maxDistance);
 
                 // 9. Calculate the camera's final orientation
