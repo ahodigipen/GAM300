@@ -26,9 +26,21 @@ namespace GameScripts
         private static System.Collections.Generic.Dictionary<string, SpotlightFollower> s_Spotlights
             = new System.Collections.Generic.Dictionary<string, SpotlightFollower>();
 
+        // Track if registry has been cleared this session
+        private static bool s_RegistryCleared = false;
+
         public void OnStart(string jsonParams)
         {
             API.Log($"[SpotlightFollower] OnStart() - Entity: {Entity}");
+
+            // Clear stale references from previous play session (only once per session)
+            // The first SpotlightFollower to initialize will clear the registry
+            if (!s_RegistryCleared)
+            {
+                s_Spotlights.Clear();
+                s_RegistryCleared = true;
+                API.Log("[SpotlightFollower] Cleared stale spotlight registry for new session");
+            }
 
             // Apply the exposed positionOffsetY to the offset vector
             positionOffset.Y = positionOffsetY;
@@ -53,6 +65,7 @@ namespace GameScripts
 
             // Register this spotlight so EnemyController can find it
             s_Spotlights[targetName] = this;
+            API.Log($"[SpotlightFollower] Registered spotlight for target: {targetName} (Total: {s_Spotlights.Count})");
         }
 
         public void OnUpdate(float dt)
@@ -160,6 +173,16 @@ namespace GameScripts
                 kvp.Value.ResetColor();
             }
             API.Log($"[SpotlightFollower] Reset all {s_Spotlights.Count} spotlights to original colors");
+        }
+
+        /// <summary>
+        /// Clear the registry for a new play session. Call this when stopping play mode.
+        /// </summary>
+        public static void ClearRegistry()
+        {
+            s_Spotlights.Clear();
+            s_RegistryCleared = false;
+            API.Log("[SpotlightFollower] Registry cleared for new session");
         }
     }
 }

@@ -124,6 +124,13 @@ namespace GameScripts
         private float _damageResetTimer = 0f;
         private const float DAMAGE_RESET_DELAY = 3.0f; // 3 seconds after damage
 
+        // Entity name for spotlight lookup (matches SpotlightFollower's targetName)
+        [Boom.EditorExposed("Entity Name", "Name of this patrol enemy for spotlight lookup")]
+        private string _entityName = "Patrol_1";
+
+        [Boom.EditorExposed("Spotlight Offset Y", "Height offset for spotlight above entity", 0f, 10f, true)]
+        private float _spotlightOffsetY = 2.0f;
+
         public void OnStart(string json)
         {
             if (!API.HasTransform(Entity)) { //("[PatrolEnemyController] Missing Transform."); return;
