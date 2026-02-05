@@ -29,6 +29,9 @@ namespace GameScripts
         [EditorExposed("Fade Duration", "Duration of fade out before scene transition")]
         public float fadeDuration = 1.0f;
 
+        [EditorExposed("Start Delay", "Delay before movement starts (allows scene to load)")]
+        public float startDelay = 2.0f;
+
         [EditorExposed("Use Smooth Movement", "Use smooth easing for movement")]
         public bool useSmoothMovement = true;
 
@@ -40,6 +43,37 @@ namespace GameScripts
 
         [EditorExposed("Maze Entity Name", "Name of the entity with MazeGeneration script")]
         public string mazeEntityName = "MazeTrigger";
+
+        [EditorExposed("Spotlight Entity Name", "Name of spotlight to control (optional)")]
+        public string spotlightEntityName = "";
+
+        [EditorExposed("Enable Spotlight Control", "Control a red/green spotlight during cutscene")]
+        public bool enableSpotlightControl = false;
+
+        [EditorExposed("Spotlight Interval", "How often spotlight switches colors (seconds)")]
+        public float spotlightInterval = 3.0f;
+
+        [EditorExposed("Play Spotlight Audio", "Play red/green light audio")]
+        public bool playSpotlightAudio = false;
+
+        [EditorExposed("Red Light Audio Path", "Path to red light audio")]
+        public string redLightAudioPath = "Resources/Audio/Redlight.wav";
+
+        [EditorExposed("Green Light Audio Path", "Path to green light audio")]
+        public string greenLightAudioPath = "Resources/Audio/Greenlight.wav";
+
+        // Camera pan parameters
+        [EditorExposed("Enable Camera Pan", "Enable slow upward camera rotation")]
+        public bool enableCameraPan = false;
+
+        [EditorExposed("Camera Entity Name", "Name of camera entity to rotate")]
+        public string cameraEntityName = "Camera";
+
+        [EditorExposed("Camera X Rotation Amount", "Total degrees to rotate camera X (upward)")]
+        public float cameraXRotationAmount = 15.0f;
+
+        [EditorExposed("Camera Pan Duration", "How long the camera rotation takes (seconds)")]
+        public float cameraPanDuration = 8.0f;
 
         // Internal state
         private float _elapsedTime = 0f;
@@ -53,8 +87,26 @@ namespace GameScripts
         private bool _isFadingIn = true;
         private float _fadeInTimer = 0f;
 
+        // Start delay state
+        private bool _isWaitingToStart = true;
+        private float _startDelayTimer = 0f;
+
         // Store previous position for movement delta
         private Vec3 _previousPosition;
+
+        // Spotlight control
+        private ulong _spotlightEntity = 0;
+        private bool _spotlightIsRed = true;
+        private float _spotlightTimer = 0f;
+        private Vec3 _redColor = new Vec3(1f, 0f, 0f);
+        private Vec3 _greenColor = new Vec3(0f, 1f, 0f);
+
+        // Camera pan control
+        private ulong _cameraEntity = 0;
+        private Vec3 _cameraStartRotation;
+        private Vec3 _cameraTargetRotation;
+        private float _cameraPanTimer = 0f;
+        private bool _cameraPanComplete = false;
 
         public void OnStart(string paramsJson)
         {
@@ -82,6 +134,8 @@ namespace GameScripts
             _isFading = false;
             _transitionTriggered = false;
             _mazeTriggered = false;
+            _isWaitingToStart = true;
+            _startDelayTimer = 0f;
 
             // Set player to start position
             if (API.HasTransform(Entity))
@@ -97,21 +151,84 @@ namespace GameScripts
                 API.TeleportController(Entity, startPosition);
             }
 
-            // Play walking animation if animator exists
+            // Don't play animation yet - wait for start delay
             if (API.HasAnimator(Entity))
             {
-                API.AnimatorSetBool(Entity, "IsMoving", true);
-                API.AnimatorSetFloat(Entity, "Speed", 3.0f);
+                API.AnimatorSetBool(Entity, "IsMoving", false);
+                API.AnimatorSetFloat(Entity, "Speed", 0f);
                 API.AnimatorSetBool(Entity, "Sprint", false);
                 API.AnimatorSetBool(Entity, "IsSneaking", false);
             }
 
-            API.Log($"[BossCutsceneMovement] Cutscene started. Movement: {movementDuration}s, Total: {totalDuration}s");
+            // Initialize spotlight control if enabled
+            if (enableSpotlightControl && !string.IsNullOrEmpty(spotlightEntityName))
+            {
+                _spotlightEntity = API.FindEntity(spotlightEntityName);
+                if (_spotlightEntity != 0 && API.HasSpotLight(_spotlightEntity))
+                {
+                    API.Log($"[BossCutsceneMovement] Found spotlight: {spotlightEntityName}");
+                    _spotlightIsRed = true;
+                    _spotlightTimer = 0f;
+                    API.SetSpotLightColor(_spotlightEntity, _redColor);
+                }
+                else
+                {
+                    API.Log($"[BossCutsceneMovement] WARNING: Could not find spotlight '{spotlightEntityName}' or it has no spotlight component");
+                    _spotlightEntity = 0;
+                }
+            }
+
+            // Initialize camera pan if enabled
+            if (enableCameraPan && !string.IsNullOrEmpty(cameraEntityName))
+            {
+                _cameraEntity = API.FindEntity(cameraEntityName);
+                if (_cameraEntity != 0 && API.HasTransform(_cameraEntity))
+                {
+                    _cameraStartRotation = API.GetRotation(_cameraEntity);
+                    _cameraTargetRotation = new Vec3(
+                        _cameraStartRotation.X + cameraXRotationAmount,
+                        _cameraStartRotation.Y,
+                        _cameraStartRotation.Z
+                    );
+                    _cameraPanTimer = 0f;
+                    _cameraPanComplete = false;
+                    API.Log($"[BossCutsceneMovement] Camera pan initialized: {cameraEntityName}, rotating X by {cameraXRotationAmount} degrees over {cameraPanDuration}s");
+                }
+                else
+                {
+                    API.Log($"[BossCutsceneMovement] WARNING: Could not find camera '{cameraEntityName}' or it has no transform");
+                    _cameraEntity = 0;
+                }
+            }
+
+            API.Log($"[BossCutsceneMovement] Cutscene initialized. Start delay: {startDelay}s, Movement: {movementDuration}s, Total: {totalDuration}s");
         }
 
         public void OnUpdate(float deltaTime)
         {
             if (Entity == 0 || _transitionTriggered) return;
+
+            // Handle start delay - wait before beginning movement
+            if (_isWaitingToStart)
+            {
+                _startDelayTimer += deltaTime;
+
+                if (_startDelayTimer >= startDelay)
+                {
+                    _isWaitingToStart = false;
+                    API.Log("[BossCutsceneMovement] Start delay complete, beginning movement");
+
+                    // Now start walking animation
+                    if (API.HasAnimator(Entity))
+                    {
+                        API.AnimatorSetBool(Entity, "IsMoving", true);
+                        API.AnimatorSetFloat(Entity, "Speed", 3.0f);
+                        API.AnimatorSetBool(Entity, "Sprint", false);
+                        API.AnimatorSetBool(Entity, "IsSneaking", false);
+                    }
+                }
+                // During start delay, just handle fade-in but don't move
+            }
 
             // Handle fade-in from black (when scene first loads)
             if (_isFadingIn && enableFadeEffects)
@@ -157,6 +274,24 @@ namespace GameScripts
                     API.Log("[BossCutsceneMovement] Loading MainMenu scene (no fade)");
                     API.LoadScene(Entry.MAIN_MENU_SCENE_NAME);
                 }
+                return;
+            }
+
+            // Update spotlight cycling (happens even during start delay)
+            if (enableSpotlightControl && _spotlightEntity != 0)
+            {
+                UpdateSpotlight(deltaTime);
+            }
+
+            // Update camera pan (happens even during start delay)
+            if (enableCameraPan && _cameraEntity != 0 && !_cameraPanComplete)
+            {
+                UpdateCameraPan(deltaTime);
+            }
+
+            // Don't move during start delay
+            if (_isWaitingToStart)
+            {
                 return;
             }
 
@@ -288,6 +423,84 @@ namespace GameScripts
         }
 
         /// <summary>
+        /// Update the spotlight color cycling
+        /// </summary>
+        private void UpdateSpotlight(float deltaTime)
+        {
+            _spotlightTimer += deltaTime;
+
+            if (_spotlightTimer >= spotlightInterval)
+            {
+                _spotlightTimer = 0f;
+                _spotlightIsRed = !_spotlightIsRed;
+
+                if (API.HasSpotLight(_spotlightEntity))
+                {
+                    if (_spotlightIsRed)
+                    {
+                        API.SetSpotLightColor(_spotlightEntity, _redColor);
+                        API.Log("[BossCutsceneMovement] Spotlight -> RED");
+
+                        if (playSpotlightAudio)
+                        {
+                            Vec3 pos = API.GetPosition(_spotlightEntity);
+                            API.PlaySoundAt("cutscene_redlight", redLightAudioPath, pos, false);
+                            API.SetSoundVolume("cutscene_redlight", 0.8f);
+                        }
+                    }
+                    else
+                    {
+                        API.SetSpotLightColor(_spotlightEntity, _greenColor);
+                        API.Log("[BossCutsceneMovement] Spotlight -> GREEN");
+
+                        if (playSpotlightAudio)
+                        {
+                            Vec3 pos = API.GetPosition(_spotlightEntity);
+                            API.PlaySoundAt("cutscene_greenlight", greenLightAudioPath, pos, false);
+                            API.SetSoundVolume("cutscene_greenlight", 0.8f);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update the camera pan rotation (slow upward tilt)
+        /// </summary>
+        private void UpdateCameraPan(float deltaTime)
+        {
+            if (_cameraPanComplete || _cameraEntity == 0 || !API.HasTransform(_cameraEntity))
+                return;
+
+            _cameraPanTimer += deltaTime;
+
+            // Calculate interpolation factor (0 to 1)
+            float t = Clamp01(_cameraPanTimer / cameraPanDuration);
+
+            // Apply smooth easing for camera movement (ease in-out)
+            float easedT = t < 0.5f
+                ? 2f * t * t
+                : 1f - (float)Math.Pow(-2f * t + 2f, 2f) / 2f;
+
+            // Interpolate camera rotation
+            Vec3 currentRotation = new Vec3(
+                Lerp(_cameraStartRotation.X, _cameraTargetRotation.X, easedT),
+                Lerp(_cameraStartRotation.Y, _cameraTargetRotation.Y, easedT),
+                Lerp(_cameraStartRotation.Z, _cameraTargetRotation.Z, easedT)
+            );
+
+            API.SetRotation(_cameraEntity, currentRotation);
+
+            // Mark as complete when finished
+            if (_cameraPanTimer >= cameraPanDuration)
+            {
+                _cameraPanComplete = true;
+                API.SetRotation(_cameraEntity, _cameraTargetRotation);
+                API.Log("[BossCutsceneMovement] Camera pan complete");
+            }
+        }
+
+        /// <summary>
         /// Triggers the maze generation via static method call
         /// </summary>
         private void TriggerMazeGeneration()
@@ -320,6 +533,13 @@ namespace GameScripts
         {
             // Reset screen fade when destroyed
             API.SetScreenFadeAlpha(0f);
+
+            // Reset camera rotation if it was modified
+            if (enableCameraPan && _cameraEntity != 0 && API.HasTransform(_cameraEntity))
+            {
+                API.SetRotation(_cameraEntity, _cameraStartRotation);
+                API.Log("[BossCutsceneMovement] Camera rotation reset");
+            }
         }
     }
 }

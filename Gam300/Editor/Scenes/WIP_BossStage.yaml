@@ -2,13 +2,14 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
-      Name: Wall (Copy) (Copy) (Copy)
-      UID: 13604432045869299143
+      Name: Wall (Copy) (Copy) (Copy) (Copy)
+      UID: 18397485521370492888
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [8.43278599, 15.867569, 26.5350285]
+        Translate: [-0.744352579, 6.40124607, 48.1226349]
         Rotate: [0, 89.980217, 0]
-        Scale: [1, 10.908102, 7.84341812]
+        Scale: [42.7643051, 8.57234478, 27.2301006]
     ModelComponent:
       ModelID: 7633162898494281895
       MaterialID: 6104124486273075758
@@ -18,8 +19,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Wall (Copy) (Copy) (Copy)
-      UID: 17575956581514532657
+      Name: Wall (Copy) (Copy) (Copy) (Copy)
+      UID: 4873739462056408975
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.744352579, 25.3435612, 26.5350285]
@@ -34,13 +36,31 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Roof_1 (Copy)
-      UID: 3003759369631847308
+      Name: Wall (Copy) (Copy) (Copy)
+      UID: 17575956581514532657
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [12.2674084, 25.6593513, 33.6734085]
+        Translate: [-0.744352579, 20.4966812, 52.5132294]
+        Rotate: [0, 90, 0]
+        Scale: [7.37837315, 24.2975845, 27.2301025]
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 6104124486273075758
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Roof_1 (Copy)
+      UID: 3003759369631847308
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [12.2674084, 25.6593513, 49.5972481]
         Rotate: [0, -0, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+        Scale: [0.00999999978, 0.00999999978, 0.023170922]
     ModelComponent:
       ModelID: 2720699287626206402
       MaterialID: 16051879611138255440
@@ -52,6 +72,7 @@ ENTITIES:
       Parent: 0
       Name: Roof_1 (Copy)
       UID: 4433475918073630714
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-22.3067341, 25.6593513, 26.1579895]
@@ -68,11 +89,12 @@ ENTITIES:
       Parent: 0
       Name: Roof_1
       UID: 13904237265309682321
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-12.5889997, 25.6593513, -12.2508068]
+        Translate: [-12.5889997, 25.6593513, -45.6679993]
         Rotate: [180, -5.00895612e-06, 180]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+        Scale: [0.00999999978, 0.00999999978, 0.0381984375]
     ModelComponent:
       ModelID: 2720699287626206402
       MaterialID: 16051879611138255440
@@ -82,13 +104,14 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Wall (Copy)
-      UID: 13541143157355054466
+      Name: Wall (Copy) (Copy) (Copy)
+      UID: 13604432045869299143
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-1.10840631, 18.0913982, -9.37438869]
+        Translate: [8.43278599, 15.867569, 26.5350285]
         Rotate: [0, 89.980217, 0]
-        Scale: [1, 20.8787899, 28.5447407]
+        Scale: [1, 10.908102, 7.84341812]
     ModelComponent:
       ModelID: 7633162898494281895
       MaterialID: 6104124486273075758
@@ -100,6 +123,7 @@ ENTITIES:
       Parent: 0
       Name: Wall (Copy)
       UID: 8459617508951873888
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-13.3995094, 20.0008335, 7.19802809]
@@ -116,11 +140,12 @@ ENTITIES:
       Parent: 0
       Name: Wall
       UID: 8261118590240462762
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [12.8325434, 20.0008335, 10.3848152]
+        Translate: [12.8325434, 20.0008335, 5.5848155]
         Rotate: [0, -0, 0]
-        Scale: [1, 20.8787899, 33.8737335]
+        Scale: [1, 20.8787899, 46.8748093]
     ModelComponent:
       ModelID: 7633162898494281895
       MaterialID: 6104124486273075758
@@ -145,6 +170,7 @@ ENTITIES:
       Parent: 0
       Name: 100
       UID: 12684717623744179882
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-11.5, 4.06412029, 25]
@@ -184,6 +210,7 @@ ENTITIES:
       Parent: 0
       Name: 99
       UID: 17674115786117354752
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-9, 4.06412029, 25]
@@ -223,6 +250,7 @@ ENTITIES:
       Parent: 0
       Name: 98
       UID: 3604366723244646869
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-6.5, 4.06412029, 25]
@@ -262,6 +290,7 @@ ENTITIES:
       Parent: 0
       Name: 97
       UID: 9654478162219970198
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-4, 4.06412029, 25]
@@ -301,6 +330,7 @@ ENTITIES:
       Parent: 0
       Name: 96
       UID: 15865763079266319912
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-1.5, 4.06412029, 25]
@@ -340,6 +370,7 @@ ENTITIES:
       Parent: 0
       Name: 95
       UID: 14270607591979394860
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [1, 4.06412029, 25]
@@ -379,6 +410,7 @@ ENTITIES:
       Parent: 0
       Name: 94
       UID: 9054293745048605271
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [3.5, 4.06412029, 25]
@@ -418,6 +450,7 @@ ENTITIES:
       Parent: 0
       Name: 93
       UID: 15409688297101184763
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [6, 4.06412029, 25]
@@ -457,6 +490,7 @@ ENTITIES:
       Parent: 0
       Name: 92
       UID: 7543827605585335189
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [8.5, 4.06412029, 25]
@@ -496,6 +530,7 @@ ENTITIES:
       Parent: 0
       Name: 91
       UID: 1320697613618875285
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [11, 4.06412029, 25]
@@ -535,6 +570,7 @@ ENTITIES:
       Parent: 0
       Name: 90
       UID: 16798214312275698097
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-11.5, 4.06412029, 22.5]
@@ -574,6 +610,7 @@ ENTITIES:
       Parent: 0
       Name: 89
       UID: 8773835554230295764
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-9, 4.06412029, 22.5]
@@ -613,6 +650,7 @@ ENTITIES:
       Parent: 0
       Name: 88
       UID: 5609422573134797008
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-6.5, 4.06412029, 22.5]
@@ -652,6 +690,7 @@ ENTITIES:
       Parent: 0
       Name: 87
       UID: 4597570555139629739
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-4, 4.06412029, 22.5]
@@ -691,6 +730,7 @@ ENTITIES:
       Parent: 0
       Name: 86
       UID: 11942461399261229538
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-1.5, 4.06412029, 22.5]
@@ -730,6 +770,7 @@ ENTITIES:
       Parent: 0
       Name: 85
       UID: 14113403026030451311
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [1, 4.06412029, 22.5]
@@ -769,6 +810,7 @@ ENTITIES:
       Parent: 0
       Name: 84
       UID: 7503482464438152233
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [3.5, 4.06412029, 22.5]
@@ -808,6 +850,7 @@ ENTITIES:
       Parent: 0
       Name: 83
       UID: 10040165949170074956
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [6, 4.06412029, 22.5]
@@ -847,6 +890,7 @@ ENTITIES:
       Parent: 0
       Name: 82
       UID: 4220846402761492739
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [8.5, 4.06412029, 22.5]
@@ -886,6 +930,7 @@ ENTITIES:
       Parent: 0
       Name: 81
       UID: 3960675068417224290
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [11, 4.06412029, 22.5]
@@ -925,6 +970,7 @@ ENTITIES:
       Parent: 0
       Name: 80
       UID: 15931948002124235111
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-11.5, 4.06412029, 20]
@@ -964,6 +1010,7 @@ ENTITIES:
       Parent: 0
       Name: 79
       UID: 12267705242334298509
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-9, 4.06412029, 20]
@@ -1003,6 +1050,7 @@ ENTITIES:
       Parent: 0
       Name: 78
       UID: 17840547423332298723
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-6.5, 4.06412029, 20]
@@ -1042,6 +1090,7 @@ ENTITIES:
       Parent: 0
       Name: 77
       UID: 9227111139855097593
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-4, 4.06412029, 20]
@@ -1081,6 +1130,7 @@ ENTITIES:
       Parent: 0
       Name: 76
       UID: 7823782061526992217
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-1.5, 4.06412029, 20]
@@ -1120,6 +1170,7 @@ ENTITIES:
       Parent: 0
       Name: 75
       UID: 13835384603247308762
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [1, 4.06412029, 20]
@@ -1159,6 +1210,7 @@ ENTITIES:
       Parent: 0
       Name: 74
       UID: 11657435028969232280
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [3.5, 4.06412029, 20]
@@ -1198,6 +1250,7 @@ ENTITIES:
       Parent: 0
       Name: 73
       UID: 13255142204283733114
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [6, 4.06412029, 20]
@@ -1237,6 +1290,7 @@ ENTITIES:
       Parent: 0
       Name: 72
       UID: 10905956833686645638
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [8.5, 4.06412029, 20]
@@ -1276,6 +1330,7 @@ ENTITIES:
       Parent: 0
       Name: 71
       UID: 2238476588735709907
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [11, 4.06412029, 20]
@@ -1315,6 +1370,7 @@ ENTITIES:
       Parent: 0
       Name: 70
       UID: 11874957069048578541
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-11.5, 4.06412029, 17.5]
@@ -1354,6 +1410,7 @@ ENTITIES:
       Parent: 0
       Name: 69
       UID: 5670558368769707587
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-9, 4.06412029, 17.5]
@@ -1393,6 +1450,7 @@ ENTITIES:
       Parent: 0
       Name: 68
       UID: 17272131317710256060
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-6.5, 4.06412029, 17.5]
@@ -1432,6 +1490,7 @@ ENTITIES:
       Parent: 0
       Name: 67
       UID: 17780611409874371330
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-4, 4.06412029, 17.5]
@@ -1471,6 +1530,7 @@ ENTITIES:
       Parent: 0
       Name: 66
       UID: 14604932093112185715
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-1.5, 4.06412029, 17.5]
@@ -1510,6 +1570,7 @@ ENTITIES:
       Parent: 0
       Name: 65
       UID: 8513556033936264744
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [1, 4.06412029, 17.5]
@@ -1549,6 +1610,7 @@ ENTITIES:
       Parent: 0
       Name: 64
       UID: 16034239831424504688
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [3.5, 4.06412029, 17.5]
@@ -1588,6 +1650,7 @@ ENTITIES:
       Parent: 0
       Name: 63
       UID: 3821183811604680392
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [6, 4.06412029, 17.5]
@@ -1627,6 +1690,7 @@ ENTITIES:
       Parent: 0
       Name: 62
       UID: 12381753751103705300
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [8.5, 4.06412029, 17.5]
@@ -1666,6 +1730,7 @@ ENTITIES:
       Parent: 0
       Name: 61
       UID: 11331933626511835772
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [11, 4.06412029, 17.5]
@@ -1705,6 +1770,7 @@ ENTITIES:
       Parent: 0
       Name: 60
       UID: 2406332295219798795
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-11.5, 4.06412029, 15]
@@ -1744,6 +1810,7 @@ ENTITIES:
       Parent: 0
       Name: 59
       UID: 4265605112684324630
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-9, 4.06412029, 15]
@@ -1783,6 +1850,7 @@ ENTITIES:
       Parent: 0
       Name: 58
       UID: 12331387264599645300
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-6.5, 4.06412029, 15]
@@ -1822,6 +1890,7 @@ ENTITIES:
       Parent: 0
       Name: 57
       UID: 1504132964350325578
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-4, 4.06412029, 15]
@@ -1861,6 +1930,7 @@ ENTITIES:
       Parent: 0
       Name: 56
       UID: 4425702043658356449
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-1.5, 4.06412029, 15]
@@ -1900,6 +1970,7 @@ ENTITIES:
       Parent: 0
       Name: 55
       UID: 2009968735979851580
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [1, 4.06412029, 15]
@@ -1939,6 +2010,7 @@ ENTITIES:
       Parent: 0
       Name: 54
       UID: 17861068333996249023
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [3.5, 4.06412029, 15]
@@ -1978,6 +2050,7 @@ ENTITIES:
       Parent: 0
       Name: 53
       UID: 14183137043536901167
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [6, 4.06412029, 15]
@@ -2017,6 +2090,7 @@ ENTITIES:
       Parent: 0
       Name: 52
       UID: 5196724670888282401
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [8.5, 4.06412029, 15]
@@ -2056,6 +2130,7 @@ ENTITIES:
       Parent: 0
       Name: 51
       UID: 8555629658599158434
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [11, 4.06412029, 15]
@@ -2095,6 +2170,7 @@ ENTITIES:
       Parent: 0
       Name: 50
       UID: 1845449832322307338
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-11.5, 4.06412029, 12.5]
@@ -2134,6 +2210,7 @@ ENTITIES:
       Parent: 0
       Name: 49
       UID: 11895835730688752910
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-9, 4.06412029, 12.5]
@@ -2173,6 +2250,7 @@ ENTITIES:
       Parent: 0
       Name: 48
       UID: 7805070400636494217
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-6.5, 4.06412029, 12.5]
@@ -2212,6 +2290,7 @@ ENTITIES:
       Parent: 0
       Name: 47
       UID: 7934126993556322153
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-4, 4.06412029, 12.5]
@@ -2251,6 +2330,7 @@ ENTITIES:
       Parent: 0
       Name: 46
       UID: 4656373472025900333
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-1.5, 4.06412029, 12.5]
@@ -2290,6 +2370,7 @@ ENTITIES:
       Parent: 0
       Name: 45
       UID: 17777794808496824521
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [1, 4.06412029, 12.5]
@@ -2329,6 +2410,7 @@ ENTITIES:
       Parent: 0
       Name: 44
       UID: 10625112996726225619
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [3.5, 4.06412029, 12.5]
@@ -2368,6 +2450,7 @@ ENTITIES:
       Parent: 0
       Name: 43
       UID: 15056529166057665333
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [6, 4.06412029, 12.5]
@@ -2407,6 +2490,7 @@ ENTITIES:
       Parent: 0
       Name: 42
       UID: 3292555773487992068
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [8.5, 4.06412029, 12.5]
@@ -2446,6 +2530,7 @@ ENTITIES:
       Parent: 0
       Name: 41
       UID: 14857743575845930001
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [11, 4.06412029, 12.5]
@@ -2485,6 +2570,7 @@ ENTITIES:
       Parent: 0
       Name: 40
       UID: 3613159250141469691
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-11.5, 4.06412029, 10]
@@ -2524,6 +2610,7 @@ ENTITIES:
       Parent: 0
       Name: 39
       UID: 17748033044254751842
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-9, 4.06412029, 10]
@@ -2563,6 +2650,7 @@ ENTITIES:
       Parent: 0
       Name: 38
       UID: 8885798115699839919
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-6.5, 4.06412029, 10]
@@ -2602,6 +2690,7 @@ ENTITIES:
       Parent: 0
       Name: 37
       UID: 2268555076500029557
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-4, 4.06412029, 10]
@@ -2641,6 +2730,7 @@ ENTITIES:
       Parent: 0
       Name: 36
       UID: 7892956405726764375
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-1.5, 4.06412029, 10]
@@ -2680,6 +2770,7 @@ ENTITIES:
       Parent: 0
       Name: 35
       UID: 4303494492272360445
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [1, 4.06412029, 10]
@@ -2719,6 +2810,7 @@ ENTITIES:
       Parent: 0
       Name: 34
       UID: 2872478540503233320
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [3.5, 4.06412029, 10]
@@ -2758,6 +2850,7 @@ ENTITIES:
       Parent: 0
       Name: 33
       UID: 6600790194800902916
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [6, 4.06412029, 10]
@@ -2797,6 +2890,7 @@ ENTITIES:
       Parent: 0
       Name: 32
       UID: 13768426144333345914
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [8.5, 4.06412029, 10]
@@ -2836,6 +2930,7 @@ ENTITIES:
       Parent: 0
       Name: 31
       UID: 15248759351581143154
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [11, 4.06412029, 10]
@@ -2875,6 +2970,7 @@ ENTITIES:
       Parent: 0
       Name: 30
       UID: 6089564965269148297
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-11.5, 4.06412029, 7.5]
@@ -2914,6 +3010,7 @@ ENTITIES:
       Parent: 0
       Name: 29
       UID: 12740032579514094294
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-9, 4.06412029, 7.5]
@@ -2953,6 +3050,7 @@ ENTITIES:
       Parent: 0
       Name: 28
       UID: 8774435822853427258
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-6.5, 4.06412029, 7.5]
@@ -2992,6 +3090,7 @@ ENTITIES:
       Parent: 0
       Name: 27
       UID: 14133673997578809457
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-4, 4.06412029, 7.5]
@@ -3031,6 +3130,7 @@ ENTITIES:
       Parent: 0
       Name: 26
       UID: 5916107385260401324
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-1.5, 4.06412029, 7.5]
@@ -3070,6 +3170,7 @@ ENTITIES:
       Parent: 0
       Name: 25
       UID: 3553385507780333611
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [1, 4.06412029, 7.5]
@@ -3109,6 +3210,7 @@ ENTITIES:
       Parent: 0
       Name: 24
       UID: 12564117363159293041
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [3.5, 4.06412029, 7.5]
@@ -3148,6 +3250,7 @@ ENTITIES:
       Parent: 0
       Name: 23
       UID: 6572550519122184015
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [6, 4.06412029, 7.5]
@@ -3187,6 +3290,7 @@ ENTITIES:
       Parent: 0
       Name: 22
       UID: 2144240752640231939
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [8.5, 4.06412029, 7.5]
@@ -3226,6 +3330,7 @@ ENTITIES:
       Parent: 0
       Name: 21
       UID: 3885304283100040373
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [11, 4.06412029, 7.5]
@@ -3265,6 +3370,7 @@ ENTITIES:
       Parent: 0
       Name: 20
       UID: 4361976672868932278
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-11.5, 4.06412029, 5]
@@ -3304,6 +3410,7 @@ ENTITIES:
       Parent: 0
       Name: 19
       UID: 8903628335096084802
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-9, 4.06412029, 5]
@@ -3343,6 +3450,7 @@ ENTITIES:
       Parent: 0
       Name: 18
       UID: 1641453806155884047
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-6.5, 4.06412029, 5]
@@ -3382,6 +3490,7 @@ ENTITIES:
       Parent: 0
       Name: 17
       UID: 8953927742560523201
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-4, 4.06412029, 5]
@@ -3421,6 +3530,7 @@ ENTITIES:
       Parent: 0
       Name: 16
       UID: 13471947162775275603
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-1.5, 4.06412029, 5]
@@ -3460,6 +3570,7 @@ ENTITIES:
       Parent: 0
       Name: 15
       UID: 13342030379389906652
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [1, 4.06412029, 5]
@@ -3499,6 +3610,7 @@ ENTITIES:
       Parent: 0
       Name: 14
       UID: 15128129608004115613
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [3.5, 4.06412029, 5]
@@ -3538,6 +3650,7 @@ ENTITIES:
       Parent: 0
       Name: 13
       UID: 13257254106168897207
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [6, 4.06412029, 5]
@@ -3577,6 +3690,7 @@ ENTITIES:
       Parent: 0
       Name: 12
       UID: 17804393993876456783
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [8.5, 4.06412029, 5]
@@ -3616,6 +3730,7 @@ ENTITIES:
       Parent: 0
       Name: 1
       UID: 16379753910443869995
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [11, 4.06412029, 2.5]
@@ -3655,6 +3770,7 @@ ENTITIES:
       Parent: 0
       Name: 9
       UID: 12022062431640706141
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-9, 4.06412029, 2.5]
@@ -3694,6 +3810,7 @@ ENTITIES:
       Parent: 0
       Name: 8
       UID: 9602154250600983685
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-6.5, 4.06412029, 2.5]
@@ -3733,6 +3850,7 @@ ENTITIES:
       Parent: 0
       Name: 7
       UID: 15490037875401314600
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-4, 4.06412029, 2.5]
@@ -3772,6 +3890,7 @@ ENTITIES:
       Parent: 0
       Name: 6
       UID: 18360286531583021747
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-1.5, 4.06412029, 2.5]
@@ -3811,6 +3930,7 @@ ENTITIES:
       Parent: 0
       Name: 5
       UID: 9459180253573215487
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [1, 4.06412029, 2.5]
@@ -3850,6 +3970,7 @@ ENTITIES:
       Parent: 0
       Name: 4
       UID: 555982936065551794
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [3.5, 4.06412029, 2.5]
@@ -3889,6 +4010,7 @@ ENTITIES:
       Parent: 0
       Name: 3
       UID: 1337918719781483943
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [6, 4.06412029, 2.5]
@@ -3928,6 +4050,7 @@ ENTITIES:
       Parent: 0
       Name: 2
       UID: 9856367294296735021
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [8.5, 4.06400013, 2.5]
@@ -3967,6 +4090,7 @@ ENTITIES:
       Parent: 0
       Name: 11
       UID: 11050920808383232136
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [11, 4.06412029, 5]
@@ -4006,6 +4130,7 @@ ENTITIES:
       Parent: 0
       Name: MazeWall
       UID: 5184298894274328555
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.238336563, 8.5343647, -4]
@@ -4032,18 +4157,19 @@ ENTITIES:
       Parent: 0
       Name: Camera
       UID: 9201024860084647067
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-3.38861823, 21.5952091, -8.40005207]
-        Rotate: [183.499985, 264.499756, 180]
+        Translate: [-0.975832701, 13.4401731, -18.4303169]
+        Rotate: [194.597, 358.169006, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.00100000005
         FarPlane: 935.47998
-        FOV: 100
+        FOV: 62
     ThirdPersonCameraComponent:
-      Target UID: 2377197601835279376
+      Target UID: 0
       Offset: [0.00999999978, 4.1500001, 0]
       Current Distance: 1
       Min Distance: 1
@@ -4056,6 +4182,7 @@ ENTITIES:
       Parent: 0
       Name: Skybox
       UID: 3009173759421305309
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -4067,6 +4194,7 @@ ENTITIES:
       Parent: 0
       Name: Samurai
       UID: 2377197601835279376
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [11.5270004, 17.6930008, -7.79199982]
@@ -4079,16 +4207,6 @@ ENTITIES:
       ContactOffset: 0.100000001
       SlopeLimit: 45
       LocalOffset: [0, 1.47000003, 0]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0164999887, 0.0164999999, 0.0164999887]
-        FreezeRotationX: true
-        FreezeRotationY: true
-        FreezeRotationZ: true
-        Type: DYNAMIC
     ModelComponent:
       ModelID: 17129197088641895711
       MaterialID: 13160241162385617845
@@ -4096,6 +4214,44 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: redLightAudioPath
+          filePaths:
+            - Resources/Audio/Redlight.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: greenLightAudioPath
+          filePaths:
+            - Resources/Audio/Greenlight.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
     AnimatorComponent:
       Clips:
         - name: mixamo.com
@@ -4224,9 +4380,9 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 3
+        Speed: 0
       BoolParams:
-        IsMoving: true
+        IsMoving: false
         Sprint: false
         IsCrouching: false
         IsSneaking: false
@@ -4235,7 +4391,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.BossCutsceneMovement
-      ParamsJSON: "{\n  \"enableFadeEffects\": true,\n  \"endPosition\": {\n    \"X\": -1.159999966621399,\n    \"Y\": 10.12600040435791,\n    \"Z\": -7.0\n  },\n  \"mazeEntityName\": \"MapGeneration\",\n  \"mazeTriggerProgress\": 0.10000000149011612,\n  \"movementDuration\": 6.0,\n  \"startPosition\": {\n    \"X\": 11.527000427246094,\n    \"Y\": 17.69300079345703,\n    \"Z\": -7.791999816894531\n  },\n  \"totalDuration\": 7.5,\n  \"useSmoothMovement\": false\n}"
+      ParamsJSON: "{\n  \"enableCameraPan\": true,\n  \"enableFadeEffects\": true,\n  \"enableSpotlightControl\": true,\n  \"endPosition\": {\n    \"X\": -1.159999966621399,\n    \"Y\": 10.12600040435791,\n    \"Z\": -7.0\n  },\n  \"mazeEntityName\": \"MapGeneration\",\n  \"mazeTriggerProgress\": 0.10000000149011612,\n  \"movementDuration\": 6.0,\n  \"playSpotlightAudio\": true,\n  \"spotlightEntityName\": \"LightPoint\",\n  \"spotlightInterval\": 2.5,\n  \"startDelay\": 0.5,\n  \"startPosition\": {\n    \"X\": 11.527000427246094,\n    \"Y\": 17.69300079345703,\n    \"Z\": -7.791999816894531\n  },\n  \"totalDuration\": 7.5,\n  \"useSmoothMovement\": false\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -4253,6 +4409,7 @@ ENTITIES:
       Parent: 0
       Name: 10
       UID: 4335838949732216225
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-11.5, 4.06412029, 2.5]
@@ -4292,6 +4449,7 @@ ENTITIES:
       Parent: 0
       Name: MapGeneration
       UID: 15778899060177861509
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [11.1859999, 18.8610001, -8.84073734]
@@ -4305,6 +4463,7 @@ ENTITIES:
       Parent: 0
       Name: New Entity
       UID: 9851584267716230439
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [17.0568295, 11.5370026, 33.8854866]
@@ -4318,6 +4477,7 @@ ENTITIES:
       Parent: 0
       Name: New Entity (1)
       UID: 14757495953244097559
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-1.60618985, 30.6362782, 13.8393593]
@@ -4333,6 +4493,7 @@ ENTITIES:
       Parent: 0
       Name: Scene Settings
       UID: 108
+      SortOrder: 0
     SceneNavmeshComponent:
       NavmeshFile: ""
       AmbientStrength: 0
@@ -4357,6 +4518,7 @@ ENTITIES:
       Parent: 0
       Name: Stairs
       UID: 6895475612116251577
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [4.02488136, 10.5092125, -7.53782845]
@@ -4383,6 +4545,7 @@ ENTITIES:
       Parent: 0
       Name: Wall (Copy) (Copy)
       UID: 10520009349331699836
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-9.15594006, 15.867569, 26.5350285]
@@ -4399,11 +4562,12 @@ ENTITIES:
       Parent: 0
       Name: BOSS
       UID: 10561426511897708155
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-13.8755875, 47.5283012, 70.9270477]
-        Rotate: [-180, -5.00895612e-06, -180]
-        Scale: [1.41999996, 0.649999976, 1.42140651]
+        Translate: [0.945040703, 61.1117439, 70.9270477]
+        Rotate: [180, -5.00895749e-06, 180]
+        Scale: [3.40290999, 0.733722925, 1.42140651]
     ModelComponent:
       ModelID: 17047777006874206768
       MaterialID: 14891281585286011240
@@ -4415,6 +4579,7 @@ ENTITIES:
       Parent: 0
       Name: LightDirection
       UID: 4212835681801812632
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-4.45847368, 36.1773148, 3.22756481]
@@ -4428,6 +4593,7 @@ ENTITIES:
       Parent: 0
       Name: New Entity (3)
       UID: 171651767026794635
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -4437,6 +4603,7 @@ ENTITIES:
       Parent: 0
       Name: LightPoint
       UID: 2106348438969185543
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0.479864597, 36.6479073, 14.0310001]
@@ -4444,7 +4611,7 @@ ENTITIES:
         Scale: [0.999990106, 0.999887764, 0.999880552]
     SpotLightComponent:
       Light:
-        Radiance: [0.0784313679, 1, 0.105536163]
+        Radiance: [1, 0, 0]
         Intensity: 23.1900005
         FallOff: 0.765999973
         CutOff: 0.108999997
