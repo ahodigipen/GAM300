@@ -334,6 +334,9 @@ namespace Boom
 
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static ulong Boom_API_Raycast(ref Vec3 from, ref Vec3 dir, float maxDist);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Boom_API_Linecast(ref Vec3 from, ref Vec3 to, ulong ignoreEntity);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -401,6 +404,9 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static ulong[] Boom_API_GetControllerTriggerOverlaps(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static ulong Boom_API_GetControllerStandingOn(ulong handle);
 
         // ========= SPOTLIGHT COMPONENT INTERNAL CALLS =========
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -1078,6 +1084,11 @@ namespace Boom
         }
 
 
+        public static ulong Raycast(Vec3 from, Vec3 dir, float maxDist)
+        {
+            return Native.Boom_API_Raycast(ref from, ref dir, maxDist);
+        }
+
         public static bool Linecast(Vec3 from, Vec3 to, ulong ignoreEntity = 0)
         {
             return Native.Boom_API_Linecast(ref from, ref to, ignoreEntity);
@@ -1153,6 +1164,11 @@ namespace Boom
         public static ulong[] GetControllerTriggerOverlaps(ulong entity)
         {
             return Native.Boom_API_GetControllerTriggerOverlaps(entity) ?? new ulong[0];
+        }
+
+        public static ulong GetStandingOnEntity(ulong entity)
+        {
+            return Native.Boom_API_GetControllerStandingOn(entity);
         }
 
         // ========= SPOTLIGHT COMPONENT METHODS =========

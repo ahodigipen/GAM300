@@ -3056,6 +3056,23 @@ namespace EditorUI {
                         sc.Enabled, sc.TypeName);
                 }
 
+                // --- CUSTOM TELEPORT BUTTONS FOR PLAYER ---
+                if (sc.TypeName == "GameScripts.PlayerMovement" && sc.InstanceId != 0 && scripting) {
+                    ImGui::Spacing();
+                    ImGui::TextDisabled("Editor Actions:");
+                    
+                    if (ImGui::Button("Teleport to Start", ImVec2(-1, 0))) {
+                        scripting->SetFieldValue(sc.InstanceId, "_teleportToStartTrigger", "true");
+                        BOOM_INFO("[Inspector] Triggered Teleport to Start");
+                    }
+
+                    if (ImGui::Button("Teleport to Last Checkpoint", ImVec2(-1, 0))) {
+                        scripting->SetFieldValue(sc.InstanceId, "_teleportToCPTrigger", "true");
+                        BOOM_INFO("[Inspector] Triggered Teleport to Last Checkpoint");
+                    }
+                    ImGui::Spacing();
+                }
+
                 // ----- Exposed Script Fields -----
                 if (scripting && scripting->IsAlive() && sc.InstanceId != 0 && !sc.TypeName.empty()) {
                     auto exposedFields = scripting->GetExposedFields(sc.TypeName);

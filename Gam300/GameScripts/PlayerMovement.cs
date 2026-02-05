@@ -31,6 +31,9 @@ namespace GameScripts
         private float _sprintSpeed = 8f;
         private float _sneakSpeed = 1.5f;
 
+        [Boom.EditorExposed("Level Start Pos", "Specific coordinates for the 'Teleport to Start' action")]
+        private Vec3 _levelStartPos = new Vec3(-0.227f, 1.613f, 11.489f);
+
         private int _health = 5;
         private int _maxHealth = 5;
         private Vec3 _spawnPoint;
@@ -90,6 +93,12 @@ namespace GameScripts
         // ==== Gravity constant ====a
         private const float GRAVITY = 50f;
         private const float GROUND_STICK = -5.0f;
+
+        // ==== Editor Action Triggers ====
+        [Boom.EditorExposed("Teleport to Start", "Internal trigger for editor button", 0, 0, false)]
+        private bool _teleportToStartTrigger = false;
+        [Boom.EditorExposed("Teleport to CP", "Internal trigger for editor button", 0, 0, false)]
+        private bool _teleportToCPTrigger = false;
 
         // ==== CRITICAL: Manual vertical velocity tracking for Character Controller ====
         private float _verticalVelocity = 0f;
@@ -245,6 +254,24 @@ namespace GameScripts
             API.SetSoundVolume("checkpoint_save", 0.8f);
         }
 
+        public void TeleportTo(Vec3 position)
+        {
+            _verticalVelocity = 0f;
+            API.TeleportController(Entity, position);
+            API.SetPosition(Entity, position);
+            API.Log($"[PlayerMovement] Teleported to ({position.X:F2}, {position.Y:F2}, {position.Z:F2})");
+        }
+
+        public void TeleportToStart()
+        {
+            TeleportTo(_levelStartPos);
+        }
+
+        public void TeleportToLastCheckpoint()
+        {
+            RespawnAtCheckpoint();
+        }
+
         private void RegisterTriggerCallbacksOnAllTriggers()
         {
             _freezePickupIDs.Clear();
@@ -350,6 +377,18 @@ namespace GameScripts
         {
             UpdateFade(dt);
             if (!API.HasTransform(Entity) || !API.HasScript(Entity)) return;
+
+            // --- Handle Editor Teleport Triggers ---
+            if (_teleportToStartTrigger)
+            {
+                _teleportToStartTrigger = false;
+                TeleportToStart();
+            }
+            if (_teleportToCPTrigger)
+            {
+                _teleportToCPTrigger = false;
+                TeleportToLastCheckpoint();
+            }
 
             FreezeManager.Update(dt);
 
