@@ -61,6 +61,7 @@ namespace GameScripts
 
         // Static instance tracking for trigger callbacks
         private static readonly Dictionary<ulong, MazeGeneration> s_instances = new Dictionary<ulong, MazeGeneration>();
+        private static MazeGeneration s_primaryInstance = null; // Primary instance for external triggering
 
         // Directions for maze generation (N, S, E, W)
         private static readonly int[] DX = { 0, 0, 1, -1 };
@@ -104,6 +105,14 @@ namespace GameScripts
 
             // Register this instance for trigger callbacks
             s_instances[Entity] = this;
+
+            // Set as primary instance if it's the first one
+            if (s_primaryInstance == null)
+            {
+                s_primaryInstance = this;
+                API.Log($"[MazeGeneration] Set as primary instance for external triggering");
+            }
+
             API.Log($"[MazeGeneration] Registered instance. Total instances: {s_instances.Count}");
 
             // Ensure trigger is configured
@@ -168,8 +177,86 @@ namespace GameScripts
             {
                 s_instances.Remove(Entity);
             }
+
+            // Clear primary instance if this was it
+            if (s_primaryInstance == this)
+            {
+                s_primaryInstance = null;
+            }
+
             API.UnregisterTriggerCallbacks(Entity);
             API.Log("[MazeGeneration] Destroyed");
+        }
+
+        /// <summary>
+        /// PUBLIC STATIC: Trigger maze generation from external scripts (e.g., cutscenes)
+        /// This allows other scripts to activate the maze without needing a trigger volume
+        /// </summary>
+        public static void TriggerMazeFromExternal()
+        {
+            API.Log("[MazeGeneration] TriggerMazeFromExternal called!");
+
+            if (s_primaryInstance == null)
+            {
+                API.Log("[MazeGeneration] WARNING: No maze instance available to trigger!");
+                return;
+            }
+
+            if (s_primaryInstance._mazeGenerated && !s_primaryInstance._allowRetrigger)
+            {
+                API.Log("[MazeGeneration] Maze already generated. Enable 'Allow Retrigger' to regenerate.");
+                return;
+            }
+
+            // Reset if retriggering
+            if (s_primaryInstance._mazeGenerated && s_primaryInstance._allowRetrigger)
+            {
+                API.Log("[MazeGeneration] Retriggering maze generation...");
+                s_primaryInstance.ResetMaze();
+            }
+
+            // Generate the maze
+            API.Log("[MazeGeneration] Generating maze from external trigger...");
+            s_primaryInstance.GenerateMaze();
+        }
+
+        /// <summary>
+        /// PUBLIC STATIC: Trigger a specific maze instance by entity name
+        /// </summary>
+        public static void TriggerMazeByName(string entityName)
+        {
+            API.Log($"[MazeGeneration] TriggerMazeByName called for '{entityName}'");
+
+            ulong mazeEntity = API.FindEntity(entityName);
+            if (mazeEntity == 0)
+            {
+                API.Log($"[MazeGeneration] ERROR: Could not find entity '{entityName}'");
+                return;
+            }
+
+            MazeGeneration instance;
+            if (!s_instances.TryGetValue(mazeEntity, out instance))
+            {
+                API.Log($"[MazeGeneration] ERROR: Entity '{entityName}' does not have a MazeGeneration instance");
+                return;
+            }
+
+            if (instance._mazeGenerated && !instance._allowRetrigger)
+            {
+                API.Log("[MazeGeneration] Maze already generated. Enable 'Allow Retrigger' to regenerate.");
+                return;
+            }
+
+            // Reset if retriggering
+            if (instance._mazeGenerated && instance._allowRetrigger)
+            {
+                API.Log("[MazeGeneration] Retriggering maze generation...");
+                instance.ResetMaze();
+            }
+
+            // Generate the maze
+            API.Log("[MazeGeneration] Generating maze from external trigger...");
+            instance.GenerateMaze();
         }
 
         // ===== TRIGGER CALLBACKS =====

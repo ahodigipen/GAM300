@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="API.cs" />
     <Compile Include="AttackSquash.cs" />
+    <Compile Include="BossCutsceneMovement.cs" />
     <Compile Include="CharacterAnimation.cs" />
     <Compile Include="CPTrigger.cs" />
     <Compile Include="MazeGeneration.cs" />

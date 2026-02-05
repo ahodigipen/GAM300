@@ -12,10 +12,17 @@ namespace GameScripts
         public const string DEATH_SCENE_NAME = "DeathMenu";
         public const string END_SCENE_NAME = "EndMenu";
 
+        public const string POPUP_SCENE_NAME = "PopUpMenu";
+        public const string LEVEL_1_UI = "Level1PopUp";
+
         public static string _currentSceneName;
         public static bool IsGamePaused = false;
         public static bool IsPlayerDead = false;
         public static bool IsGameEnded = false;
+
+        public static bool IsStartPopupActive = false;
+        private static float _sceneInputDebounceTimer = 0.0f;
+        public static bool CanProcessInput => _sceneInputDebounceTimer <= 0.0f;
 
         // GLFW key constants
         public const int KEY_ESCAPE = 256;
@@ -63,6 +70,9 @@ namespace GameScripts
             IsPlayerDead = false;
             IsGameEnded = false;
 
+            IsStartPopupActive = false;
+            _sceneInputDebounceTimer = 0.5f;
+
             s_RequestedPauseAction = PauseMenuAction.None;
             s_RequestedDeathAction = DeathMenuAction.None;
             s_RequestedEndAction = EndMenuAction.None;
@@ -91,8 +101,14 @@ namespace GameScripts
 
         public static void Update(float dt)
         {
-            // CRITICAL FIX: Always update game logic pause state FIRST (before any early returns)
-            API.SetGameLogicPaused(IsGamePaused);
+            if (_sceneInputDebounceTimer > 0.0f)
+            {
+                _sceneInputDebounceTimer -= dt;
+            }
+
+            // Update game logic pause state
+            // If the popup is active, we force the game to stay paused
+            API.SetGameLogicPaused(IsGamePaused || IsStartPopupActive);
             API.SetPlayerDead(IsPlayerDead);
             API.SetGameEnd(IsGameEnded);
 

@@ -249,6 +249,27 @@ ASSETS:
       EmissiveMapID: 10463905360874748658
       OpacityMapID: 0
   - Type: MATERIAL
+    UID: 16305148809392937752
+    Name: FreezeMaterial
+    Source: FreezeMaterial
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 18006214182850053589
+      NormalMapID: 9939195436459860698
+      RoughnessMapID: 13466075847250744873
+      MetallicMapID: 0
+      OcclusionMapID: 13466075847250744873
+      EmissiveMapID: 0
+      OpacityMapID: 0
+  - Type: MATERIAL
     UID: 14920165367361296626
     Name: Enemy2
     Source: Enemy2
@@ -1139,6 +1160,17 @@ ASSETS:
     UID: 11555272199408419487
     Name: Red_Gem
     Source: Resources/UnityOtherFiles/UI Assets/Red_Gem.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 18015433039280727800
+    Name: UI_Running
+    Source: Resources/Textures/PlayerUI/UI_Running.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2269,6 +2301,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 9939195436459860698
+    Name: lambert1_normal
+    Source: Resources/Models/Props/Freeze/lambert1_normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
     UID: 18036222300221331622
     Name: Indoor_Lantern_Hanging_2_openPBR_shader1_BaseColor
     Source: Resources/Models/Props/3_PON_LanternTextures/Indoor_Lantern_Hanging_2_openPBR_shader1_BaseColor.png
@@ -2448,6 +2491,17 @@ ASSETS:
     UID: 7561553270291559458
     Name: Wall_Stone_C_Metallic
     Source: Resources/Textures/Wall Textures/Wall stone/Wall_Stone_C_Metallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 4292453219005343617
+    Name: UI_Crouching
+    Source: Resources/Textures/PlayerUI/UI_Crouching.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2712,6 +2766,17 @@ ASSETS:
     UID: 2408227857109572219
     Name: Pillow_openPBR_shader1_BaseColor
     Source: Resources/Textures/Props Textures/Pillow_openPBR_shader1_BaseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 17703832789455133950
+    Name: M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Metallic
+    Source: Resources/Models/Enemy/Patrol2Textures/M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Metallic.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3259,9 +3324,31 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 12936131708983895469
+    Name: UI_Tutorial
+    Source: Resources/Textures/PlayerUI/UI_Tutorial.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 18426389008356641383
     Name: ReturnButton
     Source: Resources/Textures/MenusUI/ReturnButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 5730132691109228952
+    Name: M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Normal
+    Source: Resources/Models/Enemy/Patrol2Textures/M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Normal.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3357,6 +3444,83 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
+  - Type: TEXTURE
+    UID: 17610262196672489587
+    Name: M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_BaseColor
+    Source: Resources/Models/Enemy/Patrol2Textures/M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_BaseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 12294537066232412532
+    Name: M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Emissive
+    Source: Resources/Models/Enemy/Patrol2Textures/M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Emissive.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 6568004371144359680
+    Name: M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Height
+    Source: Resources/Models/Enemy/Patrol2Textures/M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Height.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 11583444921017572832
+    Name: Level1PopUp
+    Source: Resources/Textures/MenusUI/Level1PopUp.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 17735993601354122583
+    Name: Level2PopUp
+    Source: Resources/Textures/MenusUI/Level2PopUp.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 18006214182850053589
+    Name: lambert1_baseColor
+    Source: Resources/Models/Props/Freeze/lambert1_baseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 13466075847250744873
+    Name: lambert1_occlusionRoughnessMetallic
+    Source: Resources/Models/Props/Freeze/lambert1_occlusionRoughnessMetallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
   - Type: SKYBOX
     UID: 4245843529762785392
     Name: NightSkyHDRI003_8K_HDR
@@ -4501,6 +4665,17 @@ ASSETS:
     UID: 7796158376131028701
     Name: visionconesmall
     Source: Resources/Models/Player/visionconesmall.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 5551161321672247114
+    Name: Freeze
+    Source: Resources/Models/Props/Freeze/Freeze.fbx
     Properties:
       Model Transform:
         transform:

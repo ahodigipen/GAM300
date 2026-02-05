@@ -23,5 +23,6 @@ uniform sampler2D texMap;
 void main() {
     vec4 result = texture(texMap, uvs).rgba;
     FragColor = color * result;
+    out_brightness = vec4(0.0, 0.0, 0.0, FragColor.a);  // Match visual alpha so bloom is preserved behind translucent sprites
 }
 ==FRAGMENT==

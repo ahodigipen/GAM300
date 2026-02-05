@@ -40,13 +40,14 @@ namespace Boom {
 		BOOM_INLINE ~FinalShader()
 		{
 			glDeleteTextures(1, &m_Final);
+			glDeleteFramebuffers(1, &m_FBO);
 		}
 
 		BOOM_INLINE void Render(uint32_t vmap, uint32_t vbloom, bool useFBO, bool enableBloom = false)
 		{
-			glBindFramebuffer(GL_FRAMEBUFFER, useFBO ? m_Final : 0);
-			glClear(GL_COLOR_BUFFER_BIT);
+			glBindFramebuffer(GL_FRAMEBUFFER, useFBO ? m_FBO : 0);
 			glClearColor(0, 0, 0, 1);
+			glClear(GL_COLOR_BUFFER_BIT);
 			Use();
 
 			SetUniform(bloomEnabled, enableBloom);
@@ -77,6 +78,11 @@ namespace Boom {
 		BOOM_INLINE uint32_t GetMap()
 		{
 			return m_Final;
+		}
+
+		BOOM_INLINE uint32_t GetFBOId() const
+		{
+			return m_FBO;
 		}
 
 		BOOM_INLINE void CreateBuffer(int32_t width, int32_t height)

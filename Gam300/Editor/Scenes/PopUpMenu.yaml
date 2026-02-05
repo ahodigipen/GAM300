@@ -1,0 +1,33 @@
+Version: 1.0
+ENTITIES:
+  - InfoComponent:
+      Parent: 0
+      Name: Pop Up Camera
+      UID: 9201024860084647067
+    TransformComponent:
+      Transform:
+        Translate: [0.443855196, 1.21253562, 2.94374704]
+        Rotate: [-19.375, 1.6875, 0]
+        Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        NearPlane: 0.300000012
+        FarPlane: 1000
+        FOV: 91
+    MenuComponent:
+      MenuType: 5
+  - InfoComponent:
+      Parent: 0
+      Name: Level1PopUp
+      UID: 1133745270066678340
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [0.800000012, 0.5, 1]
+    SpriteComponent:
+      textureID: 11583444921017572832
+      color: [0.501960814, 0.501960814, 0.501960814, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 5

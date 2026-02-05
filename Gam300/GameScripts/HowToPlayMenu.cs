@@ -6,7 +6,7 @@ namespace GameScripts
     public class HowToPlayMenu
     {
         private const int MOUSE_LEFT = 0;
-        private const string RETURN_TEX_CLICKED = "Resources/Textures/MenusUI/ReturnButton_Clicked.png";
+        private const string RETURN_TEX_CLICKED = "Resources/Textures/MenusUI/ReturnMenuButton_Clicked.png";
 
         private ulong _returnButtonID;
 
@@ -48,6 +48,8 @@ namespace GameScripts
 
         private void Update_Idle()
         {
+            if (!Entry.CanProcessInput) return;
+
             if (API.IsMouseDown(MOUSE_LEFT))
             {
                 if (!API.GetMousePosInViewport(out Vec2 mousePos))
