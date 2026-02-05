@@ -30,7 +30,7 @@ namespace GameScripts
         private ulong _clickedButtonID = 0;
 
         // Controller navigation
-        private int _selectedIndex = 0; // 0: New Game, 1: How To Play, 2: Quit
+        private int _selectedIndex = -1; // -1: Nothing Selected, 0: New Game, 1: How To Play, 2: Quit
         private bool _wasDpadUp = false;
         private bool _wasDpadDown = false;
         private bool _wasStickUp = false;
@@ -51,7 +51,7 @@ namespace GameScripts
 
             _currentState = MenuState.Idle;
             _clickedButtonID = 0;
-            _selectedIndex = 0;
+            _selectedIndex = -1;
 
             // Fade in from black when menu loads
             API.SetScreenFadeAlpha(1f);
@@ -90,6 +90,33 @@ namespace GameScripts
             bool stickDown = stickY > 0.5f;
             bool aPressed = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A);
 
+            if (_selectedIndex == -1)
+            {
+                // If any navigation button is pressed, select the first button and return
+                if ((dpadUp && !_wasDpadUp) || (dpadDown && !_wasDpadDown) ||
+                    (stickUp && !_wasStickUp) || (stickDown && !_wasStickDown))
+                {
+                    _selectedIndex = 0;
+                    UpdateVisuals();
+
+                    // Update "was" flags to prevent double-input this frame
+                    _wasDpadUp = dpadUp;
+                    _wasDpadDown = dpadDown;
+                    _wasStickUp = stickUp;
+                    _wasStickDown = stickDown;
+                    _wasAButtonPressed = aPressed;
+                    return;
+                }
+
+                // Keep updating tracking flags even if we didn't wake up
+                _wasDpadUp = dpadUp;
+                _wasDpadDown = dpadDown;
+                _wasStickUp = stickUp;
+                _wasStickDown = stickDown;
+                _wasAButtonPressed = aPressed;
+                return;
+            }
+
             if ((dpadUp && !_wasDpadUp) || (stickUp && !_wasStickUp))
             {
                 _selectedIndex = (_selectedIndex - 1 + 3) % 3;
@@ -124,6 +151,11 @@ namespace GameScripts
             API.SetSpriteTexture(_newGameButtonID, NEWGAME_TEX_NORMAL);
             API.SetSpriteTexture(_howToPlayButtonID, HOWTOPLAY_TEX_NORMAL);
             API.SetSpriteTexture(_quitButtonID, QUIT_TEX_NORMAL);
+
+            if (_selectedIndex == -1)
+            {
+                return; // "continue" isn't valid here, so we use return to stop.
+            }
 
             // Highlight selected (using clicked texture as highlight for now)
             if (_selectedIndex == 0) API.SetSpriteTexture(_newGameButtonID, NEWGAME_TEX_CLICKED);
