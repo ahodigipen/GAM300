@@ -51,6 +51,7 @@
     <Compile Include="CutsceneController.cs" />
     <Compile Include="CutsceneSequencer.cs" />
     <Compile Include="FreezeOverlayBehavior.cs" />
+    <Compile Include="HoverMotion.cs" />
     <Compile Include="IntroCutscene.cs" />
     <Compile Include="LevelTransitionCutscene.cs" />
     <Compile Include="MazeGeneration.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="DoorTriggerLeft.cs" />
     <Compile Include="PlayerInventory.cs" />
     <Compile Include="BloodOverlayController.cs" />
+    <Compile Include="SceneTransitionTrigger.cs" />
     <Compile Include="SettingsManager.cs" />
     <Compile Include="SpotlightFollower.cs" />
     <Compile Include="UIStanceController.cs" />
