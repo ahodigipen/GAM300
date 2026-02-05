@@ -287,42 +287,99 @@ namespace EditorUI {
             ImGui::EndDragDropSource();
         }
 
-        // Drop target (for reparenting)
-       // Drop target (for reparenting)
+        // Drop target — three-zone: top = insert before, middle = reparent, bottom = insert after
         if (ImGui::BeginDragDropTarget()) {
+            // Determine which zone the mouse is in
+            ImVec2 mousePos = ImGui::GetMousePos();
+            ImVec2 itemMin = ImGui::GetItemRectMin();
+            ImVec2 itemMax = ImGui::GetItemRectMax();
+            float itemHeight = itemMax.y - itemMin.y;
+            float relY = (itemHeight > 0.0f) ? (mousePos.y - itemMin.y) / itemHeight : 0.5f;
+
+            enum class DropZone { Before, Middle, After };
+            DropZone zone = DropZone::Middle;
+            if (relY < 0.25f) zone = DropZone::Before;
+            else if (relY > 0.75f) zone = DropZone::After;
+
+            // Visual indicator for reorder zones
+            if (zone == DropZone::Before) {
+                ImGui::GetForegroundDrawList()->AddLine(
+                    ImVec2(itemMin.x, itemMin.y), ImVec2(itemMax.x, itemMin.y),
+                    IM_COL32(255, 200, 0, 255), 2.0f);
+            } else if (zone == DropZone::After) {
+                ImGui::GetForegroundDrawList()->AddLine(
+                    ImVec2(itemMin.x, itemMax.y), ImVec2(itemMax.x, itemMax.y),
+                    IM_COL32(255, 200, 0, 255), 2.0f);
+            }
+
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_HIERARCHY")) {
                 entt::entity draggedEntity = *(const entt::entity*)payload->Data;
 
-                // Capture state for undo
-                entt::entity oldParent = Boom::GetParentEntity(registry, draggedEntity);
-                Boom::Transform3D oldLocalTransform;
-                if (registry.all_of<Boom::TransformComponent>(draggedEntity)) {
-                    oldLocalTransform = registry.get<Boom::TransformComponent>(draggedEntity).transform;
-                }
+                if (draggedEntity != entity) {
+                    entt::entity oldParent = Boom::GetParentEntity(registry, draggedEntity);
+                    Boom::Transform3D oldLocalTransform;
+                    if (registry.all_of<Boom::TransformComponent>(draggedEntity)) {
+                        oldLocalTransform = registry.get<Boom::TransformComponent>(draggedEntity).transform;
+                    }
 
-                // Create and execute reparent command
-                auto* history = m_Owner->GetCommandHistory();
-                if (history) {
-                    auto command = std::make_unique<ReparentCommand>(
-                        &registry,
-                        draggedEntity,
-                        oldParent,
-                        entity,
-                        oldLocalTransform
-                    );
+                    auto* history = m_Owner->GetCommandHistory();
 
-                    // The command will call SetParent internally
-                    history->Execute(std::move(command));
-
-                    BOOM_INFO("[Hierarchy] Reparented '{}' to '{}' (with undo)",
-                        registry.get<Boom::InfoComponent>(draggedEntity).name, info.name);
-                } else {
-                    // Fallback if no history (shouldn't happen)
-                    if (Boom::SetParent(registry, draggedEntity, entity)) {
-                        BOOM_INFO("[Hierarchy] Reparented '{}' to '{}'",
-                            registry.get<Boom::InfoComponent>(draggedEntity).name, info.name);
+                    if (zone == DropZone::Middle) {
+                        // --- REPARENT (existing behavior) ---
+                        if (history) {
+                            auto command = std::make_unique<ReparentCommand>(
+                                &registry, draggedEntity, oldParent, entity, oldLocalTransform);
+                            history->Execute(std::move(command));
+                            BOOM_INFO("[Hierarchy] Reparented '{}' to '{}' (with undo)",
+                                registry.get<Boom::InfoComponent>(draggedEntity).name, info.name);
+                        } else {
+                            Boom::SetParent(registry, draggedEntity, entity);
+                        }
                     } else {
-                        BOOM_WARN("[Hierarchy] Failed to reparent (circular reference prevented)");
+                        // --- REORDER (insert before/after) ---
+                        entt::entity targetParent = Boom::GetParentEntity(registry, entity);
+
+                        // Get siblings at the target level, compute insertion index
+                        std::vector<entt::entity> siblings;
+                        if (targetParent != entt::null) {
+                            siblings = Boom::GetChildren(registry, targetParent);
+                        } else {
+                            // Root level: collect root entities sorted by sortOrder
+                            struct RE { entt::entity e; int32_t so; Boom::AssetID uid; };
+                            std::vector<RE> roots;
+                            auto v = registry.view<Boom::InfoComponent>();
+                            for (auto [en, inf] : v.each()) {
+                                if (inf.parent == EMPTY_ASSET) roots.push_back({en, inf.sortOrder, inf.uid});
+                            }
+                            std::sort(roots.begin(), roots.end(), [](const RE& a, const RE& b) {
+                                if (a.so != b.so) return a.so < b.so;
+                                return a.uid < b.uid;
+                            });
+                            for (const auto& r : roots) siblings.push_back(r.e);
+                        }
+
+                        // Build list without dragged entity to compute correct index
+                        std::vector<entt::entity> withoutDragged;
+                        for (auto s : siblings) {
+                            if (s != draggedEntity) withoutDragged.push_back(s);
+                        }
+
+                        // Find target entity's index in the filtered list
+                        int targetIdx = 0;
+                        for (int i = 0; i < static_cast<int>(withoutDragged.size()); i++) {
+                            if (withoutDragged[i] == entity) { targetIdx = i; break; }
+                        }
+
+                        int insertIdx = (zone == DropZone::Before) ? targetIdx : targetIdx + 1;
+
+                        if (history) {
+                            auto command = std::make_unique<ReorderEntityCommand>(
+                                &registry, draggedEntity, targetParent, insertIdx,
+                                oldParent, oldLocalTransform);
+                            history->Execute(std::move(command));
+                            BOOM_INFO("[Hierarchy] Reordered '{}' (with undo)",
+                                registry.get<Boom::InfoComponent>(draggedEntity).name);
+                        }
                     }
                 }
             }
@@ -449,9 +506,9 @@ namespace EditorUI {
             }
 
             // Render only root entities (those with no parent)
-            // Collect root entities and sort by UID for consistent order across scene reloads
             struct RootEntity {
                 entt::entity entity;
+                int32_t sortOrder;
                 AssetID uid;
             };
             std::vector<RootEntity> rootEntities;
@@ -460,15 +517,17 @@ namespace EditorUI {
             for (entt::entity e : view)
             {
                 const auto& info = view.get<Boom::InfoComponent>(e);
-                // Only collect root entities (those with no parent)
                 if (info.parent == EMPTY_ASSET) {
-                    rootEntities.push_back({e, info.uid});
+                    rootEntities.push_back({e, info.sortOrder, info.uid});
                 }
             }
 
-            // Sort by UID to maintain consistent order (UIDs are stable, entity IDs are not)
+            // Sort by sortOrder first, UID as tiebreaker
             std::sort(rootEntities.begin(), rootEntities.end(),
-                     [](const RootEntity& a, const RootEntity& b) { return a.uid < b.uid; });
+                     [](const RootEntity& a, const RootEntity& b) {
+                         if (a.sortOrder != b.sortOrder) return a.sortOrder < b.sortOrder;
+                         return a.uid < b.uid;
+                     });
 
             // Render in sorted order
             for (const auto& root : rootEntities) {

@@ -36,8 +36,6 @@ namespace Boom {
 			UnUse();
 		}
 
-		//Hehe OOPS
-
 		BOOM_INLINE ~FinalShader()
 		{
 			glDeleteTextures(1, &m_Final);

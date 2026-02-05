@@ -1721,7 +1721,7 @@ ENTITIES:
         ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-34.7096901, 13.4397764, 62.1609154]
+      Target: [-13.3622103, 13.4397764, 62.1609154]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -1738,7 +1738,7 @@ ENTITIES:
         - [-13.3622103, 13.4397764, 62.1609154]
         - [-28.2320347, 13.4397764, 62.1609154]
         - [-34.7096901, 13.4397764, 62.1609154]
-      PatrolIndex: 2
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -2187,7 +2187,7 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 10218476581140508616
-        SurfaceType: DEFAULT
+        SurfaceType: STONE
         Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
@@ -2492,7 +2492,7 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 6064271428936207948
-        SurfaceType: DEFAULT
+        SurfaceType: WOOD
         Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
@@ -3333,13 +3333,157 @@ ENTITIES:
       LoseRadius: 12
       IdleWait: 1
       PatrolPoints:
-        - [-20.7575817, 13.1060772, 5.78730965]
-        - [-20.7575817, 13.1060772, -13.2258558]
+        - [-22.7366295, 13.404274, 19.3370762]
+        - [10.9044418, 13.404274, 19.3370762]
+      PatrolIndex: 1
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolEnemyController
+      ParamsJSON: "{\n  \"EnemyDetection\": false\n}"
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 1.98000002, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [100, 200, 100]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: CAPSULE
+    InfoComponent:
+      Parent: 0
+      Name: Patrol enemy 1
+      UID: 7568830222834310318
+    TransformComponent:
+      Transform:
+        Translate: [-8.98198032, 13.4210215, 5.36700153]
+        Rotate: [180, -50.041729, 180]
+        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+        FreezeRotationX: true
+        FreezeRotationY: true
+        FreezeRotationZ: true
+        Type: DYNAMIC
+    ModelComponent:
+      ModelID: 12439106707269888329
+      MaterialID: 14920165367361296626
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _footstepSoundPath
+          filePaths:
+            - Resources/Audio/footstep_stone_1.wav
+          loop: false
+          volume: 0.541999996
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 21.2000008
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_Alert_020.wav
+          loop: false
+          volume: 0.842999995
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 0.5
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _gruntSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_001.wav
+          loop: false
+          volume: 0.619000018
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.50999999
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 17.7000008
+    AnimatorComponent:
+      Clips:
+        - name: mixamo.com
+          filePath: ""
+        - name: patrol_head_up
+          filePath: Resources/Animations/patrol_head_up.anim
+        - name: mixamo.com
+          filePath: Resources/Animations/mixamo.com.anim
+      States:
+        - name: State 0
+          clipIndex: 1
+          speed: 0.330000013
+          loop: false
+          transitions:
+            - targetStateIndex: 0
+              conditionType: 0
+              parameterName: IsWalking
+              floatValue: 0
+              boolValue: false
+              transitionDuration: 0.469999999
+              hasExitTime: false
+              exitTime: 0.899999976
+      FloatParams:
+        Speed: 0
+      BoolParams:
+        ApplyRootMotion: false
+      CurrentStateIndex: 0
+    NavAgentComponent:
+      Target: [-8.98202515, 13.2056856, -10.6896248]
+      Speed: 2.5
+      ArriveRadius: 0.150000006
+      Active: true
+      RepathCooldown: 0.25
+      RetargetDistance: 0.5
+      FollowName: ""
+    AIComponent:
+      Mode: 2
+      PlayerName: ""
+      DetectRadius: 8
+      LoseRadius: 12
+      IdleWait: 1
+      PatrolPoints:
+        - [-8.98202515, 13.2056856, -10.6896248]
+        - [-8.98202515, 13.2056856, 7.27203894]
       PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"_entityName\": \"Patrol enemy 3\"\n}"
+      ParamsJSON: "{\n  \"EnemyDetection\": false\n}"
   - InfoComponent:
       Parent: 0
       Name: Terrain
@@ -3426,7 +3570,7 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 12807707659119185110
-        SurfaceType: DEFAULT
+        SurfaceType: STONE
         Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
@@ -5626,7 +5770,7 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
-        SurfaceType: DEFAULT
+        SurfaceType: WOOD
         Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
@@ -5704,7 +5848,7 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
-        SurfaceType: DEFAULT
+        SurfaceType: SAND
         Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
@@ -5954,7 +6098,7 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 12807707659119185110
-        SurfaceType: DEFAULT
+        SurfaceType: STONE
         Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
@@ -6902,7 +7046,7 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
-        SurfaceType: DEFAULT
+        SurfaceType: SAND
         Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
@@ -7467,7 +7611,7 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
-        SurfaceType: DEFAULT
+        SurfaceType: WOOD
         Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
@@ -8402,7 +8546,7 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
-        SurfaceType: DEFAULT
+        SurfaceType: SAND
         Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
@@ -8972,7 +9116,7 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 12807707659119185110
-        SurfaceType: DEFAULT
+        SurfaceType: STONE
         Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
@@ -9011,7 +9155,7 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 12807707659119185110
-        SurfaceType: DEFAULT
+        SurfaceType: STONE
         Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
@@ -9561,7 +9705,7 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
-        SurfaceType: DEFAULT
+        SurfaceType: WOOD
         Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
@@ -9889,7 +10033,7 @@ ENTITIES:
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 12807707659119185110
-        SurfaceType: DEFAULT
+        SurfaceType: STONE
         Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
@@ -10297,9 +10441,127 @@ ENTITIES:
       UID: 14440688285386943557
     TransformComponent:
       Transform:
-        Translate: [-14.5949755, 15.3514919, 22.6192093]
-        Rotate: [0, 463.252594, 0]
-        Scale: [66.4224243, 48.3170776, 102.520721]
+        Translate: [-22.2889729, 13.4210215, -12.2338219]
+        Rotate: [180, -0.156703219, 180]
+        Scale: [0.0199999847, 0.0199999996, 0.0199999847]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0199999847, 0.0199999996, 0.0199999847]
+        FreezeRotationX: true
+        FreezeRotationY: true
+        FreezeRotationZ: true
+        Type: DYNAMIC
+    ModelComponent:
+      ModelID: 12439106707269888329
+      MaterialID: 14920165367361296626
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _footstepSoundPath
+          filePaths:
+            - Resources/Audio/footstep_stone_1.wav
+          loop: false
+          volume: 0.513999999
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 17
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_Alert_020.wav
+          loop: false
+          volume: 0.856999993
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 0.5
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 17.7000008
+        - name: _gruntSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_001.wav
+          loop: false
+          volume: 0.657000005
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.639999986
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 14.8999996
+    AnimatorComponent:
+      Clips:
+        - name: mixamo.com
+          filePath: ""
+        - name: Patrol Walk
+          filePath: Resources/Models/Patrol Walk.fbx
+        - name: patrol_head_up
+          filePath: Resources/Animations/patrol_head_up.anim
+      States:
+        - name: State 0
+          clipIndex: 1
+          speed: 0.330000013
+          loop: false
+          transitions:
+            - targetStateIndex: 0
+              conditionType: 0
+              parameterName: IsWalking
+              floatValue: 0
+              boolValue: false
+              transitionDuration: 0.469999999
+              hasExitTime: false
+              exitTime: 0.899999976
+      FloatParams:
+        Speed: 0
+      BoolParams:
+        ApplyRootMotion: false
+      CurrentStateIndex: 0
+    NavAgentComponent:
+      Target: [-22.2951069, 13.404274, -14.4732275]
+      Speed: 2.5
+      ArriveRadius: 0.150000006
+      Active: true
+      RepathCooldown: 0.25
+      RetargetDistance: 0.5
+      FollowName: ""
+    AIComponent:
+      Mode: 2
+      PlayerName: ""
+      DetectRadius: 8
+      LoseRadius: 12
+      IdleWait: 1
+      PatrolPoints:
+        - [-22.2951069, 13.404274, 7.21938944]
+        - [-22.2951069, 13.404274, -14.4732275]
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.SpotlightFollower
@@ -10820,6 +11082,25 @@ ENTITIES:
       Enabled: true
       TypeName: GameScripts.SpotlightFollower
       ParamsJSON: "{\n  \"targetName\": \"Sentry_level2_3\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [1, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 14909493107942851076
+      Name: Sentry Vision Cone 8
+      UID: 17778255159458948583
+    TransformComponent:
+      Transform:
+        Translate: [11.7274904, 17.8618813, -13.9575005]
+        Rotate: [90, 180, 0]
+        Scale: [0.465116262, 0.50000006, 0.714285791]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.SpotlightFollower
+      ParamsJSON: "{\n  \"targetName\": \"Sentry_3\"\n}"
     SpotLightComponent:
       Light:
         Radiance: [1, 0, 0]

@@ -342,14 +342,14 @@ BOOM_API void SoundEngine::PlaySound(const std::string& name, const std::string&
         return;
     }
 
-    std::cout << "[SoundEngine] Current working directory: "
-        << std::filesystem::current_path().string() << std::endl;
+   /* std::cout << "[SoundEngine] Current working directory: "
+        << std::filesystem::current_path().string() << std::endl;*/
 
     if (!std::filesystem::exists(filePath)) {
         std::cerr << "[SoundEngine] File does NOT exist: " << filePath << std::endl;
     }
     else {
-        std::cout << "[SoundEngine] File found: " << filePath << std::endl;
+       // std::cout << "[SoundEngine] File found: " << filePath << std::endl;
     }
 
     if (mSounds.find(name) == mSounds.end()) {
@@ -657,8 +657,7 @@ BOOM_API void SoundEngine::PlaySoundAt(const std::string& name, const std::strin
             // Debug: verify mode
             FMOD_MODE verifyMode = FMOD_DEFAULT;
             if (sound->getMode(&verifyMode) == FMOD_OK) {
-                if (verifyMode & FMOD_3D) std::cerr << "[SoundEngine] Loaded sound as 3D SFX: " << soundKey << "\n";
-                else std::cerr << "[SoundEngine] WARNING: sound not 3D after create: " << soundKey << "\n";
+               
             }
         }
     }
