@@ -97,6 +97,7 @@ namespace GameScripts
 
             // Clear stale static registries from previous play session
             SpotlightFollower.ClearRegistry();
+            TutorialManager.Reset();
 
             API.Log("[C#] Entry.Start() called for scene: " + _currentSceneName);
 
@@ -155,6 +156,9 @@ namespace GameScripts
             {
                 _sceneInputDebounceTimer -= dt;
             }
+
+            // Update tutorial manager for auto-dismiss
+            TutorialManager.Update(dt);
 
             // Update game logic pause state
             // If the popup is active, we force the game to stay paused
@@ -238,6 +242,16 @@ namespace GameScripts
             bool escape_KeyDown = API.IsKeyDown(KEY_ESCAPE);
             bool ctrl_KeyDown = API.IsKeyDown(API.KEY_LEFT_CONTROL);
             bool start_ButtonDown = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_START);
+
+            // Handle Tutorial - Skip all input if tutorial active OR just dismissed this frame
+            if (TutorialManager.IsKeyTutorialActive() || TutorialManager.WasJustDismissed())
+            {
+                // Keep tracking key states to prevent bleed-through after tutorial dismissal
+                _escape_KeyWasDown = escape_KeyDown;
+                _p_KeyWasDown = p_KeyDown;
+                _start_ButtonWasDown = start_ButtonDown;
+                return;
+            }
 
             // Handle Start Pop-up Interaction
             if (IsStartPopupActive)

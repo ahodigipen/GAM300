@@ -754,6 +754,10 @@ namespace GameScripts
                         if (PlayerInventory.TryAddFreezeCharge())
                         {
                             API.Log($"[PlayerMovement] Instant Pickup: Freeze Powerup (ID: {triggerEntity})");
+                            
+                            // Show tutorial on first freeze pickup
+                            TutorialManager.ShowFreezeTutorial();
+                            
                             API.DestroyEntity(triggerEntity);
                         }
                     }

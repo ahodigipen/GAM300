@@ -91,7 +91,6 @@ namespace GameScripts
         {
             if (_onlyShowOnce && _hasTriggered) return;
 
-            Entry.TriggerModalPopup(_tutorialSpriteName);
 
             _hasTriggered = true;
             _isCurrentlyShowing = true;

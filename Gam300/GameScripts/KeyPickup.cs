@@ -69,6 +69,9 @@ namespace GameScripts
             PlayerInventory.AddKey(inst._keyType);
             UIManager.ShowKeyPickup();
 
+            // Show tutorial on first key pickup
+            TutorialManager.ShowKeyTutorial();
+
             // Play pickup SFX at key's position
             if (API.HasTransform(inst.Entity))
             {

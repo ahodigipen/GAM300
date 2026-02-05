@@ -18,6 +18,7 @@ namespace GameScripts
             s_keyCount = 0;
             s_keyTypes.Clear();
             s_hasFreezeCharge = false; // Reset ability on game restart
+            TutorialManager.Reset(); // Reset tutorial states
             API.Log("[PlayerInventory] Reset");
         }
 

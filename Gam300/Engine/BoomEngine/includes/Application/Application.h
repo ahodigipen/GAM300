@@ -498,7 +498,8 @@ namespace Boom
 		{
 			// 1. Determine "Mode": Is this a Menu file?
 			// "PauseMenu" -> true. "Level1" -> false.
-			bool isMenuFile = (sceneName.find("Menu") != std::string::npos);
+			bool isMenuFile = (sceneName.find("Menu") != std::string::npos) || 
+							  (sceneName.find("Tutorial") != std::string::npos);
 
 			DataSerializer serializer;
 
@@ -630,6 +631,7 @@ namespace Boom
 			else if (sceneName.find("Main") != std::string::npos) targetType = MenuType::Main;
 			else if (sceneName.find("End") != std::string::npos) targetType = MenuType::End;
 			else if (sceneName.find("PopUp") != std::string::npos) targetType = MenuType::PopUp;
+			else if (sceneName.find("Tutorial") != std::string::npos) targetType = MenuType::PopUp;
 
 			// 2. Check if objects of this MenuType *already exist*
 			bool alreadyLoaded = false;
