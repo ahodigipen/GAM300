@@ -138,13 +138,12 @@ uniform float textureScale = 1.0;
 const float PI = 3.14159265358979323846;
 layout (location=0) out vec4 out_fragment;
 layout(location=1) out vec4 out_brightness; //for bloom
-const vec3 BLOOM_THRESHOLD = vec3(0.2126, 0.7152, 0.0722);
-uniform float u_bloomThreshold = 1.0; // Brightness threshold for bloom extraction
+const vec3 BLOOM_THRESHOLD = vec3(0.2126, 0.7152, 0.0722) ;
 
 //must also change in PBR.h limits
-#define MAX_POINT_LIGHTS 128
-#define MAX_DIR_LIGHTS   128
-#define MAX_SPOT_LIGHTS  256
+#define MAX_POINT_LIGHTS 32
+#define MAX_DIR_LIGHTS   32
+#define MAX_SPOT_LIGHTS  128
 
 // GPU-friendly packed structs (std140-friendly: only vec4)
 struct GPUPointLight {

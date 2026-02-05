@@ -5,11 +5,7 @@ namespace GameScripts
 {
     public static class Entry
     {
-        // Scene flow: MainMenu -> Cutscene -> Gameplay
-        public const string CUTSCENE_SCENE_NAME = "START CUTSCENE";
-        public const string GAMEPLAY_SCENE_NAME = "M3 GAMEPLAY";
-        public const string LEVEL_SCENE_NAME = GAMEPLAY_SCENE_NAME; // Alias for compatibility
-
+        public const string LEVEL_SCENE_NAME = "M3 GAMEPLAY";
         public const string PAUSE_SCENE_NAME = "PauseMenu";
         public const string MAIN_MENU_SCENE_NAME = "MainMenu";
         public const string HOW_TO_PLAY_SCENE_NAME = "HowToPlay";
@@ -94,20 +90,8 @@ namespace GameScripts
 
             API.Log("[C#] Entry.Start() called for scene: " + _currentSceneName);
 
-            // Only pre-load menus for gameplay scene, not for cutscene
-            if (_currentSceneName == GAMEPLAY_SCENE_NAME)
+            if (_currentSceneName == LEVEL_SCENE_NAME)
             {
-                API.Log("Loading Start Pop-up...");
-                API.LoadSceneAdditive(POPUP_SCENE_NAME);
-                ulong camEntity = API.FindEntity("Pop Up Camera");
-                if (camEntity != 0)
-                {
-                    API.DestroyEntity(camEntity);
-                    API.Log("Pop Up Camera deleted immediately on load.");
-                }
-                IsStartPopupActive = true;
-                API.SetGameLogicPaused(true);
-
                 API.Log("Pre-loading pause menu additively...");
                 API.LoadSceneAdditive(PAUSE_SCENE_NAME);
                 API.LoadSceneAdditive(DEATH_SCENE_NAME);
@@ -177,7 +161,6 @@ namespace GameScripts
             IsGameEnded = true;
             IsGamePaused = false;
             IsPlayerDead = false;
-            IsStartPopupActive = false;
 
             API.SetGameEnd(true);
             API.ShowEndMenu();
@@ -204,39 +187,7 @@ namespace GameScripts
             bool escape_KeyDown = API.IsKeyDown(KEY_ESCAPE);
             bool ctrl_KeyDown = API.IsKeyDown(API.KEY_LEFT_CONTROL);
 
-            // Handle Start Pop-up Interaction
-            if (IsStartPopupActive)
-            {
-                // Trigger close on ESC (Primary) OR P (Fallback)
-                bool closeTriggered = (escape_KeyDown && !_escape_KeyWasDown) ||
-                                      (p_KeyDown && !_p_KeyWasDown);
-
-                if (closeTriggered)
-                {
-                    API.Log("Closing Level 1 Pop-up...");
-
-                    // 1. Find the UI entity by name and destroy it
-                    ulong popupEntity = API.FindEntity(LEVEL_1_UI);
-                    if (popupEntity != 0) API.DestroyEntity(popupEntity);
-                    else API.Log("[Warning] Could not find Pop-up Entity to destroy: " + POPUP_SCENE_NAME);
-
-                    // 2. Unpause the game and update state
-                    IsStartPopupActive = false;
-                    API.SetGameLogicPaused(false);
-
-                    // 3. Consume the key press so it doesn't trigger Pause Menu in the very next frame
-                    _escape_KeyWasDown = true;
-                    _p_KeyWasDown = true;
-                    return;
-                }
-
-                // Keep tracking key state while popup is active to prevent bleed-through
-                _escape_KeyWasDown = escape_KeyDown;
-                _p_KeyWasDown = p_KeyDown;
-                return;
-            }
-
-            if (_currentSceneName == GAMEPLAY_SCENE_NAME)
+            if (_currentSceneName == LEVEL_SCENE_NAME)
             {
                 // Handle Escape key to pause
                 if (escape_KeyDown && !_escape_KeyWasDown)

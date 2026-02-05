@@ -35,7 +35,6 @@
 #include "AI/AISystem.h"
 #include "Input/RayCast.h"
 #include "Graphics/Video/VideoPlayer.h"
-#include "GlobalConstants.h"
 
 namespace std {
 	template<>
@@ -133,6 +132,18 @@ namespace Boom
 		* BOOM_INLINE hints to the compiler to inline this small constructor
 		* to avoid function-call overhead during startup.
 		*/
+
+		struct ScriptLine {
+			glm::vec3 p0;
+			glm::vec3 p1;
+			glm::vec3 color;
+		};
+		std::vector<ScriptLine> m_ScriptLines;
+
+		void DrawScriptLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec3& color) {
+			m_ScriptLines.push_back({ p0, p1, color });
+		}
+
 		BOOM_INLINE Application()
 		{
 			m_LayerID = TypeID<Application>();
@@ -522,18 +533,6 @@ namespace Boom
 			}
 
 			auto& sn = reg.get<SceneNavmeshComponent>(settings);
-
-			// Apply scene settings to renderer
-			if (m_Context->renderer)
-			{
-				m_Context->renderer->AmbientStrength() = sn.ambientStrength;
-				m_Context->renderer->enabledBloom = sn.bloomEnabled;
-				m_Context->renderer->bloomIntensity = sn.bloomIntensity;
-				m_Context->renderer->bloomThreshold = sn.bloomThreshold;
-				m_Context->renderer->bloomIterations = sn.bloomIterations;
-				BOOM_INFO("[Scene] Applied scene settings: ambient={}, bloom={}, intensity={}, threshold={}, iterations={}",
-					sn.ambientStrength, sn.bloomEnabled, sn.bloomIntensity, sn.bloomThreshold, sn.bloomIterations);
-			}
 
 			if (sn.navmeshFile.empty())
 			{
@@ -1057,6 +1056,9 @@ namespace Boom
 		*/
 		BOOM_INLINE bool IsSceneLoaded() const { return m_SceneLoaded; }
 
+
+		void SetCutsceneMode(bool active);
+
 		BOOM_INLINE void UpdateKinematicTransforms()
 		{
 			EnttView<Entity, RigidBodyComponent>(
@@ -1260,6 +1262,7 @@ namespace Boom
 		bool m_IsInPlayMode = true;
 		bool m_IsPlayerDead = false;	// For Death Menu
 		bool m_IsEnd = false;			// For End Menu
+		bool m_IsCutsceneMode = false;
 
 		Boom::AISystem                         m_AIagents;
 		Boom::NavAgentSystem                   m_NavAgents;
@@ -1382,15 +1385,6 @@ namespace Boom
 
 			// *** ADD THIS - Clear trigger callbacks to prevent stale delegates ***
 			Boom::ClearAllTriggerCallbacks();
-
-			// Reset video system for scene change (clears players and playOnStart tracking)
-			if (m_Context->videoSystem) {
-				m_Context->videoSystem->OnSceneChange();
-			}
-
-			// Reset screen fade to transparent so new scene isn't covered by black
-			// (Each scene's scripts can fade in/out as needed)
-			g_ScreenFadeAlpha = 0.0f;
 
 			// Clear the ECS scene
 			m_Context->scene.clear();

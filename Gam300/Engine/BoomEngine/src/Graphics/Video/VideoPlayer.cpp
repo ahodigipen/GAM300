@@ -185,12 +185,8 @@ namespace Boom {
         // Check for audio track
         m_HasAudioTrack = (plm_get_num_audio_streams(m_PLM) > 0) && (m_SampleRate > 0);
 
-        // 1. Raw Buffer: RGB (3 bytes) for the decoder to write into
-        size_t rgbSize = static_cast<size_t>(m_Width) * m_Height * 3;
-        m_RawRGBBuffer = std::make_unique<uint8_t[]>(rgbSize);
-
-        // 2. Texture Buffer: RGBA (4 bytes) for OpenGL upload (supports transparency)
-        m_FrameBufferSize = static_cast<size_t>(m_Width) * m_Height * 4;
+        // Allocate frame buffer (RGB format: 3 bytes per pixel)
+        m_FrameBufferSize = static_cast<size_t>(m_Width) * m_Height * 3;
         m_FrameBuffer = std::make_unique<uint8_t[]>(m_FrameBufferSize);
 
         // Set loop behavior
@@ -269,7 +265,7 @@ namespace Boom {
         }
 
         BOOM_INFO("[VideoPlayer] Audio initialized (sample rate: {}, channels: {})",
-            exinfo.defaultfrequency, m_AudioChannels);
+                  exinfo.defaultfrequency, m_AudioChannels);
     }
 
     void VideoPlayer::ShutdownAudio() {
@@ -424,32 +420,42 @@ namespace Boom {
 
         plm_frame_t* frame = nullptr;
 
-        // Decode audio if enabled - plm_decode() will call our audio callback
-        // This only advances the audio decoder, not the video decoder
+        // Two different playback modes:
+        // 1. With audio: Use plm_decode() for synchronized A/V playback
+        // 2. Without audio: Use frame-rate limited manual video decoding
+
         if (m_HasAudioTrack && m_AudioEnabled && m_FMODSound) {
+            // plm_decode() handles both audio and video timing internally
+            // It decodes audio frames and calls our callback, and returns video frames
+            // when they're due based on the elapsed time
             plm_decode(m_PLM, adjustedDelta);
-        }
 
-        // Use frame-rate limiting for video playback
-        // This ensures video plays at the correct speed regardless of audio
-        m_AccumulatedTime += adjustedDelta;
-
-        // Only decode video frames at the proper framerate
-        // This prevents fast-forward playback and keeps audio/video in sync
-        while (m_AccumulatedTime >= m_SecondsPerFrame) {
-            m_AccumulatedTime -= m_SecondsPerFrame;
-
-            // Decode one video frame
             frame = plm_decode_video(m_PLM);
             if (frame) {
-                plm_frame_to_rgb(frame, m_RawRGBBuffer.get(), m_Width * 3);
+                plm_frame_to_rgb(frame, m_FrameBuffer.get(), m_Width * 3);
                 m_HasNewFrame = true;
             }
+        } else {
+            // No audio - use manual frame-rate limiting
+            m_AccumulatedTime += adjustedDelta;
 
-            // Prevent infinite loop if video has ended
-            if (plm_has_ended(m_PLM)) {
-                m_AccumulatedTime = 0.0;
-                break;
+            // Only decode video frames at the proper framerate
+            // This prevents fast-forward playback when there's no audio sync
+            while (m_AccumulatedTime >= m_SecondsPerFrame) {
+                m_AccumulatedTime -= m_SecondsPerFrame;
+
+                // Decode one video frame
+                frame = plm_decode_video(m_PLM);
+                if (frame) {
+                    plm_frame_to_rgb(frame, m_FrameBuffer.get(), m_Width * 3);
+                    m_HasNewFrame = true;
+                }
+
+                // Prevent infinite loop if video has ended
+                if (plm_has_ended(m_PLM)) {
+                    m_AccumulatedTime = 0.0;
+                    break;
+                }
             }
         }
 
@@ -483,7 +489,7 @@ namespace Boom {
         plm_frame_t* frame = plm_decode_video(m_PLM);
         if (frame) {
             // Convert YCrCb to RGB
-            plm_frame_to_rgb(frame, m_RawRGBBuffer.get(), m_Width * 3);
+            plm_frame_to_rgb(frame, m_FrameBuffer.get(), m_Width * 3);
             m_HasNewFrame = true;
         }
     }
@@ -663,7 +669,7 @@ namespace Boom {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
         // Allocate texture storage (RGB format)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 
         glBindTexture(GL_TEXTURE_2D, 0);
         m_TextureCreated = true;
@@ -680,59 +686,12 @@ namespace Boom {
     }
 
     void VideoPlayer::UpdateTexture() {
-        if (!m_TextureCreated || !m_HasNewFrame || !m_RawRGBBuffer || !m_FrameBuffer) {
+        if (!m_TextureCreated || !m_HasNewFrame || !m_FrameBuffer) {
             return;
         }
 
-        // --- CPU CHROMA KEY LOGIC ---
-        int pixelCount = m_Width * m_Height;
-
-        // Loop through pixels
-        for (int i = 0; i < pixelCount; ++i) {
-            // Indices
-            int rgbIndex = i * 3;
-            int rgbaIndex = i * 4;
-
-            // Read RGB
-            uint8_t r = m_RawRGBBuffer[rgbIndex + 0];
-            uint8_t g = m_RawRGBBuffer[rgbIndex + 1];
-            uint8_t b = m_RawRGBBuffer[rgbIndex + 2];
-
-            // Write RGB
-            m_FrameBuffer[rgbaIndex + 0] = r;
-            m_FrameBuffer[rgbaIndex + 1] = g;
-            m_FrameBuffer[rgbaIndex + 2] = b;
-
-            // Calculate Alpha
-            if (m_RemoveBlack) {
-                // Sum of channels (Max 765)
-                float brightness = (float)(r + g + b);
-
-                // Threshold 1: Absolute Black (Delete compression noise)
-                // Increase to remove the "dirty pixels"
-                if (brightness < 60.0f) {
-                    m_FrameBuffer[rgbaIndex + 3] = 0; // Fully Transparent
-                }
-                // Threshold 2: Smooth Transition (Fade out edges)
-                // Pixels between brightness 60 and 100 will fade from 0% to 100% alpha
-                else if (brightness < 100.0f) {
-                    float alpha = (brightness - 60.0f) / 40.0f;
-                    m_FrameBuffer[rgbaIndex + 3] = static_cast<uint8_t>(alpha * 255.0f);
-                }
-                // Threshold 3: Visible Content
-                else {
-                    m_FrameBuffer[rgbaIndex + 3] = 255; // Opaque
-                }
-            }
-            else {
-                m_FrameBuffer[rgbaIndex + 3] = 255; // Always Opaque
-            }
-        }
-        // ----------------------------
-
         glBindTexture(GL_TEXTURE_2D, m_TextureID);
-        // --- UPLOAD AS RGBA ---
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height, GL_RGBA, GL_UNSIGNED_BYTE, m_FrameBuffer.get());
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height, GL_RGB, GL_UNSIGNED_BYTE, m_FrameBuffer.get());
         glBindTexture(GL_TEXTURE_2D, 0);
 
         m_HasNewFrame = false;

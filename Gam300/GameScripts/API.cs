@@ -140,6 +140,9 @@ namespace Boom
         internal extern static void Boom_API_AnimatorPlay(ulong h, string state);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_AnimatorSetStateMachineEnabled(ulong h, bool enabled);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Boom_API_HasAnimator(ulong handle);
 
         // ========= TRANSFORM STRUCT INTERNAL CALLS =========
@@ -161,6 +164,12 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_ShutdownApplication(); // CORRECT QUIT
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetCutsceneMode(bool active);
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_DrawDebugLine(Vec3 start, Vec3 end, Vec3 color);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_LoadSceneAdditive(string name);
@@ -424,36 +433,6 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_SetSpotLightIntensity(ulong handle, float intensity);
 
-        // ========= VIDEO COMPONENT INTERNAL CALLS =========
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal extern static bool Boom_API_HasVideoComponent(ulong handle);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal extern static bool Boom_API_IsVideoPlaying(ulong handle);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal extern static bool Boom_API_HasVideoEnded(ulong handle);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal extern static void Boom_API_PlayVideo(ulong handle);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal extern static void Boom_API_StopVideo(ulong handle);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal extern static double Boom_API_GetVideoDuration(ulong handle);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal extern static double Boom_API_GetVideoCurrentTime(ulong handle);
-
-
-        // Video
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void Boom_API_PlayVideoComponent(ulong handle);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void Boom_API_StopVideoComponent(ulong handle);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void Boom_API_GetViewportSize(out float width, out float height);
     }
 
     // ========= DELEGATES =========
@@ -467,6 +446,7 @@ namespace Boom
     {
         public float X, Y;
         public Vec2(float x, float y) { X = x; Y = y; }
+        public override string ToString() => $"({X:F2}, {Y:F2})";
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -480,6 +460,7 @@ namespace Boom
             Y = y;
             Z = z;
         }
+        public override string ToString() => $"({X:F2}, {Y:F2}, {Z:F2})";
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -496,6 +477,7 @@ namespace Boom
         public static Vec4 operator -(Vec4 a, Vec4 b) => new Vec4(a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W - b.W);
         public static Vec4 operator *(Vec4 a, float s) => new Vec4(a.X * s, a.Y * s, a.Z * s, a.W * s);
         public static Vec4 operator /(Vec4 a, float s) => new Vec4(a.X / s, a.Y / s, a.Z / s, a.W / s);
+        public override string ToString() => $"({X:F2}, {Y:F2}, {Z:F2}, {W:F2})";
     }
 
     // RENAMED to avoid conflict with the static class below
@@ -537,6 +519,12 @@ namespace Boom
 
         // ===== Entity queries =====
         public static ulong FindEntity(string name) => Native.Boom_API_FindEntity(name);
+
+        // ===== Cutscene Control =====
+        public static void SetCutsceneMode(bool active) => Native.Boom_API_SetCutsceneMode(active);
+        
+        // ===== Debug Drawing =====
+        public static void DrawDebugLine(Vec3 start, Vec3 end, Vec3 color) => Native.Boom_API_DrawDebugLine(start, end, color);
 
         //AI Helpers
         public enum AIMode
@@ -843,6 +831,7 @@ namespace Boom
         public static void AnimatorSetBool(ulong h, string n, bool v) => Native.Boom_API_AnimatorSetBool(h, n, v);
         public static void AnimatorSetTrigger(ulong h, string n) => Native.Boom_API_AnimatorSetTrigger(h, n);
         public static void AnimatorPlay(ulong h, string state) => Native.Boom_API_AnimatorPlay(h, state);
+        public static void AnimatorSetStateMachineEnabled(ulong h, bool enabled) => Native.Boom_API_AnimatorSetStateMachineEnabled(h, enabled);
 
         // ===== Input Constants =====
         // ===== SOUND / AUDIO API =====
@@ -1192,33 +1181,6 @@ namespace Boom
             Native.Boom_API_SetSpotLightIntensity(entity, intensity);
         }
 
-        // ========== VIDEO COMPONENT API ==========
-
-        /// <summary>
-        /// Check if entity has a VideoComponent
-        /// </summary>
-        public static bool HasVideoComponent(ulong entity) => Native.Boom_API_HasVideoComponent(entity);
-
-        /// <summary>
-        /// Check if the video is currently playing
-        /// </summary>
-        public static bool IsVideoPlaying(ulong entity) => Native.Boom_API_IsVideoPlaying(entity);
-
-        /// <summary>
-        /// Check if the video has finished playing (reached the end)
-        /// </summary>
-        public static bool HasVideoEnded(ulong entity) => Native.Boom_API_HasVideoEnded(entity);
-
-        /// <summary>
-        /// Get the total duration of the video in seconds
-        /// </summary>
-        public static double GetVideoDuration(ulong entity) => Native.Boom_API_GetVideoDuration(entity);
-
-        /// <summary>
-        /// Get the current playback time in seconds
-        /// </summary>
-        public static double GetVideoCurrentTime(ulong entity) => Native.Boom_API_GetVideoCurrentTime(entity);
-
         // ========== TEXT COMPONENT API ==========
 
         /// <summary>
@@ -1293,23 +1255,6 @@ namespace Boom
         public static void SetTextPosition(ulong entity, Vec2 pos)
         {
             Native.Boom_API_SetTextPosition(entity, ref pos);
-        }
-
-        public static void PlayVideo(ulong entity)
-        {
-            if (HasTransform(entity)) // Simple check to ensure entity is valid
-                Native.Boom_API_PlayVideoComponent(entity);
-        }
-
-        public static void StopVideo(ulong entity)
-        {
-            if (HasTransform(entity)) // Simple check to ensure entity is valid
-                Native.Boom_API_StopVideoComponent(entity);
-        }
-
-        public static void GetViewportSize(out float width, out float height)
-        {
-            Native.Boom_API_GetViewportSize(out width, out height);
         }
 
 

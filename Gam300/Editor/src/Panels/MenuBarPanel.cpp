@@ -153,6 +153,15 @@ namespace EditorUI {
             if (m.showAnimatorGraph)    ImGui::MenuItem("Animator Graph", nullptr, m.showAnimatorGraph);
             if (m.showModelPreview)     ImGui::MenuItem("Model Preview", nullptr, m.showModelPreview);
             if (m.showAnimationTimeline) ImGui::MenuItem("Animation Timeline", nullptr, m.showAnimationTimeline);
+            
+            // Check if Editor class has exposed the boolean directly or if we need to access via Editor pointer
+            // Since we modified Editor.h to add m_ShowCutsceneSequencer, we can access it if MenuBarPanel uses the pointer logic
+            // But MenuBarPanel.cpp uses a struct `m` to hold pointers. We need to check if we can add it there or strictly use m_Owner.
+            // Looking at `MenuBarPanel.cpp`'s `Render` method, it uses `m.showX`.
+            // Let's modify the struct initialization in the constructor first (which we can't easily do via Replace).
+            // Actually, we can just use m_Owner->m_ShowCutsceneSequencer since m_Owner is available!
+            if (m_Owner) ImGui::MenuItem("Cutscene Sequencer", nullptr, &m_Owner->m_ShowCutsceneSequencer);
+
             ImGui::EndMenu();
         }
 
@@ -181,50 +190,17 @@ namespace EditorUI {
                     info.name = "Scene Settings";
                     info.uid = static_cast<Boom::AssetID>(sceneSettings); // Use entity ID as UID
 
-                    // Add SceneNavmeshComponent with default values
+                    // Add SceneNavmeshComponent with default ambient strength
                     auto& sceneComp = m.ctx->scene.emplace<Boom::SceneNavmeshComponent>(sceneSettings);
-                    sceneComp.ambientStrength = 0.5f;
-                    sceneComp.bloomEnabled = false;
-                    sceneComp.bloomIntensity = 1.0f;
-                    sceneComp.bloomThreshold = 1.0f;
-                    sceneComp.bloomIterations = 10;
+                    sceneComp.ambientStrength = 0.5f; // Default value
                 }
                 auto& settings = m.ctx->scene.get<Boom::SceneNavmeshComponent>(sceneSettings);
 
-                // Keep renderer in sync with scene settings (for loaded scenes)
-                // This ensures that when a scene is loaded, the renderer reflects the saved settings
-                m.ctx->renderer->AmbientStrength() = settings.ambientStrength;
-                m.ctx->renderer->enabledBloom = settings.bloomEnabled;
-                m.ctx->renderer->bloomIntensity = settings.bloomIntensity;
-                m.ctx->renderer->bloomThreshold = settings.bloomThreshold;
-                m.ctx->renderer->bloomIterations = settings.bloomIterations;
-
                 // Slider modifies the scene component
                 if (ImGui::SliderFloat("Ambient Strength", &settings.ambientStrength, 0.0f, 1.0f)) {
-                    // Value updated above in sync block
+                    // Apply to renderer in real-time for immediate visual feedback
+                    m.ctx->renderer->AmbientStrength() = settings.ambientStrength;
                 }
-
-                // Bloom controls with serialization to scene
-                if (ImGui::BeginMenu("Bloom Settings")) {
-                    if (ImGui::Checkbox("Enable Bloom", &settings.bloomEnabled)) {
-                        // Value updated above in sync block
-                    }
-
-                    if (ImGui::SliderFloat("Bloom Intensity", &settings.bloomIntensity, 0.0f, 3.0f)) {
-                        // Value updated above in sync block
-                    }
-
-                    if (ImGui::SliderFloat("Bloom Threshold", &settings.bloomThreshold, 0.1f, 5.0f)) {
-                        // Value updated above in sync block
-                    }
-
-                    if (ImGui::SliderInt("Bloom Iterations", &settings.bloomIterations, 1, 20)) {
-                        // Value updated above in sync block
-                    }
-
-                    ImGui::EndMenu();
-                }
-
                 if (m.ctx->physics && m_Owner && m_Owner->GetApp()) {
                     // Get current state from Application
                     bool physDebugViz = m_Owner->GetApp()->m_PhysDebugViz;

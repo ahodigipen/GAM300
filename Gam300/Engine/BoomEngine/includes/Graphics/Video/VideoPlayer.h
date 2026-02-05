@@ -119,13 +119,9 @@ namespace Boom {
         // Called by pl_mpeg audio callback - public for callback access
         void OnAudioDecoded(const float* samples, size_t count);
 
-        // Called by pl_mpeg video callback - public for callback access
-        void OnVideoDecoded(void* frame);
-
         // Audio buffer access for FMOD callback (returns samples read)
         size_t ReadAudioSamples(float* outBuffer, size_t samplesRequested);
 
-        void SetRemoveBlackBackground(bool enable) { m_RemoveBlack = enable; }
         // Check if audio is shutting down (for callback safety)
         bool IsAudioShuttingDown() const { return m_AudioShuttingDown.load(std::memory_order_acquire); }
 
@@ -157,7 +153,6 @@ namespace Boom {
 
         // Frame buffer (RGB data)
         std::unique_ptr<uint8_t[]> m_FrameBuffer;
-        std::unique_ptr<uint8_t[]> m_RawRGBBuffer; // NEW: Raw decode buffer
         size_t m_FrameBufferSize = 0;
         bool m_HasNewFrame = false;
 
@@ -189,15 +184,12 @@ namespace Boom {
         std::atomic<bool> m_AudioShuttingDown{false};  // Prevents callback access during shutdown
         mutable std::mutex m_AudioMutex;
 
-
         // Track audio state
         int m_AudioChannels = 2; // Stereo
 
         // Video timing - accumulate time and decode at proper framerate
         double m_AccumulatedTime = 0.0;
         double m_SecondsPerFrame = 0.0;  // 1.0 / framerate
-
-        bool m_RemoveBlack = false;
     };
 
 } // namespace Boom

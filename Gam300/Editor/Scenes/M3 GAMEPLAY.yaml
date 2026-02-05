@@ -2,6 +2,86 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
+      Name: Level 2 Map (4 CutScene)
+      UID: 16141805011341090856
+    TransformComponent:
+      Transform:
+        Translate: [-28.4467125, 37.6739006, -19.3403492]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [13.8100004, 3.68000007, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: true
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: Collider for Level 2
+      UID: 8452600080159842641
+    TransformComponent:
+      Transform:
+        Translate: [0.0716488957, 19.4958382, 27.1905842]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.LevelTransitionCutscene
+      ParamsJSON: "{}"
+  - InfoComponent:
+      Parent: 0
+      Name: Level 1 Map (CutScene)
+      UID: 9054217741465614535
+    TransformComponent:
+      Transform:
+        Translate: [0, 29.696907, 0]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+  - InfoComponent:
+      Parent: 0
+      Name: Top_Ceiling
+      UID: 15729046611990068865
+    TransformComponent:
+      Transform:
+        Translate: [0, 12.3543997, 5.49479961]
+        Rotate: [0, -0, 0]
+        Scale: [1.53440881, 0.0199999996, 4.18454552]
+    ModelComponent:
+      ModelID: 1441742420851203854
+      MaterialID: 16257091296667891899
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [14.7299995, 5.57000017, 37.2000008]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: Squeeze
+      UID: 17966297571862268424
+    TransformComponent:
+      Transform:
+        Translate: [-0.610087514, 20.6173363, 45.5718765]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
       Name: White noise SFX
       UID: 352134920596403547
     TransformComponent:
@@ -97,7 +177,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [9.27999973, 31.6200008, 4.9000001]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -123,11 +203,11 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: true
+        IsTrigger: false
         ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: STONE
-        Type: BOX
+        PhysicsMesh: 799933234689450045
+        SurfaceType: DEFAULT
+        Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
       Name: Stone_Stairs_Left
@@ -180,7 +260,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: true
+        IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
@@ -202,7 +282,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: true
+        IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
@@ -349,7 +429,7 @@ ENTITIES:
       MaterialSource: ""
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 0, 0]
+        LocalPosition: [0, 2, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
         DynamicFriction: 0.5
@@ -359,7 +439,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
         SurfaceType: DEFAULT
-        Type: TRIANGLE_MESH
+        Type: CAPSULE
     InfoComponent:
       Parent: 0
       Name: level2_Railing_4
@@ -386,11 +466,96 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _footstepSoundPath
+          filePaths:
+            - Resources/Audio/playerRun_02.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/enemyHurt_2.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    AnimatorComponent:
+      Clips:
+        - name: mixamo.com
+          filePath: ""
+        - name: Patrol Walk
+          filePath: Resources/Models/Patrol Walk.fbx
+      States:
+        - name: State 0
+          clipIndex: 1
+          speed: 0.330000013
+          loop: false
+          transitions:
+            - targetStateIndex: 0
+              conditionType: 0
+              parameterName: IsWalking
+              floatValue: 0
+              boolValue: false
+              transitionDuration: 0.469999999
+              hasExitTime: false
+              exitTime: 0.899999976
+      FloatParams:
+        Speed: 4.44999981
+      BoolParams:
+        {}
+      CurrentStateIndex: 0
+    NavAgentComponent:
+      Target: [-31.8510666, 24.596777, 24.0069332]
+      Speed: 4.44999981
+      ArriveRadius: 0.150000006
+      Active: true
+      RepathCooldown: 0.25
+      RetargetDistance: 0.5
+      FollowName: ""
+    AIComponent:
+      Mode: 0
+      PlayerName: ""
+      DetectRadius: 8
+      LoseRadius: 12
+      IdleWait: 1
+      PatrolPoints:
+        - [-31.8510666, 24.596777, 24.0069332]
+        - [-31.8510666, 24.596777, 0.315589666]
+      PatrolIndex: 0
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolEnemyController
+      ParamsJSON: "{}"
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 0, 0]
+        LocalPosition: [0, 2, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [100, 200, 100]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -398,7 +563,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
         SurfaceType: DEFAULT
-        Type: TRIANGLE_MESH
+        Type: CAPSULE
     InfoComponent:
       Parent: 0
       Name: level2_wall_2 (Copy)
@@ -488,9 +653,9 @@ ENTITIES:
         CutOff: 0.769999981
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 0, 0]
+        LocalPosition: [0, 2, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [100, 200, 100]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -498,7 +663,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
         SurfaceType: DEFAULT
-        Type: TRIANGLE_MESH
+        Type: CAPSULE
     InfoComponent:
       Parent: 0
       Name: level2_wall_3 (Copy) (Copy)
@@ -525,11 +690,96 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _footstepSoundPath
+          filePaths:
+            - Resources/Audio/playerRun_02.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/enemyHurt_2.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    AnimatorComponent:
+      Clips:
+        - name: mixamo.com
+          filePath: ""
+        - name: Patrol Walk
+          filePath: Resources/Models/Patrol Walk.fbx
+      States:
+        - name: State 0
+          clipIndex: 1
+          speed: 0.330000013
+          loop: false
+          transitions:
+            - targetStateIndex: 0
+              conditionType: 0
+              parameterName: IsWalking
+              floatValue: 0
+              boolValue: false
+              transitionDuration: 0.469999999
+              hasExitTime: false
+              exitTime: 0.899999976
+      FloatParams:
+        Speed: 0.000489145576
+      BoolParams:
+        {}
+      CurrentStateIndex: 0
+    NavAgentComponent:
+      Target: [-12.0609379, 13.4397764, 31.8400135]
+      Speed: 2.5
+      ArriveRadius: 0.150000006
+      Active: true
+      RepathCooldown: 0.25
+      RetargetDistance: 0.5
+      FollowName: ""
+    AIComponent:
+      Mode: 0
+      PlayerName: ""
+      DetectRadius: 8
+      LoseRadius: 12
+      IdleWait: 1
+      PatrolPoints:
+        - [-23.0942459, 13.4397764, 31.8400135]
+        - [-12.0609379, 13.4397764, 31.8400135]
+      PatrolIndex: 0
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolEnemyController
+      ParamsJSON: "{\n  \"EnemyDetection\": true\n}"
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 0, 0]
+        LocalPosition: [0, 2, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [100, 200, 100]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -537,7 +787,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 799933234689450045
         SurfaceType: DEFAULT
-        Type: TRIANGLE_MESH
+        Type: CAPSULE
     InfoComponent:
       Parent: 0
       Name: level2_wall_3 (Copy)
@@ -808,7 +1058,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: false
+        IsTrigger: true
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
@@ -950,7 +1200,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: false
+        IsTrigger: true
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
@@ -1232,8 +1482,8 @@ ENTITIES:
         LocalRotation: [0, 0, 0]
         LocalScale: [100, 200, 100]
         DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
+        StaticFriction: 0.5
+        Restitution: 0
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
@@ -1251,7 +1501,7 @@ ENTITIES:
     RigidBodyComponent:
       RigidBody:
         Density: 1
-        Mass: 1
+        Mass: 0
         InitialVelocity: [0, 0, 0]
         Previous Scale: [0.0200004764, 0.0199999996, 0.0200004764]
         FreezeRotationX: true
@@ -1375,8 +1625,8 @@ ENTITIES:
         LocalRotation: [0, 0, 0]
         LocalScale: [100, 200, 100]
         DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
+        StaticFriction: 0.5
+        Restitution: 0
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
@@ -1804,13 +2054,13 @@ ENTITIES:
       MaterialSource: ""
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 0, 0]
+        LocalPosition: [3.17000008, 0, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: false
+        IsTrigger: true
         ShowPhysicsDebug: false
         PhysicsMesh: 10218476581140508616
         SurfaceType: DEFAULT
@@ -1853,7 +2103,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 16135378917386993712
         SurfaceType: DEFAULT
-        Type: CONVEX_MESH
+        Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
       Name: 2nd_Level_Door
@@ -1994,15 +2244,15 @@ ENTITIES:
       Collider:
         LocalPosition: [0, -0.0799999982, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0
+        LocalScale: [100, 200, 100]
+        DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         SurfaceType: DEFAULT
-        Type: CONVEX_MESH
+        Type: CAPSULE
     InfoComponent:
       Parent: 0
       Name: Walls_Right_Floor_2 (Copy)
@@ -2068,6 +2318,91 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _footstepSoundPath
+          filePaths:
+            - Resources/Audio/playerRun_02.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/enemyHurt_2.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    AnimatorComponent:
+      Clips:
+        - name: mixamo.com
+          filePath: ""
+        - name: Patrol Walk
+          filePath: Resources/Models/Patrol Walk.fbx
+      States:
+        - name: State 0
+          clipIndex: 1
+          speed: 0.330000013
+          loop: false
+          transitions:
+            - targetStateIndex: 0
+              conditionType: 0
+              parameterName: IsWalking
+              floatValue: 0
+              boolValue: false
+              transitionDuration: 0.469999999
+              hasExitTime: false
+              exitTime: 0.899999976
+      FloatParams:
+        Speed: 0.0593983456
+      BoolParams:
+        {}
+      CurrentStateIndex: 0
+    NavAgentComponent:
+      Target: [23.1396694, 13.4210176, -9.57754421]
+      Speed: 2.5
+      ArriveRadius: 0.150000006
+      Active: true
+      RepathCooldown: 0.25
+      RetargetDistance: 0.5
+      FollowName: ""
+    AIComponent:
+      Mode: 2
+      PlayerName: ""
+      DetectRadius: 8
+      LoseRadius: 12
+      IdleWait: 1
+      PatrolPoints:
+        - [-4.79301453, 13.4210176, -9.57754421]
+        - [23.1396694, 13.4210176, -9.57754421]
+      PatrolIndex: 1
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolEnemyController
+      ParamsJSON: "{}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -2080,7 +2415,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 6064271428936207948
         SurfaceType: DEFAULT
-        Type: CONVEX_MESH
+        Type: CAPSULE
     InfoComponent:
       Parent: 0
       Name: Floor (Copy) (Copy)
@@ -2107,11 +2442,96 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _footstepSoundPath
+          filePaths:
+            - Resources/Audio/playerRun_02.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/enemyHurt_2.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    AnimatorComponent:
+      Clips:
+        - name: mixamo.com
+          filePath: ""
+        - name: Patrol Walk
+          filePath: Resources/Models/Patrol Walk.fbx
+      States:
+        - name: State 0
+          clipIndex: 1
+          speed: 0.330000013
+          loop: false
+          transitions:
+            - targetStateIndex: 0
+              conditionType: 0
+              parameterName: IsWalking
+              floatValue: 0
+              boolValue: false
+              transitionDuration: 0.469999999
+              hasExitTime: false
+              exitTime: 0.899999976
+      FloatParams:
+        Speed: 0.0225387178
+      BoolParams:
+        {}
+      CurrentStateIndex: 0
+    NavAgentComponent:
+      Target: [-22.7366295, 13.404274, 19.3370762]
+      Speed: 2.5
+      ArriveRadius: 0.150000006
+      Active: true
+      RepathCooldown: 0.25
+      RetargetDistance: 0.5
+      FollowName: ""
+    AIComponent:
+      Mode: 2
+      PlayerName: ""
+      DetectRadius: 8
+      LoseRadius: 12
+      IdleWait: 1
+      PatrolPoints:
+        - [-22.7366295, 13.404274, 19.3370762]
+        - [10.9044418, 13.404274, 19.3370762]
+      PatrolIndex: 0
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolEnemyController
+      ParamsJSON: "{\n  \"EnemyDetection\": false\n}"
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 0, 0]
+        LocalPosition: [0, 1.98000002, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [100, 200, 100]
         DynamicFriction: 0.5
         StaticFriction: 0.5
         Restitution: 0
@@ -2119,7 +2539,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 6064271428936207948
         SurfaceType: DEFAULT
-        Type: CONVEX_MESH
+        Type: CAPSULE
     InfoComponent:
       Parent: 0
       Name: Floor
@@ -2210,15 +2630,15 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [10, 20, 5]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: false
+        IsTrigger: true
         ShowPhysicsDebug: false
         PhysicsMesh: 2665223197068733968
         SurfaceType: DEFAULT
-        Type: TRIANGLE_MESH
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: Divider
@@ -2490,6 +2910,87 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _turnSoundPath1
+          filePaths:
+            - Resources/Audio/StatueTurn_01.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath2
+          filePaths:
+            - Resources/Audio/StatueTurn_02.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath3
+          filePaths:
+            - Resources/Audio/StatueTurn_03.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/playerPunch_1.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.EnemyController
+      ParamsJSON: "{}"
+  - SceneNavmeshComponent:
+      NavmeshFile: Resources/NavData/solo_navmesh.bin
+      AmbientStrength: 0.193000004
   - ColliderComponent:
       Collider:
         LocalPosition: [3.17000008, 0, 0]
@@ -3420,6 +3921,84 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _turnSoundPath1
+          filePaths:
+            - Resources/Audio/StatueTurn_01.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath2
+          filePaths:
+            - Resources/Audio/StatueTurn_02.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _turnSoundPath3
+          filePaths:
+            - Resources/Audio/StatueTurn_03.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/playerPunch_1.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.EnemyController
+      ParamsJSON: "{}"
   - InfoComponent:
       Parent: 0
       Name: Sentry_4
@@ -4064,11 +4643,6 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-    PointLightComponent:
-      Light:
-        Radiance: [1, 0.744809687, 0.421568632]
-        Intensity: 1.63
-        Range: 4
   - InfoComponent:
       Parent: 0
       Name: Pagoda_Lantern
@@ -4079,8 +4653,8 @@ ENTITIES:
         Rotate: [-90, 0, 0]
         Scale: [2, 2, 2]
     ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 9126702018428758169
+      ModelID: 5963078964798272625
+      MaterialID: 12207453972742617529
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5465,7 +6039,7 @@ ENTITIES:
       MaterialSource: ""
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 0, 0]
+        LocalPosition: [0, 1.98000002, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
         DynamicFriction: 0.5
@@ -5679,7 +6253,7 @@ ENTITIES:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
-        DynamicFriction: 0
+        DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
@@ -5689,26 +6263,26 @@ ENTITIES:
         Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
-      Name: Wall_behind_Hut
-      UID: 4395201707747078389
+      Name: Floor_2_Conector_Floor_3
+      UID: 6577078971723633079
     TransformComponent:
       Transform:
-        Translate: [-23.6012897, 18.7940292, 69.493103]
+        Translate: [-30.0310497, 1.10064602, 61.2063103]
         Rotate: [0, 0, 0]
-        Scale: [0.925000012, 1, 0.125]
+        Scale: [0.5, 2.5, 1.77499998]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.925000012, 1, 0.125]
+        Previous Scale: [0.5, 2.5, 1.77499998]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 8475851512635632909
+      MaterialID: 15937630629384441243
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5920,7 +6494,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 5710357086850101923
         SurfaceType: DEFAULT
-        Type: CONVEX_MESH
+        Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
       Name: Statue_Floor_2_Middle
@@ -5949,7 +6523,7 @@ ENTITIES:
       MaterialSource: ""
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 0, 0]
+        LocalPosition: [0, -0.0299999993, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
         DynamicFriction: 0.5
@@ -5992,7 +6566,7 @@ ENTITIES:
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
         DynamicFriction: 0.5
-        StaticFriction: 0
+        StaticFriction: 1
         Restitution: 0.100000001
         IsTrigger: false
         ShowPhysicsDebug: false
@@ -6030,14 +6604,14 @@ ENTITIES:
         LocalPosition: [0, -0.0299999993, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
+        DynamicFriction: 0
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 5710357086850101923
         SurfaceType: DEFAULT
-        Type: CONVEX_MESH
+        Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
       Name: Wall_Floor_2_2
@@ -6060,6 +6634,70 @@ ENTITIES:
     ModelComponent:
       ModelID: 4826384296126717694
       MaterialID: 6104124486273075758
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Indoor_Lantern_Left4_Floor_1
+      UID: 15947168737531537874
+    TransformComponent:
+      Transform:
+        Translate: [-3.23749995, 5.54779816, -19.2549992]
+        Rotate: [-89.9999847, 0, 0]
+        Scale: [2.5, 2.49996281, 2.49996281]
+    ModelComponent:
+      ModelID: 17862911105458314379
+      MaterialID: 9126702018428758169
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Indoor_Lantern_Right4_Floor_1
+      UID: 14989716943305730551
+    TransformComponent:
+      Transform:
+        Translate: [3.23762012, 5.70701742, -19.2554798]
+        Rotate: [-89.9999847, 0, 0]
+        Scale: [2.5, 2.49998546, 2.49998546]
+    ModelComponent:
+      ModelID: 17862911105458314379
+      MaterialID: 9126702018428758169
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Indoor_Lantern_Right3_Floor_1
+      UID: 15274239832865337985
+    TransformComponent:
+      Transform:
+        Translate: [-13.6234903, 5.40826988, -5.87540007]
+        Rotate: [-90, 0, 0]
+        Scale: [2.5, 2.5, 2.5]
+    ModelComponent:
+      ModelID: 17862911105458314379
+      MaterialID: 9126702018428758169
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Indoor_Lantern_Left2_Floor_1
+      UID: 11239854396506886408
+    TransformComponent:
+      Transform:
+        Translate: [-17.0311127, 5.64779997, -2.20093012]
+        Rotate: [-89.9555817, 89.944046, 0.0423971936]
+        Scale: [2.5, 2.5, 2.49998999]
+    ModelComponent:
+      ModelID: 17862911105458314379
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6231,7 +6869,7 @@ ENTITIES:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
+        DynamicFriction: 0
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
@@ -6296,7 +6934,7 @@ ENTITIES:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
+        DynamicFriction: 0
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
@@ -6369,6 +7007,12 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    SpotLightComponent:
+      Light:
+        Radiance: [0.867647052, 0.323866546, 0.182886392]
+        Intensity: 1.63
+        FallOff: 4.66599989
+        CutOff: -16.6410007
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -6379,9 +7023,9 @@ ENTITIES:
         Restitution: 0.100000001
         IsTrigger: false
         ShowPhysicsDebug: false
-        PhysicsMesh: 13244744886219103757
+        PhysicsMesh: 10628283856412644923
         SurfaceType: DEFAULT
-        Type: CONVEX_MESH
+        Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
       Name: Seperator_2_Middle_1
@@ -6418,9 +7062,9 @@ ENTITIES:
         Restitution: 0.100000001
         IsTrigger: false
         ShowPhysicsDebug: false
-        PhysicsMesh: 13244744886219103757
+        PhysicsMesh: 10628283856412644923
         SurfaceType: DEFAULT
-        Type: CONVEX_MESH
+        Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
       Name: Seperator_1_Right_1
@@ -6457,9 +7101,9 @@ ENTITIES:
         Restitution: 0.100000001
         IsTrigger: false
         ShowPhysicsDebug: false
-        PhysicsMesh: 13244744886219103757
+        PhysicsMesh: 3835169672366958006
         SurfaceType: DEFAULT
-        Type: CONVEX_MESH
+        Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
       Name: Middle_Pillar_Floor_1
@@ -6519,7 +7163,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 10628283856412644923
         SurfaceType: DEFAULT
-        Type: TRIANGLE_MESH
+        Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
       Name: Bonsai_Tree_Right_Floor_1
@@ -6782,15 +7426,15 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
+        LocalScale: [1, 0.00999999978, 1]
+        DynamicFriction: 0
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 4431181016770564176
         SurfaceType: DEFAULT
-        Type: CONVEX_MESH
+        Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
       Name: Cushion_3_Second_Floor
@@ -6944,8 +7588,8 @@ ENTITIES:
         Rotate: [-90, 90, 0]
         Scale: [2.5, 2.5, 2.5]
     ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 9126702018428758169
+      ModelID: 1441742420851203854
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -7004,18 +7648,26 @@ ENTITIES:
         Rotate: [-90, -90, 0]
         Scale: [2.5, 2.5, 2.5]
     ModelComponent:
-      ModelID: 17862911105458314379
-      MaterialID: 9126702018428758169
+      ModelID: 1441742420851203854
+      MaterialID: 5692762562094318330
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-    PointLightComponent:
-      Light:
-        Radiance: [1, 0.744809687, 0.421568632]
-        Intensity: 1.63
-        Range: 4
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 13244744886219103757
+        SurfaceType: DEFAULT
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: Interior_Decor_RIght_Of_Hut
       UID: 13900569791274339863
@@ -7153,7 +7805,7 @@ ENTITIES:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
+        DynamicFriction: 0
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
@@ -7189,7 +7841,7 @@ ENTITIES:
       MaterialSource: ""
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 0, 0]
+        LocalPosition: [0, 0, 1.57000005]
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
         DynamicFriction: 0
@@ -7199,7 +7851,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 7134129580656216935
         SurfaceType: DEFAULT
-        Type: TRIANGLE_MESH
+        Type: CONVEX_MESH
     InfoComponent:
       Parent: 0
       Name: Hut_Roof
@@ -7384,9 +8036,9 @@ ENTITIES:
       MaterialSource: ""
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 0, 0]
+        LocalPosition: [0, 0, 1.57000005]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [0.600000024, 0.600000024, 1.19000006]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -7423,9 +8075,9 @@ ENTITIES:
       MaterialSource: ""
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 0, 0]
+        LocalPosition: [0, 0, 1.57000005]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [0.600000024, 0.600000024, 1.19000006]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -7582,7 +8234,7 @@ ENTITIES:
         LocalPosition: [0, 0, 1.57000005]
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
-        DynamicFriction: 0
+        DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
@@ -7758,7 +8410,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 5710357086850101923
         SurfaceType: DEFAULT
-        Type: CONVEX_MESH
+        Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
       Name: Sentry_3
@@ -8202,17 +8854,17 @@ ENTITIES:
       MaterialSource: ""
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 0, 0]
+        LocalPosition: [0, 0, 1.51999998]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [0.600000024, 0.600000024, 1.19000006]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
         ShowPhysicsDebug: false
-        PhysicsMesh: 799933234689450045
+        PhysicsMesh: 14214629347157244268
         SurfaceType: DEFAULT
-        Type: TRIANGLE_MESH
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: FLOOR2
@@ -8309,7 +8961,7 @@ ENTITIES:
         Restitution: 0.100000001
         IsTrigger: false
         ShowPhysicsDebug: false
-        PhysicsMesh: 13244744886219103757
+        PhysicsMesh: 5710357086850101923
         SurfaceType: DEFAULT
         Type: CONVEX_MESH
     InfoComponent:
@@ -8429,6 +9081,38 @@ ENTITIES:
         Restitution: 0.100000001
         IsTrigger: false
         ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: NavAgent
+      UID: 1992698266524408743
+    TransformComponent:
+      Transform:
+        Translate: [5.01281404, 8.48799229, 4.99975538]
+        Rotate: [0, -0, 0]
+        Scale: [1.25, 1.25, 1.25]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.25, 1.25, 1.25]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0.5
+        Restitution: 0
+        IsTrigger: false
+        ShowPhysicsDebug: false
         PhysicsMesh: 13244744886219103757
         SurfaceType: DEFAULT
         Type: CONVEX_MESH
@@ -8444,7 +9128,7 @@ ENTITIES:
     RigidBodyComponent:
       RigidBody:
         Density: 1
-        Mass: 1
+        Mass: 0
         InitialVelocity: [0, 0, 0]
         Previous Scale: [0.0749999955, 0.442761391, 0.37499997]
         FreezeRotationX: false
@@ -8572,11 +9256,11 @@ ENTITIES:
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
         DynamicFriction: 0.5
-        StaticFriction: 0.5
-        Restitution: 0
+        StaticFriction: 0
+        Restitution: 0.100000001
         IsTrigger: false
         ShowPhysicsDebug: false
-        PhysicsMesh: 6064271428936207948
+        PhysicsMesh: 2061877446978793964
         SurfaceType: DEFAULT
         Type: CONVEX_MESH
     InfoComponent:
@@ -8591,7 +9275,7 @@ ENTITIES:
     RigidBodyComponent:
       RigidBody:
         Density: 1
-        Mass: 0
+        Mass: 1
         InitialVelocity: [0, 0, 0]
         Previous Scale: [27.8651428, 1.67400002, 23.4337292]
         FreezeRotationX: false
@@ -8655,9 +9339,9 @@ ENTITIES:
       renderAs3D: false
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 0, 0]
+        LocalPosition: [-0.230000004, -0.560000002, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [1.10000002, 1.15499997, 1]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -8694,7 +9378,7 @@ ENTITIES:
       MaterialSource: ""
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 0, 0]
+        LocalPosition: [-0.230000004, -0.560000002, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [1.10000002, 1, 1]
         DynamicFriction: 0.5
@@ -8913,7 +9597,7 @@ ENTITIES:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
+        DynamicFriction: 0
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
@@ -8980,8 +9664,8 @@ ENTITIES:
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 8475851512635632909
+      ModelID: 17862911105458314379
+      MaterialID: 9126702018428758169
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -10601,7 +11285,7 @@ ENTITIES:
         IsTrigger: true
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: STONE
+        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0

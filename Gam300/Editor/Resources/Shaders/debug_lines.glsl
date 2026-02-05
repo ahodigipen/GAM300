@@ -16,13 +16,11 @@ void main()
 
 #version 450 core
 layout(location = 0) out vec4 fragColor;
-layout(location = 1) out vec4 out_brightness;  // Brightness for bloom (always zero for debug lines)
 
 in vec4 vCol;
 
 void main()
 {
     fragColor = vCol;
-    out_brightness = vec4(0.0, 0.0, 0.0, 1.0);  // Debug lines should NOT contribute to bloom
 }
 ==FRAGMENT==

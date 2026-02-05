@@ -376,6 +376,10 @@ namespace Boom {
         auto* anim = GetAnimator((entt::entity)(uint32_t)h); if (!anim) return;
         char* n = mono_string_to_utf8(stateName); if (!n) return; anim->PlayClip(n); mono_free(n);
     }
+    static void ICALL_API_AnimatorSetStateMachineEnabled(uint64_t h, bool enabled) {
+        auto* anim = GetAnimator((entt::entity)(uint32_t)h); if (!anim) return;
+        anim->SetStateMachineEnabled(enabled);
+    }
 
 
     static void ICALL_API_LoadScene(MonoString* sceneName) {
@@ -562,6 +566,25 @@ namespace Boom {
     static int ICALL_API_GetApplicationState() {
         if (!s_Ctx || !s_Ctx->app) return (int)ApplicationState::STOPPED;
         return (int)s_Ctx->app->GetState();
+    }
+
+    static void ICALL_API_SetCutsceneMode(bool active) {
+        if (s_Ctx && s_Ctx->app) {
+            s_Ctx->app->SetCutsceneMode(active);
+            BOOM_INFO("[ScriptBinding] SetCutsceneMode called: {}", active ? "TRUE" : "FALSE");
+        } else {
+             BOOM_ERROR("[ScriptBinding] SetCutsceneMode FAILED: Context or App is null!");
+        }
+    }
+
+    static void ICALL_API_DrawDebugLine(Boom::Vec3 start, Boom::Vec3 end, Boom::Vec3 color) {
+        if (s_Ctx && s_Ctx->app) {
+             s_Ctx->app->DrawScriptLine(
+                 glm::vec3(start.x, start.y, start.z),
+                 glm::vec3(end.x, end.y, end.z),
+                 glm::vec3(color.x, color.y, color.z)
+             );
+        }
     }
 
 	//AI Component functions
@@ -1144,80 +1167,6 @@ namespace Boom {
             return;
         }
         s_Ctx->scene.get<SpotLightComponent>(e).light.intensity = intensity;
-    }
-
-    // ========= VIDEO COMPONENT INTERNAL CALLS =========
-    static bool ICALL_API_HasVideoComponent(uint64_t handle)
-    {
-        if (!s_Ctx) return false;
-        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
-        return (e != entt::null && s_Ctx->scene.valid(e) && s_Ctx->scene.any_of<VideoComponent>(e));
-    }
-
-    static bool ICALL_API_IsVideoPlaying(uint64_t handle)
-    {
-        if (!s_Ctx || !s_Ctx->videoSystem) return false;
-        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
-        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<VideoComponent>(e)) {
-            return false;
-        }
-        auto* player = s_Ctx->videoSystem->GetPlayer(e);
-        return player && player->IsPlaying();
-    }
-
-    static bool ICALL_API_HasVideoEnded(uint64_t handle)
-    {
-        if (!s_Ctx || !s_Ctx->videoSystem) return true;
-        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
-        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<VideoComponent>(e)) {
-            return true;
-        }
-        auto* player = s_Ctx->videoSystem->GetPlayer(e);
-        return player ? player->HasEnded() : true;
-    }
-
-    static void ICALL_API_PlayVideo(uint64_t handle)
-    {
-        if (!s_Ctx || !s_Ctx->videoSystem) return;
-        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
-        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<VideoComponent>(e)) {
-            BOOM_WARN("[ScriptBinding] PlayVideo: Entity doesn't have VideoComponent");
-            return;
-        }
-        s_Ctx->videoSystem->Play(e);
-    }
-
-    static void ICALL_API_StopVideo(uint64_t handle)
-    {
-        if (!s_Ctx || !s_Ctx->videoSystem) return;
-        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
-        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<VideoComponent>(e)) {
-            BOOM_WARN("[ScriptBinding] StopVideo: Entity doesn't have VideoComponent");
-            return;
-        }
-        s_Ctx->videoSystem->Stop(e);
-    }
-
-    static double ICALL_API_GetVideoDuration(uint64_t handle)
-    {
-        if (!s_Ctx || !s_Ctx->videoSystem) return 0.0;
-        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
-        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<VideoComponent>(e)) {
-            return 0.0;
-        }
-        auto* player = s_Ctx->videoSystem->GetPlayer(e);
-        return player ? player->GetDuration() : 0.0;
-    }
-
-    static double ICALL_API_GetVideoCurrentTime(uint64_t handle)
-    {
-        if (!s_Ctx || !s_Ctx->videoSystem) return 0.0;
-        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
-        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<VideoComponent>(e)) {
-            return 0.0;
-        }
-        auto* player = s_Ctx->videoSystem->GetPlayer(e);
-        return player ? player->GetTickCount() : 0.0;
     }
 
     struct ScriptTransform {
@@ -1815,15 +1764,15 @@ namespace Boom {
         // 4. Project the point
         glm::vec3 screenPos = glm::project(*worldPos, viewMat, projMat, viewportRect);
 
-        // 5. Check if it's behind the camera
+        // 5. Return the 2D coordinates
+        // We only care about x and y. Z is depth (0 to 1).
+        outViewportPos->x = screenPos.x;
+        outViewportPos->y = screenPos.y;
+
+        // 6. Check if it's behind the camera
         if (screenPos.z > 1.0f || screenPos.z < 0.0f) {
             return false;
         }
-
-        // 6. Return Local Viewport Coordinates (subtract the offset)
-        // This makes (0,0) the bottom-left of the GAME VIEW, not the window.
-        outViewportPos->x = screenPos.x - vX;
-        outViewportPos->y = screenPos.y - vY;
 
         return true;
     }
@@ -2114,44 +2063,6 @@ namespace Boom {
         sprite.textureID = textureAssetID;
     }
 
-    // Video
-    static void ICALL_API_PlayVideoComponent(uint64_t handle) {
-        if (!s_Ctx || !s_Ctx->videoSystem) return;
-        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
-
-        // Call Play on the video system
-        s_Ctx->videoSystem->Play(e);
-    }
-
-    static void ICALL_API_StopVideoComponent(uint64_t handle) {
-        if (!s_Ctx || !s_Ctx->videoSystem) return;
-        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
-
-        // Call Stop on the video system
-        s_Ctx->videoSystem->Stop(e);
-    }
-
-    // Get the current viewport size (handles both Editor and Standalone)
-    static void ICALL_API_GetViewportSize(float* width, float* height) {
-        if (!s_Ctx || !s_Ctx->window) {
-            *width = 1.0f; *height = 1.0f;
-            return;
-        }
-
-        auto* win = s_Ctx->window.get();
-        float vW = win->GetViewportW();
-        float vH = win->GetViewportH();
-
-        // Standalone fallback (if viewport is not set by editor)
-        if (vW <= 1.0f || vH <= 1.0f) {
-            vW = (float)win->getWidth();
-            vH = (float)win->getHeight();
-        }
-
-        *width = vW;
-        *height = vH;
-    }
-
     static void ICALL_API_ShutdownApplication()
     {
         if (!s_Ctx || !s_Ctx->window)
@@ -2170,7 +2081,7 @@ namespace Boom {
     }
 
     // Global fade alpha (0 = transparent, 1 = black)
-    BOOM_API float g_ScreenFadeAlpha = 0.0f;
+    float g_ScreenFadeAlpha = 0.0f;
 
     // C# -> C++ internal call (sets global fade)
     static void ICALL_API_SetScreenFadeAlpha(float alpha)
@@ -2258,6 +2169,7 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_AnimatorSetBool", (const void*)ICALL_API_AnimatorSetBool);
         mono_add_internal_call("Boom.Native::Boom_API_AnimatorSetTrigger", (const void*)ICALL_API_AnimatorSetTrigger);
         mono_add_internal_call("Boom.Native::Boom_API_AnimatorPlay", (const void*)ICALL_API_AnimatorPlay);
+        mono_add_internal_call("Boom.Native::Boom_API_AnimatorSetStateMachineEnabled", (const void*)ICALL_API_AnimatorSetStateMachineEnabled);
         mono_add_internal_call("Boom.Native::Boom_API_GetThirdPersonCameraYaw", (const void*)ICALL_API_GetThirdPersonCameraYaw);
 
         mono_add_internal_call("Boom.Native::Boom_API_HasCollider", (const void*)ICALL_API_HasCollider);
@@ -2354,18 +2266,7 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_GetSpotLightIntensity", (const void*)ICALL_API_GetSpotLightIntensity);
         mono_add_internal_call("Boom.Native::Boom_API_SetSpotLightIntensity", (const void*)ICALL_API_SetSpotLightIntensity);
 
-        // Video component internal calls
-        mono_add_internal_call("Boom.Native::Boom_API_HasVideoComponent", (const void*)ICALL_API_HasVideoComponent);
-        mono_add_internal_call("Boom.Native::Boom_API_IsVideoPlaying", (const void*)ICALL_API_IsVideoPlaying);
-        mono_add_internal_call("Boom.Native::Boom_API_HasVideoEnded", (const void*)ICALL_API_HasVideoEnded);
-        mono_add_internal_call("Boom.Native::Boom_API_PlayVideo", (const void*)ICALL_API_PlayVideo);
-        mono_add_internal_call("Boom.Native::Boom_API_StopVideo", (const void*)ICALL_API_StopVideo);
-        mono_add_internal_call("Boom.Native::Boom_API_GetVideoDuration", (const void*)ICALL_API_GetVideoDuration);
-        mono_add_internal_call("Boom.Native::Boom_API_GetVideoCurrentTime", (const void*)ICALL_API_GetVideoCurrentTime);
-        // Video
-        mono_add_internal_call("Boom.Native::Boom_API_PlayVideoComponent", (void*)ICALL_API_PlayVideoComponent);
-        mono_add_internal_call("Boom.Native::Boom_API_StopVideoComponent", (void*)ICALL_API_StopVideoComponent);
-        mono_add_internal_call("Boom.Native::Boom_API_GetViewportSize", (void*)ICALL_API_GetViewportSize);
-
+        mono_add_internal_call("Boom.Native::Boom_API_SetCutsceneMode", (const void*)ICALL_API_SetCutsceneMode);
+        mono_add_internal_call("Boom.Native::Boom_API_DrawDebugLine", (const void*)ICALL_API_DrawDebugLine);
     }
 }

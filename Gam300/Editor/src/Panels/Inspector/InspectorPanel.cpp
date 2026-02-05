@@ -2049,14 +2049,6 @@ namespace EditorUI {
                         );
                     }
 
-                    ImGui::Checkbox("Remove Black Background", &vc.removeBlackBackground);
-                    if (ImGui::IsItemHovered()) {
-                        ImGui::SetTooltip(
-                            "Treats black pixels (brightness < 0.1) as transparent.\n"
-                            "Useful for overlay effects like explosions or holograms."
-                        );
-                    }
-
                     ImGui::Spacing();
 
                     ImGui::AlignTextToFramePadding();
@@ -3943,118 +3935,79 @@ namespace EditorUI {
         if (!ctx || !entity.Has<Boom::TransformComponent>()) return;
 
         auto& tc = entity.Get<Boom::TransformComponent>();
-        const float maxDistance = 1000.0f;
+        const float maxDistance = 100.0f;
 
-        // Get entity's current world position (Pivot)
+        // Get entity's current world position
         glm::mat4 worldMatrix = Boom::GetWorldMatrix(ctx->scene, entity.ID());
-        glm::vec3 entityWorldPos = glm::vec3(worldMatrix[3]);
+        glm::vec3 entityWorldPos;
+        glm::vec3 unused1, unused2;
+        Boom::DecomposeMatrix(worldMatrix, entityWorldPos, unused1, unused2);
 
-        // Get entity's AABB
-        glm::vec3 entityAABBMin, entityAABBMax;
-        GetEntityAABB(entity, entityAABBMin, entityAABBMax);
-        glm::vec3 aabbCenter = (entityAABBMin + entityAABBMax) * 0.5f;
-
-        // Start ray from AABB center
-        glm::vec3 rayOrigin = aabbCenter;
+        // Calculate ray origin - start from entity center, offset slightly in opposite direction
+        // to avoid self-intersection
+        glm::vec3 rayOrigin = entityWorldPos - direction * 0.1f;
         glm::vec3 rayDir = glm::normalize(direction);
 
-        // Try physics raycast first
+        // Get entity's own AABB for offset calculation
+        glm::vec3 entityAABBMin, entityAABBMax;
+        GetEntityAABB(entity, entityAABBMin, entityAABBMax);
+
+        // Calculate entity half-size in the snap direction
+        glm::vec3 entityHalfSize = (entityAABBMax - entityAABBMin) * 0.5f;
+        float entityOffset = glm::abs(glm::dot(entityHalfSize, rayDir));
+
+        // Try physics raycast first (works if actors exist)
         auto physResult = ctx->physics->Raycast(rayOrigin, rayDir, maxDistance);
 
         bool hitFound = false;
         glm::vec3 hitPoint;
+        glm::vec3 hitNormal;
         entt::entity hitEntity = entt::null;
 
         if (physResult.hitFound && physResult.hitEntity != entity.ID()) {
             hitFound = true;
             hitPoint = physResult.position;
+            hitNormal = physResult.normal;
             hitEntity = physResult.hitEntity;
         }
 
-        // Fallback: Check against scene bounds (OBB check)
+        // Fallback: Check against all entities with models or colliders (for edit mode)
         if (!hitFound) {
             float closestDist = maxDistance;
 
             auto view = ctx->scene.view<Boom::TransformComponent>();
             for (auto e : view) {
-                if (e == entity.ID()) continue;
+                if (e == entity.ID()) continue; // Skip self
 
-                // Only check entities with models or colliders
                 bool hasModel = ctx->scene.any_of<Boom::ModelComponent>(e);
                 bool hasCollider = ctx->scene.any_of<Boom::ColliderComponent>(e);
                 if (!hasModel && !hasCollider) continue;
 
-                // --- Calculate Local AABB ---
-                glm::vec3 localMin(-0.5f), localMax(0.5f);
-                if (hasModel) {
-                    auto& mc = ctx->scene.get<Boom::ModelComponent>(e);
-                    if (mc.modelID != EMPTY_ASSET) {
-                        auto* modelAsset = ctx->assets->TryGet<ModelAsset>(mc.modelID);
-                        if (modelAsset && modelAsset->data) {
-                            auto staticModel = std::dynamic_pointer_cast<Boom::StaticModel>(modelAsset->data);
-                            if (staticModel) {
-                                const auto& meshData = staticModel->GetMeshData();
-                                if (!meshData.empty()) {
-                                    localMin = glm::vec3(FLT_MAX);
-                                    localMax = glm::vec3(-FLT_MAX);
-                                    for (const auto& mesh : meshData) {
-                                        for (const auto& vertex : mesh.vtx) {
-                                            localMin = glm::min(localMin, vertex.pos);
-                                            localMax = glm::max(localMax, vertex.pos);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } else if (hasCollider) {
-                    auto& cc = ctx->scene.get<Boom::ColliderComponent>(e);
-                    glm::vec3 halfSize = cc.Collider.localScale * 0.5f;
-                    localMin = cc.Collider.localPosition - halfSize;
-                    localMax = cc.Collider.localPosition + halfSize;
-                }
+                // Get target entity's AABB
+                glm::vec3 targetMin, targetMax;
+                GetEntityAABBForSnap(ctx, e, targetMin, targetMax);
 
-                // Transform Ray to Local Space
-                glm::mat4 targetWorld = Boom::GetWorldMatrix(ctx->scene, e);
-                glm::mat4 worldToLocal = glm::inverse(targetWorld);
-
-                glm::vec3 localRayOrigin = glm::vec3(worldToLocal * glm::vec4(rayOrigin, 1.0f));
-                glm::vec3 localRayDir = glm::vec3(worldToLocal * glm::vec4(rayDir, 0.0f));
-
+                // Ray-AABB intersection
                 float t;
-                if (RayAABBIntersection(localRayOrigin, localRayDir, localMin, localMax, t)) {
-                    if (t > 0.0f) {
-                        glm::vec3 localHit = localRayOrigin + localRayDir * t;
-                        glm::vec3 worldHit = glm::vec3(targetWorld * glm::vec4(localHit, 1.0f));
-                        float dist = glm::distance(rayOrigin, worldHit);
+                if (RayAABBIntersection(rayOrigin, rayDir, targetMin, targetMax, t)) {
+                    if (t > 0.0f && t < closestDist) {
+                        closestDist = t;
+                        hitFound = true;
+                        hitPoint = rayOrigin + rayDir * t;
+                        hitEntity = e;
 
-                        if (dist < closestDist) {
-                            closestDist = dist;
-                            hitFound = true;
-                            hitPoint = worldHit;
-                            hitEntity = e;
-                        }
+                        // Calculate approximate normal based on which face was hit
+                        hitNormal = CalculateAABBHitNormal(hitPoint, targetMin, targetMax);
                     }
                 }
             }
         }
 
         if (hitFound) {
-            // Find the support point on the AABB in the direction of the ray
-            // (The point that should touch the hit surface)
-            glm::vec3 supportPoint;
-            for (int i = 0; i < 3; ++i) {
-                supportPoint[i] = (rayDir[i] > 0.0f) ? entityAABBMax[i] : entityAABBMin[i];
-            }
+            // Calculate new position: hit point + offset so entity sits on surface
+            glm::vec3 newWorldPos = hitPoint - rayDir * entityOffset;
 
-            // Calculate distance to move along the ray direction
-            // We project the vector (HitPoint - SupportPoint) onto RayDir
-            float dist = glm::dot(hitPoint - supportPoint, rayDir);
-
-            // Apply the shift to the entity's pivot
-            glm::vec3 newWorldPos = entityWorldPos + rayDir * dist;
-
-            // Convert to local space if parented
+            // If entity has a parent, convert world position to local
             entt::entity parent = Boom::GetParentEntity(ctx->scene, entity.ID());
             if (parent != entt::null) {
                 glm::mat4 parentWorld = Boom::GetWorldMatrix(ctx->scene, parent);
@@ -4072,7 +4025,8 @@ namespace EditorUI {
                 hitName = ctx->scene.get<Boom::InfoComponent>(hitEntity).name;
             }
 
-            BOOM_INFO("[Snap] Snapped entity to '{}' (Shift: {:.2f})", hitName, dist);
+            auto dout = glm::distance(entityWorldPos, newWorldPos);
+            BOOM_INFO("[Snap] Snapped entity to '{}' (distance: {:.2f})", hitName, dout);
         }
         else {
             BOOM_WARN("[Snap] No surface found in direction ({:.1f}, {:.1f}, {:.1f})", direction.x, direction.y, direction.z);
