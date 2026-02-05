@@ -454,6 +454,8 @@ namespace Boom
         internal static extern void Boom_API_StopVideoComponent(ulong handle);
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_GetViewportSize(out float width, out float height);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetVideoRemoveBlack(ulong handle, bool enabled);
     }
 
     // ========= DELEGATES =========
@@ -1310,6 +1312,11 @@ namespace Boom
         public static void GetViewportSize(out float width, out float height)
         {
             Native.Boom_API_GetViewportSize(out width, out height);
+        }
+
+        public static void SetVideoRemoveBlack(ulong entity, bool enabled)
+        {
+            Native.Boom_API_SetVideoRemoveBlack(entity, enabled);
         }
 
 

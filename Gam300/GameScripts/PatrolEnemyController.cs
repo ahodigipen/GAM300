@@ -348,7 +348,8 @@ namespace GameScripts
             {
                 // Visibility Update
                 bool isInProximity = (_proximityDetection != null && _proximityDetection.IsPlayerInProximity());
-                bool isVisible = _isAlert || isInProximity;
+                // Only show alert video for proximity detection, not for direct vision alert
+                bool isVisible = isInProximity && !Entry.IsPlayerDead;
 
                 if (isVisible)
                 {
@@ -589,6 +590,18 @@ namespace GameScripts
 
             // Reset proximity
             _proximityDetection?.ResetDetection();
+
+            // Hide alert video if active
+            if (_isMyVideoVisible)
+            {
+                if (_sharedVideoEntity != 0 && _videoOwnerID == Entity)
+                {
+                    API.StopVideo(_sharedVideoEntity);
+                    API.SetScale(_sharedVideoEntity, new Vec3(0, 0, 0));
+                    _videoOwnerID = 0;
+                }
+                _isMyVideoVisible = false;
+            }
 
             //("[PatrolEnemyController] Player respawned - all states reset");
         }
