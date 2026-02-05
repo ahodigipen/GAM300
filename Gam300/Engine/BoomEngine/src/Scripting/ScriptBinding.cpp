@@ -171,6 +171,21 @@ namespace Boom {
         return s_Ctx->window->input.mouseDown(button);
     }
 
+    static bool ICALL_API_IsGamepadButtonDown(int button) {
+        if (!s_Ctx || !s_Ctx->window) return false;
+        return s_Ctx->window->input.gamepadButtonDown(button);
+    }
+
+    static float ICALL_API_GetGamepadAxis(int axis) {
+        if (!s_Ctx || !s_Ctx->window) return 0.0f;
+        return s_Ctx->window->input.gamepadAxis(axis);
+    }
+
+    static bool ICALL_API_IsGamepadConnected() {
+        if (!s_Ctx || !s_Ctx->window) return false;
+        return s_Ctx->window->input.isGamepadConnected();
+    }
+
     
     static glm::vec3* ICALL_API_GetLinearVelocity(uint64_t handle, glm::vec3* outVel)
     {
@@ -626,6 +641,47 @@ namespace Boom {
             else {
                 // UNFREEZE
             }
+        }
+    }
+
+    static void ICALL_API_SetNavAgentPosition(uint64_t handle, glm::vec3* pos)
+    {
+        if (!s_Ctx || !pos) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+
+        // 1. Teleport Transform
+        if (s_Ctx->scene.any_of<TransformComponent>(e)) {
+            auto& t = s_Ctx->scene.get<TransformComponent>(e).transform;
+            t.translate = *pos;
+        }
+
+        // 2. Teleport RigidBody if present
+        if (s_Ctx->scene.any_of<RigidBodyComponent>(e)) {
+            auto& rb = s_Ctx->scene.get<RigidBodyComponent>(e).RigidBody;
+            if (rb.actor) {
+                PxTransform pose = rb.actor->getGlobalPose();
+                pose.p = PxVec3(pos->x, pos->y, pos->z);
+                
+                if (PxRigidDynamic* dyn = rb.actor->is<PxRigidDynamic>()) {
+                    dyn->setLinearVelocity(PxVec3(0, 0, 0));
+                    dyn->setAngularVelocity(PxVec3(0, 0, 0));
+                    dyn->setGlobalPose(pose);
+                    dyn->wakeUp();
+                } else {
+                    rb.actor->setGlobalPose(pose);
+                }
+            }
+        }
+
+        // 3. Reset Nav Agent internal state
+        if (s_Ctx->scene.any_of<Boom::NavAgentComponent>(e)) {
+            auto& ag = s_Ctx->scene.get<Boom::NavAgentComponent>(e);
+            ag.path.clear();
+            ag.waypoint = 0;
+            ag.dirty = true; // Force it to recalculate path from new position
+            ag.velocity = glm::vec3(0, 0, 0);
         }
     }
 
@@ -2224,6 +2280,9 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetRotation", (const void*)ICALL_API_SetRotation);
         mono_add_internal_call("Boom.Native::Boom_API_IsKeyDown", (const void*)ICALL_API_IsKeyDown);
         mono_add_internal_call("Boom.Native::Boom_API_IsMouseDown", (const void*)ICALL_API_IsMouseDown);
+        mono_add_internal_call("Boom.Native::Boom_API_IsGamepadButtonDown", (const void*)ICALL_API_IsGamepadButtonDown);
+        mono_add_internal_call("Boom.Native::Boom_API_GetGamepadAxis", (const void*)ICALL_API_GetGamepadAxis);
+        mono_add_internal_call("Boom.Native::Boom_API_IsGamepadConnected", (const void*)ICALL_API_IsGamepadConnected);
 
         mono_add_internal_call("Boom.Native::Boom_API_LoadScene", (const void*)ICALL_API_LoadScene);
         mono_add_internal_call("Boom.Native::Boom_API_GetCurrentSceneName", (const void*)ICALL_API_GetCurrentSceneName);
@@ -2282,6 +2341,8 @@ namespace Boom {
             (const void*)ICALL_API_AI_GetMode);
         mono_add_internal_call("Boom.Native::Boom_API_SetNavAgentActive",
             (const void*)ICALL_API_SetNavAgentActive);
+        mono_add_internal_call("Boom.Native::Boom_API_SetNavAgentPosition",
+            (const void*)ICALL_API_SetNavAgentPosition);
 
 
         // Animator function

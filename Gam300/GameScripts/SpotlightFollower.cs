@@ -14,6 +14,9 @@ namespace GameScripts
         [Boom.EditorExposed("Position Offset Y", "Height offset above target", 0f, 10f, true)]
         private float positionOffsetY = 2.0f;
 
+        [Boom.EditorExposed("Is Patrol Enemy", "Enable if following a PatrolEnemyController (uses different rotation method)")]
+        private bool isPatrolEnemy = false;
+
         private Vec3 positionOffset = new Vec3(0, 2, 0);  // Offset from target (e.g., above the head)
         private bool followRotation = true;
 
@@ -26,9 +29,21 @@ namespace GameScripts
         private static System.Collections.Generic.Dictionary<string, SpotlightFollower> s_Spotlights
             = new System.Collections.Generic.Dictionary<string, SpotlightFollower>();
 
+        // Track if registry has been cleared this session
+        private static bool s_RegistryCleared = false;
+
         public void OnStart(string jsonParams)
         {
             API.Log($"[SpotlightFollower] OnStart() - Entity: {Entity}");
+
+            // Clear stale references from previous play session (only once per session)
+            // The first SpotlightFollower to initialize will clear the registry
+            if (!s_RegistryCleared)
+            {
+                s_Spotlights.Clear();
+                s_RegistryCleared = true;
+                API.Log("[SpotlightFollower] Cleared stale spotlight registry for new session");
+            }
 
             // Apply the exposed positionOffsetY to the offset vector
             positionOffset.Y = positionOffsetY;
@@ -53,6 +68,7 @@ namespace GameScripts
 
             // Register this spotlight so EnemyController can find it
             s_Spotlights[targetName] = this;
+            API.Log($"[SpotlightFollower] Registered spotlight for target: {targetName} (Total: {s_Spotlights.Count})");
         }
 
         public void OnUpdate(float dt)
@@ -76,8 +92,19 @@ namespace GameScripts
             if (followRotation)
             {
                 // Add 180 to Y rotation because spotlight points -Z but model faces +Z
-                targetRot.Y += 180f;
-                API.SetRotation(Entity, targetRot);
+                if (isPatrolEnemy)
+                {
+                    // For patrol enemies, use GetRotationY to get the Y value set by SetRotationY
+                    float targetYaw = API.GetRotationY(targetHandle);
+                    float spotlightYaw = targetYaw + 180f;
+                    API.SetRotationY(Entity, spotlightYaw);
+                }
+                else
+                {
+                    // For sentry enemies, use full rotation
+                    targetRot.Y += 180f;
+                    API.SetRotation(Entity, targetRot);
+                }
             }
         }
 
@@ -136,6 +163,17 @@ namespace GameScripts
             alertColor = color;
         }
 
+        /// <summary>
+        /// Directly set the spotlight's Y rotation (for PatrolEnemyController)
+        /// </summary>
+        public void SetYaw(float yaw)
+        {
+            if (Entity == 0) return;
+            // Add 180 because spotlight points -Z but model faces +Z
+            float spotlightYaw = yaw + 180f;
+            API.SetRotationY(Entity, spotlightYaw);
+        }
+
         // === STATIC METHODS FOR EXTERNAL ACCESS ===
 
         /// <summary>
@@ -160,6 +198,16 @@ namespace GameScripts
                 kvp.Value.ResetColor();
             }
             API.Log($"[SpotlightFollower] Reset all {s_Spotlights.Count} spotlights to original colors");
+        }
+
+        /// <summary>
+        /// Clear the registry for a new play session. Call this when stopping play mode.
+        /// </summary>
+        public static void ClearRegistry()
+        {
+            s_Spotlights.Clear();
+            s_RegistryCleared = false;
+            API.Log("[SpotlightFollower] Registry cleared for new session");
         }
     }
 }

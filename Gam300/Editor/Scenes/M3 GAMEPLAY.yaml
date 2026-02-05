@@ -1,39 +1,14 @@
 Version: 1.0
 ENTITIES:
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: true
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Collider fror Level 2
-      UID: 5999147340285286252
-    TransformComponent:
-      Transform:
-        Translate: [0, 19, 29.8959999]
-        Rotate: [0, -0, 0]
-        Scale: [26, 6.94000006, 3.93000007]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.LevelTransitionCutscene
-      ParamsJSON: "{}"
   - InfoComponent:
       Parent: 2086609460865131994
       Name: Patrol Vision Cone 1
       UID: 5615154073566744542
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-8.74418545, 15.4210215, 2.18726182]
-        Rotate: [180, -359.999786, 180]
+        Translate: [-8.10595322, 15.4210215, 3.15582228]
+        Rotate: [180, -95.9486008, 180]
         Scale: [49.9987907, 50, 49.9987907]
     ScriptComponent:
       Enabled: true
@@ -49,6 +24,7 @@ ENTITIES:
       Parent: 0
       Name: White noise SFX
       UID: 352134920596403547
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 16.9754181, 0]
@@ -78,6 +54,7 @@ ENTITIES:
       Parent: 0
       Name: Ambience SFX
       UID: 6591059401153072858
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 20.6220818, 0]
@@ -107,10 +84,11 @@ ENTITIES:
       Parent: 14909493107942851076
       Name: Sentry Vision Cone 8
       UID: 17778255159458948583
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [17.540493, 15.4146328, 3.31294298]
-        Rotate: [5.00895476e-06, 283.252594, 5.00895476e-06]
+        Rotate: [5.00895476e-06, 193.252594, 5.00895476e-06]
         Scale: [0.465116262, 0.50000006, 0.714285791]
     ScriptComponent:
       Enabled: true
@@ -126,10 +104,11 @@ ENTITIES:
       Parent: 5648346527941532950
       Name: Sentry Vision Cone 7
       UID: 14183844314391113747
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-46.1160126, 26.2603378, -18.4139233]
-        Rotate: [0, 283.252594, 0]
+        Rotate: [0, 193.252594, 0]
         Scale: [66.4224167, 48.3170547, 102.520752]
     ScriptComponent:
       Enabled: true
@@ -145,10 +124,11 @@ ENTITIES:
       Parent: 7127256712868942196
       Name: Sentry Vision Cone 6
       UID: 775872690826725368
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-32.5929832, 26.2603378, -2.77601147]
-        Rotate: [0, 256.747498, 0]
+        Rotate: [0, 346.747498, 0]
         Scale: [66.4224243, 48.3170776, 102.520737]
     ScriptComponent:
       Enabled: true
@@ -164,10 +144,11 @@ ENTITIES:
       Parent: 7684206646313759860
       Name: Sentry Vision Cone 5
       UID: 4830657238726851453
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-56.9920845, 26.2603378, -2.19607687]
-        Rotate: [0, 283.252594, 0]
+        Rotate: [0, 193.252594, 0]
         Scale: [66.4224243, 48.3170776, 102.520729]
     ScriptComponent:
       Enabled: true
@@ -181,21 +162,19 @@ ENTITIES:
         CutOff: 0.769999981
   - InfoComponent:
       Parent: 0
-      Name: Intro CutScene
+      Name: New Entity
       UID: 11874897706277067581
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.IntroCutscene
-      ParamsJSON: "{}"
   - InfoComponent:
       Parent: 0
       Name: UI_Freeze_Text
       UID: 14281033186002033227
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -213,6 +192,7 @@ ENTITIES:
       Parent: 0
       Name: UI_Stance_Text
       UID: 799560869092660199
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -230,6 +210,7 @@ ENTITIES:
       Parent: 0
       Name: FreezeVFXManager
       UID: 4921143958973744307
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.26146245, -0.298543572, -0.5]
@@ -265,6 +246,7 @@ ENTITIES:
       Parent: 0
       Name: TutorialTriggerZone
       UID: 8071608095093610792
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.523941755, 20.6264801, 31.9619293]
@@ -311,6 +293,7 @@ ENTITIES:
       Parent: 0
       Name: Stone_Stairs_Right
       UID: 12252970625562623435
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [10.9185543, 5.7363534, -17.7784405]
@@ -333,6 +316,7 @@ ENTITIES:
       Parent: 0
       Name: Mini_Tatami_Level1
       UID: 4388766450973729723
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0.0321748853, 2.71989751, -17.972702]
@@ -355,6 +339,7 @@ ENTITIES:
       Parent: 0
       Name: Tatami_Level1
       UID: 3510211931949444765
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0.854861081, 2.49743152, -6.92689991]
@@ -377,6 +362,7 @@ ENTITIES:
       Parent: 0
       Name: Checkpoint1
       UID: 9034677838078506674
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.504779816, 20.3323364, 36.178093]
@@ -398,6 +384,7 @@ ENTITIES:
       Parent: 0
       Name: Sliding_Door_3 (Copy) (Copy)
       UID: 13652929590394751880
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.183026552, 4.77786446, 1.91003978]
@@ -414,6 +401,7 @@ ENTITIES:
       Parent: 0
       Name: Sliding_Door_3 (Copy)
       UID: 1758537403935878050
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [13.5128288, 4.77786446, 1.91003978]
@@ -430,6 +418,7 @@ ENTITIES:
       Parent: 0
       Name: Level1_Lantern_1 (Copy)
       UID: 9834102100243015334
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.16913873, 10.4461336, 4.59823084]
@@ -451,6 +440,7 @@ ENTITIES:
       Parent: 18428452598414175165
       Name: Heart_Dead
       UID: 10598076066696413096
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.845601499, 0.857142925, 0]
@@ -464,6 +454,7 @@ ENTITIES:
       Parent: 18428452598414175165
       Name: Heart_Dead
       UID: 18081686699052920950
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.938958704, 0.857142925, 0]
@@ -477,6 +468,7 @@ ENTITIES:
       Parent: 0
       Name: PlayerUI
       UID: 15030438282683852635
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -490,6 +482,7 @@ ENTITIES:
       Parent: 15030438282683852635
       Name: UI_Key
       UID: 14770515492309957970
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0.827750802, -0.256043077, 0]
@@ -503,6 +496,7 @@ ENTITIES:
       Parent: 15030438282683852635
       Name: UI_Hold
       UID: 9281200604267375397
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0.40993607, -0.351144314, 0]
@@ -529,6 +523,7 @@ ENTITIES:
       Parent: 0
       Name: CrouchTriggerZoneL
       UID: 17470992432161037172
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-8.49653721, 2.8389039, -2.23557353]
@@ -575,6 +570,7 @@ ENTITIES:
       Parent: 0
       Name: 2nd_Level_Door_Move
       UID: 2036230071031837327
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-32.5522919, 27.4181995, -23.2234497]
@@ -601,6 +597,7 @@ ENTITIES:
       Parent: 18428452598414175165
       Name: Heart_4
       UID: 13304020931239740115
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.660682201, 0.857142925, 0]
@@ -614,6 +611,7 @@ ENTITIES:
       Parent: 0
       Name: Wall_Texture_Floor_3_Hut
       UID: 11625819730582011641
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-45.4736633, 30.3199997, -36.2785988]
@@ -630,6 +628,7 @@ ENTITIES:
       Parent: 0
       Name: Wall_Texture_Floor_3_Hut
       UID: 15794365267296025769
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-27.6082001, 30.3196449, -31.3253174]
@@ -646,9 +645,10 @@ ENTITIES:
       Parent: 14023949945871365441
       Name: Sentry Vision Cone 4
       UID: 14440688285386943557
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-26.2623577, -260.738373, -30.3636093]
+        Translate: [-22.2889729, -104.821922, 0.0275647361]
         Rotate: [-180, -0.156703219, -180]
         Scale: [0.0199999847, 0.0199999996, 0.0199999847]
     RigidBodyComponent:
@@ -747,7 +747,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.46718383
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -796,6 +796,7 @@ ENTITIES:
       Parent: 0
       Name: DoorTrigger1
       UID: 18225839841380023019
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [5.77212048, 16.5778847, 26.3222256]
@@ -829,10 +830,11 @@ ENTITIES:
       Parent: 13685181942599758823
       Name: VisionConeFake 1
       UID: 9232137645831539091
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 2.53051853, -14.2555885]
-        Rotate: [0, 473.092896, 0]
+        Rotate: [0, 383.092896, 0]
         Scale: [136.157349, 68.9649124, 68.9648361]
     ScriptComponent:
       Enabled: true
@@ -848,10 +850,11 @@ ENTITIES:
       Parent: 3476234535713046263
       Name: Patrol Vision Cone 3
       UID: 12748229014291956908
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [621.4552, 15.4210815, 1069.91479]
-        Rotate: [-0.0148149105, -89.980217, 0.0148199201]
+        Translate: [-8.84629059, 15.4210215, -10.1728039]
+        Rotate: [-0.0148149105, -269.99881, 0.0148199201]
         Scale: [49.9987984, 50, 49.9987984]
     ScriptComponent:
       Enabled: true
@@ -880,6 +883,7 @@ ENTITIES:
       Parent: 0
       Name: RESSURECTION_1
       UID: 15809231333415568356
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.349066317, 17.6987705, 35.8912468]
@@ -906,10 +910,11 @@ ENTITIES:
       Parent: 0
       Name: Samurai
       UID: 2377197601835279376
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.698119283, 1.61266565, 13.419239]
-        Rotate: [0, -147.000107, 0]
+        Translate: [0.914043128, 0.329999924, 13.9171219]
+        Rotate: [0, -69.9999695, 0]
         Scale: [0.0164999999, 0.0164999999, 0.0164999999]
     CharacterControllerComponent:
       Radius: 0.800000012
@@ -1092,6 +1097,7 @@ ENTITIES:
       Parent: 0
       Name: Slope_To_Floor_4
       UID: 16971308981666661812
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-5.74949598, 27.2761364, -68.4480591]
@@ -1131,6 +1137,7 @@ ENTITIES:
       Parent: 0
       Name: Slope_To_Floor_4
       UID: 7414217602248962368
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [3.82375813, 27.2757206, -68.4524078]
@@ -1170,6 +1177,7 @@ ENTITIES:
       Parent: 0
       Name: Stairs_To_Level_4
       UID: 18171915684282977524
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0.112765431, 28.8956814, -68.2000122]
@@ -1209,6 +1217,7 @@ ENTITIES:
       Parent: 0
       Name: Ground_To_Level_4
       UID: 2785878939097235308
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-1.17319596, 23.5724277, -55.4904709]
@@ -1248,6 +1257,7 @@ ENTITIES:
       Parent: 0
       Name: Wall_To_Level_4
       UID: 4088013001839752820
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-7.21007729, 45.8062286, -56.1780586]
@@ -1287,6 +1297,7 @@ ENTITIES:
       Parent: 0
       Name: Slanted_Wall_Floor_2
       UID: 16581412378949571375
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-10.1353874, 46.8441925, -21.3619003]
@@ -1326,6 +1337,7 @@ ENTITIES:
       Parent: 0
       Name: Wall_To_Level_4
       UID: 5874223206021024749
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [5.13815689, 45.8059998, -42.5093346]
@@ -1365,6 +1377,7 @@ ENTITIES:
       Parent: 0
       Name: Roof2_Floor_4
       UID: 6513624723293006926
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-10.8613825, 31.4991512, -31.3504295]
@@ -1404,6 +1417,7 @@ ENTITIES:
       Parent: 0
       Name: Roof_Floor_4
       UID: 9902595753491289907
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-11.4286013, 27.2315941, -43.8359489]
@@ -1430,6 +1444,7 @@ ENTITIES:
       Parent: 0
       Name: Back_wall_Floor_4
       UID: 10920713051260619935
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-25.5088902, 44.7066307, -48.7016869]
@@ -1459,6 +1474,7 @@ ENTITIES:
       Parent: 0
       Name: Seperator_Floor_4
       UID: 3747498441944261189
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-31.7399521, 30.2462902, -39.9961624]
@@ -1498,6 +1514,7 @@ ENTITIES:
       Parent: 0
       Name: Base_Floor_4
       UID: 8976218786569724792
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-36.6510201, 26.444046, -43.8982277]
@@ -1537,6 +1554,7 @@ ENTITIES:
       Parent: 0
       Name: Floor_With_Roof
       UID: 12818118575085889591
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-36.9092903, 37.1134758, -35.4818497]
@@ -1576,6 +1594,7 @@ ENTITIES:
       Parent: 0
       Name: ClosedDoor
       UID: 16826855015415748122
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [3.01600885, 20.6351547, 50.493]
@@ -1615,6 +1634,7 @@ ENTITIES:
       Parent: 0
       Name: Divider
       UID: 6730938418377857404
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-36.9224434, 31.5197773, -22.791029]
@@ -1654,6 +1674,7 @@ ENTITIES:
       Parent: 0
       Name: level2_wall_1
       UID: 16800634043632137629
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-35.5668259, 25.2593002, -14.6050816]
@@ -1693,6 +1714,7 @@ ENTITIES:
       Parent: 0
       Name: Statue_Floor_3
       UID: 3718808117625100366
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-64.5262833, 27.1949787, -2.79239726]
@@ -1719,6 +1741,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Floor_3
       UID: 12897822714022431195
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-65.4899979, 33.4420013, -6.09061813]
@@ -1740,6 +1763,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Floor_3
       UID: 6967137589478054039
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-65.4899979, 33.4420013, 7.52897549]
@@ -1761,6 +1785,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Floor_3
       UID: 11517796869274227248
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-65.4902573, 33.44244, 14.7301979]
@@ -1782,6 +1807,7 @@ ENTITIES:
       Parent: 0
       Name: Right_Roof
       UID: 9718040968456975006
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0, -0.108324289]
@@ -1811,6 +1837,7 @@ ENTITIES:
       Parent: 0
       Name: Left_Wall_Roof
       UID: 2388035415323208407
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-53.4668274, 31.8470898, 24.2546768]
@@ -1850,6 +1877,7 @@ ENTITIES:
       Parent: 0
       Name: Stone_Statue_2_Floor_2
       UID: 652544334224876638
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-12.5113859, 15.9546919, -8.32742023]
@@ -1876,6 +1904,7 @@ ENTITIES:
       Parent: 0
       Name: Hanging_Lantern_Outside_Hut_3
       UID: 9657880931208710085
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [15.0132399, 21.2858295, 25.3724995]
@@ -1910,6 +1939,7 @@ ENTITIES:
       Parent: 0
       Name: Wall_Back2_Floor_1
       UID: 2848513897976485529
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.0579999983, 5.50299978, 18.7877693]
@@ -1949,6 +1979,7 @@ ENTITIES:
       Parent: 0
       Name: Wall_Back_Floor_1
       UID: 14120173863723679001
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.425951004, 6.89492989, 20.3509407]
@@ -1975,6 +2006,7 @@ ENTITIES:
       Parent: 0
       Name: Hanging_Lantern_Outside_Hut_4
       UID: 4028690314670065481
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-9.81009007, 15.5142698, 39.4992981]
@@ -2009,6 +2041,7 @@ ENTITIES:
       Parent: 0
       Name: Statue_Floor_2_Right
       UID: 11259276590053674568
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [8.69515038, 16.1399899, 1.41270006]
@@ -2048,6 +2081,7 @@ ENTITIES:
       Parent: 0
       Name: Stairs_Left
       UID: 14807325083218498713
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-12.0617018, 3.17116499, -19.2377338]
@@ -2087,6 +2121,7 @@ ENTITIES:
       Parent: 0
       Name: Stairs_Right
       UID: 1078971789643419703
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [12.3542604, 3.277385, -17.711401]
@@ -2126,6 +2161,7 @@ ENTITIES:
       Parent: 0
       Name: Stairs_Handle_Left
       UID: 43420598284529509
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-13.8217173, 1.91249001, -16.0023098]
@@ -2165,6 +2201,7 @@ ENTITIES:
       Parent: 0
       Name: Stairs_Handle_Right
       UID: 14423942184205972563
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [13.5607443, 1.79463005, -15.8301144]
@@ -2204,6 +2241,7 @@ ENTITIES:
       Parent: 0
       Name: Level1_r2
       UID: 12178355083667882808
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-2.6044755, 23.2352219, 11.8266916]
@@ -2230,6 +2268,7 @@ ENTITIES:
       Parent: 18428452598414175165
       Name: Heart_Dead
       UID: 16775474597636124132
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.660682201, 0.857142925, 0]
@@ -2243,30 +2282,32 @@ ENTITIES:
       Parent: 0
       Name: Camera
       UID: 9201024860084647067
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [5.79202223, 20.4306164, 26.8074913]
-        Rotate: [-26.6874962, -252.1875, 6.36255137e-08]
+        Translate: [-31.3735161, 44.7006683, 13.022872]
+        Rotate: [132.375, -30.9375, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.00100000005
         FarPlane: 935.47998
-        FOV: 76
+        FOV: 78
     ThirdPersonCameraComponent:
       Target UID: 2377197601835279376
       Offset: [0.00999999978, 4.1500001, 0]
       Current Distance: 5
       Min Distance: 1
       Max Distance: 5
-      Current Yaw: -1227
-      Current Pitch: 3
+      Current Yaw: -2142
+      Current Pitch: 6
       Mouse Sensitivity: 1
       Scroll Sensitivity: 1
   - InfoComponent:
       Parent: 0
       Name: Skybox
       UID: 3009173759421305309
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -2291,6 +2332,7 @@ ENTITIES:
       Parent: 0
       Name: Floor
       UID: 10000000000000000002
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-22.4655457, -0.254334569, -9.83891582]
@@ -2330,6 +2372,7 @@ ENTITIES:
       Parent: 0
       Name: NavAgent
       UID: 1992698266524408743
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [5.01281404, 8.48799229, 4.99975538]
@@ -2349,6 +2392,7 @@ ENTITIES:
       Parent: 0
       Name: Hanging_Lantern_Outside_Hut_6
       UID: 11500368858515465967
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-9.81000042, 15.4601097, 67.0189667]
@@ -2370,6 +2414,7 @@ ENTITIES:
       Parent: 0
       Name: Floor
       UID: 8978989599714003870
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-10.1912403, 15.6816101, 53.8320808]
@@ -2399,6 +2444,7 @@ ENTITIES:
       Parent: 0
       Name: Statue_Outside_Hut_2
       UID: 7787992081072199843
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-11.0900002, 16.6774998, 44.2412872]
@@ -2438,6 +2484,7 @@ ENTITIES:
       Parent: 0
       Name: Prism_Outside_Hut
       UID: 17261417048716064848
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-14.74018, 15.547945, 67.3678665]
@@ -2477,6 +2524,7 @@ ENTITIES:
       Parent: 0
       Name: Standing_Lantern_Outside_Hut
       UID: 6757287925914476890
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [24.15732, 13.3178778, 25.6966896]
@@ -2508,6 +2556,7 @@ ENTITIES:
       Parent: 0
       Name: Hanging_Lantern_Outside_Hut_2
       UID: 685986689009478695
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [23.7648296, 21.0400009, 20.714262]
@@ -2529,6 +2578,7 @@ ENTITIES:
       Parent: 0
       Name: Wall_Divider_Floor_1
       UID: 15313398657113075594
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-4.76421309, 11.1515064, 2.4115274]
@@ -2558,6 +2608,7 @@ ENTITIES:
       Parent: 0
       Name: Floor_Right_Floor_2
       UID: 11914392841982844469
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [21.8964272, 6.56983852, 3.97473001]
@@ -2597,6 +2648,7 @@ ENTITIES:
       Parent: 0
       Name: Floor_Left_Floor_2
       UID: 16568992521348852646
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-22.110651, 6.51090288, 3.09660268]
@@ -2623,6 +2675,7 @@ ENTITIES:
       Parent: 0
       Name: Level1_Lantern_1
       UID: 13119191662111720466
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-6.8278656, 10.4461336, 4.59823084]
@@ -2657,6 +2710,7 @@ ENTITIES:
       Parent: 0
       Name: FLOOR2
       UID: 13500012620144209348
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0.400190592, 13.3520041, 5.78579521]
@@ -2683,6 +2737,7 @@ ENTITIES:
       Parent: 0
       Name: Indoor_Hanging_Lanturn_Front_Right
       UID: 7163372545072077516
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [12.6297703, 5.05205011, -14.58529]
@@ -2699,6 +2754,7 @@ ENTITIES:
       Parent: 0
       Name: Indoor_Hanging_Lanturn_Front_Left
       UID: 15777117760288992777
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-12.6473351, 5.0162096, -14.7060986]
@@ -2728,6 +2784,7 @@ ENTITIES:
       Parent: 0
       Name: Liom_Statue_Floor1_Right
       UID: 3221638087839990396
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [11.8449898, 2.42384171, 3.73498988]
@@ -2767,6 +2824,7 @@ ENTITIES:
       Parent: 0
       Name: Liom_Statue_Floor1_Left
       UID: 17809540757208150702
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-11.9532928, 2.38350415, 3.35174274]
@@ -2806,6 +2864,7 @@ ENTITIES:
       Parent: 0
       Name: Wall_Front_Floor_1
       UID: 10276433539658323172
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.404028654, 12.0561199, -21.3861027]
@@ -2832,6 +2891,7 @@ ENTITIES:
       Parent: 0
       Name: Turn_Point_Left
       UID: 12662354917274233329
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-18.7131691, 13.6084099, -15.8298397]
@@ -2848,6 +2908,7 @@ ENTITIES:
       Parent: 0
       Name: Turn_Point_Right
       UID: 4738938337717066563
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [18.8044491, 14.1700001, -15.9637899]
@@ -2877,6 +2938,7 @@ ENTITIES:
       Parent: 0
       Name: Fence_Level_2
       UID: 360363283426413035
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.174999997, 13.3675003, -15.64499]
@@ -2916,6 +2978,7 @@ ENTITIES:
       Parent: 0
       Name: Wall_Slanted
       UID: 17789316079778263479
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-25.7503872, 5.62664747, 1.69924796]
@@ -2955,6 +3018,7 @@ ENTITIES:
       Parent: 0
       Name: Walls_Right_Floor_2
       UID: 9853635101962824744
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-1.86501169, 16.91502, -22.0168877]
@@ -2994,6 +3058,7 @@ ENTITIES:
       Parent: 0
       Name: Lion_Statue_Left
       UID: 9981075119489624857
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-17.3267307, 15.0158005, -13.9871597]
@@ -3033,6 +3098,7 @@ ENTITIES:
       Parent: 0
       Name: Lion_Statue_Right
       UID: 7838097312144507883
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [17.3274994, 14.7282858, -13.9874897]
@@ -3072,6 +3138,7 @@ ENTITIES:
       Parent: 0
       Name: Statue_Left
       UID: 9585209574695702259
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-12.494441, 15.83319, -13.6623602]
@@ -3111,6 +3178,7 @@ ENTITIES:
       Parent: 0
       Name: Outdoor_Lantern_Floor_2_Left
       UID: 2870292450877532431
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-12.6430702, 13.3031406, -11.10783]
@@ -3155,6 +3223,7 @@ ENTITIES:
       Parent: 0
       Name: Outdoor_Lantern_Floor_2_Right
       UID: 2218775839040934482
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-4.29736137, 13.3820486, -13.9300003]
@@ -3186,6 +3255,7 @@ ENTITIES:
       Parent: 0
       Name: Outdoor_Hanging_Lamp_Right
       UID: 717955065497441822
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [23.6426105, 18.8042793, -6.06337023]
@@ -3207,6 +3277,7 @@ ENTITIES:
       Parent: 0
       Name: Outdoor_Hanging_Lamp_Left
       UID: 14749266138962598626
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-24.0835533, 20, -6.06248999]
@@ -3241,6 +3312,7 @@ ENTITIES:
       Parent: 0
       Name: Satue_For_Wall_Slope
       UID: 17696174002566031047
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.707055628, 20.9480381, 10.1362982]
@@ -3280,6 +3352,7 @@ ENTITIES:
       Parent: 0
       Name: Wall_Floor_2_Left
       UID: 6831113887765089259
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-12.3898497, 16.6887817, -1.34182]
@@ -3319,6 +3392,7 @@ ENTITIES:
       Parent: 0
       Name: Lion_Statue_Middle_Right_Floor_2
       UID: 12279501084326585378
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [6.61868, 14.6855631, -5.95343018]
@@ -3358,6 +3432,7 @@ ENTITIES:
       Parent: 0
       Name: Wall_floor_2_3
       UID: 17346385537782786279
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [2.35991001, 16.7140274, -4.78031015]
@@ -3397,6 +3472,7 @@ ENTITIES:
       Parent: 0
       Name: Fruit_Tree_Middle_Floor_2
       UID: 13972879706102874778
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [3.71992993, 13.6502399, 4.24085999]
@@ -3436,6 +3512,7 @@ ENTITIES:
       Parent: 0
       Name: Lion_Statue_Middle_Left_Floor_2
       UID: 963547750710080490
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-2.51615, 14.7536297, -6.00606012]
@@ -3475,6 +3552,7 @@ ENTITIES:
       Parent: 0
       Name: Fruit_Tree_Outside_Hut
       UID: 2443250646068502005
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [19.4503727, 13.4251757, 22.6484566]
@@ -3514,6 +3592,7 @@ ENTITIES:
       Parent: 0
       Name: EndTriggerZone
       UID: 16900605180980820779
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-7.74946213, 15.7404327, 24.2598057]
@@ -3553,6 +3632,7 @@ ENTITIES:
       Parent: 0
       Name: Wall_Middle_Floor_2
       UID: 6365037268832649934
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [18.0107307, 13.525032, 28.0049896]
@@ -3592,6 +3672,7 @@ ENTITIES:
       Parent: 0
       Name: Hut_Base
       UID: 2136373434774079840
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.325205803, 15.5079336, 48.3323936]
@@ -3631,6 +3712,7 @@ ENTITIES:
       Parent: 0
       Name: Hut_Roof
       UID: 16133961965073669139
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0.238012001, 32.0342598, 47.7282219]
@@ -3670,6 +3752,7 @@ ENTITIES:
       Parent: 0
       Name: Right_Wall_Of_Hut
       UID: 468644347822796871
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [8.16724968, 15.4367504, 48.1555481]
@@ -3709,6 +3792,7 @@ ENTITIES:
       Parent: 0
       Name: Left_Wall_Of_Hut_Bottom
       UID: 8618011661999532453
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-8.1671896, 12.0883799, 48.1404953]
@@ -3748,6 +3832,7 @@ ENTITIES:
       Parent: 0
       Name: Front_Pillar_Left_Of_Hut
       UID: 4636965599594259602
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-8.17185974, 22.17132, 27.9622288]
@@ -3787,6 +3872,7 @@ ENTITIES:
       Parent: 0
       Name: Left_Wall_Of_Hut_Top
       UID: 13337176872369800048
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-9.43455887, 22.1983395, 47.9132614]
@@ -3813,6 +3899,7 @@ ENTITIES:
       Parent: 0
       Name: Interior_Decor_RIght_Of_Hut
       UID: 13900569791274339863
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-8.9846096, 20.7383347, 40.2095222]
@@ -3829,6 +3916,7 @@ ENTITIES:
       Parent: 0
       Name: Hanging_Lantern_Front_Of_Hut
       UID: 15969626093444568412
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [5.86999989, 22.5209999, 29.7439995]
@@ -3863,6 +3951,7 @@ ENTITIES:
       Parent: 0
       Name: Back_Wall_Of_Hut
       UID: 1153291360730907286
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.410641015, 19.2469997, 69.4668274]
@@ -3889,6 +3978,7 @@ ENTITIES:
       Parent: 0
       Name: Hanging_Lantern_Exit_Of_Hut
       UID: 13237089712335802159
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-7.89580011, 22.4724998, 50.1567116]
@@ -3923,6 +4013,7 @@ ENTITIES:
       Parent: 0
       Name: Table_Second_Floor
       UID: 16020692895328883736
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0.780245006, 17.7140808, 58.7899513]
@@ -3962,6 +4053,7 @@ ENTITIES:
       Parent: 0
       Name: Cushion_1_Second_Floor
       UID: 2249271849963366371
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-4.52539015, 17.8589993, 58.1401901]
@@ -4001,6 +4093,7 @@ ENTITIES:
       Parent: 0
       Name: Cushion_2_Second_Floor
       UID: 1861805954047498574
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0.51077801, 17.8591137, 54.8099899]
@@ -4040,6 +4133,7 @@ ENTITIES:
       Parent: 0
       Name: Cushion_3_Second_Floor
       UID: 8415643198172161472
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0.311001986, 17.8589993, 63.8384285]
@@ -4079,6 +4173,7 @@ ENTITIES:
       Parent: 0
       Name: Cushion_4_Second_Floor
       UID: 3820564189371600480
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [5.46808004, 17.8589993, 58.8430405]
@@ -4118,6 +4213,7 @@ ENTITIES:
       Parent: 0
       Name: Prism_Inside_Back_Of_Hut
       UID: 6129246695125078299
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0.508838832, 18.9373226, 67.315773]
@@ -4157,6 +4253,7 @@ ENTITIES:
       Parent: 0
       Name: Floor_Of_Level_2_Back
       UID: 5980189267885289823
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-17.3172607, 3.20444989, 48.5984993]
@@ -4183,6 +4280,7 @@ ENTITIES:
       Parent: 0
       Name: Hanging_Lantern_Outside_Hut_1
       UID: 5352366284023826398
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [20.4207706, 21.0399895, 25.3731709]
@@ -4204,6 +4302,7 @@ ENTITIES:
       Parent: 0
       Name: Sliding_Door_3
       UID: 16125401810609408549
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-13.546586, 4.77786446, 1.91003978]
@@ -4233,6 +4332,7 @@ ENTITIES:
       Parent: 0
       Name: RESSURECTION_2
       UID: 4182635420518313201
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.227113545, 0.547555506, 7.48859787]
@@ -4272,6 +4372,7 @@ ENTITIES:
       Parent: 0
       Name: Bonsai_Tree_Left_Floor_1
       UID: 3199022155007006803
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-15.2567644, 1.33925223, 6.14814854]
@@ -4311,6 +4412,7 @@ ENTITIES:
       Parent: 0
       Name: Bonsai_Tree_Right_Floor_1
       UID: 693392909073787642
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [15.7273293, 1.14433169, 6.02052069]
@@ -4337,6 +4439,7 @@ ENTITIES:
       Parent: 0
       Name: Level1_Lantern_1 (Copy)
       UID: 5837872605486375087
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [6.59885406, 10.4461336, 4.59823084]
@@ -4371,6 +4474,7 @@ ENTITIES:
       Parent: 0
       Name: Middle_Pillar_Floor_1
       UID: 8760152593011495485
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 6.2579999, -5.33099985]
@@ -4410,6 +4514,7 @@ ENTITIES:
       Parent: 0
       Name: Seperator_1_Right_1
       UID: 8853765616727413598
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [16.1222, 4.83065653, -7.35652018]
@@ -4449,6 +4554,7 @@ ENTITIES:
       Parent: 0
       Name: Seperator_2_Middle_1
       UID: 12563510430926190574
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.0804859996, 3.04089189, -7.35750008]
@@ -4488,6 +4594,7 @@ ENTITIES:
       Parent: 0
       Name: Seperator_1_Left_1
       UID: 11358494504990055002
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-14.8467503, 5.13626003, -7.30916977]
@@ -4527,6 +4634,7 @@ ENTITIES:
       Parent: 0
       Name: LionStatue_2
       UID: 13710406995112056729
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [8.51709747, 2.34984994, -5.37112951]
@@ -4553,6 +4661,7 @@ ENTITIES:
       Parent: 0
       Name: Indoor_Lantern_Right2_Floor_1
       UID: 8993144560248912592
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [18.3160591, 6.04059982, -2.5]
@@ -4587,6 +4696,7 @@ ENTITIES:
       Parent: 0
       Name: LionStatue_1
       UID: 7885476797525816908
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-8.46483231, 2.71366882, -4.61915731]
@@ -4618,6 +4728,7 @@ ENTITIES:
       Parent: 0
       Name: Indoor_Lantern_Left2_Floor_1
       UID: 11239854396506886408
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-17.0311127, 5.64779997, -2.20093012]
@@ -4639,6 +4750,7 @@ ENTITIES:
       Parent: 0
       Name: Indoor_Lantern_Right3_Floor_1
       UID: 15274239832865337985
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-13.6234903, 5.40826988, -5.87540007]
@@ -4660,6 +4772,7 @@ ENTITIES:
       Parent: 0
       Name: Indoor_Lantern_Right4_Floor_1
       UID: 14989716943305730551
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [3.23762012, 5.70701742, -19.2554798]
@@ -4681,6 +4794,7 @@ ENTITIES:
       Parent: 0
       Name: Indoor_Lantern_Left4_Floor_1
       UID: 15947168737531537874
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-3.23749995, 5.54779816, -19.2549992]
@@ -4715,6 +4829,7 @@ ENTITIES:
       Parent: 0
       Name: SPOOFWALL_2 (Copy)
       UID: 13182400529227188578
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [8.83058643, 19.0299473, 10.1362982]
@@ -4754,6 +4869,7 @@ ENTITIES:
       Parent: 0
       Name: Slop_Floor_2
       UID: 5793905410628473602
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.200665653, 17.2417717, -0.637229979]
@@ -4793,6 +4909,7 @@ ENTITIES:
       Parent: 0
       Name: Wall_Floor_2_2
       UID: 13236036178594084216
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-4.61744022, 16.7172375, -0.193920001]
@@ -4832,6 +4949,7 @@ ENTITIES:
       Parent: 0
       Name: Lion_Statue_Floor_2_Middle
       UID: 13492418210642916084
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-11.2880154, 14.7176704, 2.8759923]
@@ -4871,6 +4989,7 @@ ENTITIES:
       Parent: 0
       Name: Lion_Statue_Floor_2_Middle_2
       UID: 8074056370493249823
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-2.43833995, 15.4986296, 2.66752005]
@@ -4910,6 +5029,7 @@ ENTITIES:
       Parent: 0
       Name: Statue_Floor_2_Middle
       UID: 12830585954203493242
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [10.15977, 16.1405201, 3.67790747]
@@ -4949,6 +5069,7 @@ ENTITIES:
       Parent: 0
       Name: Statue_Floor_2_Left
       UID: 6782473813474277487
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [10.06814, 16.1399899, 6.15147018]
@@ -4988,6 +5109,7 @@ ENTITIES:
       Parent: 0
       Name: Seperator_Floor_2
       UID: 10281552342571521286
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-16.9721165, 20.0402336, 27.7949505]
@@ -5027,6 +5149,7 @@ ENTITIES:
       Parent: 0
       Name: Stone_Statue_Floor_2_Outside_Hut
       UID: 13587679039975028729
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-11.0900002, 16.6774998, 50.0120239]
@@ -5066,6 +5189,7 @@ ENTITIES:
       Parent: 0
       Name: Floor_2_Conector_Floor_3
       UID: 6577078971723633079
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-30.0310497, 1.10064602, 61.2063103]
@@ -5105,6 +5229,7 @@ ENTITIES:
       Parent: 0
       Name: Stairs_To_Level_3
       UID: 4356941940841291798
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-30.8573399, 15.4151258, 40.7431717]
@@ -5144,6 +5269,7 @@ ENTITIES:
       Parent: 0
       Name: Wall_behind_Hut
       UID: 4395201707747078389
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-23.6012897, 18.7940292, 69.493103]
@@ -5183,6 +5309,7 @@ ENTITIES:
       Parent: 0
       Name: SPOOF FIX
       UID: 13501458050490497474
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-37.7912064, 16.2824345, 43.5765533]
@@ -5222,6 +5349,7 @@ ENTITIES:
       Parent: 0
       Name: Wall_Middle_Floor_3
       UID: 16181083975962338629
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-67.8677292, 26.5737686, -0.528297186]
@@ -5261,6 +5389,7 @@ ENTITIES:
       Parent: 0
       Name: Wall_Left_Roof
       UID: 3125007874419280460
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-57.0695, 38.3369026, -23.8117065]
@@ -5300,6 +5429,7 @@ ENTITIES:
       Parent: 0
       Name: Stair_Handle_Floor_3
       UID: 23348314003995208
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-25.5687408, 13.709671, 36.9383659]
@@ -5326,6 +5456,7 @@ ENTITIES:
       Parent: 0
       Name: Wall_Left_Roof2
       UID: 17876669626006337926
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-47.1118736, 39.0058556, -35.7579308]
@@ -5355,6 +5486,7 @@ ENTITIES:
       Parent: 0
       Name: Floor_3_Ground
       UID: 12984771949456142781
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-47.3688126, 18.9319916, -3.45885515]
@@ -5394,6 +5526,7 @@ ENTITIES:
       Parent: 0
       Name: Wall_Floor_3
       UID: 13846031918317396066
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-26.5638962, 23.9131203, -30.8718948]
@@ -5433,6 +5566,7 @@ ENTITIES:
       Parent: 0
       Name: Floor_3_Ground
       UID: 4319432897561837554
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-36.6882286, 19.7098942, -35.6134834]
@@ -5472,6 +5606,7 @@ ENTITIES:
       Parent: 0
       Name: Floor_4
       UID: 4918625632145337744
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-1.16658056, 29.2030125, -92.1585541]
@@ -5511,6 +5646,7 @@ ENTITIES:
       Parent: 0
       Name: Base_Floor_4
       UID: 2190075676593154955
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [10.8032551, 33.5409164, -69.3112869]
@@ -5550,6 +5686,7 @@ ENTITIES:
       Parent: 0
       Name: Base_Floor_4
       UID: 11842107837780108053
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-12.8216953, 33.3653908, -69.0238113]
@@ -5589,6 +5726,7 @@ ENTITIES:
       Parent: 0
       Name: Base_Pillar_Floor_4
       UID: 13287787014918558297
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [10.7512808, 52.951889, -69.2815323]
@@ -5628,6 +5766,7 @@ ENTITIES:
       Parent: 0
       Name: Base_Pillar_Floor_4
       UID: 7718348480325726076
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-12.8123875, 52.7081757, -69.1482925]
@@ -5667,6 +5806,7 @@ ENTITIES:
       Parent: 0
       Name: Base_Floor_4
       UID: 2570408052666540741
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-23.0928097, 32.9230003, -90.8538818]
@@ -5706,6 +5846,7 @@ ENTITIES:
       Parent: 0
       Name: Base_Floor_4
       UID: 6848394130365334558
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [21.8044872, 32.9230003, -90.8539963]
@@ -5745,6 +5886,7 @@ ENTITIES:
       Parent: 0
       Name: Base_Pillar_Floor_4
       UID: 1729221631931156963
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [21.8040009, 52.7220001, -90.8539963]
@@ -5784,6 +5926,7 @@ ENTITIES:
       Parent: 0
       Name: Base_Pillar_Floor_4
       UID: 17871542461698769179
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-23.0930004, 52.7220001, -90.8459091]
@@ -5823,6 +5966,7 @@ ENTITIES:
       Parent: 0
       Name: Base_Floor_4
       UID: 17970313403515076686
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-1.20458198, 32.9230003, -115.667686]
@@ -5862,6 +6006,7 @@ ENTITIES:
       Parent: 0
       Name: Base_Pillar_Floor_4
       UID: 13688581090606078187
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-1.20500004, 52.7220001, -115.667999]
@@ -5888,6 +6033,7 @@ ENTITIES:
       Parent: 0
       Name: Floating_Platform
       UID: 7686139830452718370
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-9.07210922, 41.6555748, -89.5403824]
@@ -5904,6 +6050,7 @@ ENTITIES:
       Parent: 0
       Name: Floating_Platform
       UID: 11729297249889730486
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-3.8817277, 48.7154236, -98.5415649]
@@ -5920,6 +6067,7 @@ ENTITIES:
       Parent: 0
       Name: Floating_Platform
       UID: 17354752070664653093
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [2.12977314, 56.1651993, -93.8769531]
@@ -5949,6 +6097,7 @@ ENTITIES:
       Parent: 0
       Name: Platform_Floor_5
       UID: 7871732944255032664
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.521252096, 66.5829697, -92.2309723]
@@ -5988,6 +6137,7 @@ ENTITIES:
       Parent: 0
       Name: Roof_Prism
       UID: 1493003963993392887
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.201146603, 69.2807007, -93.6500397]
@@ -6027,6 +6177,7 @@ ENTITIES:
       Parent: 0
       Name: Floor_4_Level_2_Pillars
       UID: 6846558112192725432
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-16.0169621, 73.2748413, -91.9531631]
@@ -6066,6 +6217,7 @@ ENTITIES:
       Parent: 0
       Name: Floor_4_Level_2_Pillars
       UID: 7785019101967178938
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [14.7936926, 73.2750015, -91.9530029]
@@ -6092,6 +6244,7 @@ ENTITIES:
       Parent: 0
       Name: Floor_4_Level_2_Pillars
       UID: 5611518539189129686
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.065299511, 73.2821426, -108.403519]
@@ -6108,6 +6261,7 @@ ENTITIES:
       Parent: 0
       Name: Floor_4_Level_2_Pillars
       UID: 2509374863121979023
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.0649999976, 73.2819977, -76.1972961]
@@ -6124,6 +6278,7 @@ ENTITIES:
       Parent: 0
       Name: Pagoda_Roof
       UID: 12903353811079709539
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-2.65608549, 83.7516174, -92.276062]
@@ -6153,6 +6308,7 @@ ENTITIES:
       Parent: 0
       Name: Lion_Statue_Outside_Hut
       UID: 10462113249038074581
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-5.43645191, 14.4126081, 12.9054432]
@@ -6179,6 +6335,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Outside_Hut
       UID: 6044471115333520374
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-24.0105228, 20, 19.5658321]
@@ -6213,6 +6370,7 @@ ENTITIES:
       Parent: 0
       Name: Stone_Statue_Oppo_Hut
       UID: 15169553047577864002
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-24.0168438, 16.420187, 41.5472527]
@@ -6239,6 +6397,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Outside_Hut
       UID: 16540825364151879958
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-24.2539177, 20, 32.0946426]
@@ -6260,6 +6419,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Stairs_To_Level_3
       UID: 18332403659842707375
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-36.6634407, 27.3636951, 49.4195786]
@@ -6281,6 +6441,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Stairs_To_Level_3
       UID: 818727880264195286
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-36.5221405, 33.1678963, 40.0979576]
@@ -6302,6 +6463,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Floor_3
       UID: 11077699063001817715
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-27.9700241, 28.4772587, 4.60886812]
@@ -6336,6 +6498,7 @@ ENTITIES:
       Parent: 0
       Name: Stone_Statue_Level_3
       UID: 9590274819649667893
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-28.2738647, 27.1949997, -0.0270000007]
@@ -6375,6 +6538,7 @@ ENTITIES:
       Parent: 0
       Name: Stone_Statue_Level_3
       UID: 275969553929978137
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-28.2740002, 27.1949997, -4.91556978]
@@ -6401,6 +6565,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Floor_3
       UID: 12975091722426689741
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-27.9699993, 30.8564072, -4.6309967]
@@ -6422,6 +6587,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Floor_3
       UID: 7663837736192417177
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-27.9699993, 33.2314072, -19.653017]
@@ -6443,6 +6609,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Floor_3_Hut
       UID: 6317734868130890583
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-44.6216393, 31.3342381, -27.9635677]
@@ -6464,6 +6631,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Floor_3_Hut
       UID: 14537573544098562715
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-44.6220016, 31.3339996, -34.5730896]
@@ -6485,6 +6653,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Floor_3_Hut
       UID: 8168573405014264879
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-28.46908, 31.3339996, -34.5730019]
@@ -6506,6 +6675,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Floor_3_Hut
       UID: 14233077341372326445
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-28.4689999, 31.3339996, -27.9640007]
@@ -6527,6 +6697,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Floor_3_Path
       UID: 2114394365494610129
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-26.1213818, 33.8359985, -46.8549995]
@@ -6548,6 +6719,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Floor_3_Path
       UID: 150969247414630593
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-18.824192, 33.8359985, -46.8549995]
@@ -6569,6 +6741,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Floor_3_Path
       UID: 5189871711091922832
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-11.0206232, 33.7595825, -46.7296333]
@@ -6590,6 +6763,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Floor_3_Path
       UID: 2820362142471303937
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-5.70150089, 33.7599983, -53.4096489]
@@ -6611,6 +6785,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Floor_3_Path
       UID: 10619389207332613408
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-5.70200014, 34.8158875, -61.0913467]
@@ -6632,6 +6807,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Floor_3_Path
       UID: 3488747654536006867
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [3.68748307, 38.2705269, -46.9481735]
@@ -6653,6 +6829,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Floor_3_Path
       UID: 13647060801884170779
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [3.68700004, 38.2709999, -54.0912285]
@@ -6674,6 +6851,7 @@ ENTITIES:
       Parent: 0
       Name: Pagoda_Stone_Lamp
       UID: 16042555781880460813
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-5.81922483, 31.2680721, -74.2551575]
@@ -6690,6 +6868,7 @@ ENTITIES:
       Parent: 0
       Name: Pagoda_Stone_Lamp
       UID: 13162323159620032714
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [3.79427958, 31.2679996, -74.2549973]
@@ -6706,6 +6885,7 @@ ENTITIES:
       Parent: 0
       Name: Pagoda_Stone_Lamp
       UID: 5027990970072505888
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [2.52886105, 31.2679996, -89.1905746]
@@ -6722,6 +6902,7 @@ ENTITIES:
       Parent: 0
       Name: Pagoda_Stone_Lamp
       UID: 652248780630557429
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [11.1570415, 31.6630154, -103.532608]
@@ -6738,6 +6919,7 @@ ENTITIES:
       Parent: 0
       Name: Pagoda_Stone_Lamp
       UID: 3635165805699065905
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-17.3380222, 31.6630001, -109.257034]
@@ -6754,6 +6936,7 @@ ENTITIES:
       Parent: 0
       Name: Pagoda_Lantern
       UID: 17238108029389531752
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0.0096411705, 49.3672791, -110.323997]
@@ -6775,6 +6958,7 @@ ENTITIES:
       Parent: 0
       Name: Pagoda_Lantern
       UID: 8404366303875562460
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [16.3647175, 59.2910995, -108.218216]
@@ -6809,6 +6993,7 @@ ENTITIES:
       Parent: 0
       Name: Pagoda_Tree
       UID: 7315362603184300195
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [17.4115829, 58.9146423, -101.037125]
@@ -6848,6 +7033,7 @@ ENTITIES:
       Parent: 0
       Name: Pagoda_Tree
       UID: 11904896227911583788
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-18.6848431, 56.2561417, -82.548996]
@@ -6874,6 +7060,7 @@ ENTITIES:
       Parent: 0
       Name: Pagoda_Sliding_Door
       UID: 10890283744556511936
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [5.88403034, 70.5062943, -79.1026077]
@@ -6890,6 +7077,7 @@ ENTITIES:
       Parent: 0
       Name: Pagoda_Sliding_Door
       UID: 7370925412447993334
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-6.70585823, 70.5059967, -79.1029968]
@@ -6906,6 +7094,7 @@ ENTITIES:
       Parent: 0
       Name: Pagoda_Sliding_Door
       UID: 13779619464636331194
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-12.9792385, 70.5059967, -85.4349747]
@@ -6922,6 +7111,7 @@ ENTITIES:
       Parent: 0
       Name: Pagoda_Sliding_Door
       UID: 16765621825976434554
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-12.9790001, 70.5059967, -97.9914017]
@@ -6951,6 +7141,7 @@ ENTITIES:
       Parent: 0
       Name: Pagoda_Sliding_Door
       UID: 15625970133127521591
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-6.83072519, 70.5059967, -104.269653]
@@ -6990,6 +7181,7 @@ ENTITIES:
       Parent: 0
       Name: Pagoda_Sliding_Door
       UID: 16387207638960670320
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [5.72519016, 70.5059967, -104.269997]
@@ -7016,6 +7208,7 @@ ENTITIES:
       Parent: 0
       Name: Pagoda_Sliding_Door
       UID: 7893589190981011138
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [11.8839369, 70.5059967, -97.9142761]
@@ -7032,6 +7225,7 @@ ENTITIES:
       Parent: 0
       Name: Pagoda_Sliding_Door
       UID: 17494235520125609851
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [11.8839998, 70.5059967, -85.4093323]
@@ -7048,10 +7242,11 @@ ENTITIES:
       Parent: 0
       Name: Sentry_1
       UID: 13685181942599758823
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 0.530518472, -14.2555885]
-        Rotate: [0, 293.092896, 0]
+        Rotate: [0, 203.092896, 0]
         Scale: [0.0144997435, 0.0145000005, 0.0144997435]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -7142,10 +7337,11 @@ ENTITIES:
       Parent: 0
       Name: Sentry_2
       UID: 15156590934559075775
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [9.27553558, 0.550991118, -14.2555885]
-        Rotate: [0, 340.171265, 0]
+        Rotate: [0, 250.171265, 0]
         Scale: [0.0145000955, 0.0145000005, 0.0145000955]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -7236,10 +7432,11 @@ ENTITIES:
       Parent: 0
       Name: Sentry_3
       UID: 5830254891821542999
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [17.540493, 13.4146328, 3.31294298]
-        Rotate: [5.00895476e-06, 103.252594, 5.00895476e-06]
+        Rotate: [5.00895476e-06, 13.252594, 5.00895476e-06]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -7330,10 +7527,11 @@ ENTITIES:
       Parent: 0
       Name: Sentry_4
       UID: 14023949945871365441
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-14.5949755, 13.3514919, 22.6192093]
-        Rotate: [0, 103.252594, 0]
+        Rotate: [0, 13.252594, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -7437,6 +7635,7 @@ ENTITIES:
       Parent: 0
       Name: SPOOFWALL_1
       UID: 4893602407579985783
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.707777619, 16.9812908, 10.1362982]
@@ -7470,10 +7669,11 @@ ENTITIES:
       Parent: 0
       Name: Sentry_level2_2
       UID: 7684206646313759860
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-56.9920845, 24.2603378, -2.19607687]
-        Rotate: [0, 103.252594, 0]
+        Rotate: [0, 13.252594, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -7564,6 +7764,7 @@ ENTITIES:
       Parent: 0
       Name: Directional Light 2
       UID: 13973321056421727476
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -7590,6 +7791,7 @@ ENTITIES:
       Parent: 0
       Name: MoveDoor
       UID: 16163120983566193923
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0.879230499, 20.6671638, 50.6341934]
@@ -7633,6 +7835,7 @@ ENTITIES:
       Parent: 0
       Name: Stair_Pagoda
       UID: 3850586383865992763
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-1.87897015, 12.5709419, 23.8264389]
@@ -7672,6 +7875,7 @@ ENTITIES:
       Parent: 0
       Name: Key
       UID: 1377313242926581139
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.213325948, -100, 11.6280107]
@@ -7718,6 +7922,7 @@ ENTITIES:
       Parent: 0
       Name: Terrain
       UID: 16705966753190619249
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-317.081085, -12.6315441, 246.0448]
@@ -7747,10 +7952,11 @@ ENTITIES:
       Parent: 0
       Name: Patrol enemy 1
       UID: 7568830222834310318
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-8.96667194, 17.316927, 3.55974746]
-        Rotate: [0, 85.0264969, 0]
+        Translate: [-9.8386488, 13.4210215, 4.22411728]
+        Rotate: [180, -88.0706482, 180]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -7848,7 +8054,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 0.332499683
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -7891,10 +8097,11 @@ ENTITIES:
       Parent: 0
       Name: Patrol enemy 3
       UID: 16217385032863444442
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [10.7893705, 13.4210215, 8.46495247]
-        Rotate: [0, 84.5752716, 0]
+        Translate: [2.8748796, 13.4210224, 7.71377945]
+        Rotate: [0, 84.584343, 0]
         Scale: [0.0200004783, 0.0199999996, 0.0200004783]
     RigidBodyComponent:
       RigidBody:
@@ -7973,6 +8180,8 @@ ENTITIES:
       Clips:
         - name: mixamo.com
           filePath: ""
+        - name: ROCK_WALKING
+          filePath: Resources/Animations/ROCK_WALKING.anim
       States:
         - name: State 0
           clipIndex: 1
@@ -8013,7 +8222,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"EnemyDetection\": false\n}"
+      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Patrol Enemy 3\",\n  \"_spotlightName\": \"Patrol Vision Cone 10\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 1.98000002, 0]
@@ -8031,10 +8240,11 @@ ENTITIES:
       Parent: 0
       Name: Patrol enemy 2
       UID: 3476234535713046263
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-3.30662203, 13.4210215, -10.1728039]
-        Rotate: [0, 90, 0]
+        Translate: [-8.84629059, 13.4210215, -10.1728039]
+        Rotate: [180, -90, 180]
         Scale: [0.0200004745, 0.0199999996, 0.0200004745]
     RigidBodyComponent:
       RigidBody:
@@ -8113,6 +8323,8 @@ ENTITIES:
       Clips:
         - name: mixamo.com
           filePath: ""
+        - name: ROCK_WALKING
+          filePath: Resources/Animations/ROCK_WALKING.anim
       States:
         - name: State 0
           clipIndex: 1
@@ -8133,7 +8345,7 @@ ENTITIES:
         ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [22.0396671, 12.997159, -10.1728058]
+      Target: [-8.97313118, 12.997159, -10.1728058]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -8153,11 +8365,12 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Patrol enemy 2\"\n}"
+      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Patrol enemy 2\",\n  \"_spotlightName\": \"Patrol Vision Cone 3\"\n}"
   - InfoComponent:
       Parent: 2888197353573082632
       Name: Blood1
       UID: 13818896248684015938
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -8171,6 +8384,7 @@ ENTITIES:
       Parent: 2888197353573082632
       Name: Blood2
       UID: 9420786784898466129
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -8184,6 +8398,7 @@ ENTITIES:
       Parent: 2888197353573082632
       Name: Blood3
       UID: 3669045143093455409
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -8197,6 +8412,7 @@ ENTITIES:
       Parent: 2888197353573082632
       Name: Blood4
       UID: 16885297189431714560
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -8210,6 +8426,7 @@ ENTITIES:
       Parent: 0
       Name: BloodUI
       UID: 2888197353573082632
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -8223,6 +8440,7 @@ ENTITIES:
       Parent: 18428452598414175165
       Name: Heart_2
       UID: 2471808296830425899
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.845601499, 0.857142925, 0]
@@ -8236,6 +8454,7 @@ ENTITIES:
       Parent: 18428452598414175165
       Name: Heart_Dead
       UID: 6115143401978660500
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.569120288, 0.857142925, 0]
@@ -8249,6 +8468,7 @@ ENTITIES:
       Parent: 0
       Name: SpareBOX
       UID: 3484787123933464128
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-87.80233, 38.8613548, -7.88539076]
@@ -8278,6 +8498,7 @@ ENTITIES:
       Parent: 0
       Name: Level1_r2 (Copy)
       UID: 1923409079914458876
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [1.15100801, 23.2352219, 11.7378435]
@@ -8317,6 +8538,7 @@ ENTITIES:
       Parent: 0
       Name: DoorTrigger2
       UID: 7751103662141316706
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-42.9265518, 28.3803501, -19.1654472]
@@ -8363,6 +8585,7 @@ ENTITIES:
       Parent: 0
       Name: Big Wall
       UID: 2102239511598691624
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-26.1500111, 26.0529957, 10.391284]
@@ -8389,6 +8612,7 @@ ENTITIES:
       Parent: 18428452598414175165
       Name: Heart_1
       UID: 16075859986944912680
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.938958704, 0.857142925, 0]
@@ -8402,6 +8626,7 @@ ENTITIES:
       Parent: 18428452598414175165
       Name: Heart_3
       UID: 8738239648003058153
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.754039526, 0.857142925, 0]
@@ -8415,6 +8640,7 @@ ENTITIES:
       Parent: 0
       Name: Lantern_Floor_3 4
       UID: 4839426429376116815
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-65.4899979, 33.4420013, -16.4610004]
@@ -8436,10 +8662,11 @@ ENTITIES:
       Parent: 0
       Name: Sentry_level2_3
       UID: 5648346527941532950
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-46.1160126, 24.2603378, -18.4139233]
-        Rotate: [0, 103.252594, 0]
+        Rotate: [0, 13.252594, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -8543,6 +8770,7 @@ ENTITIES:
       Parent: 0
       Name: Level1_Platform (Copy) (Copy)
       UID: 7393927911693108114
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.841246486, 23.2352219, 12.8422441]
@@ -8569,6 +8797,7 @@ ENTITIES:
       Parent: 18428452598414175165
       Name: Heart_5
       UID: 5351145407601607575
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.569120288, 0.857142925, 0]
@@ -8582,6 +8811,7 @@ ENTITIES:
       Parent: 18428452598414175165
       Name: Heart_Dead
       UID: 7305709452366689602
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.754039526, 0.857142925, 0]
@@ -8608,6 +8838,7 @@ ENTITIES:
       Parent: 0
       Name: Divider
       UID: 13194841271217537450
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.227488875, 24.2370033, 27.0301399]
@@ -8634,6 +8865,7 @@ ENTITIES:
       Parent: 0
       Name: QuitButton
       UID: 8828448039952393107
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, -0.449999988, 0.100000001]
@@ -8649,6 +8881,7 @@ ENTITIES:
       Parent: 0
       Name: ReturnButton
       UID: 3604609492683265047
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, -0.200000003, 0.100000001]
@@ -8664,6 +8897,7 @@ ENTITIES:
       Parent: 0
       Name: RestartButton
       UID: 4723468649465391231
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0.0500000007, 0.100000001]
@@ -8679,6 +8913,7 @@ ENTITIES:
       Parent: 0
       Name: ResumeButton
       UID: 14919722611869620216
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0.300000012, 0.100000001]
@@ -8707,6 +8942,7 @@ ENTITIES:
       Parent: 0
       Name: Floor
       UID: 6761807866675013811
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [5.23507881, -0.254334569, -9.80904198]
@@ -8746,6 +8982,7 @@ ENTITIES:
       Parent: 0
       Name: Floor (Copy) (Copy)
       UID: 3651541717493644356
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-34.0874672, -0.254334569, 10.7052326]
@@ -8785,6 +9022,7 @@ ENTITIES:
       Parent: 0
       Name: Floor (Copy) (Copy) (Copy)
       UID: 1015759547661366488
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [5.23507881, -0.254334569, 10.7052326]
@@ -8824,6 +9062,7 @@ ENTITIES:
       Parent: 0
       Name: Walls_Right_Floor_2 (Copy)
       UID: 10603877224477453926
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [26.1251488, 13.3294411, 3.1269989]
@@ -8863,6 +9102,7 @@ ENTITIES:
       Parent: 0
       Name: CrouchTriggerZoneR
       UID: 16121302333992579556
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [8.36959553, 2.8389039, -3.17529559]
@@ -8909,6 +9149,7 @@ ENTITIES:
       Parent: 0
       Name: EndTriggerZone
       UID: 2484585604236038765
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-32.5887833, 26.898428, -26.0088863]
@@ -8922,6 +9163,7 @@ ENTITIES:
       Parent: 0
       Name: PlayerHP
       UID: 18428452598414175165
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -8931,6 +9173,7 @@ ENTITIES:
       Parent: 0
       Name: Gameplay BGM
       UID: 18108710378386747548
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -8973,6 +9216,7 @@ ENTITIES:
       Parent: 0
       Name: 2nd_Level_Door
       UID: 35976896518982433
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-40.0782547, 27.4181995, -22.863203]
@@ -9012,6 +9256,7 @@ ENTITIES:
       Parent: 0
       Name: 2ndFloorPlatform
       UID: 3772334925194879998
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-35.61483, 24.1844692, 22.9105568]
@@ -9051,6 +9296,7 @@ ENTITIES:
       Parent: 0
       Name: 2ndFloorPlatform (Copy)
       UID: 11219956585080537341
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-41.0712051, 34.4977417, 11.7124043]
@@ -9077,6 +9323,7 @@ ENTITIES:
       Parent: 0
       Name: Hut_Base (Copy)
       UID: 13039769697529503876
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.153001994, 25.7323341, 48.5304146]
@@ -9093,10 +9340,11 @@ ENTITIES:
       Parent: 0
       Name: Sentry_level2_1
       UID: 7127256712868942196
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-32.5929832, 24.2603378, -2.77601147]
-        Rotate: [0, 76.7474976, 0]
+        Rotate: [0, 166.747498, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -9200,10 +9448,11 @@ ENTITIES:
       Parent: 0
       Name: Level2_PatrolEnemy_2
       UID: 4350822310922817577
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-13.3622112, 14.1755466, 48.0624924]
-        Rotate: [180, -5.00895612e-06, 180]
+        Translate: [-13.3622122, 14.1755466, 47.744854]
+        Rotate: [180, 0.000172575965, 180]
         Scale: [0.0399999991, 0.0399999991, 0.0399999991]
     RigidBodyComponent:
       RigidBody:
@@ -9280,7 +9529,10 @@ ENTITIES:
           maxDistance: 16.2999992
     AnimatorComponent:
       Clips:
-        []
+        - name: mixamo.com
+          filePath: ""
+        - name: Zombie Walk
+          filePath: Resources/Models/Enemy/Patrol2Textures/Zombie Walk.fbx
       States:
         - name: State 0
           clipIndex: 1
@@ -9321,7 +9573,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"DetectionEnemy\": false,\n  \"_entityName\": \"Level2_PatrolEnemy_2\"\n}"
+      ParamsJSON: "{\n  \"DetectionEnemy\": false,\n  \"_entityName\": \"Level2_PatrolEnemy_2\",\n  \"_spotlightName\": \"Patrol Vision Cone 4\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 2, 0]
@@ -9339,10 +9591,11 @@ ENTITIES:
       Parent: 0
       Name: Level2_PatrolEnemy_1
       UID: 11377284783086712530
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-22.2326412, 14.1755447, 31.8400097]
-        Rotate: [0, -90, 0]
+        Translate: [-20.2831421, 14.1755447, 31.8400116]
+        Rotate: [0, -89.980217, 0]
         Scale: [0.0399999991, 0.0399999991, 0.0399999991]
     RigidBodyComponent:
       RigidBody:
@@ -9419,7 +9672,10 @@ ENTITIES:
           maxDistance: 15.6000004
     AnimatorComponent:
       Clips:
-        []
+        - name: mixamo.com
+          filePath: ""
+        - name: Zombie Walk
+          filePath: Resources/Models/Enemy/Patrol2Textures/Zombie Walk.fbx
       States:
         - name: State 0
           clipIndex: 1
@@ -9460,7 +9716,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"EnemyDetection\": true,\n  \"_entityName\": \"Level2_PatrolEnemy_1\"\n}"
+      ParamsJSON: "{\n  \"EnemyDetection\": true,\n  \"_entityName\": \"Level2_PatrolEnemy_1\",\n  \"_spotlightName\": \"Patrol Vision Cone 7\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 2, 0]
@@ -9478,9 +9734,10 @@ ENTITIES:
       Parent: 0
       Name: Level2_PatrolEnemy_3
       UID: 7103488143176582610
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-21.1245537, 14.1755486, 62.1609192]
+        Translate: [-31.1176205, 14.1549797, 62.1609192]
         Rotate: [180, 90, 180]
         Scale: [0.0399999991, 0.0399999991, 0.0399999991]
     RigidBodyComponent:
@@ -9558,7 +9815,10 @@ ENTITIES:
           maxDistance: 15.6000004
     AnimatorComponent:
       Clips:
-        []
+        - name: mixamo.com
+          filePath: ""
+        - name: Zombie Walk
+          filePath: Resources/Models/Enemy/Patrol2Textures/Zombie Walk.fbx
       States:
         - name: State 0
           clipIndex: 1
@@ -9600,7 +9860,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"DetectionEnemy\": false,\n  \"EnemyDetection\": true,\n  \"_entityName\": \"Level2_PatrolEnemy_3\"\n}"
+      ParamsJSON: "{\n  \"DetectionEnemy\": false,\n  \"EnemyDetection\": true,\n  \"_entityName\": \"Level2_PatrolEnemy_3\",\n  \"_spotlightName\": \"Patrol Vision Cone 5\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 2, 0]
@@ -9618,10 +9878,11 @@ ENTITIES:
       Parent: 0
       Name: Level2_PatrolEnemy_4
       UID: 9730896463395262189
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-31.8510666, 25.1238995, 1.15810943]
-        Rotate: [180, -5.00895612e-06, 180]
+        Translate: [-31.8510666, 25.1238995, 21.9495926]
+        Rotate: [0, 76.2069931, 0]
         Scale: [0.0399999991, 0.0399999991, 0.0399999991]
     RigidBodyComponent:
       RigidBody:
@@ -9698,7 +9959,10 @@ ENTITIES:
           maxDistance: 14.8999996
     AnimatorComponent:
       Clips:
-        []
+        - name: mixamo.com
+          filePath: ""
+        - name: Zombie Walk
+          filePath: Resources/Models/Enemy/Patrol2Textures/Zombie Walk.fbx
       States:
         - name: State 0
           clipIndex: 1
@@ -9739,7 +10003,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"_entityName\": \"Level2_PatrolEnemy_4\"\n}"
+      ParamsJSON: "{\n  \"_entityName\": \"Level2_PatrolEnemy_4\",\n  \"_spotlightName\": \"Patrol Vision Cone 6\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 1.98000002, 0]
@@ -9757,9 +10021,10 @@ ENTITIES:
       Parent: 0
       Name: Level2_PatrolEnemy_5
       UID: 263206634475258297
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-34.8919945, 25.143898, -9.79262638]
+        Translate: [-41.7120247, 25.143898, -9.79262638]
         Rotate: [0, 90, 0]
         Scale: [0.0399999991, 0.0399999991, 0.0399999991]
     RigidBodyComponent:
@@ -9837,7 +10102,10 @@ ENTITIES:
           maxDistance: 15.6000004
     AnimatorComponent:
       Clips:
-        []
+        - name: mixamo.com
+          filePath: ""
+        - name: Zombie Walk
+          filePath: Resources/Models/Enemy/Patrol2Textures/Zombie Walk.fbx
       States:
         - name: State 0
           clipIndex: 1
@@ -9878,7 +10146,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"_entityName\": \"Level2_PatrolEnemy_5\"\n}"
+      ParamsJSON: "{\n  \"_entityName\": \"Level2_PatrolEnemy_5\",\n  \"_spotlightName\": \"Patrol Vision Cone 2\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 2, 0]
@@ -9896,10 +10164,11 @@ ENTITIES:
       Parent: 0
       Name: Level2_PatrolEnemy_6
       UID: 14450237795829985322
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-56.095108, 32.4161949, 16.0034504]
-        Rotate: [180, 61.2337456, 180]
+        Translate: [-64.6849136, 32.4161949, 20.719099]
+        Rotate: [0, -61.2337608, 0]
         Scale: [0.0399999991, 0.0399999991, 0.0399999991]
     RigidBodyComponent:
       RigidBody:
@@ -9976,7 +10245,10 @@ ENTITIES:
           maxDistance: 19.1000004
     AnimatorComponent:
       Clips:
-        []
+        - name: mixamo.com
+          filePath: ""
+        - name: Zombie Walk
+          filePath: Resources/Models/Enemy/Patrol2Textures/Zombie Walk.fbx
       States:
         - name: State 0
           clipIndex: 1
@@ -9997,7 +10269,7 @@ ENTITIES:
         ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-46.5436516, 31.8782978, 10.7598639]
+      Target: [-64.7831268, 31.8782978, 20.773016]
       Speed: 3.5
       ArriveRadius: 0.150000006
       Active: true
@@ -10017,15 +10289,16 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"_entityName\": \"Level2_PatrolEnemy_6\"\n}"
+      ParamsJSON: "{\n  \"_entityName\": \"Level2_PatrolEnemy_6\",\n  \"_spotlightName\": \"Patrol Vision Cone 9\"\n}"
   - InfoComponent:
       Parent: 0
       Name: Sentry_5
       UID: 6045005175953569135
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [2.07987475, 17.7299271, 63.520256]
-        Rotate: [0, 242.061813, 0]
+        Rotate: [0, 112.478119, 0]
         Scale: [0.0145000033, 0.0145000005, 0.0145000033]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -10116,6 +10389,7 @@ ENTITIES:
       Parent: 0
       Name: Interior_Decor_RIght_Of_Hut3
       UID: 14454375277036946657
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-8.9846096, 20.7383347, 48.0981331]
@@ -10132,6 +10406,7 @@ ENTITIES:
       Parent: 0
       Name: Interior_Decor_RIght_Of_Hut2
       UID: 8624766367126432546
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-8.9846096, 20.7383347, 55.8499641]
@@ -10148,6 +10423,7 @@ ENTITIES:
       Parent: 0
       Name: Interior_Decor_RIght_Of_Hut4
       UID: 9579238965234966102
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [10.9831419, 19.9206276, 50.1185417]
@@ -10164,6 +10440,7 @@ ENTITIES:
       Parent: 0
       Name: Interior_Decor_RIght_Of_Hut5
       UID: 14009296219501205597
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [13.1106653, 19.9206276, 50.1185417]
@@ -10193,6 +10470,7 @@ ENTITIES:
       Parent: 0
       Name: level2_Railing_2
       UID: 5069200700288611314
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-43.818325, 39.7607422, 5.29587269]
@@ -10232,6 +10510,7 @@ ENTITIES:
       Parent: 0
       Name: level2_wall_3
       UID: 7222492299785959060
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-14.2633896, 15.2607174, 36.6476326]
@@ -10271,6 +10550,7 @@ ENTITIES:
       Parent: 0
       Name: level2_wall_3 (Copy)
       UID: 13617350948466439292
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-17.9862957, 15.2607174, 51.0270386]
@@ -10310,6 +10590,7 @@ ENTITIES:
       Parent: 0
       Name: level2_wall_3 (Copy) (Copy)
       UID: 11116882991729141087
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-21.3980961, 15.2607174, 44.1456223]
@@ -10336,10 +10617,11 @@ ENTITIES:
       Parent: 15156590934559075775
       Name: Sentry Vision Cone 2
       UID: 9293667924588559209
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [9.27553558, 2.64499116, -14.2555885]
-        Rotate: [0, 520.171265, 0]
+        Rotate: [0, 430.171265, 0]
         Scale: [68.965065, 68.9655151, 68.965065]
     ScriptComponent:
       Enabled: true
@@ -10355,6 +10637,7 @@ ENTITIES:
       Parent: 0
       Name: UI_Freeze
       UID: 6489595956869048591
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0.872441649, -0.770739496, 0]
@@ -10381,6 +10664,7 @@ ENTITIES:
       Parent: 0
       Name: level2_wall_2 (Copy)
       UID: 8998044387958126622
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-59.3272324, 25.2593002, -6.96039963]
@@ -10420,6 +10704,7 @@ ENTITIES:
       Parent: 0
       Name: level2_Railing_4
       UID: 9050133987659228229
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-40.8537331, 38.8613548, -7.88539076]
@@ -10459,6 +10744,7 @@ ENTITIES:
       Parent: 0
       Name: level2_Railing_3
       UID: 7341040337093762232
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-37.7470169, 39.7607422, 8.17754841]
@@ -10485,6 +10771,7 @@ ENTITIES:
       Parent: 0
       Name: level2_Railing_5
       UID: 9988454013048955449
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-43.818325, 38.5996971, 17.8731098]
@@ -10514,6 +10801,7 @@ ENTITIES:
       Parent: 0
       Name: Level1_Platform
       UID: 2752481671236067374
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.720223665, 21.1737442, 11.5276871]
@@ -10553,6 +10841,7 @@ ENTITIES:
       Parent: 0
       Name: Key2
       UID: 3286848895912838454
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-39.4119606, 38.4697838, -6.55990791]
@@ -10612,6 +10901,7 @@ ENTITIES:
       Parent: 0
       Name: Squeeze
       UID: 17966297571862268424
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.610087514, 20.6173363, 45.5718765]
@@ -10621,6 +10911,7 @@ ENTITIES:
       Parent: 0
       Name: Top_Ceiling
       UID: 15729046611990068865
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 12.3543997, 5.49479961]
@@ -10637,6 +10928,7 @@ ENTITIES:
       Parent: 0
       Name: AlertVideo
       UID: 9054217741465614535
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -10668,6 +10960,7 @@ ENTITIES:
       Parent: 0
       Name: Stone_Stairs_Left
       UID: 18307948141547307247
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-11.2100706, 2.26809382, -18.1583977]
@@ -10690,6 +10983,7 @@ ENTITIES:
       Parent: 0
       Name: Sand_Floor_Level2
       UID: 12445945734618633047
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-5.53177166, 14.124135, 4.82432461]
@@ -10699,11 +10993,12 @@ ENTITIES:
       Parent: 15030438282683852635
       Name: UI_Tutorial
       UID: 10734415831348860119
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [0.800000012, 0.5, 1]
+        Translate: [0.40993607, -0.351144314, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.300000012, 0.349999994, 0.300000012]
     SpriteComponent:
       textureID: 12936131708983895469
       color: [1, 1, 1, 1.63056921e-32]
@@ -10712,6 +11007,7 @@ ENTITIES:
       Parent: 0
       Name: UI_Stance
       UID: 10500341996070685860
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-0.796772301, -0.770739496, 0]
@@ -10725,10 +11021,11 @@ ENTITIES:
       Parent: 5830254891821542999
       Name: Sentry Vision Cone 3
       UID: 5945174440261716768
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [17.540493, 15.4146328, 3.31294298]
-        Rotate: [5.00895476e-06, 283.252594, 5.00895476e-06]
+        Rotate: [5.00895476e-06, 193.252594, 5.00895476e-06]
         Scale: [66.4224625, 48.3170776, 102.520782]
     ScriptComponent:
       Enabled: true
@@ -10757,10 +11054,11 @@ ENTITIES:
       Parent: 0
       Name: Patrol enemy 1
       UID: 14361277227657285018
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-15.788908, 13.4210215, 19.3370762]
-        Rotate: [360, -90, 0]
+        Translate: [-6.23037577, 13.4210224, 19.33708]
+        Rotate: [180, -89.980217, 180]
         Scale: [0.0200004522, 0.0199999996, 0.0200004522]
     RigidBodyComponent:
       RigidBody:
@@ -10839,6 +11137,8 @@ ENTITIES:
       Clips:
         - name: mixamo.com
           filePath: ""
+        - name: ROCK_WALKING
+          filePath: Resources/Animations/ROCK_WALKING.anim
       States:
         - name: State 0
           clipIndex: 1
@@ -10879,7 +11179,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"_entityName\": \"Patrol enemy 1\"\n}"
+      ParamsJSON: "{\n  \"_entityName\": \"Patrol enemy 1\",\n  \"_spotlightName\": \"Patrol Vision Cone 8\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 1.98000002, 0]
@@ -10897,10 +11197,11 @@ ENTITIES:
       Parent: 0
       Name: Patrol enemy 4
       UID: 2086609460865131994
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-8.7441597, 13.4210205, 7.1903882]
-        Rotate: [0, -0.00373292551, 0]
+        Translate: [-8.10201359, 13.4210215, 3.15524912]
+        Rotate: [180, 83.5110626, 180]
         Scale: [0.0200004783, 0.0199999996, 0.0200004783]
     RigidBodyComponent:
       RigidBody:
@@ -10979,6 +11280,8 @@ ENTITIES:
       Clips:
         - name: mixamo.com
           filePath: ""
+        - name: ROCK_WALKING
+          filePath: Resources/Animations/ROCK_WALKING.anim
       States:
         - name: State 0
           clipIndex: 1
@@ -11019,20 +11322,21 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"_entityName\": \"Patrol enemy 4\"\n}"
+      ParamsJSON: "{\n  \"_entityName\": \"Patrol enemy 4\",\n  \"_spotlightName\": \"Patrol Vision Cone 1\"\n}"
   - InfoComponent:
       Parent: 263206634475258297
       Name: Patrol Vision Cone 2
       UID: 579238474671125089
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 2.53051853, -14.2555885]
-        Rotate: [0, 473.092896, 0]
+        Rotate: [0, 383.092896, 0]
         Scale: [49.9988136, 50, 49.9988136]
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.SpotlightFollower
-      ParamsJSON: "{}"
+      TypeName: GameScripts.PatrolSpotlightFollower
+      ParamsJSON: "{\n  \"targetName\": \"Level2_PatrolEnemy_5\"\n}"
     SpotLightComponent:
       Light:
         Radiance: [1, 0, 0]
@@ -11043,6 +11347,7 @@ ENTITIES:
       Parent: 0
       Name: wakkkker
       UID: 17630822912627836995
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [-13.6622381, 19.0557327, 10.1362982]
@@ -11059,10 +11364,11 @@ ENTITIES:
       Parent: 4350822310922817577
       Name: Patrol Vision Cone 4
       UID: 5626738050018619883
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [111.078888, -11.1526184, -1194.73303]
-        Rotate: [-180, 1.74258239e-05, -180]
+        Translate: [-13.3622122, 16.1755466, 47.7801704]
+        Rotate: [-180, -179.999832, -180]
         Scale: [24.9999924, 25, 24.9999924]
     ScriptComponent:
       Enabled: true
@@ -11078,10 +11384,11 @@ ENTITIES:
       Parent: 7103488143176582610
       Name: Patrol Vision Cone 5
       UID: 13004693949065280400
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-1497.79272, -10.6385498, -590.850159]
-        Rotate: [-90, -89.980217, 90]
+        Translate: [-31.1529369, 16.1549797, 62.1609192]
+        Rotate: [-90, -90.0000153, 90]
         Scale: [24.9999962, 25, 24.9999962]
     ScriptComponent:
       Enabled: true
@@ -11097,10 +11404,11 @@ ENTITIES:
       Parent: 9730896463395262189
       Name: Patrol Vision Cone 6
       UID: 16553261442957951333
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-573.299805, -284.861511, -44.7728462]
-        Rotate: [-5.00950637e-06, -1.59213175e-06, 0.0197773334]
+        Translate: [-31.8510666, 27.1238995, 22.0132675]
+        Rotate: [-5.00950637e-06, -76.2069931, 0.0197773334]
         Scale: [24.9999924, 25, 24.9999943]
     ScriptComponent:
       Enabled: true
@@ -11116,10 +11424,11 @@ ENTITIES:
       Parent: 11377284783086712530
       Name: Patrol Vision Cone 7
       UID: 17207126084649200590
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-739.64856, -11.1525574, -351.429932]
-        Rotate: [-135.012695, -89.980217, 135.015167]
+        Translate: [-20.2478256, 16.1755447, 31.8400116]
+        Rotate: [-135.012695, -270.000031, 135.015167]
         Scale: [24.9999924, 25, 24.9999943]
     ScriptComponent:
       Enabled: true
@@ -11135,10 +11444,11 @@ ENTITIES:
       Parent: 14361277227657285018
       Name: Patrol Vision Cone 8
       UID: 15829944425654132245
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [854.373901, 15.4210205, -889.393066]
-        Rotate: [112.547661, 89.980217, 112.549316]
+        Translate: [-9.83429813, 15.4210224, 4.22414589]
+        Rotate: [112.547661, -269.999969, 112.549316]
         Scale: [49.9988518, 49.9999962, 49.9988556]
     ScriptComponent:
       Enabled: true
@@ -11154,10 +11464,11 @@ ENTITIES:
       Parent: 14450237795829985322
       Name: Patrol Vision Cone 9
       UID: 4378450492672010194
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-266.145081, -467.168854, 996.076538]
-        Rotate: [0.0316256806, 61.2416267, 0.0379715934]
+        Translate: [-64.6849136, 34.4161949, 20.719099]
+        Rotate: [0.0316256806, -298.766235, 0.0379715934]
         Scale: [24.9999905, 24.9999981, 24.9999905]
     ScriptComponent:
       Enabled: true
@@ -11170,12 +11481,13 @@ ENTITIES:
         FallOff: -3.0999999
         CutOff: 0.769999981
   - InfoComponent:
-      Parent: 0
-      Name: White noise SFX
-      UID: 352134920596403547
+      Parent: 16217385032863444442
+      Name: Patrol Vision Cone 10
+      UID: 7479274772312597537
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [591.911621, 15.4210815, -160.990173]
+        Translate: [2.83971953, 15.4210224, 7.71044636]
         Rotate: [179.998337, -0.00755275087, 179.981735]
         Scale: [49.9987793, 49.9999962, 49.9987755]
     ScriptComponent:
@@ -11188,66 +11500,3 @@ ENTITIES:
         Intensity: 6.67000008
         FallOff: -3.0999999
         CutOff: 0.769999981
-  - InfoComponent:
-      Parent: 0
-      Name: Level 1 Map (CutScene)
-      UID: 12267654284087294338
-    TransformComponent:
-      Transform:
-        Translate: [0, 29.6960697, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-  - InfoComponent:
-      Parent: 0
-      Name: Level 2 Map (4 CutScene)
-      UID: 3683288603051507780
-    TransformComponent:
-      Transform:
-        Translate: [-28.4466991, 37.6739006, -19.3400002]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-  - InfoComponent:
-      Parent: 0
-      Name: Level 2 Map (3 CutScene)
-      UID: 7033561204064415315
-    TransformComponent:
-      Transform:
-        Translate: [-28.4466991, 37.6739006, 27.3089256]
-        Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]
-  - InfoComponent:
-      Parent: 0
-      Name: Level 2 Map (2 CutScene)
-      UID: 10231439511586252963
-    TransformComponent:
-      Transform:
-        Translate: [-33.4011459, 21.5008602, 65.0104065]
-        Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]
-  - InfoComponent:
-      Parent: 0
-      Name: Level 2 Map (1 CutScene)
-      UID: 13074945463280986120
-    TransformComponent:
-      Transform:
-        Translate: [-14.4846859, 21.5008602, 65.0104065]
-        Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]
-  - InfoComponent:
-      Parent: 0
-      Name: Level 2 Map (1 CutScene) (Copy)
-      UID: 3245220241749412111
-    TransformComponent:
-      Transform:
-        Translate: [-14.4846859, 21.5008602, 65.0104065]
-        Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]
-  - InfoComponent:
-      Parent: 16217385032863444442
-      Name: Patrol Vision Cone 10
-      UID: 7479274772312597537
-    TransformComponent:
-      Transform:
-        Translate: [-14.4846859, 21.5008602, 31.2522011]
-        Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]

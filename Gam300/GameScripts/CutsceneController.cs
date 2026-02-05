@@ -135,7 +135,12 @@ namespace GameScripts
             }
 
             // Check for skip input
-            if (allowSkip && API.IsKeyDown(skipKey))
+            bool skipKeyPressed = allowSkip && (API.IsKeyDown(skipKey) || API.IsKeyDown(256)); // Support Escape too
+            bool skipControllerPressed = allowSkip && API.IsGamepadConnected() && 
+                                        (API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A) || 
+                                         API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_START));
+
+            if (skipKeyPressed || skipControllerPressed)
             {
                 API.Log("[CutsceneController] Cutscene skipped");
                 StartTransition();

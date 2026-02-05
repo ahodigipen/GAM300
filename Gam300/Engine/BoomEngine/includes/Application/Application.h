@@ -193,6 +193,7 @@ namespace Boom
 
 		void RenderScene(bool isPicking = false);
 		void RenderTextOverlay();
+		void RenderSpriteOverlay();
 
 		/**
 		* @brief Enters play mode (like Unity's Play button)

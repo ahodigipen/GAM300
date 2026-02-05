@@ -54,6 +54,7 @@
     <Compile Include="IntroCutscene.cs" />
     <Compile Include="LevelTransitionCutscene.cs" />
     <Compile Include="MazeGeneration.cs" />
+    <Compile Include="PatrolSpotlightFollower.cs" />
     <Compile Include="ProximityDetectionComponent.cs" />
     <Compile Include="DeathMenu.cs" />
     <Compile Include="EndMenu.cs" />

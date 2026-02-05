@@ -6,9 +6,9 @@
 
 namespace Boom {
 	//UBO must also change in pbr.glsl limits
-	inline constexpr int MAX_POINT_LIGHTS = 128;
-	inline constexpr int MAX_DIR_LIGHTS = 128;
-	inline constexpr int MAX_SPOT_LIGHTS = 256;
+	inline constexpr int MAX_POINT_LIGHTS = 512;
+	inline constexpr int MAX_DIR_LIGHTS = 512;
+	inline constexpr int MAX_SPOT_LIGHTS = 512;
 	struct GPUPointLight {
 		glm::vec4 position_range;       // xyz = position, w = range
 		glm::vec4 radiance_intensity;   // rgb = radiance, w = intensity
