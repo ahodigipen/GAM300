@@ -29,9 +29,6 @@ namespace GameScripts
         private static float _sceneInputDebounceTimer = 0.0f;
         public static bool CanProcessInput => _sceneInputDebounceTimer <= 0.0f;
 
-        // GLFW key constants
-        public const int KEY_ESCAPE = 256;
-
         public enum PauseMenuAction
         {
             None,
@@ -239,12 +236,13 @@ namespace GameScripts
             if (IsPlayerDead) return;
 
             bool p_KeyDown = API.IsKeyDown(API.KEY_P);
-            bool escape_KeyDown = API.IsKeyDown(KEY_ESCAPE);
+            bool escape_KeyDown = API.IsKeyDown(API.KEY_ESCAPE);
             bool ctrl_KeyDown = API.IsKeyDown(API.KEY_LEFT_CONTROL);
             bool start_ButtonDown = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_START);
 
-            // Handle Tutorial - Skip all input if tutorial active OR just dismissed this frame
-            if (TutorialManager.IsKeyTutorialActive() || TutorialManager.WasJustDismissed())
+            // Handle Tutorial - Skip all input if any tutorial active OR just dismissed this frame
+            if (TutorialManager.IsKeyTutorialActive() || TutorialManager.WasJustDismissed() ||
+                TutorialPopupTrigger.IsPopupActive() || TutorialPopupTrigger.WasJustDismissed())
             {
                 // Keep tracking key states to prevent bleed-through after tutorial dismissal
                 _escape_KeyWasDown = escape_KeyDown;
@@ -371,7 +369,7 @@ namespace GameScripts
 
         private static void UpdatePauseMenu(float dt)
         {
-            bool escape_KeyDown = API.IsKeyDown(KEY_ESCAPE);
+            bool escape_KeyDown = API.IsKeyDown(API.KEY_ESCAPE);
             bool start_ButtonDown = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_START);
 
             // Handle Escape key or Start button to resume

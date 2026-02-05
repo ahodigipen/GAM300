@@ -65,6 +65,13 @@ namespace GameScripts
             // Only react when the player enters this trigger
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
 
+            // Don't allow pickup if another popup is active (prevents UI overlap)
+            if (TutorialPopupTrigger.IsPopupActive())
+            {
+                API.Log("[KeyPickup] Cannot pickup key - another popup is active");
+                return;
+            }
+
             inst._collected = true;
             PlayerInventory.AddKey(inst._keyType);
             UIManager.ShowKeyPickup();

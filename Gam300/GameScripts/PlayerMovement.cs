@@ -749,6 +749,13 @@ namespace GameScripts
                 // Check freeze pickups
                 if (s_instance._freezePickupIDs.Contains(triggerEntity))
                 {
+                    // Don't allow pickup if another popup is active (prevents UI overlap)
+                    if (TutorialPopupTrigger.IsPopupActive())
+                    {
+                        API.Log("[PlayerMovement] Cannot pickup freeze - another popup is active");
+                        return;
+                    }
+
                     if (!PlayerInventory.HasFreezePower())
                     {
                         if (PlayerInventory.TryAddFreezeCharge())

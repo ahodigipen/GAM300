@@ -21,10 +21,6 @@ namespace GameScripts
         private const string KEY_TUTORIAL_UI = "KeyTutorialPopup";
         private const string FREEZE_TUTORIAL_UI = "FreezeTutorialPopup";
 
-        // GLFW key constants
-        private const int KEY_ESCAPE = 256;
-        private const int KEY_P = 80;
-
         // Active tutorial tracking
         private static bool s_isTutorialActive = false;
         private static string s_activeTutorialUI = "";
@@ -63,9 +59,17 @@ namespace GameScripts
                 return;
             }
 
+            // Don't show if another popup is active (prevents UI overlap)
+            if (TutorialPopupTrigger.IsPopupActive())
+            {
+                API.Log("[TutorialManager] Cannot show key tutorial - another popup is active");
+                // Don't mark as shown - player can retry after closing the popup
+                return;
+            }
+
             API.Log("[TutorialManager] Showing key tutorial (manual dismiss with ESC/P)");
-            s_keyTutorialShown = true;
             ShowTutorial(KEY_TUTORIAL_SCENE, KEY_TUTORIAL_UI);
+            s_keyTutorialShown = true; // Only mark as shown after successful display
         }
 
         /// <summary>
@@ -80,9 +84,17 @@ namespace GameScripts
                 return;
             }
 
+            // Don't show if another popup is active (prevents UI overlap)
+            if (TutorialPopupTrigger.IsPopupActive())
+            {
+                API.Log("[TutorialManager] Cannot show freeze tutorial - another popup is active");
+                // Don't mark as shown - player can retry after closing the popup
+                return;
+            }
+
             API.Log("[TutorialManager] Showing freeze tutorial (manual dismiss with ESC/P)");
-            s_freezeTutorialShown = true;
             ShowTutorial(FREEZE_TUTORIAL_SCENE, FREEZE_TUTORIAL_UI);
+            s_freezeTutorialShown = true; // Only mark as shown after successful display
         }
 
         /// <summary>
@@ -123,8 +135,8 @@ namespace GameScripts
             if (!s_isTutorialActive) return;
 
             // Check input for manual dismissal
-            bool escapeKeyDown = API.IsKeyDown(KEY_ESCAPE);
-            bool pKeyDown = API.IsKeyDown(KEY_P);
+            bool escapeKeyDown = API.IsKeyDown(API.KEY_ESCAPE);
+            bool pKeyDown = API.IsKeyDown(API.KEY_P);
             bool startButtonDown = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_START);
 
             // Detect key press (edge detection: key is down now but wasn't down before)

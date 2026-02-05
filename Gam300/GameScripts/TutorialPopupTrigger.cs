@@ -6,8 +6,8 @@ namespace GameScripts
 {
     /// <summary>
     /// Attach to a trigger zone where a tutorial popup should appear
-    /// Shows a tutorial UI sprite when player enters
-    /// Hides the tutorial UI when player exits
+    /// When player enters, pauses game logic and shows popup
+    /// Player must press ESC/P to dismiss (like Level 1 popup)
     /// </summary>
     public class TutorialPopupTrigger
     {
@@ -15,9 +15,7 @@ namespace GameScripts
 
         private static readonly Dictionary<ulong, TutorialPopupTrigger> s_instances = new Dictionary<ulong, TutorialPopupTrigger>();
 
-        private static bool _globalEnabled = false;
-
-        // The sprite entity name to show/hide (e.g., "UI_L2_Tutorial")
+        // The sprite entity name to show (e.g., "UI_Tutorial")
         [Boom.EditorExposed("Tutorial Sprite", "Name of the sprite entity to show (e.g., UI_Tutorial)")]
         private string _tutorialSpriteName = "UI_Tutorial";
 
@@ -25,8 +23,6 @@ namespace GameScripts
         private bool _onlyShowOnce = true;
 
         private bool _hasTriggered = false;
-        private bool _isCurrentlyShowing = false;
-        private bool _isPlayerInside = false;
 
         // Optional: Play a sound when entering the zone
         [Boom.EditorExposed("Play Sound On Enter", "Whether to play a sound when player enters the tutorial zone")]
@@ -35,23 +31,15 @@ namespace GameScripts
         [Boom.EditorExposed("Enter Sound", "Sound played when player enters the tutorial zone")]
         private string _enterSound = "Resources/Audio/ambient_notification.wav";
 
-        public static void EnableAllTutorials()
-        {
-            if (_globalEnabled) return; // Already enabled
+        // Static tracking for active popup
+        private static bool s_isPopupActive = false;
+        private static string s_activeSpriteName = "";
+        private static bool s_justDismissed = false;
 
-            API.Log("[TutorialPopupTrigger] Global Tutorials ENABLED.");
-            _globalEnabled = true;
-
-            // Check if player is ALREADY inside any trigger waiting for this
-            foreach (var kvp in s_instances)
-            {
-                TutorialPopupTrigger inst = kvp.Value;
-                if (inst._isPlayerInside && !inst._isCurrentlyShowing)
-                {
-                    inst.ShowPopup(); // Force show immediately
-                }
-            }
-        }
+        // Key state tracking to prevent pause menu conflicts
+        private static bool s_escapeKeyWasDown = false;
+        private static bool s_pKeyWasDown = false;
+        private static bool s_startButtonWasDown = false;
 
         public void OnStart(string jsonParams)
         {
@@ -71,13 +59,46 @@ namespace GameScripts
             }
 
             API.RegisterTriggerEnterCallback(Entity, OnTriggerEnter);
-            API.RegisterTriggerExitCallback(Entity, OnTriggerExit);
             API.Log("[TutorialPopupTrigger] Registered trigger callbacks.");
         }
 
         public void OnUpdate(float dt)
         {
-            // No-op
+            // Clear just dismissed flag at start of each frame
+            s_justDismissed = false;
+
+            // Handle input for dismissal if popup is active
+            if (!s_isPopupActive) return;
+
+            // Check input for manual dismissal
+            bool escapeKeyDown = API.IsKeyDown(API.KEY_ESCAPE);
+            bool pKeyDown = API.IsKeyDown(API.KEY_P);
+            bool startButtonDown = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_START);
+
+            // Detect key press (edge detection)
+            bool escapePressed = escapeKeyDown && !s_escapeKeyWasDown;
+            bool pPressed = pKeyDown && !s_pKeyWasDown;
+            bool startPressed = startButtonDown && !s_startButtonWasDown;
+
+            if (escapePressed || pPressed || startPressed)
+            {
+                API.Log("[TutorialPopupTrigger] Dismissing popup via player input");
+                DismissPopup();
+                
+                // Mark that we just dismissed this frame
+                s_justDismissed = true;
+                
+                // Keep key states as "down" to prevent Entry from detecting this as a new press
+                s_escapeKeyWasDown = true;
+                s_pKeyWasDown = true;
+                s_startButtonWasDown = true;
+                return;
+            }
+
+            // Update key states
+            s_escapeKeyWasDown = escapeKeyDown;
+            s_pKeyWasDown = pKeyDown;
+            s_startButtonWasDown = startButtonDown;
         }
 
         public void OnDestroy()
@@ -85,16 +106,6 @@ namespace GameScripts
             // Cleanup
             if (s_instances.ContainsKey(Entity)) s_instances.Remove(Entity);
             API.UnregisterTriggerCallbacks(Entity);
-        }
-
-        private void ShowPopup()
-        {
-            if (_onlyShowOnce && _hasTriggered) return;
-
-
-            _hasTriggered = true;
-            _isCurrentlyShowing = true;
-            API.Log("[TutorialPopupTrigger] Showing UI popup.");
         }
 
         private static void OnTriggerEnter(ulong triggerEntity, ulong otherEntity)
@@ -108,10 +119,42 @@ namespace GameScripts
             // Check if we should only show once
             if (inst._onlyShowOnce && inst._hasTriggered) return;
 
-            // *** Show the tutorial UI prompt ***
-            UIManager.ShowTutorialPopup(API.FindEntity(inst._tutorialSpriteName));
+            // Check if another popup is already active
+            if (s_isPopupActive)
+            {
+                API.Log("[TutorialPopupTrigger] Another popup is already active - skipping");
+                return;
+            }
+
+            // Show the popup and pause game logic
+            ShowPopup(inst);
+        }
+
+        private static void ShowPopup(TutorialPopupTrigger inst)
+        {
+            // Find the sprite entity
+            ulong spriteEntity = API.FindEntity(inst._tutorialSpriteName);
+            if (spriteEntity == 0)
+            {
+                API.Log($"[TutorialPopupTrigger] ERROR: Could not find sprite entity '{inst._tutorialSpriteName}'");
+                return;
+            }
+
+            // Show the sprite
+            UIManager.ShowTutorialPopup(spriteEntity);
+
+            // Mark as triggered and active
             inst._hasTriggered = true;
-            inst._isCurrentlyShowing = true;
+            s_isPopupActive = true;
+            s_activeSpriteName = inst._tutorialSpriteName;
+
+            // Reset key states to prevent immediate dismissal
+            s_escapeKeyWasDown = true;
+            s_pKeyWasDown = true;
+            s_startButtonWasDown = true;
+
+            // Pause game logic (but not the pause menu)
+            API.SetGameLogicPaused(true);
 
             // Optional: Play notification sound
             if (inst._playSoundOnEnter && API.HasTransform(inst.Entity))
@@ -122,25 +165,40 @@ namespace GameScripts
                 API.Set3DMinMaxDistance("sfx_tutorial_enter", 1.0f, 12.0f);
             }
 
-            API.Log("[TutorialPopupTrigger] Player entered tutorial zone - showing UI popup");
+            API.Log($"[TutorialPopupTrigger] Showing popup '{inst._tutorialSpriteName}' - press ESC/P to dismiss");
         }
 
-        private static void OnTriggerExit(ulong triggerEntity, ulong otherEntity)
+        private static void DismissPopup()
         {
-            TutorialPopupTrigger inst;
-            if (!s_instances.TryGetValue(triggerEntity, out inst)) return;
+            if (!s_isPopupActive) return;
 
-            // Only react when the player exits this trigger
-            if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
+            API.Log($"[TutorialPopupTrigger] Dismissing popup '{s_activeSpriteName}'");
 
-            // Only hide if we were the ones showing it
-            if (!inst._isCurrentlyShowing) return;
-
-            // *** Hide the tutorial UI prompt ***
+            // Hide the tutorial UI
             UIManager.HideTutorialPopup();
-            inst._isCurrentlyShowing = false;
 
-            API.Log("[TutorialPopupTrigger] Player exited tutorial zone - hiding UI popup");
+            // Unpause game logic
+            API.SetGameLogicPaused(false);
+
+            // Reset state
+            s_isPopupActive = false;
+            s_activeSpriteName = "";
+        }
+
+        /// <summary>
+        /// Check if a popup is currently active
+        /// </summary>
+        public static bool IsPopupActive()
+        {
+            return s_isPopupActive;
+        }
+
+        /// <summary>
+        /// Check if a popup was just dismissed this frame
+        /// </summary>
+        public static bool WasJustDismissed()
+        {
+            return s_justDismissed;
         }
     }
 }
