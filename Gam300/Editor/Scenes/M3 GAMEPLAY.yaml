@@ -178,7 +178,7 @@ ENTITIES:
         Type: BOX
     InfoComponent:
       Parent: 0
-      Name: FreezePowerUp_1 (Copy)
+      Name: FreezePowerUp_2
       UID: 10819433398759731482
       SortOrder: 0
     TransformComponent:
@@ -534,7 +534,7 @@ ENTITIES:
       Transform:
         Translate: [-0.26146245, -0.298543572, -0.5]
         Rotate: [0, 0, 0]
-        Scale: [0, 0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FreezeOverlayBehavior
@@ -546,7 +546,7 @@ ENTITIES:
       Volume: 1
       PlaybackSpeed: 1
       RenderAs3D: true
-      RemoveBlackBackground: false
+      RemoveBlackBackground: true
       TintColor: [1, 1, 1, 1]
   - ColliderComponent:
       Collider:
@@ -10959,7 +10959,7 @@ ENTITIES:
       Transform:
         Translate: [0, 0, 0]
         Rotate: [0, 0, 0]
-        Scale: [0, 0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     VideoComponent:
       VideoPath: Detection.mpeg
       PlayOnStart: true
@@ -10967,7 +10967,7 @@ ENTITIES:
       Volume: 1
       PlaybackSpeed: 1
       RenderAs3D: true
-      RemoveBlackBackground: false
+      RemoveBlackBackground: true
       TintColor: [1, 1, 1, 1]
   - ColliderComponent:
       Collider:
