@@ -171,6 +171,21 @@ namespace Boom {
         return s_Ctx->window->input.mouseDown(button);
     }
 
+    static bool ICALL_API_IsGamepadButtonDown(int button) {
+        if (!s_Ctx || !s_Ctx->window) return false;
+        return s_Ctx->window->input.gamepadButtonDown(button);
+    }
+
+    static float ICALL_API_GetGamepadAxis(int axis) {
+        if (!s_Ctx || !s_Ctx->window) return 0.0f;
+        return s_Ctx->window->input.gamepadAxis(axis);
+    }
+
+    static bool ICALL_API_IsGamepadConnected() {
+        if (!s_Ctx || !s_Ctx->window) return false;
+        return s_Ctx->window->input.isGamepadConnected();
+    }
+
     
     static glm::vec3* ICALL_API_GetLinearVelocity(uint64_t handle, glm::vec3* outVel)
     {
@@ -2193,6 +2208,9 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetRotation", (const void*)ICALL_API_SetRotation);
         mono_add_internal_call("Boom.Native::Boom_API_IsKeyDown", (const void*)ICALL_API_IsKeyDown);
         mono_add_internal_call("Boom.Native::Boom_API_IsMouseDown", (const void*)ICALL_API_IsMouseDown);
+        mono_add_internal_call("Boom.Native::Boom_API_IsGamepadButtonDown", (const void*)ICALL_API_IsGamepadButtonDown);
+        mono_add_internal_call("Boom.Native::Boom_API_GetGamepadAxis", (const void*)ICALL_API_GetGamepadAxis);
+        mono_add_internal_call("Boom.Native::Boom_API_IsGamepadConnected", (const void*)ICALL_API_IsGamepadConnected);
 
         mono_add_internal_call("Boom.Native::Boom_API_LoadScene", (const void*)ICALL_API_LoadScene);
         mono_add_internal_call("Boom.Native::Boom_API_GetCurrentSceneName", (const void*)ICALL_API_GetCurrentSceneName);

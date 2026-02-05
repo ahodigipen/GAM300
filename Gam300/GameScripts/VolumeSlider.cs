@@ -95,6 +95,13 @@ namespace GameScripts
             UpdateVisuals(_currentValue);
         }
 
+        public void SetValue(float value)
+        {
+            _currentValue = Clamp(value, 0f, 1f);
+            API.SetGroupVolume(_audioGroup, _currentValue);
+            UpdateVisuals(_currentValue);
+        }
+
         public void Update()
         {
             if (!API.GetMousePosInViewport(out Vec2 mouseScreenPos)) return;

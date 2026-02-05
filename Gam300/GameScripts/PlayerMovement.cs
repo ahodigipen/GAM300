@@ -32,7 +32,7 @@ namespace GameScripts
         private float _sneakSpeed = 1.5f;
 
         [Boom.EditorExposed("Level Start Pos", "Specific coordinates for the 'Teleport to Start' action")]
-        private Vec3 _levelStartPos = new Vec3(0.914043128f, 1.5f, 13.9171219f);
+        private Vec3 _levelStartPos = new Vec3(0.914043128f, 1.8f, 13.9171219f);
 
         private int _health = 5;
         private int _maxHealth = 5;
@@ -409,7 +409,7 @@ namespace GameScripts
                 }
             }
 
-            bool isUseFreeze = API.IsKeyDown(USE_FREEZE);
+            bool isUseFreeze = API.IsKeyDown(USE_FREEZE) || (API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_X));
             bool isFreezePressed = isUseFreeze && !_wasUseFreezeDown;
             _wasUseFreezeDown = isUseFreeze;
 
@@ -452,7 +452,7 @@ namespace GameScripts
             bool isGrounded = IsPlayerGrounded();
 
             // Crouch logic - CTRL key works anywhere, stealth invisibility only in crouch zones
-            bool crouchDown = API.IsKeyDown(CROUCH_KEY);
+            bool crouchDown = API.IsKeyDown(CROUCH_KEY) || (API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_B));
             if (crouchDown && !_isCrouching)
             {
                 _isCrouching = true;
@@ -548,15 +548,38 @@ namespace GameScripts
                 if (API.IsKeyDown(API.KEY_D)) inputX -= 1f;
                 if (API.IsKeyDown(API.KEY_W)) inputZ += 1f;
                 if (API.IsKeyDown(API.KEY_S)) inputZ -= 1f;
+
+                // Add Gamepad support for movement
+                if (API.IsGamepadConnected())
+                {
+                    float gpX = API.GetGamepadAxis(API.GAMEPAD_AXIS_LEFT_X);
+                    float gpY = API.GetGamepadAxis(API.GAMEPAD_AXIS_LEFT_Y);
+
+                    // Deadzone handling (simple)
+                    if (Math.Abs(gpX) > 0.15f) inputX -= gpX; // GLFW X is positive right, our logic was A=+1, D=-1
+                    if (Math.Abs(gpY) > 0.15f) inputZ -= gpY; // GLFW Y is positive down, our logic was W=+1, S=-1
+                }
             }
 
             bool hasInput = (inputX != 0f || inputZ != 0f);
-            bool sprintKey = API.IsKeyDown(API.KEY_LEFT_SHIFT);
-            bool sneakKey = API.IsKeyDown(API.KEY_LEFT_CONTROL);
+            bool sprintKey = API.IsKeyDown(API.KEY_LEFT_SHIFT) || (API.IsGamepadConnected() && API.GetGamepadAxis(API.GAMEPAD_AXIS_LEFT_TRIGGER) > 0.1f);
+            bool sneakKey = API.IsKeyDown(API.KEY_LEFT_CONTROL) || (API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_RIGHT_THUMB));
 
             float currentSpeed = _walkSpeed;
             if (sneakKey) currentSpeed = _sneakSpeed;
             else if (sprintKey) currentSpeed = _sprintSpeed;
+
+            // Use analog stick magnitude for speed if using gamepad
+            if (API.IsGamepadConnected() && hasInput)
+            {
+                float gpX = API.GetGamepadAxis(API.GAMEPAD_AXIS_LEFT_X);
+                float gpY = API.GetGamepadAxis(API.GAMEPAD_AXIS_LEFT_Y);
+                float mag = (float)Math.Sqrt(gpX * gpX + gpY * gpY);
+                if (mag > 0.15f)
+                {
+                    currentSpeed *= Math.Min(1.0f, mag);
+                }
+            }
 
             float velX = 0f, velZ = 0f;
             if (hasInput)
@@ -582,7 +605,7 @@ namespace GameScripts
                 }
             }
 
-            bool ctrlDown = API.IsKeyDown(API.KEY_LEFT_CONTROL);
+            bool ctrlDown = API.IsKeyDown(API.KEY_LEFT_CONTROL) || (API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_B));
             Vec3 desiredMoveDir = new Vec3(0, 0, 0);
             if (hasInput)
             {

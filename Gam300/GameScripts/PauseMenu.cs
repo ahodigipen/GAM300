@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Boom;
 
 namespace GameScripts
@@ -38,8 +38,21 @@ namespace GameScripts
         private ulong _clickedButtonID = 0;
         private bool _wasPausedLastFrame = false;
 
+        // Controller navigation
+        // 0: Resume, 1: Restart, 2: Main Menu, 3: Quit, 4: Master, 5: BGM, 6: SFX
+        private int _selectedIndex = 0; 
+        private bool _wasDpadUp = false;
+        private bool _wasDpadDown = false;
+        private bool _wasStickUp = false;
+        private bool _wasStickDown = false;
+        private bool _wasAButtonPressed = false;
+
         private float _buttonDelayTimer = 0.0f;
         private const float CLICK_DELAY_DURATION = 0.1f;
+
+        // Visual constants for slider highlighting
+        private const float SLIDER_HIGHLIGHT_ALPHA = 1.0f;
+        private const float SLIDER_NORMAL_ALPHA = 0.6f;
 
         public void OnStart(string jsonParams)
         {
@@ -58,6 +71,7 @@ namespace GameScripts
             _bgmSlider = new VolumeSlider("Pause_BGM_BG", "Pause_BGM_Fill", "Pause_BGM_Handle", "Music");
             _sfxSlider = new VolumeSlider("Pause_SFX_BG", "Pause_SFX_Fill", "Pause_SFX_Handle", "SFX");
 
+            _selectedIndex = 0;
             ResetButtonState();
         }
 
@@ -117,6 +131,8 @@ namespace GameScripts
 
             if (isAnyDragging) return;
 
+            Update_ControllerNavigation(dt);
+
             switch (_currentState)
             {
                 case PauseMenuState.WaitingForMouseUp:
@@ -136,20 +152,111 @@ namespace GameScripts
             }
         }
 
+        private void Update_ControllerNavigation(float dt)
+        {
+            if (!API.IsGamepadConnected()) return;
+
+            bool dpadUp = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_DPAD_UP);
+            bool dpadDown = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_DPAD_DOWN);
+            float stickY = API.GetGamepadAxis(API.GAMEPAD_AXIS_LEFT_Y);
+            bool stickUp = stickY < -0.5f;
+            bool stickDown = stickY > 0.5f;
+            bool aPressed = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A);
+
+            // Vertical Navigation
+            if ((dpadUp && !_wasDpadUp) || (stickUp && !_wasStickUp))
+            {
+                _selectedIndex = (_selectedIndex - 1 + 7) % 7;
+                UpdateVisuals();
+            }
+            if ((dpadDown && !_wasDpadDown) || (stickDown && !_wasStickDown))
+            {
+                _selectedIndex = (_selectedIndex + 1) % 7;
+                UpdateVisuals();
+            }
+
+            // Horizontal Navigation (Slider Control)
+            if (_selectedIndex >= 4)
+            {
+                float stickX = API.GetGamepadAxis(API.GAMEPAD_AXIS_LEFT_X);
+                bool dpadLeft = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_DPAD_LEFT);
+                bool dpadRight = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_DPAD_RIGHT);
+
+                float moveAmount = 0f;
+                if (Math.Abs(stickX) > 0.2f) moveAmount = stickX * dt * 0.5f;
+                else if (dpadLeft) moveAmount = -dt * 0.5f;
+                else if (dpadRight) moveAmount = dt * 0.5f;
+
+                if (Math.Abs(moveAmount) > 0.0001f)
+                {
+                    VolumeSlider selectedSlider = null;
+                    string group = "";
+                    if (_selectedIndex == 4) { selectedSlider = _masterSlider; group = "Master"; }
+                    else if (_selectedIndex == 5) { selectedSlider = _bgmSlider; group = "Music"; }
+                    else if (_selectedIndex == 6) { selectedSlider = _sfxSlider; group = "SFX"; }
+
+                    if (selectedSlider != null)
+                    {
+                        float currentVal = API.GetGroupVolume(group);
+                        selectedSlider.SetValue(currentVal + moveAmount);
+                    }
+                }
+            }
+
+            if (aPressed && !_wasAButtonPressed)
+            {
+                ulong buttonID = 0;
+                if (_selectedIndex == 0) buttonID = _resumeButtonID;
+                else if (_selectedIndex == 1) buttonID = _restartButtonID;
+                else if (_selectedIndex == 2) buttonID = _mainMenuButtonID;
+                else if (_selectedIndex == 3) buttonID = _quitButtonID;
+
+                if (buttonID != 0) StartClickDelay(buttonID);
+            }
+
+            _wasDpadUp = dpadUp;
+            _wasDpadDown = dpadDown;
+            _wasStickUp = stickUp;
+            _wasStickDown = stickDown;
+            _wasAButtonPressed = aPressed;
+        }
+
+        private void UpdateVisuals()
+        {
+            // Reset buttons to normal
+            API.SetSpriteTexture(_resumeButtonID, RESUME_TEX_NORMAL);
+            API.SetSpriteTexture(_mainMenuButtonID, MAINMENU_TEX_NORMAL);
+            API.SetSpriteTexture(_restartButtonID, RESTART_TEX_NORMAL);
+            API.SetSpriteTexture(_quitButtonID, QUIT_TEX_NORMAL);
+
+            // Reset sliders visuals (using alpha for highlight for now)
+            SetSliderHighlight("Pause_Master_BG", _selectedIndex == 4);
+            SetSliderHighlight("Pause_BGM_BG", _selectedIndex == 5);
+            SetSliderHighlight("Pause_SFX_BG", _selectedIndex == 6);
+
+            // Highlight selected button
+            if (_selectedIndex == 0) API.SetSpriteTexture(_resumeButtonID, RESUME_TEX_CLICKED);
+            else if (_selectedIndex == 1) API.SetSpriteTexture(_restartButtonID, RESTART_TEX_CLICKED);
+            else if (_selectedIndex == 2) API.SetSpriteTexture(_mainMenuButtonID, MAINMENU_TEX_CLICKED);
+            else if (_selectedIndex == 3) API.SetSpriteTexture(_quitButtonID, QUIT_TEX_CLICKED);
+        }
+
+        private void SetSliderHighlight(string bgEntityName, bool highlight)
+        {
+            ulong id = API.FindEntity(bgEntityName);
+            if (id != 0)
+            {
+                API.SetSpriteAlpha(id, highlight ? SLIDER_HIGHLIGHT_ALPHA : SLIDER_NORMAL_ALPHA);
+            }
+        }
+
         public void ResetButtonState()
         {
             _currentState = PauseMenuState.WaitingForMouseUp;
             _clickedButtonID = 0;
             _buttonDelayTimer = 0.0f;
 
-            if (_resumeButtonID != 0)
-                API.SetSpriteTexture(_resumeButtonID, RESUME_TEX_NORMAL);
-            if (_restartButtonID != 0)
-                API.SetSpriteTexture(_restartButtonID, RESTART_TEX_NORMAL);
-            if (_mainMenuButtonID != 0)
-                API.SetSpriteTexture(_mainMenuButtonID, MAINMENU_TEX_NORMAL);
-            if (_quitButtonID != 0)
-                API.SetSpriteTexture(_quitButtonID, QUIT_TEX_NORMAL);
+            UpdateVisuals();
         }
 
         private void Update_Idle()
@@ -165,14 +272,35 @@ namespace GameScripts
                 if (!API.GetMousePosInViewport(out Vec2 mousePos)) { return; }
 
                 if (API.Check2DViewportClick(_resumeButtonID, mousePos.X, mousePos.Y))
+                {
+                    _selectedIndex = 0;
                     StartClickDelay(_resumeButtonID);
-                else if (API.Check2DViewportClick(_mainMenuButtonID, mousePos.X, mousePos.Y))
-                    StartClickDelay(_mainMenuButtonID);
+                }
                 else if (API.Check2DViewportClick(_restartButtonID, mousePos.X, mousePos.Y))
+                {
+                    _selectedIndex = 1;
                     StartClickDelay(_restartButtonID);
+                }
+                else if (API.Check2DViewportClick(_mainMenuButtonID, mousePos.X, mousePos.Y))
+                {
+                    _selectedIndex = 2;
+                    StartClickDelay(_mainMenuButtonID);
+                }
                 else if (API.Check2DViewportClick(_quitButtonID, mousePos.X, mousePos.Y))
+                {
+                    _selectedIndex = 3;
                     StartClickDelay(_quitButtonID);
+                }
+                else if (IsSliderClicked("Pause_Master_BG", mousePos)) _selectedIndex = 4;
+                else if (IsSliderClicked("Pause_BGM_BG", mousePos)) _selectedIndex = 5;
+                else if (IsSliderClicked("Pause_SFX_BG", mousePos)) _selectedIndex = 6;
             }
+        }
+
+        private bool IsSliderClicked(string bgEntityName, Vec2 mousePos)
+        {
+            ulong id = API.FindEntity(bgEntityName);
+            return id != 0 && API.Check2DViewportClick(id, mousePos.X, mousePos.Y);
         }
 
         private void Update_ButtonDelay(float dt)

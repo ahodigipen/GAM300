@@ -28,6 +28,7 @@ namespace GameScripts
 
         // Track previous key state to detect press (not hold)
         private bool _wasQPressed = false;
+        private bool _wasAPressed = false;
 
         // Static instance tracking
         private static readonly Dictionary<ulong, CPTrigger> s_instances = new Dictionary<ulong, CPTrigger>();
@@ -60,19 +61,23 @@ namespace GameScripts
             // Register callbacks
             API.RegisterTriggerEnterCallback(Entity, OnTriggerEnterCallback);
             API.RegisterTriggerExitCallback(Entity, OnTriggerExitCallback);
-            API.Log("[CPTrigger] Registered trigger callbacks. Press Q to activate checkpoint.");
+            API.Log("[CPTrigger] Registered trigger callbacks. Press Q or Gamepad A to activate checkpoint.");
         }
 
         public void OnUpdate(float dt)
         {
-            // Only check for Q key if player is in zone and checkpoint not yet activated
+            // Only check for keys if player is in zone and checkpoint not yet activated
             if (!_playerInZone || _activated) return;
 
             bool isQPressed = API.IsKeyDown(API.KEY_Q);
-            bool justPressed = isQPressed && !_wasQPressed;
+            bool justPressedQ = isQPressed && !_wasQPressed;
             _wasQPressed = isQPressed;
 
-            if (justPressed)
+            bool isAPressed = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A);
+            bool justPressedA = isAPressed && !_wasAPressed;
+            _wasAPressed = isAPressed;
+
+            if (justPressedQ || justPressedA)
             {
                 ActivateCheckpoint();
             }
@@ -145,7 +150,7 @@ namespace GameScripts
                     color.W = 1.0f;
                     API.SetTextColor(inst.Entity, color);
                 }
-                API.Log("[CPTrigger] Player entered checkpoint zone. Press Q to save checkpoint.");
+                API.Log("[CPTrigger] Player entered checkpoint zone. Press Q or Gamepad A to save checkpoint.");
             }
         }
 

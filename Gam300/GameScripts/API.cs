@@ -73,6 +73,15 @@ namespace Boom
         internal extern static bool Boom_API_IsMouseDown(int button);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Boom_API_IsGamepadButtonDown(int button);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static float Boom_API_GetGamepadAxis(int axis);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Boom_API_IsGamepadConnected();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Boom_API_HasTransform(ulong handle);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -701,6 +710,9 @@ namespace Boom
         // ===== Input =====
         public static bool IsKeyDown(int glfwKey) => Native.Boom_API_IsKeyDown(glfwKey);
         public static bool IsMouseDown(int button) => Native.Boom_API_IsMouseDown(button);
+        public static bool IsGamepadButtonDown(int button) => Native.Boom_API_IsGamepadButtonDown(button);
+        public static float GetGamepadAxis(int axis) => Native.Boom_API_GetGamepadAxis(axis);
+        public static bool IsGamepadConnected() => Native.Boom_API_IsGamepadConnected();
 
         // ===== Physics / Rigidbody =====
         public static Vec3 GetLinearVelocity(ulong h)
@@ -1338,6 +1350,31 @@ namespace Boom
         public const int MOUSE_LEFT = 0;
         public const int MOUSE_RIGHT = 1;
         public const int MOUSE_MIDDLE = 2;
+
+        // ===== Gamepad Button Constants =====
+        public const int GAMEPAD_BUTTON_A = 0;
+        public const int GAMEPAD_BUTTON_B = 1;
+        public const int GAMEPAD_BUTTON_X = 2;
+        public const int GAMEPAD_BUTTON_Y = 3;
+        public const int GAMEPAD_BUTTON_LEFT_BUMPER = 4;
+        public const int GAMEPAD_BUTTON_RIGHT_BUMPER = 5;
+        public const int GAMEPAD_BUTTON_BACK = 6;
+        public const int GAMEPAD_BUTTON_START = 7;
+        public const int GAMEPAD_BUTTON_GUIDE = 8;
+        public const int GAMEPAD_BUTTON_LEFT_THUMB = 9;
+        public const int GAMEPAD_BUTTON_RIGHT_THUMB = 10;
+        public const int GAMEPAD_BUTTON_DPAD_UP = 11;
+        public const int GAMEPAD_BUTTON_DPAD_RIGHT = 12;
+        public const int GAMEPAD_BUTTON_DPAD_DOWN = 13;
+        public const int GAMEPAD_BUTTON_DPAD_LEFT = 14;
+
+        // ===== Gamepad Axis Constants =====
+        public const int GAMEPAD_AXIS_LEFT_X = 0;
+        public const int GAMEPAD_AXIS_LEFT_Y = 1;
+        public const int GAMEPAD_AXIS_RIGHT_X = 2;
+        public const int GAMEPAD_AXIS_RIGHT_Y = 3;
+        public const int GAMEPAD_AXIS_LEFT_TRIGGER = 4;
+        public const int GAMEPAD_AXIS_RIGHT_TRIGGER = 5;
 
         // ===== Application State Constants =====
         public const int APP_STATE_RUNNING = 0;
