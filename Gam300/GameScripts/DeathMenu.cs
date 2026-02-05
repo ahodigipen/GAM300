@@ -30,7 +30,7 @@ namespace GameScripts
         private bool _wasDeadLastFrame = false;
 
         // Controller navigation
-        private int _selectedIndex = 0; // 0: Restart, 1: Main Menu
+        private int _selectedIndex = -1; // -1: Nothing Selected, 0: Restart, 1: Main Menu
         private bool _wasDpadUp = false;
         private bool _wasDpadDown = false;
         private bool _wasStickUp = false;
