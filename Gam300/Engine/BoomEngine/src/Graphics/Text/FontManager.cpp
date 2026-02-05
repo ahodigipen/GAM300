@@ -177,6 +177,11 @@ namespace Boom {
         m_TextShader->SetUniform(locProj, projection);
 
         // --- RENDER STATE SETUP ---
+        GLboolean wasDepthTestEnabled = glIsEnabled(GL_DEPTH_TEST);
+        GLboolean wasCullFaceEnabled = glIsEnabled(GL_CULL_FACE);
+        GLboolean wasBlendEnabled = glIsEnabled(GL_BLEND);
+        GLboolean wasScissorTestEnabled = glIsEnabled(GL_SCISSOR_TEST);
+
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
         glEnable(GL_BLEND);
@@ -226,6 +231,19 @@ namespace Boom {
 
             x += (glyph.advance.x) * scale;
         }
+
+        // --- RESTORE STATES ---
+        if (wasDepthTestEnabled) glEnable(GL_DEPTH_TEST);
+        else glDisable(GL_DEPTH_TEST);
+
+        if (wasCullFaceEnabled) glEnable(GL_CULL_FACE);
+        else glDisable(GL_CULL_FACE);
+
+        if (wasBlendEnabled) glEnable(GL_BLEND);
+        else glDisable(GL_BLEND);
+
+        if (wasScissorTestEnabled) glEnable(GL_SCISSOR_TEST);
+        else glDisable(GL_SCISSOR_TEST);
 
         glBindVertexArray(0);
         glBindTexture(GL_TEXTURE_2D, 0);
