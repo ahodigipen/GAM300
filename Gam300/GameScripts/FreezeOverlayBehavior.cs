@@ -156,6 +156,8 @@ namespace GameScripts
 
             if (visible)
             {
+                // API.SetVideoRemoveBlack(Entity, true);
+
                 // Apply X & Y scale
                 API.SetScale(Entity, new Vec3(_scaleX, _scaleY, 1.0f));
 

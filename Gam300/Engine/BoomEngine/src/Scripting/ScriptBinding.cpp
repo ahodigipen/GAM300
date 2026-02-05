@@ -2152,6 +2152,16 @@ namespace Boom {
         *height = vH;
     }
 
+    static void ICALL_API_SetVideoRemoveBlack(uint64_t handle, bool enabled) {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+
+        if (s_Ctx->scene.any_of<VideoComponent>(e)) {
+            auto& vc = s_Ctx->scene.get<VideoComponent>(e);
+            vc.removeBlackBackground = enabled;
+        }
+    }
+
     static void ICALL_API_ShutdownApplication()
     {
         if (!s_Ctx || !s_Ctx->window)
@@ -2366,6 +2376,7 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_PlayVideoComponent", (void*)ICALL_API_PlayVideoComponent);
         mono_add_internal_call("Boom.Native::Boom_API_StopVideoComponent", (void*)ICALL_API_StopVideoComponent);
         mono_add_internal_call("Boom.Native::Boom_API_GetViewportSize", (void*)ICALL_API_GetViewportSize);
+        mono_add_internal_call("Boom.Native::Boom_API_SetVideoRemoveBlack", (void*)ICALL_API_SetVideoRemoveBlack);
 
     }
 }

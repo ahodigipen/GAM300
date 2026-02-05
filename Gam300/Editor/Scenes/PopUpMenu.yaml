@@ -2,21 +2,6 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
-      Name: Level2PopUp
-      UID: 14113604206782153237
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [0.800000012, 0.5, 1]
-    SpriteComponent:
-      textureID: 17735993601354122583
-      color: [0.501960814, 0.501960814, 0.501960814, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 0
-  - InfoComponent:
-      Parent: 0
       Name: Level1PopUp
       UID: 1133745270066678340
     TransformComponent:
