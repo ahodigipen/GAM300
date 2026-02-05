@@ -250,6 +250,15 @@ namespace GameScripts
             API.Log($"[CutsceneSequencer] Recalculated Duration: {_duration}");
         }
 
+        public void Skip()
+        {
+            if (!_isPlaying) return;
+            API.Log("[CutsceneSequencer] Skip triggered.");
+            _currentTime = _duration;
+            ApplyTracks(_duration); // Force final state
+            Stop();
+        }
+
         public void Stop()
         {
             _isPlaying = false;

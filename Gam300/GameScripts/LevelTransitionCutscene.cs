@@ -329,8 +329,15 @@ namespace GameScripts
                 }
             }
 
-            if (_initialized && _sequencer != null) { 
+            if (_initialized && _sequencer != null)
+            {
+                if (API.IsKeyDown(API.KEY_SPACE))
+                {
+                    _sequencer.Skip();
+                }
+             
                 _sequencer.OnUpdate(dt);
+        
 
                 // TRACK COMPLETION
                 if (_isPlaying && !_hasFinished)

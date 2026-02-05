@@ -110,7 +110,7 @@ namespace GameScripts
                 // Wait 5 seconds & Pull Back
                 frame += 5 * fps;
                 // End Pos: Move BACK (Z - 12.0f) to create a dolly-out effect
-                Vec3 camPosEnd = new Vec3(ePos.X, ePos.Y + 5.0f, ePos.Z - 13.0f);
+                Vec3 camPosEnd = new Vec3(ePos.X, ePos.Y + 5.0f, ePos.Z +13.0f);
                 AddPosKey(posTrack, frame, camPosEnd);
                 AddLookKey(lookTrack, frame, "patrol enemy 3");
             }
@@ -246,6 +246,14 @@ namespace GameScripts
 
             if (_initialized && _sequencer != null)
             {
+                // Check for Skip
+                if (API.IsKeyDown(API.KEY_SPACE) && _isPlaying && !_hasFinished)
+                {
+                    _sequencer.Skip();
+                    _elapsedTime = _totalDuration; // Force completion
+                    API.Log("[IntroCutscene] Skipped via Spacebar.");
+                }
+
                 _sequencer.OnUpdate(dt);
                 // Debug log every second
                 // static float logTimer = 0; logTimer += dt; if(logTimer > 1.0f) { API.Log("[IntroCutscene] Tick..."); logTimer=0; }
