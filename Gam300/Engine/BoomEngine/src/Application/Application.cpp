@@ -656,9 +656,10 @@ namespace Boom
 
             m_Context->renderer->ShowFrame(showFrame);
 
-            // Render text at full resolution on top of the composited frame when in low poly mode
+            // Render 2D sprites and text at full resolution on top of the composited frame when in low poly mode
             if (m_Context->renderer->showLowPoly) {
                 m_Context->renderer->BeginFullResOverlay(showFrame);
+                RenderSpriteOverlay();
                 RenderTextOverlay();
                 m_Context->renderer->EndFullResOverlay();
             }
@@ -888,8 +889,8 @@ namespace Boom
                         // Render as 3D quad in world space
                         m_Context->renderer->DrawQuadRaw(textureId, worldTransform, comp.tintColor);
                     }
-                    else {
-                        // Render as 2D UI overlay
+                    else if (!m_Context->renderer->showLowPoly) {
+                        // Render as 2D UI overlay (skip when low poly; rendered at full res after compositing)
                         Transform2D transform2D{
                             worldTransform.translate,
                             worldTransform.rotate.z,
@@ -961,7 +962,8 @@ namespace Boom
                 m_Context->renderer->SetPickUniform(std::get<2>(gui)); //entity should be of type uint32_t
                 m_Context->renderer->DrawPick(std::get<1>(gui));
             }
-            else {
+            else if (!m_Context->renderer->showLowPoly) {
+                // Skip 2D sprite rendering when low poly is active; sprites will be rendered at full resolution after compositing
                 TextureAsset* texture{ m_Context->assets->TryGet<TextureAsset>(std::get<0>(gui).textureID) };
                 if (texture)
                     m_Context->renderer->DrawQuad(texture->data, std::get<1>(gui), std::get<0>(gui).color);
@@ -1134,6 +1136,74 @@ namespace Boom
                 textComp.color.a
             );
         }
+    }
+
+    void Application::RenderSpriteOverlay()
+    {
+        // Re-collect and render 2D screen-space sprites at full resolution (same logic as guiList in RenderScene)
+        std::vector<std::tuple<SpriteComponent, Transform2D, uint32_t>> guiList;
+
+        EnttView<Entity, TransformComponent>([this, &guiList](auto entity, TransformComponent&) {
+            if (entity.Has<DeactivatedComponent>()) return;
+
+            if (entity.Has<SpriteComponent>()) {
+                SpriteComponent& comp{ entity.Get<SpriteComponent>() };
+                if (comp.textureID == EMPTY_ASSET) return;
+                if (comp.renderAs3D) return; // Only 2D screen-space sprites
+
+                glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+                Transform3D worldTransform;
+                DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
+
+                Transform2D guiTransform{
+                    worldTransform.translate,
+                    worldTransform.rotate.z,
+                    glm::vec2(worldTransform.scale.x, worldTransform.scale.y)
+                };
+
+                guiList.push_back({ comp, guiTransform, entt::to_integral(entity.ID()) });
+            }
+        });
+
+        // Sort by Z for proper depth ordering
+        std::sort(guiList.begin(), guiList.end(), [](const auto& a, const auto& b) {
+            return std::get<1>(a).translate.z < std::get<1>(b).translate.z;
+        });
+
+        // Render sorted 2D sprites
+        for (auto const& gui : guiList) {
+            TextureAsset* texture{ m_Context->assets->TryGet<TextureAsset>(std::get<0>(gui).textureID) };
+            if (texture)
+                m_Context->renderer->DrawQuad(texture->data, std::get<1>(gui), std::get<0>(gui).color);
+        }
+
+        // Render 2D video overlays
+        EnttView<Entity, TransformComponent>([this](auto entity, TransformComponent&) {
+            if (entity.Has<DeactivatedComponent>()) return;
+            if (!entity.Has<VideoComponent>()) return;
+
+            VideoComponent& comp{ entity.Get<VideoComponent>() };
+            if (comp.videoPath.empty()) return;
+            if (comp.renderAs3D) return; // Only 2D videos
+
+            VideoPlayer* player = m_Context->videoSystem ? m_Context->videoSystem->GetPlayer(entity.ID()) : nullptr;
+            if (!player || !player->IsLoaded()) return;
+
+            uint32_t textureId = player->GetTextureID();
+            if (textureId == 0) return;
+
+            glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+            Transform3D worldTransform;
+            DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
+
+            Transform2D transform2D{
+                worldTransform.translate,
+                worldTransform.rotate.z,
+                glm::vec2(worldTransform.scale.x, worldTransform.scale.y)
+            };
+
+            m_Context->renderer->DrawQuadRaw(textureId, transform2D, comp.tintColor);
+        });
     }
 
     void Application::UpdateThirdPersonCameras()
