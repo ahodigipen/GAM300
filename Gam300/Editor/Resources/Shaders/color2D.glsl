@@ -19,12 +19,20 @@ layout(location = 0) out vec4 FragColor;
 layout(location = 1) out vec4 out_brightness;  // Brightness for bloom (always zero for 2D GUI)
 uniform vec4 color;
 uniform sampler2D texMap;
+uniform bool u_applyToneMap;
 void main() {
     vec4 result = texture(texMap, uvs).rgba;
 
     if (result.a < 0.01) discard;
 
     FragColor = color * result;
+
+    // Apply same tone mapping as final.glsl when rendering overlays after compositing
+    if (u_applyToneMap) {
+        const float EXPOSURE = 4.0;
+        FragColor.rgb = vec3(1.0) - exp(-FragColor.rgb * EXPOSURE);
+    }
+
     out_brightness = vec4(0.0, 0.0, 0.0, FragColor.a);  // Match visual alpha so bloom is preserved behind translucent sprites
 }
 ==FRAGMENT==

@@ -654,6 +654,187 @@ namespace EditorUI {
         Boom::Transform3D m_NewLocalTransform;
     };
 
+    // ==================== REORDER ENTITY COMMAND ====================
+
+    class ReorderEntityCommand : public ICommand {
+    public:
+        // Stores the old sortOrder of every sibling so undo restores exact state
+        ReorderEntityCommand(entt::registry* registry,
+                            entt::entity entity,
+                            entt::entity targetParent,
+                            int targetIndex,
+                            entt::entity oldParent,
+                            const Boom::Transform3D& oldLocalTransform)
+            : m_Registry(registry)
+            , m_TargetIndex(targetIndex)
+            , m_OldLocalTransform(oldLocalTransform)
+        {
+            // Store UIDs
+            if (registry->valid(entity) && registry->all_of<Boom::InfoComponent>(entity)) {
+                m_EntityUID = registry->get<Boom::InfoComponent>(entity).uid;
+            }
+            if (oldParent != entt::null && registry->valid(oldParent) &&
+                registry->all_of<Boom::InfoComponent>(oldParent)) {
+                m_OldParentUID = registry->get<Boom::InfoComponent>(oldParent).uid;
+            }
+            if (targetParent != entt::null && registry->valid(targetParent) &&
+                registry->all_of<Boom::InfoComponent>(targetParent)) {
+                m_TargetParentUID = registry->get<Boom::InfoComponent>(targetParent).uid;
+            }
+
+            // Snapshot old sortOrders for ALL siblings at the old parent level
+            CaptureOldSortOrders(entity, oldParent);
+            // Also snapshot target parent's children if different
+            if (m_OldParentUID != m_TargetParentUID) {
+                CaptureTargetSortOrders(targetParent);
+            }
+        }
+
+        void Execute() override {
+            entt::entity entity = FindEntityByUID(m_EntityUID);
+            if (entity == entt::null) return;
+
+            entt::entity targetParent = (m_TargetParentUID != 0) ? FindEntityByUID(m_TargetParentUID) : entt::null;
+            entt::entity oldParent = (m_OldParentUID != 0) ? FindEntityByUID(m_OldParentUID) : entt::null;
+
+            // If changing parents, reparent first
+            Boom::AssetID currentParentUID = m_Registry->get<Boom::InfoComponent>(entity).parent;
+            Boom::AssetID targetParentUIDVal = (targetParent != entt::null) ?
+                m_Registry->get<Boom::InfoComponent>(targetParent).uid : Boom::EMPTY_ASSET;
+
+            if (currentParentUID != targetParentUIDVal) {
+                Boom::SetParent(*m_Registry, entity, targetParent, true);
+            }
+
+            // Build the sibling list at the target level, insert entity at targetIndex
+            std::vector<entt::entity> siblings;
+            if (targetParent != entt::null) {
+                siblings = Boom::GetChildren(*m_Registry, targetParent);
+            } else {
+                // Root level siblings
+                siblings = GetRootEntities();
+            }
+
+            // Remove entity from current position
+            siblings.erase(std::remove(siblings.begin(), siblings.end(), entity), siblings.end());
+
+            // Clamp and insert at target index
+            int idx = std::min(m_TargetIndex, static_cast<int>(siblings.size()));
+            siblings.insert(siblings.begin() + idx, entity);
+
+            Boom::ReorderSiblings(*m_Registry, siblings);
+        }
+
+        void Undo() override {
+            entt::entity entity = FindEntityByUID(m_EntityUID);
+            if (entity == entt::null) return;
+
+            entt::entity oldParent = (m_OldParentUID != 0) ? FindEntityByUID(m_OldParentUID) : entt::null;
+
+            // Restore parent if it changed
+            Boom::AssetID currentParentUID = m_Registry->get<Boom::InfoComponent>(entity).parent;
+            Boom::AssetID oldParentUIDVal = (oldParent != entt::null) ?
+                m_Registry->get<Boom::InfoComponent>(oldParent).uid : Boom::EMPTY_ASSET;
+
+            if (currentParentUID != oldParentUIDVal) {
+                Boom::SetParent(*m_Registry, entity, oldParent, false);
+                if (m_Registry->all_of<Boom::TransformComponent>(entity)) {
+                    m_Registry->get<Boom::TransformComponent>(entity).transform = m_OldLocalTransform;
+                }
+            }
+
+            // Restore all saved sortOrders
+            for (const auto& [uid, order] : m_OldSortOrders) {
+                entt::entity e = FindEntityByUID(uid);
+                if (e != entt::null && m_Registry->all_of<Boom::InfoComponent>(e)) {
+                    m_Registry->get<Boom::InfoComponent>(e).sortOrder = order;
+                }
+            }
+            for (const auto& [uid, order] : m_TargetSortOrders) {
+                entt::entity e = FindEntityByUID(uid);
+                if (e != entt::null && m_Registry->all_of<Boom::InfoComponent>(e)) {
+                    m_Registry->get<Boom::InfoComponent>(e).sortOrder = order;
+                }
+            }
+        }
+
+        std::string GetDescription() const override {
+            return "Reorder Entity";
+        }
+
+    private:
+        void CaptureOldSortOrders(entt::entity entity, entt::entity parent) {
+            std::vector<entt::entity> siblings;
+            if (parent != entt::null) {
+                siblings = Boom::GetChildren(*m_Registry, parent);
+            } else {
+                siblings = GetRootEntities();
+            }
+            for (entt::entity e : siblings) {
+                if (m_Registry->all_of<Boom::InfoComponent>(e)) {
+                    auto& info = m_Registry->get<Boom::InfoComponent>(e);
+                    m_OldSortOrders.push_back({info.uid, info.sortOrder});
+                }
+            }
+        }
+
+        void CaptureTargetSortOrders(entt::entity targetParent) {
+            std::vector<entt::entity> siblings;
+            if (targetParent != entt::null) {
+                siblings = Boom::GetChildren(*m_Registry, targetParent);
+            } else {
+                siblings = GetRootEntities();
+            }
+            for (entt::entity e : siblings) {
+                if (m_Registry->all_of<Boom::InfoComponent>(e)) {
+                    auto& info = m_Registry->get<Boom::InfoComponent>(e);
+                    m_TargetSortOrders.push_back({info.uid, info.sortOrder});
+                }
+            }
+        }
+
+        std::vector<entt::entity> GetRootEntities() const {
+            struct RootEntry {
+                entt::entity entity;
+                int32_t sortOrder;
+                Boom::AssetID uid;
+            };
+            std::vector<RootEntry> roots;
+            auto view = m_Registry->view<Boom::InfoComponent>();
+            for (auto [e, info] : view.each()) {
+                if (info.parent == Boom::EMPTY_ASSET) {
+                    roots.push_back({e, info.sortOrder, info.uid});
+                }
+            }
+            std::sort(roots.begin(), roots.end(), [](const RootEntry& a, const RootEntry& b) {
+                if (a.sortOrder != b.sortOrder) return a.sortOrder < b.sortOrder;
+                return a.uid < b.uid;
+            });
+            std::vector<entt::entity> result;
+            result.reserve(roots.size());
+            for (const auto& r : roots) result.push_back(r.entity);
+            return result;
+        }
+
+        entt::entity FindEntityByUID(Boom::AssetID uid) const {
+            if (!m_Registry || uid == 0) return entt::null;
+            auto view = m_Registry->view<Boom::InfoComponent>();
+            for (auto e : view) {
+                if (view.get<Boom::InfoComponent>(e).uid == uid) return e;
+            }
+            return entt::null;
+        }
+
+        entt::registry* m_Registry;
+        Boom::AssetID m_EntityUID = 0;
+        Boom::AssetID m_OldParentUID = 0;
+        Boom::AssetID m_TargetParentUID = 0;
+        int m_TargetIndex = 0;
+        Boom::Transform3D m_OldLocalTransform;
+        std::vector<std::pair<Boom::AssetID, int32_t>> m_OldSortOrders;
+        std::vector<std::pair<Boom::AssetID, int32_t>> m_TargetSortOrders;
+    };
+
     // ==================== COMMAND HISTORY ====================
 
     class CommandHistory {
