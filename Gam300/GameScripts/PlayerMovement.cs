@@ -32,7 +32,7 @@ namespace GameScripts
         private float _sneakSpeed = 1.5f;
 
         [Boom.EditorExposed("Level Start Pos", "Specific coordinates for the 'Teleport to Start' action")]
-        private Vec3 _levelStartPos = new Vec3(-0.227f, 1.613f, 11.489f);
+        private Vec3 _levelStartPos = new Vec3(0.914043128f, 1.5f, 13.9171219f);
 
         private int _health = 5;
         private int _maxHealth = 5;
@@ -147,7 +147,6 @@ namespace GameScripts
                 return;
             }
 
-            _spawnPoint = API.GetPosition(Entity);
             _health = _maxHealth;
 
             _footstepComponent = new FootstepComponent { Entity = Entity };
@@ -157,10 +156,17 @@ namespace GameScripts
             {
                 API.CreateController(Entity, 0.8f, 4.8f);
                 API.Log("[PlayerMovement] Character controller created successfully");
+                
+                // Teleport to the designated level start position
+                TeleportToStart();
+                
+                // Set initial spawn point to the teleported location
+                _spawnPoint = API.GetPosition(Entity);
             }
             catch (Exception ex)
             {
                 API.Log($"[PlayerMovement] CreateController failed: {ex.Message}");
+                _spawnPoint = API.GetPosition(Entity);
             }
 
             if (API.HasAnimator(Entity))
