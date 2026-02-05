@@ -13,6 +13,11 @@ namespace GameScripts
         private bool _pendingStart = false;
         private int _startDelayFrames = 0;
 
+        private float _totalDuration = 0f;
+        private float _elapsedTime = 0f;
+        private bool _isPlaying = false;
+        private bool _hasFinished = false;
+
         public void OnStart(string jsonParams)
         {
             API.Log("[IntroCutscene] OnStart CALL RECEIVED.");
@@ -29,6 +34,7 @@ namespace GameScripts
                 _initialized = true;
                 _pendingStart = true;
                 _startDelayFrames = 30; // Wait 30 frames (~0.5s at 60fps)
+                _hasFinished = false; // Reset finish state
 
                 API.Log("[IntroCutscene] OnStart: Deferred Play by 30 frames...");
             }
@@ -179,6 +185,8 @@ namespace GameScripts
             _sequencer.AddTrack(posTrack);
             _sequencer.AddTrack(lookTrack); // LookTrack "Overwrites" RotTrack if active
 
+            // Calculate Total Duration based on final frame count
+            _totalDuration = frame / (float)fps;
 
             API.Log($"[IntroCutscene] Built sequence. Duration: {frame} frames. Tracks Added: Pos & Look.");
         }
@@ -226,6 +234,11 @@ namespace GameScripts
                     _pendingStart = false;
                     BuildSequence();
                     _sequencer.Play();
+
+                    // Start tracking playback
+                    _isPlaying = true;
+                    _elapsedTime = 0f;
+
                     API.Log("[IntroCutscene] Delayed Play() executed.");
                 }
                 return;
@@ -236,6 +249,21 @@ namespace GameScripts
                 _sequencer.OnUpdate(dt);
                 // Debug log every second
                 // static float logTimer = 0; logTimer += dt; if(logTimer > 1.0f) { API.Log("[IntroCutscene] Tick..."); logTimer=0; }
+
+                // Check for completion
+                if (_isPlaying && !_hasFinished)
+                {
+                    _elapsedTime += dt;
+                    if (_elapsedTime >= _totalDuration)
+                    {
+                        _hasFinished = true;
+                        _isPlaying = false;
+                        API.Log("[IntroCutscene] Cutscene Sequence Complete. Triggering Entry Popup.");
+
+                        // Call Entry to show the popup
+                        Entry.OnCutsceneCompleted();
+                    }
+                }
             }
             else
             {

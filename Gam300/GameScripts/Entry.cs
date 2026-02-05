@@ -97,21 +97,23 @@ namespace GameScripts
             // Only pre-load menus for gameplay scene, not for cutscene
             if (_currentSceneName == GAMEPLAY_SCENE_NAME)
             {
-                API.Log("Loading Start Pop-up...");
-                API.LoadSceneAdditive(POPUP_SCENE_NAME);
-                ulong camEntity = API.FindEntity("Pop Up Camera");
-                if (camEntity != 0)
-                {
-                    API.DestroyEntity(camEntity);
-                    API.Log("Pop Up Camera deleted immediately on load.");
-                }
-                IsStartPopupActive = true;
-                API.SetGameLogicPaused(true);
-
                 API.Log("Pre-loading pause menu additively...");
                 API.LoadSceneAdditive(PAUSE_SCENE_NAME);
                 API.LoadSceneAdditive(DEATH_SCENE_NAME);
                 API.LoadSceneAdditive(END_SCENE_NAME);
+            }
+        }
+
+        public static void OnCutsceneCompleted()
+        {
+            if (_currentSceneName == GAMEPLAY_SCENE_NAME && !IsStartPopupActive)
+            {
+                API.Log("[Entry] Cutscene Finished. Loading Level 1 Pop-up...");
+                API.LoadSceneAdditive(POPUP_SCENE_NAME);
+                ulong camEntity = API.FindEntity("Pop Up Camera");
+                if (camEntity != 0) API.DestroyEntity(camEntity);
+                IsStartPopupActive = true;
+                API.SetGameLogicPaused(true);
             }
         }
 
