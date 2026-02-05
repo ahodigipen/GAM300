@@ -652,6 +652,10 @@ namespace Boom {
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
         }
 
+        BOOM_INLINE void SetSpriteToneMap(bool enable) {
+            colorShader->SetToneMap(enable);
+        }
+
     public: // ---------------------- Utilities / helpers -------------------
         BOOM_INLINE void Resize(int32_t w, int32_t h) {
             if (w <= 0 || h <= 0) return;

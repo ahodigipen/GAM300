@@ -659,7 +659,9 @@ namespace Boom
             // Render 2D sprites and text at full resolution on top of the composited frame when in low poly mode
             if (m_Context->renderer->showLowPoly) {
                 m_Context->renderer->BeginFullResOverlay(showFrame);
+                m_Context->renderer->SetSpriteToneMap(true);
                 RenderSpriteOverlay();
+                m_Context->renderer->SetSpriteToneMap(false);
                 RenderTextOverlay();
                 m_Context->renderer->EndFullResOverlay();
             }

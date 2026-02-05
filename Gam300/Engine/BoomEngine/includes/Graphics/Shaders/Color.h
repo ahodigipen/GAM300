@@ -12,11 +12,15 @@ namespace Boom {
             , colLoc{ GetUniformVar("color") }
             , texLoc{ GetUniformVar("texMap") }
             , matLoc{ GetUniformVar("mat") }
+            , toneMapLoc{ GetUniformVar("u_applyToneMap") }
             , quad{ CreateQuad2D() }
         {
         }
         BOOM_INLINE void ChangeColor(glm::vec4 const& col) {
             color = col;
+        }
+        BOOM_INLINE void SetToneMap(bool enable) {
+            applyToneMap = enable;
         }
         BOOM_INLINE void Show(uint32_t texid, Transform2D const& t) {
             Use();
@@ -25,6 +29,7 @@ namespace Boom {
             SetUniform(texLoc, 0);
             SetUniform(colLoc, color);
             SetUniform(matLoc, t.Matrix());
+            SetUniform(toneMapLoc, applyToneMap);
             quad->Draw(GL_TRIANGLE_STRIP);
             UnUse();
         }
@@ -34,6 +39,8 @@ namespace Boom {
         int32_t colLoc;
         int32_t texLoc;
         int32_t matLoc;
+        int32_t toneMapLoc;
+        bool applyToneMap{ false };
         Quad2D quad;
     };
 
