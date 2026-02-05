@@ -3070,11 +3070,6 @@ namespace EditorUI {
                         scripting->SetFieldValue(sc.InstanceId, "_teleportToCPTrigger", "true");
                         BOOM_INFO("[Inspector] Triggered Teleport to Last Checkpoint");
                     }
-
-                    if (ImGui::Button("Teleport to Level 2", ImVec2(-1, 0))) {
-                        scripting->SetFieldValue(sc.InstanceId, "_teleportToLevel2Trigger", "true");
-                        BOOM_INFO("[Inspector] Triggered Teleport to Level 2");
-                    }
                     ImGui::Spacing();
                 }
 

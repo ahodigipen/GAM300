@@ -19,50 +19,11 @@ namespace Boom {
             m_scrollDelta = { 0.0f, 0.0f };
             m_lastMouseDelta = { 0.0f,0.0f };
             m_firstMouseThisFrame = true; // next cursor event seeds position
-
-            // Poll Gamepad (GLFW_JOYSTICK_1 is the default primary controller)
-            if (glfwJoystickPresent(GLFW_JOYSTICK_1) && glfwJoystickIsGamepad(GLFW_JOYSTICK_1)) {
-                GLFWgamepadstate state;
-                if (glfwGetGamepadState(GLFW_JOYSTICK_1, &state)) {
-                    m_cur.GamepadConnected = true;
-                    for (int i = 0; i <= GLFW_GAMEPAD_BUTTON_LAST; ++i) {
-                        m_cur.GamepadButtons.set(i, state.buttons[i] == GLFW_PRESS);
-                    }
-                    for (int i = 0; i <= GLFW_GAMEPAD_AXIS_LAST; ++i) {
-                        m_cur.GamepadAxes[i] = state.axes[i];
-                    }
-                }
-                else {
-                    m_cur.GamepadConnected = false;
-                }
-            }
-            else {
-                m_cur.GamepadConnected = false;
-            }
         }
 
         // ---- State accessors ----
         const WindowInputs& current()  const { return m_cur; }
         const WindowInputs& previous() const { return m_prev; }
-
-        // Gamepad helpers
-        bool gamepadButtonDown(int button) const {
-            return (button >= 0 && button <= GLFW_GAMEPAD_BUTTON_LAST) ? m_cur.GamepadButtons.test(size_t(button)) : false;
-        }
-        bool gamepadButtonPressed(int button) const {
-            return (button >= 0 && button <= GLFW_GAMEPAD_BUTTON_LAST)
-                ? (m_cur.GamepadButtons.test(size_t(button)) && !m_prev.GamepadButtons.test(size_t(button)))
-                : false;
-        }
-        bool gamepadButtonReleased(int button) const {
-            return (button >= 0 && button <= GLFW_GAMEPAD_BUTTON_LAST)
-                ? (!m_cur.GamepadButtons.test(size_t(button)) && m_prev.GamepadButtons.test(size_t(button)))
-                : false;
-        }
-        float gamepadAxis(int axis) const {
-            return (axis >= 0 && axis <= GLFW_GAMEPAD_AXIS_LAST) ? m_cur.GamepadAxes[axis] : 0.0f;
-        }
-        bool isGamepadConnected() const { return m_cur.GamepadConnected; }
 
         // Per-frame deltas (accumulated within this frame)
         glm::vec2 mouseDelta()  const { return m_mouseDelta; }

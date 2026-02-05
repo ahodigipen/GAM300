@@ -159,11 +159,6 @@ namespace Boom
         std::bitset<GLFW_KEY_LAST+1> Keys;
         double MouseX = 0.0;
         double MouseY = 0.0;
-
-        // Gamepad (supporting at least one for now)
-        bool GamepadConnected = false;
-        std::bitset<GLFW_GAMEPAD_BUTTON_LAST + 1> GamepadButtons;
-        float GamepadAxes[GLFW_GAMEPAD_AXIS_LAST + 1]{ 0.0f };
     };
     struct KeyReleaseEvent
     {

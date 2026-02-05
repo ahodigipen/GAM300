@@ -60,7 +60,6 @@ namespace GameScripts
 
         private static bool _p_KeyWasDown = false;
         private static bool _escape_KeyWasDown = false;
-        private static bool _start_ButtonWasDown = false;
 
         public static PauseMenu s_ActivePauseMenuInstance = null;
         public static DeathMenu s_ActiveDeathMenuInstance = null;
@@ -70,7 +69,6 @@ namespace GameScripts
         {
             _p_KeyWasDown = false;
             _escape_KeyWasDown = false;
-            _start_ButtonWasDown = false;
 
             IsGamePaused = false;
             IsPlayerDead = false;
@@ -208,15 +206,13 @@ namespace GameScripts
             bool p_KeyDown = API.IsKeyDown(API.KEY_P);
             bool escape_KeyDown = API.IsKeyDown(KEY_ESCAPE);
             bool ctrl_KeyDown = API.IsKeyDown(API.KEY_LEFT_CONTROL);
-            bool start_ButtonDown = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_START);
 
             // Handle Start Pop-up Interaction
             if (IsStartPopupActive)
             {
-                // Trigger close on ESC (Primary) OR P (Fallback) OR Start (Gamepad)
+                // Trigger close on ESC (Primary) OR P (Fallback)
                 bool closeTriggered = (escape_KeyDown && !_escape_KeyWasDown) ||
-                                      (p_KeyDown && !_p_KeyWasDown) ||
-                                      (start_ButtonDown && !_start_ButtonWasDown);
+                                      (p_KeyDown && !_p_KeyWasDown);
 
                 if (closeTriggered)
                 {
@@ -234,33 +230,29 @@ namespace GameScripts
                     // 3. Consume the key press so it doesn't trigger Pause Menu in the very next frame
                     _escape_KeyWasDown = true;
                     _p_KeyWasDown = true;
-                    _start_ButtonWasDown = true;
                     return;
                 }
 
                 // Keep tracking key state while popup is active to prevent bleed-through
                 _escape_KeyWasDown = escape_KeyDown;
                 _p_KeyWasDown = p_KeyDown;
-                _start_ButtonWasDown = start_ButtonDown;
                 return;
             }
 
             if (_currentSceneName == GAMEPLAY_SCENE_NAME)
             {
-                // Handle Escape key or Start button to pause
-                if ((escape_KeyDown && !_escape_KeyWasDown) || (start_ButtonDown && !_start_ButtonWasDown))
+                // Handle Escape key to pause
+                if (escape_KeyDown && !_escape_KeyWasDown)
                 {
-                    API.Log("Pausing game...");
+                    API.Log("Pausing game (Escape key)...");
                     IsGamePaused = true;
                     API.ShowPauseMenu();
                     API.EnableFileWatcher(false);
 
                     _escape_KeyWasDown = escape_KeyDown;
-                    _start_ButtonWasDown = start_ButtonDown;
                     return;
                 }
                 _escape_KeyWasDown = escape_KeyDown;
-                _start_ButtonWasDown = start_ButtonDown;
 
                 // Handle P key to pause (legacy support)
                 if (p_KeyDown && !_p_KeyWasDown && !ctrl_KeyDown)
@@ -329,19 +321,16 @@ namespace GameScripts
         private static void UpdatePauseMenu(float dt)
         {
             bool escape_KeyDown = API.IsKeyDown(KEY_ESCAPE);
-            bool start_ButtonDown = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_START);
 
-            // Handle Escape key or Start button to resume
-            if ((escape_KeyDown && !_escape_KeyWasDown) || (start_ButtonDown && !_start_ButtonWasDown))
+            // Handle Escape key to resume
+            if (escape_KeyDown && !_escape_KeyWasDown)
             {
-                API.Log("Resuming game...");
+                API.Log("Resuming game (Escape key)...");
                 s_RequestedPauseAction = PauseMenuAction.Resume;
                 _escape_KeyWasDown = escape_KeyDown;
-                _start_ButtonWasDown = start_ButtonDown;
                 return;
             }
             _escape_KeyWasDown = escape_KeyDown;
-            _start_ButtonWasDown = start_ButtonDown;
 
             switch (s_RequestedPauseAction)
             {

@@ -18,6 +18,15 @@ namespace GameScripts
         private float _minSpeedToRotate = 0.15f;
         private float _yaw;
 
+        // Static registry for spotlight lookup
+        private static System.Collections.Generic.Dictionary<string, PatrolEnemyController> s_PatrolEnemies
+            = new System.Collections.Generic.Dictionary<string, PatrolEnemyController>();
+
+        /// <summary>
+        /// Get current yaw rotation in degrees
+        /// </summary>
+        public float GetYaw() => _yaw;
+
         private const bool DRIVE_SPEED_PARAM = true;
         private const float SPEED_SMOOTH = 10f;
         private double _smoothedSpeed = 0.0;
@@ -120,6 +129,19 @@ namespace GameScripts
         private float _damageResetTimer = 0f;
         private const float DAMAGE_RESET_DELAY = 3.0f; // 3 seconds after damage
 
+        // Entity name for spotlight lookup (matches SpotlightFollower's targetName)
+        [Boom.EditorExposed("Entity Name", "Name of this patrol enemy for spotlight lookup")]
+        private string _entityName = "Patrol_1";
+
+        [Boom.EditorExposed("Spotlight Name", "Name of the spotlight entity to control")]
+        private string _spotlightName = "Patrol_1_Spotlight";
+
+        [Boom.EditorExposed("Spotlight Offset Y", "Height offset for spotlight above entity", 0f, 10f, true)]
+        private float _spotlightOffsetY = 2.0f;
+
+        // Cached spotlight entity ID
+        private ulong _spotlightEntity = 0;
+
         public void OnStart(string json)
         {
             if (!API.HasTransform(Entity)) { //("[PatrolEnemyController] Missing Transform."); return;
@@ -160,6 +182,20 @@ namespace GameScripts
             _alertName = "alert_" + Entity.ToString();
             _gruntName = "grunt_" + Entity.ToString();
 
+            // Find spotlight entity by name
+            if (!string.IsNullOrEmpty(_spotlightName))
+            {
+                _spotlightEntity = API.FindEntity(_spotlightName);
+                if (_spotlightEntity != 0)
+                {
+                    API.Log($"[PatrolEnemyController] Found spotlight entity: '{_spotlightName}' (ID: {_spotlightEntity})");
+                }
+                else
+                {
+                    API.Log($"[PatrolEnemyController] WARNING: Could not find spotlight entity: '{_spotlightName}'");
+                }
+            }
+
             // Preload all footstep sound variants
             PreloadFootstepSounds();
             // Preload all alert sound variants
@@ -172,6 +208,9 @@ namespace GameScripts
 
             // NEW: Register with PlayerManager
             PlayerManager.RegisterEnemy(this);
+
+            // Register for spotlight lookup
+            s_PatrolEnemies[_entityName] = this;
 
             // Initialize Alert Video (Shared)
             if (_sharedVideoEntity == 0 && !string.IsNullOrEmpty(_alertVideoName))
@@ -309,7 +348,8 @@ namespace GameScripts
             {
                 // Visibility Update
                 bool isInProximity = (_proximityDetection != null && _proximityDetection.IsPlayerInProximity());
-                bool isVisible = _isAlert || isInProximity;
+                // Only show alert video for proximity detection, not for direct vision alert
+                bool isVisible = isInProximity && !Entry.IsPlayerDead;
 
                 if (isVisible)
                 {
@@ -434,7 +474,14 @@ namespace GameScripts
 
             _yaw = (Math.Abs(delta) <= maxStep) ? targetYawDeg : _yaw + Math.Sign(delta) * maxStep;
             _yaw = Wrap360(_yaw);
-            API.SetRotationY(Entity, _yaw);
+            SetRotationAndSpotlight(_yaw);
+        }
+
+        // Helper to set entity rotation
+        private void SetRotationAndSpotlight(float yaw)
+        {
+            API.SetRotationY(Entity, yaw);
+            // Spotlight rotation is handled by SpotlightFollower with isPatrolEnemy=true
         }
 
         private float ComputeYawFromVelocity(float vx, float vz)
@@ -447,13 +494,21 @@ namespace GameScripts
         private void OnPlayerDetected(ulong target, Vec3 pos)
         {
             _isAlert = true;
+
+            // Set spotlight to alert (red) color
+            var spotlight = SpotlightFollower.GetByTargetName(_entityName);
+            if (spotlight != null)
+            {
+                spotlight.SetAlert(true);
+            }
+
             var self = API.GetPosition(Entity);
             float dx = pos.X - self.X, dz = pos.Z - self.Z;
             float baseYaw = WORLD_FORWARD_IS_NEG_Z
                 ? (float)(Math.Atan2(dx, -dz) * 180.0 / Math.PI)
                 : (float)(Math.Atan2(dx, dz) * 180.0 / Math.PI);
             _yaw = Wrap360(baseYaw);
-            API.SetRotationY(Entity, _yaw);
+            SetRotationAndSpotlight(_yaw);
 
             PlayRandomAlertSound(self);
 
@@ -472,6 +527,13 @@ namespace GameScripts
             _hasDealtDamage = false;
             _alertSoundPlayed = false; // Reset so alert can play again next detection
 
+            // Reset spotlight to original color
+            var spotlight = SpotlightFollower.GetByTargetName(_entityName);
+            if (spotlight != null)
+            {
+                spotlight.SetAlert(false);
+            }
+
             // NEW: Reset proximity when player lost
             _proximityDetection?.ResetDetection();
         }
@@ -484,7 +546,7 @@ namespace GameScripts
                 ? (float)(Math.Atan2(dx, -dz) * 180.0 / Math.PI)
                 : (float)(Math.Atan2(dx, dz) * 180.0 / Math.PI);
             _yaw = Wrap360(baseYaw);
-            API.SetRotationY(Entity, _yaw);
+            SetRotationAndSpotlight(_yaw);
         }
 
         // === NEW: PROXIMITY DETECTION HANDLER ===
@@ -506,7 +568,7 @@ namespace GameScripts
                 ? (float)(Math.Atan2(dx, -dz) * 180.0 / Math.PI)
                 : (float)(Math.Atan2(dx, dz) * 180.0 / Math.PI);
             _yaw = Wrap360(baseYaw);
-            API.SetRotationY(Entity, _yaw);
+            SetRotationAndSpotlight(_yaw);
 
             if (!_hasDealtDamage)
             {
@@ -529,10 +591,19 @@ namespace GameScripts
             // Reset proximity
             _proximityDetection?.ResetDetection();
 
-            // Reset position to anchor
-            API.SetNavAgentPosition(Entity, _anchorPos);
+            // Hide alert video if active
+            if (_isMyVideoVisible)
+            {
+                if (_sharedVideoEntity != 0 && _videoOwnerID == Entity)
+                {
+                    API.StopVideo(_sharedVideoEntity);
+                    API.SetScale(_sharedVideoEntity, new Vec3(0, 0, 0));
+                    _videoOwnerID = 0;
+                }
+                _isMyVideoVisible = false;
+            }
 
-            //("[PatrolEnemyController] Player respawned - all states reset and teleported to anchor");
+            //("[PatrolEnemyController] Player respawned - all states reset");
         }
 
         public void OnDestroy()
@@ -542,6 +613,24 @@ namespace GameScripts
 
             // NEW: Unregister from PlayerManager
             PlayerManager.UnregisterEnemy(this);
+
+            // Unregister from spotlight lookup
+            if (s_PatrolEnemies.ContainsKey(_entityName))
+            {
+                s_PatrolEnemies.Remove(_entityName);
+            }
+        }
+
+        /// <summary>
+        /// Get PatrolEnemyController by entity name (for spotlight lookup)
+        /// </summary>
+        public static PatrolEnemyController GetByName(string name)
+        {
+            if (s_PatrolEnemies.TryGetValue(name, out PatrolEnemyController controller))
+            {
+                return controller;
+            }
+            return null;
         }
 
         // ====== AUDIO HELPER METHODS ======

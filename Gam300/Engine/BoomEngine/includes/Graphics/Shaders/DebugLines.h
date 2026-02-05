@@ -68,28 +68,20 @@ namespace Boom {
                 glBufferSubData(GL_ARRAY_BUFFER, 0, bytes, verts.data());
             }
 
-            // Save current states
-            GLboolean wasDepthTestEnabled = glIsEnabled(GL_DEPTH_TEST);
-            GLboolean wasCullFaceEnabled = glIsEnabled(GL_CULL_FACE);
-
+            // Optional depth test disable for overlay effect (skeleton bones always visible)
             if (disableDepthTest) {
                 glDisable(GL_DEPTH_TEST);
-            }
-            else {
-                glEnable(GL_DEPTH_TEST);
             }
 
             glDisable(GL_CULL_FACE);
             glLineWidth(lineWidth);
             glDrawArrays(GL_LINES, 0, static_cast<GLint>(verts.size()));
             glLineWidth(1.0f);
+            glEnable(GL_CULL_FACE);
 
-            // Restore states
-            if (wasDepthTestEnabled) glEnable(GL_DEPTH_TEST);
-            else glDisable(GL_DEPTH_TEST);
-
-            if (wasCullFaceEnabled) glEnable(GL_CULL_FACE);
-            else glDisable(GL_CULL_FACE);
+            if (disableDepthTest) {
+                glEnable(GL_DEPTH_TEST);
+            }
 
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             glBindVertexArray(0);

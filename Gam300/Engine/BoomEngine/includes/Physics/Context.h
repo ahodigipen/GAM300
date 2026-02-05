@@ -30,15 +30,6 @@ namespace Boom {
             entt::entity hitEntity = entt::null;
         };
 
-        // Collision filtering groups
-        enum CollisionGroup {
-            GROUP_DEFAULT = 1 << 0,
-            GROUP_PLAYER = 1 << 1,
-            GROUP_ENEMY = 1 << 2,
-            GROUP_ENVIRONMENT = 1 << 3,
-            GROUP_TRIGGER = 1 << 4
-        };
-
         // ====================================================================================
         // REGION: LIFECYCLE & CORE
         // ====================================================================================
@@ -189,15 +180,6 @@ namespace Boom {
                 for (PxShape* shape : shapes) {
                     // Enable scene query so raycasts and overlap tests can detect the controller
                     shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, true);
-
-                    // Setup Filtering for Player Controller
-                    PxFilterData playerFD;
-                    playerFD.word0 = GROUP_PLAYER;
-                    // Player collides with EVERYTHING EXCEPT Enemy (to avoid pushing them)
-                    playerFD.word1 = 0xFFFFFFFF & ~GROUP_ENEMY; 
-                    
-                    shape->setSimulationFilterData(playerFD);
-                    shape->setQueryFilterData(playerFD);
                 }
             }
 
@@ -610,18 +592,6 @@ namespace Boom {
 
             if (!body.actor) { BOOM_ERROR("Error creating actor"); if (shape) shape->release(); return; }
 
-            // Apply special filtering if this is an enemy
-            if (shape) {
-                auto const& entName = entity.Get<InfoComponent>().name;
-                if (entName.find("Enemy") != std::string::npos || entName.find("Patrol") != std::string::npos) {
-                    PxFilterData enemyFD;
-                    enemyFD.word0 = GROUP_ENEMY;
-                    enemyFD.word1 = 0xFFFFFFFF; // Collide with everything
-                    shape->setSimulationFilterData(enemyFD);
-                    shape->setQueryFilterData(enemyFD);
-                }
-            }
-
             // 5. Final Setup
             body.actor->setActorFlag(PxActorFlag::eVISUALIZATION, true);
             body.actor->userData = new EntityID(entity.ID());
@@ -756,17 +726,6 @@ namespace Boom {
             // 3. Attach New Shape
             if (newShape) {
                 actor->attachShape(*newShape);
-
-                // Apply special filtering if this is an enemy
-                auto const& entName = entity.Get<InfoComponent>().name;
-                if (entName.find("Enemy") != std::string::npos || entName.find("Patrol") != std::string::npos) {
-                    PxFilterData enemyFD;
-                    enemyFD.word0 = GROUP_ENEMY;
-                    enemyFD.word1 = 0xFFFFFFFF; // Collide with everything
-                    newShape->setSimulationFilterData(enemyFD);
-                    newShape->setQueryFilterData(enemyFD);
-                }
-
                 newShape->release(); // Actor now owns it, release our reference
 
                 // Recalculate mass for dynamic objects
@@ -1220,26 +1179,15 @@ namespace Boom {
             // 3. Flags
             if (shape) {
                 shape->setFlag(PxShapeFlag::eVISUALIZATION, true);
-
-                // Default filter data (Word0: Group, Word1: Mask)
-                // Default: Collides with everything
-                PxFilterData fd;
-                fd.word0 = GROUP_DEFAULT;
-                fd.word1 = 0xFFFFFFFF; 
-
                 if (collider.isTrigger) {
                     shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
                     shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
-                    fd.word0 = GROUP_TRIGGER;
                 }
                 else {
                     shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
                     shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, false);
                     shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, true);
                 }
-
-                shape->setSimulationFilterData(fd);
-                shape->setQueryFilterData(fd);
 
                 // Store shape reference in collider
                 collider.Shape = shape;
@@ -1331,26 +1279,23 @@ namespace Boom {
         }
 
         static PxFilterFlags CustomFilterShader(
-            PxFilterObjectAttributes attr0, PxFilterData fd0,
-            PxFilterObjectAttributes attr1, PxFilterData fd1,
+            PxFilterObjectAttributes attr0, [[maybe_unused]] PxFilterData fd0,
+            PxFilterObjectAttributes attr1, [[maybe_unused]] PxFilterData fd1,
             PxPairFlags& pairFlags, [[maybe_unused]] const void* constantBlock,
             [[maybe_unused]] PxU32 constantBlockSize)
         {
-            // Triggers: Notify but don't collide
+            (void)fd0;
+            (void)fd1;
+            (void)constantBlock;
+            (void)constantBlockSize;
+
             if (PxFilterObjectIsTrigger(attr0) || PxFilterObjectIsTrigger(attr1)) {
                 pairFlags = PxPairFlag::eNOTIFY_TOUCH_FOUND | PxPairFlag::eNOTIFY_TOUCH_LOST | PxPairFlag::eDETECT_DISCRETE_CONTACT;
-                return PxFilterFlag::eDEFAULT;
             }
-
-            // Filtering logic: Check word0 (collision group) and word1 (collision mask)
-            // If (group0 & mask1) AND (group1 & mask0) are both non-zero, they collide.
-            if ((fd0.word0 & fd1.word1) && (fd1.word0 & fd0.word1)) {
+            else {
                 pairFlags = PxPairFlag::eCONTACT_DEFAULT | PxPairFlag::eNOTIFY_TOUCH_FOUND | PxPairFlag::eNOTIFY_TOUCH_PERSISTS | PxPairFlag::eNOTIFY_TOUCH_LOST;
-                return PxFilterFlag::eDEFAULT;
             }
-
-            // Otherwise, ignore collision
-            return PxFilterFlag::eSUPPRESS;
+            return PxFilterFlag::eDEFAULT;
         }
 
         PxDefaultErrorCallback m_ErrorCallback;
