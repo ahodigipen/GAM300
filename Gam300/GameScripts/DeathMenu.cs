@@ -49,7 +49,7 @@ namespace GameScripts
             _mainMenuButtonID = API.FindEntity("Death_ReturnButton");
             _backgroundID = API.FindEntity("Death_Background");
 
-            _selectedIndex = 0;
+            _selectedIndex = -1;
             ResetButtonState();
         }
 
@@ -103,12 +103,14 @@ namespace GameScripts
 
             if ((dpadUp && !_wasDpadUp) || (stickUp && !_wasStickUp))
             {
-                _selectedIndex = (_selectedIndex - 1 + 2) % 2;
+                if (_selectedIndex == -1) _selectedIndex = 1; // Highlight Main Menu if coming from nothing
+                else _selectedIndex = (_selectedIndex - 1 + 2) % 2;
                 UpdateVisuals();
             }
             if ((dpadDown && !_wasDpadDown) || (stickDown && !_wasStickDown))
             {
-                _selectedIndex = (_selectedIndex + 1) % 2;
+                if (_selectedIndex == -1) _selectedIndex = 0; // Highlight Restart if coming from nothing
+                else _selectedIndex = (_selectedIndex + 1) % 2;
                 UpdateVisuals();
             }
 
@@ -130,21 +132,34 @@ namespace GameScripts
 
         private void UpdateVisuals()
         {
-            // Reset all to normal
+            // Reset all to normal (Texture and full brightness)
             if (_restartButtonID != 0)
+            {
                 API.SetSpriteTexture(_restartButtonID, RESTART_TEX_NORMAL);
+                API.SetSpriteColor(_restartButtonID, new Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+            }
             if (_mainMenuButtonID != 0)
+            {
                 API.SetSpriteTexture(_mainMenuButtonID, MAINMENU_TEX_NORMAL);
+                API.SetSpriteColor(_mainMenuButtonID, new Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+            }
 
-            // Highlight selected
+            // Highlight selected by darkening
+            if (_selectedIndex == -1) return;
+
             if (_selectedIndex == 0 && _restartButtonID != 0)
-                API.SetSpriteTexture(_restartButtonID, RESTART_TEX_CLICKED);
+            {
+                API.SetSpriteColor(_restartButtonID, new Vec4(0.5f, 0.5f, 0.5f, 1.0f));
+            }
             else if (_selectedIndex == 1 && _mainMenuButtonID != 0)
-                API.SetSpriteTexture(_mainMenuButtonID, MAINMENU_TEX_CLICKED);
+            {
+                API.SetSpriteColor(_mainMenuButtonID, new Vec4(0.5f, 0.5f, 0.5f, 1.0f));
+            }
         }
 
         public void ResetButtonState()
         {
+            _selectedIndex = -1;
             _currentState = DeathMenuState.WaitingForMouseUp;
             _clickedButtonID = 0;
             _buttonDelayTimer = 0.0f;
@@ -187,10 +202,8 @@ namespace GameScripts
             _clickedButtonID = buttonID;
             _buttonDelayTimer = 0.0f;
 
-            if (buttonID == _mainMenuButtonID)
-                API.SetSpriteTexture(buttonID, MAINMENU_TEX_CLICKED);
-            else if (buttonID == _restartButtonID)
-                API.SetSpriteTexture(buttonID, RESTART_TEX_CLICKED);
+            if (buttonID != 0)
+                API.SetSpriteColor(buttonID, new Vec4(0.5f, 0.5f, 0.5f, 1.0f));
         }
 
         private void ExecuteClickAction()

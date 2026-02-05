@@ -214,14 +214,16 @@ namespace Boom
 			serializer.Serialize(m_Context->scene, m_PrePlayScenePath);
 			BOOM_INFO("[Application] Saved pre-play scene state");
 
-			// Initialize physics actors for all rigid bodies
+			// 1. Initialize collider-only entities (static geometry) FIRST
 			EnttView<Entity, ColliderComponent>([this](auto entity, auto&) {
 				if (!entity.Has<RigidBodyComponent>()) {
 					m_Context->physics->AddColliderOnly(entity, *m_Context->assets);
 				}
-				else {
-					m_Context->physics->AddRigidBody(entity, *m_Context->assets);
-				}
+				});
+
+			// 2. Initialize rigid bodies SECOND
+			EnttView<Entity, RigidBodyComponent>([this](auto entity, auto&) {
+				m_Context->physics->AddRigidBody(entity, *m_Context->assets);
 				});
 
 			// Create controllers for all entities with CharacterControllerComponent
@@ -710,28 +712,19 @@ namespace Boom
 			BOOM_INFO("[Scene] Initializing and Deactivating newly deserialized objects...");
 
 			auto fullMenuView = reg.view<MenuComponent>();
+			
+			// 1. First pass: Deactivate and Init Colliders
 			for (auto [entity, menu] : fullMenuView.each())
 			{
-				// Only process the menu type we just loaded
 				if (menu.menuType != targetType) continue;
 
-				// 1. Deactivate (Start hidden)
+				// Deactivate (Start hidden)
 				if (targetType != MenuType::PopUp)
 				{
 					reg.emplace_or_replace<DeactivatedComponent>(entity);
 				}
 
-				// 2. Init RigidBody
-				if (reg.all_of<RigidBodyComponent>(entity))
-				{
-					auto& rb = reg.get<RigidBodyComponent>(entity);
-					if (!rb.RigidBody.actor) {
-						Boom::Entity ent{ &m_Context->scene, entity };
-						m_Context->physics->AddRigidBody(ent, *m_Context->assets);
-					}
-				}
-
-				// 3. Init Collider (Only if no RigidBody)
+				// Init Collider (Only if no RigidBody) - STATIC FIRST
 				if (reg.all_of<ColliderComponent>(entity) && !reg.all_of<RigidBodyComponent>(entity))
 				{
 					auto& col = reg.get<ColliderComponent>(entity);
@@ -744,8 +737,24 @@ namespace Boom
 						col.Collider.actor->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, true);
 					}
 				}
+			}
 
-				// 4. Init Scripts
+			// 2. Second pass: Init RigidBodies and Scripts
+			for (auto [entity, menu] : fullMenuView.each())
+			{
+				if (menu.menuType != targetType) continue;
+
+				// Init RigidBody
+				if (reg.all_of<RigidBodyComponent>(entity))
+				{
+					auto& rb = reg.get<RigidBodyComponent>(entity);
+					if (!rb.RigidBody.actor) {
+						Boom::Entity ent{ &m_Context->scene, entity };
+						m_Context->physics->AddRigidBody(ent, *m_Context->assets);
+					}
+				}
+
+				// Init Scripts
 				if (m_Context->scriptingSystem && reg.all_of<ScriptComponent>(entity))
 				{
 					auto& sc = reg.get<ScriptComponent>(entity);
@@ -1483,19 +1492,19 @@ namespace Boom
 				BOOM_INFO("[Scene] No scene settings found, using default ambient strength: 0.5");
 			}
 
-			// Reinitialize physics - BOTH RigidBodies AND Collider-Only (Triggers)
-			EnttView<Entity, RigidBodyComponent>([this](auto entity, auto&) {
-				m_Context->physics->AddRigidBody(entity, *m_Context->assets);
-				});
-
-			// *** ADD THIS - Reinitialize collider-only entities (triggers) ***
+			// 1. Reinitialize collider-only entities (triggers, static geometry) FIRST
 			EnttView<Entity, ColliderComponent>([this](auto entity, auto&) {
-				// Skip if it has a RigidBodyComponent (already handled above)
+				// Skip if it has a RigidBodyComponent (handled in second pass)
 				if (entity.Has<RigidBodyComponent>()) return;
 
 				m_Context->physics->AddColliderOnly(entity, *m_Context->assets);
 				BOOM_INFO("[Scene] Reinitialized collider-only actor for entity {}",
 					static_cast<uint32_t>(entity.ID()));
+				});
+
+			// 2. Reinitialize physics for RigidBodies SECOND
+			EnttView<Entity, RigidBodyComponent>([this](auto entity, auto&) {
+				m_Context->physics->AddRigidBody(entity, *m_Context->assets);
 				});
 
 			// Creating script instances 
@@ -1652,6 +1661,9 @@ namespace Boom
 
 			// Calculate raw delta time
 			double rawDelta = (currentTime - sLastTime);
+
+			// Cap delta time to prevent physics tunneling after long frames (like scene loading)
+			if (rawDelta > 0.1) rawDelta = 0.033; // Cap to ~30fps if frame took too long
 
 			// Delta time behavior:
 			// - Edit mode: Always update (for smooth camera movement)
