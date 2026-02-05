@@ -72,9 +72,21 @@ namespace EditorUI {
 
             if (rootNode) RenderDirectoryTree(rootNode);
 
+            // Right-click on empty space in the panel
+            if (ImGui::BeginPopupContextWindow("##DirPanelContext", ImGuiPopupFlags_NoOpenOverItems | ImGuiPopupFlags_MouseButtonRight)) {
+                if (ImGui::MenuItem("New Folder")) {
+                    newFolderParentPath = ROOT_PATH.string();
+                    memset(newFolderNameBuf, 0, sizeof(newFolderNameBuf));
+                    showNewFolderPopup = true;
+                }
+                ImGui::EndPopup();
+            }
+
             RefreshUpdate();
             PrintSelectedInfo();
             DeleteUpdate();
+            NewFolderUpdate();
+            RenameUpdate();
         }
         ImGui::End();
 
@@ -96,13 +108,21 @@ namespace EditorUI {
 
         static std::future<std::unique_ptr<FileNode>> refreshFuture;
 
-        if (((rTimer += dt) > AUTO_REFRESH_SEC) && !refreshFuture.valid())
+        // Pause refresh while any popup/context menu is active to avoid invalidating ImGui IDs
+        bool popupActive = showDeleteConfirm || showDeleteError || showNewFolderPopup || showRenamePopup
+            || ImGui::IsPopupOpen("Confirm Delete##Dir")
+            || ImGui::IsPopupOpen("New Folder##Dir")
+            || ImGui::IsPopupOpen("Rename##Dir")
+            || ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel);
+
+        if (((rTimer += dt) > AUTO_REFRESH_SEC) && !refreshFuture.valid() && !popupActive)
         {
             refreshFuture = std::async(std::launch::async, [this]() {return BuildDirectoryTree(); });
             rTimer = 0.0;
         }
 
         if (refreshFuture.valid() && refreshFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+            if (popupActive) return;  // defer applying refresh until popup closes
             rootNode = refreshFuture.get();
             UpdateAssetRegistry();
         }
@@ -122,46 +142,253 @@ namespace EditorUI {
             showDeleteConfirm = true;
 
         if (showDeleteConfirm) {
-            ImGui::OpenPopup("Confirm Delete");
-            ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-
-            if (ImGui::BeginPopupModal("Confirm Delete", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-                ImGui::Text("Are you sure you want to delete:\n%s?", selectedPath.c_str());
-                ImGui::Separator();
-                if (ImGui::Button("Yes", ImVec2(120, 0)) || ImGui::IsKeyPressed(ImGuiKey_Enter, false)) {
-                    if (DeletePath(selectedPath)) {
-                        selectedPath.clear(); // Clear selection after deletion
-                    }
-                    else {
-                        showDeleteError = true;
-                        deleteErrorMessage = "Failed to delete: " + selectedPath;
-                    }
-                    showDeleteConfirm = false;
-                    ImGui::CloseCurrentPopup();
-                }
-                ImGui::SameLine();
-                if (ImGui::Button("No", ImVec2(120, 0)) || ImGui::IsKeyPressed(ImGuiKey_Escape)) {
-                    showDeleteConfirm = false;
-                    ImGui::CloseCurrentPopup();
-                }
-                ImGui::EndPopup();
-            }
+            ImGui::OpenPopup("Confirm Delete##Dir");
         }
 
-        if (showDeleteError)
-        {
+        ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+        ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+        ImGui::SetNextWindowSize(ImVec2(450, 0), ImGuiCond_Appearing);
+
+        if (ImGui::BeginPopupModal("Confirm Delete##Dir", &showDeleteConfirm,
+                                   ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse)) {
+            std::filesystem::path pathToDelete(selectedPath);
+            std::string displayName = pathToDelete.filename().string();
+            bool isDir = std::filesystem::is_directory(pathToDelete);
+
+            ImGui::Text("Are you sure you want to delete:");
+            ImGui::Spacing();
+            ImGui::TextColored(ImVec4(1, 0.8f, 0, 1), "  %s", displayName.c_str());
+            ImGui::Spacing();
+            ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1), "Path: %s", selectedPath.c_str());
+
+            if (isDir) {
+                // Count and list directory contents
+                int fileCount = 0;
+                std::vector<std::string> contents;
+                std::error_code ec;
+                for (auto& entry : std::filesystem::recursive_directory_iterator(pathToDelete, ec)) {
+                    if (!entry.is_directory()) {
+                        fileCount++;
+                        if (contents.size() < 5) {
+                            contents.push_back(entry.path().filename().string());
+                        }
+                    }
+                }
+                ImGui::Spacing();
+                ImGui::TextColored(ImVec4(1, 0.5f, 0, 1), "This directory contains %d file(s):", fileCount);
+                for (const auto& name : contents) {
+                    ImGui::BulletText("%s", name.c_str());
+                }
+                if (fileCount > 5) {
+                    ImGui::BulletText("... and %d more", fileCount - 5);
+                }
+            }
+
+            ImGui::Spacing();
+            ImGui::TextColored(ImVec4(1, 0.5f, 0.5f, 1), "This will permanently delete %s from disk!",
+                               isDir ? "the directory and all its contents" : "the file");
+            ImGui::Spacing();
+            ImGui::Separator();
+            ImGui::Spacing();
+
+            if (ImGui::Button("Yes, Delete", ImVec2(120, 0))) {
+                if (DeletePath(selectedPath)) {
+                    UpdateAssetRegistry();
+                    selectedPath.clear();
+                }
+                else {
+                    showDeleteError = true;
+                    deleteErrorMessage = "Failed to delete: " + selectedPath;
+                }
+                showDeleteConfirm = false;
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+                showDeleteConfirm = false;
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
+        }
+
+        if (showDeleteError) {
             ImGui::OpenPopup("Delete Error");
             ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
         }
 
-        if (ImGui::BeginPopupModal("Delete Error", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-        {
+        if (ImGui::BeginPopupModal("Delete Error", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
             ImGui::Text("%s", deleteErrorMessage.c_str());
             ImGui::Separator();
 
-            if (ImGui::Button("OK", ImVec2(120, 0)) || ImGui::IsKeyPressed(ImGuiKey_Escape))
-            {
+            if (ImGui::Button("OK", ImVec2(120, 0)) || ImGui::IsKeyPressed(ImGuiKey_Escape)) {
                 showDeleteError = false;
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
+        }
+    }
+
+    void DirectoryPanel::NewFolderUpdate()
+    {
+        if (showNewFolderPopup) {
+            ImGui::OpenPopup("New Folder##Dir");
+            showNewFolderPopup = false;  // one-shot trigger
+        }
+
+        ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+        ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+        ImGui::SetNextWindowSize(ImVec2(400, 0), ImGuiCond_Appearing);
+
+        if (ImGui::BeginPopupModal("New Folder##Dir", nullptr,
+                                   ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse)) {
+            ImGui::Text("Create new folder in:");
+            ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1), "  %s", newFolderParentPath.c_str());
+            ImGui::Spacing();
+
+            // Auto-focus on first appearance
+            if (ImGui::IsWindowAppearing()) {
+                ImGui::SetKeyboardFocusHere();
+            }
+
+            bool enterPressed = ImGui::InputText("Folder Name", newFolderNameBuf, sizeof(newFolderNameBuf),
+                                                  ImGuiInputTextFlags_EnterReturnsTrue);
+
+            ImGui::Spacing();
+
+            std::string folderName(newFolderNameBuf);
+            bool nameValid = !folderName.empty();
+            std::filesystem::path newPath = std::filesystem::path(newFolderParentPath) / folderName;
+            bool alreadyExists = nameValid && std::filesystem::exists(newPath);
+
+            if (alreadyExists) {
+                ImGui::TextColored(ImVec4(1, 0.4f, 0.4f, 1), "A folder with this name already exists!");
+            }
+
+            if (!nameValid) ImGui::BeginDisabled();
+            if (alreadyExists) ImGui::BeginDisabled();
+
+            if (ImGui::Button("Create", ImVec2(120, 0)) || (enterPressed && nameValid && !alreadyExists)) {
+                std::error_code ec;
+                std::filesystem::create_directory(newPath, ec);
+                if (!ec) {
+                    rootNode = BuildDirectoryTree();
+                    treeNodeOpenStatus[newPath.string()] = false;
+                }
+                ImGui::CloseCurrentPopup();
+            }
+
+            if (alreadyExists) ImGui::EndDisabled();
+            if (!nameValid) ImGui::EndDisabled();
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
+        }
+    }
+
+    void DirectoryPanel::RenameUpdate()
+    {
+        if (showRenamePopup) {
+            ImGui::OpenPopup("Rename##Dir");
+            showRenamePopup = false;  // one-shot trigger
+        }
+
+        ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+        ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+        ImGui::SetNextWindowSize(ImVec2(450, 0), ImGuiCond_Appearing);
+
+        if (ImGui::BeginPopupModal("Rename##Dir", nullptr,
+                                   ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse)) {
+            std::filesystem::path oldPath(renameTargetPath);
+            std::string oldName = oldPath.filename().string();
+            bool isDir = std::filesystem::is_directory(oldPath);
+
+            ImGui::Text("Rename %s:", isDir ? "folder" : "file");
+            ImGui::TextColored(ImVec4(1, 0.8f, 0, 1), "  %s", oldName.c_str());
+            ImGui::Spacing();
+
+            // Auto-focus on first appearance
+            if (ImGui::IsWindowAppearing()) {
+                ImGui::SetKeyboardFocusHere();
+            }
+
+            bool enterPressed = ImGui::InputText("New Name", renameNameBuf, sizeof(renameNameBuf),
+                                                  ImGuiInputTextFlags_EnterReturnsTrue);
+
+            ImGui::Spacing();
+
+            std::string newName(renameNameBuf);
+            bool nameValid = !newName.empty() && newName != oldName;
+            std::filesystem::path newPath = oldPath.parent_path() / newName;
+            bool alreadyExists = nameValid && std::filesystem::exists(newPath);
+
+            if (alreadyExists) {
+                ImGui::TextColored(ImVec4(1, 0.4f, 0.4f, 1), "An item with this name already exists!");
+            }
+
+            if (!nameValid) ImGui::BeginDisabled();
+            if (alreadyExists) ImGui::BeginDisabled();
+
+            if (ImGui::Button("Rename", ImVec2(120, 0)) || (enterPressed && nameValid && !alreadyExists)) {
+                std::error_code ec;
+                std::filesystem::rename(oldPath, newPath, ec);
+                if (!ec) {
+                    // Update asset registry source paths
+                    std::string oldPathStr = oldPath.generic_string();
+                    std::string newPathStr = newPath.generic_string();
+
+                    for (auto& [type, map] : m_App->GetAssetRegistry().GetAll()) {
+                        for (auto& [id, asset] : map) {
+                            if (isDir) {
+                                // For directories: update all assets whose source starts with old path prefix
+                                std::string prefix = oldPathStr + "/";
+                                if (asset->source.compare(0, prefix.size(), prefix) == 0) {
+                                    asset->source = newPathStr + "/" + asset->source.substr(prefix.size());
+                                }
+                            }
+                            else {
+                                // For files: exact match
+                                if (asset->source == oldPathStr) {
+                                    asset->source = newPathStr;
+                                }
+                            }
+                        }
+                    }
+
+                    // Update selected path if it was the renamed item
+                    if (selectedPath == renameTargetPath) {
+                        selectedPath = newPath.string();
+                    }
+
+                    // Transfer open status for directories
+                    if (isDir) {
+                        auto it = treeNodeOpenStatus.find(oldPath.string());
+                        if (it != treeNodeOpenStatus.end()) {
+                            treeNodeOpenStatus[newPath.string()] = it->second;
+                            treeNodeOpenStatus.erase(it);
+                        }
+                    }
+
+                    rootNode = BuildDirectoryTree();
+                    UpdateAssetRegistry();
+                }
+                ImGui::CloseCurrentPopup();
+            }
+
+            if (alreadyExists) ImGui::EndDisabled();
+            if (!nameValid) ImGui::EndDisabled();
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Cancel", ImVec2(120, 0))) {
                 ImGui::CloseCurrentPopup();
             }
 
@@ -273,6 +500,32 @@ namespace EditorUI {
         if (ImGui::IsItemClicked()) {
             m_App->ResetAllSelected();
             selectedPath = root->fullPath.string();
+        }
+
+        // Right-click context menu
+        if (ImGui::BeginPopupContextItem()) {
+            if (root->isDirectory) {
+                if (ImGui::MenuItem("New Folder")) {
+                    newFolderParentPath = root->fullPath.string();
+                    memset(newFolderNameBuf, 0, sizeof(newFolderNameBuf));
+                    showNewFolderPopup = true;
+                }
+                ImGui::Separator();
+            }
+            if (root->fullPath != ROOT_PATH) {
+                if (ImGui::MenuItem("Rename")) {
+                    renameTargetPath = root->fullPath.string();
+                    memset(renameNameBuf, 0, sizeof(renameNameBuf));
+                    std::string currentName = root->fullPath.filename().string();
+                    strncpy_s(renameNameBuf, currentName.c_str(), sizeof(renameNameBuf) - 1);
+                    showRenamePopup = true;
+                }
+                if (ImGui::MenuItem("Delete")) {
+                    selectedPath = root->fullPath.string();
+                    showDeleteConfirm = true;
+                }
+            }
+            ImGui::EndPopup();
         }
 
         // Drag source for animation files

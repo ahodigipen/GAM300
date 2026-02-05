@@ -27,6 +27,8 @@ namespace EditorUI {
         // Helpers
         void RefreshUpdate();
         void DeleteUpdate();
+        void NewFolderUpdate();
+        void RenameUpdate();
         void PrintSelectedInfo();
 
         // Directory tree
@@ -76,6 +78,16 @@ namespace EditorUI {
         bool        showDeleteConfirm{};
         bool        showDeleteError{};
         std::string deleteErrorMessage{};
+
+        // New folder handling
+        bool        showNewFolderPopup{};
+        std::string newFolderParentPath{};
+        char        newFolderNameBuf[256]{};
+
+        // Rename handling
+        bool        showRenamePopup{};
+        std::string renameTargetPath{};
+        char        renameNameBuf[256]{};
 
         ImTextureID folderIcon;
         ImTextureID assetIcon;
