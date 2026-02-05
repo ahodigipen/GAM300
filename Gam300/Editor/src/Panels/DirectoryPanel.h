@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <filesystem>
 #include <unordered_set>
+#include <set>
 #include "imgui.h"
 
 namespace Boom { struct AppContext; struct AppInterface; struct Texture2D; }
@@ -30,6 +31,18 @@ namespace EditorUI {
         void NewFolderUpdate();
         void RenameUpdate();
         void PrintSelectedInfo();
+
+        // Multi-select helpers
+        bool IsPathSelected(const std::string& path) const;
+        void SelectPath(const std::string& path, bool addToSelection = false);
+        void TogglePathSelection(const std::string& path);
+        void ClearSelection();
+        void SelectRange(const std::string& fromPath, const std::string& toPath);
+
+        // Move helpers
+        bool MovePathsToDirectory(const std::vector<std::string>& paths, const std::filesystem::path& targetDir);
+        bool IsDescendantOf(const std::filesystem::path& child, const std::filesystem::path& parent);
+        void UpdateAssetRegistryAfterMove(const std::filesystem::path& oldPath, const std::filesystem::path& newPath, bool isDirectory);
 
         // Directory tree
         struct FileNode;
@@ -65,14 +78,22 @@ namespace EditorUI {
 
         // UI state
         std::unique_ptr<FileNode>      rootNode{};
-        std::string                    selectedPath{};
+        std::string                    selectedPath{};  // For backwards compat, keeps last clicked
+        std::set<std::string>          selectedPaths{}; // Multi-selection
+        std::string                    selectionAnchor{}; // For shift-click range selection
+        std::vector<std::string>       visiblePathsInOrder{}; // Built during render for range select
         double                         rTimer = AUTO_REFRESH_SEC;
         std::unordered_map<std::string, bool> treeNodeOpenStatus;
 
-        // Drag & drop
+        // Drag & drop (external GLFW drops)
         inline static std::vector<std::string> droppedFiles{};
         inline static bool filesDropped{ false };
         std::filesystem::path dropTargetPath{};
+
+        // Deferred move operation (to avoid modifying tree during traversal)
+        bool                        pendingMove{};
+        std::vector<std::string>    pendingMovePaths{};
+        std::filesystem::path       pendingMoveTarget{};
 
         // Delete handling
         bool        showDeleteConfirm{};
