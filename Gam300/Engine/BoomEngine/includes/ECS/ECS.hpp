@@ -182,12 +182,14 @@ namespace Boom {
  AssetID parent{ EMPTY_ASSET };
  std::string name{ "Entity" };
  AssetID uid{ RandomU64() };
+ int32_t sortOrder{ 0 };
 
         XPROPERTY_DEF(
             "InfoComponent", InfoComponent,
             obj_member<"Parent", &InfoComponent::parent>,
             obj_member<"Name", &InfoComponent::name>,
-            obj_member<"UID", &InfoComponent::uid>
+            obj_member<"UID", &InfoComponent::uid>,
+            obj_member<"SortOrder", &InfoComponent::sortOrder>
         )
     };
     BOOM_INLINE entt::entity FindEntityByName(entt::registry& reg, std::string_view name) {
@@ -235,31 +237,76 @@ namespace Boom {
 
         AssetID parentUID = reg.get<InfoComponent>(parent).uid;
 
-        // Collect children with their UIDs for sorting
         struct ChildEntity {
             entt::entity entity;
+            int32_t sortOrder;
             AssetID uid;
         };
-        std::vector<ChildEntity> childrenWithUID;
+        std::vector<ChildEntity> childrenSorted;
 
         auto view = reg.view<InfoComponent>();
         for (auto [e, info] : view.each()) {
             if (info.parent == parentUID) {
-                childrenWithUID.push_back({e, info.uid});
+                childrenSorted.push_back({e, info.sortOrder, info.uid});
             }
         }
 
-        // Sort by UID to maintain consistent order across scene reloads
-        std::sort(childrenWithUID.begin(), childrenWithUID.end(),
-                 [](const ChildEntity& a, const ChildEntity& b) { return a.uid < b.uid; });
+        // Sort by sortOrder first, UID as tiebreaker for stable ordering
+        std::sort(childrenSorted.begin(), childrenSorted.end(),
+                 [](const ChildEntity& a, const ChildEntity& b) {
+                     if (a.sortOrder != b.sortOrder) return a.sortOrder < b.sortOrder;
+                     return a.uid < b.uid;
+                 });
 
-        // Extract sorted entities
-        children.reserve(childrenWithUID.size());
-        for (const auto& child : childrenWithUID) {
+        children.reserve(childrenSorted.size());
+        for (const auto& child : childrenSorted) {
             children.push_back(child.entity);
         }
 
         return children;
+    }
+
+    // Get siblings of an entity (all entities sharing the same parent, including the entity itself)
+    BOOM_INLINE std::vector<entt::entity> GetSiblings(entt::registry& reg, entt::entity entity) {
+        if (!reg.valid(entity) || !reg.all_of<InfoComponent>(entity)) return {};
+
+        AssetID parentUID = reg.get<InfoComponent>(entity).parent;
+
+        struct SiblingEntry {
+            entt::entity entity;
+            int32_t sortOrder;
+            AssetID uid;
+        };
+        std::vector<SiblingEntry> siblings;
+
+        auto view = reg.view<InfoComponent>();
+        for (auto [e, info] : view.each()) {
+            if (info.parent == parentUID) {
+                siblings.push_back({e, info.sortOrder, info.uid});
+            }
+        }
+
+        std::sort(siblings.begin(), siblings.end(),
+                 [](const SiblingEntry& a, const SiblingEntry& b) {
+                     if (a.sortOrder != b.sortOrder) return a.sortOrder < b.sortOrder;
+                     return a.uid < b.uid;
+                 });
+
+        std::vector<entt::entity> result;
+        result.reserve(siblings.size());
+        for (const auto& s : siblings) {
+            result.push_back(s.entity);
+        }
+        return result;
+    }
+
+    // Reassign sortOrder values 0, 1, 2, ... to a list of entities
+    BOOM_INLINE void ReorderSiblings(entt::registry& reg, const std::vector<entt::entity>& orderedEntities) {
+        for (int32_t i = 0; i < static_cast<int32_t>(orderedEntities.size()); ++i) {
+            if (reg.valid(orderedEntities[i]) && reg.all_of<InfoComponent>(orderedEntities[i])) {
+                reg.get<InfoComponent>(orderedEntities[i]).sortOrder = i;
+            }
+        }
     }
 
     // Check if 'ancestor' is in the parent chain of 'entity' (prevents circular parenting)
