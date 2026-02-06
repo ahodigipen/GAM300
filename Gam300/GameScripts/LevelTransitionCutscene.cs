@@ -59,6 +59,18 @@ namespace GameScripts
             API.Log("[LevelTransition] Player entered trigger! Starting Cutscene.");
             _hasTriggered = true;
 
+            // Auto-dismiss any active tutorials before starting cutscene
+            if (TutorialManager.IsTutorialActive())
+            {
+                API.Log("[LevelTransition] Dismissing active tutorial for cutscene");
+                TutorialManager.DismissTutorial();
+            }
+            if (TutorialPopupTrigger.IsPopupActive())
+            {
+                API.Log("[LevelTransition] Dismissing active popup for cutscene");
+                TutorialPopupTrigger.DismissActivePopup();
+            }
+
             BuildSequence();
             _sequencer.Play();
 
@@ -323,6 +335,19 @@ namespace GameScripts
                     {
                         API.Log($"[LevelTransition] Distance Check Triggered! ({distSq} < 9.0)");
                         _hasTriggered = true;
+
+                        // Auto-dismiss any active tutorials before starting cutscene
+                        if (TutorialManager.IsTutorialActive())
+                        {
+                            API.Log("[LevelTransition] Dismissing active tutorial for cutscene (distance check)");
+                            TutorialManager.DismissTutorial();
+                        }
+                        if (TutorialPopupTrigger.IsPopupActive())
+                        {
+                            API.Log("[LevelTransition] Dismissing active popup for cutscene (distance check)");
+                            TutorialPopupTrigger.DismissActivePopup();
+                        }
+
                         BuildSequence();
                         _sequencer.Play();
                     }

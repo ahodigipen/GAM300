@@ -126,6 +126,13 @@ namespace GameScripts
                 return;
             }
 
+            // Check if a key/freeze tutorial is active (prevents UI overlap)
+            if (TutorialManager.IsTutorialActive())
+            {
+                API.Log("[TutorialPopupTrigger] Cannot show popup - tutorial is active");
+                return;
+            }
+
             // Show the popup and pause game logic
             ShowPopup(inst);
         }
@@ -199,6 +206,14 @@ namespace GameScripts
         public static bool WasJustDismissed()
         {
             return s_justDismissed;
+        }
+
+        /// <summary>
+        /// Manually dismiss the active popup (called externally, e.g., from cutscenes)
+        /// </summary>
+        public static void DismissActivePopup()
+        {
+            DismissPopup();
         }
     }
 }
