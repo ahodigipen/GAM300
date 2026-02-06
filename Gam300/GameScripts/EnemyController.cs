@@ -48,6 +48,18 @@ namespace GameScripts
         [Boom.EditorExposed("Proximity Detection", "Enable/Disable proximity detection")]
         private bool EnemyDetection = true;
 
+        [Boom.EditorExposed("Proximity Radius", "How close player must be to trigger proximity detection", 0.5f, 10f, true)]
+        private float _proximityRadius = 2.5f;
+
+        [Boom.EditorExposed("Proximity Duration", "How long player must stay close to trigger detection", 0.1f, 10f, true)]
+        private float _proximityDuration = 5.0f;
+
+        [Boom.EditorExposed("Proximity Vertical Tolerance", "Vertical range for proximity detection", 0.5f, 5f, true)]
+        private float _proximityVerticalTolerance = 2.5f;
+
+        [Boom.EditorExposed("Proximity Debug Log", "Enable debug logging for proximity detection")]
+        private bool _proximityDebugLog = false;
+
         [Boom.EditorExposed("Rotation: Clockwise/Anti-clockwise", "Change Rotation")]
         private bool _rotation  = true;
 
@@ -96,10 +108,12 @@ namespace GameScripts
             _proximityDetection = new ProximityDetectionComponent { Entity = Entity };
             _proximityDetection.OnProximityDetected += OnProximityDetected;
             _proximityDetection.OnStart();
-            // Optional: Configure settings
-            // _proximityDetection.SetDetectionRadius(3.5f);
-            // _proximityDetection.SetDetectionDuration(2.0f);
-            // _proximityDetection.EnableDebugLog(true);
+            
+            // Configure settings from editor-exposed fields
+            _proximityDetection.SetDetectionRadius(_proximityRadius);
+            _proximityDetection.SetDetectionDuration(_proximityDuration);
+            _proximityDetection.SetVerticalTolerance(_proximityVerticalTolerance);
+            _proximityDetection.EnableDebugLog(_proximityDebugLog);
 
             // Initialize rotation from current entity rotation
             _currentYRotation = API.GetRotation(Entity).Y;
@@ -140,6 +154,13 @@ namespace GameScripts
             // Update proximity detection (only if enabled)
             if (EnemyDetection)
             {
+                if (_proximityDetection != null)
+                {
+                    _proximityDetection.DetectionRadius = _proximityRadius;
+                    _proximityDetection.DetectionDuration = _proximityDuration;
+                    _proximityDetection.VerticalTolerance = _proximityVerticalTolerance;
+                    _proximityDetection.DebugLog = _proximityDebugLog;
+                }
                 _proximityDetection?.OnUpdate(dt);
             }
 
@@ -438,11 +459,13 @@ namespace GameScripts
         // NEW: Proximity configuration
         public void SetProximityRadius(float radius)
         {
+            _proximityRadius = radius;
             _proximityDetection?.SetDetectionRadius(radius);
         }
 
         public void SetProximityDuration(float duration)
         {
+            _proximityDuration = duration;
             _proximityDetection?.SetDetectionDuration(duration);
         }
 

@@ -471,6 +471,10 @@ namespace Boom
         internal static extern void Boom_API_GetViewportSize(out float width, out float height);
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_SetVideoRemoveBlack(ulong handle, bool enabled);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetVideoBrightness(ulong handle, float value);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern float Boom_API_GetVideoBrightness(ulong handle);
 
         // Cutscene
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -1355,6 +1359,22 @@ namespace Boom
         public static void SetVideoRemoveBlack(ulong entity, bool enabled)
         {
             Native.Boom_API_SetVideoRemoveBlack(entity, enabled);
+        }
+
+        /// <summary>
+        /// Set video brightness multiplier (0.0 = black, 1.0 = normal, >1.0 = overbright)
+        /// </summary>
+        public static void SetVideoBrightness(ulong entity, float brightness)
+        {
+            Native.Boom_API_SetVideoBrightness(entity, brightness);
+        }
+
+        /// <summary>
+        /// Get the current video brightness multiplier
+        /// </summary>
+        public static float GetVideoBrightness(ulong entity)
+        {
+            return Native.Boom_API_GetVideoBrightness(entity);
         }
 
         // Cutscene

@@ -149,6 +149,10 @@ namespace GameScripts
             API.SetScreenFadeAlpha(0f);
             s_playerEntity = Entity;
             s_instance = this;
+
+            // Reset god mode (static field persists across scene loads)
+            s_godMode = false;
+
             Vec3 rot = API.GetRotation(Entity);
             API.SetRotation(Entity, new Vec3(0, rot.Y, 0));
             PlayerManager.RegisterPlayer(this);
@@ -804,10 +808,10 @@ namespace GameScripts
                 // Check freeze pickups
                 if (s_instance._freezePickupIDs.Contains(triggerEntity))
                 {
-                    // Don't allow pickup if another popup is active (prevents UI overlap)
-                    if (TutorialPopupTrigger.IsPopupActive())
+                    // Don't allow pickup if any popup/tutorial is active (prevents UI overlap)
+                    if (TutorialPopupTrigger.IsPopupActive() || TutorialManager.IsTutorialActive())
                     {
-                        API.Log("[PlayerMovement] Cannot pickup freeze - another popup is active");
+                        API.Log("[PlayerMovement] Cannot pickup freeze - another popup/tutorial is active");
                         return;
                     }
 

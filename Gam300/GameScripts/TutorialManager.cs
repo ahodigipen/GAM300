@@ -24,6 +24,7 @@ namespace GameScripts
         // Active tutorial tracking
         private static bool s_isTutorialActive = false;
         private static string s_activeTutorialUI = "";
+        private static string s_activeSceneName = ""; // Track which scene was loaded
         private static bool s_justDismissed = false; // Track if tutorial was dismissed this frame
 
         // Key state tracking to prevent pause menu conflicts
@@ -40,6 +41,7 @@ namespace GameScripts
             s_freezeTutorialShown = false;
             s_isTutorialActive = false;
             s_activeTutorialUI = "";
+            s_activeSceneName = "";
             s_justDismissed = false;
             s_escapeKeyWasDown = false;
             s_pKeyWasDown = false;
@@ -68,8 +70,8 @@ namespace GameScripts
             }
 
             API.Log("[TutorialManager] Showing key tutorial (manual dismiss with ESC/P)");
+            s_keyTutorialShown = true;
             ShowTutorial(KEY_TUTORIAL_SCENE, KEY_TUTORIAL_UI);
-            s_keyTutorialShown = true; // Only mark as shown after successful display
         }
 
         /// <summary>
@@ -114,6 +116,7 @@ namespace GameScripts
             // Set active tutorial tracking
             s_isTutorialActive = true;
             s_activeTutorialUI = uiEntityName;
+            s_activeSceneName = sceneName;
 
             // Reset key states to prevent immediate dismissal
             s_escapeKeyWasDown = true;
@@ -189,6 +192,7 @@ namespace GameScripts
             // Reset active state
             s_isTutorialActive = false;
             s_activeTutorialUI = "";
+            s_activeSceneName = "";
         }
 
         /// <summary>

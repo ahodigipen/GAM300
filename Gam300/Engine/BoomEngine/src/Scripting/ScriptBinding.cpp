@@ -2218,6 +2218,27 @@ namespace Boom {
         }
     }
 
+    static void ICALL_API_SetVideoBrightness(uint64_t handle, float value) {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+
+        if (s_Ctx->scene.any_of<VideoComponent>(e)) {
+            auto& vc = s_Ctx->scene.get<VideoComponent>(e);
+            vc.brightness = glm::clamp(value, 0.0f, 10.0f);
+        }
+    }
+
+    static float ICALL_API_GetVideoBrightness(uint64_t handle) {
+        if (!s_Ctx) return 1.0f;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+
+        if (s_Ctx->scene.any_of<VideoComponent>(e)) {
+            auto& vc = s_Ctx->scene.get<VideoComponent>(e);
+            return vc.brightness;
+        }
+        return 1.0f;
+    }
+
     // Cutscene
     static void ICALL_API_SetCutsceneMode(bool active) {
         if (s_Ctx && s_Ctx->app) {
@@ -2459,6 +2480,8 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_StopVideoComponent", (void*)ICALL_API_StopVideoComponent);
         mono_add_internal_call("Boom.Native::Boom_API_GetViewportSize", (void*)ICALL_API_GetViewportSize);
         mono_add_internal_call("Boom.Native::Boom_API_SetVideoRemoveBlack", (void*)ICALL_API_SetVideoRemoveBlack);
+        mono_add_internal_call("Boom.Native::Boom_API_SetVideoBrightness", (void*)ICALL_API_SetVideoBrightness);
+        mono_add_internal_call("Boom.Native::Boom_API_GetVideoBrightness", (void*)ICALL_API_GetVideoBrightness);
 
         // Cutscene
         mono_add_internal_call("Boom.Native::Boom_API_SetCutsceneMode", (const void*)ICALL_API_SetCutsceneMode);

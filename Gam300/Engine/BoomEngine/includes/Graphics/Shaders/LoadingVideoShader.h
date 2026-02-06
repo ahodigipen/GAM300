@@ -13,7 +13,9 @@ namespace Boom {
         BOOM_INLINE LoadingVideoShader(std::string const& filename)
             : Shader{ filename }
             , tintColor{ 1.f }
+            , brightnessVal{ 1.f }
             , tintLoc{ GetUniformVar("tintColor") }
+            , brightnessLoc{ GetUniformVar("brightness") }
             , projLoc{ GetUniformVar("uProj") }
             , texLoc{ GetUniformVar("videoTex") }
             , quad{ CreateQuad2D() }
@@ -29,6 +31,7 @@ namespace Boom {
             Use();
             SetUniform(projLoc, proj * quadTransform.Matrix());
             SetUniform(tintLoc, tintColor);
+            SetUniform(brightnessLoc, brightnessVal);
 
             // Bind video texture
             glActiveTexture(GL_TEXTURE0);
@@ -49,12 +52,15 @@ namespace Boom {
         }
 
         BOOM_INLINE void SetTintColor(glm::vec4 const& col) { tintColor = col; }
+        BOOM_INLINE void SetBrightness(float val) { brightnessVal = val; }
 
     private:
         glm::vec4 tintColor;
+        float brightnessVal;
         Transform3D quadTransform;
         int32_t projLoc;
         int32_t tintLoc;
+        int32_t brightnessLoc;
         int32_t texLoc;
         Quad2D quad;
     };
