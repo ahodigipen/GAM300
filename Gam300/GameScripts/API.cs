@@ -1384,6 +1384,8 @@ namespace Boom
         public const int KEY_E = 69; // Use Freeze
         public const int KEY_F = 70;
         public const int KEY_G = 71;
+        public const int KEY_ESCAPE = 256;
+        public const int KEY_F8 = 297;
 
         public const int MOUSE_LEFT = 0;
         public const int MOUSE_RIGHT = 1;

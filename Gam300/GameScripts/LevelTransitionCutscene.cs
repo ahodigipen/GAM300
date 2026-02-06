@@ -347,10 +347,7 @@ namespace GameScripts
                     {
                         _hasFinished = true;
                         _isPlaying = false;
-                        API.Log("[LevelTransition] Cutscene Finished. Enabling Level 2 Pop Up.");
-
-                        // *** SIGNAL TUTORIALS TO ENABLE ***
-                        TutorialPopupTrigger.EnableAllTutorials();
+                        API.Log("[LevelTransition] Cutscene Finished.");
                     }
                 }
             }
