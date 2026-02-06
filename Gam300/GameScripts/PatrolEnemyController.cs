@@ -144,6 +144,17 @@ namespace GameScripts
 
         public void OnStart(string json)
         {
+            // Detect stale registry from previous play session by checking if our key exists with different instance
+            if (s_PatrolEnemies.TryGetValue(_entityName, out PatrolEnemyController existing) && existing != this)
+            {
+                API.Log("[PatrolEnemyController] Detected stale registry - clearing for new session");
+                s_PatrolEnemies.Clear();
+                // Also reset other static variables
+                _sharedVideoEntity = 0;
+                _videoOwnerID = 0;
+                _sharedVideoBaseScale = new Vec3(1, 1, 1);
+            }
+
             if (!API.HasTransform(Entity)) { //("[PatrolEnemyController] Missing Transform."); return;
                                              }
 
@@ -635,6 +646,18 @@ namespace GameScripts
                 return controller;
             }
             return null;
+        }
+
+        /// <summary>
+        /// Clear the registry for a new play session. Call this when stopping play mode.
+        /// </summary>
+        public static void ClearRegistry()
+        {
+            s_PatrolEnemies.Clear();
+            _sharedVideoEntity = 0;
+            _videoOwnerID = 0;
+            _sharedVideoBaseScale = new Vec3(1, 1, 1);
+            API.Log("[PatrolEnemyController] Registry cleared");
         }
 
         // ====== AUDIO HELPER METHODS ======
