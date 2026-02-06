@@ -784,7 +784,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [26, 6.94000006, 3.93000007]
+        LocalScale: [1, 1, 1]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -800,9 +800,9 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, 19, 29.8950005]
+        Translate: [-0.730000019, 20.7900009, 27.1350002]
         Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [12, 5, 0.699999988]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.LevelTransitionCutscene
@@ -9489,8 +9489,8 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-37.5629959, 41.8258133, -8.29064369]
-        Rotate: [-24.9375839, -244.312317, 4.8925318e-05]
+        Translate: [-5.62158155, 22.6397686, 23.3479118]
+        Rotate: [-10.4375839, -138.312317, 4.8925318e-05]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -11512,9 +11512,9 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.523941755, 20.6264801, 31.9619293]
+        Translate: [-0.734000027, 20.6560001, 32.6619987]
         Rotate: [0, -0, 0]
-        Scale: [10, 4.5, 5]
+        Scale: [9, 4.5, 2.99000001]
     SoundComponent:
       Entries:
         - name: _enterSound
@@ -12027,7 +12027,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.117730319, 19.0394745, 28.379158]
+        Translate: [-0.118000001, 19.0394745, 28.6189995]
         Rotate: [0, -0, 0]
         Scale: [0.0292000007, 0.0292000007, 0.0292000007]
     ModelComponent:
