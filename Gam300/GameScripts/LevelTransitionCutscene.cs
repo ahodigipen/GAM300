@@ -356,7 +356,15 @@ namespace GameScripts
 
             if (_initialized && _sequencer != null)
             {
-                if (API.IsKeyDown(API.KEY_SPACE))
+                // Check for Skip (Spacebar OR Gamepad Start/A)
+                bool skipPressed = API.IsKeyDown(API.KEY_SPACE);
+                if (!skipPressed && API.IsGamepadConnected())
+                {
+                    skipPressed = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_START) ||
+                                  API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A);
+                }
+
+                if (skipPressed)
                 {
                     _sequencer.Skip();
                 }

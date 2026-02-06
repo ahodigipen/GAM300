@@ -246,12 +246,19 @@ namespace GameScripts
 
             if (_initialized && _sequencer != null)
             {
-                // Check for Skip
-                if (API.IsKeyDown(API.KEY_SPACE) && _isPlaying && !_hasFinished)
+                // Check for Skip (Spacebar OR Gamepad Start/A)
+                bool skipPressed = API.IsKeyDown(API.KEY_SPACE);
+                if (!skipPressed && API.IsGamepadConnected())
+                {
+                    skipPressed = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_START) ||
+                                  API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A);
+                }
+
+                if (skipPressed && _isPlaying && !_hasFinished)
                 {
                     _sequencer.Skip();
                     _elapsedTime = _totalDuration; // Force completion
-                    API.Log("[IntroCutscene] Skipped via Spacebar.");
+                    API.Log("[IntroCutscene] Skipped via Input.");
                 }
 
                 _sequencer.OnUpdate(dt);
