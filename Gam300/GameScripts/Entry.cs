@@ -158,8 +158,8 @@ namespace GameScripts
             TutorialManager.Update(dt);
 
             // Update game logic pause state
-            // If the popup is active, we force the game to stay paused
-            API.SetGameLogicPaused(IsGamePaused || IsStartPopupActive);
+            // If any popup/tutorial is active, we force the game to stay paused
+            API.SetGameLogicPaused(IsGamePaused || IsStartPopupActive || TutorialManager.IsTutorialActive() || TutorialPopupTrigger.IsPopupActive());
             API.SetPlayerDead(IsPlayerDead);
             API.SetGameEnd(IsGameEnded);
 
