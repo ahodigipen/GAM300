@@ -2,6 +2,138 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
+      Name: Ambient_Light_7
+      UID: 14749664744492239984
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-53.5695572, 39.5091896, -16.6743431]
+        Rotate: [0, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 0
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [0.627450943, 0.769896269, 1]
+        Intensity: 30
+        Range: 30
+  - InfoComponent:
+      Parent: 0
+      Name: Ambient_Light_8
+      UID: 5292724605791263706
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-41.5723114, 29.3025436, -19.7955208]
+        Rotate: [0, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 0
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [0.892156839, 0.871319294, 0.655997634]
+        Intensity: 11
+        Range: 20
+  - InfoComponent:
+      Parent: 0
+      Name: Ambient_Light_5.2
+      UID: 9911651905354074816
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-32.046463, 28.6017933, 27.2715359]
+        Rotate: [0, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 0
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [0.627450943, 0.769896269, 1]
+        Intensity: 20
+        Range: 62.2700005
+  - InfoComponent:
+      Parent: 0
+      Name: Ambient_Light_6
+      UID: 8430130863154397151
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-45.2132645, 47.0633087, 12.292388]
+        Rotate: [0, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 0
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [0.627450943, 0.769896269, 1]
+        Intensity: 80
+        Range: 50
+  - InfoComponent:
+      Parent: 0
+      Name: Ambient_Light_4
+      UID: 8301567694618131210
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-20.576973, 39.6088066, 59.3564529]
+        Rotate: [0, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 0
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [0.627450943, 0.769896269, 1]
+        Intensity: 80
+        Range: 50
+  - InfoComponent:
+      Parent: 0
+      Name: Ambient_Light_5.1
+      UID: 11861433297314813486
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-32.178257, 21.5545845, 48.6683388]
+        Rotate: [0, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 0
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [0.627450943, 0.769896269, 1]
+        Intensity: 20
+        Range: 50
+  - InfoComponent:
+      Parent: 0
       Name: Ambient_Light_3
       UID: 16166181313205793321
       SortOrder: 0
@@ -9635,14 +9767,14 @@ ENTITIES:
       SortOrder: 190
     TransformComponent:
       Transform:
-        Translate: [11.3173475, 28.9367542, 14.2583389]
-        Rotate: [-20.75, 490.062622, 0]
+        Translate: [-53.9933395, 41.071209, -13.944829]
+        Rotate: [-22.875, 669.062622, 0]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.00100000005
         FarPlane: 935.47998
-        FOV: 98
+        FOV: 84
     ThirdPersonCameraComponent:
       Target UID: 2377197601835279376
       Offset: [0.00999999978, 4.1500001, 0]
