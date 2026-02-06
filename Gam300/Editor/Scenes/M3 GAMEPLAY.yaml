@@ -12752,3 +12752,21 @@ ENTITIES:
       screenPosition: [1687, 789]
       renderAs3D: false
       billboardMode: true
+  - InfoComponent:
+      Parent: 0
+      Name: UI_NoKeyText
+      UID: 2164882826581698227
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    TextComponent:
+      text: ""
+      fontName: Roboto-Regular
+      color: [1, 1, 1, 0]
+      scale: 1
+      screenPosition: [500, 440]
+      renderAs3D: false
+      billboardMode: true

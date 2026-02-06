@@ -64,41 +64,8 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
-            // Clear just dismissed flag at start of each frame
-            s_justDismissed = false;
-
-            // Handle input for dismissal if popup is active
-            if (!s_isPopupActive) return;
-
-            // Check input for manual dismissal
-            bool escapeKeyDown = API.IsKeyDown(API.KEY_ESCAPE);
-            bool pKeyDown = API.IsKeyDown(API.KEY_P);
-            bool startButtonDown = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_START);
-
-            // Detect key press (edge detection)
-            bool escapePressed = escapeKeyDown && !s_escapeKeyWasDown;
-            bool pPressed = pKeyDown && !s_pKeyWasDown;
-            bool startPressed = startButtonDown && !s_startButtonWasDown;
-
-            if (escapePressed || pPressed || startPressed)
-            {
-                API.Log("[TutorialPopupTrigger] Dismissing popup via player input");
-                DismissPopup();
-                
-                // Mark that we just dismissed this frame
-                s_justDismissed = true;
-                
-                // Keep key states as "down" to prevent Entry from detecting this as a new press
-                s_escapeKeyWasDown = true;
-                s_pKeyWasDown = true;
-                s_startButtonWasDown = true;
-                return;
-            }
-
-            // Update key states
-            s_escapeKeyWasDown = escapeKeyDown;
-            s_pKeyWasDown = pKeyDown;
-            s_startButtonWasDown = startButtonDown;
+            // Note: Input handling moved to static Update() method called from Entry.cs
+            // This allows input to work even when game logic is paused
         }
 
         public void OnDestroy()
@@ -214,6 +181,48 @@ namespace GameScripts
         public static void DismissActivePopup()
         {
             DismissPopup();
+        }
+
+        /// <summary>
+        /// Update input handling - must be called from Entry.cs to work when game logic is paused
+        /// </summary>
+        public static void Update(float dt)
+        {
+            // Clear just dismissed flag at start of each frame
+            s_justDismissed = false;
+
+            // Handle input for dismissal if popup is active
+            if (!s_isPopupActive) return;
+
+            // Check input for manual dismissal
+            bool escapeKeyDown = API.IsKeyDown(API.KEY_ESCAPE);
+            bool pKeyDown = API.IsKeyDown(API.KEY_P);
+            bool startButtonDown = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_START);
+
+            // Detect key press (edge detection)
+            bool escapePressed = escapeKeyDown && !s_escapeKeyWasDown;
+            bool pPressed = pKeyDown && !s_pKeyWasDown;
+            bool startPressed = startButtonDown && !s_startButtonWasDown;
+
+            if (escapePressed || pPressed || startPressed)
+            {
+                API.Log("[TutorialPopupTrigger] Dismissing popup via player input");
+                DismissPopup();
+                
+                // Mark that we just dismissed this frame
+                s_justDismissed = true;
+                
+                // Keep key states as "down" to prevent Entry from detecting this as a new press
+                s_escapeKeyWasDown = true;
+                s_pKeyWasDown = true;
+                s_startButtonWasDown = true;
+                return;
+            }
+
+            // Update key states
+            s_escapeKeyWasDown = escapeKeyDown;
+            s_pKeyWasDown = pKeyDown;
+            s_startButtonWasDown = startButtonDown;
         }
     }
 }

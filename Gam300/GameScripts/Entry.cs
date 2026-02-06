@@ -154,8 +154,11 @@ namespace GameScripts
                 _sceneInputDebounceTimer -= dt;
             }
 
-            // Update tutorial manager for auto-dismiss
+            // Update tutorial manager (handles key/freeze tutorial input even when paused)
             TutorialManager.Update(dt);
+
+            // Update tutorial popup trigger (handles Level 2 popup input even when paused)
+            TutorialPopupTrigger.Update(dt);
 
             // Update game logic pause state
             // If any popup/tutorial is active, we force the game to stay paused
