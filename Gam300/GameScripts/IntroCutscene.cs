@@ -93,28 +93,28 @@ namespace GameScripts
             AddRotKey(rotTrack, 0, new Vec3(0f, 0f, 0f));
 
             // 1. Enemy 3
-            ulong enemy3ID = API.FindEntity("patrol enemy 2");
-            if (enemy3ID == 0) enemy3ID = API.FindEntity("Patrol enemy 2"); // Try Capitalized
+            ulong enemy3ID = API.FindEntity("patrol enemy 3");
+            if (enemy3ID == 0) enemy3ID = API.FindEntity("Patrol enemy 3"); // Try Capitalized
 
             if (enemy3ID != 0)
             {
-                API.Log("[IntroCutscene] Found 'patrol enemy 2'. Adding keys.");
+                API.Log("[IntroCutscene] Found 'patrol enemy 3'. Adding keys.");
                 Vec3 ePos = API.GetPosition(enemy3ID);
                 // Start: Front-Right (Original)
-                Vec3 camPos = new Vec3(ePos.X, ePos.Y + 2.0f, ePos.Z + 5.0f) ;
+                Vec3 camPos = new Vec3(ePos.X + 5.0f, ePos.Y + 5.0f, ePos.Z + 5.0f) ;
 
                 // Move Start
                 AddPosKey(posTrack, frame, camPos);
-                AddLookKey(lookTrack, frame, "patrol enemy 2");
+                AddLookKey(lookTrack, frame, "patrol enemy 3");
 
                 // Wait 5 seconds & Pull Back
                 frame += 5 * fps;
                 // End Pos: Move LEFT (X - 10) to Turn Right, and BACK (Z + 15) to Pan Backward
-                Vec3 camPosEnd = new Vec3(ePos.X - 15.0f, ePos.Y + 2.0f, ePos.Z + 5.0f);
+                Vec3 camPosEnd = new Vec3(ePos.X, ePos.Y + 5.0f, ePos.Z + 13.0f);
                 AddPosKey(posTrack, frame, camPosEnd);
-                AddLookKey(lookTrack, frame, "patrol enemy 2");
+                AddLookKey(lookTrack, frame, "patrol enemy 3");
             }
-            else { API.Log("[IntroCutscene] WARNING: 'patrol enemy 2' not found!"); }
+            else { API.Log("[IntroCutscene] WARNING: 'patrol enemy 3' not found!"); }
 
             // 2. Sentry 2
             ulong sentry2ID = API.FindEntity("Sentry_2");
