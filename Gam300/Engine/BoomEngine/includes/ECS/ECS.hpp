@@ -911,6 +911,7 @@ struct MenuComponent {
 
         // Display settings
         glm::vec4 tintColor = glm::vec4(1.0f);  // Tint/multiply color
+        float brightness = 1.0f;                 // Brightness multiplier (0.0 = black, 1.0 = normal, >1.0 = overbright)
         bool renderAs3D = false;                 // true = 3D quad in world, false = 2D UI overlay
 
         bool removeBlackBackground = false;
@@ -927,6 +928,7 @@ struct MenuComponent {
             j["volume"] = volume;
             j["playbackSpeed"] = playbackSpeed;
             j["tintColor"] = { tintColor.r, tintColor.g, tintColor.b, tintColor.a };
+            j["brightness"] = brightness;
             j["renderAs3D"] = renderAs3D;
             j["removeBlackBackground"] = removeBlackBackground;
         }
@@ -943,6 +945,7 @@ struct MenuComponent {
                 tintColor.b = j.at("tintColor")[2];
                 tintColor.a = j.at("tintColor")[3];
             }
+            if (j.contains("brightness")) j.at("brightness").get_to(brightness);
             if (j.contains("renderAs3D")) j.at("renderAs3D").get_to(renderAs3D);
             if (j.contains("removeBlackBackground")) j.at("removeBlackBackground").get_to(removeBlackBackground);
 
@@ -959,6 +962,7 @@ struct MenuComponent {
             obj_member<"Volume", &VideoComponent::volume>,
             obj_member<"PlaybackSpeed", &VideoComponent::playbackSpeed>,
             obj_member<"TintColor", &VideoComponent::tintColor>,
+            obj_member<"Brightness", &VideoComponent::brightness>,
             obj_member<"RenderAs3D", &VideoComponent::renderAs3D>,
             obj_member<"RemoveBlackBackground", &VideoComponent::removeBlackBackground>
             )
