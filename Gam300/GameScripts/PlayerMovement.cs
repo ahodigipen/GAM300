@@ -84,6 +84,13 @@ namespace GameScripts
         // NEW: Track all crouch zone entity IDs
         private HashSet<ulong> _crouchZoneIDs = new HashSet<ulong>();
 
+        // ==== God Mode (No Detection Cheat) ====
+        private static bool s_godMode = false;
+        private bool _wasGodModePressed = false;
+        private ulong _godModeTextEntity = 0;
+        private float _godModeTextTimer = 0f;
+        private const float GOD_MODE_TEXT_DISPLAY = 2.0f;
+
         // ==== Freeze Ability Fields ====
         private const int USE_FREEZE = API.KEY_E;
         private bool _wasUseFreezeDown = false;
@@ -192,6 +199,14 @@ namespace GameScripts
 
             RegisterTriggerCallbacksOnAllTriggers();
             HUD.SetHealth(_health, _maxHealth);
+
+            // Find god mode text entity (optional - add a TextComponent entity named "UI_GodMode" to scene)
+            _godModeTextEntity = API.FindEntity("UI_GodMode");
+            if (_godModeTextEntity != 0 && API.HasText(_godModeTextEntity))
+            {
+                API.SetText(_godModeTextEntity, "");
+                API.SetTextColor(_godModeTextEntity, new Vec4(0, 0, 0, 0));
+            }
 
             DebugCrouch($"OnStart complete. Player Entity: {Entity}");
             DebugLogCrouchState("OnStart");
@@ -431,8 +446,48 @@ namespace GameScripts
                 }
             }
 
-            bool isUseFreeze = API.IsKeyDown(USE_FREEZE) || 
-                               (API.IsGamepadConnected() && 
+            // Cheat: God Mode toggle (F8 on keyboard, LB+RB on controller)
+            bool isGodModeInput = API.IsKeyDown(API.KEY_F8)
+                || (API.IsGamepadConnected()
+                    && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_LEFT_BUMPER)
+                    && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_RIGHT_BUMPER));
+            bool godModePressed = isGodModeInput && !_wasGodModePressed;
+            _wasGodModePressed = isGodModeInput;
+            if (godModePressed)
+            {
+                s_godMode = !s_godMode;
+                API.Log($"[CHEAT] God Mode (No Detection): {(s_godMode ? "ON" : "OFF")}");
+
+                if (_godModeTextEntity != 0 && API.HasText(_godModeTextEntity))
+                {
+                    if (s_godMode)
+                    {
+                        API.SetText(_godModeTextEntity, "GOD MODE: ON");
+                        API.SetTextColor(_godModeTextEntity, new Vec4(0f, 1f, 0f, 1f));
+                        _godModeTextTimer = -1f; // stay on screen
+                    }
+                    else
+                    {
+                        API.SetText(_godModeTextEntity, "GOD MODE: OFF");
+                        API.SetTextColor(_godModeTextEntity, new Vec4(1f, 0f, 0f, 1f));
+                        _godModeTextTimer = GOD_MODE_TEXT_DISPLAY; // fade after 2s
+                    }
+                }
+            }
+
+            // Hide "OFF" text after timer
+            if (_godModeTextTimer > 0f)
+            {
+                _godModeTextTimer -= dt;
+                if (_godModeTextTimer <= 0f && _godModeTextEntity != 0 && API.HasText(_godModeTextEntity))
+                {
+                    API.SetText(_godModeTextEntity, "");
+                    API.SetTextColor(_godModeTextEntity, new Vec4(0, 0, 0, 0));
+                }
+            }
+
+            bool isUseFreeze = API.IsKeyDown(USE_FREEZE) ||
+                               (API.IsGamepadConnected() &&
                                (API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_X) ||
                                API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_Y)));
             bool isFreezePressed = isUseFreeze && !_wasUseFreezeDown;
@@ -878,6 +933,9 @@ namespace GameScripts
         public static bool IsPlayerInvisibleToEnemies()
         {
             if (s_instance == null) return false;
+
+            // Cheat: God mode bypass
+            if (s_godMode) return true;
 
             // Check crouch stealth
             if (s_isStealthInvisible) return true;
