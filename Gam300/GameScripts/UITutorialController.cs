@@ -58,8 +58,15 @@ namespace GameScripts
         {
             _tutorialSprite = spriteEntity;
             _shouldShow = true;
-            _currentAlpha = 0f;  // Reset alpha for fade in
+            _currentAlpha = 1f;  // Set to full alpha immediately (OnUpdate won't run when paused)
             _pulseTimer = 0f;
+            
+            // Set sprite alpha immediately since OnUpdate won't run when game logic is paused
+            if (API.HasSprite(_tutorialSprite))
+            {
+                API.SetSpriteAlpha(_tutorialSprite, 1f);
+            }
+            
             API.Log($"[UITutorial] Showing tutorial popup (entity: {spriteEntity})");
         }
 
@@ -69,6 +76,14 @@ namespace GameScripts
         public void Hide()
         {
             _shouldShow = false;
+            _currentAlpha = 0f;
+            
+            // Set sprite alpha immediately
+            if (_tutorialSprite != 0 && API.HasSprite(_tutorialSprite))
+            {
+                API.SetSpriteAlpha(_tutorialSprite, 0f);
+            }
+            
             API.Log("[UITutorial] Hiding tutorial popup");
         }
 

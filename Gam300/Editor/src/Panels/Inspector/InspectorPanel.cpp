@@ -2066,6 +2066,18 @@ namespace EditorUI {
                     ImGui::ColorEdit4("##TintColor", &vc.tintColor.r,
                         ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreview);
 
+                    ImGui::AlignTextToFramePadding();
+                    ImGui::Text("Brightness");
+                    ImGui::SameLine(120);
+                    ImGui::SetNextItemWidth(-1);
+                    ImGui::SliderFloat("##Brightness", &vc.brightness, 0.0f, 2.0f, "%.2f");
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip(
+                            "Brightness multiplier.\n"
+                            "0.0 = black, 1.0 = normal, 2.0 = overbright"
+                        );
+                    }
+
                     ImGui::Unindent(12.0f);
                 }
 

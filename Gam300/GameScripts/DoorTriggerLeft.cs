@@ -51,6 +51,19 @@ namespace GameScripts
         private ulong _doorEntity = 0;
         private Vec3 _doorOffset; // Offset from trigger to door
 
+        // "No Key" message
+        private ulong _noKeyTextEntity = 0;
+        private const string NO_KEY_MESSAGE = "This door is locked, need to find a key.";
+        private enum MessageState { Hidden, Typing, Displaying, FadingOut }
+        private MessageState _messageState = MessageState.Hidden;
+        private float _typewriterTimer = 0f;
+        private int _currentCharIndex = 0;
+        private const float CHARS_PER_SECOND = 20f; // Typing speed
+        private const float DISPLAY_DURATION = 2f; // How long to show full message
+        private const float FADE_OUT_SPEED = 2f; // Fade out speed
+        private float _displayTimer = 0f;
+        private float _messageAlpha = 1f;
+
         // State
         private static readonly Dictionary<ulong, DoorTriggerLeft> s_instances = new Dictionary<ulong, DoorTriggerLeft>();
         private bool _opening = false;
@@ -124,6 +137,15 @@ namespace GameScripts
             API.Log($"[DoorTriggerLeft] Trigger basePos=({_basePos.X:F2},{_basePos.Y:F2},{_basePos.Z:F2}) targetPos=({_targetPos.X:F2},{_targetPos.Y:F2},{_targetPos.Z:F2})");
             API.Log($"[DoorTriggerLeft] Door offset=({_doorOffset.X:F2},{_doorOffset.Y:F2},{_doorOffset.Z:F2})");
 
+            // Find and initialize the "no key" text entity
+            _noKeyTextEntity = API.FindEntity("UI_NoKeyText");
+            if (_noKeyTextEntity != 0 && API.HasText(_noKeyTextEntity))
+            {
+                API.SetText(_noKeyTextEntity, "");
+                API.SetTextColor(_noKeyTextEntity, new Vec4(1, 1, 1, 0)); // White text, 0 alpha
+                API.Log("[DoorTriggerLeft] Initialized UI_NoKeyText");
+            }
+
             API.RegisterTriggerEnterCallback(Entity, OnTriggerEnter);
             API.RegisterTriggerExitCallback(Entity, OnTriggerExit);
             API.Log("[DoorTriggerLeft] Registered trigger callbacks.");
@@ -132,6 +154,9 @@ namespace GameScripts
         public void OnUpdate(float dt)
         {
             if (_doorEntity == 0) return;
+
+            // Update "no key" message typewriter effect
+            UpdateNoKeyMessage(dt);
 
             // Handle delayed close
             if (_autoCloseOnExit && _closeDelay > 0f && !_opening && _closing)
@@ -244,6 +269,7 @@ namespace GameScripts
             if (!PlayerInventory.HasKey(inst._requiredKeyType))
             {
                 API.Log($"[DoorTriggerLeft] Player does not have required key type '{inst._requiredKeyType}' - door will not move.");
+                inst.ShowNoKeyMessage();
                 return;
             }
 
@@ -278,6 +304,81 @@ namespace GameScripts
             inst._closeTimer = inst._closeDelay;
 
             API.Log("[DoorTriggerLeft] Player left trigger - door will slide back.");
+        }
+
+        /// <summary>
+        /// Show the "no key" message with typewriter effect
+        /// </summary>
+        private void ShowNoKeyMessage()
+        {
+            if (_noKeyTextEntity == 0 || !API.HasText(_noKeyTextEntity)) return;
+            if (_messageState != MessageState.Hidden) return; // Already showing
+
+            _messageState = MessageState.Typing;
+            _currentCharIndex = 0;
+            _typewriterTimer = 0f;
+            _messageAlpha = 1f;
+            API.SetText(_noKeyTextEntity, "");
+            API.SetTextColor(_noKeyTextEntity, new Vec4(1, 1, 1, 1)); // White, full alpha
+            API.Log("[DoorTriggerLeft] Starting 'no key' message");
+        }
+
+        /// <summary>
+        /// Update the typewriter effect and fade out
+        /// </summary>
+        private void UpdateNoKeyMessage(float dt)
+        {
+            if (_noKeyTextEntity == 0 || !API.HasText(_noKeyTextEntity)) return;
+            if (_messageState == MessageState.Hidden) return;
+
+            switch (_messageState)
+            {
+                case MessageState.Typing:
+                    _typewriterTimer += dt;
+                    float charsToShow = _typewriterTimer * CHARS_PER_SECOND;
+                    int targetIndex = (int)charsToShow;
+
+                    if (targetIndex > _currentCharIndex)
+                    {
+                        _currentCharIndex = Math.Min(targetIndex, NO_KEY_MESSAGE.Length);
+                        string displayText = NO_KEY_MESSAGE.Substring(0, _currentCharIndex);
+                        API.SetText(_noKeyTextEntity, displayText);
+
+                        // Check if we've typed the full message
+                        if (_currentCharIndex >= NO_KEY_MESSAGE.Length)
+                        {
+                            _messageState = MessageState.Displaying;
+                            _displayTimer = DISPLAY_DURATION;
+                            API.Log("[DoorTriggerLeft] Finished typing message, displaying");
+                        }
+                    }
+                    break;
+
+                case MessageState.Displaying:
+                    _displayTimer -= dt;
+                    if (_displayTimer <= 0f)
+                    {
+                        _messageState = MessageState.FadingOut;
+                        API.Log("[DoorTriggerLeft] Starting fade out");
+                    }
+                    break;
+
+                case MessageState.FadingOut:
+                    _messageAlpha -= FADE_OUT_SPEED * dt;
+                    if (_messageAlpha <= 0f)
+                    {
+                        _messageAlpha = 0f;
+                        API.SetTextColor(_noKeyTextEntity, new Vec4(1, 1, 1, 0));
+                        API.SetText(_noKeyTextEntity, "");
+                        _messageState = MessageState.Hidden;
+                        API.Log("[DoorTriggerLeft] Message hidden");
+                    }
+                    else
+                    {
+                        API.SetTextColor(_noKeyTextEntity, new Vec4(1, 1, 1, _messageAlpha));
+                    }
+                    break;
+            }
         }
 
         private void ParseParams(string p)

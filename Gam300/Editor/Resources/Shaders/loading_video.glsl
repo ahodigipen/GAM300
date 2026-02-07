@@ -18,13 +18,14 @@ layout(location = 0) out vec4 FragColor;
 layout(location = 1) out vec4 out_brightness;  // Brightness for bloom (always zero for video)
 uniform sampler2D videoTex;
 uniform vec4 tintColor;
+uniform float brightness;
 
 void main() {
     vec4 videoColor = texture(videoTex, uvs).rgba;
 
     if (videoColor.a < 0.01) discard;
 
-    FragColor = tintColor * videoColor;
+    FragColor = vec4((tintColor * videoColor).rgb * brightness, (tintColor * videoColor).a);
     out_brightness = vec4(0.0, 0.0, 0.0, 1.0);  // Video should NOT contribute to bloom
 }
 ==FRAGMENT==

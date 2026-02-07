@@ -12,9 +12,14 @@ namespace GameScripts
         public ulong Entity;
 
         // Detection settings
-        private float _detectionRadius = 2.5f;           // How close player must be
-        private float _detectionDuration = 5.0f;         // How long player must stay close
-        private float _verticalTolerance = 2.5f;         // Vertical range (same floor)
+        [Boom.EditorExposed("Detection Radius", "How close player must be", 0.1f, 20f, true)]
+        public float DetectionRadius = 3.0f;           // How close player must be
+
+        [Boom.EditorExposed("Detection Duration", "How long player must stay close", 0.1f, 20f, true)]
+        public float DetectionDuration = 5.0f;         // How long player must stay close
+
+        [Boom.EditorExposed("Vertical Tolerance", "Vertical range (same floor)", 0.1f, 10f, true)]
+        public float VerticalTolerance = 2.5f;         // Vertical range (same floor)
 
         // State tracking
         private float _proximityTimer = 0f;
@@ -26,7 +31,8 @@ namespace GameScripts
         public event ProximityEventHandler OnProximityDetected;
 
         // Debug
-        private bool _debugLog = true;  // Enable by default for testing
+        [Boom.EditorExposed("Debug Log", "Enable proximity detection debug logging")]
+        public bool DebugLog = true;  // Enable by default for testing
         private float _debugTimer = 0f;
 
         /// <summary>
@@ -40,7 +46,7 @@ namespace GameScripts
                 return;
             }
 
-            API.Log($"[ProximityDetection] Initialized - Range: {_detectionRadius}m, Duration: {_detectionDuration}s");
+            API.Log($"[ProximityDetection] Initialized - Range: {DetectionRadius}m, Duration: {DetectionDuration}s");
         }
 
         /// <summary>
@@ -70,7 +76,7 @@ namespace GameScripts
 
             // Check if player is on same floor (vertical check)
             float verticalDistance = Math.Abs(playerPos.Y - enemyPos.Y);
-            if (verticalDistance > _verticalTolerance)
+            if (verticalDistance > VerticalTolerance)
             {
                 ResetProximityTimer();
                 return;
@@ -82,7 +88,7 @@ namespace GameScripts
             float horizontalDistance = (float)Math.Sqrt(dx * dx + dz * dz);
 
             // Check if player is within detection radius
-            bool playerCurrentlyInRange = horizontalDistance <= _detectionRadius;
+            bool playerCurrentlyInRange = horizontalDistance <= DetectionRadius;
 
             if (playerCurrentlyInRange)
             {
@@ -92,7 +98,7 @@ namespace GameScripts
                     _isPlayerInRange = true;
                     _proximityTimer = 0f;
 
-                    if (_debugLog)
+                    if (DebugLog)
                     {
                         API.Log($"[ProximityDetection] Player entered proximity range ({horizontalDistance:F2}m)");
                     }
@@ -102,20 +108,20 @@ namespace GameScripts
                 _proximityTimer += dt;
 
                 // Check if detection threshold reached
-                if (!_hasTriggeredDetection && _proximityTimer >= _detectionDuration)
+                if (!_hasTriggeredDetection && _proximityTimer >= DetectionDuration)
                 {
                     TriggerProximityDetection(playerEntity, playerPos);
                 }
 
                 // Debug logging
-                if (_debugLog)
+                if (DebugLog)
                 {
                     _debugTimer += dt;
                     if (_debugTimer >= 0.5f)
                     {
                         _debugTimer = 0f;
-                        float remaining = _detectionDuration - _proximityTimer;
-                        API.Log($"[ProximityDetection] Timer: {_proximityTimer:F2}s / {_detectionDuration}s (Remaining: {remaining:F2}s)");
+                        float remaining = DetectionDuration - _proximityTimer;
+                        API.Log($"[ProximityDetection] Timer: {_proximityTimer:F2}s / {DetectionDuration}s (Remaining: {remaining:F2}s)");
                     }
                 }
             }
@@ -124,7 +130,7 @@ namespace GameScripts
                 // Player left range - reset timer
                 if (_isPlayerInRange)
                 {
-                    if (_debugLog)
+                    if (DebugLog)
                     {
                         API.Log($"[ProximityDetection] Player left proximity range - timer reset");
                     }
@@ -141,7 +147,7 @@ namespace GameScripts
         {
             _hasTriggeredDetection = true;
 
-            API.Log($"[ProximityDetection] PROXIMITY ALERT! Player lingered for {_detectionDuration}s");
+            API.Log($"[ProximityDetection] PROXIMITY ALERT! Player lingered for {DetectionDuration}s");
 
             // Play proximity alert sound (different from vision alert)
             Vec3 enemyPos = API.GetPosition(Entity);
@@ -172,7 +178,7 @@ namespace GameScripts
         public void ResetDetection()
         {
             ResetProximityTimer();
-            if (_debugLog)
+            if (DebugLog)
             {
                 API.Log("[ProximityDetection] Detection state forcefully reset");
             }
@@ -181,25 +187,25 @@ namespace GameScripts
         // Configuration methods
         public void SetDetectionRadius(float radius)
         {
-            _detectionRadius = radius;
-            API.Log($"[ProximityDetection] Detection radius set to {_detectionRadius}m");
+            DetectionRadius = radius;
+            API.Log($"[ProximityDetection] Detection radius set to {DetectionRadius}m");
         }
 
         public void SetDetectionDuration(float duration)
         {
-            _detectionDuration = duration;
-            API.Log($"[ProximityDetection] Detection duration set to {_detectionDuration}s");
+            DetectionDuration = duration;
+            API.Log($"[ProximityDetection] Detection duration set to {DetectionDuration}s");
         }
 
         public void SetVerticalTolerance(float tolerance)
         {
-            _verticalTolerance = tolerance;
-            API.Log($"[ProximityDetection] Vertical tolerance set to {_verticalTolerance}m");
+            VerticalTolerance = tolerance;
+            API.Log($"[ProximityDetection] Vertical tolerance set to {VerticalTolerance}m");
         }
 
         public void EnableDebugLog(bool enable)
         {
-            _debugLog = enable;
+            DebugLog = enable;
         }
 
         public float GetProximityTimer() => _proximityTimer;

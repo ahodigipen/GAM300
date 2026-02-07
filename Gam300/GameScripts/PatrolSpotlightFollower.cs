@@ -31,6 +31,13 @@ namespace GameScripts
 
         public void OnStart(string jsonParams)
         {
+            // Detect stale registry from previous play session by checking if our key exists with different instance
+            if (s_Spotlights.TryGetValue(targetName, out PatrolSpotlightFollower existing) && existing != this)
+            {
+                API.Log("[PatrolSpotlightFollower] Detected stale registry - clearing for new session");
+                s_Spotlights.Clear();
+            }
+
             // Find target entity
             targetHandle = API.FindEntity(targetName);
             if (targetHandle == 0)
@@ -83,9 +90,9 @@ namespace GameScripts
             if (_controller != null)
             {
                 float yaw = _controller.GetYaw();
-                float spotlightYaw = yaw;
-                API.SetRotationY(Entity, -spotlightYaw);
-               
+                // Add 180 because spotlight points -Z but model faces +Z
+                float spotlightYaw = yaw + 180f;
+                API.SetRotationY(Entity, spotlightYaw);
             }
           
         }
@@ -143,6 +150,15 @@ namespace GameScripts
             {
                 kvp.Value.ResetColor();
             }
+        }
+
+        /// <summary>
+        /// Clear the registry for a new play session.
+        /// </summary>
+        public static void ClearRegistry()
+        {
+            s_Spotlights.Clear();
+            API.Log("[PatrolSpotlightFollower] Registry cleared");
         }
     }
 }

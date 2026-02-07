@@ -59,6 +59,18 @@ namespace GameScripts
             API.Log("[LevelTransition] Player entered trigger! Starting Cutscene.");
             _hasTriggered = true;
 
+            // Auto-dismiss any active tutorials before starting cutscene
+            if (TutorialManager.IsTutorialActive())
+            {
+                API.Log("[LevelTransition] Dismissing active tutorial for cutscene");
+                TutorialManager.DismissTutorial();
+            }
+            if (TutorialPopupTrigger.IsPopupActive())
+            {
+                API.Log("[LevelTransition] Dismissing active popup for cutscene");
+                TutorialPopupTrigger.DismissActivePopup();
+            }
+
             BuildSequence();
             _sequencer.Play();
 
@@ -117,7 +129,7 @@ namespace GameScripts
                 // Start: Offset (X-5, Y+5, Z+5)
                 Vec3 startPos = new Vec3(ePos.X + 5.0f, ePos.Y + 5.0f, ePos.Z + 5.0f);
                 // End: Move backwards slightly (Z-5) over 4 seconds
-                Vec3 endPos = new Vec3(ePos.X + 5.0f, ePos.Y + 6.0f, ePos.Z - 5.0f);
+                Vec3 endPos = new Vec3(ePos.X + 5.5f, ePos.Y + 6.0f, ePos.Z - 5.0f);
 
                 AddPosKey(posTrack, frame, startPos);
                 AddLookKey(lookTrack, frame, "Level2_PatrolEnemy_3");
@@ -305,7 +317,7 @@ namespace GameScripts
             // Fallback: Distance Check if Trigger fails
             if (!_hasTriggered && _initialized)
             {
-                ulong playerID = API.FindEntity("Player");
+                ulong playerID = API.FindEntity("Samurai");
                 if (playerID == 0) playerID = PlayerMovement.GetPlayerEntity();
 
                 if (playerID != 0)
@@ -323,6 +335,19 @@ namespace GameScripts
                     {
                         API.Log($"[LevelTransition] Distance Check Triggered! ({distSq} < 9.0)");
                         _hasTriggered = true;
+
+                        // Auto-dismiss any active tutorials before starting cutscene
+                        if (TutorialManager.IsTutorialActive())
+                        {
+                            API.Log("[LevelTransition] Dismissing active tutorial for cutscene (distance check)");
+                            TutorialManager.DismissTutorial();
+                        }
+                        if (TutorialPopupTrigger.IsPopupActive())
+                        {
+                            API.Log("[LevelTransition] Dismissing active popup for cutscene (distance check)");
+                            TutorialPopupTrigger.DismissActivePopup();
+                        }
+
                         BuildSequence();
                         _sequencer.Play();
                     }

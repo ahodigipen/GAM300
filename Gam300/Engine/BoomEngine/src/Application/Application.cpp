@@ -897,9 +897,15 @@ namespace Boom
                     m_Context->renderer->DrawPick(worldTransform);
                 }
                 else {
+                    // Apply brightness to tint color (multiply RGB, preserve alpha)
+                    glm::vec4 adjustedTint = comp.tintColor;
+                    adjustedTint.r *= comp.brightness;
+                    adjustedTint.g *= comp.brightness;
+                    adjustedTint.b *= comp.brightness;
+
                     if (comp.renderAs3D) {
                         // Render as 3D quad in world space
-                        m_Context->renderer->DrawQuadRaw(textureId, worldTransform, comp.tintColor);
+                        m_Context->renderer->DrawQuadRaw(textureId, worldTransform, adjustedTint);
                     }
                     else if (!m_Context->renderer->showLowPoly) {
                         // Render as 2D UI overlay (skip when low poly; rendered at full res after compositing)
@@ -908,7 +914,7 @@ namespace Boom
                             worldTransform.rotate.z,
                             glm::vec2(worldTransform.scale.x, worldTransform.scale.y)
                         };
-                        m_Context->renderer->DrawQuadRaw(textureId, transform2D, comp.tintColor);
+                        m_Context->renderer->DrawQuadRaw(textureId, transform2D, adjustedTint);
                     }
                 }
             }
@@ -1212,13 +1218,19 @@ namespace Boom
             Transform3D worldTransform;
             DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
 
+            // Apply brightness to tint color (multiply RGB, preserve alpha)
+            glm::vec4 adjustedTint = comp.tintColor;
+            adjustedTint.r *= comp.brightness;
+            adjustedTint.g *= comp.brightness;
+            adjustedTint.b *= comp.brightness;
+
             Transform2D transform2D{
                 worldTransform.translate,
                 worldTransform.rotate.z,
                 glm::vec2(worldTransform.scale.x, worldTransform.scale.y)
             };
 
-            m_Context->renderer->DrawQuadRaw(textureId, transform2D, comp.tintColor);
+            m_Context->renderer->DrawQuadRaw(textureId, transform2D, adjustedTint);
         });
     }
 

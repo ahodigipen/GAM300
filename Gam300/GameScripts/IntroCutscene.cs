@@ -100,8 +100,8 @@ namespace GameScripts
             {
                 API.Log("[IntroCutscene] Found 'patrol enemy 3'. Adding keys.");
                 Vec3 ePos = API.GetPosition(enemy3ID);
-                // Raised Y to look over rocks, modified Z to be closer
-                Vec3 camPos = new Vec3(ePos.X + 5.0f, ePos.Y + 5.0f, ePos.Z + 5.0f);
+                // Start: Front-Right (Original)
+                Vec3 camPos = new Vec3(ePos.X + 5.0f, ePos.Y + 5.0f, ePos.Z + 5.0f) ;
 
                 // Move Start
                 AddPosKey(posTrack, frame, camPos);
@@ -109,8 +109,8 @@ namespace GameScripts
 
                 // Wait 5 seconds & Pull Back
                 frame += 5 * fps;
-                // End Pos: Move BACK (Z - 12.0f) to create a dolly-out effect
-                Vec3 camPosEnd = new Vec3(ePos.X, ePos.Y + 5.0f, ePos.Z +13.0f);
+                // End Pos: Move LEFT (X - 10) to Turn Right, and BACK (Z + 15) to Pan Backward
+                Vec3 camPosEnd = new Vec3(ePos.X, ePos.Y + 5.0f, ePos.Z + 13.0f);
                 AddPosKey(posTrack, frame, camPosEnd);
                 AddLookKey(lookTrack, frame, "patrol enemy 3");
             }

@@ -89,12 +89,18 @@ namespace Boom {
                     // The renderer expects a Texture (shared_ptr<Texture2D>)
                     // We need to wrap the raw OpenGL texture ID
 
+                    // Apply brightness to tint color (multiply RGB, preserve alpha)
+                    glm::vec4 adjustedTint = videoComp.tintColor;
+                    adjustedTint.r *= videoComp.brightness;
+                    adjustedTint.g *= videoComp.brightness;
+                    adjustedTint.b *= videoComp.brightness;
+
                     if (videoComp.renderAs3D) {
                         // Render as a 3D quad in world space
                         renderer.DrawQuad(
                             Texture{}, // Placeholder - will need to create proper texture wrapper
                             transformComp.transform,
-                            videoComp.tintColor
+                            adjustedTint
                         );
                     } else {
                         // Render as 2D UI overlay
@@ -102,7 +108,7 @@ namespace Boom {
                         renderer.DrawQuad(
                             Texture{}, // Placeholder
                             transform2D,
-                            videoComp.tintColor
+                            adjustedTint
                         );
                     }
                 }
