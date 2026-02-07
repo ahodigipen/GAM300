@@ -4047,7 +4047,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 15398575817850185585
       color: [1, 0, 0, 0]
-      renderAs3D: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 2888197353573082632
       Name: Blood3
@@ -4061,7 +4061,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 8078124372590329184
       color: [1, 0, 0, 0]
-      renderAs3D: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 2888197353573082632
       Name: Blood2
@@ -4075,7 +4075,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 14611654011234671873
       color: [1, 0, 0, 0]
-      renderAs3D: true
+      renderAs3D: false
   - InfoComponent:
       Parent: 2888197353573082632
       Name: Blood1
@@ -4089,7 +4089,7 @@ ENTITIES:
     SpriteComponent:
       textureID: 9978758564026709928
       color: [1, 0, 0, 0]
-      renderAs3D: true
+      renderAs3D: false
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 1.98000002, 0]
