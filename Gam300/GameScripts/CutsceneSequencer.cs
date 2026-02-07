@@ -32,7 +32,6 @@ namespace GameScripts
         public bool BlockInput = true; // Default to TRUE for cinematic feel
         public bool ConsoleDebug = true; // Default ON: Logs position/target every sec
         public bool VisualDebug = false; // Default OFF: Draws lines
-        private bool Debug = false; // Deprecated helper
 
         public float StartDelay = 0.0f;
 
@@ -79,7 +78,7 @@ namespace GameScripts
         public void OnStart(string jsonParams)
         {
             // Register self
-            string myName = "Unknown";
+            //string myName = "Unknown";
             // We don't have GetName in API directly exposed for Entity ID? 
             // We can assume the user passes unique names or we use Entity ID registry.
             // For now, let's use the Entity Name searching.
