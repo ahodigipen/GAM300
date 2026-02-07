@@ -168,26 +168,26 @@ namespace Boom {
             glm::quat rotation = glm::quat(eulerRadians);
             glm::vec3 lightDir = rotation * glm::vec3(0.0f, 0.0f, -1.0f); // Forward direction
 
-            // Position the light camera at distance along the light direction
-            // For directional lights, we look "backwards" from the direction
-            float lightDistance = 10.0f; // Distance from scene center
-            glm::vec3 lightPos = -lightDir * lightDistance; // Negative because we want to look towards the scene
-            glm::vec3 sceneCenter = glm::vec3(0.0f, 0.0f, 0.0f); // Look at scene origin
+            // Use camera position as shadow focus point (camera-centric shadows)
+            // This ensures shadows are always rendered around where the player is looking
+            float lightDistance = 50.0f;
+            glm::vec3 shadowFocus = m_CameraPosition; // Follow the camera
+            glm::vec3 lightPos = shadowFocus - lightDir * lightDistance;
 
-            // Calculate view direction (from camera to scene)
-            glm::vec3 viewDir = glm::normalize(sceneCenter - lightPos);
-
-            // Calculate up vector (must not be parallel to view direction)
+            // Calculate up vector (must not be parallel to light direction)
             glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-            if (glm::abs(glm::dot(viewDir, up)) > 0.99f) {
-                // If viewing straight up/down, use right vector as up
-                up = glm::vec3(1.0f, 0.0f, 0.0f);
+            if (glm::abs(glm::dot(lightDir, up)) > 0.99f) {
+                // If light is pointing straight up/down, use forward as up
+                up = glm::vec3(0.0f, 0.0f, 1.0f);
             }
 
             // prepare projection and view mtx
-            float orthoSize = 10.0f; // Shadow coverage area
-            auto proj = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, 1.f, 25.0f);
-            auto view = glm::lookAt(lightPos, sceneCenter, up);
+            // Smaller values for better shadow quality (less pixelation)
+            float orthoSize = 50.0f; // Shadow coverage area (100x100 units total)
+            float nearPlane = 1.0f;
+            float farPlane = lightDistance * 2.5f; // 125.0f - tighter range for better depth precision
+            auto proj = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, nearPlane, farPlane);
+            auto view = glm::lookAt(lightPos, shadowFocus, up);
 
             // compute light space
             auto lightSpaceMtx = proj * view;
@@ -319,6 +319,12 @@ namespace Boom {
         }
 
         BOOM_INLINE glm::vec3 GetCameraPosition() const { return m_CameraPosition; }
+
+        // Updates just the camera position without setting up shaders
+        // Call this BEFORE shadow pass to ensure shadow frustum is centered correctly
+        BOOM_INLINE void SetCameraPositionOnly(const glm::vec3& position) {
+            m_CameraPosition = position;
+        }
 
         BOOM_INLINE void Draw(Mesh3D const& mesh, Transform3D const& transform) {
             pbrShader->Draw(mesh, transform);
@@ -537,6 +543,87 @@ namespace Boom {
                                                     static_cast<uint32_t>(batch->Count()),
                                                     static_cast<uint32_t>(batch->ssboOffset),
                                                     showNormalTexture);
+            }
+        }
+
+        /**
+         * @brief Render all collected instance batches as shadow casters.
+         *
+         * Uses the shadow shader with instanced draw calls instead of per-entity draws.
+         * Call after BeginShadowPass() and after collecting instances via AddInstance/AddAnimatedInstance.
+         *
+         * @param assets Asset registry to look up models and materials
+         */
+        template<typename AssetRegistryT>
+        BOOM_INLINE void RenderShadowInstancedBatches(AssetRegistryT& assets) {
+            m_InstanceManager->UploadBatches();
+
+            size_t totalStatic = m_InstanceManager->GetTotalInstances();
+            size_t totalAnimated = m_InstanceManager->GetTotalAnimatedInstances();
+
+            if (totalStatic == 0 && totalAnimated == 0) return;
+
+            // Bind SSBOs for the shadow shader to read
+            m_InstanceManager->BindAllSSBOs();
+
+            // Ensure shadow shader is active
+            shadowShader->Use();
+
+            // === Render Static Shadow Batches ===
+            if (totalStatic > 0) {
+                for (const auto& [key, batch] : m_InstanceManager->GetBatches()) {
+                    if (batch.IsEmpty()) continue;
+
+                    auto* modelAsset = assets.template TryGet<ModelAsset>(batch.modelID);
+                    if (!modelAsset || !modelAsset->data) continue;
+
+                    // Check if material has opacity for shadow dithering
+                    if (batch.materialID != EMPTY_ASSET) {
+                        auto* matAsset = assets.template TryGet<MaterialAsset>(batch.materialID);
+                        if (matAsset) {
+                            assets.ResolveMaterialTextures(matAsset);
+                            shadowShader->DrawInstanced(modelAsset->data,
+                                                        static_cast<uint32_t>(batch.Count()),
+                                                        static_cast<uint32_t>(batch.ssboOffset),
+                                                        matAsset->data);
+                            continue;
+                        }
+                    }
+
+                    shadowShader->DrawInstanced(modelAsset->data,
+                                                static_cast<uint32_t>(batch.Count()),
+                                                static_cast<uint32_t>(batch.ssboOffset));
+                }
+            }
+
+            // === Render Animated Shadow Batches ===
+            if (totalAnimated > 0) {
+                for (const auto& [key, batch] : m_InstanceManager->GetAnimatedBatches()) {
+                    if (batch.IsEmpty()) continue;
+
+                    auto* modelAsset = assets.template TryGet<ModelAsset>(batch.modelID);
+                    if (!modelAsset || !modelAsset->data) continue;
+
+                    uint32_t jointBase = static_cast<uint32_t>(batch.jointSsboOffset / MAX_ANIMATED_JOINTS);
+
+                    if (batch.materialID != EMPTY_ASSET) {
+                        auto* matAsset = assets.template TryGet<MaterialAsset>(batch.materialID);
+                        if (matAsset) {
+                            assets.ResolveMaterialTextures(matAsset);
+                            shadowShader->DrawAnimatedInstanced(modelAsset->data,
+                                                                static_cast<uint32_t>(batch.Count()),
+                                                                static_cast<uint32_t>(batch.transformSsboOffset),
+                                                                jointBase,
+                                                                matAsset->data);
+                            continue;
+                        }
+                    }
+
+                    shadowShader->DrawAnimatedInstanced(modelAsset->data,
+                                                        static_cast<uint32_t>(batch.Count()),
+                                                        static_cast<uint32_t>(batch.transformSsboOffset),
+                                                        jointBase);
+                }
             }
         }
 
