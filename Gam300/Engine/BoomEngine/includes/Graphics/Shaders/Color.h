@@ -64,9 +64,9 @@ namespace Boom {
         }
         BOOM_INLINE void Show(uint32_t texid, Transform3D const& t) {
             Use();
-            glActiveTexture(GL_TEXTURE0);
+            glActiveTexture(GL_TEXTURE15);
             glBindTexture(GL_TEXTURE_2D, texid);
-            SetUniform(texLoc, 0);
+            SetUniform(texLoc, 15);
             SetUniform(colLoc, color);
             SetUniform(matLoc, t.Matrix());
             quad->Draw(GL_TRIANGLES);
