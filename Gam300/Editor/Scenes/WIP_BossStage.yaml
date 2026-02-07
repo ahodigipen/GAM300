@@ -4269,7 +4269,7 @@ ENTITIES:
         - name: Walking
           filePath: Resources/Models/Player/animations/Walking.fbx
         - name: Samurai New Walk
-          filePath: Resources/Samurai New Walk.fbx
+          filePath: Resources/Models/Player/animations/Samurai New Walk.fbx
         - name: Fast Run
           filePath: Resources/Models/Player/animations/Fast Run.fbx
         - name: Samurai Idle
@@ -4277,9 +4277,9 @@ ENTITIES:
         - name: run
           filePath: Resources/Models/run.fbx
         - name: Stand To Roll (1)
-          filePath: Resources/Stand To Roll (1).fbx
+          filePath: Resources//Models/Player/animations/Stand To Roll (1).fbx
         - name: Crouching Idle
-          filePath: Resources/Crouching Idle.fbx
+          filePath: Resources/Models/Player/animations/Crouching Idle.fbx
       States:
         - name: Walk
           clipIndex: 2
