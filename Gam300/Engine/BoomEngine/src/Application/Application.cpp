@@ -28,8 +28,8 @@ namespace Boom
         // Clear loading video after assets are loaded (optional - keeps video for scene loading)
         // AppWindow::ClearLoadingVideo();
 
-        LoadScene("M3 GAMEPLAY");
-        //LoadScene("MainMenu");
+        //LoadScene("M3 GAMEPLAY");
+        LoadScene("MainMenu");
         
 
         std::cout << "[RunContext] Scene loaded successfully" << std::endl;
