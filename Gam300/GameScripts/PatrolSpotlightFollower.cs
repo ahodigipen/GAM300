@@ -1,11 +1,10 @@
 using Boom;
-using System;
 
 namespace GameScripts
 {
     /// <summary>
-    /// Spotlight follower specifically for PatrolEnemyController.
-    /// Gets yaw directly from the controller instead of using API.GetRotation().
+    /// Spotlight follower for patrol enemies.
+    /// Copies the target's Y rotation directly to the spotlight.
     /// </summary>
     public class PatrolSpotlightFollower
     {
@@ -14,11 +13,13 @@ namespace GameScripts
         [Boom.EditorExposed("Target Name", "Name of patrol enemy entity to follow")]
         private string targetName = "Patrol_1";
 
-        [Boom.EditorExposed("Position Offset Y", "Height offset above target", 0f, 10f, true)]
+        [Boom.EditorExposed("Position Offset Y", "Height offset above target", -10f, 10f, true)]
         private float positionOffsetY = 2.0f;
 
+        [Boom.EditorExposed("Rotation Offset Y", "Extra Y rotation offset if needed", -180f, 180f, true)]
+        private float rotationOffsetY = 0f;
+
         private ulong targetHandle;
-        private PatrolEnemyController _controller;
 
         // Color state for detection
         private Vec3 originalColor;
@@ -49,13 +50,6 @@ namespace GameScripts
                 API.Log($"[PatrolSpotlightFollower] Following entity: {targetName}");
             }
 
-            // Get controller reference
-            _controller = PatrolEnemyController.GetByName(targetName);
-            if (_controller == null)
-            {
-                API.Log($"[PatrolSpotlightFollower] WARNING: Could not find PatrolEnemyController for: {targetName}");
-            }
-
             // Store original color
             if (API.HasSpotLight(Entity))
             {
@@ -80,20 +74,20 @@ namespace GameScripts
             );
             API.SetPosition(Entity, newPos);
 
-            // Update rotation - get yaw directly from controller
-            if (_controller == null)
-            {
-                // Try to get controller again (might have initialized after us)
-                _controller = PatrolEnemyController.GetByName(targetName);
-            }
+            // Update rotation - read yaw directly from the controller to avoid
+            // Euler angle decomposition issues with the engine transform
+            float enemyYaw;
+            var controller = PatrolEnemyController.GetByName(targetName);
+            if (controller != null)
+                enemyYaw = controller.GetYaw();
+            else
+                enemyYaw = API.GetRotationY(targetHandle); // fallback
 
-            if (_controller != null)
-            {
-                float yaw = _controller.GetYaw();
-                // Add 180 because spotlight points -Z but model faces +Z
-                float spotlightYaw = yaw + 180f;
-                API.SetRotationY(Entity, spotlightYaw);
-            }
+            float spotlightYaw = enemyYaw + 180f + rotationOffsetY;
+            // Normalize to 0-360 range to avoid wrapping issues
+            while (spotlightYaw >= 360f) spotlightYaw -= 360f;
+            while (spotlightYaw < 0f) spotlightYaw += 360f;
+            API.SetRotationY(Entity, spotlightYaw);
           
         }
 
