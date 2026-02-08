@@ -81,7 +81,8 @@ void DataSerializer::DeserializeAsync(AssetRegistry& registry, const std::string
 
         auto loadedContexts = loader.WaitForAll();
 
-        BOOM_INFO("[DataSerializer] CPU loading complete. Starting GPU upload phase...");
+        size_t totalAssets = nodes.size();
+        BOOM_INFO("[DataSerializer] CPU loading complete. Starting GPU upload phase for {} assets...", totalAssets);
 
         // Phase 3: Upload to GPU on main thread and create remaining assets
         int successCount = 0;
@@ -95,6 +96,14 @@ void DataSerializer::DeserializeAsync(AssetRegistry& registry, const std::string
         }
 
         for (const auto& node : nodes) {
+            assetIndex++;
+
+            // Check if window was closed during loading
+            if (glfwWindowShouldClose(win)) {
+                BOOM_WARN("[DataSerializer] Asset loading cancelled by user");
+                break;
+            }
+
             try {
                 auto props = node["Properties"];
                 auto uid = node["UID"].as<AssetID>();
@@ -168,11 +177,6 @@ void DataSerializer::DeserializeAsync(AssetRegistry& registry, const std::string
                     BOOM_ERROR("[DataSerializer] Failed to deserialize asset '{}' (UID={})", name, uid);
                     failCount++;
                 }
-
-                // Render progress (80-100% for GPU upload)
-                assetIndex++;
-                float gpuProgress = 0.8f + (0.2f * ((float)assetIndex / (float)nodes.size()));
-                AppWindow::RenderLoading(win, gpuProgress);
             }
             catch (const YAML::Exception& e) {
                 BOOM_ERROR("[DataSerializer] YAML error while processing asset: {}", std::string(e.what()));
@@ -185,6 +189,19 @@ void DataSerializer::DeserializeAsync(AssetRegistry& registry, const std::string
             catch (...) {
                 BOOM_ERROR("[DataSerializer] Unknown error while loading asset");
                 failCount++;
+            }
+
+            // Throttle rendering and logging to avoid overwhelming the driver/console
+            // Only render every 10 assets or for the last one
+            if (assetIndex % 10 == 0 || assetIndex == totalAssets) {
+                float gpuProgress = 0.8f + (0.2f * ((float)assetIndex / (float)totalAssets));
+                AppWindow::RenderLoading(win, gpuProgress);
+            }
+
+            // Log progress every 100 assets
+            if (assetIndex % 100 == 0) {
+                BOOM_INFO("[DataSerializer] GPU upload progress: {}/{} ({}%)", 
+                    assetIndex, totalAssets, (int)(100.0f * assetIndex / (float)totalAssets));
             }
         }
 
