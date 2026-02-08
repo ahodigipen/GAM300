@@ -320,10 +320,46 @@ void AnimationTimelinePanel::HandleCameraControls()
     {
         // Another window is focused on top - don't process input
         m_IsOrbitingCamera = false;
+        m_IsPanningCamera = false;
         return;
     }
 
     ImGuiIO& io = ImGui::GetIO();
+
+    // Middle mouse button: pan camera (move target)
+    if (ImGui::IsMouseDown(ImGuiMouseButton_Middle))
+    {
+        if (!m_IsPanningCamera)
+        {
+            m_IsPanningCamera = true;
+            m_LastMousePos = ImGui::GetMousePos();
+        }
+
+        ImVec2 currentMousePos = ImGui::GetMousePos();
+        ImVec2 delta = ImVec2(
+            currentMousePos.x - m_LastMousePos.x,
+            currentMousePos.y - m_LastMousePos.y
+        );
+
+        // Calculate camera right and up vectors for panning in screen space
+        glm::vec3 forward = glm::normalize(m_CameraTarget - m_CameraPosition);
+        glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+        glm::vec3 right = glm::normalize(glm::cross(forward, worldUp));
+        glm::vec3 up = glm::normalize(glm::cross(right, forward));
+
+        // Pan speed scales with camera distance for consistent feel
+        float panSpeed = m_CameraDistance * 0.002f;
+
+        // Move the camera target (and camera position follows via UpdateCamera)
+        m_CameraTarget -= right * (delta.x * panSpeed);
+        m_CameraTarget += up * (delta.y * panSpeed);
+
+        m_LastMousePos = currentMousePos;
+    }
+    else
+    {
+        m_IsPanningCamera = false;
+    }
 
     // Right mouse button: orbit camera
     if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
@@ -342,7 +378,7 @@ void AnimationTimelinePanel::HandleCameraControls()
 
         // Update camera angles
         m_CameraYaw -= delta.x * 0.005f;
-        m_CameraPitch -= delta.y * 0.005f;
+        m_CameraPitch += delta.y * 0.005f;  // Fixed: was inverted (changed -= to +=)
 
         // Clamp pitch to avoid flipping
         m_CameraPitch = glm::clamp(m_CameraPitch, -1.5f, 1.5f);

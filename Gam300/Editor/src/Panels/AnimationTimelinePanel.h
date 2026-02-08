@@ -171,6 +171,7 @@ namespace EditorUI {
         float m_CameraYaw = 0.0f;      // Horizontal rotation
         float m_CameraPitch = 0.0f;    // Vertical rotation
         bool m_IsOrbitingCamera = false;
+        bool m_IsPanningCamera = false;  // Middle mouse button panning
         ImVec2 m_LastMousePos = { 0.0f, 0.0f };
 
         // Visualization settings
