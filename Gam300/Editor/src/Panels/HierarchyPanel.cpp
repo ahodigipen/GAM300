@@ -130,12 +130,12 @@ namespace EditorUI {
 
         // Convert search to lowercase for case-insensitive search
         std::string searchLower = searchText;
-        std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), ::tolower);
+        std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
 
         // Check current entity
         if (registry.all_of<Boom::InfoComponent>(entity)) {
             std::string nameLower = registry.get<Boom::InfoComponent>(entity).name;
-            std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
+            std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
             if (nameLower.find(searchLower) != std::string::npos) {
                 return true;
             }

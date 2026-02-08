@@ -100,7 +100,9 @@ namespace GameScripts
         [Boom.EditorExposed("Freeze Duration", "How long the freeze lasts")]
         private float _freezeDuration = 3.0f;
 
+#pragma warning disable CS0414 // Field is assigned but its value is never read
         private bool _canPickupFreeze = false;
+#pragma warning restore CS0414
         private ulong _currentPickupEntity = 0;
 
         private HashSet<ulong> _freezePickupIDs = new HashSet<ulong>();

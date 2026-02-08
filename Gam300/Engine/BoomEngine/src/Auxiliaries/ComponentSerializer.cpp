@@ -638,9 +638,9 @@ namespace Boom
                 if (auto v = data["renderAs3D"]) {
                     sprite.renderAs3D = v.as<bool>(sprite.renderAs3D);
                 }
-                else if (auto v = data["uiOverlay"]) {
+                else if (auto uiVal = data["uiOverlay"]) {
                     // Legacy: uiOverlay=true means 2D (renderAs3D=false)
-                    sprite.renderAs3D = !v.as<bool>(true);
+                    sprite.renderAs3D = !uiVal.as<bool>(true);
                 }
             }
         );

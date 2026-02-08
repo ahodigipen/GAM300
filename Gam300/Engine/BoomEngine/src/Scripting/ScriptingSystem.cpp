@@ -277,7 +277,6 @@ namespace Boom {
         m_Reloading = true;
 
         // Temporarily disable file watching during reload
-        bool wasAutoReloadEnabled = m_AutoHotReload;
         m_FileWatcher.ClearAll();
 
         // 1. Call OnDestroy on all existing instances
