@@ -4611,8 +4611,8 @@ ENTITIES:
         Scale: [1, 1, 1]
     DirectLightComponent:
       Light:
-        Radiance: [0.0220588148, 0.023356393, 0.0441176295]
-        Intensity: 6.84000015
+        Radiance: [0.0439999998, 0.023356393, 0.0441176295]
+        Intensity: 9.5
   - InfoComponent:
       Parent: 0
       Name: Sentry_level2_2
@@ -9686,8 +9686,8 @@ ENTITIES:
       SortOrder: 190
     TransformComponent:
       Transform:
-        Translate: [-27.1193447, 18.6882515, 59.0406494]
-        Rotate: [-215.375, 4617.125, 180]
+        Translate: [1.5570997, 4.13218069, 15.7911425]
+        Rotate: [-181.3125, 4136.6875, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
