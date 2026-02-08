@@ -930,46 +930,43 @@ namespace Boom
 					auto& lightDir = tc.transform.rotate;
 					m_Context->renderer->BeginShadowPass(lightDir, toggleShadows);
 
+					// Collect shadow casters into instanced batches
+					m_Context->renderer->BeginInstanceCollection();
+
 					EnttView<Entity, ModelComponent>([this](auto entity, ModelComponent& comp) {
 						//ignore lights and non initialized models
 						if (!entity.Has<ModelComponent>() || comp.modelID == EMPTY_ASSET) return;
 						if (entity.Has<DirectLightComponent>() || entity.Has<PointLightComponent>() || entity.Has<SpotLightComponent>()) return;
+						// Skip deactivated entities - they shouldn't cast shadows
+						if (entity.Has<DeactivatedComponent>()) return;
 
 						ModelAsset* model{ m_Context->assets->TryGet<ModelAsset>(comp.modelID) };
-						if (!model) return;
-
-						std::vector<glm::mat4> joints;
-						if (entity.Has<AnimatorComponent>()) {
-							auto& an = entity.Get<AnimatorComponent>();
-							joints = an.animator->GetJoints(); //dont update animation here
-
-						}
-						else if (model->hasJoints) {
-							static std::vector<glm::mat4> identityPalette(100, glm::mat4(1.0f));
-							joints = identityPalette;
-						}
+						if (!model || !model->data) return;
 
 						glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
-						Transform3D worldTransform;
-						DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
+						glm::mat4 finalMatrix = worldMatrix * model->data->modelTransform.Matrix();
 
-						// Get material for opacity-based shadow casting
-						if (comp.materialID != EMPTY_ASSET) {
-							MaterialAsset* matAsset = m_Context->assets->TryGet<MaterialAsset>(comp.materialID);
-							if (matAsset) {
-								// Resolve opacity map texture if present
-								if (matAsset->opacityMapID != EMPTY_ASSET) {
-									TextureAsset* opacityTex = m_Context->assets->TryGet<TextureAsset>(matAsset->opacityMapID);
-									if (opacityTex && opacityTex->data) {
-										matAsset->data.opacityMap = opacityTex->data;
-									}
-								}
-								m_Context->renderer->DrawShadow(model->data, worldTransform, joints, matAsset->data);
-								return;
+						bool isAnimated = entity.Has<AnimatorComponent>() || model->hasJoints;
+
+						if (isAnimated) {
+							std::vector<glm::mat4> joints;
+							if (entity.Has<AnimatorComponent>()) {
+								auto& an = entity.Get<AnimatorComponent>();
+								joints = an.animator->GetJoints();
 							}
+							else {
+								static std::vector<glm::mat4> identityPalette(100, glm::mat4(1.0f));
+								joints = identityPalette;
+							}
+							m_Context->renderer->AddAnimatedInstance(comp.modelID, comp.materialID, finalMatrix, joints);
 						}
-						m_Context->renderer->DrawShadow(model->data, worldTransform, joints);
-						});
+						else {
+							m_Context->renderer->AddInstance(comp.modelID, comp.materialID, finalMatrix, false);
+						}
+					});
+
+					// Render all collected shadow batches with instanced draw calls
+					m_Context->renderer->RenderShadowInstancedBatches(*m_Context->assets);
 
 					m_Context->renderer->EndShadowPass();
 				});
@@ -1005,9 +1002,11 @@ namespace Boom
 					EnttView<Entity, ModelComponent>([this](auto entity, ModelComponent& comp) {
 						if (!entity.Has<ModelComponent>() || comp.modelID == EMPTY_ASSET) return;
 						if (entity.Has<DirectLightComponent>() || entity.Has<PointLightComponent>() || entity.Has<SpotLightComponent>()) return;
+						// Skip deactivated entities - they shouldn't cast shadows
+						if (entity.Has<DeactivatedComponent>()) return;
 
 						ModelAsset* model{ m_Context->assets->TryGet<ModelAsset>(comp.modelID) };
-						if (!model) return;
+						if (!model || !model->data) return;
 
 						std::vector<glm::mat4> joints;
 						if (entity.Has<AnimatorComponent>()) {

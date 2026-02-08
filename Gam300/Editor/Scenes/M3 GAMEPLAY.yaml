@@ -1,5 +1,45 @@
 Version: 1.0
 ENTITIES:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 7982763225733669098
+        SurfaceType: DEFAULT
+        Type: TRIANGLE_MESH
+    InfoComponent:
+      Parent: 0
+      Name: SPOOFWALL_3
+      UID: 2831899497212386249
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-13.7790422, 19.0299473, 10.1362982]
+        Rotate: [89.9999847, -0, 0]
+        Scale: [25.9071941, 2.99475837, 3.1717968]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [25.9071941, 2.99475837, 3.1717968]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 4826384296126717694
+      MaterialID: 6104124486273075758
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
       Parent: 0
       Name: Ambient_Light_7
@@ -1146,139 +1186,19 @@ ENTITIES:
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
   - InfoComponent:
-      Parent: 16217385032863444442
+      Parent: 0
       Name: Patrol Vision Cone 10
       UID: 7479274772312597537
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.219629854, 15.4210205, 18.0792179]
-        Rotate: [179.998337, -90, 179.981735]
-        Scale: [49.9987793, 49.9999962, 49.9987755]
+        Translate: [0.383743823, 13.7294407, 18.0837364]
+        Rotate: [-0.0199341383, -0.019783644, -8.14222162e-11]
+        Scale: [0.999999464, 0.999999881, 0.999999285]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"targetName\": \"Patrol enemy 3\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
-  - InfoComponent:
-      Parent: 14450237795829985322
-      Name: Patrol Vision Cone 6 (lvl 2)
-      UID: 4378450492672010194
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-47.3199692, 33.3661957, 12.9249163]
-        Rotate: [0.0316256806, 523.567932, 0.0379715934]
-        Scale: [24.9999905, 24.9999981, 24.9999905]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"targetName\": \"Level2_PatrolEnemy_6\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
-  - InfoComponent:
-      Parent: 14361277227657285018
-      Name: Patrol Vision Cone 6
-      UID: 15829944425654132245
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [20.6923141, 15.4210215, 12.1986961]
-        Rotate: [112.547661, 360, 112.549316]
-        Scale: [49.9988518, 49.9999962, 49.9988556]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"targetName\": \"Patrol enemy 6\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
-  - InfoComponent:
-      Parent: 11377284783086712530
-      Name: Patrol Vision Cone 7
-      UID: 17207126084649200590
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-11.9965687, 15.1255436, 31.8400135]
-        Rotate: [-135.012695, 238.835724, 135.015167]
-        Scale: [24.9999924, 25, 24.9999943]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"targetName\": \"Level2_PatrolEnemy_1\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
-  - InfoComponent:
-      Parent: 9730896463395262189
-      Name: Patrol Vision Cone 4
-      UID: 16553261442957951333
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-30.8884773, 26.0738983, 10.7831411]
-        Rotate: [-5.00950637e-06, 540, 0.0197773334]
-        Scale: [24.9999924, 25, 24.9999943]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"targetName\": \"Level2_PatrolEnemy_4\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
-  - InfoComponent:
-      Parent: 7103488143176582610
-      Name: Patrol Vision Cone 3 (lvl 2)
-      UID: 13004693949065280400
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-22.3940601, 15.1255474, 61.5604668]
-        Rotate: [-90, 180.006424, 90]
-        Scale: [24.9999962, 25, 24.9999962]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"targetName\": \"Level2_PatrolEnemy_3\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
-  - InfoComponent:
-      Parent: 4350822310922817577
-      Name: Patrol Vision Cone 2(lvl 2)
-      UID: 5626738050018619883
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-13.3622046, 15.1255474, 43.3587112]
-        Rotate: [-180, 360, -180]
-        Scale: [24.9999924, 25, 24.9999924]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"targetName\": \"Level2_PatrolEnemy_2\"\n}"
+      ParamsJSON: "{\n  \"positionOffsetY\": 4.050000190734863,\n  \"targetName\": \"Patrol enemy 3\"\n}"
     SpotLightComponent:
       Light:
         Radiance: [0.975490212, 0, 0]
@@ -1287,35 +1207,138 @@ ENTITIES:
         CutOff: 0.769999981
   - InfoComponent:
       Parent: 0
-      Name: wakkkker
-      UID: 17630822912627836995
-      SortOrder: 341
+      Name: Patrol Vision Cone 6 (lvl 2)
+      UID: 4378450492672010194
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-13.6622381, 19.0557327, 10.1362982]
-        Rotate: [89.9999847, -0, 0]
-        Scale: [25.4209995, 2.99476004, 3.17179823]
-    ModelComponent:
-      ModelID: 4826384296126717694
-      MaterialID: 6104124486273075758
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+        Translate: [-47.8231125, 32.3748283, 12.3560247]
+        Rotate: [0, 103.632004, 0]
+        Scale: [0.999999166, 0.625000179, 0.999999166]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolMultiDirectionSpotlight
+      ParamsJSON: "{\n  \"positionOffsetY\": 4.14900016784668,\n  \"targetName\": \"Level2_PatrolEnemy_6\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.975490212, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
   - InfoComponent:
-      Parent: 263206634475258297
+      Parent: 0
+      Name: Patrol Vision Cone 67
+      UID: 15829944425654132245
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [21.1061707, 13.8318195, 13.2460003]
+        Rotate: [0, 180, 0]
+        Scale: [0.999980092, 0.625, 0.999996901]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolSpotlightFollower
+      ParamsJSON: "{\n  \"positionOffsetY\": 4.14900016784668,\n  \"targetName\": \"Patrol enemy 6\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.975490212, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 0
+      Name: Patrol Vision Cone 7
+      UID: 17207126084649200590
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-10.7229681, 13.5036821, 32.3198776]
+        Rotate: [0, 90, 0]
+        Scale: [0.95835644, 0.689458668, 0.998410165]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolSpotlightFollower
+      ParamsJSON: "{\n  \"positionOffsetY\": 4.065999984741211,\n  \"targetName\": \"Level2_PatrolEnemy_1\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.975490212, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 0
+      Name: PatrolVisionCone45
+      UID: 16553261442957951333
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-30.4961529, 24.7257462, 11.4562502]
+        Rotate: [0, 180, 0]
+        Scale: [1, 0.62500006, 0.999999762]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolSpotlightFollower
+      ParamsJSON: "{\n  \"positionOffsetY\": 4.065999984741211,\n  \"targetName\": \"Level2_PatrolEnemy_4\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.975490212, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 0
+      Name: Patrol Vision Cone 3 (lvl 2)
+      UID: 13004693949065280400
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-22.165781, 13.503686, 61.9170761]
+        Rotate: [0, 0, 0]
+        Scale: [0.62500006, 1.00000453, 1.00000429]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolMultiDirectionSpotlight
+      ParamsJSON: "{\n  \"positionOffsetY\": 4.480000019073486,\n  \"targetName\": \"Level2_PatrolEnemy_3\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.975490212, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 0
+      Name: Patrol Vision Cone 2(lvl 2)
+      UID: 5626738050018619883
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-13.8966961, 13.503685, 45.3348427]
+        Rotate: [0, 180, 0]
+        Scale: [0.999999702, 0.625, 0.999999702]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolSpotlightFollower
+      ParamsJSON: "{\n  \"positionOffsetY\": 4.065999984741211,\n  \"targetName\": \"Level2_PatrolEnemy_2\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.975490212, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 0
       Name: Patrol Vision Cone 2(lvl 2)
       UID: 579238474671125089
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-39.1271286, 26.0938988, -9.8121357]
-        Rotate: [0, 268.636108, 0]
-        Scale: [49.9988136, 50, 49.9988136]
+        Translate: [-38.2900963, 24.7463894, -10.1274652]
+        Rotate: [0, 90, 0]
+        Scale: [1.9999454, 1.25, 1.9999454]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"targetName\": \"Level2_PatrolEnemy_5\"\n}"
+      ParamsJSON: "{\n  \"positionOffsetY\": 4.065999984741211,\n  \"targetName\": \"Level2_PatrolEnemy_5\"\n}"
     SpotLightComponent:
       Light:
         Radiance: [1, 0, 0]
@@ -1364,7 +1387,7 @@ ENTITIES:
       SortOrder: 285
     TransformComponent:
       Transform:
-        Translate: [20.6923141, 13.4210215, 12.1986961]
+        Translate: [20.6923141, 13.4210215, 13.0893068]
         Rotate: [0, 1.98571761e-05, 0]
         Scale: [0.0200004503, 0.0199999996, 0.0200004503]
     RigidBodyComponent:
@@ -1461,7 +1484,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.16762783e-06
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -1486,7 +1509,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Patrol enemy 1\",\n  \"_spotlightName\": \"Patrol Vision Cone 6\"\n}"
+      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Patrol enemy 6\",\n  \"_spotlightName\": \"Patrol Vision Cone 67\",\n  \"_spotlightOffsetY\": 3.815999984741211\n}"
   - InfoComponent:
       Parent: 5830254891821542999
       Name: Sentry Vision Cone 3
@@ -1518,7 +1541,7 @@ ENTITIES:
         Rotate: [0, -0, 0]
         Scale: [0.100000001, 0.100000001, 0.5]
     SpriteComponent:
-      textureID: 7848094390213021062
+      textureID: 883033736161376587
       color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
@@ -1971,7 +1994,7 @@ ENTITIES:
       SortOrder: 266
     TransformComponent:
       Transform:
-        Translate: [-17.9862957, 15.2607174, 51.0270386]
+        Translate: [-17.9862957, 15.2607174, 50.5679626]
         Rotate: [0, 89.980217, 0]
         Scale: [0.396357149, 1.4714483, 0.0700263679]
     RigidBodyComponent:
@@ -2073,40 +2096,6 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Interior_Decor_RIght_Of_Hut5
-      UID: 14009296219501205597
-      SortOrder: 278
-    TransformComponent:
-      Transform:
-        Translate: [13.1106653, 19.9206276, 50.1185417]
-        Rotate: [-89.9999847, 0, 0]
-        Scale: [0.52342391, 2.49985337, 1.18793631]
-    ModelComponent:
-      ModelID: 5963078964798272625
-      MaterialID: 12207453972742617529
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Interior_Decor_RIght_Of_Hut4
-      UID: 9579238965234966102
-      SortOrder: 194
-    TransformComponent:
-      Transform:
-        Translate: [10.9831419, 19.9206276, 50.1185417]
-        Rotate: [-89.9999847, 0, 0]
-        Scale: [0.52342391, 2.49988437, 1.1879518]
-    ModelComponent:
-      ModelID: 5963078964798272625
-      MaterialID: 12207453972742617529
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
       Name: Interior_Decor_RIght_Of_Hut2
       UID: 8624766367126432546
       SortOrder: 178
@@ -2160,7 +2149,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-47.6698189, 31.3661957, 12.9250517]
-        Rotate: [0, 29.0535717, 0]
+        Rotate: [0, -74.3180008, 0]
         Scale: [0.0399999991, 0.0250000004, 0.0399999991]
     RigidBodyComponent:
       RigidBody:
@@ -2256,7 +2245,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.91059756
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -2401,7 +2390,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 4.28972483
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -2447,8 +2436,8 @@ ENTITIES:
       SortOrder: 199
     TransformComponent:
       Transform:
-        Translate: [-30.8884773, 24.0738983, 11.0249243]
-        Rotate: [-0, 1.00179122e-05, -0]
+        Translate: [-30.7921524, 24.0738983, 11.0249243]
+        Rotate: [0, 1.00179122e-05, 0]
         Scale: [0.0399999991, 0.0250000004, 0.0399999991]
     RigidBodyComponent:
       RigidBody:
@@ -2544,7 +2533,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.23972273
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -2569,7 +2558,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"_entityName\": \"Level2_PatrolEnemy_4\",\n  \"_spotlightName\": \"Patrol Vision Cone 4\"\n}"
+      ParamsJSON: "{\n  \"_entityName\": \"Level2_PatrolEnemy_4\",\n  \"_spotlightName\": \"PatrolVisionCone45\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 2, 0]
@@ -2687,7 +2676,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.23972225
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -2736,15 +2725,15 @@ ENTITIES:
       SortOrder: 224
     TransformComponent:
       Transform:
-        Translate: [-11.9965687, 13.1255436, 31.8400135]
-        Rotate: [0, 90, 0]
-        Scale: [0.0399999991, 0.0250000004, 0.0399999991]
+        Translate: [-11.0493851, 13.1255436, 32.8526077]
+        Rotate: [0, 89.980217, 0]
+        Scale: [0.0399999954, 0.0250000004, 0.0399999954]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0399999991, 0.0250000004, 0.0399999991]
+        Previous Scale: [0.0399999954, 0.0250000004, 0.0399999954]
         FreezeRotationX: true
         FreezeRotationY: true
         FreezeRotationZ: true
@@ -2833,7 +2822,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 4.64637378e-06
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -2976,7 +2965,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.23971248
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -3001,7 +2990,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"DetectionEnemy\": false,\n  \"_entityName\": \"Level2_PatrolEnemy_2\",\n  \"_spotlightName\": \"Patrol Vision Cone 4\"\n}"
+      ParamsJSON: "{\n  \"DetectionEnemy\": false,\n  \"_entityName\": \"Level2_PatrolEnemy_2\",\n  \"_spotlightName\": \"Patrol Vision Cone 2(lvl 2)\"\n}"
   - InfoComponent:
       Parent: 0
       Name: Sentry_level2_1
@@ -3010,7 +2999,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-32.5929832, 24.2603378, -8.11126804]
-        Rotate: [0, 129.265076, 0]
+        Rotate: [0, 0, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3711,7 +3700,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-46.1160126, 24.2603378, -18.4139233]
-        Rotate: [0, 128.311707, 0]
+        Rotate: [0, 0, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -3868,15 +3857,15 @@ ENTITIES:
       SortOrder: 37
     TransformComponent:
       Transform:
-        Translate: [-26.1500111, 26.0529957, 10.391284]
+        Translate: [-26.1500111, 26.0529957, 12.5014]
         Rotate: [0, 89.980217, 0]
-        Scale: [2.02822948, 2.48813438, 0.238284126]
+        Scale: [2.17542291, 2.48813438, 0.238284066]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [2.02822948, 2.48813438, 0.238284126]
+        Previous Scale: [2.17542291, 2.48813438, 0.238284066]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -4020,76 +4009,6 @@ ENTITIES:
       textureID: 9683671951523272381
       color: [1, 1, 1, 1]
       renderAs3D: false
-  - InfoComponent:
-      Parent: 0
-      Name: BloodUI
-      UID: 2888197353573082632
-      SortOrder: 52
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.BloodOverlayController
-      ParamsJSON: "{}"
-  - InfoComponent:
-      Parent: 2888197353573082632
-      Name: Blood4
-      UID: 16885297189431714560
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]
-    SpriteComponent:
-      textureID: 15398575817850185585
-      color: [1, 0, 0, 0]
-      renderAs3D: true
-  - InfoComponent:
-      Parent: 2888197353573082632
-      Name: Blood3
-      UID: 3669045143093455409
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]
-    SpriteComponent:
-      textureID: 8078124372590329184
-      color: [1, 0, 0, 0]
-      renderAs3D: true
-  - InfoComponent:
-      Parent: 2888197353573082632
-      Name: Blood2
-      UID: 9420786784898466129
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]
-    SpriteComponent:
-      textureID: 14611654011234671873
-      color: [1, 0, 0, 0]
-      renderAs3D: true
-  - InfoComponent:
-      Parent: 2888197353573082632
-      Name: Blood1
-      UID: 13818896248684015938
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]
-    SpriteComponent:
-      textureID: 9978758564026709928
-      color: [1, 0, 0, 0]
-      renderAs3D: true
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 1.98000002, 0]
@@ -4110,15 +4029,15 @@ ENTITIES:
       SortOrder: 62
     TransformComponent:
       Transform:
-        Translate: [12.8473635, 13.4210215, -10.1728048]
-        Rotate: [360, -90, 0]
-        Scale: [0.0200004745, 0.0199999996, 0.0200004745]
+        Translate: [12.8473635, 13.2265387, -10.1728048]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.0200004727, 0.0199999996, 0.0200004727]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0200004745, 0.0199999996, 0.0200004745]
+        Previous Scale: [0.0200004727, 0.0199999996, 0.0200004727]
         FreezeRotationX: true
         FreezeRotationY: true
         FreezeRotationZ: true
@@ -4207,7 +4126,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.23972511
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -4350,7 +4269,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.23972273
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -4493,7 +4412,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 3.8053625e-07
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -4688,12 +4607,12 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
-        Rotate: [25.1359997, 0, -37.5279999]
+        Rotate: [25.1359997, -102.114998, -150.639999]
         Scale: [1, 1, 1]
     DirectLightComponent:
       Light:
-        Radiance: [0, 0.101960786, 0.149019614]
-        Intensity: 0.5
+        Radiance: [0.0439999998, 0.023356393, 0.0441176295]
+        Intensity: 9.5
   - InfoComponent:
       Parent: 0
       Name: Sentry_level2_2
@@ -4702,7 +4621,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-64.1180191, 24.2603378, -1.22266841]
-        Rotate: [-180, 129.264648, -180]
+        Rotate: [-180, 0, -180]
         Scale: [0.0145000033, 0.0145000005, 0.0145000033]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -4791,7 +4710,7 @@ ENTITIES:
       ParamsJSON: "{\n  \"_entityName\": \"Sentry_level2_2\"\n}"
   - SceneNavmeshComponent:
       NavmeshFile: Resources/NavData/solo_navmesh.bin
-      AmbientStrength: 0.0399999991
+      AmbientStrength: 0.0189999994
       BloomEnabled: false
       BloomIntensity: 1.73399997
       BloomThreshold: 0.667999983
@@ -4843,8 +4762,8 @@ ENTITIES:
       SortOrder: 279
     TransformComponent:
       Transform:
-        Translate: [-17.1420422, 13.3514919, 18.5294762]
-        Rotate: [-180, 129.264648, -180]
+        Translate: [-17.1420422, 13.3514919, 18.490139]
+        Rotate: [-180, -0, -180]
         Scale: [0.0145000033, 0.0145000005, 0.0145000033]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -4939,7 +4858,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [17.540493, 13.4146328, 3.31294298]
-        Rotate: [5.00895476e-06, 128.311707, 5.00895476e-06]
+        Rotate: [5.00895476e-06, 0, 5.00895476e-06]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -5034,7 +4953,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [9.27553558, 0.550991118, -14.2555885]
-        Rotate: [0, 5.23049927, 0]
+        Rotate: [0, 0, 0]
         Scale: [0.0145000955, 0.0145000005, 0.0145000955]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -5129,7 +5048,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 0.530518472, -14.2555885]
-        Rotate: [0, 318.1521, 0]
+        Rotate: [0, 0, 0]
         Scale: [0.0144997435, 0.0145000005, 0.0144997435]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -6373,7 +6292,7 @@ ENTITIES:
         Scale: [1.79999995, 2.9000001, 0.899999976]
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 10882923977369277709
+      MaterialID: 0
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6407,7 +6326,7 @@ ENTITIES:
         Scale: [1.33000004, 2.9000001, 0.899999976]
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 10882923977369277709
+      MaterialID: 0
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6419,7 +6338,7 @@ ENTITIES:
       SortOrder: 27
     TransformComponent:
       Transform:
-        Translate: [21.8040009, 22.8597507, -90.8539963]
+        Translate: [21.8040009, 18.6751995, -90.8539963]
         Rotate: [0, 89.980217, 0]
         Scale: [1.32999992, 9.61890793, 0.899999857]
     ModelComponent:
@@ -6475,7 +6394,7 @@ ENTITIES:
         Scale: [0.400000006, 2.8499999, 0.889999986]
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 10882923977369277709
+      MaterialID: 0
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6669,7 +6588,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 10882923977369277709
+      MaterialID: 16257091296667891899
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -6911,8 +6830,8 @@ ENTITIES:
       SortOrder: 85
     TransformComponent:
       Transform:
-        Translate: [-23.6012897, 18.7940292, 69.493103]
-        Rotate: [0, 0, 0]
+        Translate: [-23.6012897, 18.266531, 69.493103]
+        Rotate: [0, -0, 0]
         Scale: [0.925000012, 1, 0.125]
     RigidBodyComponent:
       RigidBody:
@@ -7356,7 +7275,7 @@ ENTITIES:
         Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
-      Name: SPOOFWALL_2 (Copy)
+      Name: SPOOFWALL_2
       UID: 13182400529227188578
       SortOrder: 254
     TransformComponent:
@@ -9062,7 +8981,7 @@ ENTITIES:
       SortOrder: 204
     TransformComponent:
       Transform:
-        Translate: [-17.9229393, 15.0158005, -1.22798765]
+        Translate: [-17.9229393, 14.701086, -1.22798765]
         Rotate: [0, 89.980217, 0]
         Scale: [0.0249999948, 0.0250000004, 0.0249999948]
     RigidBodyComponent:
@@ -9380,20 +9299,20 @@ ENTITIES:
         Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
-      Name: FLOOR2
+      Name: FLOOR2dupe2
       UID: 13500012620144209348
       SortOrder: 263
     TransformComponent:
       Transform:
-        Translate: [0.400190592, 13.3520041, 5.78579521]
+        Translate: [-22.1496296, 12.889863, -18.3441277]
         Rotate: [0, -0, 0]
-        Scale: [1.75422895, 0.00999999978, 4.22906542]
+        Scale: [0.202504665, 0.104583584, 0.628181815]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.75422895, 0.00999999978, 4.22906542]
+        Previous Scale: [0.202504665, 0.104583584, 0.628181815]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -9447,7 +9366,7 @@ ENTITIES:
       SortOrder: 325
     TransformComponent:
       Transform:
-        Translate: [-22.110651, 6.51090288, 3.09660268]
+        Translate: [-22.110651, 5.78769588, 3.09660268]
         Rotate: [0, -0, 0]
         Scale: [0.200000003, 1.375, 4.67500019]
     RigidBodyComponent:
@@ -9487,15 +9406,15 @@ ENTITIES:
       SortOrder: 232
     TransformComponent:
       Transform:
-        Translate: [21.8964272, 6.56983852, 3.97473001]
+        Translate: [21.8964272, 5.78660679, 3.97473001]
         Rotate: [-89.9999847, 0, 0]
-        Scale: [0.200000003, 5.39865923, 1.35548878]
+        Scale: [0.200000003, 5.39853382, 1.35545743]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.200000003, 5.39865923, 1.35548878]
+        Previous Scale: [0.200000003, 5.39853382, 1.35545743]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -9767,8 +9686,8 @@ ENTITIES:
       SortOrder: 190
     TransformComponent:
       Transform:
-        Translate: [-53.9933395, 41.071209, -13.944829]
-        Rotate: [-22.875, 669.062622, 0]
+        Translate: [1.5570997, 4.13218069, 15.7911425]
+        Rotate: [-181.3125, 4136.6875, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -10635,7 +10554,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 10882923977369277709
+      MaterialID: 0
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -10928,8 +10847,8 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [0.914043128, 1.79999995, 13.9171219]
-        Rotate: [0, 179.000122, 0]
-        Scale: [0.0164999999, 0.0164999999, 0.0164999999]
+        Rotate: [0, 0.999917388, 0]
+        Scale: [0.0164994802, 0.0164999999, 0.0164994802]
     CharacterControllerComponent:
       Radius: 0.800000012
       Height: 4.80000019
@@ -10942,7 +10861,7 @@ ENTITIES:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0164999999, 0.0164999999, 0.0164999999]
+        Previous Scale: [0.0164994802, 0.0164999999, 0.0164994802]
         FreezeRotationX: true
         FreezeRotationY: true
         FreezeRotationZ: true
@@ -10961,7 +10880,7 @@ ENTITIES:
         - name: Walking
           filePath: Resources/Models/Player/animations/Walking.fbx
         - name: Samurai New Walk
-          filePath: Resources/Samurai New Walk.fbx
+          filePath: Resources/Models/Player/animations/Samurai New Walk.fbx
         - name: Fast Run
           filePath: Resources/Models/Player/animations/Fast Run.fbx
         - name: Samurai Idle
@@ -10969,9 +10888,9 @@ ENTITIES:
         - name: run
           filePath: Resources/Models/run.fbx
         - name: Stand To Roll (1)
-          filePath: Resources/Stand To Roll (1).fbx
+          filePath: Resources//Models/Player/animations/Stand To Roll (1).fbx
         - name: Crouching Idle
-          filePath: Resources/Crouching Idle.fbx
+          filePath: Resources/Models/Player/animations/Crouching Idle.fbx
       States:
         - name: Walk
           clipIndex: 2
@@ -11135,19 +11054,19 @@ ENTITIES:
       ModelSource: ""
       MaterialSource: ""
   - InfoComponent:
-      Parent: 3476234535713046263
+      Parent: 0
       Name: Patrol Vision Cone 2
       UID: 12748229014291956908
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [12.9681263, 15.4210215, -10.1728048]
-        Rotate: [-0.0148149105, 450, 0.0148199201]
-        Scale: [49.9987984, 50, 49.9987984]
+        Translate: [12.0414486, 13.4996881, -9.91350651]
+        Rotate: [-0.0296053514, 77.6070023, 1.17258114e-09]
+        Scale: [0.999962628, 0.99999994, 0.999974549]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"targetName\": \"Patrol enemy 2\"\n}"
+      ParamsJSON: "{\n  \"positionOffsetY\": 4.215000152587891,\n  \"targetName\": \"Patrol enemy 2\"\n}"
     SpotLightComponent:
       Light:
         Radiance: [0.975490212, 0, 0]
@@ -11228,127 +11147,9 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-22.2889729, -103582.086, 0.0275647361]
-        Rotate: [180, -0.156703219, 180]
-        Scale: [0.0199999847, 0.0199999996, 0.0199999847]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0199999847, 0.0199999996, 0.0199999847]
-        FreezeRotationX: true
-        FreezeRotationY: true
-        FreezeRotationZ: true
-        Type: DYNAMIC
-    ModelComponent:
-      ModelID: 12439106707269888329
-      MaterialID: 14920165367361296626
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-    SoundComponent:
-      Entries:
-        - name: _footstepSoundPath
-          filePaths:
-            - Resources/Audio/footstep_stone_1.wav
-          loop: false
-          volume: 0.513999999
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 17
-        - name: _alertSoundPath
-          filePaths:
-            - Resources/Audio/VO_Patrol_Alert_020.wav
-          loop: false
-          volume: 0.856999993
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 0.5
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 17.7000008
-        - name: _gruntSoundPath
-          filePaths:
-            - Resources/Audio/VO_Patrol_001.wav
-          loop: false
-          volume: 0.657000005
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.639999986
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 14.8999996
-    AnimatorComponent:
-      Clips:
-        - name: mixamo.com
-          filePath: ""
-        - name: Patrol Walk
-          filePath: Resources/Models/Patrol Walk.fbx
-        - name: patrol_head_up
-          filePath: Resources/Animations/patrol_head_up.anim
-      States:
-        - name: State 0
-          clipIndex: 1
-          speed: 0.330000013
-          loop: false
-          transitions:
-            - targetStateIndex: 0
-              conditionType: 0
-              parameterName: IsWalking
-              floatValue: 0
-              boolValue: false
-              transitionDuration: 0.469999999
-              hasExitTime: false
-              exitTime: 0.899999976
-      FloatParams:
-        Speed: 0
-      BoolParams:
-        ApplyRootMotion: false
-      CurrentStateIndex: 0
-    NavAgentComponent:
-      Target: [-22.2951069, 13.404274, -14.4732275]
-      Speed: 2.5
-      ArriveRadius: 0.150000006
-      Active: true
-      RepathCooldown: 0.25
-      RetargetDistance: 0.5
-      FollowName: ""
-    AIComponent:
-      Mode: 2
-      PlayerName: ""
-      DetectRadius: 8
-      LoseRadius: 12
-      IdleWait: 1
-      PatrolPoints:
-        - [-22.2951069, 13.404274, 7.21938944]
-        - [-22.2951069, 13.404274, -14.4732275]
-      PatrolIndex: 1
+        Translate: [-3.31616211, 38.7184448, 7.36401367]
+        Rotate: [-180, -0.156713367, -180]
+        Scale: [0.0199985746, 0.0199999996, 0.0199985746]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.SpotlightFollower
@@ -11359,23 +11160,6 @@ ENTITIES:
         Intensity: 6.67000008
         FallOff: -3.0999999
         CutOff: 0.769999981
-  - InfoComponent:
-      Parent: 0
-      Name: Wall_Texture_Floor_3_Hut
-      UID: 15794365267296025769
-      SortOrder: 309
-    TransformComponent:
-      Transform:
-        Translate: [-27.6082001, 30.3196449, -31.3253174]
-        Rotate: [89.93116, 89.8898544, -0.069285199]
-        Scale: [2.7599659, 0.999986053, 3.29999995]
-    ModelComponent:
-      ModelID: 5963078964798272625
-      MaterialID: 16257091296667891899
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
   - InfoComponent:
       Parent: 0
       Name: Wall_Texture_Floor_3_Hut
@@ -11427,15 +11211,15 @@ ENTITIES:
       SortOrder: 33
     TransformComponent:
       Transform:
-        Translate: [-33.2141151, 27.4181995, -22.9724979]
-        Rotate: [-90.0000305, -5.00895749e-06, -5.00895385e-06]
-        Scale: [1.26724064, 0.999885917, 1.6902324]
+        Translate: [-33.2141151, 27.4181995, -22.8875294]
+        Rotate: [89.9999695, -5.00895476e-06, 180]
+        Scale: [1.26724064, 0.999880254, 1.69022107]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.26724064, 0.999885917, 1.6902324]
+        Previous Scale: [1.26724064, 0.999880254, 1.69022107]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -12147,7 +11931,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0.00236176164
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -12973,19 +12757,19 @@ ENTITIES:
       renderAs3D: false
       billboardMode: true
   - InfoComponent:
-      Parent: 4473216484263622379
+      Parent: 0
       Name: Patrol Vision Cone 12
       UID: 3785755798607696763
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [6.54703093, 15.4210215, 7.16827679]
-        Rotate: [279.595001, 270, -90.9499969]
-        Scale: [31.2499943, 50.0002289, 50.0002213]
+        Translate: [6.69039631, 13.7294416, 7.03733635]
+        Rotate: [0, -90, 0]
+        Scale: [0.624999762, 1.00000441, 1.00000429]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"targetName\": \"Patrol enemy 12\"\n}"
+      ParamsJSON: "{\n  \"positionOffsetY\": 4.14900016784668,\n  \"targetName\": \"Patrol enemy 12\"\n}"
     SpotLightComponent:
       Light:
         Radiance: [0.975490212, 0, 0]
@@ -12993,22 +12777,102 @@ ENTITIES:
         FallOff: -3.0999999
         CutOff: 0.769999981
   - InfoComponent:
-      Parent: 7568830222834310318
+      Parent: 0
       Name: Patrol Vision Cone 1
       UID: 4196030628338108250
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-22.3117981, 15.4210224, 3.95429873]
-        Rotate: [-1.05844929e-05, 540, -0.0219972786]
-        Scale: [49.9999847, 31.2500038, 49.9999886]
+        Translate: [-22.7580338, 13.7294426, 4.0333848]
+        Rotate: [0, 180, 0]
+        Scale: [0.999999762, 0.62500006, 0.999999762]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"targetName\": \"Patrol enemy 1\"\n}"
+      ParamsJSON: "{\n  \"positionOffsetY\": 4.14900016784668,\n  \"targetName\": \"Patrol enemy 1\"\n}"
     SpotLightComponent:
       Light:
         Radiance: [0.975490212, 0, 0]
         Intensity: 6.67000008
         FallOff: -3.0999999
         CutOff: 0.769999981
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 799933234689450045
+        SurfaceType: SAND
+        Type: TRIANGLE_MESH
+    InfoComponent:
+      Parent: 0
+      Name: FLOOR2
+      UID: 13711859325329503332
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.400190592, 13.3520041, 5.78579521]
+        Rotate: [0, -0, 0]
+        Scale: [1.75422895, 0.00999999978, 4.22906542]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.75422895, 0.00999999978, 4.22906542]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 1441742420851203854
+      MaterialID: 15937630629384441243
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 799933234689450045
+        SurfaceType: SAND
+        Type: TRIANGLE_MESH
+    InfoComponent:
+      Parent: 0
+      Name: FLOOR2dupe2 (Copy)
+      UID: 1643247817783219933
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [21.9908524, 12.889863, -18.3441277]
+        Rotate: [0, -0, 0]
+        Scale: [0.202504665, 0.104583584, 0.628181815]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.202504665, 0.104583584, 0.628181815]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 1441742420851203854
+      MaterialID: 15937630629384441243
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
