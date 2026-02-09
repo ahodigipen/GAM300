@@ -48,7 +48,6 @@ namespace EditorUI {
     void InspectorPanel::RenderMaterialPreview(Boom::MaterialAsset* mat) {
         if (!mat || !m_App) return;
 
-        auto* ctx = m_App->GetContext();
         if (!ctx || !ctx->renderer || !ctx->assets) return;
 
         // Initialize or reinitialize material preview in renderer if needed
@@ -436,8 +435,8 @@ namespace EditorUI {
                         
                         // Convert search to lowercase for case-insensitive matching
                         std::string searchLower = m_AlignSearchBuffer;
-                        std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), 
-                            [](unsigned char c){ return std::tolower(c); });
+                        std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(),
+                            [](unsigned char c){ return static_cast<char>(std::tolower(c)); });
 
                         auto view = ctx->scene.view<Boom::InfoComponent>();
                         for (auto e : view) {
@@ -447,8 +446,8 @@ namespace EditorUI {
                             // Filter logic
                             if (!searchLower.empty()) {
                                 std::string nameLower = info.name;
-                                std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), 
-                                    [](unsigned char c){ return std::tolower(c); });
+                                std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(),
+                                    [](unsigned char c){ return static_cast<char>(std::tolower(c)); });
                                 if (nameLower.find(searchLower) == std::string::npos) {
                                     continue; // Skip if doesn't match
                                 }
@@ -1774,7 +1773,7 @@ namespace EditorUI {
 
                                     // Convert to lowercase for comparison
                                     std::transform(ext.begin(), ext.end(), ext.begin(),
-                                        [](unsigned char c) { return std::tolower(c); });
+                                        [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
 
                                     if (ext == ".mpg" || ext == ".mpeg") {
                                         mpgFiles.push_back(filename);
@@ -1860,7 +1859,7 @@ namespace EditorUI {
 
                         std::string ext = std::filesystem::path(pathStr).extension().string();
                         std::transform(ext.begin(), ext.end(), ext.begin(),
-                            [](unsigned char c) { return std::tolower(c); });
+                            [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
 
                         if (ext == ".mpg" || ext == ".mpeg") {
                             size_t videosPos = pathStr.find("Videos/");
@@ -1974,7 +1973,7 @@ namespace EditorUI {
                 }
                 else if (!vc.videoPath.empty()) {
                     ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.0f, 1.0f),
-                        "⚠ Video not loaded: %s", vc.videoPath.c_str());
+                        "[!] Video not loaded: %s", vc.videoPath.c_str());
                     ImGui::Spacing();
 
                     if (ImGui::Button("Load Video", ImVec2(-1, 30))) {

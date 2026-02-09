@@ -202,7 +202,7 @@ if exist "$(glew_BIN_DIRS)" xcopy /y /i "$(glew_BIN_DIRS)\*.dll" "$(TargetDir)"<
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="Engine\BoomEngine\BoomEngine.vcxproj">
+    <ProjectReference Include="..\Engine\BoomEngine\BoomEngine.vcxproj">
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -12,7 +12,7 @@ namespace Boom
         BOOM_INFO("[Application] RunContext started");
 
         m_IsInPlayMode = true;
-        m_AppState = ApplicationState::RUNNING;
+        m_AppState = ApplicationState::STOPPED;
 
         std::cout << "[RunContext] Loading scene MainMenu..." << std::endl;
         std::cout.flush();
@@ -28,7 +28,7 @@ namespace Boom
         // Clear loading video after assets are loaded (optional - keeps video for scene loading)
         // AppWindow::ClearLoadingVideo();
 
-        //LoadScene("level");
+        //LoadScene("M3 GAMEPLAY");
         LoadScene("MainMenu");
         
 
@@ -278,11 +278,14 @@ namespace Boom
             m_Context->renderer->NewFrame();
             m_Context->profiler.End("Renderer Start Frame");
 
-            // Render shadow map AFTER NewFrame, but before scene rendering
+            EnttView<Entity, CameraComponent>([this](auto entity, CameraComponent&) {
+                Transform3D& transform{ entity.template Get<TransformComponent>().transform };
+                m_Context->renderer->SetCameraPositionOnly(transform.translate);
+            });
+
             if (toggleShadows) {
                 RenderShadowScene();
             } else {
-                // Explicitly disable shadows in the shader when toggled off
                 m_Context->renderer->SetShadowsEnabled(false);
             }
 
@@ -503,6 +506,7 @@ namespace Boom
 
                 // Collect debug lines only for entities with showPhysicsDebug enabled
                 EnttView<Entity, ColliderComponent, TransformComponent>([this, &perEntityPhysLines, &dbgCamPos](auto entity, ColliderComponent& col, TransformComponent& tc) {
+                    (void)tc;
                     if (!col.Collider.showPhysicsDebug) return;
 
                     // Get the physics actor for this entity

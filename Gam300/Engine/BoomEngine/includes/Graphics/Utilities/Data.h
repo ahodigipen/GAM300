@@ -6,8 +6,22 @@
 
 //helper functions
 namespace Boom {
+	// Normalize rotation to [-180, 180] range to prevent floating-point precision issues
+	// with extreme rotation values (e.g., 6691 degrees from accumulated rotations)
+	BOOM_INLINE glm::vec3 NormalizeRotation(glm::vec3 const& rot) {
+		auto normalize = [](float angle) -> float {
+			angle = fmodf(angle, 360.0f);
+			if (angle > 180.0f) angle -= 360.0f;
+			else if (angle < -180.0f) angle += 360.0f;
+			return angle;
+		};
+		return glm::vec3(normalize(rot.x), normalize(rot.y), normalize(rot.z));
+	}
+
 	BOOM_INLINE glm::highp_mat4 GetRotationMatrix(glm::vec3 const& rot) {
-		return glm::toMat4(glm::quat(glm::radians(rot)));
+		// Normalize rotation before converting to prevent precision issues
+		glm::vec3 normalizedRot = NormalizeRotation(rot);
+		return glm::toMat4(glm::quat(glm::radians(normalizedRot)));
 	}
 }
 

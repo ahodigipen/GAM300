@@ -100,7 +100,9 @@ namespace GameScripts
         [Boom.EditorExposed("Freeze Duration", "How long the freeze lasts")]
         private float _freezeDuration = 3.0f;
 
+#pragma warning disable CS0414 // Field is assigned but its value is never read
         private bool _canPickupFreeze = false;
+#pragma warning restore CS0414
         private ulong _currentPickupEntity = 0;
 
         private HashSet<ulong> _freezePickupIDs = new HashSet<ulong>();
@@ -644,8 +646,21 @@ namespace GameScripts
             }
 
             bool hasInput = (inputX != 0f || inputZ != 0f);
-            bool sprintKey = API.IsKeyDown(API.KEY_LEFT_SHIFT) || (API.IsGamepadConnected() && API.GetGamepadAxis(API.GAMEPAD_AXIS_LEFT_TRIGGER) > 0.1f);
-            bool sneakKey = API.IsKeyDown(API.KEY_LEFT_CONTROL) || (API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_RIGHT_THUMB));
+            
+            // Sprint: Left Trigger on gamepad
+            // Note: Trigger axes can be -1 to 1 (XInput, resting at -1) or 0 to 1 (DirectInput, resting at 0)
+            // We check > -0.5f to handle both cases: pressed on XInput goes from -1 toward 1
+            bool sprintKey = API.IsKeyDown(API.KEY_LEFT_SHIFT);
+            if (API.IsGamepadConnected())
+            {
+                float leftTrigger = API.GetGamepadAxis(API.GAMEPAD_AXIS_LEFT_TRIGGER);
+                // XInput: rests at -1, pressed goes to 1. Threshold at -0.5 means pressed.
+                // DirectInput: rests at 0, pressed goes to 1. Threshold at 0.3 means pressed.
+                // Use > -0.5f to work for XInput, and this also catches DirectInput pressed (since 0.3 > -0.5)
+                sprintKey = sprintKey || (leftTrigger > -0.5f);
+            }
+            
+            bool sneakKey = API.IsKeyDown(API.KEY_LEFT_CONTROL) || (API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_B));
 
             float currentSpeed = _walkSpeed;
             if (sneakKey) currentSpeed = _sneakSpeed;

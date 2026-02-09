@@ -148,8 +148,10 @@ namespace GameScripts
         [Boom.EditorExposed("Spotlight Name", "Name of the spotlight entity to control")]
         private string _spotlightName = "Patrol_1_Spotlight";
 
+#pragma warning disable CS0414 // Field is assigned but its value is never used (editor-exposed)
         [Boom.EditorExposed("Spotlight Offset Y", "Height offset for spotlight above entity", 0f, 10f, true)]
         private float _spotlightOffsetY = 2.0f;
+#pragma warning restore CS0414
 
         // Cached spotlight entity ID
         private ulong _spotlightEntity = 0;

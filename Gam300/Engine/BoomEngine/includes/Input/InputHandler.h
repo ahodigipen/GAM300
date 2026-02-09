@@ -5,6 +5,9 @@
 #include <cstdint>
 #include <glm/vec2.hpp>
 #include <GLFW/glfw3.h>
+#include <iostream>
+
+#include <iostream>
 
 namespace Boom {
 
@@ -20,24 +23,58 @@ namespace Boom {
             m_lastMouseDelta = { 0.0f,0.0f };
             m_firstMouseThisFrame = true; // next cursor event seeds position
 
-            // Poll Gamepad (GLFW_JOYSTICK_1 is the default primary controller)
-            if (glfwJoystickPresent(GLFW_JOYSTICK_1) && glfwJoystickIsGamepad(GLFW_JOYSTICK_1)) {
-                GLFWgamepadstate state;
-                if (glfwGetGamepadState(GLFW_JOYSTICK_1, &state)) {
-                    m_cur.GamepadConnected = true;
-                    for (int i = 0; i <= GLFW_GAMEPAD_BUTTON_LAST; ++i) {
-                        m_cur.GamepadButtons.set(i, state.buttons[i] == GLFW_PRESS);
-                    }
-                    for (int i = 0; i <= GLFW_GAMEPAD_AXIS_LAST; ++i) {
-                        m_cur.GamepadAxes[i] = state.axes[i];
-                    }
-                }
-                else {
-                    m_cur.GamepadConnected = false;
+            // Track logged state to avoid spamming cout
+            static bool s_joyLogged[GLFW_JOYSTICK_LAST + 1] = { false };
+            static bool s_gamepadLogged[GLFW_JOYSTICK_LAST + 1] = { false };
+
+            // Reset flags for disconnected joysticks
+            for (int j = GLFW_JOYSTICK_1; j <= GLFW_JOYSTICK_LAST; ++j) {
+                if (!glfwJoystickPresent(j)) {
+                    s_joyLogged[j] = false;
+                    s_gamepadLogged[j] = false;
                 }
             }
-            else {
-                m_cur.GamepadConnected = false;
+
+            // Poll Gamepad: Search for the first available gamepad
+            m_cur.GamepadConnected = false;
+            for (int jid = GLFW_JOYSTICK_1; jid <= GLFW_JOYSTICK_LAST; ++jid) {
+                if (glfwJoystickPresent(jid)) {
+                    if (glfwJoystickIsGamepad(jid)) {
+                        // Log success once
+                        if (!s_gamepadLogged[jid]) {
+                            const char* name = glfwGetGamepadName(jid);
+                            const char* guid = glfwGetJoystickGUID(jid);
+                            std::cout << "[Input] Gamepad connected at index " << jid 
+                                      << ": " << (name ? name : "Unknown") 
+                                      << " (GUID: " << (guid ? guid : "N/A") << ")" << std::endl;
+                            s_gamepadLogged[jid] = true;
+                        }
+
+                        GLFWgamepadstate state;
+                        if (glfwGetGamepadState(jid, &state)) {
+                            m_cur.GamepadConnected = true;
+                            for (int i = 0; i <= GLFW_GAMEPAD_BUTTON_LAST; ++i) {
+                                m_cur.GamepadButtons.set(i, state.buttons[i] == GLFW_PRESS);
+                            }
+                            for (int i = 0; i <= GLFW_GAMEPAD_AXIS_LAST; ++i) {
+                                m_cur.GamepadAxes[i] = state.axes[i];
+                            }
+                            break; // Use the first gamepad found
+                        }
+                    }
+                    else {
+                         // Log failure (missing mapping) once
+                        if (!s_joyLogged[jid]) {
+                            const char* name = glfwGetJoystickName(jid);
+                            const char* guid = glfwGetJoystickGUID(jid);
+                            std::cout << "[Input] Joystick found at index " << jid 
+                                      << " but NOT recognized as Gamepad (missing mapping)." 
+                                      << "\n        Name: " << (name ? name : "Unknown") 
+                                      << "\n        GUID: " << (guid ? guid : "N/A") << std::endl;
+                            s_joyLogged[jid] = true;
+                        }
+                    }
+                }
             }
         }
 

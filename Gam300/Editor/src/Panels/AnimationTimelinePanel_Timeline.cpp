@@ -41,7 +41,7 @@ static std::vector<std::string> GetAvailableAudioFiles()
                 {
                     std::string ext = entry.path().extension().string();
                     // Convert to lowercase for comparison
-                    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+                    std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
 
                     if (ext == ".wav" || ext == ".mp3" || ext == ".ogg" || ext == ".flac")
                     {
@@ -851,8 +851,6 @@ void AnimationTimelinePanel::RenderAudioTrack(float duration)
     if (duration > 0.0f && !clip->audioEvents.empty())
     {
         ImVec2 mousePos = ImGui::GetMousePos();
-        ImGuiIO& io = ImGui::GetIO();
-
         for (size_t i = 0; i < clip->audioEvents.size(); ++i)
         {
             const auto& audioEvent = clip->audioEvents[i];
