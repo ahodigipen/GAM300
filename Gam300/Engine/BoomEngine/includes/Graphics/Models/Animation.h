@@ -143,5 +143,12 @@ namespace Boom
         std::string name{};
         glm::mat4 offset{}; // <- inverse transform mtx
         int32_t index{};
+
+        // Bind pose (rest/T-pose) - used when no keyframes exist
+        // This is the local transform of the joint at rest position
+        glm::vec3 bindPosition = glm::vec3(0.0f);
+        glm::quat bindRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);  // Identity quaternion
+        glm::vec3 bindScale = glm::vec3(1.0f);
+        bool hasBindPose = false;  // True if bind pose was captured from animation data
     };
 }

@@ -664,6 +664,21 @@ glm::mat4 AnimationTimelinePanel::GetBoneWorldTransform(const std::string& boneN
                     localTransform *= glm::mat4_cast(rot);
                     localTransform = glm::scale(localTransform, scl);
                 }
+                else if (keys && keys->size() == 1)
+                {
+                    // Single keyframe - use it as static pose
+                    const Boom::KeyFrame& key = (*keys)[0];
+                    localTransform = glm::translate(glm::mat4(1.0f), key.position);
+                    localTransform *= glm::mat4_cast(key.rotation);
+                    localTransform = glm::scale(localTransform, key.scale);
+                }
+                else if (joint.hasBindPose)
+                {
+                    // No keyframes - use bind pose (T-pose/rest pose)
+                    localTransform = glm::translate(glm::mat4(1.0f), joint.bindPosition);
+                    localTransform *= glm::mat4_cast(joint.bindRotation);
+                    localTransform = glm::scale(localTransform, joint.bindScale);
+                }
             }
         }
 
@@ -879,6 +894,28 @@ void AnimationTimelinePanel::ApplyManualBonePosesToTransforms(std::vector<glm::m
                     localTransform *= glm::mat4_cast(rot);
                     localTransform = glm::scale(localTransform, scl);
                 }
+                else if (keys && keys->size() == 1)
+                {
+                    // Single keyframe - use it as static pose
+                    const Boom::KeyFrame& key = (*keys)[0];
+                    localTransform = glm::translate(glm::mat4(1.0f), key.position);
+                    localTransform *= glm::mat4_cast(key.rotation);
+                    localTransform = glm::scale(localTransform, key.scale);
+                }
+                else if (joint.hasBindPose)
+                {
+                    // No keyframes - use bind pose (T-pose/rest pose)
+                    localTransform = glm::translate(glm::mat4(1.0f), joint.bindPosition);
+                    localTransform *= glm::mat4_cast(joint.bindRotation);
+                    localTransform = glm::scale(localTransform, joint.bindScale);
+                }
+            }
+            else if (joint.hasBindPose)
+            {
+                // No clip selected - use bind pose
+                localTransform = glm::translate(glm::mat4(1.0f), joint.bindPosition);
+                localTransform *= glm::mat4_cast(joint.bindRotation);
+                localTransform = glm::scale(localTransform, joint.bindScale);
             }
         }
 
@@ -1424,6 +1461,11 @@ void AnimationTimelinePanel::LoadModel(const std::string& modelPath)
                     m_Animator->PlayClip(0);
                     m_CurrentTime = 0.0f;
                     m_IsPlaying = false;  // Reset playback state
+
+                    // CRITICAL: Initialize joint transforms for the new model
+                    m_Animator->SetTime(0.0f);
+                    m_Animator->UpdateJointsFromCurrentTime();
+
                     BOOM_INFO("[AnimationTimeline] Auto-selected first clip: {}",
                         m_Animator->GetClip(0)->name);
                 }
@@ -1431,6 +1473,11 @@ void AnimationTimelinePanel::LoadModel(const std::string& modelPath)
                 {
                     m_SelectedClipIndex = -1;
                     m_IsPlaying = false;
+
+                    // Still initialize transforms even with no clips (use bind pose)
+                    m_Animator->SetTime(0.0f);
+                    m_Animator->UpdateJointsFromCurrentTime();
+
                     BOOM_WARN("[AnimationTimeline] Animator has no clips");
                 }
             }
@@ -1474,10 +1521,35 @@ void AnimationTimelinePanel::ClearModel()
     m_HasModel = false;
     m_StandaloneMode = false;
     m_LoadedModelPath.clear();
-    m_SelectedBoneName.clear();
     m_SelectedClipIndex = -1;
     m_CurrentTime = 0.0f;
     m_IsPlaying = false;
+
+    // Clear bone selection and manipulation state
+    m_SelectedBoneName.clear();
+    m_ManualBonePoses.clear();
+    m_HasManualPoses = false;
+    m_HoveredBoneNameViewport.clear();
+    m_BoneBeingManipulated.clear();
+    m_HasPoseBeforeManipulation = false;
+    m_GizmoWasUsing = false;
+
+    // Clear keyframe selection state
+    m_SelectedKeyframes.clear();
+    m_HasSelectionAnchor = false;
+    m_HoveredBoneName.clear();
+    m_HoveredKeyframeIndex = -1;
+    m_IsDraggingKeyframe = false;
+    m_DraggedBoneName.clear();
+
+    // Clear audio event selection state
+    m_SelectedAudioEventIndex = -1;
+    m_HoveredAudioEventIndex = -1;
+    m_IsDraggingAudioEvent = false;
+
+    // Clear undo/redo stacks (they reference the old animator)
+    m_UndoStack.clear();
+    m_RedoStack.clear();
 
     BOOM_INFO("[AnimationTimeline] Model cleared");
 }

@@ -216,20 +216,43 @@ void AnimationTimelinePanel::Render()
         m_Model.reset();
         m_SourceEntityID = entt::null;
         m_HasModel = false;
-        m_SelectedBoneName.clear();
-        m_ManualBonePoses.clear();
-        m_HasManualPoses = false;
         m_SelectedClipIndex = -1;
         m_CurrentTime = 0.0f;
         m_IsPlaying = false;
+
+        // Clear bone selection and manipulation state
+        m_SelectedBoneName.clear();
+        m_ManualBonePoses.clear();
+        m_HasManualPoses = false;
+        m_HoveredBoneNameViewport.clear();
+        m_BoneBeingManipulated.clear();
+        m_HasPoseBeforeManipulation = false;
+        m_GizmoWasUsing = false;
+
+        // Clear keyframe selection state
+        m_SelectedKeyframes.clear();
+        m_HasSelectionAnchor = false;
+        m_HoveredBoneName.clear();
+        m_HoveredKeyframeIndex = -1;
+        m_IsDraggingKeyframe = false;
+        m_DraggedBoneName.clear();
+
+        // Clear audio event selection state
+        m_SelectedAudioEventIndex = -1;
+        m_HoveredAudioEventIndex = -1;
+        m_IsDraggingAudioEvent = false;
+
+        // Clear undo/redo stacks
         m_UndoStack.clear();
         m_RedoStack.clear();
+
         ImGui::End();  // Must end the window before returning
         return;
     }
 
-    // Only try to load from entity if we're not in standalone mode and have valid selection
-    if (!m_StandaloneMode && hasValidSelection)
+    // Try to load from entity if we have valid selection
+    // This also handles exiting standalone mode when user selects an entity with AnimatorComponent
+    if (hasValidSelection)
     {
         auto& scene = m_App->GetContext()->scene;
         Boom::Entity selected(&scene, selectedID);
@@ -249,6 +272,13 @@ void AnimationTimelinePanel::Render()
                 {
                     BOOM_INFO("[AnimationTimeline] Entity changed (old={}, new={}), cloning animator",
                         (uint32_t)m_SourceEntityID, (uint32_t)selectedID);
+
+                    // Exit standalone mode when loading from entity
+                    if (m_StandaloneMode)
+                    {
+                        BOOM_INFO("[AnimationTimeline] Exiting standalone mode - loading from entity");
+                        m_StandaloneMode = false;
+                    }
 
                     m_SourceEntityID = selectedID;
                     m_SourceAnimator = animComp.animator;
@@ -280,10 +310,31 @@ void AnimationTimelinePanel::Render()
                     m_CurrentTime = 0.0f;
                     m_IsPlaying = false;
 
+                    // CRITICAL: Initialize joint transforms for the new model
+                    m_Animator->SetTime(0.0f);
+                    m_Animator->UpdateJointsFromCurrentTime();
+
                     // Clear manual poses when switching entities
                     m_ManualBonePoses.clear();
                     m_HasManualPoses = false;
                     m_SelectedBoneName.clear();
+                    m_HoveredBoneNameViewport.clear();
+                    m_BoneBeingManipulated.clear();
+                    m_HasPoseBeforeManipulation = false;
+                    m_GizmoWasUsing = false;
+
+                    // Clear keyframe selection state
+                    m_SelectedKeyframes.clear();
+                    m_HasSelectionAnchor = false;
+                    m_HoveredBoneName.clear();
+                    m_HoveredKeyframeIndex = -1;
+                    m_IsDraggingKeyframe = false;
+                    m_DraggedBoneName.clear();
+
+                    // Clear audio event selection state
+                    m_SelectedAudioEventIndex = -1;
+                    m_HoveredAudioEventIndex = -1;
+                    m_IsDraggingAudioEvent = false;
 
                     // Clear undo/redo stacks - old commands reference old animator
                     m_UndoStack.clear();
@@ -306,7 +357,17 @@ void AnimationTimelinePanel::Render()
                     {
                         m_Animator->PlayClip(m_SelectedClipIndex);
                         m_Animator->SetTime(m_CurrentTime);
+
+                        // CRITICAL: Initialize joint transforms after re-clone
+                        m_Animator->UpdateJointsFromCurrentTime();
+
                         BOOM_INFO("[AnimationTimeline] Restored clip {} at time {:.2f}", m_SelectedClipIndex, m_CurrentTime);
+                    }
+                    else
+                    {
+                        // No valid clip - still initialize transforms (use bind pose)
+                        m_Animator->SetTime(0.0f);
+                        m_Animator->UpdateJointsFromCurrentTime();
                     }
 
                     BOOM_INFO("[AnimationTimeline] Re-clone complete: Original={}, New Clone={}",
@@ -423,6 +484,45 @@ void AnimationTimelinePanel::RenderControlBar()
     if (ImGui::CollapsingHeader("Model & Playback", ImGuiTreeNodeFlags_DefaultOpen))
     {
         ImGui::Indent(10.0f);
+
+        // Mode indicator - shows current editing mode
+        {
+            bool hasEntity = (m_SourceEntityID != entt::null && !m_StandaloneMode);
+            if (hasEntity)
+            {
+                // Entity Mode - green indicator
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 0.9f, 0.3f, 1.0f));
+                ImGui::Text("[Entity Mode]");
+                ImGui::PopStyleColor();
+                if (ImGui::IsItemHovered())
+                {
+                    ImGui::SetTooltip("Editing animation for selected entity.\nApply button will sync changes to the entity.");
+                }
+            }
+            else if (m_StandaloneMode)
+            {
+                // Standalone Mode - yellow/orange indicator
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.7f, 0.2f, 1.0f));
+                ImGui::Text("[Standalone Mode]");
+                ImGui::PopStyleColor();
+                if (ImGui::IsItemHovered())
+                {
+                    ImGui::SetTooltip("Editing animation without an entity.\nApply is disabled - select an entity with\nAnimatorComponent to enable Apply.");
+                }
+            }
+            else
+            {
+                // No model loaded
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
+                ImGui::Text("[No Model]");
+                ImGui::PopStyleColor();
+                if (ImGui::IsItemHovered())
+                {
+                    ImGui::SetTooltip("No model loaded.\nSelect an entity with AnimatorComponent\nor use 'Load Model' button.");
+                }
+            }
+            ImGui::SameLine(0, 15);
+        }
 
         // Model loading
         if (ImGui::Button("Load Model", ImVec2(100, 0)))
@@ -1241,9 +1341,32 @@ void AnimationTimelinePanel::RenderControlBar()
                 }
             }
         }
-        if (ImGui::IsItemHovered())
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
         {
-            ImGui::SetTooltip("Apply changes to entity and clear manual poses\n(Preview animation in real-time)");
+            if (!canApply)
+            {
+                // Explain why button is disabled
+                if (m_StandaloneMode)
+                {
+                    ImGui::SetTooltip("Apply is disabled in standalone mode.\nSelect an entity with AnimatorComponent to apply changes.");
+                }
+                else if (m_SourceEntityID == entt::null)
+                {
+                    ImGui::SetTooltip("Apply is disabled - no entity selected.\nSelect an entity with AnimatorComponent in the Hierarchy.");
+                }
+                else if (m_SelectedClipIndex < 0)
+                {
+                    ImGui::SetTooltip("Apply is disabled - no clip selected.\nSelect an animation clip first.");
+                }
+                else
+                {
+                    ImGui::SetTooltip("Apply is disabled.");
+                }
+            }
+            else
+            {
+                ImGui::SetTooltip("Apply changes to entity and clear manual poses\n(Preview animation in real-time)");
+            }
         }
         ImGui::EndDisabled();
 

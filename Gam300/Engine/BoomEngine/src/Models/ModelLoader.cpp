@@ -220,6 +220,23 @@ void SkeletalModel::LoadFromDiskCPU(const std::string& filename, SkeletalModelLo
         outContext.clips.push_back(clip);
     }
 
+    // Capture bind pose from first keyframe of first animation clip
+    // This provides a default T-pose/rest pose when all keyframes are deleted
+    if (!outContext.clips.empty()) {
+        const auto& firstClip = outContext.clips[0];
+        for (auto& [jointName, joint] : jointMap) {
+            auto trackIt = firstClip->tracks.find(jointName);
+            if (trackIt != firstClip->tracks.end() && !trackIt->second.empty()) {
+                // Use the first keyframe as the bind pose
+                const KeyFrame& firstKey = trackIt->second[0];
+                joint.bindPosition = firstKey.position;
+                joint.bindRotation = firstKey.rotation;
+                joint.bindScale = firstKey.scale;
+                joint.hasBindPose = true;
+            }
+        }
+    }
+
     // Build joint hierarchy
     std::function<void(aiNode*, Joint&)> parseHierarchy = [&](aiNode* ai_node, Joint& joint) {
         std::string jointName(ai_node->mName.C_Str());
