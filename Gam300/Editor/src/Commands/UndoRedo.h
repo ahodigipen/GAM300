@@ -695,7 +695,6 @@ namespace EditorUI {
             if (entity == entt::null) return;
 
             entt::entity targetParent = (m_TargetParentUID != 0) ? FindEntityByUID(m_TargetParentUID) : entt::null;
-            entt::entity oldParent = (m_OldParentUID != 0) ? FindEntityByUID(m_OldParentUID) : entt::null;
 
             // If changing parents, reparent first
             Boom::AssetID currentParentUID = m_Registry->get<Boom::InfoComponent>(entity).parent;
@@ -763,7 +762,7 @@ namespace EditorUI {
         }
 
     private:
-        void CaptureOldSortOrders(entt::entity entity, entt::entity parent) {
+        void CaptureOldSortOrders(entt::entity /*entity*/, entt::entity parent) {
             std::vector<entt::entity> siblings;
             if (parent != entt::null) {
                 siblings = Boom::GetChildren(*m_Registry, parent);

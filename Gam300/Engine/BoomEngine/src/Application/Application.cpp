@@ -506,6 +506,7 @@ namespace Boom
 
                 // Collect debug lines only for entities with showPhysicsDebug enabled
                 EnttView<Entity, ColliderComponent, TransformComponent>([this, &perEntityPhysLines, &dbgCamPos](auto entity, ColliderComponent& col, TransformComponent& tc) {
+                    (void)tc;
                     if (!col.Collider.showPhysicsDebug) return;
 
                     // Get the physics actor for this entity

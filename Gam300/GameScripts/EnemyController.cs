@@ -247,7 +247,7 @@ namespace GameScripts
                         API.SetSoundVolume(soundId, 0.5f);
                         API.Set3DMinMaxDistance(soundId, 1.0f, 25.0f);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         //($"[EnemyController] ERROR while playing rotation sound: {ex.Message}");
                     }

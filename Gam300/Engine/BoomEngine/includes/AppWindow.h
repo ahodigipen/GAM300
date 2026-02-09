@@ -422,6 +422,12 @@ namespace Boom {
 			// Calculate delta time
 			double currentTime = glfwGetTime();
 			double deltaTime = currentTime - lastTime;
+			
+			// Safety: Limit deltaTime to 100ms to prevent massive time jumps 
+			// (e.g. after long synchronous asset loads) that could hang the video player loop
+			if (deltaTime > 0.1) deltaTime = 0.1;
+			if (deltaTime < 0.0) deltaTime = 0.0;
+			
 			lastTime = currentTime;
 
 			// Setup rendering
