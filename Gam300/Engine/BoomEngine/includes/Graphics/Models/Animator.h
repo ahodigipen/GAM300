@@ -753,6 +753,13 @@ namespace Boom
                          glm::scale(glm::mat4(1.0f), key.scale);
                  }
              }
+             else if (joint.hasBindPose)
+             {
+                 // No keyframes in from clip - use bind pose
+                 fromTransform = glm::translate(glm::mat4(1.0f), joint.bindPosition) *
+                     glm::toMat4(joint.bindRotation) *
+                     glm::scale(glm::mat4(1.0f), joint.bindScale);
+             }
 
              // Get "to" clip transform
              const auto* toKeys = toClip->GetTrack(joint.name);
@@ -778,6 +785,13 @@ namespace Boom
                          glm::toMat4(key.rotation) *
                          glm::scale(glm::mat4(1.0f), key.scale);
                  }
+             }
+             else if (joint.hasBindPose)
+             {
+                 // No keyframes in to clip - use bind pose
+                 toTransform = glm::translate(glm::mat4(1.0f), joint.bindPosition) *
+                     glm::toMat4(joint.bindRotation) *
+                     glm::scale(glm::mat4(1.0f), joint.bindScale);
              }
 
              // Decompose and blend
@@ -838,6 +852,13 @@ namespace Boom
                          glm::scale(glm::mat4(1.0f), key.scale);
                  }
              }
+             else if (joint.hasBindPose)
+             {
+                 // No keyframes in clip1 - use bind pose
+                 transform1 = glm::translate(glm::mat4(1.0f), joint.bindPosition) *
+                     glm::toMat4(joint.bindRotation) *
+                     glm::scale(glm::mat4(1.0f), joint.bindScale);
+             }
 
              // Get transform from clip2 at current time (synchronized)
              const auto* keys2 = clip2->GetTrack(joint.name);
@@ -859,6 +880,13 @@ namespace Boom
                          glm::toMat4(key.rotation) *
                          glm::scale(glm::mat4(1.0f), key.scale);
                  }
+             }
+             else if (joint.hasBindPose)
+             {
+                 // No keyframes in clip2 - use bind pose
+                 transform2 = glm::translate(glm::mat4(1.0f), joint.bindPosition) *
+                     glm::toMat4(joint.bindRotation) *
+                     glm::scale(glm::mat4(1.0f), joint.bindScale);
              }
 
              // Decompose and blend
@@ -988,6 +1016,13 @@ namespace Boom
                         glm::toMat4(key.rotation) *
                         glm::scale(glm::mat4(1.0f), key.scale);
                 }
+                else if (joint.hasBindPose)
+                {
+                    // No keyframes - use bind pose (T-pose/rest pose) to prevent collapse
+                    localTransform = glm::translate(glm::mat4(1.0f), joint.bindPosition) *
+                        glm::toMat4(joint.bindRotation) *
+                        glm::scale(glm::mat4(1.0f), joint.bindScale);
+                }
 
                 // ROOT MOTION STRIPPING
                 if (isRoot && !m_ApplyRootMotion)
@@ -1000,6 +1035,13 @@ namespace Boom
                     // Rebuild without translation
                     localTransform = glm::toMat4(rot) * glm::scale(glm::mat4(1.0f), scale);
                 }
+            }
+            else if (joint.hasBindPose)
+            {
+                // No valid clip - use bind pose to prevent collapse
+                localTransform = glm::translate(glm::mat4(1.0f), joint.bindPosition) *
+                    glm::toMat4(joint.bindRotation) *
+                    glm::scale(glm::mat4(1.0f), joint.bindScale);
             }
 
             // Combine with parent transform
@@ -1065,6 +1107,20 @@ namespace Boom
                         glm::toMat4(key.rotation) *
                         glm::scale(glm::mat4(1.0f), key.scale);
                 }
+                else if (joint.hasBindPose)
+                {
+                    // No keyframes - use bind pose for visualization
+                    localTransform = glm::translate(glm::mat4(1.0f), joint.bindPosition) *
+                        glm::toMat4(joint.bindRotation) *
+                        glm::scale(glm::mat4(1.0f), joint.bindScale);
+                }
+            }
+            else if (joint.hasBindPose)
+            {
+                // No valid clip - use bind pose for visualization
+                localTransform = glm::translate(glm::mat4(1.0f), joint.bindPosition) *
+                    glm::toMat4(joint.bindRotation) *
+                    glm::scale(glm::mat4(1.0f), joint.bindScale);
             }
 
             // Calculate world space position
