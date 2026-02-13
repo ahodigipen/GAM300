@@ -1,0 +1,69 @@
+name: CI - Build Matrix
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-windows:
+    name: Build (Windows) - ${{ matrix.configuration }} / ${{ matrix.platform }}
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+        platform: ['x64', 'Win32']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v1
+
+      - name: Restore NuGet packages
+        run: nuget restore "./Engine/BoomEngine.sln"
+
+      - name: Build solution
+        run: msbuild "./Engine/BoomEngine.sln" /m /p:Configuration=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }} /nologo
+
+      - name: Collect build outputs
+        run: |
+          mkdir -p artifacts/${{ matrix.configuration }}-${{ matrix.platform }}
+          robocopy .\Engine\BoomEngine\bin\${{ matrix.configuration }}\${{ matrix.platform }} artifacts\${{ matrix.configuration }}-${{ matrix.platform }} /E || exit 0
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.configuration }}-${{ matrix.platform }}
+          path: artifacts/${{ matrix.configuration }}-${{ matrix.platform }}
+
+  notify:
+    name: Notify Discord (always)
+    runs-on: ubuntu-latest
+    needs: build-windows
+    if: always()
+    steps:
+      - name: Send Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+          WORKFLOW: ${{ github.workflow }}
+          BUILD_RESULT: ${{ needs.build-windows.result }}
+          RUN_URL: ${{ github.server_url }}/$REPO/actions/runs/${{ github.run_id }}
+        run: |
+          # Choose embed color based on result
+          if [ "$BUILD_RESULT" = "success" ]; then
+            COLOR=3066993
+          elif [ "$BUILD_RESULT" = "failure" ]; then
+            COLOR=15158332
+          else
+            COLOR=15844367
+          fi
+
+          # Build a compact JSON payload on a single variable to avoid YAML parsing issues
+          DESC="**Repository:** $REPO\\n**Branch:** $BRANCH\\n**Workflow:** $WORKFLOW\\n**Result:** $BUILD_RESULT\\n**Details:** [View run]($RUN_URL)"
+          PAYLOAD="{\"embeds\":[{\"title\":\"CI - Build Matrix\",\"description\":\"$DESC\",\"color\":$COLOR}]}"
+
+          curl -s -H "Content-Type: application/json" -X POST -d "$PAYLOAD" "$DISCORD_WEBHOOK" || echo "Discord notify failed"
