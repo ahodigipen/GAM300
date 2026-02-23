@@ -191,16 +191,13 @@ void DataSerializer::DeserializeAsync(AssetRegistry& registry, const std::string
                 failCount++;
             }
 
-            // Throttle rendering and logging to avoid overwhelming the driver/console
-            // Only render every 10 assets or for the last one
-            if (assetIndex % 10 == 0 || assetIndex == totalAssets) {
-                float gpuProgress = 0.8f + (0.2f * ((float)assetIndex / (float)totalAssets));
-                AppWindow::RenderLoading(win, gpuProgress);
-            }
+            // Render loading progress every asset for smooth video playback
+            float gpuProgress = 0.8f + (0.2f * ((float)assetIndex / (float)totalAssets));
+            AppWindow::RenderLoading(win, gpuProgress);
 
-            // Log progress every 100 assets
+            // Log progress every 100 assets (TRACE to avoid console I/O stalls in debug)
             if (assetIndex % 100 == 0) {
-                BOOM_INFO("[DataSerializer] GPU upload progress: {}/{} ({}%)", 
+                BOOM_TRACE("[DataSerializer] GPU upload progress: {}/{} ({}%)",
                     assetIndex, totalAssets, (int)(100.0f * assetIndex / (float)totalAssets));
             }
         }
