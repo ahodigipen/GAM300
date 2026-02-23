@@ -27,6 +27,8 @@ void DataSerializer::DeserializeAsync(AssetRegistry& registry, const std::string
         BOOM_INFO("[DataSerializer] Starting multithreaded asset loading ({} assets, {} threads)",
             nodes.size(), numThreads == 0 ? "auto" : std::to_string(numThreads));
 
+        auto totalStart = std::chrono::steady_clock::now();
+
         // Create async loader
         AsyncAssetLoader loader(numThreads);
 
@@ -70,6 +72,7 @@ void DataSerializer::DeserializeAsync(AssetRegistry& registry, const std::string
         }
 
         // Phase 2: Wait for all CPU loading to complete (with progress rendering)
+        auto cpuStart = std::chrono::steady_clock::now();
         BOOM_INFO("[DataSerializer] Waiting for CPU loading phase to complete...");
 
         // Render loading progress while waiting
@@ -81,8 +84,12 @@ void DataSerializer::DeserializeAsync(AssetRegistry& registry, const std::string
 
         auto loadedContexts = loader.WaitForAll();
 
+        auto gpuStart = std::chrono::steady_clock::now();
+        auto cpuMs = std::chrono::duration_cast<std::chrono::milliseconds>(gpuStart - cpuStart).count();
+
         size_t totalAssets = nodes.size();
-        BOOM_INFO("[DataSerializer] CPU loading complete. Starting GPU upload phase for {} assets...", totalAssets);
+        std::cout << "[DataSerializer] CPU phase done in " << cpuMs << "ms (" << totalAssets << " assets queued for GPU)\n";
+        BOOM_INFO("[DataSerializer] CPU loading complete in {}ms. Starting GPU upload phase for {} assets...", cpuMs, totalAssets);
 
         // Phase 3: Upload to GPU on main thread and create remaining assets
         int successCount = 0;
@@ -202,6 +209,10 @@ void DataSerializer::DeserializeAsync(AssetRegistry& registry, const std::string
             }
         }
 
+        auto totalEnd = std::chrono::steady_clock::now();
+        auto gpuMs = std::chrono::duration_cast<std::chrono::milliseconds>(totalEnd - gpuStart).count();
+        auto totalMs = std::chrono::duration_cast<std::chrono::milliseconds>(totalEnd - totalStart).count();
+
         BOOM_INFO("[DataSerializer] Asset loading complete: {} succeeded, {} failed", successCount, failCount);
 
         // Log summary of loaded models (for debugging)
@@ -219,6 +230,8 @@ void DataSerializer::DeserializeAsync(AssetRegistry& registry, const std::string
             }
         });
         BOOM_INFO("[DataSerializer] Loaded {} static models, {} skeletal models", staticModels, skeletalModels);
+        std::cout << "[DataSerializer] *** Total load time: " << totalMs << "ms  (CPU: " << cpuMs << "ms, GPU: " << gpuMs << "ms) ***\n";
+        BOOM_INFO("[DataSerializer] Total load time: {}ms (CPU: {}ms, GPU: {}ms)", totalMs, cpuMs, gpuMs);
     }
     catch (const YAML::Exception& e) {
         BOOM_ERROR("[DataSerializer] Failed to load YAML file '{}': {}", path, std::string(e.what()));
