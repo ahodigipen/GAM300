@@ -461,7 +461,7 @@ namespace Boom {
 					BOOM_ERROR("[AssetRegistry::Add] Texture failed to load: '{}'", source);
 				}
 				else {
-					BOOM_INFO("[AssetRegistry::Add] Texture loaded successfully: '{}'", source);
+					BOOM_TRACE("[AssetRegistry::Add] Texture loaded successfully: '{}'", source);
 				}
 			}
 

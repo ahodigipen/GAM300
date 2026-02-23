@@ -11,6 +11,8 @@ AsyncAssetLoader::AsyncAssetLoader(size_t numThreads) {
         numThreads = std::thread::hardware_concurrency();
         if (numThreads == 0) numThreads = 4; // Fallback
     }
+    // Cap to leave headroom for main thread, OS, and library init (FMOD, etc.)
+    numThreads = std::max(size_t(2), std::min(numThreads - 2, size_t(4)));
 
     BOOM_INFO("[AsyncAssetLoader] Starting {} worker threads", numThreads);
 
@@ -62,20 +64,12 @@ void AsyncAssetLoader::QueueAsset(
 }
 
 std::vector<AssetLoadContext> AsyncAssetLoader::WaitForAll() {
-    // Wait until all tasks are complete
-    while (true) {
-        {
-            std::unique_lock<std::mutex> queueLock(m_QueueMutex);
-            std::unique_lock<std::mutex> completedLock(m_CompletedMutex);
-
-            if (m_TaskQueue.empty() && m_ActiveTasks == 0) {
-                break;
-            }
-        }
+    // Spin on atomics — no mutex contention with workers
+    while (m_CompletedCount.load() < m_TotalTasks.load()) {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
-    // Return all completed tasks
+    // All done — grab results
     std::unique_lock<std::mutex> lock(m_CompletedMutex);
     std::vector<AssetLoadContext> results = std::move(m_CompletedTasks);
     m_CompletedTasks.clear();
@@ -83,13 +77,13 @@ std::vector<AssetLoadContext> AsyncAssetLoader::WaitForAll() {
 }
 
 size_t AsyncAssetLoader::GetPendingCount() const {
-    std::unique_lock<std::mutex> queueLock(m_QueueMutex);
-    return m_TaskQueue.size() + m_ActiveTasks.load();
+    size_t total = m_TotalTasks.load();
+    size_t completed = m_CompletedCount.load();
+    return (total > completed) ? (total - completed) : 0;
 }
 
 bool AsyncAssetLoader::IsComplete() const {
-    std::unique_lock<std::mutex> queueLock(m_QueueMutex);
-    return m_TaskQueue.empty() && m_ActiveTasks == 0;
+    return m_TotalTasks.load() > 0 && m_CompletedCount.load() >= m_TotalTasks.load();
 }
 
 void AsyncAssetLoader::WorkerThread() {
