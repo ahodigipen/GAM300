@@ -121,6 +121,8 @@ namespace GameScripts
 
         // ==== CRITICAL: Manual vertical velocity tracking for Character Controller ====
         private float _verticalVelocity = 0f;
+        // Track current forward movement speed for other systems (falling platforms prediction)
+        private float _currentMoveSpeed = 0f;
 
         // ==== DEBUG: Helper to log crouch state ====
         private static void DebugCrouch(string message)
@@ -205,6 +207,9 @@ namespace GameScripts
 
             RegisterTriggerCallbacksOnAllTriggers();
             HUD.SetHealth(_health, _maxHealth);
+
+            // Initialize current move speed
+            _currentMoveSpeed = 0f;
 
             // Find god mode text entity (optional - add a TextComponent entity named "UI_GodMode" to scene)
             _godModeTextEntity = API.FindEntity("UI_GodMode");
@@ -974,6 +979,12 @@ namespace GameScripts
         public static bool IsCrouching()
         {
             return s_instance != null && s_instance._isCrouching;
+        }
+
+        // Provide current forward speed (approx) for external systems
+        public static float GetCurrentMoveSpeed()
+        {
+            return s_instance != null ? s_instance._currentMoveSpeed : 0f;
         }
     }
 }

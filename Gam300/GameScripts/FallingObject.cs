@@ -19,6 +19,8 @@ namespace GameScripts
 
         // Only trigger once
         private bool _hasFallen = false;
+        private bool _isFalling = false;
+        private bool _hasHit = false;
 
         // Track previous horizontal distance to player to detect approach (distance decreasing)
         private float _lastHorizontalDistance = float.MaxValue;
@@ -44,6 +46,46 @@ namespace GameScripts
         {
             if (_hasFallen) return;
 
+            // If currently falling, handle collision detection
+            if (_isFalling)
+            {
+                if (_hasHit) return;
+
+                // Poll collision state
+                if (API.IsColliding(Entity))
+                {
+                    _hasHit = true;
+
+                    // Determine if player is under the platform
+                    ulong playerEntity = PlayerMovement.GetPlayerEntity();
+                    if (playerEntity != 0 && API.HasTransform(playerEntity))
+                    {
+                        Vec3 objPosNow = API.GetPosition(Entity);
+                        Vec3 playerPosNow = API.GetPosition(playerEntity);
+                        float dxp = playerPosNow.X - objPosNow.X;
+                        float dzp = playerPosNow.Z - objPosNow.Z;
+                        float horiz = (float)System.Math.Sqrt(dxp * dxp + dzp * dzp);
+
+                        // If player is directly underneath (within small radius) and below Y, consider hit
+                        if (horiz <= 1.5f && playerPosNow.Y < objPosNow.Y)
+                        {
+                            // Kill player
+                            API.Log("[FallingObject] Platform hit player - triggering death");
+                            Entry.TriggerPlayerDeath();
+                            // Destroy platform
+                            API.DestroyEntity(Entity);
+                            return;
+                        }
+                    }
+
+                    // Otherwise, break on ground
+                    API.DestroyEntity(Entity);
+                    return;
+                }
+
+                return;
+            }
+
             _enableTimer += dt;
             if (_enableTimer < ENABLE_DELAY) return;
 
@@ -58,10 +100,36 @@ namespace GameScripts
             float dz = playerPos.Z - objPos.Z;
             float horizDist = (float)Math.Sqrt(dx * dx + dz * dz);
 
-            // If player is moving toward the object (distance decreasing) and within trigger radius, trigger fall
-            if (horizDist <= _triggerRadius && horizDist < _lastHorizontalDistance)
+            // Use prediction similar to Unity version: compute vertical distance and predicted player travel
+            Vec3 playerVel = API.GetLinearVelocity(player);
+
+            float verticalDistance = objPos.Y - playerPos.Y;
+            if (verticalDistance <= 0f)
             {
-                TriggerFall();
+                // Player at or above platform - ignore
+                _lastHorizontalDistance = horizDist;
+                return;
+            }
+
+            // Estimate fall time using gravity constant from PlayerMovement (approx)
+            // Use engine's gravity approximation (PlayerMovement uses GRAVITY constant)
+            float playerGravity = 50f; // fallback
+            try { playerGravity = 50f; } catch { }
+
+            float tFall = (float)System.Math.Sqrt(2f * verticalDistance / playerGravity);
+
+            // Player forward speed - query PlayerMovement
+            float forwardSpeed = PlayerMovement.GetCurrentMoveSpeed();
+            float predictedDistance = forwardSpeed * tFall;
+
+            // Trigger if player is within predicted distance plus threshold
+            if (horizDist <= predictedDistance + _triggerRadius - 0.1f)
+            {
+                // schedule fall with slight delay to 'smash' player
+                _hasFallen = true;
+                float delay = 0.1f;
+                // start countdown to fall
+                _enableTimer = -delay;
                 return;
             }
 
@@ -71,13 +139,18 @@ namespace GameScripts
         private void TriggerFall()
         {
             _hasFallen = true;
+            _isFalling = true;
+            FallNow();
+        }
 
+        private void FallNow()
+        {
             // Give a downward velocity; if the engine uses gravity, velocity will be integrated.
             Vec3 vel = API.GetLinearVelocity(Entity);
             vel.Y = -Math.Abs(_fallSpeed);
             API.SetLinearVelocity(Entity, vel);
 
-            // Optionally make this object a non-trigger so it collides with the player/ground
+            // Ensure this object collides
             if (API.HasCollider(Entity))
             {
                 API.SetTrigger(Entity, false);
@@ -86,9 +159,6 @@ namespace GameScripts
             API.PlaySoundAt("falling_obj_" + Entity, "Resources/Audio/rock_fall.wav", API.GetPosition(Entity), false);
             API.SetSoundVolume("falling_obj_" + Entity, 1.0f);
             API.Set3DMinMaxDistance("falling_obj_" + Entity, 1.0f, 40.0f);
-
-            // Optionally enable continuous gravity effect by applying extra downward velocity over time
-            // but for simplicity rely on physics engine gravity. If not available, we could start a simple update coroutine.
         }
 
         public void OnDestroy()

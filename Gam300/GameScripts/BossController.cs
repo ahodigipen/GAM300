@@ -13,7 +13,7 @@ namespace GameScripts
         private float _rotationInterval = 3.0f;
 
         [Boom.EditorExposed("Rotation Angle", "Degrees to rotate each turn", 1f, 360f, true)]
-        private float _rotationAngle = 1800f;
+        private float _rotationAngle = 180f;
 
         [Boom.EditorExposed("Rotation Speed", "Degrees per second for smooth rotation", 1f, 720f, true)]
         private float _rotationSpeed = 120f;
