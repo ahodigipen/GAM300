@@ -4670,7 +4670,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 1.98000002, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [25, 150, 25]
+        LocalScale: [100, 200, 100]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001

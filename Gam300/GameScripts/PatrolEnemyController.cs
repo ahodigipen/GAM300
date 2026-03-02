@@ -148,6 +148,18 @@ namespace GameScripts
         [Boom.EditorExposed("Spotlight Name", "Name of the spotlight entity to control")]
         private string _spotlightName = "Patrol_1_Spotlight";
 
+        // Gravity
+        private float _verticalVelocity = 0f;
+        private const float GRAVITY = 50f;
+        private const float GROUND_STICK = -5.0f;
+
+        // Anti-oscillation for slopes
+        private float _lastVelocityX = 0f;
+        private float _lastVelocityZ = 0f;
+        private float _directionStableTimer = 0f;
+        private const float DIRECTION_CHANGE_COOLDOWN = 0.3f; // Minimum time before allowing direction change
+        private const float VELOCITY_CHANGE_THRESHOLD = 0.5f; // How much velocity can change before we consider it a direction change
+
 #pragma warning disable CS0414 // Field is assigned but its value is never used (editor-exposed)
         [Boom.EditorExposed("Spotlight Offset Y", "Height offset for spotlight above entity", 0f, 10f, true)]
         private float _spotlightOffsetY = 2.0f;
@@ -284,6 +296,7 @@ namespace GameScripts
                 {
                     _isFrozen = true;
                     _frozenPosition = API.GetPosition(Entity);
+                    _verticalVelocity = 0f;
 
                     API.SetNavAgentActive(Entity, false);
                     API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
@@ -317,7 +330,83 @@ namespace GameScripts
             var v = API.GetLinearVelocity(Entity);
             float speedXZ = (float)Math.Sqrt(v.X * v.X + v.Z * v.Z);
 
-            if (!_isAlert) FaceVelocity(dt, v.X, v.Z);
+            // --- Improved Gravity Handling for Slopes ---
+            // Use a larger probe distance for better slope detection
+            bool isGrounded = API.IsGrounded(Entity, 0.5f);
+
+            // Additional slope check - raycast downward to detect ground beneath
+            bool onSlope = false;
+            Vec3 currentPos = API.GetPosition(Entity);
+            if (!isGrounded)
+            {
+                // Check if we're just slightly above ground (on a slope)
+                Vec3 slopeProbeFrom = new Vec3(currentPos.X, currentPos.Y + 0.2f, currentPos.Z);
+                Vec3 slopeProbeTo = new Vec3(currentPos.X, currentPos.Y - 0.8f, currentPos.Z);
+                onSlope = API.Linecast(slopeProbeFrom, slopeProbeTo, Entity);
+            }
+
+            if (!isGrounded && !onSlope)
+            {
+                // Truly airborne: Apply gravity
+                _verticalVelocity -= GRAVITY * dt;
+
+                // Clamp fall speed
+                const float MAX_FALL_SPEED = -20f;
+                if (_verticalVelocity < MAX_FALL_SPEED)
+                    _verticalVelocity = MAX_FALL_SPEED;
+
+                // Manual physics simulation
+                Vec3 gravityPos = API.GetPosition(Entity);
+                float dy = _verticalVelocity * dt;
+
+                // Prevent falling through floor
+                Vec3 from = new Vec3(gravityPos.X, gravityPos.Y + 0.1f, gravityPos.Z);
+                Vec3 to = new Vec3(gravityPos.X, gravityPos.Y + dy - 0.1f, gravityPos.Z);
+
+                if (!API.Linecast(from, to, Entity))
+                {
+                    gravityPos.Y += dy;
+                    API.TeleportRigidBody(Entity, gravityPos);
+                    API.SetNavAgentPosition(Entity, gravityPos);
+                }
+                else
+                {
+                    _verticalVelocity = 0f;
+                }
+            }
+            else if (onSlope && !isGrounded)
+            {
+                // On slope but not fully grounded - apply gentle downward force to stick to slope
+                _verticalVelocity = -2.0f; // Stronger stick force for slopes
+
+                Vec3 gravityPos = API.GetPosition(Entity);
+                float dy = _verticalVelocity * dt;
+
+                Vec3 from = new Vec3(gravityPos.X, gravityPos.Y + 0.1f, gravityPos.Z);
+                Vec3 to = new Vec3(gravityPos.X, gravityPos.Y + dy - 0.1f, gravityPos.Z);
+
+                if (!API.Linecast(from, to, Entity))
+                {
+                    gravityPos.Y += dy;
+                    API.TeleportRigidBody(Entity, gravityPos);
+                    API.SetNavAgentPosition(Entity, gravityPos);
+                }
+                else
+                {
+                    _verticalVelocity = 0f;
+                }
+            }
+            else
+            {
+                // Grounded: reset vertical velocity
+                _verticalVelocity = 0f;
+            }
+
+            // Only face velocity if moving fast enough AND not rapidly changing direction
+            if (!_isAlert)
+            {
+                FaceVelocitySmooth(dt, v.X, v.Z, speedXZ);
+            }
 
             if (API.HasAnimator(Entity) && DRIVE_SPEED_PARAM)
             {
@@ -463,31 +552,46 @@ namespace GameScripts
             // Some animations have root motion baked into non-root bones (like hips/pelvis)
             // which doesn't get stripped by ApplyRootMotion=false. This code detects and
             // corrects any unexpected drift from animation.
+            // Animation drift correction - with slope-friendly threshold
+            // Animation drift correction - with slope-friendly threshold
             if (_positionInitialized)
             {
-                var currentPos = API.GetPosition(Entity);
+                Vec3 driftCheckPos = API.GetPosition(Entity);  // RENAMED from currentPos
 
-                // Calculate expected movement from physics velocity during this frame
-                float expectedDeltaX = v.X * dt;
-                float expectedDeltaZ = v.Z * dt;
+                // Calculate expected movement from NavAgent
+                Vec3 expectedDelta = new Vec3(
+                    driftCheckPos.X - frameStartPos.X,
+                    0f, // Ignore Y for drift calculation
+                    driftCheckPos.Z - frameStartPos.Z
+                );
 
-                // Calculate actual movement during this frame
-                float actualDeltaX = currentPos.X - frameStartPos.X;
-                float actualDeltaZ = currentPos.Z - frameStartPos.Z;
+                // Calculate actual physics movement  
+                float actualDeltaX = driftCheckPos.X - _lastPhysicsPosition.X;
+                float actualDeltaZ = driftCheckPos.Z - _lastPhysicsPosition.Z;
 
-                // Calculate drift (difference between actual and expected movement)
+                float expectedDeltaX = driftCheckPos.X - frameStartPos.X;
+                float expectedDeltaZ = driftCheckPos.Z - frameStartPos.Z;
+
+                // Drift = actual movement minus expected (NavAgent) movement
                 float driftX = actualDeltaX - expectedDeltaX;
                 float driftZ = actualDeltaZ - expectedDeltaZ;
                 float driftMagnitude = (float)Math.Sqrt(driftX * driftX + driftZ * driftZ);
 
-                // If drift exceeds threshold, correct it by removing the drift
-                const float DRIFT_THRESHOLD = 0.005f; // 5mm tolerance
-                if (driftMagnitude > DRIFT_THRESHOLD)
+                // INCREASED threshold - more forgiving on slopes
+                const float DRIFT_THRESHOLD = 0.1f;
+
+                // Only correct drift if grounded and not on slope, and drift is significant
+                bool shouldCorrectDrift = driftMagnitude > DRIFT_THRESHOLD &&
+                                           isGrounded &&
+                                           !onSlope &&
+                                           _verticalVelocity >= -0.5f;
+
+                if (shouldCorrectDrift)
                 {
                     Vec3 correctedPos = new Vec3(
-                        currentPos.X - driftX,
-                        currentPos.Y,
-                        currentPos.Z - driftZ
+                        driftCheckPos.X - driftX,
+                        driftCheckPos.Y,
+                        driftCheckPos.Z - driftZ
                     );
                     API.TeleportRigidBody(Entity, correctedPos);
                 }
@@ -495,11 +599,42 @@ namespace GameScripts
                 // Update tracking for next frame
                 _lastPhysicsPosition = API.GetPosition(Entity);
             }
+            else
+            {
+                _lastPhysicsPosition = API.GetPosition(Entity);
+                _positionInitialized = true;
+            }
         }
-        private void FaceVelocity(float dt, float vx, float vz)
+        private void FaceVelocitySmooth(float dt, float vx, float vz, float speedXZ)
         {
-            float speedXZ = (float)Math.Sqrt(vx * vx + vz * vz);
-            if (speedXZ < _minSpeedToRotate) return;
+            // Don't rotate if moving too slowly
+            if (speedXZ < _minSpeedToRotate)
+            {
+                _directionStableTimer = 0f;
+                return;
+            }
+
+            // Check for rapid direction changes (oscillation detection)
+            float velocityChangeX = Math.Abs(vx - _lastVelocityX);
+            float velocityChangeZ = Math.Abs(vz - _lastVelocityZ);
+            float totalVelocityChange = velocityChangeX + velocityChangeZ;
+
+            // If velocity changed significantly, start cooldown
+            if (totalVelocityChange > VELOCITY_CHANGE_THRESHOLD)
+            {
+                _directionStableTimer = DIRECTION_CHANGE_COOLDOWN;
+            }
+
+            // Update last velocity
+            _lastVelocityX = vx;
+            _lastVelocityZ = vz;
+
+            // If in cooldown, don't change facing direction
+            if (_directionStableTimer > 0f)
+            {
+                _directionStableTimer -= dt;
+                return;
+            }
 
             float baseYaw = ComputeYawFromVelocity(vx, vz);
             float targetYawDeg = baseYaw;
@@ -625,6 +760,7 @@ namespace GameScripts
 
             // Reset proximity
             _proximityDetection?.ResetDetection();
+            _verticalVelocity = 0f;
 
             // Hide alert video if active
             if (_isMyVideoVisible)
@@ -778,6 +914,16 @@ namespace GameScripts
             API.SetSoundVolume(soundName, 0.6f);
             API.Set3DMinMaxDistance(soundName, 3.0f, 20.0f);
         }
+
+        // Use a raycast probe for better ground detection on slopes
+        private bool IsGroundedOnSlope(Vec3 pos)
+        {
+            float probeDistance = 0.5f; // Adjust based on your enemy height
+            Vec3 from = new Vec3(pos.X, pos.Y + 0.1f, pos.Z);
+            Vec3 to = new Vec3(pos.X, pos.Y - probeDistance, pos.Z);
+            return API.Linecast(from, to, Entity);
+        }
+
 
         // utils
         private static double Min(double a, double b) => (a < b) ? a : b;
