@@ -1,5 +1,165 @@
 Version: 1.0
 ENTITIES:
+  - InfoComponent:
+      Parent: 0
+      Name: Patrol Vision Cone 67 (Copy)
+      UID: 3269285486275492744
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [21.1061707, 13.8318195, 13.2460003]
+        Rotate: [0, 180, 0]
+        Scale: [0.999980092, 0.625, 0.999996901]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolSpotlightFollower
+      ParamsJSON: "{}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.975490212, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 0
+      Name: Patrol Vision Cone HR1
+      UID: 11561172986647562951
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [21.1061707, 13.8318195, 13.2460003]
+        Rotate: [0, 180, 0]
+        Scale: [0.999980092, 0.625, 0.999996901]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolSpotlightFollower
+      ParamsJSON: "{\n  \"targetName\": \"Patrol Enemy SR1 1\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.975490212, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 799933234689450045
+        SurfaceType: DEFAULT
+        Type: TRIANGLE_MESH
+    InfoComponent:
+      Parent: 0
+      Name: level2_wall_2 (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
+      UID: 4187596451003916555
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-64.5771484, 33.9643669, -9.30882835]
+        Rotate: [0, -0, 0]
+        Scale: [0.133415371, 0.159781381, 0.402894557]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.133415371, 0.159781381, 0.402894557]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 1441742420851203854
+      MaterialID: 15937630629384441243
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 799933234689450045
+        SurfaceType: DEFAULT
+        Type: TRIANGLE_MESH
+    InfoComponent:
+      Parent: 0
+      Name: level2_wall_2 (Copy) (Copy) (Copy) (Copy)
+      UID: 9118687647342000519
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-59.4883957, 25.9134388, -20.434124]
+        Rotate: [322.200592, -90, 0]
+        Scale: [0.139012501, 0.159781396, 0.903161287]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.139012501, 0.159781396, 0.903161287]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 1441742420851203854
+      MaterialID: 15937630629384441243
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 799933234689450045
+        SurfaceType: SAND
+        Type: TRIANGLE_MESH
+    InfoComponent:
+      Parent: 0
+      Name: FLOOR2 (Copy) (Copy)
+      UID: 459345954790561308
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [31.8620758, 5.57968712, 3.85934591]
+        Rotate: [0, -0, 0]
+        Scale: [0.478215665, 0.00999999978, 4.82981491]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.478215665, 0.00999999978, 4.82981491]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 1441742420851203854
+      MaterialID: 15937630629384441243
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -277,15 +437,15 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [30.9198227, 7.42236519, 14.2992458]
+        Translate: [32.2645683, 7.85300016, 14.0894318]
         Rotate: [-7.29378442e-08, 1.46921272e-21, 7.38186884e-07]
-        Scale: [0.00999999978, 0.0247393809, 0.0136120962]
+        Scale: [0.00999999978, 0.0274001788, 0.0136120962]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.00999999978, 0.0247393809, 0.0136120962]
+        Previous Scale: [0.00999999978, 0.0274001788, 0.0136120962]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -437,22 +597,22 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [30.6387691, 5.57968712, 3.85934591]
+        Translate: [31.8620758, 6.92672253, -15.2210979]
         Rotate: [0, -0, 0]
-        Scale: [0.347100556, 0.00999999978, 4.82981491]
+        Scale: [0.478215665, 0.286345243, 1.08886743]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.347100556, 0.00999999978, 4.82981491]
+        Previous Scale: [0.478215665, 0.286345243, 1.08886743]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 15937630629384441243
+      MaterialID: 7355395803280547314
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -517,15 +677,15 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-64.5771484, 33.9643669, -9.30882835]
+        Translate: [23.6277275, 17.4728546, -9.68633175]
         Rotate: [0, -0, 0]
-        Scale: [0.133415371, 0.159781381, 0.402894557]
+        Scale: [0.133415371, 0.159781381, 0.360552788]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.133415371, 0.159781381, 0.402894557]
+        Previous Scale: [0.133415371, 0.159781381, 0.360552788]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -1490,15 +1650,15 @@ ENTITIES:
       SortOrder: 256
     TransformComponent:
       Transform:
-        Translate: [-59.4883957, 25.9134388, -20.434124]
-        Rotate: [322.200592, -90, 0]
-        Scale: [0.139012501, 0.159781396, 0.903161287]
+        Translate: [23.1899261, 15.6569109, -13.9998798]
+        Rotate: [-37.7825928, 8.90555316e-13, -1.07850224e-06]
+        Scale: [0.106060892, 0.0830863044, 0.750559568]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.139012501, 0.159781396, 0.903161287]
+        Previous Scale: [0.106060892, 0.0830863044, 0.750559568]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -1729,8 +1889,8 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [21.1061707, 13.8318195, 13.2460003]
-        Rotate: [0, 180, 0]
+        Translate: [36.8326988, 13.8318195, 10.7258005]
+        Rotate: [-180, -5.00895612e-06, -180]
         Scale: [0.999980092, 0.625, 0.999996901]
     ScriptComponent:
       Enabled: true
@@ -3877,15 +4037,15 @@ ENTITIES:
       SortOrder: 212
     TransformComponent:
       Transform:
-        Translate: [30.6874123, 9.44012737, 23.1487808]
-        Rotate: [180, -89.980217, -5.8957178e-10]
-        Scale: [0.329007655, 0.767789245, 1.11594594]
+        Translate: [32.5786324, 9.44012737, 23.1487808]
+        Rotate: [180, -89.980217, -1.7687154e-09]
+        Scale: [0.329007655, 0.767789245, 1.45066655]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.329007655, 0.767789245, 1.11594594]
+        Previous Scale: [0.329007655, 0.767789245, 1.45066655]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -4510,7 +4670,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 1.98000002, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [100, 200, 100]
+        LocalScale: [25, 150, 25]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -4521,13 +4681,13 @@ ENTITIES:
         Type: CAPSULE
     InfoComponent:
       Parent: 0
-      Name: Patrol enemy 2
+      Name: Patrol Enemy SR1 1
       UID: 3476234535713046263
       SortOrder: 62
     TransformComponent:
       Transform:
-        Translate: [12.8473635, 13.2265387, -10.1728048]
-        Rotate: [0, -89.980217, 0]
+        Translate: [36.8592453, 19.1183891, -15.5547409]
+        Rotate: [0, -0, 0]
         Scale: [0.0200004727, 0.0199999996, 0.0200004727]
     RigidBodyComponent:
       RigidBody:
@@ -4642,13 +4802,13 @@ ENTITIES:
       LoseRadius: 12
       IdleWait: 1
       PatrolPoints:
-        - [20.3059769, 13.5951796, -10.1728048]
-        - [-4.40195179, 13.5951796, -10.1728048]
-      PatrolIndex: 1
+        - [36.8592453, 13.8080444, 11.1173725]
+        - [36.8592453, 19.1183891, -15.5547409]
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Patrol enemy 2\",\n  \"_spotlightName\": \"Patrol Vision Cone 2\"\n}"
+      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Patrol Enemy SR1 1\",\n  \"_spotlightName\": \"Patrol Vision Cone HR1\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 1.98000002, 0]
@@ -8922,15 +9082,15 @@ ENTITIES:
       SortOrder: 122
     TransformComponent:
       Transform:
-        Translate: [23.0837517, 13.525032, 28.0049896]
+        Translate: [24.6941662, 13.525032, 28.0049896]
         Rotate: [0, -0, 0]
-        Scale: [0.94073981, 2.58020115, 0.224999994]
+        Scale: [1.05255127, 2.58020115, 0.224999994]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.94073981, 2.58020115, 0.224999994]
+        Previous Scale: [1.05255127, 2.58020115, 0.224999994]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -9523,15 +9683,15 @@ ENTITIES:
       SortOrder: 202
     TransformComponent:
       Transform:
-        Translate: [4.17120075, 12.2189884, -22.0168877]
+        Translate: [6.84433413, 12.2189884, -22.0168877]
         Rotate: [-180, -0, 0]
-        Scale: [2.15075731, 2.73365188, 0.36048156]
+        Scale: [2.34624958, 2.73365188, 0.36048156]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [2.15075731, 2.73365188, 0.36048156]
+        Previous Scale: [2.34624958, 2.73365188, 0.36048156]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -10183,8 +10343,8 @@ ENTITIES:
       SortOrder: 190
     TransformComponent:
       Transform:
-        Translate: [12.8881149, 30.5768299, -15.1296492]
-        Rotate: [-231, 6807.25, 180]
+        Translate: [29.1090145, 24.1953392, -13.6768169]
+        Rotate: [149.25, -108.3125, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -13313,15 +13473,15 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [30.5727615, 17.1426659, -12.9752445]
-        Rotate: [180, 4.85314136e-20, 180]
-        Scale: [0.0100000044, 0.0152925998, 0.0199501123]
+        Translate: [32.0849609, 17.1426659, -12.9752445]
+        Rotate: [-180, 4.85314136e-20, -180]
+        Scale: [0.0142849507, 0.0152925998, 0.0199501123]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0100000044, 0.0152925998, 0.0199501123]
+        Previous Scale: [0.0142849507, 0.0152925998, 0.0199501123]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -13353,7 +13513,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [36.7401772, 13.3294411, 3.1269989]
+        Translate: [40.602169, 13.3294411, 3.1269989]
         Rotate: [180, -89.980217, -5.8957178e-10]
         Scale: [1.7445035, 2.514328, 0.224999964]
     RigidBodyComponent:
@@ -13393,15 +13553,15 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-84.1316681, 28.3091869, 1.34905434]
+        Translate: [-84.1316681, 28.3091869, -0.112270594]
         Rotate: [89.9999847, -0, 0]
-        Scale: [0.100000001, 4.51216269, 5.5087924]
+        Scale: [0.100000001, 4.72035646, 5.50870466]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.100000001, 4.51216269, 5.5087924]
+        Previous Scale: [0.100000001, 4.72035646, 5.50870466]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -13513,8 +13673,8 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [34.9099617, 9.43500042, 13.8651218]
-        Rotate: [-180, -89.980217, 5.8957178e-10]
+        Translate: [37.2318268, 9.43500042, 13.8651218]
+        Rotate: [180, -89.980217, -5.8957178e-10]
         Scale: [0.329007655, 0.767789245, 0.365415573]
     RigidBodyComponent:
       RigidBody:
@@ -13553,8 +13713,8 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [26.4552116, 9.4348011, 13.8651218]
-        Rotate: [180, -89.980217, -5.8957178e-10]
+        Translate: [27.2142544, 9.4348011, 13.8651218]
+        Rotate: [-180, -89.980217, 5.8957178e-10]
         Scale: [0.329007655, 0.767789245, 0.365415573]
     RigidBodyComponent:
       RigidBody:
@@ -13573,3 +13733,146 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 1.98000002, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [100, 200, 100]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: CAPSULE
+    InfoComponent:
+      Parent: 0
+      Name: Patrol enemy 2 (Copy)
+      UID: 11747975256215318199
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [12.8473635, 13.2265387, -10.1728048]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.0200004727, 0.0199999996, 0.0200004727]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0200004727, 0.0199999996, 0.0200004727]
+        FreezeRotationX: true
+        FreezeRotationY: true
+        FreezeRotationZ: true
+        Type: DYNAMIC
+    ModelComponent:
+      ModelID: 12439106707269888329
+      MaterialID: 14920165367361296626
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _footstepSoundPath
+          filePaths:
+            - Resources/Audio/footstep_stone_1.wav
+          loop: false
+          volume: 0.527999997
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 20.5
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_Alert_020.wav
+          loop: false
+          volume: 0.832000017
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 0.5
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _gruntSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_001.wav
+          loop: false
+          volume: 0.653999984
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.600000024
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 26
+    AnimatorComponent:
+      Clips:
+        - name: mixamo.com
+          filePath: ""
+        - name: ROCK_WALKING
+          filePath: Resources/Animations/ROCK_WALKING.anim
+      States:
+        - name: State 0
+          clipIndex: 1
+          speed: 0.330000013
+          loop: false
+          transitions:
+            - targetStateIndex: 0
+              conditionType: 0
+              parameterName: IsWalking
+              floatValue: 0
+              boolValue: false
+              transitionDuration: 0.469999999
+              hasExitTime: false
+              exitTime: 0.899999976
+      FloatParams:
+        Speed: 0
+      BoolParams:
+        ApplyRootMotion: false
+      CurrentStateIndex: 0
+    NavAgentComponent:
+      Target: [-4.40195179, 13.5951796, -10.1728048]
+      Speed: 2.5
+      ArriveRadius: 0.150000006
+      Active: true
+      RepathCooldown: 0.25
+      RetargetDistance: 0.5
+      FollowName: ""
+    AIComponent:
+      Mode: 0
+      PlayerName: ""
+      DetectRadius: 8
+      LoseRadius: 12
+      IdleWait: 1
+      PatrolPoints:
+        - [20.3059769, 13.5951796, -10.1728048]
+        - [-4.40195179, 13.5951796, -10.1728048]
+      PatrolIndex: 0
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolEnemyController
+      ParamsJSON: "{}"
