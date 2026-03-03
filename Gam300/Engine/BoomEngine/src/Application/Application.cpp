@@ -12,7 +12,7 @@ namespace Boom
         BOOM_INFO("[Application] RunContext started");
 
         m_IsInPlayMode = true;
-        m_AppState = ApplicationState::STOPPED;
+        m_AppState = ApplicationState::RUNNING;
 
         std::cout << "[RunContext] Loading scene MainMenu..." << std::endl;
         std::cout.flush();

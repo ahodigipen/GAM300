@@ -2,38 +2,18 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
-      Name: Patrol Vision Cone 67 (Copy)
-      UID: 3269285486275492744
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [21.1061707, 13.8318195, 13.2460003]
-        Rotate: [0, 180, 0]
-        Scale: [0.999980092, 0.625, 0.999996901]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
-  - InfoComponent:
-      Parent: 0
       Name: Patrol Vision Cone HR1
       UID: 11561172986647562951
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [21.1061707, 13.8318195, 13.2460003]
-        Rotate: [0, 180, 0]
+        Translate: [36.643383, 21.1277924, -15.1234865]
+        Rotate: [0, -5.00895612e-06, 0]
         Scale: [0.999980092, 0.625, 0.999996901]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"targetName\": \"Patrol Enemy SR1 1\"\n}"
+      ParamsJSON: "{\n  \"positionOffsetY\": 5.949999809265137,\n  \"targetName\": \"Patrol Enemy SR1\"\n}"
     SpotLightComponent:
       Light:
         Radiance: [0.975490212, 0, 0]
@@ -280,7 +260,20 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 16533510218623144807
+        SurfaceType: DEFAULT
+        Type: CONVEX_MESH
+    InfoComponent:
       Parent: 0
       Name: StairsShort (Copy)
       UID: 11991203505459064905
@@ -290,6 +283,16 @@ ENTITIES:
         Translate: [-73.6102905, 28.5019283, -1.38759089]
         Rotate: [-7.29378442e-08, 1.46921272e-21, 7.38186884e-07]
         Scale: [0.0120064421, 0.0154411756, 0.00999999978]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0120064421, 0.0154411756, 0.00999999978]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 679201389981188464
       MaterialID: 8475851512635632909
@@ -1889,8 +1892,8 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [36.8326988, 13.8318195, 10.7258005]
-        Rotate: [-180, -5.00895612e-06, -180]
+        Translate: [20.8361187, 13.8318195, 12.9704151]
+        Rotate: [0, -5.00895612e-06, 0]
         Scale: [0.999980092, 0.625, 0.999996901]
     ScriptComponent:
       Enabled: true
@@ -4243,44 +4246,147 @@ ENTITIES:
       {}
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 0, 0]
+        LocalPosition: [0, 1.98000002, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [100, 200, 100]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: false
         ShowPhysicsDebug: false
-        PhysicsMesh: 2665223197068733968
+        PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: TRIANGLE_MESH
+        Type: CAPSULE
     InfoComponent:
       Parent: 0
-      Name: Divider
-      UID: 13194841271217537450
-      SortOrder: 255
+      Name: Patrol Enemy SR2
+      UID: 18088432713603204107
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.227488875, 24.2370033, 27.0301399]
-        Rotate: [-89.9999847, 0, 0]
-        Scale: [1.82780564, 0.999959111, 1.11913657]
+        Translate: [28.3395844, 14.0055027, 7.14299393]
+        Rotate: [0, -0, 0]
+        Scale: [0.0200004727, 0.0199999996, 0.0200004727]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.82780564, 0.999959111, 1.11913657]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
+        Previous Scale: [0.0200004727, 0.0199999996, 0.0200004727]
+        FreezeRotationX: true
+        FreezeRotationY: true
+        FreezeRotationZ: true
+        Type: DYNAMIC
     ModelComponent:
-      ModelID: 6158523069679221176
-      MaterialID: 16257091296667891899
+      ModelID: 12439106707269888329
+      MaterialID: 14920165367361296626
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _footstepSoundPath
+          filePaths:
+            - Resources/Audio/footstep_stone_1.wav
+          loop: false
+          volume: 0.527999997
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 20.5
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_Alert_020.wav
+          loop: false
+          volume: 0.832000017
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 0.5
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _gruntSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_001.wav
+          loop: false
+          volume: 0.653999984
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.600000024
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 26
+    AnimatorComponent:
+      Clips:
+        - name: mixamo.com
+          filePath: ""
+        - name: ROCK_WALKING
+          filePath: Resources/Animations/ROCK_WALKING.anim
+      States:
+        - name: State 0
+          clipIndex: 1
+          speed: 0.330000013
+          loop: false
+          transitions:
+            - targetStateIndex: 0
+              conditionType: 0
+              parameterName: IsWalking
+              floatValue: 0
+              boolValue: false
+              transitionDuration: 0.469999999
+              hasExitTime: false
+              exitTime: 0.899999976
+      FloatParams:
+        Speed: 0
+      BoolParams:
+        ApplyRootMotion: false
+      CurrentStateIndex: 0
+    NavAgentComponent:
+      Target: [-4.40195179, 13.5951796, -10.1728048]
+      Speed: 2.5
+      ArriveRadius: 0.150000006
+      Active: true
+      RepathCooldown: 0.25
+      RetargetDistance: 0.5
+      FollowName: ""
+    AIComponent:
+      Mode: 0
+      PlayerName: ""
+      DetectRadius: 8
+      LoseRadius: 12
+      IdleWait: 1
+      PatrolPoints:
+        - [28.3395844, 19.7447033, -15.5547409]
+        - [28.3395844, 14.0055027, 7.14299393]
+      PatrolIndex: 0
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolEnemyController
+      ParamsJSON: "{\n  \"_entityName\": \"Patrol Enemy SR2\",\n  \"_spotlightName\": \"\"\n}"
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_Dead
@@ -4681,12 +4787,12 @@ ENTITIES:
         Type: CAPSULE
     InfoComponent:
       Parent: 0
-      Name: Patrol Enemy SR1 1
+      Name: Patrol Enemy SR1
       UID: 3476234535713046263
       SortOrder: 62
     TransformComponent:
       Transform:
-        Translate: [36.8592453, 19.1183891, -15.5547409]
+        Translate: [36.8592453, 19.7447033, -15.5547409]
         Rotate: [0, -0, 0]
         Scale: [0.0200004727, 0.0199999996, 0.0200004727]
     RigidBodyComponent:
@@ -4808,7 +4914,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Patrol Enemy SR1 1\",\n  \"_spotlightName\": \"Patrol Vision Cone HR1\"\n}"
+      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Patrol Enemy SR1\",\n  \"_spotlightName\": \"Patrol Vision Cone HR1\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 1.98000002, 0]
@@ -10343,8 +10449,8 @@ ENTITIES:
       SortOrder: 190
     TransformComponent:
       Transform:
-        Translate: [29.1090145, 24.1953392, -13.6768169]
-        Rotate: [149.25, -108.3125, 180]
+        Translate: [32.7209167, 42.8721275, -29.2410774]
+        Rotate: [149.6875, 1118.0625, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -13748,7 +13854,7 @@ ENTITIES:
         Type: CAPSULE
     InfoComponent:
       Parent: 0
-      Name: Patrol enemy 2 (Copy)
+      Name: Patrol enemy 2
       UID: 11747975256215318199
       SortOrder: 0
     TransformComponent:
@@ -13875,4 +13981,405 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_entityName\": \"Patrol enemy 2\",\n  \"_spotlightName\": \"Patrol Vision Cone 2\"\n}"
+  - InfoComponent:
+      Parent: 0
+      Name: Sentry_level2_SR1
+      UID: 15370837172034379813
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-74.4586716, 31.627758, 11.2935848]
+        Rotate: [180, -0, 180]
+        Scale: [0.0145000033, 0.0145000005, 0.0145000033]
+    ModelComponent:
+      ModelID: 12373711864448078618
+      MaterialID: 1781146247448718189
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _turnSoundPath1
+          filePaths:
+            - Resources/Audio/StatueTurn_01.wav
+          loop: false
+          volume: 0.507000029
+          priority: 116
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 17.7000008
+        - name: _turnSoundPath2
+          filePaths:
+            - Resources/Audio/StatueTurn_02.wav
+          loop: false
+          volume: 0.504000008
+          priority: 113
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 15.6000004
+        - name: _turnSoundPath3
+          filePaths:
+            - Resources/Audio/StatueTurn_03.wav
+          loop: false
+          volume: 0.541999996
+          priority: 112
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 16.2999992
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/VO_Statue_003.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 0.5
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.EnemyController
+      ParamsJSON: "{\n  \"_entityName\": \"Sentry_level2_SR1\"\n}"
+  - InfoComponent:
+      Parent: 15370837172034379813
+      Name: Sentry Vision Cone SR1
+      UID: 2430118508094887219
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-64.1180191, 26.2603378, -1.22266841]
+        Rotate: [-180, 309.264648, -180]
+        Scale: [66.4224243, 48.3170776, 102.520729]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.SpotlightFollower
+      ParamsJSON: "{\n  \"targetName\": \"Sentry_level2_SR1\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [1, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 2, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [50, 140, 50]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: CAPSULE
+    InfoComponent:
+      Parent: 0
+      Name: Level2_PatrolEnemy_SR2
+      UID: 12136419742891716940
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-80.1848984, 35.0519485, -19.5979576]
+        Rotate: [0, 1.00179122e-05, 0]
+        Scale: [0.0399999991, 0.0250000004, 0.0399999991]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0399999991, 0.0250000004, 0.0399999991]
+        FreezeRotationX: true
+        FreezeRotationY: true
+        FreezeRotationZ: true
+        Type: DYNAMIC
+    ModelComponent:
+      ModelID: 13853980779029380669
+      MaterialID: 3895109391993840374
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _footstepSoundPath
+          filePaths:
+            - Resources/Audio/footstep_stone_1.wav
+          loop: false
+          volume: 0.527999997
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 17
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_Alert_020.wav
+          loop: false
+          volume: 0.81099999
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 0.5
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50.4000015
+        - name: _gruntSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_001.wav
+          loop: false
+          volume: 0.621999979
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.400000006
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 14.8999996
+    AnimatorComponent:
+      Clips:
+        - name: mixamo.com
+          filePath: ""
+        - name: Zombie Walk
+          filePath: Resources/Models/Enemy/Patrol2Textures/Zombie Walk.fbx
+      States:
+        - name: State 0
+          clipIndex: 1
+          speed: 0.330000013
+          loop: false
+          transitions:
+            - targetStateIndex: 0
+              conditionType: 0
+              parameterName: IsWalking
+              floatValue: 0
+              boolValue: false
+              transitionDuration: 0.469999999
+              hasExitTime: false
+              exitTime: 0.899999976
+      FloatParams:
+        Speed: 0
+      BoolParams:
+        ApplyRootMotion: false
+      CurrentStateIndex: 0
+    NavAgentComponent:
+      Target: [-30.8884773, 25.1219196, 23.4795647]
+      Speed: 2.5
+      ArriveRadius: 0.150000006
+      Active: true
+      RepathCooldown: 0.25
+      RetargetDistance: 0.5
+      FollowName: ""
+    AIComponent:
+      Mode: 0
+      PlayerName: ""
+      DetectRadius: 8
+      LoseRadius: 12
+      IdleWait: 2.00999999
+      PatrolPoints:
+        - [-80.1848984, 35.0519485, -10.3347406]
+        - [-80.1848984, 35.0519485, -19.5979576]
+      PatrolIndex: 0
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolEnemyController
+      ParamsJSON: "{\n  \"_entityName\": \"Level2_PatrolEnemy_SR2\",\n  \"_spotlightName\": \"\"\n}"
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 2, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [50, 140, 50]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: CAPSULE
+    InfoComponent:
+      Parent: 0
+      Name: Level2_PatrolEnemy_SR1
+      UID: 6083771285248340239
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-15.9240818, 13.9296732, 75.7746887]
+        Rotate: [0, 1.00179122e-05, 0]
+        Scale: [0.0399999991, 0.0250000004, 0.0399999991]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0399999991, 0.0250000004, 0.0399999991]
+        FreezeRotationX: true
+        FreezeRotationY: true
+        FreezeRotationZ: true
+        Type: DYNAMIC
+    ModelComponent:
+      ModelID: 13853980779029380669
+      MaterialID: 3895109391993840374
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _footstepSoundPath
+          filePaths:
+            - Resources/Audio/footstep_stone_1.wav
+          loop: false
+          volume: 0.527999997
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 17
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_Alert_020.wav
+          loop: false
+          volume: 0.81099999
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 0.5
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50.4000015
+        - name: _gruntSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_001.wav
+          loop: false
+          volume: 0.621999979
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.400000006
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 14.8999996
+    AnimatorComponent:
+      Clips:
+        - name: mixamo.com
+          filePath: ""
+        - name: Zombie Walk
+          filePath: Resources/Models/Enemy/Patrol2Textures/Zombie Walk.fbx
+      States:
+        - name: State 0
+          clipIndex: 1
+          speed: 0.330000013
+          loop: false
+          transitions:
+            - targetStateIndex: 0
+              conditionType: 0
+              parameterName: IsWalking
+              floatValue: 0
+              boolValue: false
+              transitionDuration: 0.469999999
+              hasExitTime: false
+              exitTime: 0.899999976
+      FloatParams:
+        Speed: 0
+      BoolParams:
+        ApplyRootMotion: false
+      CurrentStateIndex: 0
+    NavAgentComponent:
+      Target: [-30.8884773, 25.1219196, 23.4795647]
+      Speed: 2.5
+      ArriveRadius: 0.150000006
+      Active: true
+      RepathCooldown: 0.25
+      RetargetDistance: 0.5
+      FollowName: ""
+    AIComponent:
+      Mode: 0
+      PlayerName: ""
+      DetectRadius: 8
+      LoseRadius: 12
+      IdleWait: 2.00999999
+      PatrolPoints:
+        - [-25.1532955, 13.9296732, 75.7746887]
+        - [-15.9240818, 13.9296732, 75.7746887]
+      PatrolIndex: 0
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolEnemyController
+      ParamsJSON: "{\n  \"_entityName\": \"Level2_PatrolEnemy_SR1\",\n  \"_spotlightName\": \"\"\n}"
