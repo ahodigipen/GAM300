@@ -25,6 +25,8 @@
 #include "Graphics/Shaders/DebugLines.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
+#include <thread>
+#include <chrono>
 #include "Scripting/MonoRuntime.h"
 #include "Scripting/ScriptingSystem.h"
 #include "Scripting/ScriptBinding.h"
@@ -112,6 +114,7 @@ namespace Boom
 		float m_TestRot = 0.0f;
 
 		bool m_PhysDebugViz = false;
+		bool m_Is30FPSLimit = false; // Toggle for 30fps testing
 
 		// --- Mono State ---
 		MonoDomain* m_MonoRootDomain = nullptr;
@@ -1658,9 +1661,15 @@ namespace Boom
 		BOOM_INLINE void ComputeFrameDeltaTime()
 		{
 			static double sLastTime = glfwGetTime();
-			double currentTime = glfwGetTime();
 
-			// Calculate raw delta time
+			if (m_Is30FPSLimit) {
+				const double targetFrameTime = 1.0 / 30.0;
+				while (glfwGetTime() - sLastTime < targetFrameTime) {
+					std::this_thread::sleep_for(std::chrono::microseconds(500));
+				}
+			}
+
+			double currentTime = glfwGetTime();
 			double rawDelta = (currentTime - sLastTime);
 
 			// Cap delta time to prevent physics tunneling after long frames (like scene loading)

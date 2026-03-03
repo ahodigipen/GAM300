@@ -2790,7 +2790,7 @@ ENTITIES:
       MaterialSource: ""
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 2, 0]
+        LocalPosition: [0, 1.9, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [50, 140, 50]
         DynamicFriction: 0.5
@@ -2935,7 +2935,7 @@ ENTITIES:
       ParamsJSON: "{\n  \"_entityName\": \"Level2_PatrolEnemy_6\",\n  \"_spotlightName\": \"Patrol Vision Cone 6 (lvl 2)\"\n}"
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 1.98000002, 0]
+        LocalPosition: [0, 1.9, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [50, 140, 50]
         DynamicFriction: 0.5
@@ -3078,7 +3078,7 @@ ENTITIES:
       ParamsJSON: "{\n  \"_entityName\": \"Level2_PatrolEnemy_5\",\n  \"_spotlightName\": \"Patrol Vision Cone 2(lvl 2)\"\n}"
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 2, 0]
+        LocalPosition: [0, 1.9, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [50, 140, 50]
         DynamicFriction: 0.5

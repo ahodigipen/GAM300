@@ -332,7 +332,7 @@ namespace GameScripts
 
             // --- Improved Gravity Handling for Slopes ---
             // Use a larger probe distance for better slope detection
-            bool isGrounded = API.IsGrounded(Entity, 0.5f);
+            bool isGrounded = API.IsGrounded(Entity, 1.5f);
 
             // Additional slope check - raycast downward to detect ground beneath
             bool onSlope = false;
@@ -347,58 +347,20 @@ namespace GameScripts
 
             if (!isGrounded && !onSlope)
             {
-                // Truly airborne: Apply gravity
-                _verticalVelocity -= GRAVITY * dt;
-
-                // Clamp fall speed
-                const float MAX_FALL_SPEED = -20f;
-                if (_verticalVelocity < MAX_FALL_SPEED)
-                    _verticalVelocity = MAX_FALL_SPEED;
-
-                // Manual physics simulation
-                Vec3 gravityPos = API.GetPosition(Entity);
-                float dy = _verticalVelocity * dt;
-
-                // Prevent falling through floor
-                Vec3 from = new Vec3(gravityPos.X, gravityPos.Y + 0.1f, gravityPos.Z);
-                Vec3 to = new Vec3(gravityPos.X, gravityPos.Y + dy - 0.1f, gravityPos.Z);
-
-                if (!API.Linecast(from, to, Entity))
-                {
-                    gravityPos.Y += dy;
-                    API.TeleportRigidBody(Entity, gravityPos);
-                    API.SetNavAgentPosition(Entity, gravityPos);
-                }
-                else
-                {
-                    _verticalVelocity = 0f;
-                }
-            }
-            else if (onSlope && !isGrounded)
-            {
-                // On slope but not fully grounded - apply gentle downward force to stick to slope
-                _verticalVelocity = -2.0f; // Stronger stick force for slopes
-
-                Vec3 gravityPos = API.GetPosition(Entity);
-                float dy = _verticalVelocity * dt;
-
-                Vec3 from = new Vec3(gravityPos.X, gravityPos.Y + 0.1f, gravityPos.Z);
-                Vec3 to = new Vec3(gravityPos.X, gravityPos.Y + dy - 0.1f, gravityPos.Z);
-
-                if (!API.Linecast(from, to, Entity))
-                {
-                    gravityPos.Y += dy;
-                    API.TeleportRigidBody(Entity, gravityPos);
-                    API.SetNavAgentPosition(Entity, gravityPos);
-                }
-                else
-                {
-                    _verticalVelocity = 0f;
-                }
+                // Truly airborne: Physics engine handles gravity automatically because it's a DYNAMIC body.
+                // We just ensure our internal tracker doesn't interfere.
+                _verticalVelocity = v.Y; 
             }
             else
             {
-                // Grounded: reset vertical velocity
+                // Grounded or on slope: Apply a small downward velocity to stay glued to the floor/slopes.
+                // This is safer than manual teleporting which causes phasing at low FPS.
+                if (v.Y > 0.1f) {
+                     // If something (like a bump) pushed us up, let it happen
+                } else {
+                    Vec3 stickVel = new Vec3(v.X, -5.0f, v.Z);
+                    API.SetLinearVelocity(Entity, stickVel);
+                }
                 _verticalVelocity = 0f;
             }
 
@@ -636,14 +598,23 @@ namespace GameScripts
                 return;
             }
 
-            float baseYaw = ComputeYawFromVelocity(vx, vz);
-            float targetYawDeg = baseYaw;
-
+            float targetYawDeg = ComputeYawFromVelocity(vx, vz);
+            
+            // Frame-rate independent smoothing
+            // We use a lerp-like approach: current = current + (target - current) * (1 - exp(-speed * dt))
             float delta = Wrap180(targetYawDeg - _yaw);
+            
+            // Adjust rotation speed based on the size of the turn
+            float turnSpeedMultiplier = 1.0f;
+            if (Math.Abs(delta) > 90f) turnSpeedMultiplier = 1.5f; // Turn faster for large angles
+            
+            float step = delta * (1f - (float)Math.Exp(-10f * turnSpeedMultiplier * dt));
+            
+            // Clamp step to max rotation speed to prevent teleporting rotation
             float maxStep = _rotationSpeedDeg * dt;
+            if (Math.Abs(step) > maxStep) step = Math.Sign(step) * maxStep;
 
-            _yaw = (Math.Abs(delta) <= maxStep) ? targetYawDeg : _yaw + Math.Sign(delta) * maxStep;
-            _yaw = Wrap360(_yaw);
+            _yaw = Wrap360(_yaw + step);
             SetRotationAndSpotlight(_yaw);
         }
 

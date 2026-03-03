@@ -58,6 +58,12 @@ namespace Boom
         internal extern static void Boom_API_Log(string msg);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_Set30FPSLimit(bool enabled);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Boom_API_Get30FPSLimit();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static ulong Boom_API_FindEntity(string name);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -565,6 +571,9 @@ namespace Boom
         // Cache trigger callbacks to prevent garbage collection
         private static System.Collections.Generic.Dictionary<ulong, TriggerCallback> s_TriggerEnterCallbacks = new System.Collections.Generic.Dictionary<ulong, TriggerCallback>();
         private static System.Collections.Generic.Dictionary<ulong, TriggerCallback> s_TriggerExitCallbacks = new System.Collections.Generic.Dictionary<ulong, TriggerCallback>();
+
+        public static void Set30FPSLimit(bool enabled) => Native.Boom_API_Set30FPSLimit(enabled);
+        public static bool Get30FPSLimit() => Native.Boom_API_Get30FPSLimit();
 
         // ===== Logging =====
         public static void Log(string s) => Native.Boom_API_Log(s);
@@ -1384,26 +1393,28 @@ namespace Boom
 
 
         // ===== GLFW key codes =====
+        public const int KEY_A = 65;
+        public const int KEY_S = 83;
+        public const int KEY_D = 68;
+        public const int KEY_W = 87;
+        public const int KEY_E = 69;
+        public const int KEY_F = 70;
+        public const int KEY_G = 71;
+        public const int KEY_H = 72;
+        public const int KEY_K = 75;
+        public const int KEY_L = 76;
+        public const int KEY_M = 77;
+        public const int KEY_P = 80;
+        public const int KEY_Q = 81;
+        public const int KEY_R = 82;
+        public const int KEY_Y = 89;
+        public const int KEY_SPACE = 32;
         public const int KEY_LEFT = 263;
         public const int KEY_RIGHT = 262;
         public const int KEY_UP = 265;
         public const int KEY_DOWN = 264;
-        public const int KEY_W = 87;
-        public const int KEY_A = 65;
-        public const int KEY_S = 83;
-        public const int KEY_D = 68;
-        public const int KEY_SPACE = 32;
-        public const int KEY_H = 72;
-        public const int KEY_P = 80;
-        public const int KEY_R = 82;
-        public const int KEY_Y = 89;
-        public const int KEY_M = 77;
-        public const int KEY_Q = 81;
         public const int KEY_LEFT_CONTROL = 341;
         public const int KEY_LEFT_SHIFT = 340;
-        public const int KEY_E = 69; // Use Freeze
-        public const int KEY_F = 70;
-        public const int KEY_G = 71;
         public const int KEY_ESCAPE = 256;
         public const int KEY_F8 = 297;
 
