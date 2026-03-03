@@ -14,13 +14,14 @@ namespace GameScripts
         [Boom.EditorExposed("Rotation Interval", "Time between random rotations in seconds", 0.5f, 10f, true)]
         private float _rotationInterval = 2f;
 
+        private float _initialYRotation = 0f;
         private float _currentYRotation = 0f;
         private float _targetYRotation = 0f;
 
         [Boom.EditorExposed("Rotation Speed", "Degrees per second for smooth rotation", 10f, 360f, true)]
         private float _rotationSpeed = 90f; // Degrees per second for smooth rotation
 
-        [Boom.EditorExposed("Rotation Angle", "Degrees to rotate each turn", 10f, 360f, true)]
+        [Boom.EditorExposed("Rotation Angle", "Degrees to rotate each turn")]
         private float _rotationAngle = 90f; // Degrees to rotate per turn (configurable per sentry)
 
         private bool _isRotating = false;
@@ -116,8 +117,9 @@ namespace GameScripts
             _proximityDetection.EnableDebugLog(_proximityDebugLog);
 
             // Initialize rotation from current entity rotation
-            _currentYRotation = API.GetRotation(Entity).Y;
-            _targetYRotation = _currentYRotation;
+            _initialYRotation = API.GetRotation(Entity).Y;
+            _currentYRotation = _initialYRotation;
+            _targetYRotation = _initialYRotation;
 
             // NEW: Register with PlayerManager
             PlayerManager.RegisterEnemy(this);
@@ -479,6 +481,21 @@ namespace GameScripts
 
             // Reset proximity detection
             _proximityDetection?.ResetDetection();
+
+            // Reset vision/spotlight state
+            var spotlight = SpotlightFollower.GetByTargetName(_entityName);
+            if (spotlight != null)
+                spotlight.SetAlert(false);
+
+            // Restore rotation to original spawn rotation
+            _currentYRotation = _initialYRotation;
+            _targetYRotation = _initialYRotation;
+            _isRotating = false;
+            _rotationTimer = 0f;
+
+            Vec3 rot = API.GetRotation(Entity);
+            rot.Y = _initialYRotation;
+            API.SetRotation(Entity, rot);
 
             //("[EnemyController] Player respawned - all detection states reset");
         }
