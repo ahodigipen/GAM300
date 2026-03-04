@@ -67,13 +67,13 @@ ENTITIES:
       Transform:
         Translate: [3.29299998, 10.2799997, 47.9099998]
         Rotate: [0, -0, 0]
-        Scale: [3, 0.569999993, 3]
+        Scale: [3, 0.569999993, 2.5]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 0.569999993, 3]
+        Previous Scale: [3, 0.569999993, 2.5]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -107,13 +107,13 @@ ENTITIES:
       Transform:
         Translate: [-0.127000004, 10.2799997, 47.9099998]
         Rotate: [0, -0, 0]
-        Scale: [3, 0.569999993, 3]
+        Scale: [3, 0.569999993, 2.5]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 0.569999993, 3]
+        Previous Scale: [3, 0.569999993, 2.5]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -147,13 +147,13 @@ ENTITIES:
       Transform:
         Translate: [-3.26699996, 10.2799997, 42.5900002]
         Rotate: [0, -0, 0]
-        Scale: [3, 0.569999993, 3]
+        Scale: [3, 0.569999993, 2.5]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 0.569999993, 3]
+        Previous Scale: [3, 0.569999993, 2.5]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -185,15 +185,15 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.133000001, 10.2799997, 40.8199997]
+        Translate: [0.133000016, 10.2799997, 40.8199997]
         Rotate: [0, -0, 0]
-        Scale: [3, 0.569999993, 3]
+        Scale: [3, 0.569999993, 2.5]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 0.569999993, 3]
+        Previous Scale: [3, 0.569999993, 2.5]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -227,13 +227,13 @@ ENTITIES:
       Transform:
         Translate: [-3.24699998, 10.2799997, 38.2799988]
         Rotate: [0, -0, 0]
-        Scale: [3, 0.569999993, 3]
+        Scale: [3, 0.569999993, 2.5]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 0.569999993, 3]
+        Previous Scale: [3, 0.569999993, 2.5]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -267,13 +267,13 @@ ENTITIES:
       Transform:
         Translate: [-0.546999991, 10.2799997, 32.9199982]
         Rotate: [0, -0, 0]
-        Scale: [3, 0.569999993, 3]
+        Scale: [3, 0.569999993, 2.5]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 0.569999993, 3]
+        Previous Scale: [3, 0.569999993, 2.5]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -305,15 +305,15 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [3.31299996, 10.2799997, 31.7299995]
+        Translate: [3.31299996, 10.2306776, 31.7299995]
         Rotate: [0, -0, 0]
-        Scale: [3, 0.569999993, 3]
+        Scale: [3, 0.569999993, 2.5]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 0.569999993, 3]
+        Previous Scale: [3, 0.569999993, 2.5]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -345,15 +345,15 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.00700000022, 10.2799997, 29]
+        Translate: [-0.00699998438, 10.2799997, 29]
         Rotate: [0, -0, 0]
-        Scale: [3, 0.569999993, 3]
+        Scale: [3, 0.569999993, 2.5]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 0.569999993, 3]
+        Previous Scale: [3, 0.569999993, 2.5]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -387,13 +387,13 @@ ENTITIES:
       Transform:
         Translate: [-3.06668544, 10.2799997, 23.9899998]
         Rotate: [0, -0, 0]
-        Scale: [3, 0.569999993, 3]
+        Scale: [3, 0.569999993, 2.5]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 0.569999993, 3]
+        Previous Scale: [3, 0.569999993, 2.5]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -427,13 +427,13 @@ ENTITIES:
       Transform:
         Translate: [3.04500008, 10.2799997, 23.9899998]
         Rotate: [0, -0, 0]
-        Scale: [3, 0.569999993, 3]
+        Scale: [3, 0.569999993, 2.5]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 0.569999993, 3]
+        Previous Scale: [3, 0.569999993, 2.5]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -510,15 +510,15 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-3.52764249, 15, 15]
+        Translate: [-3.52764249, 16, 15]
         Rotate: [0, -0, 0]
-        Scale: [3, 3, 3]
+        Scale: [3, 2, 3]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 3, 3]
+        Previous Scale: [3, 2, 3]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -550,15 +550,15 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.155175328, 15, 15]
+        Translate: [-0.155175328, 16, 15]
         Rotate: [0, -0, 0]
-        Scale: [3, 3, 3]
+        Scale: [3, 2, 3]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 3, 3]
+        Previous Scale: [3, 2, 3]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -590,15 +590,15 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [3.29633808, 15, 10]
+        Translate: [3.29633808, 16, 10]
         Rotate: [0, -0, 0]
-        Scale: [3, 3, 3]
+        Scale: [3, 2, 3]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 3, 3]
+        Previous Scale: [3, 2, 3]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -630,15 +630,15 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, 15, 5]
+        Translate: [0, 16, 5]
         Rotate: [0, -0, 0]
-        Scale: [3, 3, 3]
+        Scale: [3, 2, 3]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 3, 3]
+        Previous Scale: [3, 2, 3]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -839,13 +839,8 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [1.07700002, 17.3896294, -3.56820607]
-        Rotate: [0, -0, 9.53121059e-07]
+        Rotate: [67.8669968, 36.7610016, 14.1389999]
         Scale: [0.999990106, 0.999870121, 0.99986285]
-    PointLightComponent:
-      Light:
-        Radiance: [1, 0.227450982, 0.615686297]
-        Intensity: 100000.844
-        Range: 1
   - InfoComponent:
       Parent: 0
       Name: Wall
@@ -910,18 +905,18 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.899946332, 13.3328743, -9.07105446]
-        Rotate: [173.085007, 1801.35107, 180]
+        Translate: [0.475475818, 14.6528025, -5.09310627]
+        Rotate: [170.522507, 2161.35107, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.00100000005
         FarPlane: 935.47998
-        FOV: 59
+        FOV: 92
     ThirdPersonCameraComponent:
-      Target UID: 0
-      Offset: [0.00999999978, 4.1500001, 0]
-      Current Distance: 1
+      Target UID: 15509033343906787136
+      Offset: [0.00999999978, 4.5, 0]
+      Current Distance: 5
       Min Distance: 1
       Max Distance: 5
       Current Yaw: -5763
@@ -1231,3 +1226,177 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Samurai
+      UID: 15509033343906787136
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 10, 0]
+        Rotate: [0, 0, 0]
+        Scale: [0.0160000008, 0.0160000008, 0.0160000008]
+    CharacterControllerComponent:
+      Radius: 0.800000012
+      Height: 4.80000019
+      StepOffset: 0.400000006
+      ContactOffset: 0.100000001
+      SlopeLimit: 45
+      LocalOffset: [0, 2.4000001, 0]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0160000008, 0.0160000008, 0.0160000008]
+        FreezeRotationX: true
+        FreezeRotationY: true
+        FreezeRotationZ: true
+        Type: DYNAMIC
+    ModelComponent:
+      ModelID: 13442844895534072968
+      MaterialID: 13160241162385617845
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    AnimatorComponent:
+      Clips:
+        - name: mixamo.com
+          filePath: ""
+        - name: Walking
+          filePath: Resources/Models/Player/animations/Walking.fbx
+        - name: Samurai New Walk
+          filePath: Resources/Models/Player/animations/Samurai New Walk.fbx
+        - name: Fast Run
+          filePath: Resources/Models/Player/animations/Fast Run.fbx
+        - name: Samurai Idle
+          filePath: Resources/Models/Samurai Idle.fbx
+        - name: run
+          filePath: Resources/Models/run.fbx
+        - name: Stand To Roll (1)
+          filePath: Resources/Models/Player/animations/Stand To Roll (1).fbx
+        - name: Crouching Idle
+          filePath: Resources/Models/Player/animations/Crouching Idle.fbx
+      States:
+        - name: Walk
+          clipIndex: 2
+          speed: 1
+          loop: true
+          transitions:
+            - targetStateIndex: 2
+              conditionType: 2
+              parameterName: Speed
+              floatValue: 0.100000001
+              boolValue: false
+              transitionDuration: 0.25
+              hasExitTime: false
+              exitTime: 0.899999976
+            - targetStateIndex: 1
+              conditionType: 1
+              parameterName: Speed
+              floatValue: 5.0999999
+              boolValue: false
+              transitionDuration: 0.25
+              hasExitTime: false
+              exitTime: 0.899999976
+            - targetStateIndex: 1
+              conditionType: 3
+              parameterName: Sprint
+              floatValue: 0
+              boolValue: true
+              transitionDuration: 0.25
+              hasExitTime: false
+              exitTime: 0.899999976
+        - name: Run
+          clipIndex: 5
+          speed: 1
+          loop: true
+          transitions:
+            - targetStateIndex: 0
+              conditionType: 3
+              parameterName: Sprint
+              floatValue: 0
+              boolValue: false
+              transitionDuration: 0.25
+              hasExitTime: false
+              exitTime: 0.899999976
+            - targetStateIndex: 0
+              conditionType: 2
+              parameterName: Speed
+              floatValue: 2.4000001
+              boolValue: false
+              transitionDuration: 0.25
+              hasExitTime: false
+              exitTime: 0.899999976
+            - targetStateIndex: 2
+              conditionType: 2
+              parameterName: Speed
+              floatValue: 0.100000001
+              boolValue: false
+              transitionDuration: 0.25
+              hasExitTime: false
+              exitTime: 0.899999976
+        - name: Idle
+          clipIndex: 4
+          speed: 1
+          loop: true
+          transitions:
+            - targetStateIndex: 0
+              conditionType: 3
+              parameterName: IsMoving
+              floatValue: 0
+              boolValue: true
+              transitionDuration: 0.25
+              hasExitTime: false
+              exitTime: 0.899999976
+            - targetStateIndex: 0
+              conditionType: 1
+              parameterName: Speed
+              floatValue: 0.200000003
+              boolValue: false
+              transitionDuration: 0.25
+              hasExitTime: false
+              exitTime: 0.899999976
+            - targetStateIndex: 1
+              conditionType: 3
+              parameterName: Sprint
+              floatValue: 0
+              boolValue: true
+              transitionDuration: 0.5
+              hasExitTime: false
+              exitTime: 0.899999976
+            - targetStateIndex: 3
+              conditionType: 3
+              parameterName: IsCrouching
+              floatValue: 0
+              boolValue: true
+              transitionDuration: 0.25
+              hasExitTime: false
+              exitTime: 0.899999976
+        - name: Crouching
+          clipIndex: 7
+          speed: 1
+          loop: true
+          transitions:
+            - targetStateIndex: 2
+              conditionType: 3
+              parameterName: IsCrouching
+              floatValue: 0
+              boolValue: false
+              transitionDuration: 0.25
+              hasExitTime: false
+              exitTime: 0.899999976
+      FloatParams:
+        Speed: 0
+      BoolParams:
+        IsMoving: false
+        Sprint: false
+        IsCrouching: false
+        IsSneaking: false
+        IsRolling: false
+      CurrentStateIndex: 2
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PlayerMovement
+      ParamsJSON: "{\n  \"_level2Pos\": {\n    \"X\": 0.0,\n    \"Y\": 10.0,\n    \"Z\": 0.0\n  },\n  \"_levelStartPos\": {\n    \"X\": 0.0,\n    \"Y\": 10.0,\n    \"Z\": 0.0\n  }\n}"
