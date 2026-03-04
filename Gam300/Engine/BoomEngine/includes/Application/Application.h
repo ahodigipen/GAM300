@@ -920,6 +920,7 @@ namespace Boom
 			// Early exit if no directional lights
 			if (dirLightCount == 0) {
 				m_Context->renderer->SetShadowsEnabled(false);
+				glDisable(GL_CULL_FACE);
 				return;
 			}
 
@@ -977,6 +978,7 @@ namespace Boom
 				});
 
 			glCullFace(GL_BACK);
+			glDisable(GL_CULL_FACE);
 
 			// Render spot light shadows
 			RenderSpotShadowScene();
@@ -1050,6 +1052,7 @@ namespace Boom
 				});
 
 			glCullFace(GL_BACK);
+			glDisable(GL_CULL_FACE);
 
 			// Upload spot shadow data to the PBR shader
 			if (spotShadowIndex > 0) {
