@@ -928,6 +928,7 @@ namespace Boom
         if (!isPicking) {
             m_Context->renderer->RenderInstancedBatches(*m_Context->assets);
         }
+        glDisable(GL_CULL_FACE);
 
         // === TRANSPARENT OBJECTS PASS ===
         // Render transparent objects (batched + individual)
