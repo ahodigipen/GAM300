@@ -31,6 +31,11 @@ namespace Boom {
 #ifdef _WIN32
             // Use XInput for gamepad polling
             pollXInput();
+
+            // If no XInput controller is found, fallback to GLFW (handles Bluetooth/DirectInput controllers)
+            if (!m_cur.GamepadConnected) {
+                pollGLFWGamepad();
+            }
 #else
             // Fallback to GLFW gamepad on non-Windows platforms
             pollGLFWGamepad();
@@ -101,12 +106,12 @@ namespace Boom {
         }
         bool mousePressed(int button) const {
             return (button >= 0 && button <= GLFW_MOUSE_BUTTON_LAST)
-                ? (m_cur.Mouse.test(size_t(button)) && !m_prev.Mouse.test(size_t(button)))
+                ? (button < (int)m_cur.Mouse.size() && m_cur.Mouse.test(size_t(button)) && !m_prev.Mouse.test(size_t(button)))
                 : false;
         }
         bool mouseReleased(int button) const {
             return (button >= 0 && button <= GLFW_MOUSE_BUTTON_LAST)
-                ? (!m_cur.Mouse.test(size_t(button)) && m_prev.Mouse.test(size_t(button)))
+                ? (button < (int)m_cur.Mouse.size() && !m_cur.Mouse.test(size_t(button)) && m_prev.Mouse.test(size_t(button)))
                 : false;
         }
 
@@ -231,6 +236,16 @@ namespace Boom {
         }
 #endif
 
+        float normalizeAxis(float value, float deadzone) const {
+            float absVal = std::abs(value);
+            if (absVal < deadzone)
+                return 0.0f;
+
+            // Remap from [deadzone, 1.0] to [0.0, 1.0]
+            float sign = (value > 0.0f) ? 1.0f : -1.0f;
+            return sign * (absVal - deadzone) / (1.0f - deadzone);
+        }
+
         void pollGLFWGamepad() {
             // Original GLFW gamepad polling code (for non-Windows platforms)
             static bool s_joyLogged[GLFW_JOYSTICK_LAST + 1] = { false };
@@ -256,8 +271,16 @@ namespace Boom {
                         m_cur.GamepadConnected = true;
                         for (int i = 0; i <= GLFW_GAMEPAD_BUTTON_LAST; ++i)
                             m_cur.GamepadButtons.set(i, state.buttons[i] == GLFW_PRESS);
-                        for (int i = 0; i <= GLFW_GAMEPAD_AXIS_LAST; ++i)
-                            m_cur.GamepadAxes[i] = state.axes[i];
+                        
+                        // Apply deadzones to stick axes
+                        m_cur.GamepadAxes[GLFW_GAMEPAD_AXIS_LEFT_X] = normalizeAxis(state.axes[GLFW_GAMEPAD_AXIS_LEFT_X], m_leftStickDeadzone);
+                        m_cur.GamepadAxes[GLFW_GAMEPAD_AXIS_LEFT_Y] = normalizeAxis(state.axes[GLFW_GAMEPAD_AXIS_LEFT_Y], m_leftStickDeadzone);
+                        m_cur.GamepadAxes[GLFW_GAMEPAD_AXIS_RIGHT_X] = normalizeAxis(state.axes[GLFW_GAMEPAD_AXIS_RIGHT_X], m_rightStickDeadzone);
+                        m_cur.GamepadAxes[GLFW_GAMEPAD_AXIS_RIGHT_Y] = normalizeAxis(state.axes[GLFW_GAMEPAD_AXIS_RIGHT_Y], m_rightStickDeadzone);
+                        
+                        // Triggers
+                        m_cur.GamepadAxes[GLFW_GAMEPAD_AXIS_LEFT_TRIGGER] = state.axes[GLFW_GAMEPAD_AXIS_LEFT_TRIGGER];
+                        m_cur.GamepadAxes[GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER] = state.axes[GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER];
                         break;
                     }
                 }
