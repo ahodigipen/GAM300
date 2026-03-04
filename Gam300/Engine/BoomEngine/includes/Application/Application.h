@@ -911,6 +911,7 @@ namespace Boom
 
 		BOOM_INLINE void RenderShadowScene() {
 
+			glEnable(GL_CULL_FACE);
 			glCullFace(GL_FRONT);
 			// Count directional lights first
 			int dirLightCount = 0;
