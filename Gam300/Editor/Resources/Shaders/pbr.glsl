@@ -134,6 +134,7 @@ uniform float u_bloomThreshold = 1.0;
 struct GPUPointLight {
     vec4 position_range;
     vec4 radiance_intensity;
+    vec4 bloomStrength_padding;  // x = bloomStrength, yzw = padding
 };
 
 struct GPUDirLight {
@@ -261,7 +262,7 @@ vec3 FresnelSchlick(float cosTheta, vec3 f0);
 float GeometrySchlickGGX(float nDotV, float roughness);
 float GeometrySmithGGX(float nDotV, float nDotL, float roughness);
 float DistributionGGX(vec3 N, vec3 H, float roughness);
-vec3 ComputePointLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, float metallic);
+vec3 ComputePointLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, float metallic, out vec3 bloomContribution);
 vec3 ComputeDirLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, float metallic);
 vec3 ComputeSpotLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, float metallic);
 
@@ -324,7 +325,8 @@ void main() {
 
     float shadow = ComputeShadow();
 
-    vec3 pointLight = ComputePointLights(N, V, f0, albedo, roughness, metallic);
+    vec3 pointLightBloom;  // Bloom contribution from point lights (with per-light bloom strength applied)
+    vec3 pointLight = ComputePointLights(N, V, f0, albedo, roughness, metallic, pointLightBloom);
     vec3 dirLight = ComputeDirLights(N, V, f0, albedo, roughness, metallic);
     vec3 spotLight = ComputeSpotLights(N, V, f0, albedo, roughness, metallic);
 
@@ -336,9 +338,11 @@ void main() {
 
     color += emissive;
 
-    float brightness = dot(color, BLOOM_THRESHOLD);
+    // Calculate bloom: use point light bloom contribution (with per-light bloom multiplier) + other lights + emissive
+    vec3 bloomColor = pointLightBloom * occlusion + (dirLight * (1.0 - shadow) + spotLight) * occlusion + emissive;
+    float brightness = dot(bloomColor, BLOOM_THRESHOLD);
     float soft = clamp((brightness - u_bloomThreshold) / max(u_bloomThreshold, 0.001), 0.0, 1.0);
-    out_brightness = vec4(color * soft, 1.0);
+    out_brightness = vec4(bloomColor * soft, 1.0);
 
     float colorDepth = 32.0;
     vec3 quanColor = floor(color * colorDepth) / colorDepth;
@@ -372,8 +376,9 @@ float DistributionGGX(vec3 N, vec3 H, float roughness) {
     float denom = nDotHSq * (aSq - 1.0) + 1.0;
     return aSq / (PI * denom * denom);
 }
-vec3 ComputePointLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, float metallic) {
+vec3 ComputePointLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, float metallic, out vec3 bloomContribution) {
     vec3 result = vec3(0.0);
+    bloomContribution = vec3(0.0);
 
     int count = min(noPointLight, MAX_POINT_LIGHTS);
 
@@ -384,6 +389,7 @@ vec3 ComputePointLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, f
         float lightRange    = pl.position_range.w;
         vec3  lightRadiance = pl.radiance_intensity.rgb;
         float lightIntensity= pl.radiance_intensity.w;
+        float bloomStrength = pl.bloomStrength_padding.x;
 
         vec3 L = normalize(lightPos - vertex.position);
         vec3 H = normalize(L + V);
@@ -403,7 +409,9 @@ vec3 ComputePointLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, f
 
         float attenuation = lightIntensity / (dist * dist);
 
-        result += (diffuse + specular) * lightRadiance * attenuation * nDotL;
+        vec3 lightContrib = (diffuse + specular) * lightRadiance * attenuation * nDotL;
+        result += lightContrib;
+        bloomContribution += lightContrib * bloomStrength;  // Apply per-light bloom strength
     }
     return result;
 }
