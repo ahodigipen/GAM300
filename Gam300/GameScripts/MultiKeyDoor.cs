@@ -38,6 +38,10 @@ namespace GameScripts
         [Boom.EditorExposed("Close Delay", "Delay before auto-closing in seconds", 0f, 5f, true)]
         private float _closeDelay = 0f;
 
+        [Boom.EditorExposed("Slide Direction", "Direction the door slides when opened",
+            options: new[] { "left", "right", "front", "back" })]
+        private string _slideDirection = "left";
+
         // Audio
         [Boom.EditorExposed("Door Sound", "Sound played when door opens/closes")]
         private string _doorSoundPath = "Resources/Audio/unlock.wav";
@@ -47,7 +51,7 @@ namespace GameScripts
         // Cached positions and direction
         private Vec3 _basePos;
         private Vec3 _targetPos;
-        private Vec3 _leftDir; // unit vector
+        private Vec3 _slideDir; // unit vector
 
         // Door entity (found as child)
         private ulong _doorEntity = 0;
@@ -117,21 +121,49 @@ namespace GameScripts
                 return;
             }
 
-            // Cache base position and compute left direction from yaw
+            // Cache base position and Euler rotations
             _basePos = API.GetPosition(Entity);
-            float yawDeg = API.GetRotation(Entity).Y;
+            Vec3 rot = API.GetRotation(Entity);
+            float yawDeg = rot.Y;
+            float rollDeg = rot.Z; // Grab the Z rotation
+
             float yawRad = yawDeg * (float)Math.PI / 180f;
 
-            // Forward = (sin(yaw), cos(yaw)); Left (CCW) = (-cos(yaw), sin(yaw))
+            // Base forward and right vectors based purely on Yaw
             float fx = (float)Math.Sin(yawRad);
             float fz = (float)Math.Cos(yawRad);
-            _leftDir = new Vec3(fz, 0f, -fx); // unit left vector in XZ
 
-            // Target position = base + left * distance
+            // If the door is rolled ~180 degrees, it's visually flipped, so we invert the left/right axis
+            bool isFlipped = Math.Abs(rollDeg) > 90f && Math.Abs(rollDeg) < 270f;
+            float flipMult = isFlipped ? -1f : 1f;
+
+            Vec3 moveDir = new Vec3(0f, 0f, 0f);
+            string dirLower = _slideDirection.Trim().ToLowerInvariant();
+
+            if (dirLower == "right")
+            {
+                moveDir = new Vec3(fz * flipMult, 0f, -fx * flipMult);
+            }
+            else if (dirLower == "front")
+            {
+                // Note: If your forward/back are also feeling inverted, just add * flipMult to fx and fz here too
+                moveDir = new Vec3(fx, 0f, fz);
+            }
+            else if (dirLower == "back")
+            {
+                moveDir = new Vec3(-fx, 0f, -fz);
+            }
+            else // Default to Left
+            {
+                moveDir = new Vec3(-fz * flipMult, 0f, fx * flipMult);
+            }
+            _slideDir = moveDir;
+
+            // Target position = base + moveDir * distance
             _targetPos = new Vec3(
-                _basePos.X + _leftDir.X * _slideDistance,
+                _basePos.X + _slideDir.X * _slideDistance,
                 _basePos.Y,
-                _basePos.Z + _leftDir.Z * _slideDistance
+                _basePos.Z + _slideDir.Z * _slideDistance
             );
 
             // Calculate and store offset from trigger to door
@@ -289,23 +321,14 @@ namespace GameScripts
 
             if (missingKeys.Count > 0)
             {
-                API.Log($"[MultiKeyDoor] Player is missing keys: {string.Join(", ", missingKeys)} - door will not move.");
-
                 // Show dynamic missing keys message
-                /*
-                if (missingKeys.Count == 1)
-                {
-                    inst.ShowNoKeyMessage($"This door is locked, missing {missingKeys[0]}.");
-                }
-                else
-                {
+                if (missingKeys.Count > 1) {
                     inst.ShowNoKeyMessage($"This door is locked, missing {missingKeys.Count} keys.");
                 }
-                */
+                else {
+                    inst.ShowNoKeyMessage($"This door is locked, missing {missingKeys.Count} key.");
+                }
 
-                // string missingKeysStr = string.Join(", ", missingKeys);
-                // inst.ShowNoKeyMessage($"This door is locked, missing: {missingKeysStr}.");
-                inst.ShowNoKeyMessage($"This door is locked, missing {missingKeys.Count} keys.");
                 return;
             }
 
@@ -474,6 +497,12 @@ namespace GameScripts
 
                     case "closedelay":
                         if (float.TryParse(val, out f)) _closeDelay = Math.Max(0f, f);
+                        break;
+                        
+                    case "slidedirection":
+                    case "slide direction":
+                    case "direction":
+                        _slideDirection = val;
                         break;
                 }
             }

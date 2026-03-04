@@ -20,19 +20,23 @@ namespace Boom
         public float MinValue { get; }
         public float MaxValue { get; }
         public bool UseSlider { get; }
+        /// <summary>If non-null, the inspector renders a dropdown with these choices (string fields only).</summary>
+        public string[] Options { get; }
 
         public EditorExposedAttribute(
             string displayName = null,
             string tooltip = null,
             float min = float.MinValue,
             float max = float.MaxValue,
-            bool useSlider = false)
+            bool useSlider = false,
+            string[] options = null)
         {
             DisplayName = displayName;
             Tooltip = tooltip;
             MinValue = min;
             MaxValue = max;
             UseSlider = useSlider;
+            Options = options;
         }
     }
 
@@ -1530,21 +1534,31 @@ namespace GameScripts
                             tooltip = attr.Tooltip ?? "",
                             minValue = attr.MinValue,
                             maxValue = attr.MaxValue,
-                            useSlider = attr.UseSlider
+                            useSlider = attr.UseSlider,
+                            options = attr.Options  // may be null
                         };
                     })
                     .ToArray();
 
                 // Simple JSON serialization
                 var json = "[" + string.Join(",", fields.Select(f =>
-                    $"{{\"fieldName\":\"{f.fieldName}\"," +
-                    $"\"displayName\":\"{EscapeJson(f.displayName)}\"," +
-                    $"\"typeName\":\"{f.typeName}\"," +
-                    $"\"tooltip\":\"{EscapeJson(f.tooltip)}\"," +
-                    $"\"minValue\":{f.minValue}," +
-                    $"\"maxValue\":{f.maxValue}," +
-                    $"\"useSlider\":{f.useSlider.ToString().ToLower()}}}"
-                )) + "]";
+                {
+                    // Serialize options array (or empty array if null)
+                    string optionsJson;
+                    if (f.options != null && f.options.Length > 0)
+                        optionsJson = "[" + string.Join(",", f.options.Select(o => $"\"{EscapeJson(o)}\"")) + "]";
+                    else
+                        optionsJson = "[]";
+
+                    return $"{{\"fieldName\":\"{f.fieldName}\"," +
+                           $"\"displayName\":\"{EscapeJson(f.displayName)}\"," +
+                           $"\"typeName\":\"{f.typeName}\"," +
+                           $"\"tooltip\":\"{EscapeJson(f.tooltip)}\"," +
+                           $"\"minValue\":{f.minValue}," +
+                           $"\"maxValue\":{f.maxValue}," +
+                           $"\"useSlider\":{f.useSlider.ToString().ToLower()}," +
+                           $"\"options\":{optionsJson}}}";
+                })) + "]";
 
                 return json;
             }
