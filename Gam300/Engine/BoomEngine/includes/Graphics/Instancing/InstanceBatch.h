@@ -10,10 +10,9 @@ namespace Boom {
     struct InstanceKey {
         AssetID modelID;
         AssetID materialID;
-        bool doubleSided;
 
         bool operator==(const InstanceKey& other) const {
-            return modelID == other.modelID && materialID == other.materialID && doubleSided == other.doubleSided;
+            return modelID == other.modelID && materialID == other.materialID;
         }
     };
 
@@ -22,8 +21,7 @@ namespace Boom {
         size_t operator()(const InstanceKey& key) const {
             // Combine hashes using bit operations
             return std::hash<uint64_t>()(key.modelID) ^
-                   (std::hash<uint64_t>()(key.materialID) << 1) ^
-                   (std::hash<bool>()(key.doubleSided) << 2);
+                   (std::hash<uint64_t>()(key.materialID) << 1);
         }
     };
 
@@ -38,7 +36,6 @@ namespace Boom {
     struct InstanceBatch {
         AssetID modelID = EMPTY_ASSET;
         AssetID materialID = EMPTY_ASSET;
-        bool doubleSided = false;
         std::vector<InstanceData> instances;
 
         // Offset into the flattened SSBO buffer (set during upload)

@@ -390,8 +390,8 @@ namespace Boom {
          * @return true if batched, false if should use immediate draw
          */
         BOOM_INLINE bool AddInstance(AssetID modelID, AssetID materialID,
-                                    const glm::mat4& worldMatrix, bool isAnimated, bool doubleSided = false) {
-            return m_InstanceManager->AddInstance(modelID, materialID, worldMatrix, isAnimated, doubleSided);
+                                    const glm::mat4& worldMatrix, bool isAnimated) {
+            return m_InstanceManager->AddInstance(modelID, materialID, worldMatrix, isAnimated);
         }
 
         /**
@@ -447,20 +447,19 @@ namespace Boom {
             // === Render Single-Sided Static Batches (GL_CULL_FACE already ON from caller) ===
             if (totalStatic > 0) {
                 for (const auto& [key, batch] : m_InstanceManager->GetBatches()) {
-                    if (batch.IsEmpty() || key.doubleSided) continue;
+                    if (batch.IsEmpty()) continue;
 
-                    // Get model
+                    auto* matAsset = batch.materialID != EMPTY_ASSET
+                        ? assets.template TryGet<MaterialAsset>(batch.materialID) : nullptr;
+                    if (matAsset && matAsset->doubleSided) continue; // handled in second pass
+
                     auto* modelAsset = assets.template TryGet<ModelAsset>(batch.modelID);
                     if (!modelAsset || !modelAsset->data) continue;
 
-                    // Get material
                     PbrMaterial material{};
-                    if (batch.materialID != EMPTY_ASSET) {
-                        auto* matAsset = assets.template TryGet<MaterialAsset>(batch.materialID);
-                        if (matAsset) {
-                            assets.ResolveMaterialTextures(matAsset);
-                            material = matAsset->data;
-                        }
+                    if (matAsset) {
+                        assets.ResolveMaterialTextures(matAsset);
+                        material = matAsset->data;
                     }
 
                     pbrShader->DrawInstanced(modelAsset->data, material,
@@ -472,28 +471,22 @@ namespace Boom {
                 // === Render Double-Sided Static Batches (disable culling for this group) ===
                 bool disabledCulling = false;
                 for (const auto& [key, batch] : m_InstanceManager->GetBatches()) {
-                    if (batch.IsEmpty() || !key.doubleSided) continue;
+                    if (batch.IsEmpty()) continue;
+
+                    auto* matAsset = batch.materialID != EMPTY_ASSET
+                        ? assets.template TryGet<MaterialAsset>(batch.materialID) : nullptr;
+                    if (!matAsset || !matAsset->doubleSided) continue;
 
                     if (!disabledCulling) {
                         glDisable(GL_CULL_FACE);
                         disabledCulling = true;
                     }
 
-                    // Get model
                     auto* modelAsset = assets.template TryGet<ModelAsset>(batch.modelID);
                     if (!modelAsset || !modelAsset->data) continue;
 
-                    // Get material
-                    PbrMaterial material{};
-                    if (batch.materialID != EMPTY_ASSET) {
-                        auto* matAsset = assets.template TryGet<MaterialAsset>(batch.materialID);
-                        if (matAsset) {
-                            assets.ResolveMaterialTextures(matAsset);
-                            material = matAsset->data;
-                        }
-                    }
-
-                    pbrShader->DrawInstanced(modelAsset->data, material,
+                    assets.ResolveMaterialTextures(matAsset);
+                    pbrShader->DrawInstanced(modelAsset->data, matAsset->data,
                                             static_cast<uint32_t>(batch.Count()),
                                             static_cast<uint32_t>(batch.ssboOffset),
                                             showNormalTexture);

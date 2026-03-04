@@ -59,6 +59,7 @@ namespace Boom {
 		AssetID occlusionMapID{ EMPTY_ASSET };
 		AssetID emissiveMapID{ EMPTY_ASSET };
 		AssetID opacityMapID{ EMPTY_ASSET };
+		bool doubleSided{ false };
 
 		MaterialAsset() { type = AssetType::MATERIAL; }
 
@@ -71,7 +72,8 @@ namespace Boom {
 			obj_member<"MetallicMapID", &MaterialAsset::metallicMapID>,
 			obj_member<"OcclusionMapID", &MaterialAsset::occlusionMapID>,
 			obj_member<"EmissiveMapID", &MaterialAsset::emissiveMapID>,
-			obj_member<"OpacityMapID", &MaterialAsset::opacityMapID>
+			obj_member<"OpacityMapID", &MaterialAsset::opacityMapID>,
+			obj_member<"DoubleSided", &MaterialAsset::doubleSided>
 		)
 	};
 
@@ -137,15 +139,13 @@ namespace Boom {
 	struct ModelAsset : Asset {
 		Model3D data{}; //Runtime only, no need to serialize
 		bool hasJoints{};
-		bool doubleSided{ false };
 
 		ModelAsset() { type = AssetType::MODEL; }
 
 		XPROPERTY_DEF(
 			"ModelAsset", ModelAsset,
 			obj_member<"Model Transform", &ModelAsset::data>,
-			obj_member<"HasJoints", &ModelAsset::hasJoints>,
-			obj_member<"DoubleSided", &ModelAsset::doubleSided>
+			obj_member<"HasJoints", &ModelAsset::hasJoints>
 		)
 	};
 

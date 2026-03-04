@@ -46,7 +46,7 @@ namespace Boom {
     }
 
     bool InstanceManager::AddInstance(AssetID modelID, AssetID materialID,
-                                      const glm::mat4& worldMatrix, bool isAnimated, bool doubleSided) {
+                                      const glm::mat4& worldMatrix, bool isAnimated) {
         // Animated objects should use AddAnimatedInstance instead
         if (isAnimated) {
             return false;
@@ -57,14 +57,13 @@ namespace Boom {
             return false;
         }
 
-        InstanceKey key{modelID, materialID, doubleSided};
+        InstanceKey key{modelID, materialID};
         auto& batch = m_Batches[key];
 
         // Initialize batch if new
         if (batch.modelID == EMPTY_ASSET) {
             batch.modelID = modelID;
             batch.materialID = materialID;
-            batch.doubleSided = doubleSided;
         }
 
         batch.Add(worldMatrix);
