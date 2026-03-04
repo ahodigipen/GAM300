@@ -40,7 +40,7 @@ namespace Boom {
          * @return true if the instance was batched, false if it should use immediate draw
          */
         bool AddInstance(AssetID modelID, AssetID materialID,
-                        const glm::mat4& worldMatrix, bool isAnimated);
+                        const glm::mat4& worldMatrix, bool isAnimated, bool doubleSided = false);
 
         /**
          * @brief Add an animated instance to be rendered this frame.

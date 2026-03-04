@@ -786,6 +786,9 @@ namespace EditorUI {
                 }
 
                 ImGui::Spacing();
+                ImGui::Checkbox("Double Sided", &mc.doubleSided);
+
+                ImGui::Spacing();
                 ImGui::SeparatorText("Physics");
 
                 // --- UI for cooking the mesh collider ---

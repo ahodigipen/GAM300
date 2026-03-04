@@ -962,7 +962,7 @@ namespace Boom
 							m_Context->renderer->AddAnimatedInstance(comp.modelID, comp.materialID, finalMatrix, joints);
 						}
 						else {
-							m_Context->renderer->AddInstance(comp.modelID, comp.materialID, finalMatrix, false);
+							m_Context->renderer->AddInstance(comp.modelID, comp.materialID, finalMatrix, false, comp.doubleSided);
 						}
 					});
 

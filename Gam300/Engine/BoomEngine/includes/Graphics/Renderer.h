@@ -390,8 +390,8 @@ namespace Boom {
          * @return true if batched, false if should use immediate draw
          */
         BOOM_INLINE bool AddInstance(AssetID modelID, AssetID materialID,
-                                    const glm::mat4& worldMatrix, bool isAnimated) {
-            return m_InstanceManager->AddInstance(modelID, materialID, worldMatrix, isAnimated);
+                                    const glm::mat4& worldMatrix, bool isAnimated, bool doubleSided = false) {
+            return m_InstanceManager->AddInstance(modelID, materialID, worldMatrix, isAnimated, doubleSided);
         }
 
         /**
@@ -444,10 +444,10 @@ namespace Boom {
             // Bind both SSBOs (transform and joint)
             m_InstanceManager->BindAllSSBOs();
 
-            // === Render Static Batches ===
+            // === Render Single-Sided Static Batches (GL_CULL_FACE already ON from caller) ===
             if (totalStatic > 0) {
                 for (const auto& [key, batch] : m_InstanceManager->GetBatches()) {
-                    if (batch.IsEmpty()) continue;
+                    if (batch.IsEmpty() || key.doubleSided) continue;
 
                     // Get model
                     auto* modelAsset = assets.template TryGet<ModelAsset>(batch.modelID);
@@ -463,11 +463,43 @@ namespace Boom {
                         }
                     }
 
-                    // Draw all static instances in this batch (mode 1)
                     pbrShader->DrawInstanced(modelAsset->data, material,
                                             static_cast<uint32_t>(batch.Count()),
                                             static_cast<uint32_t>(batch.ssboOffset),
                                             showNormalTexture);
+                }
+
+                // === Render Double-Sided Static Batches (disable culling for this group) ===
+                bool disabledCulling = false;
+                for (const auto& [key, batch] : m_InstanceManager->GetBatches()) {
+                    if (batch.IsEmpty() || !key.doubleSided) continue;
+
+                    if (!disabledCulling) {
+                        glDisable(GL_CULL_FACE);
+                        disabledCulling = true;
+                    }
+
+                    // Get model
+                    auto* modelAsset = assets.template TryGet<ModelAsset>(batch.modelID);
+                    if (!modelAsset || !modelAsset->data) continue;
+
+                    // Get material
+                    PbrMaterial material{};
+                    if (batch.materialID != EMPTY_ASSET) {
+                        auto* matAsset = assets.template TryGet<MaterialAsset>(batch.materialID);
+                        if (matAsset) {
+                            assets.ResolveMaterialTextures(matAsset);
+                            material = matAsset->data;
+                        }
+                    }
+
+                    pbrShader->DrawInstanced(modelAsset->data, material,
+                                            static_cast<uint32_t>(batch.Count()),
+                                            static_cast<uint32_t>(batch.ssboOffset),
+                                            showNormalTexture);
+                }
+                if (disabledCulling) {
+                    glEnable(GL_CULL_FACE);
                 }
             }
 
