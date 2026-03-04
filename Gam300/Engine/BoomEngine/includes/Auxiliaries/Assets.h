@@ -137,13 +137,15 @@ namespace Boom {
 	struct ModelAsset : Asset {
 		Model3D data{}; //Runtime only, no need to serialize
 		bool hasJoints{};
+		bool doubleSided{ false };
 
 		ModelAsset() { type = AssetType::MODEL; }
 
 		XPROPERTY_DEF(
 			"ModelAsset", ModelAsset,
 			obj_member<"Model Transform", &ModelAsset::data>,
-			obj_member<"HasJoints", &ModelAsset::hasJoints>
+			obj_member<"HasJoints", &ModelAsset::hasJoints>,
+			obj_member<"DoubleSided", &ModelAsset::doubleSided>
 		)
 	};
 

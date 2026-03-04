@@ -786,9 +786,6 @@ namespace EditorUI {
                 }
 
                 ImGui::Spacing();
-                ImGui::Checkbox("Double Sided", &mc.doubleSided);
-
-                ImGui::Spacing();
                 ImGui::SeparatorText("Physics");
 
                 // --- UI for cooking the mesh collider ---
@@ -3744,6 +3741,8 @@ namespace EditorUI {
                     ImGui::DragFloat3("Translate", &m->data->modelTransform.translate[0], 0.01f);
                     ImGui::DragFloat3("Rotation", &m->data->modelTransform.rotate[0], 1.f, 0.f, 360.f);
                     ImGui::DragFloat3("Scale", &m->data->modelTransform.scale[0], 0.01f, 0.01f);
+                    ImGui::Spacing();
+                    ImGui::Checkbox("Double Sided", &m->doubleSided);
                 }
             }
             else {

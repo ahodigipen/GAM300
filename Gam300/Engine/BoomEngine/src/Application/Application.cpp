@@ -818,7 +818,7 @@ namespace Boom
                             // Static opaque object with material - try to batch it
                             // Include model's internal transform in the world matrix
                             glm::mat4 finalMatrix = worldMatrix * model.data->modelTransform.Matrix();
-                            if (m_Context->renderer->AddInstance(comp.modelID, comp.materialID, finalMatrix, false, comp.doubleSided)) {
+                            if (m_Context->renderer->AddInstance(comp.modelID, comp.materialID, finalMatrix, false, model.doubleSided)) {
                                 // Successfully batched - skip immediate draw
                                 return;
                             }
