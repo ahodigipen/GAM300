@@ -61,8 +61,30 @@ namespace GameScripts
         [Boom.EditorExposed("Proximity Debug Log", "Enable debug logging for proximity detection")]
         private bool _proximityDebugLog = false;
 
-        [Boom.EditorExposed("Rotation: Clockwise/Anti-clockwise", "Change Rotation")]
-        private bool _rotation  = true;
+        [Boom.EditorExposed("Rotation: Clockwise/Anti-clockwise", "Change Rotation (ignored when Ping Pong is enabled)")]
+        private bool _rotation = true;
+
+        [Boom.EditorExposed("Ping Pong Rotation", "Rotate by the angle in one direction, then sweep back the other way")]
+        private bool _pingPong = false;
+
+        private bool _pingPongForward = true;
+        private bool _currentRotationIsClockwise = true;
+
+        // Vision settings
+        [Boom.EditorExposed("Detection Range", "How far the enemy can see", 1f, 30f, true)]
+        private float _visionDetectionRange = 12f;
+
+        [Boom.EditorExposed("Lose Target Range", "Range at which the enemy loses track of the target", 1f, 40f, true)]
+        private float _visionLoseTargetRange = 15f;
+
+        [Boom.EditorExposed("Detection Angle", "Field of view cone angle in degrees", 10f, 360f, true)]
+        private float _visionDetectionAngle = 60f;
+
+        [Boom.EditorExposed("Vertical Tolerance", "Max vertical height difference to detect target", 0.5f, 10f, true)]
+        private float _visionVerticalTolerance = 2.5f;
+
+        [Boom.EditorExposed("Require Line of Sight", "Whether the enemy needs clear line of sight to detect the player")]
+        private bool _visionRequireLineOfSight = true;
 
         // Vision system
         private VisionComponent _vision;
@@ -104,6 +126,11 @@ namespace GameScripts
             _vision.OnTargetLost += OnPlayerLost;
             _vision.OnTargetUpdated += OnPlayerTracking;
             _vision.OnStart(jsonParams);
+            _vision.SetDetectionRange(_visionDetectionRange);
+            _vision.SetLoseTargetRange(_visionLoseTargetRange);
+            _vision.SetDetectionAngle(_visionDetectionAngle);
+            _vision.SetVerticalTolerance(_visionVerticalTolerance);
+            _vision.SetRequireLineOfSight(_visionRequireLineOfSight);
 
             // NEW: Initialize proximity detection
             _proximityDetection = new ProximityDetectionComponent { Entity = Entity };
@@ -197,14 +224,24 @@ namespace GameScripts
                     _rotationTimer = 0f;
 
                     // Apply rotation based on direction
-                    if (_rotation)
+                    if (_pingPong)
+                    {
+                        // _rotation sets the initial sweep direction; _pingPongForward alternates each sweep
+                        bool goClockwise = (_rotation == _pingPongForward);
+                        _currentRotationIsClockwise = goClockwise;
+                        _targetYRotation += goClockwise ? _rotationAngle : -_rotationAngle;
+                        _pingPongForward = !_pingPongForward;
+                    }
+                    else if (_rotation)
                     {
                         // Clockwise
+                        _currentRotationIsClockwise = true;
                         _targetYRotation += _rotationAngle;
                     }
                     else
                     {
                         // Anti-clockwise
+                        _currentRotationIsClockwise = false;
                         _targetYRotation -= _rotationAngle;
                     }
 
@@ -263,6 +300,10 @@ namespace GameScripts
 
                 while (angleDifference > 180f) angleDifference -= 360f;
                 while (angleDifference < -180f) angleDifference += 360f;
+
+                // When difference is exactly ±180°, shortest-path is ambiguous; use intended direction
+                if (Math.Abs(Math.Abs(angleDifference) - 180f) < 0.01f)
+                    angleDifference = _currentRotationIsClockwise ? 180f : -180f;
 
                 float rotationStep = _rotationSpeed * dt;
 
@@ -492,6 +533,7 @@ namespace GameScripts
             _targetYRotation = _initialYRotation;
             _isRotating = false;
             _rotationTimer = 0f;
+            _pingPongForward = true;
 
             Vec3 rot = API.GetRotation(Entity);
             rot.Y = _initialYRotation;
