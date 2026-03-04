@@ -15,12 +15,12 @@ ENTITIES:
         Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
-      Name: LionStatue_4
-      UID: 12059455461658320157
+      Name: LionStatue_6
+      UID: 14903475872558207030
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-3.48040915, 11.8000002, 51.6677322]
+        Translate: [-0.50999999, 11.8000002, 109.120003]
         Rotate: [0, -89.980217, 0]
         Scale: [0.0299999975, 0.0299999993, 0.0299999975]
     RigidBodyComponent:
@@ -45,6 +45,859 @@ ENTITIES:
         Radiance: [0, 0.529411793, 1]
         Intensity: 3.3599999
         Range: 3.61999989
+        BloomStrength: 1
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: spike 19
+      UID: 4527799082696848692
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.287, 10.2799997, 104.019997]
+        Rotate: [0, -0, 0]
+        Scale: [3, 0.569999993, 2]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [3, 0.569999993, 2]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 1773827607540986892
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: spike 18
+      UID: 10919593602551694708
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [3.23300004, 10.2799997, 104.019997]
+        Rotate: [0, -0, 0]
+        Scale: [3, 0.569999993, 2]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [3, 0.569999993, 2]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 1773827607540986892
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: spike 17
+      UID: 12833212561544668459
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [3.23300004, 10.2799997, 100.379997]
+        Rotate: [0, -0, 0]
+        Scale: [3, 0.569999993, 2]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [3, 0.569999993, 2]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 1773827607540986892
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: box 17
+      UID: 11712009166359473105
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-2.85500002, 16, 100.709999]
+        Rotate: [0, -0, 0]
+        Scale: [2.5, 2, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 14891281585286011240
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: box 16
+      UID: 6571810694352720447
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.375, 16, 96.1600037]
+        Rotate: [0, -0, 0]
+        Scale: [2.5, 2, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 14891281585286011240
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: box 15
+      UID: 6818606479066164049
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-2.85500002, 16, 96.1600037]
+        Rotate: [0, -0, 0]
+        Scale: [2.5, 2, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 14891281585286011240
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: box 14
+      UID: 943593039612327375
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-2.85500002, 16, 92.5599976]
+        Rotate: [0, -0, 0]
+        Scale: [2.5, 2, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 14891281585286011240
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: box 13
+      UID: 15669520144306750805
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [3.2249999, 16, 92.5599976]
+        Rotate: [0, -0, 0]
+        Scale: [2.5, 2, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 14891281585286011240
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: box 12
+      UID: 13393220216444701386
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.0250000004, 16, 85.1600037]
+        Rotate: [0, -0, 0]
+        Scale: [2.5, 2, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 14891281585286011240
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: spike 16
+      UID: 14109915350864052334
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.307000011, 10.2799997, 88.5199966]
+        Rotate: [0, -0, 0]
+        Scale: [3, 0.569999993, 2]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [3, 0.569999993, 2]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 1773827607540986892
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: spike 15
+      UID: 15545363060307225653
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [3.28299999, 10.2799997, 85.1600037]
+        Rotate: [0, -0, 0]
+        Scale: [3, 0.569999993, 2]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [3, 0.569999993, 2]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 1773827607540986892
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: spike 14
+      UID: 5345672792944336913
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-3.08699989, 10.2799997, 80]
+        Rotate: [0, -0, 0]
+        Scale: [3, 0.569999993, 2]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [3, 0.569999993, 2]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 1773827607540986892
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 4356505632757386652
+        SurfaceType: DEFAULT
+        Type: TRIANGLE_MESH
+    InfoComponent:
+      Parent: 0
+      Name: LionStatue_5
+      UID: 1759009440757392163
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [3.00999999, 11.8000002, 80]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.0299999975, 0.0299999993, 0.0299999975]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0299999975, 0.0299999993, 0.0299999975]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 6829728261434427183
+      MaterialID: 9170069941051798259
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [0, 0.529411793, 1]
+        Intensity: 3.3599999
+        Range: 3.61999989
+        BloomStrength: 1
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: box 11
+      UID: 4565592126430457284
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.0250000004, 16, 78.3700027]
+        Rotate: [0, -0, 0]
+        Scale: [2.5, 2, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 14891281585286011240
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: box 10
+      UID: 9422343463103980360
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-3.875, 16, 78.4300003]
+        Rotate: [0, -0, 0]
+        Scale: [2.5, 2, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 14891281585286011240
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: box 9
+      UID: 10024394437943401150
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [2.65499997, 16, 72.3799973]
+        Rotate: [0, -0, 0]
+        Scale: [2.5, 2, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 14891281585286011240
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: box 8
+      UID: 18142957127339204573
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-3.42499995, 16, 68.3099976]
+        Rotate: [0, -0, 0]
+        Scale: [2.5, 2, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 14891281585286011240
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: box 7
+      UID: 4919908658999948592
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.155175328, 16, 68.3099976]
+        Rotate: [0, -0, 0]
+        Scale: [2.5, 2, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 14891281585286011240
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: box 6
+      UID: 16190255381961766179
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.155175328, 16, 65]
+        Rotate: [0, -0, 0]
+        Scale: [2.5, 2, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 14891281585286011240
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: box 5
+      UID: 6994388576141132647
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.155175328, 16, 51]
+        Rotate: [0, -0, 0]
+        Scale: [2.5, 2, 2.5]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [2.5, 2, 2.5]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 14891281585286011240
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 4356505632757386652
+        SurfaceType: DEFAULT
+        Type: TRIANGLE_MESH
+    InfoComponent:
+      Parent: 0
+      Name: LionStatue_4
+      UID: 12059455461658320157
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-3.48040915, 11.8000002, 51]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.0299999975, 0.0299999993, 0.0299999975]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0299999975, 0.0299999993, 0.0299999975]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 6829728261434427183
+      MaterialID: 9170069941051798259
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [0, 0.529411793, 1]
+        Intensity: 3.3599999
+        Range: 3.61999989
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -65,15 +918,15 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [3.29299998, 10.2799997, 47.9099998]
+        Translate: [3.29299998, 10.2799997, 47]
         Rotate: [0, -0, 0]
-        Scale: [3, 0.569999993, 2.5]
+        Scale: [3, 0.569999993, 2]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 0.569999993, 2.5]
+        Previous Scale: [3, 0.569999993, 2]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -105,15 +958,15 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.127000004, 10.2799997, 47.9099998]
+        Translate: [-0.127000004, 10.2799997, 46.9799995]
         Rotate: [0, -0, 0]
-        Scale: [3, 0.569999993, 2.5]
+        Scale: [3, 0.569999993, 2]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 0.569999993, 2.5]
+        Previous Scale: [3, 0.569999993, 2]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -147,13 +1000,13 @@ ENTITIES:
       Transform:
         Translate: [-3.26699996, 10.2799997, 42.5900002]
         Rotate: [0, -0, 0]
-        Scale: [3, 0.569999993, 2.5]
+        Scale: [3, 0.569999993, 2]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 0.569999993, 2.5]
+        Previous Scale: [3, 0.569999993, 2]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -187,13 +1040,13 @@ ENTITIES:
       Transform:
         Translate: [0.133000016, 10.2799997, 40.8199997]
         Rotate: [0, -0, 0]
-        Scale: [3, 0.569999993, 2.5]
+        Scale: [3, 0.569999993, 2]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 0.569999993, 2.5]
+        Previous Scale: [3, 0.569999993, 2]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -225,15 +1078,15 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-3.24699998, 10.2799997, 38.2799988]
+        Translate: [-3.24699998, 10.2799997, 39.0800018]
         Rotate: [0, -0, 0]
-        Scale: [3, 0.569999993, 2.5]
+        Scale: [3, 0.569999993, 2]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 0.569999993, 2.5]
+        Previous Scale: [3, 0.569999993, 2]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -267,13 +1120,13 @@ ENTITIES:
       Transform:
         Translate: [-0.546999991, 10.2799997, 32.9199982]
         Rotate: [0, -0, 0]
-        Scale: [3, 0.569999993, 2.5]
+        Scale: [3, 0.569999993, 2]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 0.569999993, 2.5]
+        Previous Scale: [3, 0.569999993, 2]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -307,13 +1160,13 @@ ENTITIES:
       Transform:
         Translate: [3.31299996, 10.2306776, 31.7299995]
         Rotate: [0, -0, 0]
-        Scale: [3, 0.569999993, 2.5]
+        Scale: [3, 0.569999993, 2]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 0.569999993, 2.5]
+        Previous Scale: [3, 0.569999993, 2]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -345,15 +1198,15 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.00699998438, 10.2799997, 29]
+        Translate: [-0.00699996948, 10.2799997, 29.4799995]
         Rotate: [0, -0, 0]
-        Scale: [3, 0.569999993, 2.5]
+        Scale: [3, 0.569999993, 2]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 0.569999993, 2.5]
+        Previous Scale: [3, 0.569999993, 2]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -387,13 +1240,13 @@ ENTITIES:
       Transform:
         Translate: [-3.06668544, 10.2799997, 23.9899998]
         Rotate: [0, -0, 0]
-        Scale: [3, 0.569999993, 2.5]
+        Scale: [3, 0.569999993, 2]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 0.569999993, 2.5]
+        Previous Scale: [3, 0.569999993, 2]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -427,13 +1280,13 @@ ENTITIES:
       Transform:
         Translate: [3.04500008, 10.2799997, 23.9899998]
         Rotate: [0, -0, 0]
-        Scale: [3, 0.569999993, 2.5]
+        Scale: [3, 0.569999993, 2]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 0.569999993, 2.5]
+        Previous Scale: [3, 0.569999993, 2]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -490,6 +1343,7 @@ ENTITIES:
         Radiance: [0, 0.529411793, 1]
         Intensity: 3.3599999
         Range: 3.61999989
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -512,13 +1366,13 @@ ENTITIES:
       Transform:
         Translate: [-3.52764249, 16, 15]
         Rotate: [0, -0, 0]
-        Scale: [3, 2, 3]
+        Scale: [2.5, 2, 2.5]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 2, 3]
+        Previous Scale: [2.5, 2, 2.5]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -552,13 +1406,13 @@ ENTITIES:
       Transform:
         Translate: [-0.155175328, 16, 15]
         Rotate: [0, -0, 0]
-        Scale: [3, 2, 3]
+        Scale: [2.5, 2, 2.5]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 2, 3]
+        Previous Scale: [2.5, 2, 2.5]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -592,13 +1446,13 @@ ENTITIES:
       Transform:
         Translate: [3.29633808, 16, 10]
         Rotate: [0, -0, 0]
-        Scale: [3, 2, 3]
+        Scale: [2.5, 2, 2.5]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 2, 3]
+        Previous Scale: [2.5, 2, 2.5]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -632,13 +1486,13 @@ ENTITIES:
       Transform:
         Translate: [0, 16, 5]
         Rotate: [0, -0, 0]
-        Scale: [3, 2, 3]
+        Scale: [2.5, 2, 2.5]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3, 2, 3]
+        Previous Scale: [2.5, 2, 2.5]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -695,6 +1549,7 @@ ENTITIES:
         Radiance: [0, 0.529411793, 1]
         Intensity: 3.3599999
         Range: 3.61999989
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -740,6 +1595,7 @@ ENTITIES:
         Radiance: [0, 0.529411793, 1]
         Intensity: 3.3599999
         Range: 3.61999989
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Wall (Copy) (Copy) (Copy) (Copy)
@@ -794,7 +1650,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-3.5, 8.84638023, 48.1139984]
+        Translate: [-3.5, 8.84638023, 60]
         Rotate: [0, -0, 0]
         Scale: [3.5, 2.60136342, 120.305]
     RigidBodyComponent:
@@ -905,17 +1761,17 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.475475818, 14.6528025, -5.09310627]
-        Rotate: [170.522507, 2161.35107, 180]
+        Translate: [-0.22647959, 18.4480343, -7.34665489]
+        Rotate: [150.835007, 2159.16357, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.00100000005
         FarPlane: 935.47998
-        FOV: 92
+        FOV: 84
     ThirdPersonCameraComponent:
       Target UID: 15509033343906787136
-      Offset: [0.00999999978, 4.5, 0]
+      Offset: [0.00999999978, 4.5, -1.00999999]
       Current Distance: 5
       Min Distance: 1
       Max Distance: 5
@@ -972,7 +1828,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, 8.84638023, 48.1144791]
+        Translate: [0, 8.84638023, 60]
         Rotate: [0, -0, 0]
         Scale: [3.5, 2.60136342, 120.305]
     RigidBodyComponent:
@@ -1124,7 +1980,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [3.5, 8.84638023, 48.1139984]
+        Translate: [3.5, 8.84638023, 60]
         Rotate: [0, -0, 0]
         Scale: [3.5, 2.60136342, 120.304733]
     RigidBodyComponent:
@@ -1400,3 +2256,163 @@ ENTITIES:
       Enabled: true
       TypeName: GameScripts.PlayerMovement
       ParamsJSON: "{\n  \"_level2Pos\": {\n    \"X\": 0.0,\n    \"Y\": 10.0,\n    \"Z\": 0.0\n  },\n  \"_levelStartPos\": {\n    \"X\": 0.0,\n    \"Y\": 10.0,\n    \"Z\": 0.0\n  }\n}"
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: spike 11
+      UID: 14363673409948238081
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-3.51699996, 10.2799997, 54.6699982]
+        Rotate: [0, -0, 0]
+        Scale: [3, 0.569999993, 2]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [3, 0.569999993, 2]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 1773827607540986892
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: spike 12
+      UID: 3993713392896881928
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.143000007, 10.2799997, 54.6699982]
+        Rotate: [0, -0, 0]
+        Scale: [3, 0.569999993, 2]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [3, 0.569999993, 2]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 1773827607540986892
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: spike 13
+      UID: 18243306952441687674
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-3.51699996, 10.2799997, 57.9799995]
+        Rotate: [0, -0, 0]
+        Scale: [3, 0.569999993, 2]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [3, 0.569999993, 2]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 1773827607540986892
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: spike 14
+      UID: 2529334434494801333
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [2.97300005, 10.2799997, 58.7099991]
+        Rotate: [0, -0, 0]
+        Scale: [3, 0.569999993, 2]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [3, 0.569999993, 2]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 1773827607540986892
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
