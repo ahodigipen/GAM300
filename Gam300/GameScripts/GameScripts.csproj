@@ -57,6 +57,7 @@
     <Compile Include="IntroCutscene.cs" />
     <Compile Include="LevelTransitionCutscene.cs" />
     <Compile Include="MazeGeneration.cs" />
+    <Compile Include="MultiKeyDoor.cs" />
     <Compile Include="PatrolMultiDirectionSpotlight.cs" />
     <Compile Include="PatrolSpotlightFollower.cs" />
     <Compile Include="ProximityDetectionComponent.cs" />
@@ -96,6 +97,7 @@
     <Compile Include="Entry.cs" />
     <Compile Include="MovementAnimator.cs" />
     <Compile Include="EnemyController.cs" />
+    <Compile Include="FPSLimitToggle.cs" />
     <Compile Include="PlayerMovement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VolumeSlider.cs" />

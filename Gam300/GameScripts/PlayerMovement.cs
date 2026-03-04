@@ -653,16 +653,14 @@ namespace GameScripts
             bool hasInput = (inputX != 0f || inputZ != 0f);
             
             // Sprint: Left Trigger on gamepad
-            // Note: Trigger axes can be -1 to 1 (XInput, resting at -1) or 0 to 1 (DirectInput, resting at 0)
-            // We check > -0.5f to handle both cases: pressed on XInput goes from -1 toward 1
+            // With XInput integration in InputHandler.h, triggers are normalized from 0.0 (released) to 1.0 (fully pressed)
+            // Use a threshold of 0.3 to detect when the trigger is pressed
             bool sprintKey = API.IsKeyDown(API.KEY_LEFT_SHIFT);
             if (API.IsGamepadConnected())
             {
                 float leftTrigger = API.GetGamepadAxis(API.GAMEPAD_AXIS_LEFT_TRIGGER);
-                // XInput: rests at -1, pressed goes to 1. Threshold at -0.5 means pressed.
-                // DirectInput: rests at 0, pressed goes to 1. Threshold at 0.3 means pressed.
-                // Use > -0.5f to work for XInput, and this also catches DirectInput pressed (since 0.3 > -0.5)
-                sprintKey = sprintKey || (leftTrigger > -0.5f);
+                // XInput: normalized 0.0 to 1.0 after deadzone, threshold at 0.3 means pressed
+                sprintKey = sprintKey || (leftTrigger > 0.3f);
             }
             
             bool sneakKey = API.IsKeyDown(API.KEY_LEFT_CONTROL) || (API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_B));

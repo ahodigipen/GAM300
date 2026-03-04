@@ -99,10 +99,8 @@ namespace Boom {
                 const float dXZ = glm::length(toXZ);
                 const float dY = glm::abs(pos.y - goal.y);
 
-                // Check if we've reached the waypoint
-                // We use a tight tolerance for XZ (arrive radius) and a reasonable threshold for Y (1.0m)
-                // to prevent agents on different floors from 'reaching' waypoints above/below them.
-                if (dXZ <= ag.arrive && dY < 1.0f) {
+                // Use a larger arrival radius for XZ to handle low framerates (0.5m)
+                if (dXZ <= 0.5f && dY < 2.0f) {
                     ++ag.waypoint;
                     if (ag.waypoint >= (int)ag.path.size()) {
                         ag.path.clear();

@@ -2290,6 +2290,22 @@ namespace Boom {
         g_ScreenFadeAlpha = glm::clamp(alpha, 0.0f, 1.0f);
     }
 
+    static void ICALL_API_Set30FPSLimit(bool enabled)
+    {
+        if (s_Ctx && s_Ctx->app) {
+            static_cast<Application*>(s_Ctx->app)->m_Is30FPSLimit = enabled;
+            BOOM_INFO("[Script] 30 FPS Limit: {}", enabled ? "ENABLED" : "DISABLED");
+        }
+    }
+
+    static bool ICALL_API_Get30FPSLimit()
+    {
+        if (s_Ctx && s_Ctx->app) {
+            return static_cast<Application*>(s_Ctx->app)->m_Is30FPSLimit;
+        }
+        return false;
+    }
+
     void RegisterScriptInternalCalls(AppContext* ctx)
     {
         s_Ctx = ctx;
@@ -2298,6 +2314,8 @@ namespace Boom {
 
         // IMPORTANT: These namespaces MUST match the C# side (Boom.Native)
         mono_add_internal_call("Boom.Native::Boom_API_Log", (const void*)ICALL_API_Log);
+        mono_add_internal_call("Boom.Native::Boom_API_Set30FPSLimit", (const void*)ICALL_API_Set30FPSLimit);
+        mono_add_internal_call("Boom.Native::Boom_API_Get30FPSLimit", (const void*)ICALL_API_Get30FPSLimit);
         mono_add_internal_call("Boom.Native::Boom_API_FindEntity", (const void*)ICALL_API_FindEntity);
         mono_add_internal_call("Boom.Native::Boom_API_GetPosition", (const void*)ICALL_API_GetPosition);
         mono_add_internal_call("Boom.Native::Boom_API_SetPosition", (const void*)ICALL_API_SetPosition);
