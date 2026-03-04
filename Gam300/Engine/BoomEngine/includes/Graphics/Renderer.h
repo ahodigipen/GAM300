@@ -895,6 +895,7 @@ namespace Boom {
         float bloomIntensity{ 1.0f };
         float bloomThreshold{ 1.0f };
         int bloomIterations{ 10 };
+        float pointLightBloomMultiplier{ 1.0f };  // Global multiplier for point light bloom contribution
 
     public: // ---------------------- Material Preview ----------------------
         // Call this to reset the material preview (e.g., after scene change)
