@@ -923,6 +923,8 @@ namespace Boom
 
         // === INSTANCED RENDERING PASS ===
         // Render all batched static opaque objects
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
         if (!isPicking) {
             m_Context->renderer->RenderInstancedBatches(*m_Context->assets);
         }
