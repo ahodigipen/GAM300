@@ -59,6 +59,7 @@ namespace Boom {
 		AssetID occlusionMapID{ EMPTY_ASSET };
 		AssetID emissiveMapID{ EMPTY_ASSET };
 		AssetID opacityMapID{ EMPTY_ASSET };
+		bool doubleSided{ false };
 
 		MaterialAsset() { type = AssetType::MATERIAL; }
 
@@ -71,7 +72,8 @@ namespace Boom {
 			obj_member<"MetallicMapID", &MaterialAsset::metallicMapID>,
 			obj_member<"OcclusionMapID", &MaterialAsset::occlusionMapID>,
 			obj_member<"EmissiveMapID", &MaterialAsset::emissiveMapID>,
-			obj_member<"OpacityMapID", &MaterialAsset::opacityMapID>
+			obj_member<"OpacityMapID", &MaterialAsset::opacityMapID>,
+			obj_member<"DoubleSided", &MaterialAsset::doubleSided>
 		)
 	};
 
