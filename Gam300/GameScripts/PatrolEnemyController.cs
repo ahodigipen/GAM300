@@ -31,6 +31,22 @@ namespace GameScripts
         private const float SPEED_SMOOTH = 10f;
         private double _smoothedSpeed = 0.0;
 
+        // Vision settings
+        [Boom.EditorExposed("Detection Range", "How far the enemy can see", 1f, 30f, true)]
+        private float _visionDetectionRange = 12f;
+
+        [Boom.EditorExposed("Lose Target Range", "Range at which the enemy loses track of the target", 1f, 40f, true)]
+        private float _visionLoseTargetRange = 15f;
+
+        [Boom.EditorExposed("Detection Angle", "Field of view cone angle in degrees", 10f, 360f, true)]
+        private float _visionDetectionAngle = 60f;
+
+        [Boom.EditorExposed("Vertical Tolerance", "Max vertical height difference to detect target", 0.5f, 10f, true)]
+        private float _visionVerticalTolerance = 2.5f;
+
+        [Boom.EditorExposed("Require Line of Sight", "Whether the enemy needs clear line of sight to detect the player")]
+        private bool _visionRequireLineOfSight = true;
+
         private VisionComponent _vision;
 
         // NEW: Proximity detection
@@ -206,6 +222,11 @@ namespace GameScripts
             _vision.OnTargetLost += OnPlayerLost;
             _vision.OnTargetUpdated += OnPlayerTracking;
             _vision.OnStart(json);
+            _vision.SetDetectionRange(_visionDetectionRange);
+            _vision.SetLoseTargetRange(_visionLoseTargetRange);
+            _vision.SetDetectionAngle(_visionDetectionAngle);
+            _vision.SetVerticalTolerance(_visionVerticalTolerance);
+            _vision.SetRequireLineOfSight(_visionRequireLineOfSight);
 
             // NEW: Initialize proximity detection
             _proximityDetection = new ProximityDetectionComponent { Entity = Entity };

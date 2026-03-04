@@ -244,7 +244,7 @@ namespace Boom {
             float fov = glm::radians(cutOffAngle * 2.0f);
             fov = glm::clamp(fov, glm::radians(10.0f), glm::radians(170.0f)); // Clamp to reasonable range
 
-            float nearPlane = 0.1f;
+            float nearPlane = 0.5f;
             float farPlane = range > 0.0f ? range : 50.0f;
 
             glm::mat4 proj = glm::perspective(fov, 1.0f, nearPlane, farPlane);
@@ -444,30 +444,55 @@ namespace Boom {
             // Bind both SSBOs (transform and joint)
             m_InstanceManager->BindAllSSBOs();
 
-            // === Render Static Batches ===
+            // === Render Single-Sided Static Batches (GL_CULL_FACE already ON from caller) ===
             if (totalStatic > 0) {
                 for (const auto& [key, batch] : m_InstanceManager->GetBatches()) {
                     if (batch.IsEmpty()) continue;
 
-                    // Get model
+                    auto* matAsset = batch.materialID != EMPTY_ASSET
+                        ? assets.template TryGet<MaterialAsset>(batch.materialID) : nullptr;
+                    if (matAsset && matAsset->doubleSided) continue; // handled in second pass
+
                     auto* modelAsset = assets.template TryGet<ModelAsset>(batch.modelID);
                     if (!modelAsset || !modelAsset->data) continue;
 
-                    // Get material
                     PbrMaterial material{};
-                    if (batch.materialID != EMPTY_ASSET) {
-                        auto* matAsset = assets.template TryGet<MaterialAsset>(batch.materialID);
-                        if (matAsset) {
-                            assets.ResolveMaterialTextures(matAsset);
-                            material = matAsset->data;
-                        }
+                    if (matAsset) {
+                        assets.ResolveMaterialTextures(matAsset);
+                        material = matAsset->data;
                     }
 
-                    // Draw all static instances in this batch (mode 1)
                     pbrShader->DrawInstanced(modelAsset->data, material,
                                             static_cast<uint32_t>(batch.Count()),
                                             static_cast<uint32_t>(batch.ssboOffset),
                                             showNormalTexture);
+                }
+
+                // === Render Double-Sided Static Batches (disable culling for this group) ===
+                bool disabledCulling = false;
+                for (const auto& [key, batch] : m_InstanceManager->GetBatches()) {
+                    if (batch.IsEmpty()) continue;
+
+                    auto* matAsset = batch.materialID != EMPTY_ASSET
+                        ? assets.template TryGet<MaterialAsset>(batch.materialID) : nullptr;
+                    if (!matAsset || !matAsset->doubleSided) continue;
+
+                    if (!disabledCulling) {
+                        glDisable(GL_CULL_FACE);
+                        disabledCulling = true;
+                    }
+
+                    auto* modelAsset = assets.template TryGet<ModelAsset>(batch.modelID);
+                    if (!modelAsset || !modelAsset->data) continue;
+
+                    assets.ResolveMaterialTextures(matAsset);
+                    pbrShader->DrawInstanced(modelAsset->data, matAsset->data,
+                                            static_cast<uint32_t>(batch.Count()),
+                                            static_cast<uint32_t>(batch.ssboOffset),
+                                            showNormalTexture);
+                }
+                if (disabledCulling) {
+                    glEnable(GL_CULL_FACE);
                 }
             }
 
@@ -870,6 +895,7 @@ namespace Boom {
         float bloomIntensity{ 1.0f };
         float bloomThreshold{ 1.0f };
         int bloomIterations{ 10 };
+        float pointLightBloomMultiplier{ 1.0f };  // Global multiplier for point light bloom contribution
 
     public: // ---------------------- Material Preview ----------------------
         // Call this to reset the material preview (e.g., after scene change)

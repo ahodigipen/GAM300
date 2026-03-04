@@ -1,43 +1,50 @@
 Version: 1.0
 ENTITIES:
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0.0500000007, 0.0199999996, 0.0199999996]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [37.75, 87.2399979, 8]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: true
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Key1_3
-      UID: 5578060098966954555
+  - InfoComponent:
+      Parent: 15511979552957430112
+      Name: VisionConeFake 1_New
+      UID: 2514697231900950035
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [37.1976051, 14.8798227, 24.2018642]
-        Rotate: [-180, -57.9115143, 180]
-        Scale: [0.019999994, 0.0199999977, 0.019999994]
+        Translate: [-7.15782738, 2.53051853, -14.2555885]
+        Rotate: [0, 498.1521, 0]
+        Scale: [136.157349, 68.9649124, 68.9648361]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.SpotlightFollower
+      ParamsJSON: "{\n  \"targetName\": \"Sentry_1_New\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [1, 0, 0]
+        Intensity: 11.1099997
+        FallOff: -3.27600002
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 0
+      Name: Sentry_1_New
+      UID: 15511979552957430112
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-20.6288185, 13.3683863, 8.13043404]
+        Rotate: [0, 0, 0]
+        Scale: [0.0144997416, 0.0145000005, 0.0144997416]
     ModelComponent:
-      ModelID: 6755252122157173405
-      MaterialID: 8035902505845378175
+      ModelID: 12373711864448078618
+      MaterialID: 1781146247448718189
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
     SoundComponent:
       Entries:
-        - name: _pickupSound
+        - name: _turnSoundPath1
           filePaths:
-            - Resources/Audio/pickup.wav
+            - Resources/Audio/StatueTurn_01.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.541999996
+          priority: 116
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -49,55 +56,13 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.KeyPickup
-      ParamsJSON: "{\n  \"_keyType\": \"Key1_3\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.828431368, 0.536043823, 0]
-        Intensity: 5.88999987
-        FallOff: 4.59600019
-        CutOff: -1.98099995
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0.0500000007, 0.0199999996, 0.0199999996]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [37.75, 87.2399979, 8]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: true
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Key1_2
-      UID: 13932992734097766500
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-22.6951981, 15.2434406, 18.8773727]
-        Rotate: [0, 89.980217, 0]
-        Scale: [0.0199999828, 0.0199999977, 0.0199999958]
-    ModelComponent:
-      ModelID: 6755252122157173405
-      MaterialID: 8035902505845378175
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-    SoundComponent:
-      Entries:
-        - name: _pickupSound
+          maxDistance: 17.7000008
+        - name: _turnSoundPath2
           filePaths:
-            - Resources/Audio/pickup.wav
+            - Resources/Audio/StatueTurn_02.wav
           loop: false
-          volume: 1
-          priority: 128
+          volume: 0.51700002
+          priority: 110
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
@@ -109,17 +74,47 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
+          maxDistance: 19.1000004
+        - name: _turnSoundPath3
+          filePaths:
+            - Resources/Audio/StatueTurn_03.wav
+          loop: false
+          volume: 0.518000007
+          priority: 115
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 17.7000008
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/VO_Statue_003.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 0.5
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
           maxDistance: 50
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.KeyPickup
-      ParamsJSON: "{\n  \"_keyType\": \"Key1_2\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.828431368, 0.536043823, 0]
-        Intensity: 5.88999987
-        FallOff: 4.59600019
-        CutOff: -1.98099995
+      TypeName: GameScripts.EnemyController
+      ParamsJSON: "{\n  \"_entityName\": \"Sentry_1_New\",\n  \"_pingPong\": true,\n  \"_rotation\": false,\n  \"_rotationAngle\": 180.0,\n  \"_visionDetectionRange\": 30.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -5200,73 +5195,45 @@ ENTITIES:
       ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Patrol enemy 3\",\n  \"_spotlightName\": \"Patrol Vision Cone 10\"\n}"
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 1.98000002, 0]
+        LocalPosition: [0.0500000007, 0.0199999996, 0.0199999996]
         LocalRotation: [0, 0, 0]
-        LocalScale: [100, 200, 100]
+        LocalScale: [37.75, 87.2399979, 8]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: false
+        IsTrigger: true
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: CAPSULE
+        Type: BOX
     InfoComponent:
       Parent: 0
-      Name: Patrol enemy 1
-      UID: 7568830222834310318
-      SortOrder: 158
+      Name: Key1_3
+      UID: 5578060098966954555
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-22.3117981, 13.4210224, 3.95429873]
-        Rotate: [-0, 1.00179122e-05, -0]
-        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-        FreezeRotationX: true
-        FreezeRotationY: true
-        FreezeRotationZ: true
-        Type: DYNAMIC
+        Translate: [37.1976051, 14.8798227, 24.2018642]
+        Rotate: [-180, -57.9115143, 180]
+        Scale: [0.019999994, 0.0199999977, 0.019999994]
     ModelComponent:
-      ModelID: 12439106707269888329
-      MaterialID: 14920165367361296626
+      ModelID: 6755252122157173405
+      MaterialID: 8035902505845378175
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
     SoundComponent:
       Entries:
-        - name: _footstepSoundPath
+        - name: _pickupSound
           filePaths:
-            - Resources/Audio/footstep_stone_1.wav
+            - Resources/Audio/pickup.wav
           loop: false
-          volume: 0.541999996
+          volume: 1
           priority: 128
           pitch: 1
           stereoPan: 0
           spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 21.2000008
-        - name: _alertSoundPath
-          filePaths:
-            - Resources/Audio/VO_Patrol_Alert_020.wav
-          loop: false
-          volume: 0.842999995
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 0.5
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -5276,71 +5243,16 @@ ENTITIES:
           animTrigger: ""
           minDistance: 1
           maxDistance: 50
-        - name: _gruntSoundPath
-          filePaths:
-            - Resources/Audio/VO_Patrol_001.wav
-          loop: false
-          volume: 0.619000018
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.50999999
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 17.7000008
-    AnimatorComponent:
-      Clips:
-        - name: mixamo.com
-          filePath: ""
-        - name: ROCK_WALKING
-          filePath: Resources/Animations/ROCK_WALKING.anim
-      States:
-        - name: State 0
-          clipIndex: 1
-          speed: 0.330000013
-          loop: false
-          transitions:
-            - targetStateIndex: 0
-              conditionType: 0
-              parameterName: IsWalking
-              floatValue: 0
-              boolValue: false
-              transitionDuration: 0.469999999
-              hasExitTime: false
-              exitTime: 0.899999976
-      FloatParams:
-        Speed: 0
-      BoolParams:
-        ApplyRootMotion: false
-      CurrentStateIndex: 0
-    NavAgentComponent:
-      Target: [-22.3117981, 13.5816135, 3.93043709]
-      Speed: 2.5
-      ArriveRadius: 0.150000006
-      Active: true
-      RepathCooldown: 0.25
-      RetargetDistance: 0.5
-      FollowName: ""
-    AIComponent:
-      Mode: 2
-      PlayerName: ""
-      DetectRadius: 8
-      LoseRadius: 12
-      IdleWait: 2.04999995
-      PatrolPoints:
-        - [-22.3117981, 13.5816135, 3.93043709]
-        - [-22.3117981, 13.5816135, -12.4054985]
-      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Patrol enemy 1\",\n  \"_spotlightName\": \"Patrol Vision Cone 1\"\n}"
+      TypeName: GameScripts.KeyPickup
+      ParamsJSON: "{\n  \"_keyType\": \"Key1_3\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.828431368, 0.536043823, 0]
+        Intensity: 5.88999987
+        FallOff: 4.59600019
+        CutOff: -1.98099995
   - InfoComponent:
       Parent: 0
       Name: Terrain
@@ -10545,8 +10457,8 @@ ENTITIES:
       SortOrder: 190
     TransformComponent:
       Transform:
-        Translate: [-4.01983881, 5.51930666, -14.0654125]
-        Rotate: [169.5, 5716.9375, 180]
+        Translate: [-3.14162827, 24.6843452, 7.46901131]
+        Rotate: [157.875, 5849.0625, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -11918,7 +11830,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.MultiKeyDoor
-      ParamsJSON: "{\n  \"_doorName\": \"NewDoor2\",\n  \"_requiredKeysString\": \"Key1_1,Key1_2,Key1_3\",\n  \"_slideDirection\": \"right\"\n}"
+      ParamsJSON: "{\n  \"_doorName\": \"NewDoor2\",\n  \"_requiredKeysString\": \"Key1_1,Key1_2,Key1_3\"\n}"
   - InfoComponent:
       Parent: 14023949945871365441
       Name: Sentry Vision Cone 4
@@ -13475,26 +13387,66 @@ ENTITIES:
         Intensity: 6.67000008
         FallOff: -3.0999999
         CutOff: 0.769999981
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0.0500000007, 0.0199999996, 0.0199999996]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [37.75, 87.2399979, 8]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
       Parent: 0
-      Name: Patrol Vision Cone 1
-      UID: 4196030628338108250
+      Name: Key1_2
+      UID: 13932992734097766500
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-22.7580338, 13.7294426, 4.0333848]
-        Rotate: [0, 180, 0]
-        Scale: [0.999999762, 0.62500006, 0.999999762]
+        Translate: [-22.6951981, 15.2434406, 18.8773727]
+        Rotate: [0, 89.980217, 0]
+        Scale: [0.0199999828, 0.0199999977, 0.0199999958]
+    ModelComponent:
+      ModelID: 6755252122157173405
+      MaterialID: 8035902505845378175
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _pickupSound
+          filePaths:
+            - Resources/Audio/pickup.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"positionOffsetY\": 4.14900016784668,\n  \"targetName\": \"Patrol enemy 1\"\n}"
+      TypeName: GameScripts.KeyPickup
+      ParamsJSON: "{\n  \"_keyType\": \"Key1_2\"\n}"
     SpotLightComponent:
       Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Radiance: [0.828431368, 0.536043823, 0]
+        Intensity: 5.88999987
+        FallOff: 4.59600019
+        CutOff: -1.98099995
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]

@@ -188,6 +188,7 @@ namespace EditorUI {
                     sceneComp.bloomIntensity = 1.0f;
                     sceneComp.bloomThreshold = 1.0f;
                     sceneComp.bloomIterations = 10;
+                    sceneComp.pointLightBloomMultiplier = 1.0f;
                 }
                 auto& settings = m.ctx->scene.get<Boom::SceneNavmeshComponent>(sceneSettings);
 
@@ -198,6 +199,7 @@ namespace EditorUI {
                 m.ctx->renderer->bloomIntensity = settings.bloomIntensity;
                 m.ctx->renderer->bloomThreshold = settings.bloomThreshold;
                 m.ctx->renderer->bloomIterations = settings.bloomIterations;
+                m.ctx->renderer->pointLightBloomMultiplier = settings.pointLightBloomMultiplier;
 
                 // Slider modifies the scene component
                 if (ImGui::SliderFloat("Ambient Strength", &settings.ambientStrength, 0.0f, 1.0f)) {
@@ -221,6 +223,14 @@ namespace EditorUI {
                     if (ImGui::SliderInt("Bloom Iterations", &settings.bloomIterations, 1, 20)) {
                         // Value updated above in sync block
                     }
+
+                    ImGui::Separator();
+                    ImGui::Text("Point Light Bloom");
+                    if (ImGui::SliderFloat("Point Light Bloom Multiplier", &settings.pointLightBloomMultiplier, 0.0f, 5.0f)) {
+                        // Value synced to renderer below
+                    }
+                    ImGui::TextDisabled("(?) Multiplies bloom contribution from all point lights.\n"
+                                       "Individual lights can also have their own BloomStrength.");
 
                     ImGui::EndMenu();
                 }

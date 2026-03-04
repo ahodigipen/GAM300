@@ -21,6 +21,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 2930779482462285987
     Name: Gradient
@@ -42,6 +43,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 12207453972742617529
     Name: Wall Test
@@ -63,6 +65,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: true
   - Type: MATERIAL
     UID: 16257091296667891899
     Name: Paper Wall Texture
@@ -84,6 +87,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 5966106834849932234
     Name: Color
@@ -105,6 +109,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 9126702018428758169
     Name: Lamp Texture
@@ -126,6 +131,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 295392599374634747
     Name: Cushion Texture
@@ -147,6 +153,7 @@ ASSETS:
       OcclusionMapID: 14205466992706534584
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 8803557448742180096
     Name: light
@@ -168,6 +175,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 9170069941051798259
     Name: Lion Texture
@@ -189,6 +197,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 5692762562094318330
     Name: Floor Texture
@@ -210,6 +219,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 6133974277031033463
     Name: Tree Texture
@@ -231,6 +241,7 @@ ASSETS:
       OcclusionMapID: 10115533348395846162
       EmissiveMapID: 10463905360874748658
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 5133027133074393065
     Name: DoorKey
@@ -252,6 +263,7 @@ ASSETS:
       OcclusionMapID: 3873467379790927402
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 13160241162385617845
     Name: Samurai Texture
@@ -273,6 +285,7 @@ ASSETS:
       OcclusionMapID: 5698233998109750678
       EmissiveMapID: 15648589677235950874
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 6104124486273075758
     Name: Brick Wall Texture
@@ -294,6 +307,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 14920165367361296626
     Name: Enemy2
@@ -315,6 +329,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 17639289908748203916
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 16305148809392937752
     Name: FreezeMaterial
@@ -336,6 +351,7 @@ ASSETS:
       OcclusionMapID: 13466075847250744873
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 8235375233612734933
     Name: Wall Texture 1
@@ -357,6 +373,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 6977112513598097705
     Name: SkyBox
@@ -378,6 +395,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 8475851512635632909
     Name: Wooden Wall Texture
@@ -399,6 +417,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 5064145407616579494
     Name: TextureTerrain
@@ -420,6 +439,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 15937630629384441243
     Name: Zen Wall Texture
@@ -441,6 +461,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 15351841083764186454
     Name: Stone Statue (Thin) Texture
@@ -462,6 +483,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 14891281585286011240
     Name: Table Texture
@@ -483,6 +505,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 10882923977369277709
     Name: Stone Wall Texture
@@ -504,6 +527,7 @@ ASSETS:
       OcclusionMapID: 660614054657113155
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 7210221651131134645
     Name: Stone Statue (Thick) Texture
@@ -525,6 +549,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 16051879611138255440
     Name: Roof Texture
@@ -546,6 +571,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 17505835518794492079
     Name: Brick Rough Texture
@@ -567,6 +593,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 16814172849789012347
     Name: Outdoor Lamp Texture
@@ -588,6 +615,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 11381204713328203699
     Name: Terrain
@@ -609,6 +637,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 7355395803280547314
     Name: GrassTexture
@@ -630,6 +659,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 1773827607540986892
     Name: GOLDKEY
@@ -651,6 +681,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 1781146247448718189
     Name: Enemy1
@@ -672,6 +703,7 @@ ASSETS:
       OcclusionMapID: 13375616880279673200
       EmissiveMapID: 14479753821827653348
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 10338892533787968460
     Name: Tree Texture 2
@@ -693,6 +725,7 @@ ASSETS:
       OcclusionMapID: 10115533348395846162
       EmissiveMapID: 0
       OpacityMapID: 10115533348395846162
+      DoubleSided: false
   - Type: MATERIAL
     UID: 1677706057313398358
     Name: Gravestone_ResMat
@@ -714,6 +747,7 @@ ASSETS:
       OcclusionMapID: 8031341649730841089
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 3895109391993840374
     Name: EnemyLevel2_1
@@ -735,6 +769,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 12294537066232412532
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 162870785414010399
     Name: Translucent
@@ -756,6 +791,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 1299006059024419860
     Name: MazeWall
@@ -777,6 +813,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 10986001470646938493
     Name: BLACK
@@ -798,6 +835,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 17414608540104464264
     Name: NewDoorTexture
@@ -819,6 +857,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 12920481796716859627
       OpacityMapID: 17522809466322833643
+      DoubleSided: false
   - Type: MATERIAL
     UID: 8035902505845378175
     Name: NewTokenTexture
@@ -840,6 +879,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: PHYSICS_MESH
     UID: 8633576229273901496
     Name: Wall_With_Hole (Tri)

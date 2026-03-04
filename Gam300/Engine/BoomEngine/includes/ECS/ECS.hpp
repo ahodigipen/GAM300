@@ -874,6 +874,7 @@ struct MenuComponent {
         float bloomIntensity = 1.0f;
         float bloomThreshold = 1.0f;  // Brightness threshold for bloom extraction
         int bloomIterations = 10;     // Number of blur passes (default 10)
+        float pointLightBloomMultiplier = 1.0f;  // Global multiplier for point light bloom contribution
 
         XPROPERTY_DEF("SceneNavmeshComponent", SceneNavmeshComponent,
             obj_member<"NavmeshFile", &SceneNavmeshComponent::navmeshFile>,
@@ -881,7 +882,8 @@ struct MenuComponent {
             obj_member<"BloomEnabled", &SceneNavmeshComponent::bloomEnabled>,
             obj_member<"BloomIntensity", &SceneNavmeshComponent::bloomIntensity>,
             obj_member<"BloomThreshold", &SceneNavmeshComponent::bloomThreshold>,
-            obj_member<"BloomIterations", &SceneNavmeshComponent::bloomIterations>)
+            obj_member<"BloomIterations", &SceneNavmeshComponent::bloomIterations>,
+            obj_member<"PointLightBloomMultiplier", &SceneNavmeshComponent::pointLightBloomMultiplier>)
     };
 
     struct DeactivatedComponent {

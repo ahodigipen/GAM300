@@ -12,6 +12,7 @@ namespace Boom {
 	struct GPUPointLight {
 		glm::vec4 position_range;       // xyz = position, w = range
 		glm::vec4 radiance_intensity;   // rgb = radiance, w = intensity
+		glm::vec4 bloomStrength_padding; // x = bloomStrength, yzw = padding (for std140 alignment)
 	};
 
 	struct GPUDirLight {

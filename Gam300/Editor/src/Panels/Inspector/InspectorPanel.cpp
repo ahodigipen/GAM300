@@ -3723,6 +3723,13 @@ namespace EditorUI {
                     materialChanged |= ImGui::DragFloat("opacity", &mat->data.opacity, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
                 }
 
+                if (ImGui::CollapsingHeader("Rendering", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    materialChanged |= ImGui::Checkbox("Double Sided", &mat->doubleSided);
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip("Disables backface culling for all meshes using this material.\nUseful for single-sided geometry like doors or thin panels.");
+                    }
+                }
+
                 if (ImGui::CollapsingHeader("UV Mapping", ImGuiTreeNodeFlags_DefaultOpen)) {
                     materialChanged |= ImGui::Checkbox("Use World Space UV", &mat->data.useWorldSpaceUV);
                     if (ImGui::IsItemHovered()) {
