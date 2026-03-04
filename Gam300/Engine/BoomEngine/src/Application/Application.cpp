@@ -359,9 +359,9 @@ namespace Boom
 
             LightsUpdate();
 
-            // Flycam (edit mode only)
+            // Flycam (edit mode or editor paused)
             glfwGetCursorPos(m_Context->window->Handle().get(), &curMP.x, &curMP.y);
-            if (!m_IsInPlayMode) {
+            if (!m_IsInPlayMode || IsPaused()) {
                 camera.update(static_cast<float>(m_Context->DeltaTime));
             }
 
@@ -375,7 +375,7 @@ namespace Boom
             EnttView<Entity, CameraComponent>([this, &curMP, &prevMP, &dbgView, &dbgProj, &dbgCamPos, &mainCam, &mainCamT](auto entity, CameraComponent& comp) {
                 Transform3D& transform{ entity.template Get<TransformComponent>().transform };
 
-                if (!m_IsInPlayMode) {
+                if (!m_IsInPlayMode || IsPaused()) {
                     transform.rotate.x += m_Context->window->camRot.x;
                     transform.rotate.y += m_Context->window->camRot.y;
                     glm::quat quat{ glm::radians(transform.rotate) };
