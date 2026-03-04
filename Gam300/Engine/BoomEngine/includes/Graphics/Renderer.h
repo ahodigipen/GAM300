@@ -244,7 +244,7 @@ namespace Boom {
             float fov = glm::radians(cutOffAngle * 2.0f);
             fov = glm::clamp(fov, glm::radians(10.0f), glm::radians(170.0f)); // Clamp to reasonable range
 
-            float nearPlane = 0.1f;
+            float nearPlane = 0.5f;
             float farPlane = range > 0.0f ? range : 50.0f;
 
             glm::mat4 proj = glm::perspective(fov, 1.0f, nearPlane, farPlane);
