@@ -549,6 +549,15 @@ namespace Boom
                 e << YAML::Key << "BloomIntensity" << YAML::Value << sn.bloomIntensity;
                 e << YAML::Key << "BloomThreshold" << YAML::Value << sn.bloomThreshold;
                 e << YAML::Key << "BloomIterations" << YAML::Value << sn.bloomIterations;
+                e << YAML::Key << "PointLightBloomMultiplier" << YAML::Value << sn.pointLightBloomMultiplier;
+                e << YAML::Key << "FogEnabled" << YAML::Value << sn.fogEnabled;
+                e << YAML::Key << "FogColor" << YAML::Value
+                    << YAML::Flow << YAML::BeginSeq
+                    << sn.fogColor.r << sn.fogColor.g << sn.fogColor.b
+                    << YAML::EndSeq;
+                e << YAML::Key << "FogDensity" << YAML::Value << sn.fogDensity;
+                e << YAML::Key << "FogHeightFalloff" << YAML::Value << sn.fogHeightFalloff;
+                e << YAML::Key << "FogHeight" << YAML::Value << sn.fogHeight;
                 e << YAML::EndMap;
             },
             // ----- DESERIALIZE -----
@@ -576,6 +585,27 @@ namespace Boom
 
                 if (auto v = data["BloomIterations"])
                     sn.bloomIterations = v.as<int>(sn.bloomIterations);
+
+                if (auto v = data["PointLightBloomMultiplier"])
+                    sn.pointLightBloomMultiplier = v.as<float>(sn.pointLightBloomMultiplier);
+
+                if (auto v = data["FogEnabled"])
+                    sn.fogEnabled = v.as<bool>(sn.fogEnabled);
+
+                if (auto c = data["FogColor"]; c && c.IsSequence() && c.size() == 3) {
+                    sn.fogColor.r = c[0].as<float>(sn.fogColor.r);
+                    sn.fogColor.g = c[1].as<float>(sn.fogColor.g);
+                    sn.fogColor.b = c[2].as<float>(sn.fogColor.b);
+                }
+
+                if (auto v = data["FogDensity"])
+                    sn.fogDensity = v.as<float>(sn.fogDensity);
+
+                if (auto v = data["FogHeightFalloff"])
+                    sn.fogHeightFalloff = v.as<float>(sn.fogHeightFalloff);
+
+                if (auto v = data["FogHeight"])
+                    sn.fogHeight = v.as<float>(sn.fogHeight);
             }
         );
 

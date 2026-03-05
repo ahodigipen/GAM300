@@ -253,7 +253,7 @@ namespace EditorUI {
                     ImGui::SliderFloat("Density", &settings.fogDensity, 0.0f, 0.1f);
                     ImGui::TextDisabled("(?) Controls how thick the fog is per unit of distance.");
 
-                    ImGui::SliderFloat("Height Falloff", &settings.fogHeightFalloff, 0.0f, 5.0f);
+                    ImGui::SliderFloat("Height Falloff", &settings.fogHeightFalloff, 0.0f, 0.1f, "%.4f");
                     ImGui::TextDisabled("(?) How quickly fog thins above the fog height. 0 = uniform.");
 
                     ImGui::SliderFloat("Height Offset", &settings.fogHeight, -50.0f, 50.0f);
