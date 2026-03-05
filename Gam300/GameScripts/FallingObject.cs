@@ -9,10 +9,12 @@ namespace GameScripts
         public ulong Entity;
 
         [Boom.EditorExposed("Trigger Radius", "Player distance to start checking for fall", 0.5f, 50f, true)]
-        private float _triggerRadius = 6.0f;
+        private float _triggerRadius = 2.0f;
+        [Boom.EditorExposed("Debug: Force Fall In Radius", "If true, platform will fall immediately when player enters radius (for testing)")]
+        private bool _debugForceFallInRadius = false;
 
         [Boom.EditorExposed("Fall Speed", "Initial downward velocity when triggered", 0.1f, 50f, true)]
-        private float _fallSpeed = 6.0f;
+        private float _fallSpeed = 3.0f;
 
         [Boom.EditorExposed("Gravity Multiplier", "Extra gravity applied while falling", 0f, 50f, true)]
         private float _gravity = 9.8f;
@@ -38,13 +40,22 @@ namespace GameScripts
             // Make sure entity exists and has transform
             if (!API.HasTransform(Entity)) return;
 
+            API.Log($"[FallingObject] OnStart Entity={Entity}, triggerRadius={_triggerRadius}, fallSpeed={_fallSpeed}");
+
+            // Ensure the collider is a trigger so it doesn't fall immediately
+            if (API.HasCollider(Entity))
+            {
+                API.SetTrigger(Entity, true);
+                API.Log("[FallingObject] Collider set to trigger=true on start");
+            }
+
             // Ensure the object is not affected by physics until triggered (engine-specific)
             // We rely on SetLinearVelocity to move it when falling.
         }
 
         public void OnUpdate(float dt)
         {
-            if (_hasFallen) return;
+            API.Log($"[FallingObject] OnUpdate E={Entity} isFalling={_isFalling} hasFallen={_hasFallen} enableTimer={_enableTimer:F3}");
 
             // If currently falling, handle collision detection
             if (_isFalling)
@@ -86,6 +97,18 @@ namespace GameScripts
                 return;
             }
 
+            // If we have a scheduled fall countdown (negative timer), count up to zero then fall
+            if (_enableTimer < 0f)
+            {
+                _enableTimer += dt;
+                if (_enableTimer >= 0f)
+                {
+                    _isFalling = true;
+                    FallNow();
+                }
+                return;
+            }
+
             _enableTimer += dt;
             if (_enableTimer < ENABLE_DELAY) return;
 
@@ -118,12 +141,28 @@ namespace GameScripts
 
             float tFall = (float)System.Math.Sqrt(2f * verticalDistance / playerGravity);
 
-            // Player forward speed - query PlayerMovement
-            float forwardSpeed = PlayerMovement.GetCurrentMoveSpeed();
+            // Player forward speed - prefer actual physics velocity, fallback to PlayerMovement reported speed
+            float forwardSpeed = (float)System.Math.Sqrt(playerVel.X * playerVel.X + playerVel.Z * playerVel.Z);
+            if (forwardSpeed < 0.01f)
+            {
+                forwardSpeed = PlayerMovement.GetCurrentMoveSpeed();
+            }
+
             float predictedDistance = forwardSpeed * tFall;
 
-            // Trigger if player is within predicted distance plus threshold
-            if (horizDist <= predictedDistance + _triggerRadius - 0.1f)
+            API.Log($"[FallingObject] horizDist={horizDist:F2} forwardSpeed={forwardSpeed:F2} tFall={tFall:F2} predictedDistance={predictedDistance:F2} lastHoriz={_lastHorizontalDistance:F2}");
+
+            // Debug: force fall if within radius
+            if (_debugForceFallInRadius && horizDist <= _triggerRadius)
+            {
+                API.Log("[FallingObject] Debug force-trigger: player within radius, scheduling fall");
+                _hasFallen = true;
+                _enableTimer = -0.05f;
+                return;
+            }
+
+            // Trigger if player is within predicted distance plus threshold OR simple proximity approach
+            if (horizDist <= predictedDistance + _triggerRadius - 0.1f || (horizDist <= _triggerRadius && horizDist < _lastHorizontalDistance))
             {
                 // schedule fall with slight delay to 'smash' player
                 _hasFallen = true;

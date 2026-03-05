@@ -922,10 +922,15 @@ namespace Boom {
                 return;
             }
 
-            // Prepare arguments for delegate invocation
+            // Prepare boxed uint64 arguments for delegate invocation
+            MonoClass* uint64Class = mono_get_uint64_class();
+            MonoDomain* domain = mono_domain_get();
+            MonoObject* boxedArg0 = mono_value_box(domain, uint64Class, &triggerEntity);
+            MonoObject* boxedArg1 = mono_value_box(domain, uint64Class, &otherEntity);
+
             void* args[2];
-            args[0] = &triggerEntity;
-            args[1] = &otherEntity;
+            args[0] = boxedArg0;
+            args[1] = boxedArg1;
 
             // Invoke the delegate safely using Mono runtime
             MonoObject* exc = nullptr;
@@ -978,10 +983,15 @@ namespace Boom {
                 return;
             }
 
-            // Prepare arguments for delegate invocation
+            // Prepare boxed uint64 arguments for delegate invocation
+            MonoClass* uint64Class = mono_get_uint64_class();
+            MonoDomain* domain = mono_domain_get();
+            MonoObject* boxedArg0 = mono_value_box(domain, uint64Class, &triggerEntity);
+            MonoObject* boxedArg1 = mono_value_box(domain, uint64Class, &otherEntity);
+
             void* args[2];
-            args[0] = &triggerEntity;
-            args[1] = &otherEntity;
+            args[0] = boxedArg0;
+            args[1] = boxedArg1;
 
             // Invoke the delegate safely using Mono runtime
             MonoObject* exc = nullptr;
