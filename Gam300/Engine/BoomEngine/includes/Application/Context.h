@@ -4,6 +4,7 @@
 #include "AppWindow.h"
 #include "Graphics/Renderer.h"
 #include "Graphics/Video/VideoSystem.h"
+#include "Graphics/ParticleSystem.h"
 #include "GlobalConstants.h"
 #include "Auxiliaries/Assets.h"
 #include "ECS/ECS.hpp"

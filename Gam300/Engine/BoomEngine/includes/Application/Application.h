@@ -37,6 +37,7 @@
 #include "AI/AISystem.h"
 #include "Input/RayCast.h"
 #include "Graphics/Video/VideoPlayer.h"
+#include "Graphics/ParticleSystem.h"
 #include "GlobalConstants.h"
 
 namespace std {

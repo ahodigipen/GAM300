@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Boom;
 
 namespace GameScripts
@@ -10,6 +10,8 @@ namespace GameScripts
         private const string RETURN_TEX_CLICKED = "Resources/Textures/MenusUI/ReturnMenuButton_Clicked.png";
 
         private ulong _returnButtonID;
+
+        private ButtonFX _buttonFX;
 
         private enum MenuState
         {
@@ -34,6 +36,8 @@ namespace GameScripts
 
             if (_returnButtonID == 0) API.Log("Warning: Return Button not found!");
 
+            _buttonFX = new ButtonFX(_returnButtonID);
+
             _currentState = MenuState.Idle;
             _clickedButtonID = 0;
 
@@ -42,6 +46,9 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
+            // Always update hover effects
+            _buttonFX?.Update(dt);
+
             switch (_currentState)
             {
                 case MenuState.Idle:
@@ -63,8 +70,8 @@ namespace GameScripts
             bool bPressed = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_B);
             bool startPressed = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_START);
 
-            if ((aPressed && !_wasAButtonPressed) || 
-                (bPressed && !_wasBButtonPressed) || 
+            if ((aPressed && !_wasAButtonPressed) ||
+                (bPressed && !_wasBButtonPressed) ||
                 (startPressed && !_wasStartButtonPressed))
             {
                 if (_returnButtonID != 0) StartClickDelay(_returnButtonID);
@@ -113,6 +120,7 @@ namespace GameScripts
         {
             _currentState = MenuState.ButtonDelay;
             _clickedButtonID = buttonID;
+            ButtonFX.PlayClickSound();
 
             if (buttonID == _returnButtonID)
                 API.SetSpriteTexture(buttonID, RETURN_TEX_CLICKED);
