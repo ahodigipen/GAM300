@@ -145,6 +145,7 @@ namespace Boom {
  std::string materialName;
  std::string modelSource;
  std::string materialSource;
+ float opacityOverride{ 1.0f }; // Per-entity opacity multiplier (1.0 = opaque, 0.0 = transparent)
 
  XPROPERTY_DEF(
  "ModelComponent", ModelComponent,
