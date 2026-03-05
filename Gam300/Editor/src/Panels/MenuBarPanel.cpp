@@ -189,6 +189,11 @@ namespace EditorUI {
                     sceneComp.bloomThreshold = 1.0f;
                     sceneComp.bloomIterations = 10;
                     sceneComp.pointLightBloomMultiplier = 1.0f;
+                    sceneComp.fogEnabled = false;
+                    sceneComp.fogColor = glm::vec3(0.5f, 0.6f, 0.7f);
+                    sceneComp.fogDensity = 0.01f;
+                    sceneComp.fogHeightFalloff = 0.5f;
+                    sceneComp.fogHeight = 0.0f;
                 }
                 auto& settings = m.ctx->scene.get<Boom::SceneNavmeshComponent>(sceneSettings);
 
@@ -200,6 +205,11 @@ namespace EditorUI {
                 m.ctx->renderer->bloomThreshold = settings.bloomThreshold;
                 m.ctx->renderer->bloomIterations = settings.bloomIterations;
                 m.ctx->renderer->pointLightBloomMultiplier = settings.pointLightBloomMultiplier;
+                m.ctx->renderer->enabledFog = settings.fogEnabled;
+                m.ctx->renderer->fogColor = settings.fogColor;
+                m.ctx->renderer->fogDensity = settings.fogDensity;
+                m.ctx->renderer->fogHeightFalloff = settings.fogHeightFalloff;
+                m.ctx->renderer->fogHeight = settings.fogHeight;
 
                 // Slider modifies the scene component
                 if (ImGui::SliderFloat("Ambient Strength", &settings.ambientStrength, 0.0f, 1.0f)) {
@@ -234,6 +244,24 @@ namespace EditorUI {
 
                     ImGui::EndMenu();
                 }
+
+                if (ImGui::BeginMenu("Volumetric Fog Settings")) {
+                    ImGui::Checkbox("Enable Fog", &settings.fogEnabled);
+
+                    ImGui::ColorEdit3("Fog Color", &settings.fogColor.x);
+
+                    ImGui::SliderFloat("Density", &settings.fogDensity, 0.0f, 0.1f);
+                    ImGui::TextDisabled("(?) Controls how thick the fog is per unit of distance.");
+
+                    ImGui::SliderFloat("Height Falloff", &settings.fogHeightFalloff, 0.0f, 5.0f);
+                    ImGui::TextDisabled("(?) How quickly fog thins above the fog height. 0 = uniform.");
+
+                    ImGui::SliderFloat("Height Offset", &settings.fogHeight, -50.0f, 50.0f);
+                    ImGui::TextDisabled("(?) World Y below which fog is densest.");
+
+                    ImGui::EndMenu();
+                }
+                ImGui::MenuItem("Volumetric Fog", nullptr, &m.ctx->renderer->enabledFog);
 
                 if (m.ctx->physics && m_Owner && m_Owner->GetApp()) {
                     // Get current state from Application

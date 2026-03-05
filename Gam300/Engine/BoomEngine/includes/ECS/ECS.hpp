@@ -877,6 +877,13 @@ struct MenuComponent {
         int bloomIterations = 10;     // Number of blur passes (default 10)
         float pointLightBloomMultiplier = 1.0f;  // Global multiplier for point light bloom contribution
 
+        // Volumetric fog settings
+        bool fogEnabled = false;
+        glm::vec3 fogColor = glm::vec3(0.5f, 0.6f, 0.7f);
+        float fogDensity = 0.01f;
+        float fogHeightFalloff = 0.5f;  // How fast fog thins with height (larger = thinner at height)
+        float fogHeight = 0.0f;         // World-space Y below which fog is thickest
+
         XPROPERTY_DEF("SceneNavmeshComponent", SceneNavmeshComponent,
             obj_member<"NavmeshFile", &SceneNavmeshComponent::navmeshFile>,
             obj_member<"AmbientStrength", &SceneNavmeshComponent::ambientStrength>,
@@ -884,7 +891,12 @@ struct MenuComponent {
             obj_member<"BloomIntensity", &SceneNavmeshComponent::bloomIntensity>,
             obj_member<"BloomThreshold", &SceneNavmeshComponent::bloomThreshold>,
             obj_member<"BloomIterations", &SceneNavmeshComponent::bloomIterations>,
-            obj_member<"PointLightBloomMultiplier", &SceneNavmeshComponent::pointLightBloomMultiplier>)
+            obj_member<"PointLightBloomMultiplier", &SceneNavmeshComponent::pointLightBloomMultiplier>,
+            obj_member<"FogEnabled", &SceneNavmeshComponent::fogEnabled>,
+            obj_member<"FogColor", &SceneNavmeshComponent::fogColor>,
+            obj_member<"FogDensity", &SceneNavmeshComponent::fogDensity>,
+            obj_member<"FogHeightFalloff", &SceneNavmeshComponent::fogHeightFalloff>,
+            obj_member<"FogHeight", &SceneNavmeshComponent::fogHeight>)
     };
 
     struct DeactivatedComponent {
