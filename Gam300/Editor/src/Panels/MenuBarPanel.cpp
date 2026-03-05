@@ -87,6 +87,26 @@ namespace EditorUI {
         if (!ImGui::BeginMainMenuBar())
             return;
 
+        // Sync scene settings -> renderer every frame so values are applied
+        // immediately on scene load, not only when the Options menu is opened.
+        if (m.ctx && m.ctx->renderer) {
+            entt::entity sceneSettings = Boom::TryGetSceneSettings(m.ctx->scene);
+            if (sceneSettings != entt::null && m.ctx->scene.all_of<Boom::SceneNavmeshComponent>(sceneSettings)) {
+                auto& s = m.ctx->scene.get<Boom::SceneNavmeshComponent>(sceneSettings);
+                m.ctx->renderer->AmbientStrength()          = s.ambientStrength;
+                m.ctx->renderer->enabledBloom               = s.bloomEnabled;
+                m.ctx->renderer->bloomIntensity             = s.bloomIntensity;
+                m.ctx->renderer->bloomThreshold             = s.bloomThreshold;
+                m.ctx->renderer->bloomIterations            = s.bloomIterations;
+                m.ctx->renderer->pointLightBloomMultiplier  = s.pointLightBloomMultiplier;
+                m.ctx->renderer->enabledFog                 = s.fogEnabled;
+                m.ctx->renderer->fogColor                   = s.fogColor;
+                m.ctx->renderer->fogDensity                 = s.fogDensity;
+                m.ctx->renderer->fogHeightFalloff           = s.fogHeightFalloff;
+                m.ctx->renderer->fogHeight                  = s.fogHeight;
+            }
+        }
+
         // --------------------------- File ----------------------------------------
         if (ImGui::BeginMenu("File"))
         {
@@ -196,20 +216,6 @@ namespace EditorUI {
                     sceneComp.fogHeight = 0.0f;
                 }
                 auto& settings = m.ctx->scene.get<Boom::SceneNavmeshComponent>(sceneSettings);
-
-                // Keep renderer in sync with scene settings (for loaded scenes)
-                // This ensures that when a scene is loaded, the renderer reflects the saved settings
-                m.ctx->renderer->AmbientStrength() = settings.ambientStrength;
-                m.ctx->renderer->enabledBloom = settings.bloomEnabled;
-                m.ctx->renderer->bloomIntensity = settings.bloomIntensity;
-                m.ctx->renderer->bloomThreshold = settings.bloomThreshold;
-                m.ctx->renderer->bloomIterations = settings.bloomIterations;
-                m.ctx->renderer->pointLightBloomMultiplier = settings.pointLightBloomMultiplier;
-                m.ctx->renderer->enabledFog = settings.fogEnabled;
-                m.ctx->renderer->fogColor = settings.fogColor;
-                m.ctx->renderer->fogDensity = settings.fogDensity;
-                m.ctx->renderer->fogHeightFalloff = settings.fogHeightFalloff;
-                m.ctx->renderer->fogHeight = settings.fogHeight;
 
                 // Slider modifies the scene component
                 if (ImGui::SliderFloat("Ambient Strength", &settings.ambientStrength, 0.0f, 1.0f)) {
