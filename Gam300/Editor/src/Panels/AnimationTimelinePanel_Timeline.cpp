@@ -397,6 +397,9 @@ void AnimationTimelinePanel::RenderTrackList()
         // Render bone hierarchy starting from root
         RenderBoneTrack(root, duration);
 
+        // Render Cutscene Sequence Tracks (Entity Transforms/Slots)
+        RenderSequenceTracks(duration);
+
         ImGui::PopStyleVar();  // IndentSpacing
 
         // End columns
@@ -1550,4 +1553,280 @@ void AnimationTimelinePanel::DeleteSelectedKeyframes()
     ClearKeyframeSelection();
 
     BOOM_INFO("[Multiselect] Deleted {} keyframes", deleteCount);
+}
+
+// ========== Sequence Tracks Rendering ==========
+
+void AnimationTimelinePanel::RenderSequenceTracks(float duration)
+{
+    if (m_SequenceTracks.empty()) return;
+
+    // Small divider if we had bone tracks above
+    ImGui::Separator();
+    ImGui::TextDisabled("Entity Sequences");
+
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+    ImVec2 mousePos = ImGui::GetMousePos();
+    m_HoveredSequenceTrackIndex = -1;
+    m_HoveredSequenceKeyframeIndex = -1;
+
+    for (int tIdx = 0; tIdx < (int)m_SequenceTracks.size(); ++tIdx)
+    {
+        auto& track = m_SequenceTracks[tIdx];
+
+        // === COLUMN 0: Track Label ===
+        ImVec2 rowStartPos = ImGui::GetCursorScreenPos();
+        float rowHeight = ImGui::GetTextLineHeightWithSpacing();
+        
+        // Tree Node for expanding (though not hierarchical, useful for collapsing)
+        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+        if (m_SelectedSequenceTrack == tIdx) flags |= ImGuiTreeNodeFlags_Selected;
+
+        bool isOpen = ImGui::TreeNodeEx((void*)(intptr_t)tIdx, flags, "%s", track.label.c_str());
+        
+        if (ImGui::IsItemHovered())
+        {
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+            {
+                m_SelectedSequenceTrack = tIdx;
+            }
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+            {
+                ImGui::OpenPopup("SequenceTrackPopup");
+            }
+        }
+
+        if (ImGui::BeginPopup("SequenceTrackPopup"))
+        {
+            if (ImGui::MenuItem("Delete Track"))
+            {
+                m_SequenceTracks.erase(m_SequenceTracks.begin() + tIdx);
+                ImGui::EndPopup();
+                --tIdx;
+                continue; // Skip the rest for this deleted track
+            }
+            ImGui::EndPopup();
+        }
+
+        // === COLUMN 1: Timeline Track ===
+        ImGui::NextColumn();
+
+        ImVec2 timelineStartPos = ImGui::GetCursorScreenPos();
+        float timelineWidth = ImGui::GetColumnWidth(1) - 10.0f;
+        timelineStartPos.y = rowStartPos.y;
+
+        ImVec2 timelineMin = timelineStartPos;
+        ImVec2 timelineMax(timelineMin.x + timelineWidth, timelineMin.y + rowHeight);
+
+        // Draw track background (alternating color logic simplified)
+        ImU32 bgColor = (tIdx % 2 == 0) ? IM_COL32(35, 35, 35, 255) : IM_COL32(40, 40, 40, 255);
+        if (m_SelectedSequenceTrack == tIdx) bgColor = IM_COL32(50, 60, 80, 255);
+        drawList->AddRectFilled(timelineMin, timelineMax, bgColor);
+
+        // Grid lines
+        if (duration > 0.0f)
+        {
+            for (float t = 0.0f; t <= duration; t += 1.0f)
+            {
+                float x = timelineMin.x + (t / duration) * timelineWidth;
+                drawList->AddLine(ImVec2(x, timelineMin.y), ImVec2(x, timelineMax.y), IM_COL32(80, 80, 80, 255));
+            }
+        }
+
+        // Current time line
+        if (duration > 0.0f && m_CurrentTime >= 0.0f)
+        {
+            float normalizedTime = m_CurrentTime / duration;
+            normalizedTime = (normalizedTime < 0.0f) ? 0.0f : (normalizedTime > 1.0f) ? 1.0f : normalizedTime;
+            float x = timelineMin.x + normalizedTime * timelineWidth;
+            drawList->AddLine(ImVec2(x, timelineMin.y), ImVec2(x, timelineMax.y), IM_COL32(255, 0, 0, 255), 2.0f);
+        }
+
+        // Keyframes
+        if (duration > 0.0f)
+        {
+            for (size_t kIdx = 0; kIdx < track.keyFrames.size(); ++kIdx)
+            {
+                const auto& kf = track.keyFrames[kIdx];
+                
+                // Convert frame to seconds (assume 60fps)
+                float kfTime = (float)kf.frame / 60.0f;
+                float normalizedTime = kfTime / duration;
+                float x = timelineMin.x + normalizedTime * timelineWidth;
+                
+                ImVec2 center(x, timelineMin.y + rowHeight * 0.5f);
+                float size = 4.0f;
+
+                SequenceMarkerScreenPos markerPos;
+                markerPos.trackIndex = tIdx;
+                markerPos.keyframeIndex = (int)kIdx;
+                markerPos.screenPos = center;
+                m_SequenceMarkerScreenPositions.push_back(markerPos);
+
+                bool isHovered = (mousePos.x >= center.x - size - 2.0f && mousePos.x <= center.x + size + 2.0f &&
+                                  mousePos.y >= center.y - size - 2.0f && mousePos.y <= center.y + size + 2.0f);
+                
+                if (isHovered)
+                {
+                    m_HoveredSequenceTrackIndex = tIdx;
+                    m_HoveredSequenceKeyframeIndex = (int)kIdx;
+                }
+
+                ImU32 fillColor = IM_COL32(180, 180, 180, 255);
+                ImU32 outlineColor = IM_COL32(230, 230, 230, 255);
+
+                // Colors based on type
+                switch (track.type) {
+                    case 0: fillColor = IM_COL32(200, 100, 100, 255); break; // Pos - Reddish
+                    case 1: fillColor = IM_COL32(100, 200, 100, 255); break; // Rot - Greenish
+                    case 2: fillColor = IM_COL32(100, 100, 200, 255); break; // Scale - Blueish
+                    case 3: fillColor = IM_COL32(200, 200, 100, 255); break; // Anim - Yellow
+                }
+
+                if (isHovered)
+                {
+                    fillColor = IM_COL32(255, 255, 255, 255);
+                    size = 5.0f;
+                }
+
+                // Draw diamond shape
+                ImVec2 p1(center.x, center.y - size);
+                ImVec2 p2(center.x + size, center.y);
+                ImVec2 p3(center.x, center.y + size);
+                ImVec2 p4(center.x - size, center.y);
+                
+                drawList->AddQuadFilled(p1, p2, p3, p4, fillColor);
+                drawList->AddQuad(p1, p2, p3, p4, outlineColor, 1.5f);
+            }
+        }
+
+        // Add Keyframe by double clicking empty track area
+        if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && m_HoveredSequenceKeyframeIndex == -1)
+        {
+            m_SelectedSequenceTrack = tIdx;
+            
+            // Calculate frame at mouse click
+            float clickX = mousePos.x - timelineMin.x;
+            float clickTime = (clickX / timelineWidth) * duration;
+            int clickFrame = (int)(clickTime * 60.0f);
+
+            // Add new keyframe with defaults
+            float vX = 0, vY = 0, vZ = 0, vW = 0;
+            if (track.type == 2) { vX = 1; vY = 1; vZ = 1; } // Scale defaults
+
+            track.keyFrames.push_back({ clickFrame, vX, vY, vZ, vW });
+            track.keyFrameTimes.push_back(clickFrame);
+            
+            std::sort(track.keyFrames.begin(), track.keyFrames.end(), [](const auto& a, const auto& b) { return a.frame < b.frame; });
+            std::sort(track.keyFrameTimes.begin(), track.keyFrameTimes.end());
+            
+            ImGui::OpenPopup("EditSequenceKeyframePopup");
+        }
+        
+        // Double click specific keyframe
+        if (m_HoveredSequenceKeyframeIndex != -1 && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+        {
+            m_SelectedSequenceTrack = tIdx;
+            // The popup logic will use the playback time or nearest frame
+            ImGui::OpenPopup("EditSequenceKeyframePopup");
+        }
+
+        ImGui::NextColumn();
+    }
+    
+    // Popup must be outside the columns
+    if (ImGui::BeginPopup("EditSequenceKeyframePopup"))
+    {
+        if (m_SelectedSequenceTrack >= 0 && m_SelectedSequenceTrack < m_SequenceTracks.size())
+        {
+            auto& track = m_SequenceTracks[m_SelectedSequenceTrack];
+            
+            // Find the closest keyframe to the current time, or just edit the exact one we clicked
+            // To simplify, we find the keyframe exactly at the clicked time if we just created it, 
+            // or the nearest one.
+            int compareFrame = (int)(m_CurrentTime * 60.0f);
+            SerializedKeyframe* kf_data = nullptr;
+            
+            if (m_HoveredSequenceKeyframeIndex != -1 && m_HoveredSequenceKeyframeIndex < track.keyFrames.size()) {
+                kf_data = &track.keyFrames[m_HoveredSequenceKeyframeIndex];
+            } else {
+                // If we didn't specify, just find the closest
+                for(auto& kf : track.keyFrames) {
+                    if (std::abs(kf.frame - compareFrame) < 5) {
+                        kf_data = &kf;
+                        break;
+                    }
+                }
+            }
+            
+            if (kf_data) {
+                ImGui::Text("%s", track.label.c_str());
+                ImGui::Text("Frame: %d (%.2fs)", kf_data->frame, kf_data->frame / 60.0f);
+                ImGui::Separator();
+                
+                if (track.type <= 2) { // Pos/Rot/Scale
+                    ImGui::DragFloat("X", &kf_data->valueX, 0.1f);
+                    ImGui::DragFloat("Y", &kf_data->valueY, 0.1f);
+                    ImGui::DragFloat("Z", &kf_data->valueZ, 0.1f);
+                }
+                else if (track.type == 3) // Animation
+                {
+                    std::vector<std::string> animNames;
+                    animNames.push_back("None");
+
+                    if (m_Owner && m_Owner->GetContext())
+                    {
+                        auto& reg = m_Owner->GetContext()->scene;
+                        entt::entity e = Boom::FindEntityByName(reg, track.entityName);
+                        if (reg.valid(e) && reg.all_of<Boom::AnimatorComponent>(e))
+                        {
+                                const auto& ac = reg.get<Boom::AnimatorComponent>(e);
+                                if (ac.animator)
+                                {
+                                    for(size_t i=0; i < ac.animator->GetClipCount(); ++i)
+                                    {
+                                        const auto* c = ac.animator->GetClip(i);
+                                        if(c) animNames.push_back(c->name);
+                                    }
+                                }
+                        }
+                    }
+
+                    const char* preview = kf_data->valueStr.empty() ? "None" : kf_data->valueStr.c_str();
+                    if (ImGui::BeginCombo("Animation Name", preview))
+                    {
+                        for (const auto& name : animNames)
+                        {
+                            bool is_selected = (kf_data->valueStr == name);
+                            if (ImGui::Selectable(name.c_str(), is_selected))
+                            {
+                                kf_data->valueStr = name;
+                            }
+                            if (is_selected) ImGui::SetItemDefaultFocus();
+                        }
+                        ImGui::EndCombo();
+                    }
+                }
+                
+                ImGui::Separator();
+                if (ImGui::Button("Delete Keyframe"))
+                {
+                    // Find and remove from track.keyFrames and keyFrameTimes
+                    auto it = std::find_if(track.keyFrames.begin(), track.keyFrames.end(), [&](const SerializedKeyframe& k) { return k.frame == kf_data->frame; });
+                    if (it != track.keyFrames.end()) track.keyFrames.erase(it);
+                    
+                    auto timeIt = std::find(track.keyFrameTimes.begin(), track.keyFrameTimes.end(), kf_data->frame);
+                    if (timeIt != track.keyFrameTimes.end()) track.keyFrameTimes.erase(timeIt);
+                    
+                    ImGui::CloseCurrentPopup();
+                }
+            }
+            else {
+                ImGui::TextDisabled("No keyframe found at current time.");
+            }
+        }
+        ImGui::Separator();
+        if (ImGui::Button("Close", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+        ImGui::EndPopup();
+    }
 }

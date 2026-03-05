@@ -1222,11 +1222,29 @@ void AnimationTimelinePanel::RenderModel()
     modelTransform.rotate = finalRotate;
     modelTransform.scale = finalScale;
 
-    // Default material
+    // Use actual material if available, else fallback to default gray
     Boom::PbrMaterial material{};
-    material.albedo = glm::vec3(0.7f, 0.7f, 0.7f);
-    material.roughness = 0.5f;
-    material.metallic = 0.0f;
+    if (m_MaterialID != 0 && m_Ctx && m_Ctx->assets)
+    {
+        Boom::MaterialAsset* matAsset = m_Ctx->assets->TryGet<Boom::MaterialAsset>(m_MaterialID);
+        if (matAsset)
+        {
+            m_Ctx->assets->ResolveMaterialTextures(matAsset);
+            material = matAsset->data;
+        }
+        else
+        {
+            material.albedo = glm::vec3(0.7f, 0.7f, 0.7f);
+            material.roughness = 0.5f;
+            material.metallic = 0.0f;
+        }
+    }
+    else
+    {
+        material.albedo = glm::vec3(0.7f, 0.7f, 0.7f);
+        material.roughness = 0.5f;
+        material.metallic = 0.0f;
+    }
 
     // Draw model
     m_Ctx->renderer->Draw(m_Model, modelTransform, material);

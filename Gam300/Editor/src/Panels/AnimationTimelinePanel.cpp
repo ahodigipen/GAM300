@@ -117,8 +117,7 @@ void AnimationTimelinePanel::Render()
     if (!m_Owner || !m_App) return;
 
     // Create the animation editor window
-    ImGui::SetNextWindowSize(ImVec2(1200, 800), ImGuiCond_FirstUseEver);
-    ImGui::Begin("Animation Timeline", &m_Owner->m_ShowAnimationTimeline);
+    // (Rendered inside SequencerPanel child window now)
 
     // ===== PLAYBACK UPDATE: Independent timeline =====
     float currentFrameTime = (float)ImGui::GetTime();
@@ -132,6 +131,36 @@ void AnimationTimelinePanel::Render()
     }
 
     m_LastFrameTime = currentFrameTime;
+
+    // Process deferred Sequence Tracks
+    if (!m_DeferredTracks.empty())
+    {
+        for (const auto& dt : m_DeferredTracks)
+        {
+            SequenceTrack newTrack;
+            newTrack.entityName = dt.entityName;
+            newTrack.type = dt.type;
+            const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot" };
+            newTrack.label = dt.entityName + " : " + (dt.type >= 0 && dt.type < 4 ? typeNames[dt.type] : "Unknown");
+            m_SequenceTracks.push_back(newTrack);
+        }
+        m_DeferredTracks.clear();
+    }
+    
+    // Process deferred Sequence Tracks
+    if (!m_DeferredTracks.empty())
+    {
+        for (const auto& dt : m_DeferredTracks)
+        {
+            SequenceTrack newTrack;
+            newTrack.entityName = dt.entityName;
+            newTrack.type = dt.type;
+            const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot" };
+            newTrack.label = dt.entityName + " : " + (dt.type >= 0 && dt.type < 4 ? typeNames[dt.type] : "Unknown");
+            m_SequenceTracks.push_back(newTrack);
+        }
+        m_DeferredTracks.clear();
+    }
 
     // Update playback time (independent from game scene)
     if (m_Animator && m_SelectedClipIndex >= 0)
@@ -195,6 +224,12 @@ void AnimationTimelinePanel::Render()
         }
     }
 
+    // Always apply sequence frames during playback OR scrubbing
+    if (m_IsPlaying || m_IsDraggingTimeline)
+    {
+        ApplySequenceFrame((int)(m_CurrentTime * 60.0f));
+    }
+
     // Get selected entity and load model/animator (only if not in standalone mode)
     auto selectedID = m_App->SelectedEntity();
 
@@ -246,7 +281,6 @@ void AnimationTimelinePanel::Render()
         m_UndoStack.clear();
         m_RedoStack.clear();
 
-        ImGui::End();  // Must end the window before returning
         return;
     }
 
@@ -398,12 +432,13 @@ void AnimationTimelinePanel::Render()
         {
             auto& modelComp = selected.Get<Boom::ModelComponent>();
 
-            if (modelComp.modelID != Boom::EMPTY_ASSET && m_Ctx && m_Ctx->assets)
+            if (modelComp.modelID != 0 && m_Ctx && m_Ctx->assets)
             {
                 Boom::ModelAsset* modelAsset = m_Ctx->assets->TryGet<Boom::ModelAsset>(modelComp.modelID);
                 if (modelAsset && modelAsset->data)
                 {
                     m_Model = modelAsset->data;
+                    m_MaterialID = modelComp.materialID;
                     m_HasModel = true;
                 }
                 else
@@ -411,6 +446,7 @@ void AnimationTimelinePanel::Render()
                     if (!m_StandaloneMode)
                     {
                         m_Model.reset();
+                        m_MaterialID = 0;
                         m_HasModel = false;
                     }
                     BOOM_ERROR("[AnimationTimeline] Failed to load model from asset registry");
@@ -421,6 +457,7 @@ void AnimationTimelinePanel::Render()
                 if (!m_StandaloneMode)
                 {
                     m_Model.reset();
+                    m_MaterialID = 0;
                     m_HasModel = false;
                 }
             }
@@ -430,6 +467,7 @@ void AnimationTimelinePanel::Render()
             if (!m_StandaloneMode)
             {
                 m_Model.reset();
+                m_MaterialID = 0;
                 m_HasModel = false;
             }
         }
@@ -466,8 +504,6 @@ void AnimationTimelinePanel::Render()
 
     // Section 4: Track List (bottom - remaining space)
     RenderTrackList();
-
-    ImGui::End();
 }
 
 void AnimationTimelinePanel::RenderControlBar()
@@ -681,6 +717,97 @@ void AnimationTimelinePanel::RenderControlBar()
         ImGui::Spacing();
     }
     ImGui::PopStyleColor(3); // Pop Model & Playback colors
+
+    // ========== SECTION 1.5: CUTSCENE SEQUENCES ==========
+    ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.5f, 0.3f, 0.5f, 0.8f));
+    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.55f, 0.35f, 0.55f, 0.9f));
+    ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.6f, 0.4f, 0.6f, 1.0f));
+
+    if (ImGui::CollapsingHeader("Cutscene Sequences", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        ImGui::Indent(10.0f);
+
+        // Save/Load
+        ImGui::SetNextItemWidth(150);
+        ImGui::InputText("##SequenceFile", m_SaveSequenceFilename, IM_ARRAYSIZE(m_SaveSequenceFilename));
+        ImGui::SameLine();
+        
+        // File dropdown
+        ImGui::SetNextItemWidth(120);
+        if (ImGui::BeginCombo("##FileList", "Select File..."))
+        {
+            for (const auto& f : m_AvailableCutsceneFiles)
+            {
+                if (ImGui::Selectable(f.c_str()))
+                {
+                    std::string justName = f.substr(0, f.find_last_of('.'));
+                    strcpy_s(m_SaveSequenceFilename, justName.c_str());
+                }
+            }
+            ImGui::EndCombo();
+        }
+        
+        ImGui::SameLine();
+        std::string filename = m_SaveSequenceFilename;
+        if (filename.empty()) filename = "NewCutscene";
+        std::string fullPath = "Resources/Cutscenes/" + filename + ".seq";
+
+        if (ImGui::Button("Load seq"))
+        {
+            LoadSequence(fullPath);
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Save seq"))
+        {
+            SaveSequence(fullPath);
+        }
+        
+        ImGui::SameLine();
+        ImGui::TextDisabled("|");
+        ImGui::SameLine();
+
+        // Add Track
+        bool hasSelection = (m_Owner->SelectedEntity() != entt::null);
+        if (hasSelection)
+        {
+            auto entityID = m_Owner->SelectedEntity();
+            std::string name = "Entity";
+            if (m_Ctx && m_Ctx->scene.valid(entityID) && m_Ctx->scene.all_of<Boom::InfoComponent>(entityID)) {
+                name = m_Ctx->scene.get<Boom::InfoComponent>(entityID).name;
+            }
+
+            if (ImGui::Button(("Add Track: " + name).c_str()))
+            {
+                ImGui::OpenPopup("AddTrackPropPopup");
+                m_PendingEntityName = name;
+            }
+        }
+        else
+        {
+            ImGui::BeginDisabled();
+            ImGui::Button("Select Entity to Add Track");
+            ImGui::EndDisabled();
+        }
+
+        if (ImGui::BeginPopup("AddTrackPropPopup"))
+        {
+            ImGui::TextDisabled("Property");
+            ImGui::Separator();
+            const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot" };
+            for (int i = 0; i < 4; i++)
+            {
+                if (ImGui::Selectable(typeNames[i]))
+                {
+                    AddTrack(m_PendingEntityName, i);
+                }
+            }
+            ImGui::EndPopup();
+        }
+
+        ImGui::Unindent(10.0f);
+        ImGui::Spacing();
+    }
+    ImGui::PopStyleColor(3);
 
     // ========== SECTION 2: EDITING TOOLS ==========
     // Green tint for editing tools section
@@ -2044,3 +2171,233 @@ void AnimationTimelinePanel::RecordBonePoseChange(const std::string& boneName, c
 
     BOOM_INFO("[BonePose] Recorded pose change for bone '{}' (undoable)", boneName.c_str());
 }
+
+// ==================== CUTSCENE UTILITIES ====================
+
+void AnimationTimelinePanel::AddTrack(const std::string& entityName, int propertyType)
+{
+    m_DeferredTracks.push_back({ entityName, propertyType });
+}
+
+void AnimationTimelinePanel::RefreshCutsceneFileList()
+{
+    m_AvailableCutsceneFiles.clear();
+    std::string path = "Resources/Cutscenes";
+    if (!std::filesystem::exists(path)) return;
+
+    for (const auto& entry : std::filesystem::directory_iterator(path))
+    {
+        if (entry.path().extension() == ".seq")
+        {
+            m_AvailableCutsceneFiles.push_back(entry.path().filename().string());
+        }
+    }
+}
+
+void AnimationTimelinePanel::SaveSequence(const std::string& path)
+{
+    std::filesystem::path fsPath(path);
+    if (fsPath.has_parent_path()) {
+        std::filesystem::create_directories(fsPath.parent_path());
+    }
+
+    std::ofstream out(path);
+    if (!out.is_open()) {
+        BOOM_ERROR("Failed to save sequence: {}", path);
+        return;
+    }
+
+    // Frame Max is somewhat arbitrary based on longest keyframe, let's just use 600 default
+    int maxFrame = 600;
+    out << "DURATION " << maxFrame << "\n";
+    for (const auto& track : m_SequenceTracks)
+    {
+        out << "TRACK \"" << track.entityName << "\" " << track.type << "\n";
+        for (const auto& kf : track.keyFrames)
+        {
+            out << "KEY " << kf.frame << " " << kf.valueX << " " << kf.valueY << " " << kf.valueZ << " " << kf.valueW;
+            if (track.type == 3 && !kf.valueStr.empty()) {
+                out << " \"" << kf.valueStr << "\"";
+            }
+            out << "\n";
+        }
+    }
+    out.close();
+    BOOM_INFO("Saved sequence to {}", path);
+    RefreshCutsceneFileList();
+}
+
+void AnimationTimelinePanel::LoadSequence(const std::string& path)
+{
+    std::ifstream in(path);
+    if (!in.is_open()) {
+        BOOM_ERROR("Failed to load sequence: {}", path);
+        return;
+    }
+
+    m_SequenceTracks.clear();
+    std::string line, token;
+    SequenceTrack* currentTrack = nullptr;
+
+    const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot" };
+
+    while (std::getline(in, line))
+    {
+        if (line.empty()) continue;
+        std::stringstream ss(line);
+        ss >> token;
+
+        if (token == "DURATION")
+        {
+            // Skip duration max parsing
+        }
+        else if (token == "TRACK")
+        {
+            size_t firstQuote = line.find('"');
+            size_t lastQuote = line.rfind('"');
+            if (firstQuote != std::string::npos && lastQuote != std::string::npos)
+            {
+                    std::string entityName = line.substr(firstQuote + 1, lastQuote - firstQuote - 1);
+                    std::string typeStr = line.substr(lastQuote + 2);
+                    int type = std::stoi(typeStr);
+                    
+                    SequenceTrack newTrack;
+                    newTrack.entityName = entityName;
+                    newTrack.type = type;
+                    newTrack.label = entityName + " : " + (type >= 0 && type < 4 ? typeNames[type] : "Unknown");
+                    
+                    m_SequenceTracks.push_back(newTrack);
+                    currentTrack = &m_SequenceTracks.back(); 
+            }
+        }
+        else if (token == "KEY" && currentTrack)
+        {
+            SerializedKeyframe kf;
+            ss >> kf.frame >> kf.valueX >> kf.valueY >> kf.valueZ >> kf.valueW;
+            
+            if (currentTrack->type == 3)
+            {
+                std::string rest;
+                std::getline(ss, rest);
+                size_t q1 = rest.find('"');
+                size_t q2 = rest.rfind('"');
+                if (q1 != std::string::npos && q2 != std::string::npos && q2 > q1) {
+                    kf.valueStr = rest.substr(q1 + 1, q2 - q1 - 1);
+                }
+            }
+
+            currentTrack->keyFrames.push_back(kf);
+            currentTrack->keyFrameTimes.push_back(kf.frame);
+        }
+    }
+    in.close();
+    BOOM_INFO("Loaded sequence from {}", path);
+}
+
+void AnimationTimelinePanel::ApplySequenceFrame(int frame)
+{
+    if (!m_Owner || !m_Owner->GetContext()) return;
+    auto& reg = m_Owner->GetContext()->scene;
+
+    for (const auto& track : m_SequenceTracks)
+    {
+        if (track.keyFrames.size() < 2) 
+        {
+            continue; // Need at least 2 to interpolate, or wait for trigger
+        }
+
+        // 1. Find Entity
+        entt::entity e = Boom::FindEntityByName(reg, track.entityName);
+        if (!reg.valid(e)) continue;
+        if (!reg.all_of<Boom::TransformComponent>(e)) continue;
+
+        auto& tc = reg.get<Boom::TransformComponent>(e);
+
+        // 2. Find Keyframes
+        const SerializedKeyframe* k1 = nullptr;
+        const SerializedKeyframe* k2 = nullptr;
+
+        for (size_t i = 0; i < track.keyFrames.size() - 1; i++)
+        {
+                if (frame >= track.keyFrames[i].frame && frame <= track.keyFrames[i+1].frame)
+                {
+                    k1 = &track.keyFrames[i];
+                    k2 = &track.keyFrames[i+1];
+                    break;
+                }
+        }
+
+        if (k1 && k2)
+        {
+            if (track.type == 3) // Animation
+            {
+                    const SerializedKeyframe* activeKF = nullptr;
+                    for(auto& kf : track.keyFrames) {
+                        if (frame >= kf.frame) activeKF = &kf;
+                        else break;
+                    }
+                    
+                    if (activeKF && !activeKF->valueStr.empty() && activeKF->valueStr != "None")
+                    {
+                        if (reg.all_of<Boom::AnimatorComponent>(e))
+                        {
+                            auto& ac = reg.get<Boom::AnimatorComponent>(e);
+                            if (ac.animator) {
+                                std::string clipName = activeKF->valueStr;
+                                int clipIndex = -1;
+                                for (size_t i = 0; i < ac.animator->GetClipCount(); ++i) {
+                                    const auto* c = ac.animator->GetClip(i);
+                                    if (c && c->name == clipName) {
+                                        clipIndex = (int)i;
+                                        break;
+                                    }
+                                }
+
+                                if (clipIndex != -1)
+                                {
+                                    ac.animator->SetStateMachineEnabled(false);
+                                    if (ac.animator->GetCurrentClip() != clipIndex) {
+                                        ac.animator->PlayClip(clipIndex);
+                                    }
+                                    
+                                    float timeInSeconds = (float)(frame - activeKF->frame) / 60.0f;
+                                    const auto* clip = ac.animator->GetClip(clipIndex);
+                                    float tps = clip ? clip->ticksPerSecond : 25.0f;
+                                    if (tps <= 0.0f) tps = 25.0f; 
+
+                                    ac.animator->SetTime(timeInSeconds * tps);
+                                    ac.animator->UpdateJointsFromCurrentTime();
+                                }
+                            }
+                        }
+                    }
+                    continue; 
+            }
+
+            // Lerp Transform Values
+            float range = (float)(k2->frame - k1->frame);
+            float t = 0.0f;
+            if (range > 0.0001f) t = (frame - k1->frame) / range;
+            if (t < 0.0f) t = 0.0f;
+            if (t > 1.0f) t = 1.0f;
+
+            float valX = k1->valueX + (k2->valueX - k1->valueX) * t;
+            float valY = k1->valueY + (k2->valueY - k1->valueY) * t;
+            float valZ = k1->valueZ + (k2->valueZ - k1->valueZ) * t;
+
+            if (track.type == 0) // Position
+            {
+                tc.transform.translate = { valX, valY, valZ };
+            }
+            else if (track.type == 1) // Rotation
+            {
+                tc.transform.rotate = { valX, valY, valZ };
+            }
+            else if (track.type == 2) // Scale
+            {
+                tc.transform.scale = { valX, valY, valZ };
+            }
+        }
+    }
+}
+

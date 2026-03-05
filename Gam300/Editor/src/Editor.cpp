@@ -20,7 +20,7 @@
 #include "Panels/NavMeshPanel.h"
 #include "Panels/AnimatorGraphPanel.h"
 #include "Panels/ModelPreviewPanel.h"
-#include "Panels/AnimationTimelinePanel.h"
+#include "Panels/SequencerPanel.h"
 #include "BoomEngine.h"
 
 // Undo/Redo
@@ -163,7 +163,7 @@ namespace EditorUI {
 		m_Navmesh = std::make_unique<NavmeshPanel>(this);
         m_AnimatorGraph = std::make_unique<AnimatorGraphPanel>(this);
         m_ModelPreview = std::make_unique<ModelPreviewPanel>(this);
-        m_AnimationTimeline = std::make_unique<AnimationTimelinePanel>(this);
+        m_Sequencer = std::make_unique<SequencerPanel>(this);
 
         // Initialize Undo/Redo system
         m_CommandHistory = std::make_unique<CommandHistory>(100); // Max 100 undo levels
@@ -225,7 +225,7 @@ namespace EditorUI {
 		if (m_ShowNavmesh && m_Navmesh)       m_Navmesh->Render();
         if (m_ShowAnimatorGraph && m_AnimatorGraph) m_AnimatorGraph->Render();
         if (m_ShowModelPreview && m_ModelPreview) m_ModelPreview->Render();
-        if (m_ShowAnimationTimeline && m_AnimationTimeline) m_AnimationTimeline->Render();
+        if (m_ShowSequencer && m_Sequencer) m_Sequencer->Render();
         // --- End frame / draw ---
         EndImguiFrame();
 

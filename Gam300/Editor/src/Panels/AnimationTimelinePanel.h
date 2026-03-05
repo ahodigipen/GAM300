@@ -59,6 +59,31 @@ namespace EditorUI {
         glm::vec3 scale;
     };
 
+    // --- CUTSCENE SEQUENCER DATA ---
+    struct SerializedKeyframe
+    {
+        int frame;
+        float valueX, valueY, valueZ, valueW; // Support up to Vec4
+        std::string valueStr; // For Animation names
+    };
+
+    struct SequenceTrack
+    {
+        std::string label; // Display Name (e.g. "Player : Position")
+        std::string entityName; // Actual Entity Name
+        int type; // 0 = Position, 1 = Rotation, etc.
+        std::vector<int> keyFrameTimes;
+        std::vector<SerializedKeyframe> keyFrames;
+        bool expanded = true;
+    };
+
+    struct DeferredTrack
+    {
+        std::string entityName;
+        int type;
+    };
+    // -------------------------------
+
     // Selected keyframe identifier (for multiselect)
     struct SelectedKeyframe {
         std::string boneName;
@@ -137,6 +162,16 @@ namespace EditorUI {
         // Keyframe recording
         Boom::KeyFrame CaptureCurrentBoneTransform(const std::string& boneName);  // Capture bone's current pose
 
+        // --- CUTSCENE SEQUENCER METHODS ---
+        void SaveSequence(const std::string& path);
+        void LoadSequence(const std::string& path);
+        void AddTrack(const std::string& entityName, int propertyType);
+        void ApplySequenceFrame(int frame);
+        void RefreshCutsceneFileList();
+        
+        void RenderSequenceTracks(float duration); // Draws the entity tracks below bone tracks
+        // ----------------------------------
+
     private:
         Editor* m_Owner = nullptr;
         Boom::AppInterface* m_App = nullptr;
@@ -144,6 +179,7 @@ namespace EditorUI {
 
         // Loaded model (from selected entity OR standalone)
         std::shared_ptr<Boom::Model> m_Model;
+        uint64_t m_MaterialID = 0;
         std::shared_ptr<Boom::Animator> m_Animator;  // Our independent cloned animator
         std::shared_ptr<Boom::Animator> m_SourceAnimator;  // The original animator we cloned from (for change detection)
         entt::entity m_SourceEntityID = entt::null;  // Track which entity we cloned from
@@ -197,6 +233,27 @@ namespace EditorUI {
         // Bone picking state (viewport 3D interaction)
         std::string m_HoveredBoneNameViewport;  // Bone currently hovered in 3D viewport
         ImVec2 m_ViewportMousePos = { 0.0f, 0.0f };  // Mouse position relative to viewport
+
+        // --- CUTSCENE SEQUENCER STATE ---
+        std::vector<SequenceTrack> m_SequenceTracks;
+        std::vector<DeferredTrack> m_DeferredTracks;
+        
+        int m_SelectedSequenceTrack = -1;
+        bool m_ShowAddTrackPopup = false;
+        std::string m_PendingEntityName;
+        
+        char m_SaveSequenceFilename[128] = "NewCutscene"; 
+        std::vector<std::string> m_AvailableCutsceneFiles;
+        
+        struct SequenceMarkerScreenPos {
+            int trackIndex;
+            int keyframeIndex;
+            ImVec2 screenPos;
+        };
+        std::vector<SequenceMarkerScreenPos> m_SequenceMarkerScreenPositions;
+        int m_HoveredSequenceTrackIndex = -1;
+        int m_HoveredSequenceKeyframeIndex = -1;
+        // --------------------------------
 
         // Transform gizmo state
         int m_GizmoOperation = 120;  // ImGuizmo::ROTATE (120 = rotate, default for animation editing)
