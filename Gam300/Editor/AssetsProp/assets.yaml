@@ -397,6 +397,28 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
+    UID: 6419882418477707265
+    Name: SilverBar
+    Source: SilverBar
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 1
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 16492442963714569383
+      NormalMapID: 5151690296781102116
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
     UID: 8475851512635632909
     Name: Wooden Wall Texture
     Source: Wooden Wall Texture
@@ -484,6 +506,28 @@ ASSETS:
       EmissiveMapID: 0
       OpacityMapID: 0
       DoubleSided: false
+  - Type: MATERIAL
+    UID: 274211312935522055
+    Name: GrassDoubleSide
+    Source: GrassDoubleSide
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 1
+        metallic: 0
+        occlusion: 0.970000029
+        opacity: 1
+        useWorldSpaceUV: true
+        textureScale: 8.60999966
+      AlbedoMapID: 10441627123981480612
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: true
   - Type: MATERIAL
     UID: 14891281585286011240
     Name: Table Texture
@@ -666,16 +710,16 @@ ASSETS:
     Source: GOLDKEY
     Properties:
       Data:
-        emissive: [0.0399999991, 0.00999999978, 0]
+        emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.540000021
-        metallic: 0.930000007
-        occlusion: 0.949999988
+        roughness: 0.209999993
+        metallic: 1
+        occlusion: 1
         opacity: 1
         useWorldSpaceUV: false
-        textureScale: 1
-      AlbedoMapID: 4067648091469832735
-      NormalMapID: 8651887321472737155
+        textureScale: 27.0100002
+      AlbedoMapID: 16492442963714569383
+      NormalMapID: 5151690296781102116
       RoughnessMapID: 0
       MetallicMapID: 0
       OcclusionMapID: 0
@@ -3422,6 +3466,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 5151690296781102116
+    Name: Bar_openPBR_shader1_normal
+    Source: Resources/Models/Props/Steel Bar/Bar_openPBR_shader1_normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 4629587939548210223
     Name: lambert1_Height
     Source: Resources/Models/Props/sliding door_emissivemap model n texture/lambert1_Height.png
@@ -3524,6 +3579,39 @@ ASSETS:
     UID: 9416243508103531123
     Name: lambert2_occlusionRoughnessMetallic
     Source: Resources/Models/Props/door token texture n models/lambert2_occlusionRoughnessMetallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 569477230851035469
+    Name: RestartButton_Clicked
+    Source: Resources/Textures/MenusUI/RestartButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 16492442963714569383
+    Name: Bar_openPBR_shader1_baseColor
+    Source: Resources/Models/Props/Steel Bar/Bar_openPBR_shader1_baseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 11019855080675396891
+    Name: Bar_openPBR_shader1_occlusionRoughnessMetallic
+    Source: Resources/Models/Props/Steel Bar/Bar_openPBR_shader1_occlusionRoughnessMetallic.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -5129,9 +5217,31 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
+    UID: 6337755192484462533
+    Name: matal_jailbar
+    Source: Resources/Models/Props/matal_jailbar.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
     UID: 2915209680014061313
     Name: LEVEL2Walking
     Source: Resources/Models/Enemy/Patrol2Textures/LEVEL2Walking.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 14124836796428390504
+    Name: metal bar_uncloured
+    Source: Resources/Models/Props/Steel Bar/metal bar_uncloured.fbx
     Properties:
       Model Transform:
         transform:
