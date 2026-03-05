@@ -880,6 +880,28 @@ ASSETS:
       EmissiveMapID: 0
       OpacityMapID: 0
       DoubleSided: false
+  - Type: MATERIAL
+    UID: 4890253158248416297
+    Name: NewFloatingLantern
+    Source: NewFloatingLantern
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+        opacity: 0.839999974
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 15873517341497826991
+      NormalMapID: 3559562522405013851
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 15849755688191928543
+      OpacityMapID: 0
+      DoubleSided: false
   - Type: PHYSICS_MESH
     UID: 8633576229273901496
     Name: Wall_With_Hole (Tri)
@@ -5088,6 +5110,17 @@ ASSETS:
     UID: 6755252122157173405
     Name: token3d model
     Source: Resources/Models/Props/door token texture n models/token3d model.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 10066815242654953108
+    Name: lanternfloating
+    Source: Resources/Models/Props/lantern mat/lanternfloating.fbx
     Properties:
       Model Transform:
         transform:
