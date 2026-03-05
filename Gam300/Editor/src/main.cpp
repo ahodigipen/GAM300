@@ -11,6 +11,7 @@
 #include "Vendors/imgui/backends/imgui_impl_glfw.h"
 #include "Vendors/imgui/backends/imgui_impl_opengl3.h"
 #include "Context/Context.h"
+#include "Context/CyberpunkTheme.h"
 // GLFW (needed for window/context handle)
 #include <GLFW/glfw3.h>
 #include "../src/Context/InputBridge.h"            // EditorUI::InstallEditorInputCallbacks
@@ -70,6 +71,7 @@ int32_t main()
                 {
                     BOOM_INFO("ImGui initialized successfully!");
                     ImGui::StyleColorsDark();
+                    ApplyCyberpunkTheme();
                     EditorUI::InstallEditorInputCallbacks(engineWindow.get());
                 }
                 else
