@@ -88,7 +88,7 @@ namespace Boom {
         dtNavMesh* m_mesh{ nullptr };
         dtNavMeshQuery* m_query{ nullptr };
         dtQueryFilter    m_filter{};
-        float            m_extents[3]{ 2.f, 4.f, 2.f };
+        float            m_extents[3]{ 5.f, 5.f, 5.f };
         std::string      m_lastFile;
         std::string              m_BinDir = "Resources/NavData"; // default scan folder
         std::vector<std::string> m_BinFiles;                        // file names only

@@ -3178,6 +3178,28 @@ namespace EditorUI {
                                     val = val.substr(1, val.size() - 2);
                                 }
 
+                                // ---- Generic dropdown (options list supplied by EditorExposed) ----
+                                if (!field.options.empty()) {
+                                    // Find which option is currently selected
+                                    int currentIdx = 0;
+                                    for (int optIdx = 0; optIdx < (int)field.options.size(); ++optIdx) {
+                                        if (val == field.options[optIdx]) { currentIdx = optIdx; break; }
+                                    }
+
+                                    const char* previewLabel = field.options[currentIdx].c_str();
+                                    if (ImGui::BeginCombo("##val", previewLabel)) {
+                                        for (int optIdx = 0; optIdx < (int)field.options.size(); ++optIdx) {
+                                            bool sel = (optIdx == currentIdx);
+                                            if (ImGui::Selectable(field.options[optIdx].c_str(), sel)) {
+                                                updateFieldValue(field.fieldName, field.options[optIdx]);
+                                            }
+                                            if (sel) ImGui::SetItemDefaultFocus();
+                                        }
+                                        ImGui::EndCombo();
+                                    }
+                                }
+                                // ---- Audio asset picker ----
+                                else {
                                 // Check if this is an audio/sound field - use SoundComponent integration
                                 bool isAudioField = (field.displayName.find("Sound") != std::string::npos ||
                                                     field.displayName.find("Audio") != std::string::npos ||
@@ -3467,6 +3489,7 @@ namespace EditorUI {
                                         updateFieldValue(field.fieldName, std::string(buf));
                                     }
                                 }
+                                } // end else (not a dropdown field)
                             }
                             else if (field.typeName == "Vec3") {
                                 float vals[3] = {0, 0, 0};

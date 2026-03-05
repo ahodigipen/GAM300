@@ -1,6 +1,5 @@
 ﻿using Boom;
 using System;
-using System.Collections.Generic;
 
 namespace GameScripts
 {
@@ -9,7 +8,6 @@ namespace GameScripts
         public ulong Entity;
         private static bool _linecastAvailable = true;
         private static bool _warnedNoLinecast = false;
-        private List<ulong> _ignoredEntitiesForLOS = new List<ulong>(); // Cache ignored entity handles
 
         public delegate void VisionEventHandler(ulong target, Vec3 position);
         public event VisionEventHandler OnTargetDetected;
@@ -26,7 +24,6 @@ namespace GameScripts
             public float alertDuration = 4f;
             public float verticalMaxDifference = 2.5f;
             public string[] targetNames = { "Samurai", "Player" };
-            public string[] ignoreEntitiesForLOS = { "LionStatue_1", "LionStatue_2", "LionStatue_3", "LionStatue_4", "LionStatue_5", "LionStatue_6", "LionStatue_7", "LionStatue_8", "LionStatue_9" };
             public bool requireLineOfSight = true;
             public bool debugLog = false;
             public bool debugReasons = false;
@@ -45,30 +42,6 @@ namespace GameScripts
         public void OnStart(string jsonParams)
         {
             ValidateEntity();
-
-            // Cache all ignored entity references
-            _ignoredEntitiesForLOS.Clear();
-            foreach (string entityName in _settings.ignoreEntitiesForLOS)
-            {
-                ulong entity = API.FindEntity(entityName);
-                if (entity != 0)
-                {
-                    _ignoredEntitiesForLOS.Add(entity);
-                    if (_settings.debugLog)
-                    {
-                        API.Log($"[VisionComponent] Cached ignored entity for LOS: {entityName} (handle: {entity})");
-                    }
-                }
-                else if (_settings.debugLog)
-                {
-                    API.Log($"[VisionComponent] Warning: Ignored entity '{entityName}' not found");
-                }
-            }
-
-            if (_settings.debugLog)
-            {
-                API.Log($"[VisionComponent] Initialized with {_ignoredEntitiesForLOS.Count} ignored entities for LOS checks");
-            }
         }
 
         public void OnUpdate(float dt)
@@ -201,27 +174,6 @@ namespace GameScripts
                     return true;
                 }
 
-                // If blocked, check if any ignored entity is blocking
-                // Try combinations of ignored entities with self and target
-                foreach (ulong ignoredEntity in _ignoredEntitiesForLOS)
-                {
-                    // Try ignoring: ignoredEntity + target
-                    if (API.LinecastIgnoreBoth(fromEye, toEye, ignoredEntity, targetHandle))
-                    {
-                        if (_settings.debugLOS)
-                            API.Log($"[VisionComponent] LOS clear (ignored entity {ignoredEntity} with target)");
-                        return true;
-                    }
-
-                    // Try ignoring: ignoredEntity + self
-                    if (API.LinecastIgnoreBoth(fromEye, toEye, ignoredEntity, Entity))
-                    {
-                        if (_settings.debugLOS)
-                            API.Log($"[VisionComponent] LOS clear (ignored entity {ignoredEntity} with self)");
-                        return true;
-                    }
-                }
-
                 if (_settings.debugLOS)
                     API.Log("[VisionComponent] LOS blocked");
 
@@ -276,9 +228,11 @@ namespace GameScripts
         public Vec3 GetLastKnownTargetPosition() => _lastKnownTargetPosition;
         public bool HasTarget() => _currentTarget != 0;
         public void SetDetectionRange(float r) => _settings.detectionRange = r;
+        public void SetLoseTargetRange(float r) => _settings.loseTargetRange = r;
         public void SetDetectionAngle(float a) => _settings.detectionAngle = a;
         public void SetUpdateInterval(float i) => _settings.updateInterval = i;
         public void SetVerticalTolerance(float v) => _settings.verticalMaxDifference = v;
+        public void SetAlertDuration(float d) => _settings.alertDuration = d;
         public void SetRequireLineOfSight(bool v) => _settings.requireLineOfSight = v;
         public void EnableDebugReasons(bool v) => _settings.debugReasons = v;
         public void EnableDebugLOS(bool v) => _settings.debugLOS = v;

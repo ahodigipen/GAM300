@@ -12,7 +12,7 @@ namespace Boom
         BOOM_INFO("[Application] RunContext started");
 
         m_IsInPlayMode = true;
-        m_AppState = ApplicationState::STOPPED;
+        m_AppState = ApplicationState::RUNNING;
 
         std::cout << "[RunContext] Loading scene MainMenu..." << std::endl;
         std::cout.flush();
@@ -928,6 +928,7 @@ namespace Boom
         if (!isPicking) {
             m_Context->renderer->RenderInstancedBatches(*m_Context->assets);
         }
+        glDisable(GL_CULL_FACE);
 
         // === TRANSPARENT OBJECTS PASS ===
         // Render transparent objects (batched + individual)
@@ -977,6 +978,9 @@ namespace Boom
         //render gui overlays at the end
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL); //supports partial transparency to not interfere with background gui
+        glDepthMask(GL_FALSE);  // 2D GUI sprites must not write to the depth buffer; they would
+                                // overwrite 3D depth values with NDC z=0.0 (depth=0.5), causing
+                                // subsequent 3D debug lines to fail the depth test and go invisible.
 
         for (auto const& gui : guiList) {
             if (isPicking) {
@@ -990,6 +994,10 @@ namespace Boom
                     m_Context->renderer->DrawQuad(texture->data, std::get<1>(gui), std::get<0>(gui).color);
             }
         }
+
+        // Restore depth state so subsequent passes (debug lines, etc.) work correctly
+        glDepthMask(GL_TRUE);
+        glDepthFunc(GL_LESS);
 
         // --- RENDER ALL TEXT COMPONENTS ---
         // Skip text when low poly is active; text will be rendered at full resolution after compositing

@@ -21,6 +21,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 2930779482462285987
     Name: Gradient
@@ -42,6 +43,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 12207453972742617529
     Name: Wall Test
@@ -63,6 +65,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: true
   - Type: MATERIAL
     UID: 16257091296667891899
     Name: Paper Wall Texture
@@ -84,6 +87,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 5966106834849932234
     Name: Color
@@ -105,6 +109,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 9126702018428758169
     Name: Lamp Texture
@@ -126,6 +131,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 295392599374634747
     Name: Cushion Texture
@@ -147,6 +153,7 @@ ASSETS:
       OcclusionMapID: 14205466992706534584
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 8803557448742180096
     Name: light
@@ -168,6 +175,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 9170069941051798259
     Name: Lion Texture
@@ -189,6 +197,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 5692762562094318330
     Name: Floor Texture
@@ -210,6 +219,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 6133974277031033463
     Name: Tree Texture
@@ -231,6 +241,7 @@ ASSETS:
       OcclusionMapID: 10115533348395846162
       EmissiveMapID: 10463905360874748658
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 5133027133074393065
     Name: DoorKey
@@ -252,6 +263,7 @@ ASSETS:
       OcclusionMapID: 3873467379790927402
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 13160241162385617845
     Name: Samurai Texture
@@ -273,6 +285,7 @@ ASSETS:
       OcclusionMapID: 5698233998109750678
       EmissiveMapID: 15648589677235950874
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 6104124486273075758
     Name: Brick Wall Texture
@@ -294,6 +307,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 14920165367361296626
     Name: Enemy2
@@ -315,6 +329,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 17639289908748203916
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 16305148809392937752
     Name: FreezeMaterial
@@ -336,6 +351,7 @@ ASSETS:
       OcclusionMapID: 13466075847250744873
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 8235375233612734933
     Name: Wall Texture 1
@@ -357,6 +373,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 6977112513598097705
     Name: SkyBox
@@ -378,6 +395,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 8475851512635632909
     Name: Wooden Wall Texture
@@ -399,6 +417,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 5064145407616579494
     Name: TextureTerrain
@@ -420,6 +439,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 15937630629384441243
     Name: Zen Wall Texture
@@ -441,6 +461,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 15351841083764186454
     Name: Stone Statue (Thin) Texture
@@ -462,6 +483,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 14891281585286011240
     Name: Table Texture
@@ -483,6 +505,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 10882923977369277709
     Name: Stone Wall Texture
@@ -504,6 +527,7 @@ ASSETS:
       OcclusionMapID: 660614054657113155
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 7210221651131134645
     Name: Stone Statue (Thick) Texture
@@ -525,6 +549,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 16051879611138255440
     Name: Roof Texture
@@ -546,6 +571,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 17505835518794492079
     Name: Brick Rough Texture
@@ -567,6 +593,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 16814172849789012347
     Name: Outdoor Lamp Texture
@@ -588,6 +615,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 11381204713328203699
     Name: Terrain
@@ -609,6 +637,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 7355395803280547314
     Name: GrassTexture
@@ -630,6 +659,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 1773827607540986892
     Name: GOLDKEY
@@ -651,6 +681,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 1781146247448718189
     Name: Enemy1
@@ -672,6 +703,7 @@ ASSETS:
       OcclusionMapID: 13375616880279673200
       EmissiveMapID: 14479753821827653348
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 10338892533787968460
     Name: Tree Texture 2
@@ -693,6 +725,7 @@ ASSETS:
       OcclusionMapID: 10115533348395846162
       EmissiveMapID: 0
       OpacityMapID: 10115533348395846162
+      DoubleSided: false
   - Type: MATERIAL
     UID: 1677706057313398358
     Name: Gravestone_ResMat
@@ -714,6 +747,7 @@ ASSETS:
       OcclusionMapID: 8031341649730841089
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 3895109391993840374
     Name: EnemyLevel2_1
@@ -735,6 +769,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 12294537066232412532
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 162870785414010399
     Name: Translucent
@@ -756,6 +791,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 1299006059024419860
     Name: MazeWall
@@ -777,6 +813,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
   - Type: MATERIAL
     UID: 10986001470646938493
     Name: BLACK
@@ -798,6 +835,51 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
+    UID: 17414608540104464264
+    Name: NewDoorTexture
+    Source: NewDoorTexture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 7744213029619591337
+      NormalMapID: 9939195436459860698
+      RoughnessMapID: 16020172605613763140
+      MetallicMapID: 13151331475481834137
+      OcclusionMapID: 0
+      EmissiveMapID: 12920481796716859627
+      OpacityMapID: 17522809466322833643
+      DoubleSided: false
+  - Type: MATERIAL
+    UID: 8035902505845378175
+    Name: NewTokenTexture
+    Source: NewTokenTexture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 12258650747563998758
+      NormalMapID: 13437075076958739875
+      RoughnessMapID: 15308332345778085024
+      MetallicMapID: 15308332345778085024
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
   - Type: PHYSICS_MESH
     UID: 8633576229273901496
     Name: Wall_With_Hole (Tri)
@@ -838,6 +920,10 @@ ASSETS:
     UID: 6568928825965890083
     Name: BIG_Gravestone_low (Tri)
     Source: Resources/Physics/BIG_Gravestone_low_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 16533510218623144807
+    Name: StairsShortNew
+    Source: Resources/Physics/StairsShortNew.pxm
   - Type: PHYSICS_MESH
     UID: 4431181016770564176
     Name: Floor_Cushion
@@ -975,6 +1061,10 @@ ASSETS:
     Name: Left_Roof (Tri)
     Source: Resources/Physics/Left_Roof_tri.pxm
   - Type: PHYSICS_MESH
+    UID: 12910799112668057241
+    Name: SideHoleOrigin (Tri)
+    Source: Resources/Physics/SideHoleOrigin_tri.pxm
+  - Type: PHYSICS_MESH
     UID: 3709588994413660334
     Name: Wall_Roof (Tri)
     Source: Resources/Physics/Wall_Roof_tri.pxm
@@ -1011,9 +1101,25 @@ ASSETS:
     Name: Floor_New1 (Tri)
     Source: Resources/Physics/Floor_New1_tri.pxm
   - Type: PHYSICS_MESH
+    UID: 15733493288687535467
+    Name: door_uncoloured
+    Source: Resources/Physics/door_uncoloured.pxm
+  - Type: PHYSICS_MESH
     UID: 7787570810725283553
     Name: Cube.FBX (Tri)
     Source: Resources/Physics/Cube.FBX_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 4594122877396393681
+    Name: SlantedTest (Tri)
+    Source: Resources/Physics/SlantedTest_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 11871314770900645341
+    Name: SideHoleOrigin
+    Source: Resources/Physics/SideHoleOrigin.pxm
+  - Type: PHYSICS_MESH
+    UID: 6503168970749232758
+    Name: SideRoomNew (Tri)
+    Source: Resources/Physics/SideRoomNew_tri.pxm
   - Type: PREFAB
     UID: 5076640578672151242
     Name: Dance
@@ -1127,6 +1233,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 7744213029619591337
+    Name: lambert1_Base_color
+    Source: Resources/Models/Props/sliding door_emissivemap model n texture/lambert1_Base_color.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 2600166467088307522
     Name: Indoor_Lantern_Hanging_2_openPBR_shader1_Roughness
     Source: Resources/Models/Props/1_JAN_Lantern Textures/Indoor_Lantern_Hanging_2_openPBR_shader1_Roughness.png
@@ -1149,9 +1266,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 6336388213168836440
-    Name: HowToPlayButton
-    Source: Resources/Textures/MenusUI/HowToPlayButton.png
+    UID: 9587372192931143309
+    Name: Outdoor_Stone_Lantern2_midsection_BaseColor
+    Source: Resources/Textures/Props Textures/Outdoor_Stone_Lantern2_midsection_BaseColor.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1160,9 +1277,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 9587372192931143309
-    Name: Outdoor_Stone_Lantern2_midsection_BaseColor
-    Source: Resources/Textures/Props Textures/Outdoor_Stone_Lantern2_midsection_BaseColor.png
+    UID: 6336388213168836440
+    Name: HowToPlayButton
+    Source: Resources/Textures/MenusUI/HowToPlayButton.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1556,6 +1673,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 12920481796716859627
+    Name: lambert1_Emissive
+    Source: Resources/Models/Props/sliding door_emissivemap model n texture/lambert1_Emissive.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 3774504672902100504
     Name: Sakura Tree_normal
     Source: Resources/Textures/Props Textures/SakuraV2_Textures/Sakura Tree_normal.png
@@ -1636,6 +1764,17 @@ ASSETS:
     UID: 14205466992706534584
     Name: Pillow_openPBR_shader1_Height
     Source: Resources/Textures/Props Textures/Pillow_openPBR_shader1_Height.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 13151331475481834137
+    Name: lambert1_Metallic
+    Source: Resources/Models/Props/sliding door_emissivemap model n texture/lambert1_Metallic.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2172,6 +2311,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 11747185493236518571
+    Name: openPBR_shader1_baseColor
+    Source: Resources/Models/Props/Torigate model n textures/openPBR_shader1_baseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 3295855584758501411
     Name: Lion_Statue2_openPBR_shader1_BaseColor (1)
     Source: Resources/Textures/Props Textures/Lion_Statue2_openPBR_shader1_BaseColor (1).png
@@ -2384,6 +2534,17 @@ ASSETS:
     UID: 11146981574650659503
     Name: Japanese table_openPBR_shader1_Roughness
     Source: Resources/Textures/Props Textures/Japanese table_openPBR_shader1_Roughness.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 12258650747563998758
+    Name: lambert1_baseColor
+    Source: Resources/Models/Props/door token texture n models/lambert1_baseColor.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2788,6 +2949,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 10129386768362193608
+    Name: lambert1_Mixed_AO
+    Source: Resources/Models/Props/sliding door_emissivemap model n texture/lambert1_Mixed_AO.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 3837114816075316612
     Name: QuitButton_Clicked
     Source: Resources/Textures/MenusUI/QuitButton_Clicked.png
@@ -2865,6 +3037,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 13437075076958739875
+    Name: lambert1_normal
+    Source: Resources/Models/Props/door token texture n models/lambert1_normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 12879034172909871896
     Name: Slider
     Source: Resources/Textures/MenusUI/Slider.png
@@ -2912,6 +3095,17 @@ ASSETS:
     UID: 13358858626374697893
     Name: QuitButton
     Source: Resources/Textures/MenusUI/QuitButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 5134270148386981872
+    Name: openPBR_shader1_normal
+    Source: Resources/Models/Props/Torigate model n textures/openPBR_shader1_normal.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3205,6 +3399,116 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
+  - Type: TEXTURE
+    UID: 4629587939548210223
+    Name: lambert1_Height
+    Source: Resources/Models/Props/sliding door_emissivemap model n texture/lambert1_Height.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 7084315365399306551
+    Name: lambert1_Normal
+    Source: Resources/Models/Props/sliding door_emissivemap model n texture/lambert1_Normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 5314099190308633113
+    Name: lambert1_Normal_OpenGL
+    Source: Resources/Models/Props/sliding door_emissivemap model n texture/lambert1_Normal_OpenGL.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 17522809466322833643
+    Name: lambert1_Opacity
+    Source: Resources/Models/Props/sliding door_emissivemap model n texture/lambert1_Opacity.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 16020172605613763140
+    Name: lambert1_Roughness
+    Source: Resources/Models/Props/sliding door_emissivemap model n texture/lambert1_Roughness.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 9230337731942015023
+    Name: openPBR_shader1_occlusionRoughnessMetallic
+    Source: Resources/Models/Props/Torigate model n textures/openPBR_shader1_occlusionRoughnessMetallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 15308332345778085024
+    Name: lambert1_occlusionRoughnessMetallic
+    Source: Resources/Models/Props/door token texture n models/lambert1_occlusionRoughnessMetallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 17378324288603391199
+    Name: lambert2_baseColor
+    Source: Resources/Models/Props/door token texture n models/lambert2_baseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 5960603295336460764
+    Name: lambert2_normal
+    Source: Resources/Models/Props/door token texture n models/lambert2_normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 9416243508103531123
+    Name: lambert2_occlusionRoughnessMetallic
+    Source: Resources/Models/Props/door token texture n models/lambert2_occlusionRoughnessMetallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: SKYBOX
     UID: 4245843529762785392
     Name: NightSkyHDRI003_8K_HDR
@@ -3464,6 +3768,17 @@ ASSETS:
     UID: 4878958897926110889
     Name: Walking
     Source: Resources/Models/Player/animations/Walking.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 1855402618433266069
+    Name: SideHoleOrigin
+    Source: Resources/Models/SideHoleOrigin.fbx
     Properties:
       Model Transform:
         transform:
@@ -3901,9 +4216,9 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 4864486435085006234
-    Name: Great Sword Idle
-    Source: Resources/Models/Player/animations/throw away/Great Sword Idle.fbx
+    UID: 4710766639830257905
+    Name: Rock_Ninja_Textured
+    Source: Resources/Models/Enemy/Stationary Sentry/Rock_Ninja_Textured.fbx
     Properties:
       Model Transform:
         transform:
@@ -3912,9 +4227,9 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: true
   - Type: MODEL
-    UID: 4710766639830257905
-    Name: Rock_Ninja_Textured
-    Source: Resources/Models/Enemy/Stationary Sentry/Rock_Ninja_Textured.fbx
+    UID: 4864486435085006234
+    Name: Great Sword Idle
+    Source: Resources/Models/Player/animations/throw away/Great Sword Idle.fbx
     Properties:
       Model Transform:
         transform:
@@ -4703,6 +5018,83 @@ ASSETS:
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
       HasJoints: true
+  - Type: MODEL
+    UID: 269501779430984548
+    Name: SideRoomNew
+    Source: Resources/Models/SideRoomNew.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 11252990921725634979
+    Name: SlantedTest
+    Source: Resources/Models/SlantedTest.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 2254633852044513483
+    Name: Staircasenew
+    Source: Resources/Models/Staircasenew.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 679201389981188464
+    Name: StairsShortNew
+    Source: Resources/Models/StairsShortNew.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 8801620600601861973
+    Name: door_uncoloured
+    Source: Resources/Models/Props/sliding door_emissivemap model n texture/door_uncoloured.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 2284009292012450060
+    Name: tori_gate_model_uncloured
+    Source: Resources/Models/Props/Torigate model n textures/tori_gate_model_uncloured.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 6755252122157173405
+    Name: token3d model
+    Source: Resources/Models/Props/door token texture n models/token3d model.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
   - Type: MODEL
     UID: 2915209680014061313
     Name: LEVEL2Walking
