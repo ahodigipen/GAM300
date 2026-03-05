@@ -720,7 +720,8 @@ namespace EditorUI {
             // Use CollapsingHeader to match the style
             if (ImGui::CollapsingHeader("Model Renderer", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap)) {
                 if (ComponentSettings<Boom::ModelComponent>(ctx)) {
-                    ImGui::PopID();
+                    ImGui::PopID(); // Pop "Model Renderer"
+                    ImGui::PopID(); // Pop entity ID
                     return; // Component was removed, exit early
                 }
 
@@ -878,7 +879,8 @@ namespace EditorUI {
             ImGui::PushID("Sprite");
             if (ImGui::CollapsingHeader("Sprite", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap)) {
                 if (ComponentSettings<Boom::SpriteComponent>(ctx)) {
-                    ImGui::PopID();
+                    ImGui::PopID(); // Pop "Sprite"
+                    ImGui::PopID(); // Pop entity ID
                     return; // Component was removed, exit early
                 }
 
@@ -971,7 +973,8 @@ namespace EditorUI {
             ImGui::PushID("Text");
             if (ImGui::CollapsingHeader("Text", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap)) {
                 if (ComponentSettings<Boom::TextComponent>(ctx)) {
-                    ImGui::PopID();
+                    ImGui::PopID(); // Pop "Text"
+                    ImGui::PopID(); // Pop entity ID
                     return; // Component was removed, exit early
                 }
 
@@ -1225,6 +1228,7 @@ namespace EditorUI {
                 // Destroy physics controller if exists
                 m_App->GetPhysicsContext().DestroyController(static_cast<uint32_t>(m_App->SelectedEntity()));
                 ctx->scene.remove<Boom::CharacterControllerComponent>(m_App->SelectedEntity());
+                ImGui::PopID(); // Pop entity ID
                 return;
             }
             ImGui::Spacing();
@@ -2230,6 +2234,7 @@ namespace EditorUI {
                 // Destroy physics controller if exists
                 m_App->GetPhysicsContext().DestroyController(static_cast<uint32_t>(m_App->SelectedEntity()));
                 ctx->scene.remove<Boom::RigidBodyComponent>(m_App->SelectedEntity());
+                ImGui::PopID(); // Pop entity ID
                 return;
             }
             ImGui::Spacing();
@@ -2841,6 +2846,7 @@ namespace EditorUI {
 
                 // 2. Remove the component from ECS
                 ctx->scene.remove<Boom::ColliderComponent>(m_App->SelectedEntity());
+                ImGui::PopID(); // Pop entity ID
                 return;
             }
             ImGui::Spacing();
@@ -2902,7 +2908,8 @@ namespace EditorUI {
             ImGui::PushID("Skybox");
             if (ImGui::CollapsingHeader("Skybox", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap)) {
                 if (ComponentSettings<Boom::SkyboxComponent>(ctx)) {
-                    ImGui::PopID();
+                    ImGui::PopID(); // Pop "Skybox"
+                    ImGui::PopID(); // Pop entity ID
                     return; // Component was removed, exit early
                 }
                 auto& sky = selected.Get<SkyboxComponent>();
@@ -3655,6 +3662,7 @@ namespace EditorUI {
                     scripting->DestroyForEntity(m_App->SelectedEntity(), sc);
                 }
                 ctx->scene.remove<Boom::ScriptComponent>(m_App->SelectedEntity());
+                ImGui::PopID(); // Pop entity ID
                 return;
             }
 
