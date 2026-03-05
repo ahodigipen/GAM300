@@ -604,7 +604,7 @@ namespace Boom {
 
          // 3D Audio settings
          float minDistance = 1.0f;   // Distance at which sound is at full volume
-         float maxDistance = 50.0f;  // Distance at which sound is silent
+         float maxDistance = 15.0f;  // Distance at which sound is silent
 
          void serialize(nlohmann::json& j) const {
              j["name"] = name;
