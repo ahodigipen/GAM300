@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Boom;
 
@@ -20,15 +20,23 @@ namespace GameScripts
         [Boom.EditorExposed("Forward Offset", "Distance in front of checkpoint to spawn")]
         private float _forwardOffset = 5.0f;
 
+        [Boom.EditorExposed("Light Names", "Comma-separated names of light entities to activate")]
+        private string _lightNames = "";
+
+        [Boom.EditorExposed("Active Intensity", "Intensity of lights when activated")]
+        private float _activeIntensity = 2.5f;
+
+        [Boom.EditorExposed("Active Color", "Color of lights when activated")]
+        private Vec3 _activeColor = new Vec3(0.0f, 1.0f, 0.0f);
+
         // Track if checkpoint was already activated
         private bool _activated = false;
-
-        // Track if player is inside the trigger zone
+        
         private bool _playerInZone = false;
-
-        // Track previous key state to detect press (not hold)
         private bool _wasQPressed = false;
         private bool _wasAPressed = false;
+
+        private List<ulong> _lightIDs = new List<ulong>();
 
         // Static instance tracking
         private static readonly Dictionary<ulong, CPTrigger> s_instances = new Dictionary<ulong, CPTrigger>();
@@ -37,6 +45,33 @@ namespace GameScripts
         {
             // Register this instance
             s_instances[Entity] = this;
+
+            // Apply editor parameters
+            ScriptRegistry.ApplyParamsToExposedFields(this, jsonParams);
+
+            API.Log($"[CPTrigger] Starting on entity {Entity}. Light names: '{_lightNames}'");
+
+            // Find and initialize lights as OFF
+            if (!string.IsNullOrEmpty(_lightNames))
+            {
+                string[] names = _lightNames.Split(',');
+                foreach (string name in names)
+                {
+                    string trimmedName = name.Trim();
+                    ulong id = API.FindEntity(trimmedName);
+                    if (id != 0)
+                    {
+                        if (API.HasSpotLight(id))
+                        {
+                            API.SetSpotLightIntensity(id, 0.0f);
+                        }
+                        else if (API.HasPointLight(id))
+                        {
+                            API.SetPointLightIntensity(id, 0.0f);
+                        }
+                    }
+                }
+            }
 
             // Initialize text as hidden if it exists on this entity
             if (API.HasText(Entity))
@@ -79,6 +114,7 @@ namespace GameScripts
 
             if (justPressedQ || justPressedA)
             {
+                API.Log("[CPTrigger] Activation input detected!");
                 ActivateCheckpoint();
             }
         }
@@ -108,6 +144,45 @@ namespace GameScripts
                 player.UpdateCheckpoint(spawnPos);
                 _activated = true;
 
+                // Re-find light entities during activation to ensure they are found
+                _lightIDs.Clear();
+                if (!string.IsNullOrEmpty(_lightNames))
+                {
+                    string[] names = _lightNames.Split(',');
+                    foreach (string name in names)
+                    {
+                        string trimmedName = name.Trim();
+                        ulong id = API.FindEntity(trimmedName);
+                        if (id != 0)
+                        {
+                            _lightIDs.Add(id);
+                        }
+                    }
+                }
+
+                API.Log($"[CPTrigger] Activating {_lightIDs.Count} lights...");
+
+                // Turn on lights
+                foreach (ulong id in _lightIDs)
+                {
+                    if (API.HasSpotLight(id))
+                    {
+                        API.Log($"[CPTrigger] Setting spot light {id} intensity to {_activeIntensity}");
+                        API.SetSpotLightIntensity(id, _activeIntensity);
+                        API.SetSpotLightColor(id, _activeColor);
+                    }
+                    else if (API.HasPointLight(id))
+                    {
+                        API.Log($"[CPTrigger] Setting point light {id} intensity to {_activeIntensity}");
+                        API.SetPointLightIntensity(id, _activeIntensity);
+                        API.SetPointLightColor(id, _activeColor);
+                    }
+                    else
+                    {
+                        API.Log($"[CPTrigger] WARNING: Entity {id} has no SpotLight or PointLight component!");
+                    }
+                }
+                
                 // Hide text permanently if it exists on this entity
                 if (API.HasText(Entity))
                 {
@@ -116,7 +191,7 @@ namespace GameScripts
                     API.SetTextColor(Entity, color);
                 }
 
-                API.Log($"[CPTrigger] Checkpoint saved at ({spawnPos.X:F2}, {spawnPos.Y:F2}, {spawnPos.Z:F2})");
+                API.Log($"[CPTrigger] Checkpoint saved and lights activated at ({spawnPos.X:F2}, {spawnPos.Y:F2}, {spawnPos.Z:F2})");
             }
             else
             {
