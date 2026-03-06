@@ -30,6 +30,7 @@ void StaticModel::LoadFromDiskCPU(const std::string& filename, StaticModelLoadCo
     }
 
     // Parse all meshes (CPU only - no OpenGL)
+    float maxDistSq = 0.0f;
     std::function<void(const aiScene*, aiNode*)> parseNode = [&](const aiScene* scene, aiNode* node) {
         for (uint32_t i = 0; i < node->mNumMeshes; ++i) {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
@@ -48,6 +49,10 @@ void StaticModel::LoadFromDiskCPU(const std::string& filename, StaticModelLoadCo
                     vert.tangent = glm::normalize(AssimpToVec3(mesh->mTangents[v]));
                 }
                 meshData.vtx.push_back(vert);
+
+                // Update bounding radius
+                float distSq = glm::dot(vert.pos, vert.pos);
+                if (distSq > maxDistSq) maxDistSq = distSq;
             }
 
             // Indices
@@ -67,6 +72,7 @@ void StaticModel::LoadFromDiskCPU(const std::string& filename, StaticModelLoadCo
     };
 
     parseNode(ai_scene, ai_scene->mRootNode);
+    outContext.boundingRadius = glm::sqrt(maxDistSq);
     outContext.loadSuccess = true;
 }
 
@@ -75,6 +81,8 @@ StaticModel::StaticModel(const StaticModelLoadContext& context) {
         BOOM_ERROR("StaticModel: Cannot create from failed load context: {}", context.errorMessage);
         return;
     }
+
+    m_BoundingRadius = context.boundingRadius;
 
     // Create GPU meshes from pre-loaded data (main thread only)
     for (const auto& meshData : context.meshes) {
@@ -119,6 +127,7 @@ void SkeletalModel::LoadFromDiskCPU(const std::string& filename, SkeletalModelLo
     JointMap jointMap;
 
     // Parse all meshes
+    float maxDistSq = 0.0f;
     std::function<void(const aiScene*, aiNode*)> parseNode = [&](const aiScene* scene, aiNode* node) {
         for (uint32_t i = 0; i < node->mNumMeshes; ++i) {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
@@ -134,6 +143,10 @@ void SkeletalModel::LoadFromDiskCPU(const std::string& filename, SkeletalModelLo
                     vert.uv.y = mesh->mTextureCoords[0][v].y;
                 }
                 meshData.vtx.push_back(vert);
+
+                // Update bounding radius
+                float distSq = glm::dot(vert.pos, vert.pos);
+                if (distSq > maxDistSq) maxDistSq = distSq;
             }
 
             // Indices
@@ -258,6 +271,7 @@ void SkeletalModel::LoadFromDiskCPU(const std::string& filename, SkeletalModelLo
 
     outContext.rootJoint = std::make_shared<Joint>();
     parseHierarchy(ai_scene->mRootNode, *outContext.rootJoint);
+    outContext.boundingRadius = glm::sqrt(maxDistSq);
     outContext.loadSuccess = true;
 }
 
@@ -267,6 +281,7 @@ SkeletalModel::SkeletalModel(const SkeletalModelLoadContext& context) {
         return;
     }
 
+    m_BoundingRadius = context.boundingRadius;
     m_JointCount = context.jointCount;
 
     // Create animator
