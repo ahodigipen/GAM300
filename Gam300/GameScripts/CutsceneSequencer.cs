@@ -30,6 +30,7 @@ namespace GameScripts
         public bool PlayOnStart = false;
         public bool Loop = false;
         public bool BlockInput = true; // Default to TRUE for cinematic feel
+        public bool AllowSkip = true; // Allows players to opt-out
         public bool ConsoleDebug = true; // Default ON: Logs position/target every sec
         public bool VisualDebug = false; // Default OFF: Draws lines
 
@@ -54,7 +55,7 @@ namespace GameScripts
         {
             public string label; // "EntityName : Type"
             public string targetEntityName;
-            public int type; // 0=Pos, 1=Rot, 2=Scale, 3=Anim, 4=LookAt
+            public int type; // 0=Pos, 1=Rot, 2=Scale, 3=Anim, 4=Look At
             public List<KeyFrame> keyframes = new List<KeyFrame>();
             public ulong cachedEntityID = 0;
             public string lastAnim = ""; // Cache to prevent spamming Play
@@ -176,6 +177,21 @@ namespace GameScripts
                         {
                             BlockInput = true; // Default or explicit true
                             API.Log("[CutsceneDebug] Parsed BlockInput: TRUE");
+                        }
+                    }
+
+                    // 5. AllowSkip (New)
+                    if (jsonParams.Contains("\"AllowSkip\""))
+                    {
+                        int keyIdx = jsonParams.IndexOf("\"AllowSkip\"");
+                        string afterKey = jsonParams.Substring(keyIdx);
+                        if (afterKey.Contains("false"))
+                        {
+                            AllowSkip = false;
+                        }
+                        else
+                        {
+                            AllowSkip = true;
                         }
                     }
                 }
@@ -302,6 +318,16 @@ namespace GameScripts
                 }
 
                 if (!_isPlaying) return;
+
+                // INPUT SKIPPING
+                if (AllowSkip)
+                {
+                    if (API.IsKeyDown(API.KEY_SPACE) || API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_START) || API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A))
+                    {
+                        Skip();
+                        return;
+                    }
+                }
 
                 _currentTime += dt * 60.0f; // Convert time to frames
 
@@ -497,6 +523,68 @@ namespace GameScripts
 
                             // X=Pitch, Y=Yaw, Z=Roll
                             API.SetRotation(track.cachedEntityID, new Vec3(-pitch, yaw, 0f));
+                        }
+                    }
+                    continue;
+                }
+
+
+                // EVENT TRIGGER TRACK (Type 5)
+                if (track.type == 5)
+                {
+                    if (track.keyframes.Count < 1) continue;
+
+                    // Find active keyframe
+                    KeyFrame activeKF = null;
+                    for (int i = 0; i < track.keyframes.Count; i++)
+                    {
+                        if (currentFrame >= track.keyframes[i].frame) activeKF = track.keyframes[i];
+                        else break;
+                    }
+
+                    if (activeKF != null && !string.IsNullOrEmpty(activeKF.valStr) && activeKF.valStr != "None")
+                    {
+                        if (track.lastAnim != activeKF.valStr)
+                        {
+                            track.lastAnim = activeKF.valStr;
+                            API.Log($"[CutsceneSequencer] Triggering Event: {activeKF.valStr}");
+
+                            try
+                            {
+                                // We assume format "GameScripts.ClassName.MethodName"
+                                int lastDotPos = activeKF.valStr.LastIndexOf('.');
+                                if (lastDotPos > 0 && lastDotPos < activeKF.valStr.Length - 1)
+                                {
+                                    string className = activeKF.valStr.Substring(0, lastDotPos);
+                                    string methodName = activeKF.valStr.Substring(lastDotPos + 1);
+
+                                    Type type = Type.GetType(className);
+                                    if (type != null)
+                                    {
+                                        System.Reflection.MethodInfo method = type.GetMethod(methodName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                                        if (method != null)
+                                        {
+                                            method.Invoke(null, null);
+                                        }
+                                        else
+                                        {
+                                            API.Log($"[CutsceneSequencer] Event Error: Static method '{methodName}' not found on '{className}'");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        API.Log($"[CutsceneSequencer] Event Error: Class '{className}' not found.");
+                                    }
+                                }
+                                else
+                                {
+                                    API.Log($"[CutsceneSequencer] Event format must be 'Namespace.Class.Method'. Received: {activeKF.valStr}");
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                API.Log($"[CutsceneSequencer] Failed to trigger event '{activeKF.valStr}': {ex.Message}");
+                            }
                         }
                     }
                     continue;

@@ -140,8 +140,8 @@ void AnimationTimelinePanel::Render()
             SequenceTrack newTrack;
             newTrack.entityName = dt.entityName;
             newTrack.type = dt.type;
-            const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot" };
-            newTrack.label = dt.entityName + " : " + (dt.type >= 0 && dt.type < 4 ? typeNames[dt.type] : "Unknown");
+            const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot", "Look At Target", "Event Trigger" };
+            newTrack.label = dt.entityName + " : " + (dt.type >= 0 && dt.type < 6 ? typeNames[dt.type] : "Unknown");
             m_SequenceTracks.push_back(newTrack);
         }
         m_DeferredTracks.clear();
@@ -155,8 +155,8 @@ void AnimationTimelinePanel::Render()
             SequenceTrack newTrack;
             newTrack.entityName = dt.entityName;
             newTrack.type = dt.type;
-            const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot" };
-            newTrack.label = dt.entityName + " : " + (dt.type >= 0 && dt.type < 4 ? typeNames[dt.type] : "Unknown");
+            const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot", "Look At Target", "Event Trigger" };
+            newTrack.label = dt.entityName + " : " + (dt.type >= 0 && dt.type < 6 ? typeNames[dt.type] : "Unknown");
             m_SequenceTracks.push_back(newTrack);
         }
         m_DeferredTracks.clear();
@@ -793,8 +793,8 @@ void AnimationTimelinePanel::RenderControlBar()
         {
             ImGui::TextDisabled("Property");
             ImGui::Separator();
-            const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot" };
-            for (int i = 0; i < 4; i++)
+            const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot", "Look At Target", "Event Trigger" };
+            for (int i = 0; i < 6; i++)
             {
                 if (ImGui::Selectable(typeNames[i]))
                 {
@@ -2216,7 +2216,7 @@ void AnimationTimelinePanel::SaveSequence(const std::string& path)
         for (const auto& kf : track.keyFrames)
         {
             out << "KEY " << kf.frame << " " << kf.valueX << " " << kf.valueY << " " << kf.valueZ << " " << kf.valueW;
-            if (track.type == 3 && !kf.valueStr.empty()) {
+            if ((track.type == 3 || track.type == 4 || track.type == 5) && !kf.valueStr.empty()) {
                 out << " \"" << kf.valueStr << "\"";
             }
             out << "\n";
@@ -2239,7 +2239,7 @@ void AnimationTimelinePanel::LoadSequence(const std::string& path)
     std::string line, token;
     SequenceTrack* currentTrack = nullptr;
 
-    const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot" };
+    const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot", "Look At Target", "Event Trigger" };
 
     while (std::getline(in, line))
     {
@@ -2264,7 +2264,7 @@ void AnimationTimelinePanel::LoadSequence(const std::string& path)
                     SequenceTrack newTrack;
                     newTrack.entityName = entityName;
                     newTrack.type = type;
-                    newTrack.label = entityName + " : " + (type >= 0 && type < 4 ? typeNames[type] : "Unknown");
+                    newTrack.label = entityName + " : " + (type >= 0 && type < 6 ? typeNames[type] : "Unknown");
                     
                     m_SequenceTracks.push_back(newTrack);
                     currentTrack = &m_SequenceTracks.back(); 
@@ -2275,7 +2275,7 @@ void AnimationTimelinePanel::LoadSequence(const std::string& path)
             SerializedKeyframe kf;
             ss >> kf.frame >> kf.valueX >> kf.valueY >> kf.valueZ >> kf.valueW;
             
-            if (currentTrack->type == 3)
+            if (currentTrack->type == 3 || currentTrack->type == 4 || currentTrack->type == 5)
             {
                 std::string rest;
                 std::getline(ss, rest);
@@ -2301,101 +2301,142 @@ void AnimationTimelinePanel::ApplySequenceFrame(int frame)
 
     for (const auto& track : m_SequenceTracks)
     {
-        if (track.keyFrames.size() < 2) 
-        {
-            continue; // Need at least 2 to interpolate, or wait for trigger
-        }
-
         // 1. Find Entity
         entt::entity e = Boom::FindEntityByName(reg, track.entityName);
         if (!reg.valid(e)) continue;
         if (!reg.all_of<Boom::TransformComponent>(e)) continue;
 
         auto& tc = reg.get<Boom::TransformComponent>(e);
-
-        // 2. Find Keyframes
-        const SerializedKeyframe* k1 = nullptr;
-        const SerializedKeyframe* k2 = nullptr;
-
-        for (size_t i = 0; i < track.keyFrames.size() - 1; i++)
+        // ------------------ Non-Interpolated Tracks ------------------
+        if (track.type == 3 || track.type == 4 || track.type == 5)
         {
-                if (frame >= track.keyFrames[i].frame && frame <= track.keyFrames[i+1].frame)
-                {
-                    k1 = &track.keyFrames[i];
-                    k2 = &track.keyFrames[i+1];
-                    break;
-                }
-        }
+            const SerializedKeyframe* activeKF = nullptr;
+            for (auto& kf : track.keyFrames) {
+                if (frame >= kf.frame) activeKF = &kf;
+                else break;
+            }
 
-        if (k1 && k2)
-        {
-            if (track.type == 3) // Animation
+            if (activeKF && !activeKF->valueStr.empty() && activeKF->valueStr != "None")
             {
-                    const SerializedKeyframe* activeKF = nullptr;
-                    for(auto& kf : track.keyFrames) {
-                        if (frame >= kf.frame) activeKF = &kf;
-                        else break;
-                    }
-                    
-                    if (activeKF && !activeKF->valueStr.empty() && activeKF->valueStr != "None")
+                if (track.type == 3) // Animation
+                {
+                    if (reg.all_of<Boom::AnimatorComponent>(e))
                     {
-                        if (reg.all_of<Boom::AnimatorComponent>(e))
-                        {
-                            auto& ac = reg.get<Boom::AnimatorComponent>(e);
-                            if (ac.animator) {
-                                std::string clipName = activeKF->valueStr;
-                                int clipIndex = -1;
-                                for (size_t i = 0; i < ac.animator->GetClipCount(); ++i) {
-                                    const auto* c = ac.animator->GetClip(i);
-                                    if (c && c->name == clipName) {
-                                        clipIndex = (int)i;
-                                        break;
-                                    }
+                        auto& ac = reg.get<Boom::AnimatorComponent>(e);
+                        if (ac.animator) {
+                            std::string clipName = activeKF->valueStr;
+                            int clipIndex = -1;
+                            for (size_t i = 0; i < ac.animator->GetClipCount(); ++i) {
+                                const auto* c = ac.animator->GetClip(i);
+                                if (c && c->name == clipName) {
+                                    clipIndex = (int)i;
+                                    break;
+                                }
+                            }
+
+                            if (clipIndex != -1)
+                            {
+                                ac.animator->SetStateMachineEnabled(false);
+                                if (ac.animator->GetCurrentClip() != clipIndex) {
+                                    ac.animator->PlayClip(clipIndex);
                                 }
 
-                                if (clipIndex != -1)
-                                {
-                                    ac.animator->SetStateMachineEnabled(false);
-                                    if (ac.animator->GetCurrentClip() != clipIndex) {
-                                        ac.animator->PlayClip(clipIndex);
-                                    }
-                                    
-                                    float timeInSeconds = (float)(frame - activeKF->frame) / 60.0f;
-                                    const auto* clip = ac.animator->GetClip(clipIndex);
-                                    float tps = clip ? clip->ticksPerSecond : 25.0f;
-                                    if (tps <= 0.0f) tps = 25.0f; 
+                                float timeInSeconds = (float)(frame - activeKF->frame) / 60.0f;
+                                const auto* clip = ac.animator->GetClip(clipIndex);
+                                float tps = clip ? clip->ticksPerSecond : 25.0f;
+                                if (tps <= 0.0f) tps = 25.0f;
 
-                                    ac.animator->SetTime(timeInSeconds * tps);
-                                    ac.animator->UpdateJointsFromCurrentTime();
-                                }
+                                ac.animator->SetTime(timeInSeconds * tps);
+                                ac.animator->UpdateJointsFromCurrentTime();
                             }
                         }
                     }
-                    continue; 
+                }
+                else if (track.type == 4) // Look At Target Preview
+                {
+                    entt::entity targetE = Boom::FindEntityByName(reg, activeKF->valueStr);
+                    if (reg.valid(targetE))
+                    {
+                        glm::vec3 targetPos = Boom::GetWorldPosition(reg, targetE);
+                        targetPos.y += 1.5f; // Match C# script offset
+
+                        glm::vec3 camPos = Boom::GetWorldPosition(reg, e);
+                        float dx = targetPos.x - camPos.x;
+                        float dz = targetPos.z - camPos.z;
+                        float dy = targetPos.y - camPos.y;
+
+                        float dist = std::sqrt(dx * dx + dz * dz);
+                        float pitch = std::atan2(dy, dist);
+                        float yaw = 0.0f;
+
+                        auto& camTransform = reg.get<Boom::TransformComponent>(e);
+                        if (dist < 0.5f) {
+                            yaw = camTransform.transform.rotate.y * glm::pi<float>() / 180.0f;
+                        }
+                        else {
+                            yaw = std::atan2(dx, dz);
+                        }
+
+                        // Editor Transform uses Degrees. Convert Radians to Degrees.
+                        camTransform.transform.rotate = glm::vec3(
+                            -pitch * 180.0f / glm::pi<float>(),
+                            yaw * 180.0f / glm::pi<float>(),
+                            0.0f
+                        );
+                    }
+                }
+                // Event logic is runtime-only and handled natively in C# via CutsceneSequencer.cs
+                continue; // Skip the interpolation block
             }
 
-            // Lerp Transform Values
-            float range = (float)(k2->frame - k1->frame);
-            float t = 0.0f;
-            if (range > 0.0001f) t = (frame - k1->frame) / range;
-            if (t < 0.0f) t = 0.0f;
-            if (t > 1.0f) t = 1.0f;
+            // ------------------ Interpolated Tracks (Pos, Rot, Scale) ------------------
+            if (track.keyFrames.size() < 2) continue; // Need at least 2 to interpolate
 
-            float valX = k1->valueX + (k2->valueX - k1->valueX) * t;
-            float valY = k1->valueY + (k2->valueY - k1->valueY) * t;
-            float valZ = k1->valueZ + (k2->valueZ - k1->valueZ) * t;
+            const SerializedKeyframe* k1 = nullptr;
+            const SerializedKeyframe* k2 = nullptr;
 
-            if (track.type == 0) // Position
+            for (size_t i = 0; i < track.keyFrames.size() - 1; i++)
             {
-                tc.transform.translate = { valX, valY, valZ };
+                if (frame >= track.keyFrames[i].frame && frame <= track.keyFrames[i + 1].frame)
+                {
+                    k1 = &track.keyFrames[i];
+                    k2 = &track.keyFrames[i + 1];
+                    break;
+                }
             }
-            else if (track.type == 1) // Rotation
+
+            if (k1 && k2)
             {
-                tc.transform.rotate = { valX, valY, valZ };
-            }
-            else if (track.type == 2) // Scale
-            {
-                tc.transform.scale = { valX, valY, valZ };
+
+                // Lerp Transform Values
+                float range = (float)(k2->frame - k1->frame);
+                float t = 0.0f;
+                if (range > 0.0001f) t = (frame - k1->frame) / range;
+                if (t < 0.0f) t = 0.0f;
+                if (t > 1.0f) t = 1.0f;
+
+                float valX = k1->valueX + (k2->valueX - k1->valueX) * t;
+                float valY = k1->valueY + (k2->valueY - k1->valueY) * t;
+                float valZ = k1->valueZ + (k2->valueZ - k1->valueZ) * t;
+
+                if (track.type == 0) // Position
+                {
+                    tc.transform.translate = { valX, valY, valZ };
+                }
+                else if (track.type == 1) // Rotation
+                {
+                    tc.transform.rotate = { valX, valY, valZ };
+                }
+                else if (track.type == 2) // Scale
+                {
+                    tc.transform.scale = { valX, valY, valZ };
+                }
+                else if (track.type == 4 || track.type == 5)
+                {
+                    // Safely ignore these in the Editor preview loop as they involve Game Logic 
+                    // LookAt targets and Event Trigger bindings runs in C# natively.
+                    continue;
+                }
             }
         }
     }

@@ -346,23 +346,32 @@ void AnimationTimelinePanel::RenderTrackList()
     ImGui::BeginGroup();
 
     ImGui::Text("BONE TRACKS");
-
+    
     // Check if we have a valid animator with skeleton
     if (!m_Animator || !m_HasModel)
     {
         ImGui::TextDisabled("No model loaded");
-        ImGui::EndGroup();
-        return;
     }
 
     // Get animation duration for timeline scaling
     float duration = 1.0f;  // Default
-    if (m_SelectedClipIndex >= 0 && static_cast<size_t>(m_SelectedClipIndex) < m_Animator->GetClipCount())
+    if (m_Animator && m_SelectedClipIndex >= 0 && static_cast<size_t>(m_SelectedClipIndex) < m_Animator->GetClipCount())
     {
         const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
         if (clip)
         {
             duration = clip->duration;
+        }
+    }
+    
+    // Scale timeline to fit the furthest sequence keyframe if it's longer than duration
+    for (const auto& track : m_SequenceTracks)
+    {
+        if (!track.keyFrames.empty())
+        {
+            float maxTrackTime = (float)track.keyFrames.back().frame / 60.0f;
+            if (maxTrackTime > duration)
+                duration = maxTrackTime;
         }
     }
 
@@ -385,6 +394,9 @@ void AnimationTimelinePanel::RenderTrackList()
         ImGui::Columns(2, "BoneTrackColumns", true);
         ImGui::SetColumnWidth(0, boneNameWidth);
 
+    // Only draw bone tracks if we have a model/animator
+    if (m_Animator && m_HasModel)
+    {
         // ========== AUDIO EVENTS TRACK (before bone tracks) ==========
         RenderAudioTrack(duration);
 
@@ -397,10 +409,11 @@ void AnimationTimelinePanel::RenderTrackList()
         // Render bone hierarchy starting from root
         RenderBoneTrack(root, duration);
 
-        // Render Cutscene Sequence Tracks (Entity Transforms/Slots)
-        RenderSequenceTracks(duration);
-
         ImGui::PopStyleVar();  // IndentSpacing
+    }
+
+    // Render Cutscene Sequence Tracks (Entity Transforms/Slots) - Independent of Animator
+    RenderSequenceTracks(duration);
 
         // End columns
         ImGui::Columns(1);
@@ -1633,6 +1646,11 @@ void AnimationTimelinePanel::RenderSequenceTracks(float duration)
             }
         }
 
+        // Make the track area interactive for hovering/clicking
+        ImGui::SetCursorScreenPos(timelineMin);
+        ImGui::InvisibleButton(track.label.c_str(), ImVec2(timelineWidth, rowHeight));
+        bool isTrackHovered = ImGui::IsItemHovered();
+
         // Current time line
         if (duration > 0.0f && m_CurrentTime >= 0.0f)
         {
@@ -1701,7 +1719,7 @@ void AnimationTimelinePanel::RenderSequenceTracks(float duration)
         }
 
         // Add Keyframe by double clicking empty track area
-        if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && m_HoveredSequenceKeyframeIndex == -1)
+        if (isTrackHovered && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && m_HoveredSequenceKeyframeIndex == -1)
         {
             m_SelectedSequenceTrack = tIdx;
             
@@ -1780,15 +1798,15 @@ void AnimationTimelinePanel::RenderSequenceTracks(float duration)
                         entt::entity e = Boom::FindEntityByName(reg, track.entityName);
                         if (reg.valid(e) && reg.all_of<Boom::AnimatorComponent>(e))
                         {
-                                const auto& ac = reg.get<Boom::AnimatorComponent>(e);
-                                if (ac.animator)
+                            const auto& ac = reg.get<Boom::AnimatorComponent>(e);
+                            if (ac.animator)
+                            {
+                                for(size_t i=0; i < ac.animator->GetClipCount(); ++i)
                                 {
-                                    for(size_t i=0; i < ac.animator->GetClipCount(); ++i)
-                                    {
-                                        const auto* c = ac.animator->GetClip(i);
-                                        if(c) animNames.push_back(c->name);
-                                    }
+                                    const auto* c = ac.animator->GetClip(i);
+                                    if(c) animNames.push_back(c->name);
                                 }
+                            }
                         }
                     }
 
@@ -1805,6 +1823,64 @@ void AnimationTimelinePanel::RenderSequenceTracks(float duration)
                             if (is_selected) ImGui::SetItemDefaultFocus();
                         }
                         ImGui::EndCombo();
+                    }
+                }
+                else if (track.type == 4) // LookAt Target
+                {
+                    std::vector<std::string> entityNames;
+                    entityNames.push_back("None");
+
+                    if (m_Owner && m_Owner->GetContext())
+                    {
+                        auto& reg = m_Owner->GetContext()->scene;
+                        auto view = reg.view<Boom::InfoComponent>();
+                        for (auto e : view)
+                        {
+                            const auto& info = view.get<Boom::InfoComponent>(e);
+                            if (!info.name.empty())
+                            {
+                                entityNames.push_back(info.name);
+                            }
+                        }
+                    }
+
+                    const char* preview = kf_data->valueStr.empty() ? "None" : kf_data->valueStr.c_str();
+                    if (ImGui::BeginCombo("Target Entity", preview))
+                    {
+                        static char searchBuffer[256] = "";
+                        ImGui::InputTextWithHint("##SearchTarget", "Search entities...", searchBuffer, sizeof(searchBuffer));
+                        ImGui::Separator();
+                        
+                        std::string searchLower = searchBuffer;
+                        std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), ::tolower);
+
+                        for (const auto& name : entityNames)
+                        {
+                            std::string nameLower = name;
+                            std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
+
+                            // Only show if it matches the search filter
+                            if (searchLower.empty() || nameLower.find(searchLower) != std::string::npos)
+                            {
+                                bool is_selected = (kf_data->valueStr == name);
+                                if (ImGui::Selectable(name.c_str(), is_selected))
+                                {
+                                    kf_data->valueStr = (name == "None") ? "" : name;
+                                    searchBuffer[0] = '\0'; // Clear search box on selection
+                                }
+                                if (is_selected) ImGui::SetItemDefaultFocus();
+                            }
+                        }
+                        ImGui::EndCombo();
+                    }
+                }
+                else if (track.type == 5) // Event Trigger
+                {
+                    char buffer[256];
+                    strncpy_s(buffer, sizeof(buffer), kf_data->valueStr.c_str(), _TRUNCATE);
+                    if (ImGui::InputText("Event Function", buffer, sizeof(buffer)))
+                    {
+                        kf_data->valueStr = std::string(buffer);
                     }
                 }
                 
