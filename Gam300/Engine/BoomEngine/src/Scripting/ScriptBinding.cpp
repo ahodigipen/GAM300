@@ -547,6 +547,27 @@ namespace Boom {
         }
     }
 
+    // Inventory Menu
+    static void ICALL_API_ShowInventoryMenu() {
+        if (!s_Ctx || !s_Ctx->app) return;
+        s_Ctx->app->ShowAdditiveScene(Boom::MenuType::Inventory);
+    }
+
+    static void ICALL_API_UnloadInventoryMenu() {
+        if (!s_Ctx || !s_Ctx->app) return;
+        s_Ctx->app->UnloadAdditiveScene(Boom::MenuType::Inventory);
+    }
+
+    static bool ICALL_API_IsInventoryMenuLoaded() {
+        if (!s_Ctx) return false;
+        auto view = s_Ctx->scene.view<Boom::MenuComponent>();
+        for (auto e : view) {
+            if (view.get<Boom::MenuComponent>(e).menuType == Boom::MenuType::Inventory)
+                return true;
+        }
+        return false;
+    }
+
     // For freeze
     static void ICALL_API_DestroyEntity(uint64_t entityID)
     {
@@ -2532,6 +2553,11 @@ namespace Boom {
         // Cutscene
         mono_add_internal_call("Boom.Native::Boom_API_SetCutsceneMode", (const void*)ICALL_API_SetCutsceneMode);
         mono_add_internal_call("Boom.Native::Boom_API_DrawDebugLine", (const void*)ICALL_API_DrawDebugLine);
+
+        // Inventory Menu
+        mono_add_internal_call("Boom.Native::Boom_API_ShowInventoryMenu", (const void*)ICALL_API_ShowInventoryMenu);
+        mono_add_internal_call("Boom.Native::Boom_API_UnloadInventoryMenu", (const void*)ICALL_API_UnloadInventoryMenu);
+        mono_add_internal_call("Boom.Native::Boom_API_IsInventoryMenuLoaded", (const void*)ICALL_API_IsInventoryMenuLoaded);
 
     }
 }

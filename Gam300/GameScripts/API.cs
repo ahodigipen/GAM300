@@ -499,6 +499,16 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_DrawDebugLine(Vec3 start, Vec3 end, Vec3 color);
+
+        // Inventory Menu
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_ShowInventoryMenu();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_UnloadInventoryMenu();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern bool Boom_API_IsInventoryMenuLoaded();
     }
 
     // ========= DELEGATES =========
@@ -895,6 +905,11 @@ namespace Boom
         public static void ShowEndMenu() => Native.Boom_API_ShowEndMenu();
         public static bool IsEndMenuLoaded() => Native.Boom_API_IsEndMenuLoaded();
         public static void SetGameEnd(bool isEnd) => Native.Boom_API_SetGameEnd(isEnd);
+
+        // Inventory Menu
+        public static void ShowInventoryMenu() => Native.Boom_API_ShowInventoryMenu();
+        public static void UnloadInventoryMenu() => Native.Boom_API_UnloadInventoryMenu();
+        public static bool IsInventoryMenuLoaded() => Native.Boom_API_IsInventoryMenuLoaded();
 
         // Freeze
         public static void DestroyEntity(ulong entity) => Native.Boom_API_DestroyEntity(entity);
@@ -1420,6 +1435,7 @@ namespace Boom
         public const int KEY_F = 70;
         public const int KEY_G = 71;
         public const int KEY_H = 72;
+        public const int KEY_I = 73;
         public const int KEY_K = 75;
         public const int KEY_L = 76;
         public const int KEY_M = 77;

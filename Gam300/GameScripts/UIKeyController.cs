@@ -73,11 +73,18 @@ namespace GameScripts
                 }
                 _lastKeyCount = currentKeyCount;
             }
-            // If a key was used, fade it out
+            // If a key was used, only fade out when count reaches 0
             else if (currentKeyCount < _lastKeyCount)
             {
-                _currentState = State.FadingOut;
-                API.Log("[UIKey] Key used - hiding UI");
+                if (currentKeyCount == 0)
+                {
+                    _currentState = State.FadingOut;
+                    API.Log("[UIKey] Last key used - hiding UI");
+                }
+                else
+                {
+                    API.Log($"[UIKey] Key used - {currentKeyCount} remaining, staying visible");
+                }
                 _lastKeyCount = currentKeyCount;
             }
 

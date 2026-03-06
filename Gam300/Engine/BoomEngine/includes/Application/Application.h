@@ -641,6 +641,7 @@ namespace Boom
 			else if (sceneName.find("End") != std::string::npos) targetType = MenuType::End;
 			else if (sceneName.find("PopUp") != std::string::npos) targetType = MenuType::PopUp;
 			else if (sceneName.find("Tutorial") != std::string::npos) targetType = MenuType::PopUp;
+			else if (sceneName.find("Inventory") != std::string::npos) targetType = MenuType::Inventory;
 
 			// 2. Check if objects of this MenuType *already exist*
 			bool alreadyLoaded = false;

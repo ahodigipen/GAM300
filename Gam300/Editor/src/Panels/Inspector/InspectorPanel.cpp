@@ -2940,8 +2940,8 @@ namespace EditorUI {
 
                     // 3. Define the Enum Names for the Dropdown
                     // These must match the order of your 'enum class MenuType'
-                    // Pause=0, Death=1, Settings=2, Main=3
-                    const char* menuTypeNames[] = { "Pause", "Death", "Settings", "Main", "End", "PopUp"};
+                    // Pause=0, Death=1, Settings=2, Main=3, End=4, PopUp=5, Inventory=6
+                    const char* menuTypeNames[] = { "Pause", "Death", "Settings", "Main", "End", "PopUp", "Inventory"};
 
                     // Convert current enum value to int for ImGui
                     int currentSelection = (int)comp->menuType;

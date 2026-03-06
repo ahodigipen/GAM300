@@ -53,6 +53,7 @@
     <Compile Include="FreezeOverlayBehavior.cs" />
     <Compile Include="HoverMotion.cs" />
     <Compile Include="IntroCutscene.cs" />
+    <Compile Include="InventoryMenu.cs" />
     <Compile Include="LevelTransitionCutscene.cs" />
     <Compile Include="MazeGeneration.cs" />
     <Compile Include="MultiKeyDoor.cs" />
@@ -73,7 +74,6 @@
     <Compile Include="PlayerFootsteps.cs" />
     <Compile Include="PlayerManager.cs" />
     <Compile Include="KeyPickup.cs" />
-    <Compile Include="DoorTriggerLeft.cs" />
     <Compile Include="PlayerInventory.cs" />
     <Compile Include="BloodOverlayController.cs" />
     <Compile Include="SceneTransitionTrigger.cs" />
