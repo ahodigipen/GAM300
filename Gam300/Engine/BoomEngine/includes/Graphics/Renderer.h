@@ -743,7 +743,8 @@ namespace Boom {
         }
 
         BOOM_INLINE void ShowFrame(bool useFBO) {
-            // Feed fog state into final shader before rendering
+            // Feed tone mapping + fog state into final shader before rendering
+            finalShader->SetToneMapping(tonemapExposure, tonemapGamma, tonemapWarmTint);
             uint32_t depthTex = showLowPoly ? lowPolyFrame->GetDepthTexture() : frame->GetDepthTexture();
             finalShader->SetFog(enabledFog, fogColor, fogDensity, fogHeightFalloff, fogHeight,
                                 m_InvViewProj, m_CameraPosition, depthTex);
@@ -907,6 +908,11 @@ namespace Boom {
         float bloomThreshold{ 1.0f };
         int bloomIterations{ 10 };
         float pointLightBloomMultiplier{ 1.0f };  // Global multiplier for point light bloom contribution
+
+        // Tone mapping
+        float     tonemapExposure{ 1.0f };
+        float     tonemapGamma{ 2.2f };
+        glm::vec3 tonemapWarmTint{ 1.08f, 0.98f, 0.82f };
 
         // Volumetric fog toggles
         bool enabledFog{};

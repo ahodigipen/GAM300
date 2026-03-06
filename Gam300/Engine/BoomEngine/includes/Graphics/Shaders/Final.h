@@ -20,6 +20,9 @@ namespace Boom {
 			, fogHeightLoc{ GetUniformVar("u_fogHeight") }
 			, fogInvViewProjLoc{ GetUniformVar("u_invViewProj") }
 			, fogCameraPosLoc{ GetUniformVar("u_cameraPos") }
+			, gammaLoc{ GetUniformVar("u_gamma") }
+			, exposureLoc{ GetUniformVar("u_exposure") }
+			, warmTintLoc{ GetUniformVar("u_warmTint") }
 			, quad{ CreateQuad2D() }
 			, color{ col }
 		{
@@ -50,7 +53,14 @@ namespace Boom {
 			glDeleteFramebuffers(1, &m_FBO);
 		}
 
-		// Call before Render() to configure volumetric fog for the next draw.
+		BOOM_INLINE void SetToneMapping(float exposure, float gamma, const glm::vec3& warmTint)
+	{
+		m_Exposure = exposure;
+		m_Gamma    = gamma;
+		m_WarmTint = warmTint;
+	}
+
+	// Call before Render() to configure volumetric fog for the next draw.
 		// depthTex: the scene depth texture (slot 2)
 		BOOM_INLINE void SetFog(bool enabled, const glm::vec3& fogCol, float density,
 			float heightFalloff, float height,
@@ -76,6 +86,9 @@ namespace Boom {
 
 			SetUniform(bloomEnabled, enableBloom);
 			SetUniform(bloomIntensity, intensity);
+			SetUniform(exposureLoc, m_Exposure);
+			SetUniform(gammaLoc,    m_Gamma);
+			SetUniform(warmTintLoc, m_WarmTint);
 			SetSceneMap(vmap, vbloom);
 
 			// apply screen fade
@@ -153,6 +166,9 @@ namespace Boom {
 	private:
 		int32_t fadeAlpha;
 		int32_t bloomIntensity;
+		int32_t gammaLoc;
+		int32_t exposureLoc;
+		int32_t warmTintLoc;
 		int32_t depthMapLoc;
 		int32_t fogEnabledLoc;
 		int32_t fogColorLoc;
@@ -177,6 +193,11 @@ namespace Boom {
 		glm::mat4 m_InvViewProj = glm::mat4(1.0f);
 		glm::vec3 m_CameraPos = {};
 		uint32_t m_DepthTex = 0u;
+
+		// Tone mapping state (written by SetToneMapping, consumed by Render)
+		float     m_Exposure{ 1.0f };
+		float     m_Gamma{ 2.2f };
+		glm::vec3 m_WarmTint{ 1.08f, 0.98f, 0.82f };
 
 		uint32_t m_Final = 0u;
 		uint32_t m_FBO = 0u;
