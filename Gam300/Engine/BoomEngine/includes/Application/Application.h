@@ -550,8 +550,13 @@ namespace Boom
 				m_Context->renderer->bloomThreshold = sn.bloomThreshold;
 				m_Context->renderer->bloomIterations = sn.bloomIterations;
 				m_Context->renderer->pointLightBloomMultiplier = sn.pointLightBloomMultiplier;
-				BOOM_INFO("[Scene] Applied scene settings: ambient={}, bloom={}, intensity={}, threshold={}, iterations={}, pointLightBloom={}",
-					sn.ambientStrength, sn.bloomEnabled, sn.bloomIntensity, sn.bloomThreshold, sn.bloomIterations, sn.pointLightBloomMultiplier);
+				m_Context->renderer->enabledFog = sn.fogEnabled;
+				m_Context->renderer->fogColor = sn.fogColor;
+				m_Context->renderer->fogDensity = sn.fogDensity;
+				m_Context->renderer->fogHeightFalloff = sn.fogHeightFalloff;
+				m_Context->renderer->fogHeight = sn.fogHeight;
+				BOOM_INFO("[Scene] Applied scene settings: ambient={}, bloom={}, intensity={}, threshold={}, iterations={}, pointLightBloom={}, fog={}",
+					sn.ambientStrength, sn.bloomEnabled, sn.bloomIntensity, sn.bloomThreshold, sn.bloomIterations, sn.pointLightBloomMultiplier, sn.fogEnabled);
 			}
 
 			if (sn.navmeshFile.empty())

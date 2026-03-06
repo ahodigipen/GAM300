@@ -80,6 +80,8 @@ namespace GameScripts
         private bool _inCrouchZone = false;
         private bool _isCrouching = false;
         private static bool s_isStealthInvisible = false;
+        private bool _prevStealthInvisible = false;
+        private const float STEALTH_OPACITY = 0.30f;
 
         // NEW: Track all crouch zone entity IDs
         private HashSet<ulong> _crouchZoneIDs = new HashSet<ulong>();
@@ -123,6 +125,13 @@ namespace GameScripts
         private float _verticalVelocity = 0f;
         // Track current forward movement speed for other systems (falling platforms prediction)
         private float _currentMoveSpeed = 0f;
+
+        // ==== Stealth Opacity Helper ====
+        private void ApplyStealthOpacity(bool invisible)
+        {
+            if (!API.HasModelComponent(Entity)) return;
+            API.SetModelOpacity(Entity, invisible ? STEALTH_OPACITY : 1.0f);
+        }
 
         // ==== DEBUG: Helper to log crouch state ====
         private static void DebugCrouch(string message)
@@ -207,6 +216,8 @@ namespace GameScripts
 
             RegisterTriggerCallbacksOnAllTriggers();
             HUD.SetHealth(_health, _maxHealth);
+            _prevStealthInvisible = false;
+            ApplyStealthOpacity(false);
 
             // Initialize current move speed
             _currentMoveSpeed = 0f;
@@ -584,6 +595,13 @@ namespace GameScripts
                 }
             }
 
+            // Apply/remove translucency when stealth state changes
+            if (s_isStealthInvisible != _prevStealthInvisible)
+            {
+                _prevStealthInvisible = s_isStealthInvisible;
+                ApplyStealthOpacity(s_isStealthInvisible);
+            }
+
             if (_isCrouching)
             {
                 // Apply gravity while crouching
@@ -945,6 +963,7 @@ namespace GameScripts
             if (API.HasCollider(Entity))
                 API.UnregisterTriggerCallbacks(Entity);
             API.SetScreenFadeAlpha(0f);
+            ApplyStealthOpacity(false);
         }
 
         public void SetFootstepVolume(float volume) => _footstepComponent?.SetFootstepVolume(volume);

@@ -14,6 +14,16 @@
 #pragma warning(push)
 #pragma warning(disable : 4101 4244 4267 4365 4458 4100 5054 4189 26819 6262 26495 4834) //library warnings disable + nodiscard
 // add headers that you want to pre-compile here
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <Windows.h>
+#endif
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 

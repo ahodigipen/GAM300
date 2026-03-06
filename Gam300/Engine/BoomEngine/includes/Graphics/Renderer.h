@@ -316,6 +316,10 @@ namespace Boom {
             color3DShader->SetCamera(cam, transform, aspect);
             pbrShader->Use();
             m_CameraPosition = transform.translate;
+            // Cache for volumetric fog depth reconstruction
+            m_NearPlane = cam.nearPlane;
+            m_FarPlane = cam.farPlane;
+            m_InvViewProj = glm::inverse(cam.Frustum(transform, aspect));
         }
 
         BOOM_INLINE glm::vec3 GetCameraPosition() const { return m_CameraPosition; }
@@ -739,6 +743,10 @@ namespace Boom {
         }
 
         BOOM_INLINE void ShowFrame(bool useFBO) {
+            // Feed fog state into final shader before rendering
+            uint32_t depthTex = showLowPoly ? lowPolyFrame->GetDepthTexture() : frame->GetDepthTexture();
+            finalShader->SetFog(enabledFog, fogColor, fogDensity, fogHeightFalloff, fogHeight,
+                                m_InvViewProj, m_CameraPosition, depthTex);
 
             if (showLowPoly) {
                 if (m_TouchViewport) glViewport(0, 0, lowPolyFrame->GetWidth(), lowPolyFrame->GetHeight());
@@ -746,8 +754,7 @@ namespace Boom {
             }
             else {
                 if (m_TouchViewport) glViewport(0, 0, frame->GetWidth(), frame->GetHeight());
-                //shadowShader->GetDepthMap() //frame->GetTexture()
-                finalShader->Render(isDepthBufferView ? shadowShader->GetDepthMap() : frame->GetTexture(), bloom->GetMap(), useFBO, enabledBloom, bloomIntensity); // toggle bloom inside final if needed
+                finalShader->Render(isDepthBufferView ? shadowShader->GetDepthMap() : frame->GetTexture(), bloom->GetMap(), useFBO, enabledBloom, bloomIntensity);
             }
         }
 
@@ -884,6 +891,10 @@ namespace Boom {
         GLuint m_DirLightUBO = 0;
         GLuint m_SpotLightUBO = 0;
         glm::vec3 m_CameraPosition{};
+        // Fog depth reconstruction cache (updated each frame in SetCamera)
+        float m_NearPlane{ 0.3f };
+        float m_FarPlane{ 1000.f };
+        glm::mat4 m_InvViewProj{ 1.0f };
     public:  // ---------------------- ImGui-exposed toggles ----------------
         bool isDrawDebugMode{};
         bool showLowPoly{};
@@ -896,6 +907,13 @@ namespace Boom {
         float bloomThreshold{ 1.0f };
         int bloomIterations{ 10 };
         float pointLightBloomMultiplier{ 1.0f };  // Global multiplier for point light bloom contribution
+
+        // Volumetric fog toggles
+        bool enabledFog{};
+        glm::vec3 fogColor{ 0.5f, 0.6f, 0.7f };
+        float fogDensity{ 0.01f };
+        float fogHeightFalloff{ 0.5f };
+        float fogHeight{ 0.0f };
 
     public: // ---------------------- Material Preview ----------------------
         // Call this to reset the material preview (e.g., after scene change)

@@ -393,6 +393,13 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_SetSpriteTexture(ulong handle, string texturePath);
 
+        // ========= MODEL COMPONENT INTERNAL CALLS =========
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Boom_API_HasModelComponent(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetModelOpacity(ulong handle, float opacity);
+
         // ========= TEXT COMPONENT INTERNAL CALLS =========
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Boom_API_HasText(ulong handle);
@@ -1174,6 +1181,14 @@ namespace Boom
         public static void SetScreenFadeAlpha(float alpha)
         {
             Native.Boom_API_SetScreenFadeAlpha(alpha);
+        }
+
+        // ========= MODEL COMPONENT METHODS =========
+        public static bool HasModelComponent(ulong entity) => Native.Boom_API_HasModelComponent(entity);
+
+        public static void SetModelOpacity(ulong entity, float opacity)
+        {
+            Native.Boom_API_SetModelOpacity(entity, opacity);
         }
 
         // ========= SPRITE COMPONENT METHODS =========

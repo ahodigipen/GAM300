@@ -1067,6 +1067,25 @@ namespace Boom {
         s_Ctx->scene.get<SpriteComponent>(e).color.a = glm::clamp(alpha, 0.0f, 1.0f);
     }
 
+    // ========= MODEL COMPONENT INTERNAL CALLS =========
+    static bool ICALL_API_HasModelComponent(uint64_t handle)
+    {
+        if (!s_Ctx) return false;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        return (e != entt::null && s_Ctx->scene.valid(e) && s_Ctx->scene.any_of<ModelComponent>(e));
+    }
+
+    static void ICALL_API_SetModelOpacity(uint64_t handle, float opacity)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<ModelComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetModelOpacity: Entity does not have ModelComponent");
+            return;
+        }
+        s_Ctx->scene.get<ModelComponent>(e).opacityOverride = glm::clamp(opacity, 0.0f, 1.0f);
+    }
+
     // ========= TEXT COMPONENT INTERNAL CALLS =========
     static bool ICALL_API_HasText(uint64_t handle)
     {
@@ -2473,6 +2492,10 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_TeleportController", (void*)ICALL_API_TeleportController);
         mono_add_internal_call("Boom.Native::Boom_API_GetControllerTriggerOverlaps", (const void*)ICALL_API_GetControllerTriggerOverlaps);
         mono_add_internal_call("Boom.Native::Boom_API_GetControllerStandingOn", (const void*)ICALL_API_GetControllerStandingOn);
+
+        // Model component internal calls
+        mono_add_internal_call("Boom.Native::Boom_API_HasModelComponent", (const void*)ICALL_API_HasModelComponent);
+        mono_add_internal_call("Boom.Native::Boom_API_SetModelOpacity", (const void*)ICALL_API_SetModelOpacity);
 
         // Sprite component internal calls
         mono_add_internal_call("Boom.Native::Boom_API_HasSprite", (const void*)ICALL_API_HasSprite);
