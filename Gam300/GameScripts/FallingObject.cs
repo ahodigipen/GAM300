@@ -23,6 +23,8 @@ namespace GameScripts
         private bool _hasFallen = false;
         private bool _isFalling = false;
         private bool _hasHit = false;
+        private float _fallVelocity = 0f;
+        private Vec3 _stoppedPosition;
 
         // Track previous horizontal distance to player to detect approach (distance decreasing)
         private float _lastHorizontalDistance = float.MaxValue;
@@ -30,6 +32,9 @@ namespace GameScripts
         // Small delay before enabling physics (makes object stable atop a parent)
         private float _enableTimer = 0f;
         private const float ENABLE_DELAY = 0.05f;
+        // Keep initial position locked while armed so dynamic bodies don't fall prematurely
+        private Vec3 _initialPosition;
+        private bool _armed = true;
 
         public void OnStart(string json)
         {
@@ -42,11 +47,23 @@ namespace GameScripts
 
             API.Log($"[FallingObject] OnStart Entity={Entity}, triggerRadius={_triggerRadius}, fallSpeed={_fallSpeed}");
 
-            // Ensure the collider is a trigger so it doesn't fall immediately
+            // Keep the collider as a trigger initially so the dynamic rigidbody does not
+            // immediately fall under gravity. We'll clear the trigger when the object
+            // should start falling.
             if (API.HasCollider(Entity))
             {
                 API.SetTrigger(Entity, true);
-                API.Log("[FallingObject] Collider set to trigger=true on start");
+                API.Log($"[FallingObject] Collider set to trigger=true on start for Entity={Entity}");
+
+                // Ensure the body has no initial velocity
+                Vec3 zero = new Vec3(0f, 0f, 0f);
+                API.SetLinearVelocity(Entity, zero);
+            }
+
+            // Record initial position so we can keep the object locked in place until triggered.
+            if (API.HasTransform(Entity))
+            {
+                _initialPosition = API.GetPosition(Entity);
             }
 
             // Ensure the object is not affected by physics until triggered (engine-specific)
@@ -57,12 +74,34 @@ namespace GameScripts
         {
             API.Log($"[FallingObject] OnUpdate E={Entity} isFalling={_isFalling} hasFallen={_hasFallen} enableTimer={_enableTimer:F3}");
 
-            // If currently falling, handle collision detection
+            // If currently falling, perform kinematic step-by-step teleport to avoid tunneling
             if (_isFalling)
             {
                 if (_hasHit) return;
 
-                // Poll collision state
+                // Use a scripted kinematic fall: increment velocity by gravity and teleport by small steps
+                if (!API.HasTransform(Entity)) return;
+
+                Vec3 pos = API.GetPosition(Entity);
+                float prevY = pos.Y;
+
+                // Initialize fall velocity if needed
+                if (_fallVelocity == 0f)
+                {
+                    _fallVelocity = Math.Abs(_fallSpeed);
+                }
+
+                // Integrate simple gravity
+                _fallVelocity += _gravity * dt;
+                float deltaY = _fallVelocity * dt;
+
+                // Move down by deltaY
+                pos.Y -= deltaY;
+
+                // Teleport actor to new position (updates PhysX actor directly)
+                API.TeleportRigidBody(Entity, pos);
+
+                // Check collision after move
                 if (API.IsColliding(Entity))
                 {
                     _hasHit = true;
@@ -80,17 +119,27 @@ namespace GameScripts
                         // If player is directly underneath (within small radius) and below Y, consider hit
                         if (horiz <= 1.5f && playerPosNow.Y < objPosNow.Y)
                         {
-                            // Kill player
-                            API.Log("[FallingObject] Platform hit player - triggering death");
+                            API.Log("[FallingObject] Platform hit player - triggering death (platform remains)");
                             Entry.TriggerPlayerDeath();
-                            // Destroy platform
-                            API.DestroyEntity(Entity);
+
+                            // Stop motion so the platform stays on the floor
+                            Vec3 stop = new Vec3(0f, 0f, 0f);
+                            API.SetLinearVelocity(Entity, stop);
+                            _isFalling = false;
                             return;
                         }
                     }
 
-                    // Otherwise, break on ground
-                    API.DestroyEntity(Entity);
+                    // Hit ground or anything else - snap back to previous non-penetrating position and stop
+                    API.Log("[FallingObject] Platform collided with environment - stopping and remaining");
+                    Vec3 snap = API.GetPosition(Entity);
+                    snap.Y = prevY; // place on last safe position
+                    API.TeleportRigidBody(Entity, snap);
+                    // Store stopped position to prevent later phasing when players interact
+                    _stoppedPosition = snap;
+                    Vec3 stop2 = new Vec3(0f, 0f, 0f);
+                    API.SetLinearVelocity(Entity, stop2);
+                    _isFalling = false;
                     return;
                 }
 
@@ -104,8 +153,48 @@ namespace GameScripts
                 if (_enableTimer >= 0f)
                 {
                     _isFalling = true;
+                    _armed = false;
                     FallNow();
                 }
+                return;
+            }
+
+            // While armed (not yet triggered to fall), lock the object to its initial position
+            if (_armed && !_isFalling)
+            {
+                // Ensure collider is trigger and zero velocity
+                if (API.HasCollider(Entity) && !API.IsTrigger(Entity))
+                {
+                    API.SetTrigger(Entity, true);
+                }
+                // Zero velocity
+                Vec3 v = API.GetLinearVelocity(Entity);
+                if (v.X != 0f || v.Y != 0f || v.Z != 0f)
+                {
+                    Vec3 zero = new Vec3(0f, 0f, 0f);
+                    API.SetLinearVelocity(Entity, zero);
+                }
+                // Snap back to initial position in case physics moved it
+                if (API.HasTransform(Entity))
+                {
+                    API.SetPosition(Entity, _initialPosition);
+                }
+            }
+
+            // If the platform has already come to rest on the ground, keep it locked to the stopped position
+            if (_hasHit && !_isFalling)
+            {
+                // Ensure collider remains a simulation shape and zero velocity
+                if (API.HasCollider(Entity) && API.IsTrigger(Entity))
+                    API.SetTrigger(Entity, false);
+
+                Vec3 zero = new Vec3(0f, 0f, 0f);
+                API.SetLinearVelocity(Entity, zero);
+                if (API.HasTransform(Entity))
+                {
+                    API.SetPosition(Entity, _stoppedPosition);
+                }
+
                 return;
             }
 
@@ -177,6 +266,9 @@ namespace GameScripts
 
         private void TriggerFall()
         {
+            // If we've already hit the ground or already fell, ignore further triggers
+            if (_hasHit || _hasFallen) return;
+
             _hasFallen = true;
             _isFalling = true;
             FallNow();
@@ -184,16 +276,30 @@ namespace GameScripts
 
         private void FallNow()
         {
-            // Give a downward velocity; if the engine uses gravity, velocity will be integrated.
-            Vec3 vel = API.GetLinearVelocity(Entity);
-            vel.Y = -Math.Abs(_fallSpeed);
-            API.SetLinearVelocity(Entity, vel);
-
-            // Ensure this object collides
-            if (API.HasCollider(Entity))
+            // Ensure this object collides (only toggle if currently a trigger).
+            if (API.HasCollider(Entity) && API.IsTrigger(Entity))
             {
+                API.Log($"[FallingObject] Clearing trigger on Entity={Entity} before falling");
                 API.SetTrigger(Entity, false);
             }
+            // After enabling simulation, teleport the actor to its current transform to
+            // ensure the physics actor is aligned with the visual transform and avoid
+            // initial tunneling when applying a downward velocity.
+            if (API.HasTransform(Entity))
+            {
+                Vec3 pos = API.GetPosition(Entity);
+                // Larger upward nudge to avoid starting embedded in geometry (tunable)
+                pos.Y += 0.05f;
+                // Clear any existing velocity before teleport to avoid momentum carry-over
+                Vec3 zero = new Vec3(0f, 0f, 0f);
+                API.SetLinearVelocity(Entity, zero);
+                API.TeleportRigidBody(Entity, pos);
+            }
+
+            // Let the physics engine apply gravity naturally. We avoid forcing a constant
+            // downward velocity here so PhysX gravity and CCD (enabled engine-side)
+            // can handle the fall and collision properly.
+            API.Log($"[FallingObject] FallNow: letting physics gravity handle fall for Entity={Entity}");
 
             API.PlaySoundAt("falling_obj_" + Entity, "Resources/Audio/rock_fall.wav", API.GetPosition(Entity), false);
             API.SetSoundVolume("falling_obj_" + Entity, 1.0f);
