@@ -91,7 +91,7 @@ int32_t main()
             BOOM_ERROR("Engine window handle is null.");
         }
 
-        // Attach the Editor layer only if ImGui is ready
+        // Attach the Editor layer only if ImGui is ready   
         if (imguiContext)
         {
             // Your Editor layer expects (ImGuiContext*, entt::registry*, Application*)

@@ -135,21 +135,29 @@ namespace Boom {
 
             GLuint vs = compileStage(vtxStr.c_str(), GL_VERTEX_SHADER);
             GLuint fs2 = compileStage(fragStr.c_str(), GL_FRAGMENT_SHADER);
-            m_RenderProgram = glCreateProgram();
-            glAttachShader(m_RenderProgram, vs);
-            glAttachShader(m_RenderProgram, fs2);
-            glLinkProgram(m_RenderProgram);
 
-            GLint ok = 0;
-            glGetProgramiv(m_RenderProgram, GL_LINK_STATUS, &ok);
-            if (!ok) {
-                char log[1024];
-                glGetProgramInfoLog(m_RenderProgram, sizeof(log), nullptr, log);
-                BOOM_ERROR("[ParticleSystem] Render shader link: {}", log);
+            if (vs && fs2) {
+                m_RenderProgram = glCreateProgram();
+                glAttachShader(m_RenderProgram, vs);
+                glAttachShader(m_RenderProgram, fs2);
+                glLinkProgram(m_RenderProgram);
+
+                GLint ok = 0;
+                glGetProgramiv(m_RenderProgram, GL_LINK_STATUS, &ok);
+                if (!ok) {
+                    char log[1024];
+                    glGetProgramInfoLog(m_RenderProgram, sizeof(log), nullptr, log);
+                    BOOM_ERROR("[ParticleSystem] Render shader link: {}", log);
+                    glDeleteProgram(m_RenderProgram);
+                    m_RenderProgram = 0;
+                }
+            } else {
+                BOOM_ERROR("[ParticleSystem] Render shader compilation failed — vs:{} fs:{}", vs, fs2);
+                m_RenderProgram = 0;
             }
 
-            glDeleteShader(vs);
-            glDeleteShader(fs2);
+            if (vs)  glDeleteShader(vs);
+            if (fs2) glDeleteShader(fs2);
         }
 
         // Create quad VAO
@@ -169,7 +177,18 @@ namespace Boom {
         // Cache uniform locations once after linking
         CacheUniformLocations();
 
+        // Check for any GL errors accumulated during init
+        GLenum initErr = glGetError();
+
         BOOM_INFO("[ParticleSystem] GPU compute particle system initialized");
+        BOOM_INFO("[ParticleSystem] Compute program: {}, Render program: {}", m_SimulateProgram, m_RenderProgram);
+        BOOM_INFO("[ParticleSystem] VAO: {}, VBO: {}", m_VAO, m_VBO);
+        BOOM_INFO("[ParticleSystem] Compute uniform uDt: {}, uEmitterPos: {}, uStartColor: {}",
+                  m_ComputeLocs.uDt, m_ComputeLocs.uEmitterPos, m_ComputeLocs.uStartColor);
+        BOOM_INFO("[ParticleSystem] Render uniform uViewProj: {}, uCamRight: {}, uBillboard: {}",
+                  m_RenderLocs.uViewProj, m_RenderLocs.uCamRight, m_RenderLocs.uBillboard);
+        if (initErr != GL_NO_ERROR)
+            BOOM_ERROR("[ParticleSystem] GL error during init: 0x{:X}", initErr);
     }
 
     void ParticleSystem::CacheUniformLocations()
@@ -237,10 +256,10 @@ namespace Boom {
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, gpu.renderSSBO);
         glBufferData(GL_SHADER_STORAGE_BUFFER, renderSize, nullptr, GL_DYNAMIC_COPY);
 
-        // Atomic counter buffer (single uint32)
+        // Counter SSBO: [aliveCount, spawnCount] — 2 uints
         glGenBuffers(1, &gpu.counterBuffer);
-        glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, gpu.counterBuffer);
-        glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint), nullptr, GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, gpu.counterBuffer);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, 2 * sizeof(GLuint), nullptr, GL_DYNAMIC_DRAW);
 
         // Indirect draw buffer
         DrawArraysIndirectCommand cmd{};
@@ -254,7 +273,6 @@ namespace Boom {
         glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(cmd), &cmd, GL_DYNAMIC_DRAW);
 
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-        glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
         glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 
         m_Emitters[key] = gpu;
@@ -312,10 +330,10 @@ namespace Boom {
                 gpu.spawnAccum -= static_cast<float>(spawnCount);
             }
 
-            // Reset atomic counter to 0
-            GLuint zero = 0;
-            glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, gpu.counterBuffer);
-            glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint), &zero);
+            // Reset counters: [aliveCount=0, spawnCount=N]
+            GLuint counters[2] = { 0u, static_cast<GLuint>(spawnCount) };
+            glBindBuffer(GL_SHADER_STORAGE_BUFFER, gpu.counterBuffer);
+            glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, 2 * sizeof(GLuint), counters);
 
             // Reset indirect draw command (count=4 vertices, instanceCount=0)
             DrawArraysIndirectCommand cmd{};
@@ -326,10 +344,10 @@ namespace Boom {
             glBindBuffer(GL_DRAW_INDIRECT_BUFFER, gpu.indirectBuffer);
             glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(cmd), &cmd);
 
-            // Bind SSBOs
+            // Bind all SSBOs (matching shader bindings 0, 1, 2)
             glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, gpu.particleSSBO);  // particle state
             glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, gpu.renderSSBO);    // render output
-            glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 2, gpu.counterBuffer); // alive counter
+            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, gpu.counterBuffer); // counters [alive, spawn]
 
             // Set uniforms (using cached locations — no string lookups per frame)
             glUniform1f(m_ComputeLocs.uDt, dt);
@@ -358,7 +376,7 @@ namespace Boom {
             glDispatchCompute(groups, 1, 1);
 
             // Memory barrier: compute writes must be visible to rendering + buffer copies
-            glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT
+            glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT
                           | GL_BUFFER_UPDATE_BARRIER_BIT | GL_COMMAND_BARRIER_BIT);
 
             // Copy alive count into indirect draw command's instanceCount field
@@ -367,10 +385,23 @@ namespace Boom {
             glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER,
                                 0, sizeof(GLuint), sizeof(GLuint));
             // writeOffset = sizeof(GLuint) = instanceCount field in DrawArraysIndirectCommand
+
+            // === DIAGNOSTIC: read back alive count (remove after debugging) ===
+            if (m_FrameSeed % 60 == 0) {
+                GLuint readBack[2] = {0, 0};
+                glBindBuffer(GL_SHADER_STORAGE_BUFFER, gpu.counterBuffer);
+                glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, 2 * sizeof(GLuint), readBack);
+                BOOM_INFO("[ParticleSystem] Entity {} | alive: {} | spawnLeft: {} | spawnRequested: {}",
+                          key, readBack[0], readBack[1], spawnCount);
+
+                // Also check GL errors
+                GLenum err = glGetError();
+                if (err != GL_NO_ERROR)
+                    BOOM_ERROR("[ParticleSystem] GL error after dispatch: 0x{:X}", err);
+            }
         }
 
         glUseProgram(0);
-        glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
         glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 
         // Clean up emitters for destroyed entities

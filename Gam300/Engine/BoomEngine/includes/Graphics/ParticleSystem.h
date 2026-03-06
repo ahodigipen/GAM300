@@ -87,7 +87,7 @@ namespace Boom {
                                 const glm::mat4& viewMatrix, const glm::mat4& projMatrix)
     {
         if (!m_Initialized) Init();
-        if (m_Emitters.empty()) return;
+        if (!m_RenderProgram || m_Emitters.empty()) return;
 
         // Extract camera right/up from view matrix for billboarding
         glm::vec3 camRight = glm::vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]);

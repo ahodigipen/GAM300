@@ -13,7 +13,10 @@ layout(std430, binding = 1) buffer RenderOutput {
 };
 
 // Alive particle counter (atomic)
-layout(binding = 2, offset = 0) uniform atomic_uint uAliveCounter;
+layout(std430, binding = 2) buffer Counters {
+    uint uAliveCounter;
+    uint uSpawnCounter;
+};
 
 // Emitter parameters
 uniform float uDt;
@@ -40,8 +43,8 @@ uniform uint  uFrameSeed;
 // ─── GPU-friendly hash-based RNG ───────────────────────────────────
 uint rngState;
 
-uint pcgHash(uint input) {
-    uint state = input * 747796405u + 2891336453u;
+uint pcgHash(uint val) {
+    uint state = val * 747796405u + 2891336453u;
     uint word = ((state >> ((state >> 28u) + 4u)) ^ state) * 277803737u;
     return (word >> 22u) ^ word;
 }
@@ -119,8 +122,10 @@ void main() {
 
     // ─── SPAWNING ───────────────────────────────────────────────────
     // If this particle is dead and we still have particles to spawn
-    if (alive < 0.5 && idx < uint(uSpawnCount)) {
-        alive   = 1.0;
+    if (alive < 0.5) {
+        uint prevSpawn = atomicAdd(uSpawnCounter, 0xFFFFFFFFu);
+        if (prevSpawn > 0u && prevSpawn < 0x80000000u) {
+            alive   = 1.0;
         maxLife = randRange(uLifetimeMin, uLifetimeMax);
         life    = maxLife;
         size    = randRange(uStartSizeMin, uStartSizeMax);
@@ -148,6 +153,7 @@ void main() {
 
         float speed = randRange(uSpeedMin, uSpeedMax);
         vel = dir * speed;
+        } // End of spawn branch
     }
 
     // ─── SIMULATION (only for alive particles) ──────────────────────
@@ -172,7 +178,7 @@ void main() {
             vec4 color = mix(uStartColor, uEndColor, t);
 
             // Write to render output (compact)
-            uint renderIdx = atomicCounterIncrement(uAliveCounter);
+            uint renderIdx = atomicAdd(uAliveCounter, 1u);
             uint rBase = renderIdx * 2u;
             renderData[rBase + 0u] = vec4(pos, size);
             renderData[rBase + 1u] = color;
