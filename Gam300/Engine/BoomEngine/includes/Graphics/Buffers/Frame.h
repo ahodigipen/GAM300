@@ -8,7 +8,7 @@ namespace Boom {
 		//formats: leave blank for default
 		// or {GL_R32I, GL_RED_INTEGER} for fbo obj pick
 		BOOM_INLINE FrameBuffer(int32_t w, int32_t h, bool lowRes = false, GLenum internalFormat = GL_RGBA16F, GLenum format = GL_RGBA)
-			: buffId{}, render{}, color{}
+			: buffId{}, depth{}, color{}
 			, width{ w }, height{ h }
 			, isLowPoly{lowRes}
 		{
@@ -18,7 +18,7 @@ namespace Boom {
 
 			CreateColorAttachment(internalFormat, format);
 			CreateBrightnessAttachment();
-			CreateRenderBuffer();
+			CreateDepthAttachment();
 
 			uint32_t attachments[2] {
 				GL_COLOR_ATTACHMENT0,
@@ -36,7 +36,7 @@ namespace Boom {
 		BOOM_INLINE ~FrameBuffer() {
 			glDeleteTextures(1, &color);
 			glDeleteTextures(1, &brightness);
-			glDeleteRenderbuffers(1, &render);
+			glDeleteTextures(1, &depth);
 			glDeleteFramebuffers(1, &buffId);
 		}
 
@@ -46,28 +46,23 @@ namespace Boom {
 		BOOM_INLINE void Resize(int32_t w, int32_t h) {
 			width = w;
 			height = h;
-			const int tw = targetW();	
+			const int tw = targetW();
 			const int th = targetH();
 			//resize color attachment
 			glBindTexture(GL_TEXTURE_2D, color);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, tw, th, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 			glBindTexture(GL_TEXTURE_2D, 0);
 
-			//resize depth attachment
-			glBindRenderbuffer(GL_RENDERBUFFER, render);
-			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, tw, th);
-			glBindRenderbuffer(GL_RENDERBUFFER, 0);
+			//resize depth texture
+			glBindTexture(GL_TEXTURE_2D, depth);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, tw, th, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+			glBindTexture(GL_TEXTURE_2D, 0);
 
 			//resize brightness attachment
 			glBindTexture(GL_TEXTURE_2D, brightness);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, tw, th, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 			glGenerateMipmap(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, 0);
-
-			//resize render buffer
-			glBindRenderbuffer(GL_RENDERBUFFER, render);
-			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, tw, th);
-			glBindRenderbuffer(GL_RENDERBUFFER, 0);
 		}
 		[[nodiscard]] BOOM_INLINE uint32_t GetTexture() const {
 			return color;
@@ -116,6 +111,9 @@ namespace Boom {
 		BOOM_INLINE uint32_t GetBrightnessMap() {
 			return brightness;
 		}
+		BOOM_INLINE uint32_t GetDepthTexture() const {
+			return depth;
+		}
 		BOOM_INLINE int32_t GetWidth() const {
 			return width;
 		}
@@ -138,11 +136,15 @@ namespace Boom {
 			glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, isLowPoly ? 320 : width, isLowPoly ? 240 : height, 0, format, GL_UNSIGNED_BYTE, NULL);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color, 0);
 		}
-		BOOM_INLINE void CreateRenderBuffer() {
-			glGenRenderbuffers(1, &render);
-			glBindRenderbuffer(GL_RENDERBUFFER, render);
-			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, targetW(), targetH());
-			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, render);
+		BOOM_INLINE void CreateDepthAttachment() {
+			glGenTextures(1, &depth);
+			glBindTexture(GL_TEXTURE_2D, depth);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, targetW(), targetH(), 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth, 0);
 		}
 		BOOM_INLINE void CreateBrightnessAttachment() {
 			glGenTextures(1, &brightness);
@@ -162,7 +164,7 @@ namespace Boom {
 	private:
 		uint32_t brightness;
 		uint32_t buffId;
-		uint32_t render;
+		uint32_t depth;
 		uint32_t color;
 		int32_t width;
 		int32_t height;

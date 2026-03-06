@@ -1,107 +1,340 @@
 Version: 1.0
 ENTITIES:
   - InfoComponent:
-      Parent: 15511979552957430112
-      Name: VisionConeFake 1_New
-      UID: 2514697231900950035
+      Parent: 0
+      Name: NewFloatingLantern14
+      UID: 7168294088156961382
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-7.15782738, 2.53051853, -14.2555885]
-        Rotate: [0, 498.1521, 0]
-        Scale: [136.157349, 68.9649124, 68.9648361]
+        Translate: [1.76659966, 26.6705914, 13.4858646]
+        Rotate: [0, -0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ModelComponent:
+      ModelID: 10066815242654953108
+      MaterialID: 4890253158248416297
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.SpotlightFollower
-      ParamsJSON: "{\n  \"targetName\": \"Sentry_1_New\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [1, 0, 0]
-        Intensity: 11.1099997
-        FallOff: -3.27600002
-        CutOff: 0.769999981
+      TypeName: GameScripts.HoverMotion
+      ParamsJSON: "{}"
   - InfoComponent:
       Parent: 0
-      Name: Sentry_1_New
-      UID: 15511979552957430112
+      Name: NewFloatingLantern13
+      UID: 11803336315591054942
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-20.6288185, 13.3683863, 8.13043404]
-        Rotate: [0, 0, 0]
-        Scale: [0.0144997416, 0.0145000005, 0.0144997416]
+        Translate: [-3.65386295, 25.5752773, 11.7307339]
+        Rotate: [0, -0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
-      ModelID: 12373711864448078618
-      MaterialID: 1781146247448718189
+      ModelID: 10066815242654953108
+      MaterialID: 4890253158248416297
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.HoverMotion
+      ParamsJSON: "{}"
+  - InfoComponent:
+      Parent: 0
+      Name: NewFloatingLantern13
+      UID: 7292862371510667293
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-18.0627708, 20.2304993, 15.2779427]
+        Rotate: [0, -0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ModelComponent:
+      ModelID: 10066815242654953108
+      MaterialID: 4890253158248416297
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.HoverMotion
+      ParamsJSON: "{}"
+  - InfoComponent:
+      Parent: 0
+      Name: NewFloatingLantern12
+      UID: 4428427961446596620
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-8.97251892, 20.2303143, 20.7180004]
+        Rotate: [0, -0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ModelComponent:
+      ModelID: 10066815242654953108
+      MaterialID: 4890253158248416297
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.HoverMotion
+      ParamsJSON: "{}"
+  - InfoComponent:
+      Parent: 0
+      Name: NewFloatingLantern11
+      UID: 17375143833325491577
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [5.27946186, 20.2303143, 14.7985392]
+        Rotate: [0, -0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ModelComponent:
+      ModelID: 10066815242654953108
+      MaterialID: 4890253158248416297
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.HoverMotion
+      ParamsJSON: "{}"
+  - InfoComponent:
+      Parent: 0
+      Name: NewFloatingLantern10
+      UID: 15778189393881050452
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [15.7786045, 20.2300968, 19.2140217]
+        Rotate: [0, -0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ModelComponent:
+      ModelID: 10066815242654953108
+      MaterialID: 4890253158248416297
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.HoverMotion
+      ParamsJSON: "{}"
+  - InfoComponent:
+      Parent: 0
+      Name: NewFloatingLantern9
+      UID: 15814822362158207905
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [21.7581711, 20.2301273, 10.8551626]
+        Rotate: [0, -0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ModelComponent:
+      ModelID: 10066815242654953108
+      MaterialID: 4890253158248416297
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.HoverMotion
+      ParamsJSON: "{}"
+  - InfoComponent:
+      Parent: 0
+      Name: NewFloatingLantern8
+      UID: 4778706608006208928
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [18.8259869, 20.2301273, -1.81189764]
+        Rotate: [0, -0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ModelComponent:
+      ModelID: 10066815242654953108
+      MaterialID: 4890253158248416297
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.HoverMotion
+      ParamsJSON: "{}"
+  - InfoComponent:
+      Parent: 0
+      Name: NewFloatingLantern7
+      UID: 14492563525719320610
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [13.4454613, 20.2301273, -10.7921572]
+        Rotate: [0, -0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ModelComponent:
+      ModelID: 10066815242654953108
+      MaterialID: 4890253158248416297
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.HoverMotion
+      ParamsJSON: "{}"
+  - InfoComponent:
+      Parent: 0
+      Name: NewFloatingLantern6
+      UID: 13591427369810285369
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [6.16914749, 20.2301273, -7.53651047]
+        Rotate: [0, -0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ModelComponent:
+      ModelID: 10066815242654953108
+      MaterialID: 4890253158248416297
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.HoverMotion
+      ParamsJSON: "{}"
+  - InfoComponent:
+      Parent: 0
+      Name: NewFloatingLantern5
+      UID: 18244587823340477685
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-19.8696327, 20.2301273, -0.46067363]
+        Rotate: [0, -0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ModelComponent:
+      ModelID: 10066815242654953108
+      MaterialID: 4890253158248416297
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.HoverMotion
+      ParamsJSON: "{}"
+  - InfoComponent:
+      Parent: 0
+      Name: NewFloatingLantern4
+      UID: 8219504209889548439
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-9.17730331, 20.2301273, -0.46067363]
+        Rotate: [0, -0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ModelComponent:
+      ModelID: 10066815242654953108
+      MaterialID: 4890253158248416297
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.HoverMotion
+      ParamsJSON: "{}"
+  - InfoComponent:
+      Parent: 0
+      Name: NewFloatingLantern3
+      UID: 11190355458851935866
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-16.9751892, 20.2301273, -10.2263298]
+        Rotate: [0, -0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ModelComponent:
+      ModelID: 10066815242654953108
+      MaterialID: 4890253158248416297
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.HoverMotion
+      ParamsJSON: "{}"
+  - InfoComponent:
+      Parent: 0
+      Name: NewFloatingLantern2
+      UID: 1593002453451524432
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-6.8604722, 20.2301273, -8.56045818]
+        Rotate: [0, -0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ModelComponent:
+      ModelID: 10066815242654953108
+      MaterialID: 4890253158248416297
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.HoverMotion
+      ParamsJSON: "{}"
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0.0500000007, 0.0199999996, 0.0199999996]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [37.75, 87.2399979, 8]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: Key1_3
+      UID: 5578060098966954555
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [37.1976051, 14.8798227, 24.2018642]
+        Rotate: [-180, -57.9115143, 180]
+        Scale: [0.019999994, 0.0199999977, 0.019999994]
+    ModelComponent:
+      ModelID: 6755252122157173405
+      MaterialID: 8035902505845378175
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
     SoundComponent:
       Entries:
-        - name: _turnSoundPath1
+        - name: _pickupSound
           filePaths:
-            - Resources/Audio/StatueTurn_01.wav
-          loop: false
-          volume: 0.541999996
-          priority: 116
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 17.7000008
-        - name: _turnSoundPath2
-          filePaths:
-            - Resources/Audio/StatueTurn_02.wav
-          loop: false
-          volume: 0.51700002
-          priority: 110
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 19.1000004
-        - name: _turnSoundPath3
-          filePaths:
-            - Resources/Audio/StatueTurn_03.wav
-          loop: false
-          volume: 0.518000007
-          priority: 115
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 17.7000008
-        - name: _alertSoundPath
-          filePaths:
-            - Resources/Audio/VO_Statue_003.wav
+            - Resources/Audio/pickup.wav
           loop: false
           volume: 1
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 0.5
+          spatialBlend: 1
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -113,8 +346,74 @@ ENTITIES:
           maxDistance: 50
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.EnemyController
-      ParamsJSON: "{\n  \"_entityName\": \"Sentry_1_New\",\n  \"_pingPong\": true,\n  \"_rotation\": false,\n  \"_rotationAngle\": 180.0,\n  \"_visionDetectionRange\": 30.0\n}"
+      TypeName: GameScripts.KeyPickup
+      ParamsJSON: "{\n  \"_keyType\": \"Key1_3\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.828431368, 0.536043823, 0]
+        Intensity: 5.88999987
+        FallOff: 4.59600019
+        CutOff: -1.98099995
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0.0500000007, 0.0199999996, 0.0199999996]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [37.75, 87.2399979, 8]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: Key1_2
+      UID: 13932992734097766500
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-22.6951981, 15.2434406, 18.8773727]
+        Rotate: [0, 89.980217, 0]
+        Scale: [0.0199999828, 0.0199999977, 0.0199999958]
+    ModelComponent:
+      ModelID: 6755252122157173405
+      MaterialID: 8035902505845378175
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _pickupSound
+          filePaths:
+            - Resources/Audio/pickup.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.KeyPickup
+      ParamsJSON: "{\n  \"_keyType\": \"Key1_2\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.828431368, 0.536043823, 0]
+        Intensity: 5.88999987
+        FallOff: 4.59600019
+        CutOff: -1.98099995
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -957,6 +1256,7 @@ ENTITIES:
         Radiance: [0.627450943, 0.769896269, 1]
         Intensity: 30
         Range: 30
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Ambient_Light_8
@@ -979,6 +1279,7 @@ ENTITIES:
         Radiance: [0.892156839, 0.871319294, 0.655997634]
         Intensity: 11
         Range: 20
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Ambient_Light_5.2
@@ -1001,6 +1302,7 @@ ENTITIES:
         Radiance: [0.627450943, 0.769896269, 1]
         Intensity: 20
         Range: 62.2700005
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Ambient_Light_6
@@ -1023,6 +1325,7 @@ ENTITIES:
         Radiance: [0.627450943, 0.769896269, 1]
         Intensity: 80
         Range: 50
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Ambient_Light_4
@@ -1045,6 +1348,7 @@ ENTITIES:
         Radiance: [0.627450943, 0.769896269, 1]
         Intensity: 80
         Range: 50
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Ambient_Light_5.1
@@ -1067,6 +1371,7 @@ ENTITIES:
         Radiance: [0.627450943, 0.769896269, 1]
         Intensity: 20
         Range: 50
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Ambient_Light_3
@@ -1089,6 +1394,7 @@ ENTITIES:
         Radiance: [1, 0.991061151, 0.69607842]
         Intensity: 20
         Range: 20
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Ambient_Light_2
@@ -1111,6 +1417,7 @@ ENTITIES:
         Radiance: [0.627450943, 0.769896269, 1]
         Intensity: 30
         Range: 40
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Ambient_Light_1
@@ -1133,6 +1440,7 @@ ENTITIES:
         Radiance: [0.627450943, 0.769896269, 1]
         Intensity: 30
         Range: 40
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: ResPoint2_Light_3
@@ -1155,6 +1463,7 @@ ENTITIES:
         Radiance: [0.305882365, 0.827450991, 0.580392182]
         Intensity: 0.800000012
         Range: 10
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: ResPoint1_Light_3
@@ -1177,6 +1486,7 @@ ENTITIES:
         Radiance: [0.305882365, 0.827450991, 0.580392182]
         Intensity: 2
         Range: 10
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: UI_NoKeyText
@@ -1235,6 +1545,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3 (Copy)
@@ -1257,6 +1568,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3 (Copy)
@@ -1279,6 +1591,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1451,6 +1764,7 @@ ENTITIES:
         Radiance: [0, 0.529411793, 1]
         Intensity: 3.3599999
         Range: 3.61999989
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1513,6 +1827,7 @@ ENTITIES:
         Radiance: [1, 0.701960802, 0.423529416]
         Intensity: 0.349999994
         Range: 5.96999979
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: ResPoint1_Light_1
@@ -1535,6 +1850,7 @@ ENTITIES:
         Radiance: [0.305882365, 0.827450991, 0.580392182]
         Intensity: 2.5
         Range: 5.96999979
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: LightBall_1
@@ -1557,6 +1873,7 @@ ENTITIES:
         Radiance: [1, 0.701960802, 0.423529416]
         Intensity: 0.349999994
         Range: 5.96999979
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Fruit_Tree_Outside_Hut (Copy) (Copy) (Copy)
@@ -1579,6 +1896,7 @@ ENTITIES:
         Radiance: [0.828431368, 0.219290674, 0.219290674]
         Intensity: 333
         Range: 9.60000038
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Floating_Platform (Copy)
@@ -1635,6 +1953,7 @@ ENTITIES:
         Radiance: [0.828431368, 0.219290674, 0.219290674]
         Intensity: 333
         Range: 9.60000038
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Floating_Platform (Copy)
@@ -1674,6 +1993,7 @@ ENTITIES:
         Radiance: [0.828431368, 0.219290674, 0.219290674]
         Intensity: 333
         Range: 9.60000038
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Floating_Platform (Copy)
@@ -1883,7 +2203,7 @@ ENTITIES:
         Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
-      Name: Lion_Statue_Outside_Hut_2 (Copy)
+      Name: Lion_Statue_Outside_Hut_2567
       UID: 6997149042622129542
       SortOrder: 143
     TransformComponent:
@@ -1913,6 +2233,7 @@ ENTITIES:
         Radiance: [0, 0.529411793, 1]
         Intensity: 3.3599999
         Range: 3.61999989
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -2222,6 +2543,7 @@ ENTITIES:
         Radiance: [0.304570347, 0.828431368, 0.581908524]
         Intensity: 2.5
         Range: 5.96999979
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 1.98000002, 0]
@@ -4707,6 +5029,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 18428452598414175165
       Name: Heart_3
@@ -5195,41 +5518,51 @@ ENTITIES:
       ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Patrol enemy 3\",\n  \"_spotlightName\": \"Patrol Vision Cone 10\"\n}"
   - ColliderComponent:
       Collider:
-        LocalPosition: [0.0500000007, 0.0199999996, 0.0199999996]
+        LocalPosition: [0, 1.98000002, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [37.75, 87.2399979, 8]
+        LocalScale: [100, 200, 100]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: true
+        IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: BOX
+        Type: CAPSULE
     InfoComponent:
       Parent: 0
-      Name: Key1_3
-      UID: 5578060098966954555
-      SortOrder: 0
+      Name: Patrol enemy 1
+      UID: 7568830222834310318
+      SortOrder: 158
     TransformComponent:
       Transform:
-        Translate: [37.1976051, 14.8798227, 24.2018642]
-        Rotate: [-180, -57.9115143, 180]
-        Scale: [0.019999994, 0.0199999977, 0.019999994]
+        Translate: [-22.3117981, 13.4210224, 3.95429873]
+        Rotate: [-0, 1.00179122e-05, -0]
+        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+        FreezeRotationX: true
+        FreezeRotationY: true
+        FreezeRotationZ: true
+        Type: DYNAMIC
     ModelComponent:
-      ModelID: 6755252122157173405
-      MaterialID: 8035902505845378175
+      ModelID: 12439106707269888329
+      MaterialID: 14920165367361296626
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
     SoundComponent:
       Entries:
-        - name: _pickupSound
+        - name: _footstepSoundPath
           filePaths:
-            - Resources/Audio/pickup.wav
+            - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 1
+          volume: 0.541999996
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -5242,17 +5575,90 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
+          maxDistance: 21.2000008
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_Alert_020.wav
+          loop: false
+          volume: 0.842999995
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 0.5
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
           maxDistance: 50
+        - name: _gruntSoundPath
+          filePaths:
+            - Resources/Audio/VO_Patrol_001.wav
+          loop: false
+          volume: 0.619000018
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.50999999
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 17.7000008
+    AnimatorComponent:
+      Clips:
+        - name: mixamo.com
+          filePath: ""
+        - name: ROCK_WALKING
+          filePath: Resources/Animations/ROCK_WALKING.anim
+      States:
+        - name: State 0
+          clipIndex: 1
+          speed: 0.330000013
+          loop: false
+          transitions:
+            - targetStateIndex: 0
+              conditionType: 0
+              parameterName: IsWalking
+              floatValue: 0
+              boolValue: false
+              transitionDuration: 0.469999999
+              hasExitTime: false
+              exitTime: 0.899999976
+      FloatParams:
+        Speed: 0
+      BoolParams:
+        ApplyRootMotion: false
+      CurrentStateIndex: 0
+    NavAgentComponent:
+      Target: [-22.3117981, 13.5816135, 3.93043709]
+      Speed: 2.5
+      ArriveRadius: 0.150000006
+      Active: true
+      RepathCooldown: 0.25
+      RetargetDistance: 0.5
+      FollowName: ""
+    AIComponent:
+      Mode: 2
+      PlayerName: ""
+      DetectRadius: 8
+      LoseRadius: 12
+      IdleWait: 2.04999995
+      PatrolPoints:
+        - [-22.3117981, 13.5816135, 3.93043709]
+        - [-22.3117981, 13.5816135, -12.4054985]
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.KeyPickup
-      ParamsJSON: "{\n  \"_keyType\": \"Key1_3\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.828431368, 0.536043823, 0]
-        Intensity: 5.88999987
-        FallOff: 4.59600019
-        CutOff: -1.98099995
+      TypeName: GameScripts.PatrolEnemyController
+      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Patrol enemy 1\",\n  \"_spotlightName\": \"Patrol Vision Cone 1\"\n}"
   - InfoComponent:
       Parent: 0
       Name: Terrain
@@ -5350,15 +5756,15 @@ ENTITIES:
       SortOrder: 74
     TransformComponent:
       Transform:
-        Translate: [-1.87897015, 12.5709419, 23.8264389]
+        Translate: [-2.07471085, 12.5709419, 23.8264389]
         Rotate: [0, -89.980217, 0]
-        Scale: [0.578457892, 0.734000027, 3.5]
+        Scale: [0.578457892, 0.734000027, 3.78951812]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.578457892, 0.734000027, 3.5]
+        Previous Scale: [0.578457892, 0.734000027, 3.78951812]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -5481,7 +5887,7 @@ ENTITIES:
       ParamsJSON: "{\n  \"_entityName\": \"Sentry_level2_2\"\n}"
   - SceneNavmeshComponent:
       NavmeshFile: Resources/NavData/solo_navmesh.bin
-      AmbientStrength: 0.400999993
+      AmbientStrength: 0.0780000016
       BloomEnabled: false
       BloomIntensity: 1.73399997
       BloomThreshold: 0.667999983
@@ -6190,6 +6596,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Pagoda_Lantern
@@ -6212,6 +6619,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Pagoda_Stone_Lamp
@@ -6319,6 +6727,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Path
@@ -6341,6 +6750,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Path
@@ -6363,6 +6773,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Path
@@ -6385,6 +6796,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Path
@@ -6407,6 +6819,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Path
@@ -6429,6 +6842,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Path
@@ -6451,6 +6865,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Hut
@@ -6473,6 +6888,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Hut
@@ -6495,6 +6911,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Hut
@@ -6517,6 +6934,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3_Hut
@@ -6539,6 +6957,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3
@@ -6561,6 +6980,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3
@@ -6583,6 +7003,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -6685,6 +7106,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Lantern_Stairs_To_Level_3
@@ -6707,6 +7129,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Lantern_Stairs_To_Level_3
@@ -6729,6 +7152,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Lantern_Outside_Hut
@@ -6751,6 +7175,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -6813,6 +7238,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -6858,6 +7284,7 @@ ENTITIES:
         Radiance: [0, 0.529411793, 1]
         Intensity: 3.3599999
         Range: 3.61999989
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Pagoda_Roof
@@ -7906,6 +8333,7 @@ ENTITIES:
         Radiance: [0, 0.529411793, 1]
         Intensity: 3.3599999
         Range: 3.61999989
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -7951,6 +8379,7 @@ ENTITIES:
         Radiance: [0, 0.529411793, 1]
         Intensity: 3.3599999
         Range: 3.61999989
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, -0.0299999993, 0]
@@ -8093,6 +8522,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Indoor_Lantern_Right4_Floor_1
@@ -8115,6 +8545,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Indoor_Lantern_Right3_Floor_1
@@ -8137,6 +8568,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Indoor_Lantern_Left2_Floor_1
@@ -8159,6 +8591,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -8204,6 +8637,7 @@ ENTITIES:
         Radiance: [0, 0.529411793, 1]
         Intensity: 3.3599999
         Range: 3.61999989
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Indoor_Lantern_Right2_Floor_1
@@ -8226,6 +8660,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -8271,6 +8706,7 @@ ENTITIES:
         Radiance: [0, 0.529411793, 1]
         Intensity: 3.3599999
         Range: 3.61999989
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -8453,6 +8889,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -8635,6 +9072,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -8857,6 +9295,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -8919,6 +9358,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Interior_Decor_RIght_Of_Hut
@@ -9216,46 +9656,6 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        ShowPhysicsDebug: false
-        PhysicsMesh: 5710357086850101923
-        SurfaceType: DEFAULT
-        Type: CONVEX_MESH
-    InfoComponent:
-      Parent: 0
-      Name: EndTriggerZone
-      UID: 16900605180980820779
-      SortOrder: 333
-    TransformComponent:
-      Transform:
-        Translate: [-7.74946213, 15.7404327, 24.2598057]
-        Rotate: [-89.9555817, 89.944046, 0.0423971936]
-        Scale: [2.15000105, 1.99999988, 1.39998686]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [2.15000105, 1.99999988, 1.39998686]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 4826384296126717694
-      MaterialID: 7210221651131134645
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
   - InfoComponent:
       Parent: 0
       Name: Floating_Platform (Copy)
@@ -9318,6 +9718,7 @@ ENTITIES:
         Radiance: [0, 0.529411793, 1]
         Intensity: 3.3599999
         Range: 3.61999989
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -9443,6 +9844,7 @@ ENTITIES:
         Radiance: [0, 0.529411793, 1]
         Intensity: 3.3599999
         Range: 3.61999989
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -9545,6 +9947,7 @@ ENTITIES:
         Radiance: [1, 0.701960802, 0.423529416]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Outdoor_Hanging_Lamp_Right
@@ -9567,6 +9970,7 @@ ENTITIES:
         Radiance: [1, 0.745098054, 0.423529416]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 1.57000005]
@@ -9732,6 +10136,7 @@ ENTITIES:
         Radiance: [0, 0.529411793, 1]
         Intensity: 3.3599999
         Range: 3.61999989
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -9777,6 +10182,7 @@ ENTITIES:
         Radiance: [0, 0.529411793, 1]
         Intensity: 3.3599999
         Range: 3.61999989
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, -0.0799999982, 0]
@@ -10033,6 +10439,7 @@ ENTITIES:
         Radiance: [1, 0.766809702, 0.412568629]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Indoor_Hanging_Lanturn_Front_Right
@@ -10055,6 +10462,7 @@ ENTITIES:
         Radiance: [1, 0.745809674, 0.423568636]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -10117,6 +10525,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -10236,6 +10645,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 1.51999998]
@@ -10281,6 +10691,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -10343,6 +10754,7 @@ ENTITIES:
         Radiance: [1, 0.745000005, 0.469999999]
         Intensity: 1.60000002
         Range: 4.03000021
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Hanging_Lantern_Outside_Hut_6
@@ -10365,6 +10777,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -10457,8 +10870,8 @@ ENTITIES:
       SortOrder: 190
     TransformComponent:
       Transform:
-        Translate: [-3.14162827, 24.6843452, 7.46901131]
-        Rotate: [157.875, 5849.0625, 180]
+        Translate: [-18.3529053, 25.3171387, 12.8165779]
+        Rotate: [138.3125, 6465.6875, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -10711,6 +11124,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -10773,6 +11187,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -10892,6 +11307,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3
@@ -10914,6 +11330,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3
@@ -10936,6 +11353,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -11830,7 +12248,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.MultiKeyDoor
-      ParamsJSON: "{\n  \"_doorName\": \"NewDoor2\",\n  \"_requiredKeysString\": \"Key1_1,Key1_2,Key1_3\"\n}"
+      ParamsJSON: "{\n  \"_doorName\": \"NewDoor2\",\n  \"_requiredKeysString\": \"Key1_1,Key1_2,Key1_3\",\n  \"_slideDirection\": \"right\"\n}"
   - InfoComponent:
       Parent: 14023949945871365441
       Name: Sentry Vision Cone 4
@@ -12021,6 +12439,7 @@ ENTITIES:
         Radiance: [1, 0.744809687, 0.421568632]
         Intensity: 1.63
         Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -12623,13 +13042,13 @@ ENTITIES:
         Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
-      Name: Lion_Statue_Outside_Hut (Copy)
+      Name: Lion_Statue_Outside_Hut4562
       UID: 4787510248072333538
       SortOrder: 91
     TransformComponent:
       Transform:
         Translate: [4.27914333, 15.292963, 12.3869343]
-        Rotate: [180, 0.0295755975, 180]
+        Rotate: [180, 90, 180]
         Scale: [0.038399335, 0.0383999981, 0.038399335]
     RigidBodyComponent:
       RigidBody:
@@ -12653,6 +13072,7 @@ ENTITIES:
         Radiance: [0, 0.529411793, 1]
         Intensity: 3.3599999
         Range: 3.61999989
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -12861,6 +13281,7 @@ ENTITIES:
         Radiance: [0.305882365, 0.827450991, 0.580392182]
         Intensity: 2.5
         Range: 5.96999979
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: ResPoint2_Light_1
@@ -12883,6 +13304,7 @@ ENTITIES:
         Radiance: [0.305882365, 0.827450991, 0.580392182]
         Intensity: 2.5
         Range: 5.96999979
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -13022,6 +13444,7 @@ ENTITIES:
         Radiance: [0, 0.529411793, 1]
         Intensity: 3.3599999
         Range: 3.61999989
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -13272,13 +13695,13 @@ ENTITIES:
         Type: TRIANGLE_MESH
     InfoComponent:
       Parent: 0
-      Name: Lion_Statue_Outside_Hut_2 (Copy) (Copy)
+      Name: Lion_Statue_Outside_Hut_255
       UID: 6709799836400689563
       SortOrder: 132
     TransformComponent:
       Transform:
         Translate: [-5.3058567, 15.292963, 12.3869343]
-        Rotate: [-5.00895612e-06, -5.00895612e-06, -5.00895612e-06]
+        Rotate: [-5.00895612e-06, 90, -5.00895612e-06]
         Scale: [0.038399227, 0.0383999981, 0.038399227]
     RigidBodyComponent:
       RigidBody:
@@ -13302,6 +13725,7 @@ ENTITIES:
         Radiance: [0, 0.529411793, 1]
         Intensity: 3.3599999
         Range: 3.61999989
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -13322,9 +13746,9 @@ ENTITIES:
       SortOrder: 34
     TransformComponent:
       Transform:
-        Translate: [-0.560535431, 16.0370007, 12.5412703]
+        Translate: [-11.4466286, 16.0368786, 23.8720608]
         Rotate: [0, -0, 0]
-        Scale: [17.4341965, 4.80999994, 3.68204975]
+        Scale: [5.67145348, 4.80999994, 5.25337982]
     SoundComponent:
       Entries:
         - name: _enterSound
@@ -13387,66 +13811,26 @@ ENTITIES:
         Intensity: 6.67000008
         FallOff: -3.0999999
         CutOff: 0.769999981
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0.0500000007, 0.0199999996, 0.0199999996]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [37.75, 87.2399979, 8]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: true
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
+  - InfoComponent:
       Parent: 0
-      Name: Key1_2
-      UID: 13932992734097766500
+      Name: Patrol Vision Cone 1
+      UID: 4196030628338108250
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-22.6951981, 15.2434406, 18.8773727]
-        Rotate: [0, 89.980217, 0]
-        Scale: [0.0199999828, 0.0199999977, 0.0199999958]
-    ModelComponent:
-      ModelID: 6755252122157173405
-      MaterialID: 8035902505845378175
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-    SoundComponent:
-      Entries:
-        - name: _pickupSound
-          filePaths:
-            - Resources/Audio/pickup.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
+        Translate: [-22.7580338, 13.7294426, 4.0333848]
+        Rotate: [0, 180, 0]
+        Scale: [0.999999762, 0.62500006, 0.999999762]
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.KeyPickup
-      ParamsJSON: "{\n  \"_keyType\": \"Key1_2\"\n}"
+      TypeName: GameScripts.PatrolSpotlightFollower
+      ParamsJSON: "{\n  \"positionOffsetY\": 4.14900016784668,\n  \"targetName\": \"Patrol enemy 1\"\n}"
     SpotLightComponent:
       Light:
-        Radiance: [0.828431368, 0.536043823, 0]
-        Intensity: 5.88999987
-        FallOff: 4.59600019
-        CutOff: -1.98099995
+        Radiance: [0.975490212, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -14731,3 +15115,117 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: NewFloatingLantern
+      UID: 1241087770456756922
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-1.9828918, 20.2301273, -13.6384344]
+        Rotate: [0, -0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ModelComponent:
+      ModelID: 10066815242654953108
+      MaterialID: 4890253158248416297
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.HoverMotion
+      ParamsJSON: "{}"
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 4356505632757386652
+        SurfaceType: DEFAULT
+        Type: TRIANGLE_MESH
+    InfoComponent:
+      Parent: 0
+      Name: Lion_Statue_Outside_Hut_255_new
+      UID: 12929368932068412801
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-11.2120228, 15.292963, 23.6982765]
+        Rotate: [-8.19740671e-06, -89.980217, -2.73089654e-06]
+        Scale: [0.0383992232, 0.0383999981, 0.0383992232]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0383992232, 0.0383999981, 0.0383992232]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 6829728261434427183
+      MaterialID: 9170069941051798259
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [0, 0.529411793, 1]
+        Intensity: 3.3599999
+        Range: 3.61999989
+        BloomStrength: 1
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: CrouchTriggerM (Copy) (Copy)
+      UID: 4365684147220480690
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.560535431, 16.0370007, 12.5412703]
+        Rotate: [0, -0, 0]
+        Scale: [17.4341965, 4.80999994, 3.68204975]
+    SoundComponent:
+      Entries:
+        - name: _enterSound
+          filePaths:
+            - Resources/Audio/ambient_warning.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.CrouchTriggerZone
+      ParamsJSON: "{}"

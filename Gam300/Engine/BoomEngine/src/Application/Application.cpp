@@ -789,14 +789,19 @@ namespace Boom
                         // Resolve texture IDs to actual texture pointers
                         m_Context->assets->ResolveMaterialTextures(&material);
 
-                        // Check if material is transparent (has opacity map or opacity < 1.0)
-                        bool isTransparent = (material.data.opacity < 1.0f) || (material.opacityMapID != EMPTY_ASSET);
+                        // Check if material is transparent (has opacity map, opacity < 1.0, or entity opacity override)
+                        float effectiveOpacity = material.data.opacity * comp.opacityOverride;
+                        bool isTransparent = (effectiveOpacity < 1.0f) || (material.opacityMapID != EMPTY_ASSET);
 
                         if (isTransparent) {
                             float dist = glm::length(worldTransform.translate - cameraPos);
 
-                            if (!isAnimated) {
-                                // Static transparent object - try to batch it
+                            // Build overridden material with effective opacity
+                            PbrMaterial overriddenMat = material.data;
+                            overriddenMat.opacity = effectiveOpacity;
+
+                            if (!isAnimated && comp.opacityOverride >= 1.0f) {
+                                // Static transparent object with no override - try to batch it
                                 glm::mat4 finalMatrix = worldMatrix * model.data->modelTransform.Matrix();
                                 if (m_Context->renderer->AddTransparentInstance(comp.modelID, comp.materialID, finalMatrix, dist)) {
                                     // Successfully batched - skip immediate draw
@@ -804,11 +809,11 @@ namespace Boom
                                 }
                             }
 
-                            // Animated transparent object or batching failed - defer for individual rendering
+                            // Animated transparent object, entity has opacity override, or batching failed - defer for individual rendering
                             transparentObjects.push_back({
                                 model.data,
                                 worldTransform,
-                                material.data,
+                                overriddenMat,
                                 currentJoints,
                                 isAnimated,
                                 dist
