@@ -248,6 +248,7 @@
     <ClInclude Include="includes\Graphics\Video\pl_mpeg.h" />
     <ClInclude Include="includes\Graphics\Video\VideoPlayer.h" />
     <ClInclude Include="includes\Graphics\Video\VideoSystem.h" />
+    <ClInclude Include="includes\Graphics\ParticleSystem.h" />
     <ClInclude Include="includes\Input\CameraManager.h" />
     <ClInclude Include="includes\Input\InputHandler.h" />
     <ClInclude Include="includes\Input\RayCast.h" />
@@ -308,6 +309,7 @@
     <ClCompile Include="src\Graphics\Text\FontManager.cpp" />
     <ClCompile Include="src\Graphics\Video\VideoPlayer.cpp" />
     <ClCompile Include="src\Graphics\Video\VideoSystem.cpp" />
+    <ClCompile Include="src\Graphics\ParticleSystem.cpp" />
     <ClCompile Include="src\Models\ModelLoader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>

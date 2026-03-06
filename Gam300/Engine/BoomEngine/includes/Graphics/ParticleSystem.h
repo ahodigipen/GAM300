@@ -12,27 +12,15 @@
 
 namespace Boom {
 
-    // Single particle data (CPU side)
-    struct Particle {
-        glm::vec3 position;
-        glm::vec3 velocity;
-        glm::vec4 color;
-        float     size;
-        float     life;       // remaining life (seconds)
-        float     maxLife;    // initial life (for interpolation)
-        bool      alive = false;
-    };
-
-    // Per-emitter runtime data (not stored in ECS — managed by ParticleSystem)
-    struct EmitterData {
-        std::vector<Particle> pool;
-        int aliveCount = 0;
-    };
-
-    // GPU instance data (packed for SSBO upload)
-    struct ParticleGPU {
-        glm::mat4 modelMatrix;
-        glm::vec4 color;
+    // Per-emitter GPU-side data
+    struct EmitterGPU {
+        GLuint particleSSBO  = 0;   // particle state buffer (position, velocity, life, etc.)
+        GLuint renderSSBO    = 0;   // compacted render output (pos+size+color for alive only)
+        GLuint counterBuffer = 0;   // atomic counter: alive count
+        GLuint indirectBuffer = 0;  // DrawArraysIndirectCommand
+        int    maxParticles  = 0;
+        int    spawnCarry    = 0;   // fractional spawn accumulator (fixed-point)
+        float  spawnAccum    = 0.0f;
     };
 
     class ParticleSystem {
@@ -40,125 +28,123 @@ namespace Boom {
         ParticleSystem();
         ~ParticleSystem();
 
-        // Call once after OpenGL context is ready
         void Init();
 
-        // Call every frame: spawns, simulates, kills particles for all emitters
+        // CPU-side: orchestrate spawning counts, dispatch compute, clean up destroyed emitters
         void Update(float dt, EntityRegistry& registry, const glm::vec3& cameraPos);
 
-        // Call during render: uploads instance data and draws all particles
-        // viewMatrix needed for billboarding
+        // GPU-side: bind render SSBOs, draw instanced billboards
         template<typename AssetRegistryT>
         void Render(EntityRegistry& registry, AssetRegistryT& assets,
                     const glm::mat4& viewMatrix, const glm::mat4& projMatrix);
 
     private:
-        void SpawnParticle(Particle& p, const ParticleEmitterComponent& emitter,
-                           const glm::vec3& emitterWorldPos);
+        void EnsureEmitterGPU(uint32_t key, int maxParticles);
+        void DestroyEmitterGPU(EmitterGPU& e);
 
-        // GPU resources
+        // Compile a single-stage compute program from file
+        GLuint LoadComputeShader(const std::string& filename);
+
+        // GPU programs
+        GLuint m_SimulateProgram = 0;  // compute: simulate + spawn particles
+        GLuint m_RenderProgram   = 0;  // vert+frag: draw billboards
+
+        // Quad VAO for instanced billboard rendering
         GLuint m_VAO = 0;
-        GLuint m_VBO = 0;       // quad vertices
-        GLuint m_SSBO = 0;      // instance data buffer
-        std::unique_ptr<Shader> m_Shader;
+        GLuint m_VBO = 0;
 
-        // Per-emitter pools keyed by entt::entity
-        std::unordered_map<uint32_t, EmitterData> m_Emitters;
+        // Per-emitter GPU data keyed by entt::entity uint32
+        std::unordered_map<uint32_t, EmitterGPU> m_Emitters;
 
-        // Staging buffer for GPU upload
-        std::vector<ParticleGPU> m_GPUBuffer;
+        bool m_Initialized = false;
 
-        // RNG
-        std::mt19937 m_Rng;
+        // RNG seed counter (each emitter gets unique seed per frame)
+        uint32_t m_FrameSeed = 0;
 
-        float RandFloat(float lo, float hi);
-        glm::vec3 RandDirection();
-        glm::vec3 RandInSphere(float radius);
-        glm::vec3 RandInCone(const glm::vec3& dir, float halfAngleDeg);
-        glm::vec3 RandInBox(const glm::vec3& halfExtents);
+        // Cached uniform locations (avoid glGetUniformLocation per-frame)
+        struct ComputeUniforms {
+            GLint uDt = -1, uMaxParticles = -1, uSpawnCount = -1;
+            GLint uEmitterPos = -1, uGravity = -1;
+            GLint uLifetimeMin = -1, uLifetimeMax = -1;
+            GLint uSpeedMin = -1, uSpeedMax = -1;
+            GLint uShapeType = -1, uShapeRadius = -1, uShapeAngle = -1;
+            GLint uShapeSize = -1, uDirection = -1;
+            GLint uStartSizeMin = -1, uStartSizeMax = -1, uEndSize = -1;
+            GLint uStartColor = -1, uEndColor = -1, uFrameSeed = -1;
+        } m_ComputeLocs;
+
+        struct RenderUniforms {
+            GLint uViewProj = -1, uCamRight = -1, uCamUp = -1, uBillboard = -1;
+        } m_RenderLocs;
+
+        void CacheUniformLocations();
     };
 
-    // ──── Template implementation (must be in header) ────────────────────
+    // ──── Render template implementation ────────────────────────────────
 
     template<typename AssetRegistryT>
     void ParticleSystem::Render(EntityRegistry& registry, AssetRegistryT& assets,
                                 const glm::mat4& viewMatrix, const glm::mat4& projMatrix)
     {
-        // Collect all alive particles from all emitters into GPU buffer
-        m_GPUBuffer.clear();
+        if (!m_Initialized) Init();
+        if (m_Emitters.empty()) return;
 
         // Extract camera right/up from view matrix for billboarding
         glm::vec3 camRight = glm::vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]);
         glm::vec3 camUp    = glm::vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]);
+        glm::mat4 viewProj = projMatrix * viewMatrix;
+
+        glUseProgram(m_RenderProgram);
+
+        // Set shared uniforms (using cached locations)
+        glUniformMatrix4fv(m_RenderLocs.uViewProj, 1, GL_FALSE, &viewProj[0][0]);
+        glUniform3fv(m_RenderLocs.uCamRight, 1, &camRight[0]);
+        glUniform3fv(m_RenderLocs.uCamUp, 1, &camUp[0]);
+
+        // GL state for particles
+        glEnable(GL_BLEND);
+        glDepthMask(GL_FALSE);
+        glDisable(GL_CULL_FACE);
+
+        glBindVertexArray(m_VAO);
 
         auto view = registry.view<ParticleEmitterComponent>();
         for (auto entity : view) {
             auto& emitter = view.get<ParticleEmitterComponent>(entity);
+            if (!emitter.isPlaying) continue;
+
             uint32_t key = static_cast<uint32_t>(entity);
             auto it = m_Emitters.find(key);
             if (it == m_Emitters.end()) continue;
 
-            auto& data = it->second;
-            bool additive = emitter.additiveBlend;
+            auto& gpu = it->second;
 
-            for (auto& p : data.pool) {
-                if (!p.alive) continue;
+            // Set blend mode per-emitter
+            if (emitter.additiveBlend)
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+            else
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-                // Build billboard model matrix
-                float s = p.size;
-                glm::mat4 model(1.0f);
+            // Set billboard flag
+            glUniform1i(m_RenderLocs.uBillboard, emitter.billboard ? 1 : 0);
 
-                if (emitter.billboard) {
-                    model[0] = glm::vec4(camRight * s, 0.0f);
-                    model[1] = glm::vec4(camUp * s, 0.0f);
-                    model[2] = glm::vec4(glm::cross(camRight, camUp) * s, 0.0f);
-                    model[3] = glm::vec4(p.position, 1.0f);
-                } else {
-                    model = glm::translate(glm::mat4(1.0f), p.position);
-                    model = glm::scale(model, glm::vec3(s));
-                }
+            // Bind this emitter's render SSBO to binding 0
+            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, gpu.renderSSBO);
 
-                m_GPUBuffer.push_back({ model, p.color });
-            }
+            // Draw with indirect command (alive count written by compute shader)
+            glBindBuffer(GL_DRAW_INDIRECT_BUFFER, gpu.indirectBuffer);
+            glDrawArraysIndirect(GL_TRIANGLE_STRIP, nullptr);
         }
 
-        if (m_GPUBuffer.empty()) return;
-
-        // Upload to SSBO
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_SSBO);
-        size_t bufSize = m_GPUBuffer.size() * sizeof(ParticleGPU);
-        glBufferData(GL_SHADER_STORAGE_BUFFER, bufSize, m_GPUBuffer.data(), GL_DYNAMIC_DRAW);
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, m_SSBO); // binding point 5 to avoid clash
-
-        // Bind shader
-        m_Shader->Use();
-        m_Shader->SetUniform(m_Shader->GetUniformVar("uViewProj"), projMatrix * viewMatrix);
-
-        // Bind default white texture (or particle texture — simplified for now)
-        // TODO: per-emitter texture batching
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, 0); // 0 = use shader default
-
-        m_Shader->SetUniform(m_Shader->GetUniformVar("uTexture"), 0);
-
-        // GL state for particles
-        glEnable(GL_BLEND);
-        glDepthMask(GL_FALSE);  // don't write depth for translucent particles
-        glDisable(GL_CULL_FACE);
-
-        // Draw all particles as instanced quads
-        // We handle additive vs alpha blend per-batch later; for now use alpha
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        glBindVertexArray(m_VAO);
-        glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(m_GPUBuffer.size()));
         glBindVertexArray(0);
+        glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 
         // Restore state
         glDepthMask(GL_TRUE);
         glEnable(GL_CULL_FACE);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        m_Shader->UnUse();
+        glUseProgram(0);
     }
 
 } // namespace Boom

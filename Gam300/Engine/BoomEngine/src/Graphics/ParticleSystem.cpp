@@ -1,11 +1,13 @@
+#include "Core.h"
 #include "Graphics/ParticleSystem.h"
 #include <glm/gtc/constants.hpp>
-#include <cmath>
+#include <fstream>
+#include <sstream>
 
 namespace Boom {
 
-    // ─── Quad vertices (position + UV) for a unit billboard ──────────
-    static const float s_QuadVertices[] = {
+    // ─── Quad vertices for billboard (position + UV) ─────────────────
+    static const float s_QuadVerts[] = {
         // x,    y,    z,    u,    v
         -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
          0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
@@ -13,48 +15,273 @@ namespace Boom {
          0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
     };
 
+    // DrawArraysIndirectCommand struct matching GL spec
+    struct DrawArraysIndirectCommand {
+        GLuint count;         // vertices per instance (4 for quad)
+        GLuint instanceCount; // number of instances (alive particles)
+        GLuint first;         // first vertex (0)
+        GLuint baseInstance;  // base instance (0)
+    };
+
     ParticleSystem::ParticleSystem()
-        : m_Rng(std::random_device{}())
+        : m_FrameSeed(0)
     {
     }
 
     ParticleSystem::~ParticleSystem()
     {
-        if (m_VAO)  glDeleteVertexArrays(1, &m_VAO);
-        if (m_VBO)  glDeleteBuffers(1, &m_VBO);
-        if (m_SSBO) glDeleteBuffers(1, &m_SSBO);
+        for (auto& [key, gpu] : m_Emitters)
+            DestroyEmitterGPU(gpu);
+
+        if (m_VAO) glDeleteVertexArrays(1, &m_VAO);
+        if (m_VBO) glDeleteBuffers(1, &m_VBO);
+        if (m_SimulateProgram) glDeleteProgram(m_SimulateProgram);
+        if (m_RenderProgram)   glDeleteProgram(m_RenderProgram);
+    }
+
+    GLuint ParticleSystem::LoadComputeShader(const std::string& filename)
+    {
+        std::string path = std::string(CONSTANTS::SHADERS_LOCATION) + filename;
+        std::ifstream file(path);
+        if (!file.is_open()) {
+            BOOM_ERROR("[ParticleSystem] Failed to open compute shader: {}", path);
+            return 0;
+        }
+
+        std::stringstream ss;
+        ss << file.rdbuf();
+        std::string src = ss.str();
+        const char* srcPtr = src.c_str();
+
+        GLuint shader = glCreateShader(GL_COMPUTE_SHADER);
+        glShaderSource(shader, 1, &srcPtr, nullptr);
+        glCompileShader(shader);
+
+        GLint status = 0;
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+        if (!status) {
+            char log[1024];
+            glGetShaderInfoLog(shader, sizeof(log), nullptr, log);
+            BOOM_ERROR("[ParticleSystem] Compute shader compile error ({}): {}", filename, log);
+            glDeleteShader(shader);
+            return 0;
+        }
+
+        GLuint program = glCreateProgram();
+        glAttachShader(program, shader);
+        glLinkProgram(program);
+
+        glGetProgramiv(program, GL_LINK_STATUS, &status);
+        if (!status) {
+            char log[1024];
+            glGetProgramInfoLog(program, sizeof(log), nullptr, log);
+            BOOM_ERROR("[ParticleSystem] Compute shader link error ({}): {}", filename, log);
+            glDeleteProgram(program);
+            glDeleteShader(shader);
+            return 0;
+        }
+
+        glDeleteShader(shader);
+        return program;
     }
 
     void ParticleSystem::Init()
     {
-        // Create shader
-        m_Shader = std::make_unique<Shader>("particle.glsl");
+        if (m_Initialized) return;
+        m_Initialized = true;
+
+        // Load compute shader
+        m_SimulateProgram = LoadComputeShader("particle_compute.glsl");
+
+        // Load render shader (vert+frag) using the engine's Shader class pattern
+        {
+            std::string path = std::string(CONSTANTS::SHADERS_LOCATION) + "particle_render.glsl";
+            std::ifstream fs(path);
+            if (!fs.is_open()) {
+                BOOM_ERROR("[ParticleSystem] Failed to open render shader: {}", path);
+                return;
+            }
+
+            std::string line, vtxStr, fragStr;
+            bool isVtx = true;
+            while (std::getline(fs, line)) {
+                if (isVtx) {
+                    if (line.compare("==VERTEX==")) {
+                        vtxStr += line + '\n';
+                    } else {
+                        isVtx = false;
+                    }
+                } else {
+                    if (!line.compare("==FRAGMENT==")) break;
+                    fragStr += line + '\n';
+                }
+            }
+
+            auto compileStage = [](const char* src, GLenum type) -> GLuint {
+                GLuint id = glCreateShader(type);
+                glShaderSource(id, 1, &src, nullptr);
+                glCompileShader(id);
+                GLint ok = 0;
+                glGetShaderiv(id, GL_COMPILE_STATUS, &ok);
+                if (!ok) {
+                    char log[1024];
+                    glGetShaderInfoLog(id, sizeof(log), nullptr, log);
+                    BOOM_ERROR("[ParticleSystem] Render shader compile: {}", log);
+                    glDeleteShader(id);
+                    return 0;
+                }
+                return id;
+            };
+
+            GLuint vs = compileStage(vtxStr.c_str(), GL_VERTEX_SHADER);
+            GLuint fs2 = compileStage(fragStr.c_str(), GL_FRAGMENT_SHADER);
+            m_RenderProgram = glCreateProgram();
+            glAttachShader(m_RenderProgram, vs);
+            glAttachShader(m_RenderProgram, fs2);
+            glLinkProgram(m_RenderProgram);
+
+            GLint ok = 0;
+            glGetProgramiv(m_RenderProgram, GL_LINK_STATUS, &ok);
+            if (!ok) {
+                char log[1024];
+                glGetProgramInfoLog(m_RenderProgram, sizeof(log), nullptr, log);
+                BOOM_ERROR("[ParticleSystem] Render shader link: {}", log);
+            }
+
+            glDeleteShader(vs);
+            glDeleteShader(fs2);
+        }
 
         // Create quad VAO
         glGenVertexArrays(1, &m_VAO);
         glGenBuffers(1, &m_VBO);
-
         glBindVertexArray(m_VAO);
         glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(s_QuadVertices), s_QuadVertices, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(s_QuadVerts), s_QuadVerts, GL_STATIC_DRAW);
 
-        // position (location 0)
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-
-        // uv (location 1)
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 
         glBindVertexArray(0);
 
-        // Create SSBO for instance data
-        glGenBuffers(1, &m_SSBO);
+        // Cache uniform locations once after linking
+        CacheUniformLocations();
+
+        BOOM_INFO("[ParticleSystem] GPU compute particle system initialized");
+    }
+
+    void ParticleSystem::CacheUniformLocations()
+    {
+        if (m_SimulateProgram) {
+            m_ComputeLocs.uDt           = glGetUniformLocation(m_SimulateProgram, "uDt");
+            m_ComputeLocs.uMaxParticles = glGetUniformLocation(m_SimulateProgram, "uMaxParticles");
+            m_ComputeLocs.uSpawnCount   = glGetUniformLocation(m_SimulateProgram, "uSpawnCount");
+            m_ComputeLocs.uEmitterPos   = glGetUniformLocation(m_SimulateProgram, "uEmitterPos");
+            m_ComputeLocs.uGravity      = glGetUniformLocation(m_SimulateProgram, "uGravity");
+            m_ComputeLocs.uLifetimeMin  = glGetUniformLocation(m_SimulateProgram, "uLifetimeMin");
+            m_ComputeLocs.uLifetimeMax  = glGetUniformLocation(m_SimulateProgram, "uLifetimeMax");
+            m_ComputeLocs.uSpeedMin     = glGetUniformLocation(m_SimulateProgram, "uSpeedMin");
+            m_ComputeLocs.uSpeedMax     = glGetUniformLocation(m_SimulateProgram, "uSpeedMax");
+            m_ComputeLocs.uShapeType    = glGetUniformLocation(m_SimulateProgram, "uShapeType");
+            m_ComputeLocs.uShapeRadius  = glGetUniformLocation(m_SimulateProgram, "uShapeRadius");
+            m_ComputeLocs.uShapeAngle   = glGetUniformLocation(m_SimulateProgram, "uShapeAngle");
+            m_ComputeLocs.uShapeSize    = glGetUniformLocation(m_SimulateProgram, "uShapeSize");
+            m_ComputeLocs.uDirection    = glGetUniformLocation(m_SimulateProgram, "uDirection");
+            m_ComputeLocs.uStartSizeMin = glGetUniformLocation(m_SimulateProgram, "uStartSizeMin");
+            m_ComputeLocs.uStartSizeMax = glGetUniformLocation(m_SimulateProgram, "uStartSizeMax");
+            m_ComputeLocs.uEndSize      = glGetUniformLocation(m_SimulateProgram, "uEndSize");
+            m_ComputeLocs.uStartColor   = glGetUniformLocation(m_SimulateProgram, "uStartColor");
+            m_ComputeLocs.uEndColor     = glGetUniformLocation(m_SimulateProgram, "uEndColor");
+            m_ComputeLocs.uFrameSeed    = glGetUniformLocation(m_SimulateProgram, "uFrameSeed");
+        }
+
+        if (m_RenderProgram) {
+            m_RenderLocs.uViewProj  = glGetUniformLocation(m_RenderProgram, "uViewProj");
+            m_RenderLocs.uCamRight  = glGetUniformLocation(m_RenderProgram, "uCamRight");
+            m_RenderLocs.uCamUp     = glGetUniformLocation(m_RenderProgram, "uCamUp");
+            m_RenderLocs.uBillboard = glGetUniformLocation(m_RenderProgram, "uBillboard");
+        }
+    }
+
+    void ParticleSystem::EnsureEmitterGPU(uint32_t key, int maxParticles)
+    {
+        auto it = m_Emitters.find(key);
+        if (it != m_Emitters.end() && it->second.maxParticles == maxParticles) return;
+
+        // Destroy old if size changed
+        if (it != m_Emitters.end()) {
+            DestroyEmitterGPU(it->second);
+            m_Emitters.erase(it);
+        }
+
+        EmitterGPU gpu{};
+        gpu.maxParticles = maxParticles;
+
+        // Particle state SSBO: each particle = 12 floats
+        // [posX, posY, posZ, life, velX, velY, velZ, maxLife, size, alive, seedX, seedY]
+        size_t particleSize = 12 * sizeof(float);
+        size_t bufSize = particleSize * maxParticles;
+
+        glGenBuffers(1, &gpu.particleSSBO);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, gpu.particleSSBO);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, bufSize, nullptr, GL_DYNAMIC_COPY);
+        // Zero-initialize (all particles dead — alive=0)
+        std::vector<float> zeros(12 * maxParticles, 0.0f);
+        glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, bufSize, zeros.data());
+
+        // Render output SSBO: each alive particle = 8 floats [posX, posY, posZ, size, r, g, b, a]
+        size_t renderSize = 8 * sizeof(float) * maxParticles;
+        glGenBuffers(1, &gpu.renderSSBO);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, gpu.renderSSBO);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, renderSize, nullptr, GL_DYNAMIC_COPY);
+
+        // Atomic counter buffer (single uint32)
+        glGenBuffers(1, &gpu.counterBuffer);
+        glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, gpu.counterBuffer);
+        glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint), nullptr, GL_DYNAMIC_DRAW);
+
+        // Indirect draw buffer
+        DrawArraysIndirectCommand cmd{};
+        cmd.count = 4;          // quad vertices
+        cmd.instanceCount = 0;  // filled by compute
+        cmd.first = 0;
+        cmd.baseInstance = 0;
+
+        glGenBuffers(1, &gpu.indirectBuffer);
+        glBindBuffer(GL_DRAW_INDIRECT_BUFFER, gpu.indirectBuffer);
+        glBufferData(GL_DRAW_INDIRECT_BUFFER, sizeof(cmd), &cmd, GL_DYNAMIC_DRAW);
+
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+        glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+        glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
+
+        m_Emitters[key] = gpu;
+    }
+
+    void ParticleSystem::DestroyEmitterGPU(EmitterGPU& e)
+    {
+        if (e.particleSSBO)  glDeleteBuffers(1, &e.particleSSBO);
+        if (e.renderSSBO)    glDeleteBuffers(1, &e.renderSSBO);
+        if (e.counterBuffer) glDeleteBuffers(1, &e.counterBuffer);
+        if (e.indirectBuffer) glDeleteBuffers(1, &e.indirectBuffer);
+        e = {};
     }
 
     void ParticleSystem::Update(float dt, EntityRegistry& registry, const glm::vec3& cameraPos)
     {
+        if (!m_Initialized) Init();
+        if (!m_SimulateProgram) return;
+
+        m_FrameSeed++;
+
         auto view = registry.view<ParticleEmitterComponent, TransformComponent>();
+
+        // Early-out: no emitters with transforms — skip all GL calls
+        if (view.size_hint() == 0) return;
+
+        glUseProgram(m_SimulateProgram);
         for (auto entity : view) {
             auto& emitter = view.get<ParticleEmitterComponent>(entity);
             auto& tc      = view.get<TransformComponent>(entity);
@@ -69,179 +296,93 @@ namespace Boom {
 
             if (!emitter.isPlaying) continue;
 
-            // Get or create emitter data
-            auto& data = m_Emitters[key];
-            if (static_cast<int>(data.pool.size()) != emitter.maxParticles) {
-                data.pool.resize(emitter.maxParticles);
-                for (auto& p : data.pool) p.alive = false;
-                data.aliveCount = 0;
-            }
+            // Ensure GPU buffers exist
+            EnsureEmitterGPU(key, emitter.maxParticles);
+            auto& gpu = m_Emitters[key];
 
             // Emitter world position
             glm::vec3 worldPos = tc.transform.translate;
 
-            // Update emitter timer
+            // Calculate spawn count on CPU (cheap)
+            int spawnCount = 0;
             emitter.emitterTimer += dt;
-            if (!emitter.looping && emitter.emitterTimer >= emitter.duration) {
-                // Stop spawning but let existing particles die
-            } else {
-                // Spawn particles
-                emitter.spawnAccum += emitter.emissionRate * dt;
-                int toSpawn = static_cast<int>(emitter.spawnAccum);
-                emitter.spawnAccum -= static_cast<float>(toSpawn);
-
-                for (int s = 0; s < toSpawn; ++s) {
-                    // Find dead particle
-                    for (auto& p : data.pool) {
-                        if (!p.alive) {
-                            SpawnParticle(p, emitter, worldPos);
-                            data.aliveCount++;
-                            break;
-                        }
-                    }
-                }
+            if (emitter.looping || emitter.emitterTimer < emitter.duration) {
+                gpu.spawnAccum += emitter.emissionRate * dt;
+                spawnCount = static_cast<int>(gpu.spawnAccum);
+                gpu.spawnAccum -= static_cast<float>(spawnCount);
             }
 
-            // Simulate alive particles
-            data.aliveCount = 0;
-            for (auto& p : data.pool) {
-                if (!p.alive) continue;
+            // Reset atomic counter to 0
+            GLuint zero = 0;
+            glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, gpu.counterBuffer);
+            glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint), &zero);
 
-                p.life -= dt;
-                if (p.life <= 0.0f) {
-                    p.alive = false;
-                    continue;
-                }
+            // Reset indirect draw command (count=4 vertices, instanceCount=0)
+            DrawArraysIndirectCommand cmd{};
+            cmd.count = 4;
+            cmd.instanceCount = 0;
+            cmd.first = 0;
+            cmd.baseInstance = 0;
+            glBindBuffer(GL_DRAW_INDIRECT_BUFFER, gpu.indirectBuffer);
+            glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, sizeof(cmd), &cmd);
 
-                // Physics
-                p.velocity.y += emitter.gravity * dt;
-                p.position += p.velocity * dt;
+            // Bind SSBOs
+            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, gpu.particleSSBO);  // particle state
+            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, gpu.renderSSBO);    // render output
+            glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 2, gpu.counterBuffer); // alive counter
 
-                // Interpolation factor (0 = just born, 1 = about to die)
-                float t = 1.0f - (p.life / p.maxLife);
+            // Set uniforms (using cached locations — no string lookups per frame)
+            glUniform1f(m_ComputeLocs.uDt, dt);
+            glUniform1i(m_ComputeLocs.uMaxParticles, emitter.maxParticles);
+            glUniform1i(m_ComputeLocs.uSpawnCount, spawnCount);
+            glUniform3fv(m_ComputeLocs.uEmitterPos, 1, &worldPos[0]);
+            glUniform1f(m_ComputeLocs.uGravity, emitter.gravity);
+            glUniform1f(m_ComputeLocs.uLifetimeMin, emitter.lifetimeMin);
+            glUniform1f(m_ComputeLocs.uLifetimeMax, emitter.lifetimeMax);
+            glUniform1f(m_ComputeLocs.uSpeedMin, emitter.speedMin);
+            glUniform1f(m_ComputeLocs.uSpeedMax, emitter.speedMax);
+            glUniform1i(m_ComputeLocs.uShapeType, emitter.shapeType);
+            glUniform1f(m_ComputeLocs.uShapeRadius, emitter.shapeRadius);
+            glUniform1f(m_ComputeLocs.uShapeAngle, emitter.shapeAngle);
+            glUniform3fv(m_ComputeLocs.uShapeSize, 1, &emitter.shapeSize[0]);
+            glUniform3fv(m_ComputeLocs.uDirection, 1, &emitter.direction[0]);
+            glUniform1f(m_ComputeLocs.uStartSizeMin, emitter.startSizeMin);
+            glUniform1f(m_ComputeLocs.uStartSizeMax, emitter.startSizeMax);
+            glUniform1f(m_ComputeLocs.uEndSize, emitter.endSize);
+            glUniform4fv(m_ComputeLocs.uStartColor, 1, &emitter.startColor[0]);
+            glUniform4fv(m_ComputeLocs.uEndColor, 1, &emitter.endColor[0]);
+            glUniform1ui(m_ComputeLocs.uFrameSeed, m_FrameSeed * 1000 + key);
 
-                // Size over lifetime
-                float startSize = (emitter.startSizeMin + emitter.startSizeMax) * 0.5f;
-                p.size = startSize + (emitter.endSize - startSize) * t;
+            // Dispatch: one thread per particle slot
+            GLuint groups = (emitter.maxParticles + 255) / 256;
+            glDispatchCompute(groups, 1, 1);
 
-                // Color over lifetime
-                p.color = emitter.startColor * (1.0f - t) + emitter.endColor * t;
+            // Memory barrier: compute writes must be visible to rendering + buffer copies
+            glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT
+                          | GL_BUFFER_UPDATE_BARRIER_BIT | GL_COMMAND_BARRIER_BIT);
 
-                data.aliveCount++;
-            }
+            // Copy alive count into indirect draw command's instanceCount field
+            glBindBuffer(GL_COPY_READ_BUFFER, gpu.counterBuffer);
+            glBindBuffer(GL_COPY_WRITE_BUFFER, gpu.indirectBuffer);
+            glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER,
+                                0, sizeof(GLuint), sizeof(GLuint));
+            // writeOffset = sizeof(GLuint) = instanceCount field in DrawArraysIndirectCommand
         }
+
+        glUseProgram(0);
+        glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+        glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 
         // Clean up emitters for destroyed entities
         for (auto it = m_Emitters.begin(); it != m_Emitters.end(); ) {
             entt::entity e = static_cast<entt::entity>(it->first);
             if (!registry.valid(e) || !registry.all_of<ParticleEmitterComponent>(e)) {
+                DestroyEmitterGPU(it->second);
                 it = m_Emitters.erase(it);
             } else {
                 ++it;
             }
         }
-    }
-
-    void ParticleSystem::SpawnParticle(Particle& p, const ParticleEmitterComponent& emitter,
-                                        const glm::vec3& emitterWorldPos)
-    {
-        p.alive = true;
-        p.maxLife = RandFloat(emitter.lifetimeMin, emitter.lifetimeMax);
-        p.life = p.maxLife;
-        p.size = RandFloat(emitter.startSizeMin, emitter.startSizeMax);
-        p.color = emitter.startColor;
-
-        // Spawn position based on shape
-        switch (emitter.shapeType) {
-        case 1: // sphere
-            p.position = emitterWorldPos + RandInSphere(emitter.shapeRadius);
-            break;
-        case 2: // cone
-            p.position = emitterWorldPos;
-            break;
-        case 3: // box
-            p.position = emitterWorldPos + RandInBox(emitter.shapeSize);
-            break;
-        default: // point
-            p.position = emitterWorldPos;
-            break;
-        }
-
-        // Velocity direction based on shape
-        glm::vec3 dir;
-        switch (emitter.shapeType) {
-        case 1: { // sphere — outward from center
-            glm::vec3 offset = p.position - emitterWorldPos;
-            float len = glm::length(offset);
-            dir = (len > 0.001f) ? offset / len : RandDirection();
-            break;
-        }
-        case 2: // cone
-            dir = RandInCone(emitter.direction, emitter.shapeAngle);
-            break;
-        default:
-            dir = RandInCone(emitter.direction, 15.0f); // slight spread for point
-            break;
-        }
-
-        float speed = RandFloat(emitter.speedMin, emitter.speedMax);
-        p.velocity = dir * speed;
-    }
-
-    // ─── RNG helpers ─────────────────────────────────────────────────
-
-    float ParticleSystem::RandFloat(float lo, float hi)
-    {
-        std::uniform_real_distribution<float> dist(lo, hi);
-        return dist(m_Rng);
-    }
-
-    glm::vec3 ParticleSystem::RandDirection()
-    {
-        float theta = RandFloat(0.0f, glm::two_pi<float>());
-        float phi   = std::acos(RandFloat(-1.0f, 1.0f));
-        return {
-            std::sin(phi) * std::cos(theta),
-            std::sin(phi) * std::sin(theta),
-            std::cos(phi)
-        };
-    }
-
-    glm::vec3 ParticleSystem::RandInSphere(float radius)
-    {
-        float r = radius * std::cbrt(RandFloat(0.0f, 1.0f));
-        return RandDirection() * r;
-    }
-
-    glm::vec3 ParticleSystem::RandInCone(const glm::vec3& dir, float halfAngleDeg)
-    {
-        float halfAngleRad = glm::radians(halfAngleDeg);
-        float cosAngle = std::cos(halfAngleRad);
-        float z = RandFloat(cosAngle, 1.0f);
-        float phi = RandFloat(0.0f, glm::two_pi<float>());
-        float sinTheta = std::sqrt(1.0f - z * z);
-
-        glm::vec3 localDir(sinTheta * std::cos(phi), sinTheta * std::sin(phi), z);
-
-        // Build rotation from (0,0,1) to dir
-        glm::vec3 d = glm::normalize(dir);
-        glm::vec3 up(0, 0, 1);
-        if (std::abs(glm::dot(d, up)) > 0.999f) {
-            up = glm::vec3(1, 0, 0);
-        }
-        glm::vec3 right = glm::normalize(glm::cross(d, up));
-        glm::vec3 newUp = glm::cross(right, d);
-
-        return right * localDir.x + newUp * localDir.y + d * localDir.z;
-    }
-
-    glm::vec3 ParticleSystem::RandInBox(const glm::vec3& halfExtents)
-    {
-        return {
-            RandFloat(-halfExtents.x, halfExtents.x),
-            RandFloat(-halfExtents.y, halfExtents.y),
-            RandFloat(-halfExtents.z, halfExtents.z)
-        };
     }
 
 } // namespace Boom

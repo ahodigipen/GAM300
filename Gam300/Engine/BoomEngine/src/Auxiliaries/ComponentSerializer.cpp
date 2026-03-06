@@ -847,6 +847,9 @@ namespace Boom
             }
         );
 
+        // === PARTICLE EMITTER COMPONENT ===
+        RegisterPropertyComponent<ParticleEmitterComponent>("ParticleEmitterComponent");
+
         BOOM_INFO("[ComponentSerializers] All component serializers registered");
        
     }

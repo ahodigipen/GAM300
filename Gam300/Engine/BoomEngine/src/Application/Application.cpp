@@ -234,6 +234,11 @@ namespace Boom
 
         m_DebugLinesShader = std::make_unique<Boom::DebugLinesShader>("debug_lines.glsl");
 
+        // Initialize particle system GPU resources
+        if (m_Context->particleSystem) {
+            m_Context->particleSystem->Init();
+        }
+
         std::cout << "[RunContext] Debug lines shader created, enabling physics debug..." << std::endl;
         std::cout.flush();
 
@@ -335,9 +340,16 @@ namespace Boom
                 if (m_Context->videoSystem) {
                     m_Context->videoSystem->Update(m_Context->scene, m_Context->DeltaTime);
                 }
+
             }
 
             SoundEngine::Instance().Update();
+
+            // Particle System Update (always runs - allows editor preview)
+            if (m_Context->particleSystem) {
+                glm::vec3 camPos = m_Context->renderer->GetCameraPosition();
+                m_Context->particleSystem->Update(static_cast<float>(m_Context->DeltaTime), m_Context->scene, camPos);
+            }
 
             // Update 3D audio listener to follow the third-person camera
             EnttView<Entity, ThirdPersonCameraComponent, TransformComponent>([this](auto /*entity*/, ThirdPersonCameraComponent& /*tpCam*/, TransformComponent& transform) {
@@ -973,6 +985,24 @@ namespace Boom
                 glDisable(GL_CULL_FACE);
             }
             glDepthMask(GL_TRUE);
+
+            // === PARTICLE RENDERING PASS ===
+            if (m_Context->particleSystem) {
+                Camera3D* particleCam = nullptr;
+                Transform3D particleCamT{};
+                EnttView<Entity, CameraComponent>([&](auto entity, CameraComponent& comp) {
+                    if (!particleCam) {
+                        particleCamT = entity.template Get<TransformComponent>().transform;
+                        particleCam = &comp.camera;
+                    }
+                });
+                if (particleCam) {
+                    float aspect = m_Context->renderer->Aspect();
+                    glm::mat4 viewMat = particleCam->View(particleCamT);
+                    glm::mat4 projMat = particleCam->Projection(aspect);
+                    m_Context->particleSystem->Render(m_Context->scene, *m_Context->assets, viewMat, projMat);
+                }
+            }
         }
 
         //sort guiList based on z-axis from negative to positive(opengl z-axis towards camera)
