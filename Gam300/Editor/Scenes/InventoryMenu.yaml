@@ -2,92 +2,50 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
-      Name: Scene Settings
-      UID: 1048584
-      SortOrder: 0
-    SceneNavmeshComponent:
-      NavmeshFile: ""
-      AmbientStrength: 0.5
-      BloomEnabled: false
-      BloomIntensity: 1
-      BloomThreshold: 1
-      BloomIterations: 10
-      PointLightBloomMultiplier: 1
-      FogEnabled: false
-      FogColor: [0.5, 0.600000024, 0.699999988]
-      FogDensity: 0.00999999978
-      FogHeightFalloff: 0.5
-      FogHeight: 0
-  - InfoComponent:
-      Parent: 0
-      Name: Inventory_SmallDoorKey
-      UID: 13182539916817199809
+      Name: Inventory_FreezeIcon
+      UID: 4147139391751340254
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, 0, 2.0999999]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    TextComponent:
-      text: 0
-      fontName: Roboto-Regular
-      color: [1, 1, 1, 0]
-      scale: 1
-      screenPosition: [1435, 735]
-      renderAs3D: false
-      billboardMode: true
-    MenuComponent:
-      MenuType: 6
-  - InfoComponent:
-      Parent: 0
-      Name: Inventory_Script
-      UID: 9991983927043961746
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.InventoryMenu
-      ParamsJSON: "{}"
-    MenuComponent:
-      MenuType: 6
-  - InfoComponent:
-      Parent: 0
-      Name: Inventory_BG
-      UID: 1920285388016120200
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.600000024, 0.5, 2]
-        Rotate: [0, 0, 0]
-        Scale: [0.5, 0.5, 1]
+        Translate: [0.449999988, 0.25, 2.0999999]
+        Rotate: [0, -0, 0]
+        Scale: [0.0599999987, 0.0599999987, 1]
     SpriteComponent:
-      textureID: 13415878511549165281
-      color: [0.434959352, 0.434959352, 0.434959352, 0]
+      textureID: 3615061789617660208
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+  - InfoComponent:
+      Parent: 0
+      Name: Inventory_SmallDoorIcon
+      UID: 2360031116440682998
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.449999988, 0.649999976, 2.0999999]
+        Rotate: [0, -0, 0]
+        Scale: [0.0599999987, 0.0599999987, 1]
+    SpriteComponent:
+      textureID: 327234960441928512
+      color: [0, 0.854901969, 1, 1]
       renderAs3D: false
     MenuComponent:
       MenuType: 6
   - InfoComponent:
       Parent: 0
-      Name: Inventory_MainDoorKey
-      UID: 16253247769133231383
+      Name: Inventory_MainDoorIcon
+      UID: 16724695954102488179
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, 0, 2.0999999]
+        Translate: [0.449999988, 0.449999988, 2.0999999]
         Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    TextComponent:
-      text: 0
-      fontName: Roboto-Regular
-      color: [1, 1, 1, 0]
-      scale: 1
-      screenPosition: [1435, 640]
+        Scale: [0.0599999987, 0.0599999987, 1]
+    SpriteComponent:
+      textureID: 327234960441928512
+      color: [1, 1, 0, 1]
       renderAs3D: false
-      billboardMode: true
     MenuComponent:
       MenuType: 6
   - InfoComponent:
@@ -109,52 +67,76 @@ ENTITIES:
       MenuType: 6
   - InfoComponent:
       Parent: 0
-      Name: Inventory_MainDoorIcon
-      UID: 16724695954102488179
+      Name: Inventory_MainDoorKey
+      UID: 16253247769133231383
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.449999988, 0.449999988, 2.0999999]
+        Translate: [0, 0, 2.0999999]
         Rotate: [0, 0, 0]
-        Scale: [0.0599999987, 0.0599999987, 1]
+        Scale: [1, 1, 1]
+    TextComponent:
+      text: 0
+      fontName: Roboto-Regular
+      color: [1, 1, 1, 1]
+      scale: 1
+      screenPosition: [1435, 640]
+      renderAs3D: false
+      billboardMode: true
+    MenuComponent:
+      MenuType: 6
+  - InfoComponent:
+      Parent: 0
+      Name: Inventory_BG
+      UID: 1920285388016120200
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.600000024, 0.5, 2]
+        Rotate: [0, 0, 0]
+        Scale: [0.5, 0.5, 1]
     SpriteComponent:
-      textureID: 327234960441928512
-      color: [1, 1, 0, 0]
+      textureID: 13415878511549165281
+      color: [0.435294122, 0.435294122, 0.435294122, 1]
       renderAs3D: false
     MenuComponent:
       MenuType: 6
   - InfoComponent:
       Parent: 0
-      Name: Inventory_SmallDoorIcon
-      UID: 2360031116440682998
+      Name: Inventory_Script
+      UID: 9991983927043961746
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.449999988, 0.649999976, 2.0999999]
-        Rotate: [0, -0, 0]
-        Scale: [0.0599999987, 0.0599999987, 1]
-    SpriteComponent:
-      textureID: 327234960441928512
-      color: [0, 0.853658676, 1, 0]
-      renderAs3D: false
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.InventoryMenu
+      ParamsJSON: "{}"
     MenuComponent:
       MenuType: 6
   - InfoComponent:
       Parent: 0
-      Name: Inventory_FreezeIcon
-      UID: 4147139391751340254
+      Name: Inventory_SmallDoorKey
+      UID: 13182539916817199809
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.449999988, 0.25, 2.0999999]
-        Rotate: [0, -0, 0]
-        Scale: [0.0599999987, 0.0599999987, 1]
-    SpriteComponent:
-      textureID: 3615061789617660208
-      color: [1, 1, 1, 0]
+        Translate: [0, 0, 2.0999999]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    TextComponent:
+      text: 0
+      fontName: Roboto-Regular
+      color: [1, 1, 1, 1]
+      scale: 1
+      screenPosition: [1435, 735]
       renderAs3D: false
+      billboardMode: true
     MenuComponent:
-      MenuType: 0
+      MenuType: 6
   - InfoComponent:
       Parent: 0
       Name: Inventory_FreezeStatus
@@ -168,7 +150,7 @@ ENTITIES:
     TextComponent:
       text: 0
       fontName: Roboto-Regular
-      color: [1, 1, 1, 0]
+      color: [1, 1, 1, 1]
       scale: 1
       screenPosition: [1435, 550]
       renderAs3D: false

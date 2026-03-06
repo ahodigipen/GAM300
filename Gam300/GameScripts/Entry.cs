@@ -377,7 +377,7 @@ namespace GameScripts
                     API.Log("Closing inventory...");
                     s_RequestedInventoryAction = InventoryMenuAction.None;
                     IsInventoryOpen = false;
-                    /// API.UnloadInventoryMenu();
+                    // API.UnloadInventoryMenu();
                     API.EnableFileWatcher(true);
                     return;
             }

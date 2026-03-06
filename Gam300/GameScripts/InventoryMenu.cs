@@ -38,12 +38,19 @@ namespace GameScripts
             _freezeIcon      = API.FindEntity(FREEZE_ICON_NAME);
             _freezeText      = API.FindEntity(FREEZE_TEXT_NAME);
 
-            // Hide everything initially when the scene is pre-loaded
-            HideAll();
+            // Only hide at startup when we are loaded from the gameplay scene.
+            // When opening InventoryMenu.yaml directly in the editor,
+            // Entry._currentSceneName is null so we skip this and preserve edit-time alpha.
+            if (Entry._currentSceneName == Entry.GAMEPLAY_SCENE_NAME)
+            {
+                HideAll();
+            }
         }
 
         public void OnUpdate(float dt)
         {
+            // Do nothing outside of the gameplay scene (e.g. when editing the scene file directly)
+            if (Entry._currentSceneName != Entry.GAMEPLAY_SCENE_NAME) return;
             if (Entry.IsInventoryOpen)
             {
                 // Show everything
