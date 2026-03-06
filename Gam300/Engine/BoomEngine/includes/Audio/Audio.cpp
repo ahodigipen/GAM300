@@ -649,8 +649,8 @@ BOOM_API void SoundEngine::PlaySoundAt(const std::string& name, const std::strin
             // Set reasonable 3D min/max distances for one-shot SFX
             // Min distance: full volume within this radius
             // Max distance: silent beyond this radius
-            // Using more realistic values: 1.0 = full volume within 1 unit, fade to silent by 50 units
-            sound->set3DMinMaxDistance(1.0f, 50.0f);
+            // Using tighter values to prevent sound bleeding between floors
+            sound->set3DMinMaxDistance(1.0f, 15.0f);
 
             mSounds[soundKey] = sound;
 

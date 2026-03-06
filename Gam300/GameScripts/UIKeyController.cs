@@ -91,7 +91,10 @@ namespace GameScripts
                     _currentAlpha = Lerp(_currentAlpha, 1.0f, _fadeInSpeed * dt);
                     API.SetSpriteAlpha(_keySprite, _currentAlpha);
                     if (_keyText != 0 && API.HasText(_keyText))
+                    {
                         API.SetTextColor(_keyText, new Vec4(1, 1, 1, _currentAlpha)); // White text with current alpha
+                        API.SetText(_keyText, $"x{currentKeyCount}");
+                    }
 
                     if (_currentAlpha >= 0.98f)
                     {
@@ -106,7 +109,15 @@ namespace GameScripts
                     {
                         API.SetSpriteAlpha(_keySprite, 1.0f);
                         if (_keyText != 0 && API.HasText(_keyText))
+                        {
                             API.SetTextColor(_keyText, new Vec4(1, 1, 1, 1)); // White text, full alpha
+                            API.SetText(_keyText, $"x{currentKeyCount}");
+                        }
+                    }
+                    else
+                    {
+                        // Ensure it hides if keys drop to 0 abruptly while displaying
+                        _currentState = State.FadingOut;
                     }
                     break;
 
@@ -114,14 +125,22 @@ namespace GameScripts
                     _currentAlpha = Lerp(_currentAlpha, 0.0f, _fadeOutSpeed * dt);
                     API.SetSpriteAlpha(_keySprite, _currentAlpha);
                     if (_keyText != 0 && API.HasText(_keyText))
+                    {
                         API.SetTextColor(_keyText, new Vec4(1, 1, 1, _currentAlpha)); // White text with current alpha
+                        
+                        // Show "x0" if we've completely run out of keys while fading out
+                        API.SetText(_keyText, $"x{currentKeyCount}");
+                    }
 
                     if (_currentAlpha <= 0.02f)
                     {
                         _currentAlpha = 0.0f;
                         API.SetSpriteAlpha(_keySprite, 0f);
                         if (_keyText != 0 && API.HasText(_keyText))
+                        {
                             API.SetTextColor(_keyText, new Vec4(1, 1, 1, 0)); // White text, 0 alpha
+                            API.SetText(_keyText, "");
+                        }
                         _currentState = State.Hidden;
                     }
                     break;

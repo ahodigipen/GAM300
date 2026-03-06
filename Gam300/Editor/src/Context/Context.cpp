@@ -11,7 +11,8 @@
 
 // GLFW + GL
 #include <GLFW/glfw3.h>
-#include <GL/glew.h>   // or <GL/glew.h> – whatever your project uses before GL calls
+#include <GL/glew.h>   // or <GL/glew.h> whatever your project uses before GL calls
+#include "CyberpunkTheme.h"
 
 // ------------------------- GuiContext -------------------------
 
@@ -84,6 +85,7 @@ void GuiContext::OnStart()
 
     // Style
     ImGui::StyleColorsDark();
+    ApplyCyberpunkTheme();
 
     // Validate ImGui state after initialization
     DebugHelpers::ValidateImGuiState("After initialization");
@@ -283,6 +285,7 @@ void GuiContextNoSwitch::InitializeWithExistingContext(GLFWwindow* window)
     // Fonts + style
     LoadFonts();
     ImGui::StyleColorsDark();
+    ApplyCyberpunkTheme();
 
     BOOM_INFO("InitializeWithExistingContext - Initialization complete!");
 }

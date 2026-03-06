@@ -720,7 +720,8 @@ namespace EditorUI {
             // Use CollapsingHeader to match the style
             if (ImGui::CollapsingHeader("Model Renderer", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap)) {
                 if (ComponentSettings<Boom::ModelComponent>(ctx)) {
-                    ImGui::PopID();
+                    ImGui::PopID(); // Pop "Model Renderer"
+                    ImGui::PopID(); // Pop entity ID
                     return; // Component was removed, exit early
                 }
 
@@ -878,7 +879,8 @@ namespace EditorUI {
             ImGui::PushID("Sprite");
             if (ImGui::CollapsingHeader("Sprite", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap)) {
                 if (ComponentSettings<Boom::SpriteComponent>(ctx)) {
-                    ImGui::PopID();
+                    ImGui::PopID(); // Pop "Sprite"
+                    ImGui::PopID(); // Pop entity ID
                     return; // Component was removed, exit early
                 }
 
@@ -971,7 +973,8 @@ namespace EditorUI {
             ImGui::PushID("Text");
             if (ImGui::CollapsingHeader("Text", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap)) {
                 if (ComponentSettings<Boom::TextComponent>(ctx)) {
-                    ImGui::PopID();
+                    ImGui::PopID(); // Pop "Text"
+                    ImGui::PopID(); // Pop entity ID
                     return; // Component was removed, exit early
                 }
 
@@ -1225,6 +1228,7 @@ namespace EditorUI {
                 // Destroy physics controller if exists
                 m_App->GetPhysicsContext().DestroyController(static_cast<uint32_t>(m_App->SelectedEntity()));
                 ctx->scene.remove<Boom::CharacterControllerComponent>(m_App->SelectedEntity());
+                ImGui::PopID(); // Pop entity ID
                 return;
             }
             ImGui::Spacing();
@@ -2230,6 +2234,7 @@ namespace EditorUI {
                 // Destroy physics controller if exists
                 m_App->GetPhysicsContext().DestroyController(static_cast<uint32_t>(m_App->SelectedEntity()));
                 ctx->scene.remove<Boom::RigidBodyComponent>(m_App->SelectedEntity());
+                ImGui::PopID(); // Pop entity ID
                 return;
             }
             ImGui::Spacing();
@@ -2841,6 +2846,7 @@ namespace EditorUI {
 
                 // 2. Remove the component from ECS
                 ctx->scene.remove<Boom::ColliderComponent>(m_App->SelectedEntity());
+                ImGui::PopID(); // Pop entity ID
                 return;
             }
             ImGui::Spacing();
@@ -2902,7 +2908,8 @@ namespace EditorUI {
             ImGui::PushID("Skybox");
             if (ImGui::CollapsingHeader("Skybox", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap)) {
                 if (ComponentSettings<Boom::SkyboxComponent>(ctx)) {
-                    ImGui::PopID();
+                    ImGui::PopID(); // Pop "Skybox"
+                    ImGui::PopID(); // Pop entity ID
                     return; // Component was removed, exit early
                 }
                 auto& sky = selected.Get<SkyboxComponent>();
@@ -3178,6 +3185,28 @@ namespace EditorUI {
                                     val = val.substr(1, val.size() - 2);
                                 }
 
+                                // ---- Generic dropdown (options list supplied by EditorExposed) ----
+                                if (!field.options.empty()) {
+                                    // Find which option is currently selected
+                                    int currentIdx = 0;
+                                    for (int optIdx = 0; optIdx < (int)field.options.size(); ++optIdx) {
+                                        if (val == field.options[optIdx]) { currentIdx = optIdx; break; }
+                                    }
+
+                                    const char* previewLabel = field.options[currentIdx].c_str();
+                                    if (ImGui::BeginCombo("##val", previewLabel)) {
+                                        for (int optIdx = 0; optIdx < (int)field.options.size(); ++optIdx) {
+                                            bool sel = (optIdx == currentIdx);
+                                            if (ImGui::Selectable(field.options[optIdx].c_str(), sel)) {
+                                                updateFieldValue(field.fieldName, field.options[optIdx]);
+                                            }
+                                            if (sel) ImGui::SetItemDefaultFocus();
+                                        }
+                                        ImGui::EndCombo();
+                                    }
+                                }
+                                // ---- Audio asset picker ----
+                                else {
                                 // Check if this is an audio/sound field - use SoundComponent integration
                                 bool isAudioField = (field.displayName.find("Sound") != std::string::npos ||
                                                     field.displayName.find("Audio") != std::string::npos ||
@@ -3467,6 +3496,7 @@ namespace EditorUI {
                                         updateFieldValue(field.fieldName, std::string(buf));
                                     }
                                 }
+                                } // end else (not a dropdown field)
                             }
                             else if (field.typeName == "Vec3") {
                                 float vals[3] = {0, 0, 0};
@@ -3632,6 +3662,7 @@ namespace EditorUI {
                     scripting->DestroyForEntity(m_App->SelectedEntity(), sc);
                 }
                 ctx->scene.remove<Boom::ScriptComponent>(m_App->SelectedEntity());
+                ImGui::PopID(); // Pop entity ID
                 return;
             }
 
@@ -3698,6 +3729,13 @@ namespace EditorUI {
                     materialChanged |= ImGui::DragFloat("metallic", &mat->data.metallic, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
                     materialChanged |= ImGui::DragFloat("occlusion", &mat->data.occlusion, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
                     materialChanged |= ImGui::DragFloat("opacity", &mat->data.opacity, 0.01f, 0.f, 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+                }
+
+                if (ImGui::CollapsingHeader("Rendering", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    materialChanged |= ImGui::Checkbox("Double Sided", &mat->doubleSided);
+                    if (ImGui::IsItemHovered()) {
+                        ImGui::SetTooltip("Disables backface culling for all meshes using this material.\nUseful for single-sided geometry like doors or thin panels.");
+                    }
                 }
 
                 if (ImGui::CollapsingHeader("UV Mapping", ImGuiTreeNodeFlags_DefaultOpen)) {

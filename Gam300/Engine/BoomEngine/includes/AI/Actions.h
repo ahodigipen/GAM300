@@ -146,7 +146,8 @@ namespace Boom {
             const glm::vec3 goalXZ = { patrolGoal.x, 0.0f, patrolGoal.z };
             const float dXZ = glm::length(goalXZ - posXZ);
 
-            if (dXZ <= ag.arrive) {
+            // Using 0.5m arrival threshold to match NavAgentSystem's robustness at low FPS
+            if (dXZ <= 0.5f) {
                 // Reached this point: advance to next and start idle.
                 ai.patrolIndex = (ai.patrolIndex + 1) %
                     static_cast<int>(ai.patrolPoints.size());

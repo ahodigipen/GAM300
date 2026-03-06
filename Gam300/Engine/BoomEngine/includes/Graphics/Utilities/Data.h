@@ -215,12 +215,14 @@ namespace Boom {
 		glm::vec3 radiance{};
 		float intensity{};
 		float range{};
+		float bloomStrength{ 1.0f };  // Per-light bloom contribution multiplier (0 = no bloom, 1 = normal, >1 = extra bloom)
 		// ===== PointLight =====
 		XPROPERTY_DEF(
 			"PointLight", PointLight,
 			obj_member<"Radiance", &PointLight::radiance>,
 			obj_member<"Intensity", &PointLight::intensity>,
-			obj_member<"Range", &PointLight::range>
+			obj_member<"Range", &PointLight::range>,
+			obj_member<"BloomStrength", &PointLight::bloomStrength>
 		)
 
 	};

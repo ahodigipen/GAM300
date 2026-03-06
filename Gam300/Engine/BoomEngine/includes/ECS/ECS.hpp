@@ -145,6 +145,7 @@ namespace Boom {
  std::string materialName;
  std::string modelSource;
  std::string materialSource;
+ float opacityOverride{ 1.0f }; // Per-entity opacity multiplier (1.0 = opaque, 0.0 = transparent)
 
  XPROPERTY_DEF(
  "ModelComponent", ModelComponent,
@@ -604,7 +605,7 @@ namespace Boom {
 
          // 3D Audio settings
          float minDistance = 1.0f;   // Distance at which sound is at full volume
-         float maxDistance = 50.0f;  // Distance at which sound is silent
+         float maxDistance = 15.0f;  // Distance at which sound is silent
 
          void serialize(nlohmann::json& j) const {
              j["name"] = name;
@@ -874,6 +875,14 @@ struct MenuComponent {
         float bloomIntensity = 1.0f;
         float bloomThreshold = 1.0f;  // Brightness threshold for bloom extraction
         int bloomIterations = 10;     // Number of blur passes (default 10)
+        float pointLightBloomMultiplier = 1.0f;  // Global multiplier for point light bloom contribution
+
+        // Volumetric fog settings
+        bool fogEnabled = false;
+        glm::vec3 fogColor = glm::vec3(0.5f, 0.6f, 0.7f);
+        float fogDensity = 0.01f;
+        float fogHeightFalloff = 0.5f;  // How fast fog thins with height (larger = thinner at height)
+        float fogHeight = 0.0f;         // World-space Y below which fog is thickest
 
         XPROPERTY_DEF("SceneNavmeshComponent", SceneNavmeshComponent,
             obj_member<"NavmeshFile", &SceneNavmeshComponent::navmeshFile>,
@@ -881,7 +890,13 @@ struct MenuComponent {
             obj_member<"BloomEnabled", &SceneNavmeshComponent::bloomEnabled>,
             obj_member<"BloomIntensity", &SceneNavmeshComponent::bloomIntensity>,
             obj_member<"BloomThreshold", &SceneNavmeshComponent::bloomThreshold>,
-            obj_member<"BloomIterations", &SceneNavmeshComponent::bloomIterations>)
+            obj_member<"BloomIterations", &SceneNavmeshComponent::bloomIterations>,
+            obj_member<"PointLightBloomMultiplier", &SceneNavmeshComponent::pointLightBloomMultiplier>,
+            obj_member<"FogEnabled", &SceneNavmeshComponent::fogEnabled>,
+            obj_member<"FogColor", &SceneNavmeshComponent::fogColor>,
+            obj_member<"FogDensity", &SceneNavmeshComponent::fogDensity>,
+            obj_member<"FogHeightFalloff", &SceneNavmeshComponent::fogHeightFalloff>,
+            obj_member<"FogHeight", &SceneNavmeshComponent::fogHeight>)
     };
 
     struct DeactivatedComponent {

@@ -25,6 +25,8 @@
 #include "Graphics/Shaders/DebugLines.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
+#include <thread>
+#include <chrono>
 #include "Scripting/MonoRuntime.h"
 #include "Scripting/ScriptingSystem.h"
 #include "Scripting/ScriptBinding.h"
@@ -112,6 +114,7 @@ namespace Boom
 		float m_TestRot = 0.0f;
 
 		bool m_PhysDebugViz = false;
+		bool m_Is30FPSLimit = false; // Toggle for 30fps testing
 
 		// --- Mono State ---
 		MonoDomain* m_MonoRootDomain = nullptr;
@@ -546,8 +549,14 @@ namespace Boom
 				m_Context->renderer->bloomIntensity = sn.bloomIntensity;
 				m_Context->renderer->bloomThreshold = sn.bloomThreshold;
 				m_Context->renderer->bloomIterations = sn.bloomIterations;
-				BOOM_INFO("[Scene] Applied scene settings: ambient={}, bloom={}, intensity={}, threshold={}, iterations={}",
-					sn.ambientStrength, sn.bloomEnabled, sn.bloomIntensity, sn.bloomThreshold, sn.bloomIterations);
+				m_Context->renderer->pointLightBloomMultiplier = sn.pointLightBloomMultiplier;
+				m_Context->renderer->enabledFog = sn.fogEnabled;
+				m_Context->renderer->fogColor = sn.fogColor;
+				m_Context->renderer->fogDensity = sn.fogDensity;
+				m_Context->renderer->fogHeightFalloff = sn.fogHeightFalloff;
+				m_Context->renderer->fogHeight = sn.fogHeight;
+				BOOM_INFO("[Scene] Applied scene settings: ambient={}, bloom={}, intensity={}, threshold={}, iterations={}, pointLightBloom={}, fog={}",
+					sn.ambientStrength, sn.bloomEnabled, sn.bloomIntensity, sn.bloomThreshold, sn.bloomIterations, sn.pointLightBloomMultiplier, sn.fogEnabled);
 			}
 
 			if (sn.navmeshFile.empty())
@@ -848,6 +857,9 @@ namespace Boom
 					GPUPointLight g{};
 					g.position_range = glm::vec4(tc.transform.translate, plc.light.range);
 					g.radiance_intensity = glm::vec4(plc.light.radiance, plc.light.intensity);
+					// Combine per-light bloom strength with global point light bloom multiplier
+					float finalBloomStrength = plc.light.bloomStrength * m_Context->renderer->pointLightBloomMultiplier;
+					g.bloomStrength_padding = glm::vec4(finalBloomStrength, 0.0f, 0.0f, 0.0f);
 					gpuPoints.push_back(g);
 					++points;
 				});
@@ -907,6 +919,7 @@ namespace Boom
 
 		BOOM_INLINE void RenderShadowScene() {
 
+			glEnable(GL_CULL_FACE);
 			glCullFace(GL_FRONT);
 			// Count directional lights first
 			int dirLightCount = 0;
@@ -915,6 +928,7 @@ namespace Boom
 			// Early exit if no directional lights
 			if (dirLightCount == 0) {
 				m_Context->renderer->SetShadowsEnabled(false);
+				glDisable(GL_CULL_FACE);
 				return;
 			}
 
@@ -972,6 +986,7 @@ namespace Boom
 				});
 
 			glCullFace(GL_BACK);
+			glDisable(GL_CULL_FACE);
 
 			// Render spot light shadows
 			RenderSpotShadowScene();
@@ -1045,6 +1060,7 @@ namespace Boom
 				});
 
 			glCullFace(GL_BACK);
+			glDisable(GL_CULL_FACE);
 
 			// Upload spot shadow data to the PBR shader
 			if (spotShadowIndex > 0) {
@@ -1658,9 +1674,15 @@ namespace Boom
 		BOOM_INLINE void ComputeFrameDeltaTime()
 		{
 			static double sLastTime = glfwGetTime();
-			double currentTime = glfwGetTime();
 
-			// Calculate raw delta time
+			if (m_Is30FPSLimit) {
+				const double targetFrameTime = 1.0 / 30.0;
+				while (glfwGetTime() - sLastTime < targetFrameTime) {
+					std::this_thread::sleep_for(std::chrono::microseconds(500));
+				}
+			}
+
+			double currentTime = glfwGetTime();
 			double rawDelta = (currentTime - sLastTime);
 
 			// Cap delta time to prevent physics tunneling after long frames (like scene loading)

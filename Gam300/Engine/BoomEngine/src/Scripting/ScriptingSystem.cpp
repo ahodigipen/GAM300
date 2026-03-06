@@ -513,6 +513,12 @@ namespace Boom {
                 info.minValue = item.value("minValue", -FLT_MAX);
                 info.maxValue = item.value("maxValue", FLT_MAX);
                 info.useSlider = item.value("useSlider", false);
+                if (item.contains("options") && item["options"].is_array()) {
+                    for (const auto& opt : item["options"]) {
+                        if (opt.is_string())
+                            info.options.push_back(opt.get<std::string>());
+                    }
+                }
                 fields.push_back(info);
             }
         }

@@ -33,11 +33,14 @@ namespace Boom {
 				std::exit(EXIT_FAILURE);
 			}
 
-			// Add common mappings for Bluetooth Xbox controllers on Windows
-			// GUIDs for Xbox controllers via Bluetooth often differ from wired ones.
+			// Add common mappings for Bluetooth Xbox, PlayStation, and Switch controllers on Windows
+			// GUIDs for controllers via Bluetooth often differ from wired ones.
 			const char* mappings =
 				"030000005e040000050b000000007801,Xbox One S Controller,a:b0,b:b1,back:b6,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b10,leftshoulder:b4,leftstick:b8,lefttrigger:a2,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b9,righttrigger:a5,rightx:a3,righty:a4,start:b7,x:b2,y:b3,platform:Windows\n"
 				"030000005e040000120b000000007801,Xbox Series Controller,a:b0,b:b1,back:b6,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b10,leftshoulder:b4,leftstick:b8,lefttrigger:a2,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b9,righttrigger:a5,rightx:a3,righty:a4,start:b7,x:b2,y:b3,platform:Windows\n"
+				"030000004c050000cc09000000007801,PS4 Controller,a:b0,b:b1,back:b8,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b10,leftshoulder:b4,leftstick:b11,lefttrigger:a3,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b12,righttrigger:a4,rightx:a2,righty:a5,start:b9,x:b3,y:b2,platform:Windows\n"
+				"030000004c050000e60c000000007801,PS5 Controller,a:b0,b:b1,back:b8,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b10,leftshoulder:b4,leftstick:b11,lefttrigger:a3,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b12,righttrigger:a4,rightx:a2,righty:a5,start:b9,x:b3,y:b2,platform:Windows\n"
+				"030000007e0500000920000000007801,Nintendo Switch Pro Controller,a:b1,b:b0,back:b8,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b12,leftshoulder:b4,leftstick:b10,lefttrigger:b6,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b11,righttrigger:b7,rightx:a2,righty:a3,start:b9,x:b2,y:b3,platform:Windows\n"
 				"03000000c82d00001260000000000000,8BitDo Controller,a:b0,b:b1,back:b10,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b12,leftshoulder:b6,leftstick:b13,lefttrigger:b8,leftx:a0,lefty:a1,paddle1:b17,paddle2:b16,paddle3:b2,paddle4:b5,rightshoulder:b7,rightstick:b14,righttrigger:b9,rightx:a3,righty:a4,start:b11,x:b3,y:b4,platform:Windows\n";
 			glfwUpdateGamepadMappings(mappings);
 			//glfwWindowHint(GLFW_OPENGL_CORE_PROFILE, GLFW_TRUE);

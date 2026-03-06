@@ -9,9 +9,17 @@ namespace Boom {
 			: Shader{ filename }
 			, map{ GetUniformVar("map") }
 			, bloom{ GetUniformVar("u_bloom") }
+			, depthMapLoc{ GetUniformVar("u_depth") }
 			, bloomEnabled{ GetUniformVar("u_enableBloom") }
-			, fadeAlpha{ GetUniformVar("u_fadeAlpha") } // NEW
+			, fadeAlpha{ GetUniformVar("u_fadeAlpha") }
 			, bloomIntensity{ GetUniformVar("u_bloomIntensity") }
+			, fogEnabledLoc{ GetUniformVar("u_enableFog") }
+			, fogColorLoc{ GetUniformVar("u_fogColor") }
+			, fogDensityLoc{ GetUniformVar("u_fogDensity") }
+			, fogHeightFalloffLoc{ GetUniformVar("u_fogHeightFalloff") }
+			, fogHeightLoc{ GetUniformVar("u_fogHeight") }
+			, fogInvViewProjLoc{ GetUniformVar("u_invViewProj") }
+			, fogCameraPosLoc{ GetUniformVar("u_cameraPos") }
 			, quad{ CreateQuad2D() }
 			, color{ col }
 		{
@@ -42,6 +50,23 @@ namespace Boom {
 			glDeleteFramebuffers(1, &m_FBO);
 		}
 
+		// Call before Render() to configure volumetric fog for the next draw.
+		// depthTex: the scene depth texture (slot 2)
+		BOOM_INLINE void SetFog(bool enabled, const glm::vec3& fogCol, float density,
+			float heightFalloff, float height,
+			const glm::mat4& invViewProj, const glm::vec3& camPos,
+			uint32_t depthTex)
+		{
+			m_FogEnabled = enabled;
+			m_FogColor = fogCol;
+			m_FogDensity = density;
+			m_FogHeightFalloff = heightFalloff;
+			m_FogHeight = height;
+			m_InvViewProj = invViewProj;
+			m_CameraPos = camPos;
+			m_DepthTex = depthTex;
+		}
+
 		BOOM_INLINE void Render(uint32_t vmap, uint32_t vbloom, bool useFBO, bool enableBloom = false, float intensity = 1.0f)
 		{
 			glBindFramebuffer(GL_FRAMEBUFFER, useFBO ? m_FBO : 0);
@@ -53,8 +78,22 @@ namespace Boom {
 			SetUniform(bloomIntensity, intensity);
 			SetSceneMap(vmap, vbloom);
 
-			// NEW: apply screen fade
+			// apply screen fade
 			SetUniform(fadeAlpha, g_ScreenFadeAlpha);
+
+			// volumetric fog
+			SetUniform(fogEnabledLoc, m_FogEnabled);
+			if (m_FogEnabled) {
+				SetUniform(fogColorLoc, m_FogColor);
+				SetUniform(fogDensityLoc, m_FogDensity);
+				SetUniform(fogHeightFalloffLoc, m_FogHeightFalloff);
+				SetUniform(fogHeightLoc, m_FogHeight);
+				SetUniform(fogInvViewProjLoc, m_InvViewProj);
+				SetUniform(fogCameraPosLoc, m_CameraPos);
+				glActiveTexture(GL_TEXTURE2);
+				glBindTexture(GL_TEXTURE_2D, m_DepthTex);
+				SetUniform(depthMapLoc, 2);
+			}
 
 			//set color map
 			glActiveTexture(GL_TEXTURE0);
@@ -112,15 +151,32 @@ namespace Boom {
 		}
 
 	private:
-		int32_t fadeAlpha; // NEW
+		int32_t fadeAlpha;
 		int32_t bloomIntensity;
+		int32_t depthMapLoc;
+		int32_t fogEnabledLoc;
+		int32_t fogColorLoc;
+		int32_t fogDensityLoc;
+		int32_t fogHeightFalloffLoc;
+		int32_t fogHeightLoc;
+		int32_t fogInvViewProjLoc;
+		int32_t fogCameraPosLoc;
 
 		Quad2D quad;
 		int32_t bloom = 0u;
 		int32_t map = 0u;
-		//int32_t colLoc;
 		int32_t bloomEnabled;
 		glm::vec4 color;
+
+		// Fog state (written by SetFog, consumed by Render)
+		bool m_FogEnabled = false;
+		glm::vec3 m_FogColor = glm::vec3(0.5f, 0.6f, 0.7f);
+		float m_FogDensity = 0.01f;
+		float m_FogHeightFalloff = 0.5f;
+		float m_FogHeight = 0.0f;
+		glm::mat4 m_InvViewProj = glm::mat4(1.0f);
+		glm::vec3 m_CameraPos = {};
+		uint32_t m_DepthTex = 0u;
 
 		uint32_t m_Final = 0u;
 		uint32_t m_FBO = 0u;

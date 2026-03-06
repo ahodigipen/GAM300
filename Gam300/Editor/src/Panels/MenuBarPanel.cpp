@@ -86,6 +86,26 @@ namespace EditorUI {
         if (!ImGui::BeginMainMenuBar())
             return;
 
+        // Sync scene settings -> renderer every frame so values are applied
+        // immediately on scene load, not only when the Options menu is opened.
+        if (m.ctx && m.ctx->renderer) {
+            entt::entity sceneSettings = Boom::TryGetSceneSettings(m.ctx->scene);
+            if (sceneSettings != entt::null && m.ctx->scene.all_of<Boom::SceneNavmeshComponent>(sceneSettings)) {
+                auto& s = m.ctx->scene.get<Boom::SceneNavmeshComponent>(sceneSettings);
+                m.ctx->renderer->AmbientStrength()          = s.ambientStrength;
+                m.ctx->renderer->enabledBloom               = s.bloomEnabled;
+                m.ctx->renderer->bloomIntensity             = s.bloomIntensity;
+                m.ctx->renderer->bloomThreshold             = s.bloomThreshold;
+                m.ctx->renderer->bloomIterations            = s.bloomIterations;
+                m.ctx->renderer->pointLightBloomMultiplier  = s.pointLightBloomMultiplier;
+                m.ctx->renderer->enabledFog                 = s.fogEnabled;
+                m.ctx->renderer->fogColor                   = s.fogColor;
+                m.ctx->renderer->fogDensity                 = s.fogDensity;
+                m.ctx->renderer->fogHeightFalloff           = s.fogHeightFalloff;
+                m.ctx->renderer->fogHeight                  = s.fogHeight;
+            }
+        }
+
         // --------------------------- File ----------------------------------------
         if (ImGui::BeginMenu("File"))
         {
@@ -187,16 +207,14 @@ namespace EditorUI {
                     sceneComp.bloomIntensity = 1.0f;
                     sceneComp.bloomThreshold = 1.0f;
                     sceneComp.bloomIterations = 10;
+                    sceneComp.pointLightBloomMultiplier = 1.0f;
+                    sceneComp.fogEnabled = false;
+                    sceneComp.fogColor = glm::vec3(0.5f, 0.6f, 0.7f);
+                    sceneComp.fogDensity = 0.01f;
+                    sceneComp.fogHeightFalloff = 0.5f;
+                    sceneComp.fogHeight = 0.0f;
                 }
                 auto& settings = m.ctx->scene.get<Boom::SceneNavmeshComponent>(sceneSettings);
-
-                // Keep renderer in sync with scene settings (for loaded scenes)
-                // This ensures that when a scene is loaded, the renderer reflects the saved settings
-                m.ctx->renderer->AmbientStrength() = settings.ambientStrength;
-                m.ctx->renderer->enabledBloom = settings.bloomEnabled;
-                m.ctx->renderer->bloomIntensity = settings.bloomIntensity;
-                m.ctx->renderer->bloomThreshold = settings.bloomThreshold;
-                m.ctx->renderer->bloomIterations = settings.bloomIterations;
 
                 // Slider modifies the scene component
                 if (ImGui::SliderFloat("Ambient Strength", &settings.ambientStrength, 0.0f, 1.0f)) {
@@ -221,8 +239,34 @@ namespace EditorUI {
                         // Value updated above in sync block
                     }
 
+                    ImGui::Separator();
+                    ImGui::Text("Point Light Bloom");
+                    if (ImGui::SliderFloat("Point Light Bloom Multiplier", &settings.pointLightBloomMultiplier, 0.0f, 5.0f)) {
+                        // Value synced to renderer below
+                    }
+                    ImGui::TextDisabled("(?) Multiplies bloom contribution from all point lights.\n"
+                                       "Individual lights can also have their own BloomStrength.");
+
                     ImGui::EndMenu();
                 }
+
+                if (ImGui::BeginMenu("Volumetric Fog Settings")) {
+                    ImGui::Checkbox("Enable Fog", &settings.fogEnabled);
+
+                    ImGui::ColorEdit3("Fog Color", &settings.fogColor.x);
+
+                    ImGui::SliderFloat("Density", &settings.fogDensity, 0.0f, 0.1f);
+                    ImGui::TextDisabled("(?) Controls how thick the fog is per unit of distance.");
+
+                    ImGui::SliderFloat("Height Falloff", &settings.fogHeightFalloff, 0.0f, 0.1f, "%.4f");
+                    ImGui::TextDisabled("(?) How quickly fog thins above the fog height. 0 = uniform.");
+
+                    ImGui::SliderFloat("Height Offset", &settings.fogHeight, -50.0f, 50.0f);
+                    ImGui::TextDisabled("(?) World Y below which fog is densest.");
+
+                    ImGui::EndMenu();
+                }
+                ImGui::MenuItem("Volumetric Fog", nullptr, &m.ctx->renderer->enabledFog);
 
                 if (m.ctx->physics && m_Owner && m_Owner->GetApp()) {
                     // Get current state from Application

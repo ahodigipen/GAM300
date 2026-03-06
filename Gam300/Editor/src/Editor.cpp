@@ -4,6 +4,7 @@
 
 // Bring in the full AppContext definition here (not in the header)
 #include "Context/Context.h"
+#include "Context/CyberpunkTheme.h"
 
 // Panels (full definitions MUST be included here before ~Editor and method calls)
 #include "Panels/MenuBarPanel.h"
@@ -179,6 +180,7 @@ namespace EditorUI {
             ImGui::SetCurrentContext(m_ImGuiContext);
 
         BOOM_INFO("Editor::OnStart");
+        ApplyCyberpunkTheme();   // ensure theme is active on this context
         Init();   // build all panels here (you already wrote this)
     }
 

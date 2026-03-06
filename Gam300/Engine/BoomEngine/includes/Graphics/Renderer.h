@@ -244,7 +244,7 @@ namespace Boom {
             float fov = glm::radians(cutOffAngle * 2.0f);
             fov = glm::clamp(fov, glm::radians(10.0f), glm::radians(170.0f)); // Clamp to reasonable range
 
-            float nearPlane = 0.1f;
+            float nearPlane = 0.5f;
             float farPlane = range > 0.0f ? range : 50.0f;
 
             glm::mat4 proj = glm::perspective(fov, 1.0f, nearPlane, farPlane);
@@ -316,6 +316,10 @@ namespace Boom {
             color3DShader->SetCamera(cam, transform, aspect);
             pbrShader->Use();
             m_CameraPosition = transform.translate;
+            // Cache for volumetric fog depth reconstruction
+            m_NearPlane = cam.nearPlane;
+            m_FarPlane = cam.farPlane;
+            m_InvViewProj = glm::inverse(cam.Frustum(transform, aspect));
         }
 
         BOOM_INLINE glm::vec3 GetCameraPosition() const { return m_CameraPosition; }
@@ -444,30 +448,55 @@ namespace Boom {
             // Bind both SSBOs (transform and joint)
             m_InstanceManager->BindAllSSBOs();
 
-            // === Render Static Batches ===
+            // === Render Single-Sided Static Batches (GL_CULL_FACE already ON from caller) ===
             if (totalStatic > 0) {
                 for (const auto& [key, batch] : m_InstanceManager->GetBatches()) {
                     if (batch.IsEmpty()) continue;
 
-                    // Get model
+                    auto* matAsset = batch.materialID != EMPTY_ASSET
+                        ? assets.template TryGet<MaterialAsset>(batch.materialID) : nullptr;
+                    if (matAsset && matAsset->doubleSided) continue; // handled in second pass
+
                     auto* modelAsset = assets.template TryGet<ModelAsset>(batch.modelID);
                     if (!modelAsset || !modelAsset->data) continue;
 
-                    // Get material
                     PbrMaterial material{};
-                    if (batch.materialID != EMPTY_ASSET) {
-                        auto* matAsset = assets.template TryGet<MaterialAsset>(batch.materialID);
-                        if (matAsset) {
-                            assets.ResolveMaterialTextures(matAsset);
-                            material = matAsset->data;
-                        }
+                    if (matAsset) {
+                        assets.ResolveMaterialTextures(matAsset);
+                        material = matAsset->data;
                     }
 
-                    // Draw all static instances in this batch (mode 1)
                     pbrShader->DrawInstanced(modelAsset->data, material,
                                             static_cast<uint32_t>(batch.Count()),
                                             static_cast<uint32_t>(batch.ssboOffset),
                                             showNormalTexture);
+                }
+
+                // === Render Double-Sided Static Batches (disable culling for this group) ===
+                bool disabledCulling = false;
+                for (const auto& [key, batch] : m_InstanceManager->GetBatches()) {
+                    if (batch.IsEmpty()) continue;
+
+                    auto* matAsset = batch.materialID != EMPTY_ASSET
+                        ? assets.template TryGet<MaterialAsset>(batch.materialID) : nullptr;
+                    if (!matAsset || !matAsset->doubleSided) continue;
+
+                    if (!disabledCulling) {
+                        glDisable(GL_CULL_FACE);
+                        disabledCulling = true;
+                    }
+
+                    auto* modelAsset = assets.template TryGet<ModelAsset>(batch.modelID);
+                    if (!modelAsset || !modelAsset->data) continue;
+
+                    assets.ResolveMaterialTextures(matAsset);
+                    pbrShader->DrawInstanced(modelAsset->data, matAsset->data,
+                                            static_cast<uint32_t>(batch.Count()),
+                                            static_cast<uint32_t>(batch.ssboOffset),
+                                            showNormalTexture);
+                }
+                if (disabledCulling) {
+                    glEnable(GL_CULL_FACE);
                 }
             }
 
@@ -714,6 +743,10 @@ namespace Boom {
         }
 
         BOOM_INLINE void ShowFrame(bool useFBO) {
+            // Feed fog state into final shader before rendering
+            uint32_t depthTex = showLowPoly ? lowPolyFrame->GetDepthTexture() : frame->GetDepthTexture();
+            finalShader->SetFog(enabledFog, fogColor, fogDensity, fogHeightFalloff, fogHeight,
+                                m_InvViewProj, m_CameraPosition, depthTex);
 
             if (showLowPoly) {
                 if (m_TouchViewport) glViewport(0, 0, lowPolyFrame->GetWidth(), lowPolyFrame->GetHeight());
@@ -721,8 +754,7 @@ namespace Boom {
             }
             else {
                 if (m_TouchViewport) glViewport(0, 0, frame->GetWidth(), frame->GetHeight());
-                //shadowShader->GetDepthMap() //frame->GetTexture()
-                finalShader->Render(isDepthBufferView ? shadowShader->GetDepthMap() : frame->GetTexture(), bloom->GetMap(), useFBO, enabledBloom, bloomIntensity); // toggle bloom inside final if needed
+                finalShader->Render(isDepthBufferView ? shadowShader->GetDepthMap() : frame->GetTexture(), bloom->GetMap(), useFBO, enabledBloom, bloomIntensity);
             }
         }
 
@@ -859,6 +891,10 @@ namespace Boom {
         GLuint m_DirLightUBO = 0;
         GLuint m_SpotLightUBO = 0;
         glm::vec3 m_CameraPosition{};
+        // Fog depth reconstruction cache (updated each frame in SetCamera)
+        float m_NearPlane{ 0.3f };
+        float m_FarPlane{ 1000.f };
+        glm::mat4 m_InvViewProj{ 1.0f };
     public:  // ---------------------- ImGui-exposed toggles ----------------
         bool isDrawDebugMode{};
         bool showLowPoly{};
@@ -870,6 +906,14 @@ namespace Boom {
         float bloomIntensity{ 1.0f };
         float bloomThreshold{ 1.0f };
         int bloomIterations{ 10 };
+        float pointLightBloomMultiplier{ 1.0f };  // Global multiplier for point light bloom contribution
+
+        // Volumetric fog toggles
+        bool enabledFog{};
+        glm::vec3 fogColor{ 0.5f, 0.6f, 0.7f };
+        float fogDensity{ 0.01f };
+        float fogHeightFalloff{ 0.5f };
+        float fogHeight{ 0.0f };
 
     public: // ---------------------- Material Preview ----------------------
         // Call this to reset the material preview (e.g., after scene change)

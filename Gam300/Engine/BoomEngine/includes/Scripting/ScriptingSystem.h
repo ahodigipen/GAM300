@@ -63,6 +63,7 @@ namespace Boom {
             float minValue = -FLT_MAX;
             float maxValue = FLT_MAX;
             bool useSlider = false;
+            std::vector<std::string> options; // Non-empty = Dropdown list
         };
 
         // Get exposed fields for a script type (calls C# ScriptRegistry)

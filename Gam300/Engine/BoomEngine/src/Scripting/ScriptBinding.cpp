@@ -1057,6 +1057,25 @@ namespace Boom {
         s_Ctx->scene.get<SpriteComponent>(e).color.a = glm::clamp(alpha, 0.0f, 1.0f);
     }
 
+    // ========= MODEL COMPONENT INTERNAL CALLS =========
+    static bool ICALL_API_HasModelComponent(uint64_t handle)
+    {
+        if (!s_Ctx) return false;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        return (e != entt::null && s_Ctx->scene.valid(e) && s_Ctx->scene.any_of<ModelComponent>(e));
+    }
+
+    static void ICALL_API_SetModelOpacity(uint64_t handle, float opacity)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<ModelComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetModelOpacity: Entity does not have ModelComponent");
+            return;
+        }
+        s_Ctx->scene.get<ModelComponent>(e).opacityOverride = glm::clamp(opacity, 0.0f, 1.0f);
+    }
+
     // ========= TEXT COMPONENT INTERNAL CALLS =========
     static bool ICALL_API_HasText(uint64_t handle)
     {
@@ -2290,6 +2309,22 @@ namespace Boom {
         g_ScreenFadeAlpha = glm::clamp(alpha, 0.0f, 1.0f);
     }
 
+    static void ICALL_API_Set30FPSLimit(bool enabled)
+    {
+        if (s_Ctx && s_Ctx->app) {
+            static_cast<Application*>(s_Ctx->app)->m_Is30FPSLimit = enabled;
+            BOOM_INFO("[Script] 30 FPS Limit: {}", enabled ? "ENABLED" : "DISABLED");
+        }
+    }
+
+    static bool ICALL_API_Get30FPSLimit()
+    {
+        if (s_Ctx && s_Ctx->app) {
+            return static_cast<Application*>(s_Ctx->app)->m_Is30FPSLimit;
+        }
+        return false;
+    }
+
     void RegisterScriptInternalCalls(AppContext* ctx)
     {
         s_Ctx = ctx;
@@ -2298,6 +2333,8 @@ namespace Boom {
 
         // IMPORTANT: These namespaces MUST match the C# side (Boom.Native)
         mono_add_internal_call("Boom.Native::Boom_API_Log", (const void*)ICALL_API_Log);
+        mono_add_internal_call("Boom.Native::Boom_API_Set30FPSLimit", (const void*)ICALL_API_Set30FPSLimit);
+        mono_add_internal_call("Boom.Native::Boom_API_Get30FPSLimit", (const void*)ICALL_API_Get30FPSLimit);
         mono_add_internal_call("Boom.Native::Boom_API_FindEntity", (const void*)ICALL_API_FindEntity);
         mono_add_internal_call("Boom.Native::Boom_API_GetPosition", (const void*)ICALL_API_GetPosition);
         mono_add_internal_call("Boom.Native::Boom_API_SetPosition", (const void*)ICALL_API_SetPosition);
@@ -2445,6 +2482,10 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_TeleportController", (void*)ICALL_API_TeleportController);
         mono_add_internal_call("Boom.Native::Boom_API_GetControllerTriggerOverlaps", (const void*)ICALL_API_GetControllerTriggerOverlaps);
         mono_add_internal_call("Boom.Native::Boom_API_GetControllerStandingOn", (const void*)ICALL_API_GetControllerStandingOn);
+
+        // Model component internal calls
+        mono_add_internal_call("Boom.Native::Boom_API_HasModelComponent", (const void*)ICALL_API_HasModelComponent);
+        mono_add_internal_call("Boom.Native::Boom_API_SetModelOpacity", (const void*)ICALL_API_SetModelOpacity);
 
         // Sprite component internal calls
         mono_add_internal_call("Boom.Native::Boom_API_HasSprite", (const void*)ICALL_API_HasSprite);

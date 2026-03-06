@@ -2,34 +2,82 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
-      Name: Background
-      UID: 6826468771598520566
+      Name: ReturnButton
+      UID: 657123291311439250
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, 0, -3]
+        Translate: [0.300000012, -0.25, -0.800000012]
         Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [0.200000003, 0.100000001, 1]
     SpriteComponent:
-      textureID: 13983692512001316939
-      color: [1, 1, 1, 1]
+      textureID: 1920245529432086823
+      color: [0.529411793, 0.529411793, 0.529411793, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 0
-      Name: Script
-      UID: 10799874709337524680
+      Name: How To Play Scroll
+      UID: 4550605977641995884
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, -1.20000005]
+        Rotate: [0, 0, 0]
+        Scale: [1.10000002, 1, 1]
+    SpriteComponent:
+      textureID: 11766718581238552621
+      color: [0.524509788, 0.473087251, 0.473087251, 1]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 0
+      Name: Camera
+      UID: 9201024860084647067
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0.180000007, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        NearPlane: 0.300000012
+        FarPlane: 1000
+        FOV: 91
+  - InfoComponent:
+      Parent: 0
+      Name: Point Light
+      UID: 5315588240363654174
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0.5, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.899999976, 0.699999988]
+        Intensity: 10
+        Range: 0
+        BloomStrength: 1
+  - InfoComponent:
+      Parent: 0
+      Name: Directional Light
+      UID: 16395980114807373968
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
+        Rotate: [6, 0, 0]
         Scale: [1, 1, 1]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.HowToPlayMenu
-      ParamsJSON: "{}"
+    DirectLightComponent:
+      Light:
+        Radiance: [1, 1, 0.899999976]
+        Intensity: 3
   - InfoComponent:
       Parent: 0
       Name: Spot Light
       UID: 12363776012929465708
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [2, 2, 2]
@@ -43,68 +91,29 @@ ENTITIES:
         CutOff: 0.34906584
   - InfoComponent:
       Parent: 0
-      Name: Directional Light
-      UID: 16395980114807373968
+      Name: Script
+      UID: 10799874709337524680
+      SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
-        Rotate: [6, 0, 0]
-        Scale: [1, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [1, 1, 0.899999976]
-        Intensity: 3
-  - InfoComponent:
-      Parent: 0
-      Name: Point Light
-      UID: 5315588240363654174
-    TransformComponent:
-      Transform:
-        Translate: [0, 0.5, 0]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
-    PointLightComponent:
-      Light:
-        Radiance: [1, 0.899999976, 0.699999988]
-        Intensity: 10
-        Range: 0
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.HowToPlayMenu
+      ParamsJSON: "{}"
   - InfoComponent:
       Parent: 0
-      Name: Camera
-      UID: 9201024860084647067
+      Name: Background
+      UID: 6826468771598520566
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, 0.180000007, 0]
+        Translate: [0, 0, -3]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
-    CameraComponent:
-      Camera:
-        NearPlane: 0.300000012
-        FarPlane: 1000
-        FOV: 91
-  - InfoComponent:
-      Parent: 0
-      Name: How To Play Scroll
-      UID: 4550605977641995884
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, -1.20000005]
-        Rotate: [0, 0, 0]
-        Scale: [1.10000002, 1, 1]
     SpriteComponent:
-      textureID: 11766718581238552621
-      color: [0.666666627, 0.617646992, 0.617646992, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 0
-      Name: ReturnButton
-      UID: 657123291311439250
-    TransformComponent:
-      Transform:
-        Translate: [0.300000012, -0.25, -0.800000012]
-        Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.100000001, 1]
-    SpriteComponent:
-      textureID: 11023485835561908912
-      color: [1, 1, 1, 1]
+      textureID: 13983692512001316939
+      color: [0.475490212, 0.475490212, 0.475490212, 1]
       renderAs3D: false
