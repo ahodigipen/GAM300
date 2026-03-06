@@ -42,9 +42,11 @@ namespace Boom {
 
 	public:
 		Transform3D modelTransform{};
+		float m_BoundingRadius = 0.0f;
 		XPROPERTY_DEF(
 			"Model", Model,
-			obj_member<"transform", &Model::modelTransform>
+			obj_member<"transform", &Model::modelTransform>,
+			obj_member<"boundingRadius", &Model::m_BoundingRadius>
 		)
 	};
 

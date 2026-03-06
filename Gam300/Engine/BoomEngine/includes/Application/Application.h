@@ -844,29 +844,45 @@ namespace Boom
 
 		BOOM_INLINE void LightsUpdate() {
 
-			// Point lights
-			std::vector<GPUPointLight> gpuPoints;
-			gpuPoints.reserve(MAX_POINT_LIGHTS);
-			int points = 0;
+			// 1. Collect and Sort Point Lights
+			struct PointLightJob {
+				GPUPointLight gpuData;
+				float distSq;
+			};
+			std::vector<PointLightJob> pointLightJobs;
+			glm::vec3 camPos = m_Context->renderer->GetCameraPosition();
 
 			EnttView<Entity, PointLightComponent, TransformComponent>(
 				[&](auto, PointLightComponent& plc, TransformComponent& tc)
 				{
-					if (points >= MAX_POINT_LIGHTS) return;
-
 					GPUPointLight g{};
 					g.position_range = glm::vec4(tc.transform.translate, plc.light.range);
 					g.radiance_intensity = glm::vec4(plc.light.radiance, plc.light.intensity);
-					// Combine per-light bloom strength with global point light bloom multiplier
 					float finalBloomStrength = plc.light.bloomStrength * m_Context->renderer->pointLightBloomMultiplier;
 					g.bloomStrength_padding = glm::vec4(finalBloomStrength, 0.0f, 0.0f, 0.0f);
-					gpuPoints.push_back(g);
-					++points;
+
+					float d2 = glm::distance2(camPos, tc.transform.translate);
+					pointLightJobs.push_back({ g, d2 });
 				});
+
+			// Sort so closest lights are first
+			std::sort(pointLightJobs.begin(), pointLightJobs.end(), [](const PointLightJob& a, const PointLightJob& b) {
+				return a.distSq < b.distSq;
+			});
+
+			// Only upload the closest N lights
+			const int maxPointLights = 32; 
+			std::vector<GPUPointLight> gpuPoints;
+			int points = 0;
+			for (auto& job : pointLightJobs) {
+				if (points >= maxPointLights || points >= MAX_POINT_LIGHTS) break;
+				gpuPoints.push_back(job.gpuData);
+				points++;
+			}
 
 			m_Context->renderer->UploadPointLights(gpuPoints, points);
 
-			// Directional lights
+			// 2. Directional lights (usually only 1, so no need to sort)
 			std::vector<GPUDirLight> gpuDirs;
 			gpuDirs.reserve(MAX_DIR_LIGHTS);
 			int directs = 0;
@@ -877,7 +893,6 @@ namespace Boom
 					if (directs >= MAX_DIR_LIGHTS) return;
 
 					GPUDirLight g{};
-					// Convert Euler rotation (degrees) to direction vector
 					glm::vec3 eulerRadians = glm::radians(tc.transform.rotate);
 					glm::quat rotation = glm::quat(eulerRadians);
 					glm::vec3 lightDir = rotation * glm::vec3(0.0f, 0.0f, -1.0f);
@@ -890,31 +905,43 @@ namespace Boom
 
 			m_Context->renderer->UploadDirLights(gpuDirs, directs);
 
-			// Spot lights
-			std::vector<GPUSpotLight> gpuSpots;
-			gpuSpots.reserve(MAX_SPOT_LIGHTS);
-			int spots = 0;
+			// 3. Spot lights (Already culled/handled by shadow logic, but let's limit here too)
+			struct SpotLightJob {
+				GPUSpotLight gpuData;
+				float distSq;
+			};
+			std::vector<SpotLightJob> spotLightJobs;
 
 			EnttView<Entity, SpotLightComponent, TransformComponent>(
 				[&](auto, SpotLightComponent& slc, TransformComponent& tc)
 				{
-					if (spots >= MAX_SPOT_LIGHTS) return;
-
 					GPUSpotLight g{};
 					g.position_falloff = glm::vec4(tc.transform.translate, slc.light.fallOff);
-					// Convert Euler rotation (degrees) to direction vector
 					glm::vec3 eulerRadians = glm::radians(tc.transform.rotate);
 					glm::quat rotation = glm::quat(eulerRadians);
 					glm::vec3 lightDir = rotation * glm::vec3(0.0f, 0.0f, -1.0f);
 
 					g.dir_cutoff = glm::vec4(glm::normalize(lightDir), slc.light.cutOff);
 					g.radiance_intensity = glm::vec4(slc.light.radiance, slc.light.intensity);
-					gpuSpots.push_back(g);
-					++spots;
+					
+					float d2 = glm::distance2(camPos, tc.transform.translate);
+					spotLightJobs.push_back({ g, d2 });
 				});
 
-			m_Context->renderer->UploadSpotLights(gpuSpots, spots);
+			std::sort(spotLightJobs.begin(), spotLightJobs.end(), [](const SpotLightJob& a, const SpotLightJob& b) {
+				return a.distSq < b.distSq;
+			});
 
+			const int maxSpotLights = 32;
+			std::vector<GPUSpotLight> gpuSpots;
+			int spots = 0;
+			for (auto& job : spotLightJobs) {
+				if (spots >= maxSpotLights || spots >= MAX_SPOT_LIGHTS) break;
+				gpuSpots.push_back(job.gpuData);
+				spots++;
+			}
+
+			m_Context->renderer->UploadSpotLights(gpuSpots, spots);
 		}
 
 		BOOM_INLINE void RenderShadowScene() {
@@ -995,77 +1022,91 @@ namespace Boom
 		BOOM_INLINE void RenderSpotShadowScene() {
 			if (!toggleShadows) return;
 
+			// Distance threshold for spot light shadows (only render shadows for lights close to camera)
+			const float maxShadowDistSq = 50.0f * 50.0f; 
+			const int maxActiveSpotShadows = 8; // Limit total active spot shadows for performance
+
+			struct ShadowJob {
+				Entity entity;
+				float distSq;
+				glm::vec3 pos;
+				glm::vec3 rot;
+				float cutOff;
+			};
+			std::vector<ShadowJob> shadowJobs;
+
+			// 1. Identify and sort potential shadow casters
+			EnttView<Entity, SpotLightComponent, TransformComponent>(
+				[this, &shadowJobs, maxShadowDistSq](auto entity, SpotLightComponent& light, TransformComponent& tc)
+				{
+					glm::vec3 position = tc.transform.translate;
+					float d2 = glm::distance2(m_Context->renderer->GetCameraPosition(), position);
+					if (d2 < maxShadowDistSq) {
+						shadowJobs.push_back({ 
+							entity, d2, position, tc.transform.rotate, 
+							glm::degrees(glm::acos(light.light.cutOff)) 
+						});
+					}
+				});
+
+			if (shadowJobs.empty()) {
+				m_Context->renderer->UploadSpotShadowData(0);
+				return;
+			}
+
+			// Sort by distance so closest lights get shadow slots
+			std::sort(shadowJobs.begin(), shadowJobs.end(), [](const ShadowJob& a, const ShadowJob& b) {
+				return a.distSq < b.distSq;
+			});
+
+			glEnable(GL_CULL_FACE);
 			glCullFace(GL_FRONT);
 
-			// Collect spot lights that should cast shadows (up to MAX_SPOT_SHADOW_LIGHTS)
 			int spotShadowIndex = 0;
-			EnttView<Entity, SpotLightComponent, TransformComponent>(
-				[this, &spotShadowIndex](auto, SpotLightComponent& light, TransformComponent& tc)
-				{
-					if (spotShadowIndex >= MAX_SPOT_SHADOW_LIGHTS) return;
+			for (auto& job : shadowJobs) {
+				if (spotShadowIndex >= maxActiveSpotShadows || spotShadowIndex >= MAX_SPOT_SHADOW_LIGHTS) break;
 
-					// Get spot light properties
-					glm::vec3 position = tc.transform.translate;
-					glm::vec3 rotation = tc.transform.rotate;
-					float cutOffAngle = glm::degrees(glm::acos(light.light.cutOff)); // Convert from cos to degrees
-					float range = 50.0f; // Default range, could be added to SpotLight struct
+				// Begin shadow pass for this spot light
+				m_Context->renderer->BeginSpotShadowPass(spotShadowIndex, job.pos, job.rot, job.cutOff, 50.0f);
 
-					// Begin shadow pass for this spot light
-					m_Context->renderer->BeginSpotShadowPass(spotShadowIndex, position, rotation, cutOffAngle, range);
+				// Use instancing for shadow pass - much faster than per-entity DrawShadow
+				m_Context->renderer->BeginInstanceCollection();
 
-					// Render all shadow-casting objects
-					EnttView<Entity, ModelComponent>([this](auto entity, ModelComponent& comp) {
-						if (!entity.Has<ModelComponent>() || comp.modelID == EMPTY_ASSET) return;
-						if (entity.Has<DirectLightComponent>() || entity.Has<PointLightComponent>() || entity.Has<SpotLightComponent>()) return;
-						// Skip deactivated entities - they shouldn't cast shadows
-						if (entity.Has<DeactivatedComponent>()) return;
+				EnttView<Entity, ModelComponent>([this](auto entity, ModelComponent& comp) {
+					if (comp.modelID == EMPTY_ASSET) return;
+					if (entity.Has<DirectLightComponent>() || entity.Has<PointLightComponent>() || entity.Has<SpotLightComponent>()) return;
+					if (entity.Has<DeactivatedComponent>()) return;
 
-						ModelAsset* model{ m_Context->assets->TryGet<ModelAsset>(comp.modelID) };
-						if (!model || !model->data) return;
+					ModelAsset* model{ m_Context->assets->TryGet<ModelAsset>(comp.modelID) };
+					if (!model || !model->data) return;
 
+					glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+					glm::mat4 finalMatrix = worldMatrix * model->data->modelTransform.Matrix();
+
+					if (entity.Has<AnimatorComponent>() || model->hasJoints) {
 						std::vector<glm::mat4> joints;
 						if (entity.Has<AnimatorComponent>()) {
-							auto& an = entity.Get<AnimatorComponent>();
-							joints = an.animator->GetJoints();
-						}
-						else if (model->hasJoints) {
+							joints = entity.Get<AnimatorComponent>().animator->GetJoints();
+						} else {
 							static std::vector<glm::mat4> identityPalette(100, glm::mat4(1.0f));
 							joints = identityPalette;
 						}
-
-						glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
-						Transform3D worldTransform;
-						DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
-
-						// Get material for opacity-based shadow casting
-						if (comp.materialID != EMPTY_ASSET) {
-							MaterialAsset* matAsset = m_Context->assets->TryGet<MaterialAsset>(comp.materialID);
-							if (matAsset) {
-								// Resolve opacity map texture if present
-								if (matAsset->opacityMapID != EMPTY_ASSET) {
-									TextureAsset* opacityTex = m_Context->assets->TryGet<TextureAsset>(matAsset->opacityMapID);
-									if (opacityTex && opacityTex->data) {
-										matAsset->data.opacityMap = opacityTex->data;
-									}
-								}
-								m_Context->renderer->DrawShadow(model->data, worldTransform, joints, matAsset->data);
-								return;
-							}
-						}
-						m_Context->renderer->DrawShadow(model->data, worldTransform, joints);
-					});
-
-					m_Context->renderer->EndSpotShadowPass();
-					++spotShadowIndex;
+						m_Context->renderer->AddAnimatedInstance(comp.modelID, comp.materialID, finalMatrix, joints);
+					} else {
+						m_Context->renderer->AddInstance(comp.modelID, comp.materialID, finalMatrix, false);
+					}
 				});
+
+				m_Context->renderer->RenderShadowInstancedBatches(*m_Context->assets);
+				m_Context->renderer->EndSpotShadowPass();
+
+				spotShadowIndex++;
+			}
 
 			glCullFace(GL_BACK);
 			glDisable(GL_CULL_FACE);
 
-			// Upload spot shadow data to the PBR shader
-			if (spotShadowIndex > 0) {
-				m_Context->renderer->UploadSpotShadowData(spotShadowIndex);
-			}
+			m_Context->renderer->UploadSpotShadowData(spotShadowIndex);
 		}
 
 		void SnapEntity(Entity entity, const glm::vec3& direction, float maxDistance = 100.0f);

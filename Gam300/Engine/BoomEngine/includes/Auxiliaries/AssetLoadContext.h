@@ -46,6 +46,7 @@ namespace Boom {
     struct StaticModelLoadContext {
         std::string filePath;
         std::vector<MeshData<ShadedVert>> meshes;
+        float boundingRadius = 0.0f;
         bool loadSuccess = false;
         std::string errorMessage;
     };
@@ -56,6 +57,7 @@ namespace Boom {
     struct SkeletalModelLoadContext {
         std::string filePath;
         std::vector<MeshData<SkeletalVertex>> meshes;
+        float boundingRadius = 0.0f;
         std::shared_ptr<Joint> rootJoint;
         std::vector<std::shared_ptr<struct AnimationClip>> clips;
         glm::mat4 globalTransform;
