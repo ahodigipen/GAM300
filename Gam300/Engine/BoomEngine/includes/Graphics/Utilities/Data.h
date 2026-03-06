@@ -45,6 +45,12 @@ namespace Boom {
 				glm::scale(glm::mat4(1.f), scale);
 		}
 
+		BOOM_INLINE glm::mat4 MatrixNoScale() const {
+			return //TR
+				glm::translate(glm::mat4(1.f), translate) *
+				GetRotationMatrix(rotate);
+		}
+
 		glm::vec3 translate;
 		glm::vec3 rotate;
 		glm::vec3 scale;
@@ -106,18 +112,7 @@ namespace Boom {
 		}
 		//transform here refers to the camera's transformation variables
 		BOOM_INLINE glm::mat4 View(Transform3D const& transform) const {
-			return glm::inverse(transform.Matrix());
-
-			/*
-			glm::quat rotQuat{ glm::radians(transform.rotate) };
-			glm::vec3 forward{ rotQuat * glm::vec3{0.f, 0.f, -1.f} };
-			glm::vec3 up{ rotQuat * glm::vec3{0.f, 1.f, 0.f} };
-
-			return glm::lookAt(
-				transform.translate,			//position
-				transform.translate + forward, 	//target
-				up								//upwards direction
-			);*/
+			return glm::inverse(transform.MatrixNoScale());
 		}
 		BOOM_INLINE glm::mat4 Projection(float ratio) const {
 			return glm::perspective(glm::radians(FOV), ratio, nearPlane, farPlane);
