@@ -3267,7 +3267,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/02.Night_Forest_Field_Stars_Loop.wav
           loop: true
-          volume: 0.448000014
+          volume: 0.144999996
           priority: 101
           pitch: 1
           stereoPan: 0
