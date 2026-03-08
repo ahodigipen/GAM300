@@ -103,7 +103,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 1
+          volume: 0.66900003
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -150,7 +150,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 1
+          volume: 0.648999989
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -197,7 +197,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 1
+          volume: 0.661000013
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -3267,7 +3267,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/02.Night_Forest_Field_Stars_Loop.wav
           loop: true
-          volume: 0.448000014
+          volume: 0.144999996
           priority: 101
           pitch: 1
           stereoPan: 0
@@ -3885,7 +3885,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 1
+          volume: 0.644999981
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -5017,14 +5017,14 @@ ENTITIES:
       SortOrder: 308
     TransformComponent:
       Transform:
-        Translate: [17.3977261, 21.3131008, 15.2843199]
-        Rotate: [135.375, 27890, 180]
+        Translate: [2.72359157, 20.3691082, 25.5136395]
+        Rotate: [181.125, 27778.6875, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.00100000005
         FarPlane: 935.47998
-        FOV: 84
+        FOV: 77
     ThirdPersonCameraComponent:
       Target UID: 2377197601835279376
       Offset: [0.00999999978, 4.1500001, 0]
@@ -10405,7 +10405,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 1
+          volume: 0.665000021
           priority: 128
           pitch: 1
           stereoPan: 0
