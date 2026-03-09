@@ -9,7 +9,7 @@ namespace GameScripts
     {
         public ulong Entity;
 
-        // Static Registry by ID
+        // Static Registry by ID (Used by animation tracks/events)
         public static System.Collections.Generic.Dictionary<ulong, CutsceneSequencer> InstancesById = new System.Collections.Generic.Dictionary<ulong, CutsceneSequencer>();
 
         public static void PlayCutscene(string entityName)
@@ -25,15 +25,29 @@ namespace GameScripts
             }
         }
 
-        // Properties
+        // Properties (Exposed to Editor)
+        [Boom.EditorExposed("Cutscene File", "The .seq file to load from Resources/Cutscenes/")]
         public string CutsceneFile = "Test.seq";
+        
+        [Boom.EditorExposed("Play On Start", "Whether the cutscene plays automatically when the scene loads")]
         public bool PlayOnStart = false;
+        
+        [Boom.EditorExposed("Loop Cutscene", "Whether the sequence loops at the end")]
         public bool Loop = false;
-        public bool BlockInput = true; // Default to TRUE for cinematic feel
-        public bool AllowSkip = true; // Allows players to opt-out
-        public bool ConsoleDebug = true; // Default ON: Logs position/target every sec
-        public bool VisualDebug = false; // Default OFF: Draws lines
+        
+        [Boom.EditorExposed("Block Input", "Whether player input is disabled during the cutscene")]
+        public bool BlockInput = true;
+        
+        [Boom.EditorExposed("Allow Skip", "Whether the player can press a button to skip the cinematic")]
+        public bool AllowSkip = true;
+        
+        [Boom.EditorExposed("Console Debug", "Log position and sequencer events to the console")]
+        public bool ConsoleDebug = true;
+        
+        [Boom.EditorExposed("Visual Debug", "Draw lines indicating track paths")]
+        public bool VisualDebug = false;
 
+        [Boom.EditorExposed("Start Delay", "Seconds to wait before starting", 0.0f, 60.0f, true)]
         public float StartDelay = 0.0f;
 
         private float _currentTime = 0f;
@@ -103,100 +117,8 @@ namespace GameScripts
 
             API.Log($"[CutsceneDebug] OnStart Called. Raw Params: '{jsonParams}'");
 
-            // Parse JSON Params
-            if (!string.IsNullOrEmpty(jsonParams) && jsonParams != "{}")
-            {
-                try
-                {
-                    // Simple manual parsing since we lack a JSON lib
-                    // Expect: { "CutsceneFile": "Name.seq", "PlayOnStart": true }
-
-                    // 1. CutsceneFile
-                    if (jsonParams.Contains("\"CutsceneFile\""))
-                    {
-                        int keyIdx = jsonParams.IndexOf("\"CutsceneFile\"");
-                        int valStart = jsonParams.IndexOf(":", keyIdx) + 1;
-                        int valQuote1 = jsonParams.IndexOf("\"", valStart);
-                        int valQuote2 = jsonParams.IndexOf("\"", valQuote1 + 1);
-                        if (valQuote1 != -1 && valQuote2 != -1)
-                        {
-                            CutsceneFile = jsonParams.Substring(valQuote1 + 1, valQuote2 - valQuote1 - 1);
-                            API.Log($"[CutsceneDebug] Parsed CutsceneFile: '{CutsceneFile}'");
-                        }
-                    }
-
-                    // 2. PlayOnStart
-                    if (jsonParams.Contains("\"PlayOnStart\""))
-                    {
-                        // Simplify: Just check if "PlayOnStart" is followed by "true" (ignoring strict structure)
-                        int keyIdx = jsonParams.IndexOf("\"PlayOnStart\"");
-                        string afterKey = jsonParams.Substring(keyIdx);
-                        if (afterKey.Contains("true"))
-                        {
-                            PlayOnStart = true;
-                            API.Log("[CutsceneDebug] Parsed PlayOnStart: TRUE");
-                        }
-                        else if (afterKey.Contains("false"))
-                        {
-                            PlayOnStart = false;
-                            API.Log("[CutsceneDebug] Parsed PlayOnStart: FALSE");
-                        }
-                    }
-
-                    // 3. StartDelay (New)
-                    if (jsonParams.Contains("\"StartDelay\""))
-                    {
-                        int keyIdx = jsonParams.IndexOf("\"StartDelay\"");
-                        int valStart = jsonParams.IndexOf(":", keyIdx) + 1;
-                        // Find number
-                        // This is a rough parser, assumes delay is a number
-                        string after = jsonParams.Substring(valStart);
-                        string numStr = "";
-                        foreach (char c in after)
-                        {
-                            if (char.IsDigit(c) || c == '.') numStr += c;
-                            else if (numStr.Length > 0 && (c == ',' || c == '}' || char.IsWhiteSpace(c))) break;
-                            else if (char.IsWhiteSpace(c)) continue;
-                            else break;
-                        }
-                        float.TryParse(numStr, out StartDelay);
-                        API.Log($"[CutsceneDebug] Parsed StartDelay: {StartDelay}");
-                    }
-
-                    // 4. BlockInput (New)
-                    if (jsonParams.Contains("\"BlockInput\""))
-                    {
-                        int keyIdx = jsonParams.IndexOf("\"BlockInput\"");
-                        string afterKey = jsonParams.Substring(keyIdx);
-                        if (afterKey.Contains("false"))
-                        {
-                            BlockInput = false;
-                            API.Log("[CutsceneDebug] Parsed BlockInput: FALSE");
-                        }
-                        else
-                        {
-                            BlockInput = true; // Default or explicit true
-                            API.Log("[CutsceneDebug] Parsed BlockInput: TRUE");
-                        }
-                    }
-
-                    // 5. AllowSkip (New)
-                    if (jsonParams.Contains("\"AllowSkip\""))
-                    {
-                        int keyIdx = jsonParams.IndexOf("\"AllowSkip\"");
-                        string afterKey = jsonParams.Substring(keyIdx);
-                        if (afterKey.Contains("false"))
-                        {
-                            AllowSkip = false;
-                        }
-                        else
-                        {
-                            AllowSkip = true;
-                        }
-                    }
-                }
-                catch (Exception e) { API.Log("[Cutscene] JSON Parse Error: " + e.Message); }
-            }
+            // Parse JSON Params - No longer needed, EditorExposed handles this.
+            // The manual JSON parsing block has been removed as EditorExposed fields now handle these properties.
 
             API.Log($"[Cutscene] Initializing... File: '{CutsceneFile}', BlockInput: {BlockInput}, Delay: {StartDelay}");
             LoadCutscene(CutsceneFile);
