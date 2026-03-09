@@ -284,6 +284,18 @@ namespace EditorUI {
 
                 ImGui::MenuItem("Picking ignore GUI", nullptr, &m.ctx->renderer->isPickIgnoreGUI);
 
+                if (ImGui::BeginMenu("Tone Mapping")) {
+                    ImGui::SliderFloat("Exposure",  &m.ctx->renderer->tonemapExposure,  0.0f, 4.0f);
+                    ImGui::SliderFloat("Gamma",     &m.ctx->renderer->tonemapGamma,     1.0f, 3.0f);
+                    ImGui::ColorEdit3 ("Warm Tint", &m.ctx->renderer->tonemapWarmTint.x);
+                    if (ImGui::Button("Reset to Defaults")) {
+                        m.ctx->renderer->tonemapExposure  = 1.0f;
+                        m.ctx->renderer->tonemapGamma     = 2.2f;
+                        m.ctx->renderer->tonemapWarmTint  = glm::vec3(1.08f, 0.98f, 0.82f);
+                    }
+                    ImGui::EndMenu();
+                }
+
                 if (ImGui::BeginMenu("Shadow Debug")) {
                     ImGui::MenuItem("Toggle Shadows", nullptr, &m.ctx->app->toggleShadows);
                     ImGui::MenuItem("Toggle DepthBuffer", nullptr, &m.ctx->renderer->isDepthBufferView);

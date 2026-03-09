@@ -375,6 +375,28 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
+    UID: 15114049110730279773
+    Name: metalgatetexture
+    Source: metalgatetexture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 8538867989910609552
+      NormalMapID: 11205160342225508013
+      RoughnessMapID: 3390174833904116482
+      MetallicMapID: 0
+      OcclusionMapID: 3390174833904116482
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
     UID: 6419882418477707265
     Name: SilverBar
     Source: SilverBar
@@ -635,6 +657,28 @@ ASSETS:
       RoughnessMapID: 0
       MetallicMapID: 0
       OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
+    UID: 7666986193932932989
+    Name: ToriGateTexture
+    Source: ToriGateTexture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 11747185493236518571
+      NormalMapID: 5134270148386981872
+      RoughnessMapID: 2904894310952634977
+      MetallicMapID: 0
+      OcclusionMapID: 2904894310952634977
       EmissiveMapID: 0
       OpacityMapID: 0
       DoubleSided: false
@@ -2094,6 +2138,17 @@ ASSETS:
     UID: 7684017362689627028
     Name: Lantern_Hanging_openPBR_shader1_Height
     Source: Resources/Models/Props/2_KEN_LanternTextures/Lantern_Hanging_openPBR_shader1_Height.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 8538867989910609552
+    Name: openPBR_shader1_baseColor
+    Source: Resources/Models/Props/metalgate_model n texture/openPBR_shader1_baseColor.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3612,6 +3667,28 @@ ASSETS:
     UID: 11019855080675396891
     Name: Bar_openPBR_shader1_occlusionRoughnessMetallic
     Source: Resources/Models/Props/Steel Bar/Bar_openPBR_shader1_occlusionRoughnessMetallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 11205160342225508013
+    Name: openPBR_shader1_normal
+    Source: Resources/Models/Props/metalgate_model n texture/openPBR_shader1_normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 3390174833904116482
+    Name: openPBR_shader1_occlusionRoughnessMetallic
+    Source: Resources/Models/Props/metalgate_model n texture/openPBR_shader1_occlusionRoughnessMetallic.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -5231,6 +5308,17 @@ ASSETS:
     UID: 14124836796428390504
     Name: metal bar_uncloured
     Source: Resources/Models/Props/Steel Bar/metal bar_uncloured.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 1078495214741830672
+    Name: metalgate_uncoloured2
+    Source: Resources/Models/Props/metalgate_model n texture/metalgate_uncoloured2.fbx
     Properties:
       Model Transform:
         transform:

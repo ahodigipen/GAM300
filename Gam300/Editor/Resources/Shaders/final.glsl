@@ -16,9 +16,9 @@ void main() {
 out vec4 out_fragment;
 in vec2 uvs;
 
-const float GAMMA = 1;
-const float EXPOSURE = 4;
-const float MIN_GAMMA = 0.000001;
+uniform float u_gamma;      // sRGB gamma        (default 2.2)
+uniform float u_exposure;   // HDR exposure scale (default 1.0)
+uniform vec3  u_warmTint;   // color temperature  (default ~5000K warm)
 
 uniform sampler2D map;
 uniform sampler2D u_bloom;
@@ -35,6 +35,16 @@ uniform float u_fogHeightFalloff;
 uniform float u_fogHeight;
 uniform mat4 u_invViewProj;
 uniform vec3 u_cameraPos;
+
+// Narkowicz 2015 ACES approximation — same curve used by Unity URP's ACES mode
+vec3 ACESFilm(vec3 x) {
+    const float a = 2.51;
+    const float b = 0.03;
+    const float c = 2.43;
+    const float d = 0.59;
+    const float e = 0.14;
+    return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
+}
 
 void main()
 {
@@ -57,10 +67,10 @@ void main()
       result = mix(result, u_fogColor, fogAmount);
   }
 
-  // gamma correction
-  result = pow(result, vec3(GAMMA));
-  result = vec3(1.0) - exp(-result * EXPOSURE);
-  result = pow(result, vec3(1.0 / max(GAMMA, MIN_GAMMA)));
+  result *= u_exposure;
+  result *= u_warmTint;
+  result = ACESFilm(result);
+  result = pow(result, vec3(1.0 / u_gamma));
 
   // Apply fade to black
   result = mix(result, vec3(0.0), u_fadeAlpha);
