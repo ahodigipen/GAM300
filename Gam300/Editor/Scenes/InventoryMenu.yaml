@@ -15,7 +15,7 @@ ENTITIES:
       color: [1, 1, 1, 1]
       renderAs3D: false
     MenuComponent:
-      MenuType: 0
+      MenuType: 6
   - InfoComponent:
       Parent: 0
       Name: Inventory_SmallDoorIcon
@@ -156,4 +156,4 @@ ENTITIES:
       renderAs3D: false
       billboardMode: true
     MenuComponent:
-      MenuType: 0
+      MenuType: 6

@@ -14,8 +14,10 @@ namespace GameScripts
         private const string SMALLDOOR_TEXT_NAME = "Inventory_SmallDoorKey";
 
         // Freeze row
-        private const string FREEZE_ICON_NAME    = "Inventory_FreezeIcon";
-        private const string FREEZE_TEXT_NAME    = "Inventory_FreezeStatus";
+        private const string FREEZE_ICON_NAME       = "Inventory_FreezeIcon";
+        private const string FREEZE_TEXT_NAME       = "Inventory_FreezeStatus";
+        private const string FREEZE_TEX_AVAILABLE   = "Resources/Textures/PlayerUI/UI_Freeze_Available.png";
+        private const string FREEZE_TEX_UNAVAILABLE = "Resources/Textures/PlayerUI/UI_Freeze_Unavailable.png";
 
         // Cached handles
         private ulong _bgEntity        = 0;
@@ -25,6 +27,8 @@ namespace GameScripts
         private ulong _smallDoorText   = 0;
         private ulong _freezeIcon      = 0;
         private ulong _freezeText      = 0;
+
+        private string _currentFreezeTexture = "";
 
         public void OnStart(string jsonParams)
         {
@@ -73,10 +77,18 @@ namespace GameScripts
                 SetSpriteAlpha(_mainDoorIcon,  mainCount  > 0 ? 1.0f : 0.35f);
                 SetSpriteAlpha(_smallDoorIcon, smallCount > 0 ? 1.0f : 0.35f);
 
-                // Freeze row
+                // Freeze row — alpha always 1; swap texture based on collection state
                 bool hasFreeze = PlayerInventory.HasFreezePower();
                 SetText(_freezeText, hasFreeze ? "1" : "0");
-                SetSpriteAlpha(_freezeIcon, 1.0f); // Always full alpha when inventory is open
+                
+                string targetTexture = hasFreeze ? FREEZE_TEX_AVAILABLE : FREEZE_TEX_UNAVAILABLE;
+                if (_currentFreezeTexture != targetTexture)
+                {
+                    API.SetSpriteTexture(_freezeIcon, targetTexture);
+                    _currentFreezeTexture = targetTexture;
+                }
+                
+                SetSpriteAlpha(_freezeIcon, 1.0f);
             }
             else
             {
