@@ -142,6 +142,7 @@ namespace GameScripts
             if (player != null)
             {
                 player.UpdateCheckpoint(spawnPos);
+                player.RestoreHealth(2);
                 _activated = true;
 
                 // Re-find light entities during activation to ensure they are found
