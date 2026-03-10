@@ -441,6 +441,28 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
+    UID: 1190950372665560984
+    Name: NewBrickWall
+    Source: NewBrickWall
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0
+        metallic: 0
+        occlusion: 0.589999974
+        opacity: 1
+        useWorldSpaceUV: true
+        textureScale: 9.89999962
+      AlbedoMapID: 3243208601200922329
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
     UID: 5064145407616579494
     Name: TextureTerrain
     Source: TextureTerrain
@@ -563,8 +585,8 @@ ASSETS:
         occlusion: 0.970000029
         opacity: 1
         useWorldSpaceUV: true
-        textureScale: 8.60999966
-      AlbedoMapID: 10441627123981480612
+        textureScale: 4.71000004
+      AlbedoMapID: 13329287097237119223
       NormalMapID: 0
       RoughnessMapID: 0
       MetallicMapID: 0
@@ -739,8 +761,8 @@ ASSETS:
         occlusion: 0.970000029
         opacity: 1
         useWorldSpaceUV: true
-        textureScale: 8.60999966
-      AlbedoMapID: 10441627123981480612
+        textureScale: 4.71000004
+      AlbedoMapID: 13329287097237119223
       NormalMapID: 0
       RoughnessMapID: 0
       MetallicMapID: 0
@@ -2850,6 +2872,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 13329287097237119223
+    Name: grass big
+    Source: Resources/Textures/grass big.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 8031341649730841089
     Name: BIG_Gravestone_low_Gravestone_Height
     Source: Resources/Models/Props/Ressurection_Gravestone/Gravestone Textures/BIG_Gravestone_low_Gravestone_Height.png
@@ -3238,6 +3271,17 @@ ASSETS:
     UID: 5134270148386981872
     Name: openPBR_shader1_normal
     Source: Resources/Models/Props/Torigate model n textures/openPBR_shader1_normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 3243208601200922329
+    Name: brickwalll 256
+    Source: Resources/Textures/brickwalll 256.png
     Properties:
       Data:
         CompileAsCompressed: true
