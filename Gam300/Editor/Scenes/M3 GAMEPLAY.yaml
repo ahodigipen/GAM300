@@ -2829,24 +2829,6 @@ ENTITIES:
       ParamsJSON: "{}"
   - InfoComponent:
       Parent: 0
-      Name: UI_Freeze_Text
-      UID: 14281033186002033227
-      SortOrder: 390
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    TextComponent:
-      text: E
-      fontName: Roboto-Regular
-      color: [1, 1, 1, 1]
-      scale: 0.699999988
-      screenPosition: [1677, 22]
-      renderAs3D: false
-      billboardMode: true
-  - InfoComponent:
-      Parent: 0
       Name: UI_Stance_Text
       UID: 799560869092660199
       SortOrder: 154
@@ -2872,7 +2854,7 @@ ENTITIES:
       Transform:
         Translate: [-0.26146245, -0.298543572, -0.5]
         Rotate: [0, 0, 0]
-        Scale: [0, 0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FreezeOverlayBehavior
@@ -3182,20 +3164,6 @@ ENTITIES:
       Enabled: true
       TypeName: GameScripts.UIManager
       ParamsJSON: "{}"
-  - InfoComponent:
-      Parent: 15030438282683852635
-      Name: UI_Key
-      UID: 14770515492309957970
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.800000012, 0.796999991, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.100000001, 0.0640320182]
-    SpriteComponent:
-      textureID: 327234960441928512
-      color: [1, 1, 1, 0]
-      renderAs3D: false
   - InfoComponent:
       Parent: 15030438282683852635
       Name: UI_Hold
@@ -11717,20 +11685,6 @@ ENTITIES:
         Intensity: 6.67000008
         FallOff: -3.0999999
         CutOff: 0.769999981
-  - InfoComponent:
-      Parent: 0
-      Name: UI_Freeze
-      UID: 6489595956869048591
-      SortOrder: 247
-    TransformComponent:
-      Transform:
-        Translate: [0.872441649, -0.770739496, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0500000007, 0.100000001, 0.5]
-    SpriteComponent:
-      textureID: 3615061789617660208
-      color: [1, 1, 1, 1]
-      renderAs3D: false
   - ColliderComponent:
       Collider:
         LocalPosition: [0.117112346, -0.17562063, -0.00326804421]
@@ -13205,24 +13159,6 @@ ENTITIES:
         Intensity: 1.63
         Range: 4
         BloomStrength: 1
-  - InfoComponent:
-      Parent: 15030438282683852635
-      Name: UI_KeyText
-      UID: 8452314967023224604
-      SortOrder: 295
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]
-    TextComponent:
-      text: x1
-      fontName: Roboto-Regular
-      color: [1, 1, 1, 0]
-      scale: 1
-      screenPosition: [1687, 789]
-      renderAs3D: false
-      billboardMode: true
   - InfoComponent:
       Parent: 0
       Name: UI_NoKeyText
@@ -16636,7 +16572,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.KeyPickup
-      ParamsJSON: "{\n  \"_keyType\": \"Key2_sr2\"\n}"
+      ParamsJSON: "{\n  \"_keyType\": \"Key2_sr2\",\n  \"_keyVariant\": \"SmallDoor\"\n}"
     SpotLightComponent:
       Light:
         Radiance: [0.828431368, 0.536043823, 0]
@@ -16696,7 +16632,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.KeyPickup
-      ParamsJSON: "{\n  \"_keyType\": \"Key2_sr1\"\n}"
+      ParamsJSON: "{\n  \"_keyType\": \"Key2_sr1\",\n  \"_keyVariant\": \"SmallDoor\"\n}"
     SpotLightComponent:
       Light:
         Radiance: [1, 1, 1]
@@ -16756,7 +16692,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.KeyPickup
-      ParamsJSON: "{\n  \"_keyType\": \"Key1_sr1\"\n}"
+      ParamsJSON: "{\n  \"_keyType\": \"Key1_sr1\",\n  \"_keyVariant\": \"SmallDoor\"\n}"
     SpotLightComponent:
       Light:
         Radiance: [1, 1, 1]

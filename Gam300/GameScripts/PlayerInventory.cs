@@ -1,4 +1,4 @@
-﻿using Boom;
+using Boom;
 
 namespace GameScripts
 {
@@ -18,6 +18,9 @@ namespace GameScripts
         private static System.Collections.Generic.Dictionary<string, string> s_typeToVariant =
             new System.Collections.Generic.Dictionary<string, string>();
 
+        // New: Track the order of item types in the player's inventory
+        public static System.Collections.Generic.List<string> s_inventorySlots = new System.Collections.Generic.List<string>();
+
         // New: Track if we are holding a freeze charge
         private static bool s_hasFreezeCharge = false;
 
@@ -27,6 +30,7 @@ namespace GameScripts
             s_keyTypes.Clear();
             s_keyVariants.Clear();
             s_typeToVariant.Clear();
+            s_inventorySlots.Clear(); // Keep our new slots clean
             s_hasFreezeCharge = false; // Reset ability on game restart
             TutorialManager.Reset(); // Reset tutorial states
             API.Log("[PlayerInventory] Reset");
@@ -58,6 +62,11 @@ namespace GameScripts
                     s_keyVariants[keyVariant]++;
                 else
                     s_keyVariants[keyVariant] = 1;
+
+                if (!s_inventorySlots.Contains(keyVariant))
+                {
+                    s_inventorySlots.Add(keyVariant);
+                }
             }
 
             s_keyCount++;
@@ -97,6 +106,11 @@ namespace GameScripts
                 if (s_keyVariants.ContainsKey(variant) && s_keyVariants[variant] > 0)
                 {
                     s_keyVariants[variant]--;
+                    
+                    if (s_keyVariants[variant] == 0)
+                    {
+                        s_inventorySlots.Remove(variant);
+                    }
                 }
                 s_typeToVariant.Remove(keyType);
             }
@@ -138,6 +152,10 @@ namespace GameScripts
             }
 
             s_hasFreezeCharge = true;
+            if (!s_inventorySlots.Contains("Freeze"))
+            {
+                s_inventorySlots.Add("Freeze");
+            }
             API.Log("[PlayerInventory] Freeze Charge Acquired! Press E to use.");
             return true;
         }
@@ -147,6 +165,7 @@ namespace GameScripts
             if (!s_hasFreezeCharge) return false;
 
             s_hasFreezeCharge = false;
+            s_inventorySlots.Remove("Freeze");
             API.Log("[PlayerInventory] Freeze Charge used.");
             return true;
         }

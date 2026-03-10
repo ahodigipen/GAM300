@@ -86,10 +86,8 @@
     <Compile Include="TutorialPopupTrigger.cs" />
     <Compile Include="TextTest.cs" />
     <Compile Include="UIEndController.cs" />
-    <Compile Include="UIFreezeController.cs" />
     <Compile Include="UIHoldController.cs" />
     <Compile Include="UIHeartController.cs" />
-    <Compile Include="UIKeyController.cs" />
     <Compile Include="UILocationController.cs" />
     <Compile Include="UIManager.cs" />
     <Compile Include="VisionComponent.cs" />

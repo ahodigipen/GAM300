@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Boom;
 
@@ -79,7 +79,6 @@ namespace GameScripts
 
             inst._collected = true;
             PlayerInventory.AddKey(inst._keyType, inst._keyVariant);
-            UIManager.ShowKeyPickup();
 
             // Show tutorial on first key pickup
             TutorialManager.ShowKeyTutorial();
