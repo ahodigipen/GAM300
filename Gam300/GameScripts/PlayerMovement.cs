@@ -307,6 +307,13 @@ namespace GameScripts
             API.SetSoundVolume("checkpoint_save", 0.8f);
         }
 
+        public void RestoreHealth(int amount)
+        {
+            _health = Math.Min(_health + amount, _maxHealth);
+            HUD.SetHealth(_health, _maxHealth);
+            API.Log($"[PlayerMovement] Health restored by {amount}. Current health: {_health}/{_maxHealth}");
+        }
+
         public void TeleportTo(Vec3 position)
         {
             _verticalVelocity = 0f;

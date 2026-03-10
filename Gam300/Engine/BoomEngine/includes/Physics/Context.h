@@ -805,10 +805,11 @@ namespace Boom {
             PxTransform pose = body.actor->getGlobalPose();
             EntityID* userData = static_cast<EntityID*>(body.actor->userData);
 
-            // Get Shapes
+            // Get and keep shapes alive
             const PxU32 numShapes = body.actor->getNbShapes();
             std::vector<PxShape*> shapes(numShapes);
             body.actor->getShapes(shapes.data(), numShapes);
+            for (PxShape* shape : shapes) shape->acquireReference();
 
             // Remove old actor
             m_Scene->removeActor(*body.actor);
@@ -831,9 +832,17 @@ namespace Boom {
 
             // Re-attach shapes & Add to scene
             if (newActor) {
-                for (PxShape* shape : shapes) newActor->attachShape(*shape);
+                for (PxShape* shape : shapes) {
+                    newActor->attachShape(*shape);
+                    shape->release(); // Release the reference we acquired earlier
+                }
                 newActor->userData = userData;
                 m_Scene->addActor(*newActor);
+            }
+            else {
+                // If creation failed, we must clean up
+                for (PxShape* shape : shapes) shape->release();
+                if (userData) delete userData;
             }
 
             body.actor = newActor;
