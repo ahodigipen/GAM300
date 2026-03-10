@@ -489,6 +489,16 @@ namespace Boom {
         }
         return vol;
     }
+    // Gamma / Tone Mapping
+    static void ICALL_API_SetGamma(float gamma) {
+        if (!s_Ctx || !s_Ctx->renderer) return;
+        s_Ctx->renderer->tonemapGamma = (gamma < 0.5f ? 0.5f : (gamma > 4.0f ? 4.0f : gamma));
+    }
+
+    static float ICALL_API_GetGamma() {
+        if (!s_Ctx || !s_Ctx->renderer) return 2.2f;
+        return s_Ctx->renderer->tonemapGamma;
+    }
     // End Pause Menu
 
     // Death Menu
@@ -2380,6 +2390,9 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetGameLogicPaused", (const void*)ICALL_API_SetGameLogicPaused);
         mono_add_internal_call("Boom.Native::Boom_API_SetGroupVolume", (const void*)ICALL_API_SetGroupVolume);
         mono_add_internal_call("Boom.Native::Boom_API_GetGroupVolume", (const void*)ICALL_API_GetGroupVolume);
+        // Gamma
+        mono_add_internal_call("Boom.Native::Boom_API_SetGamma", (const void*)ICALL_API_SetGamma);
+        mono_add_internal_call("Boom.Native::Boom_API_GetGamma", (const void*)ICALL_API_GetGamma);
 
         // Death Menu
         mono_add_internal_call("Boom.Native::Boom_API_UnloadDeathMenu", (const void*)ICALL_API_UnloadDeathMenu);

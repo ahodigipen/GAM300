@@ -209,6 +209,13 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern float Boom_API_GetGroupVolume(string name);
 
+        // Gamma / Tone Mapping
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetGamma(float gamma);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern float Boom_API_GetGamma();
+
         // Death Menu
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_UnloadDeathMenu();
@@ -893,6 +900,10 @@ namespace Boom
         {
             return Native.Boom_API_GetGroupVolume(groupName);
         }
+
+        // Gamma / Tone Mapping
+        public static void SetGamma(float gamma) => Native.Boom_API_SetGamma(gamma);
+        public static float GetGamma() => Native.Boom_API_GetGamma();
 
         // Death Menu
         public static void UnloadDeathMenu() => Native.Boom_API_UnloadDeathMenu();
