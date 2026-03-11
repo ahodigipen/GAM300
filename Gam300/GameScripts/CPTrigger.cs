@@ -29,6 +29,24 @@ namespace GameScripts
         [Boom.EditorExposed("Active Color", "Color of lights when activated")]
         private Vec3 _activeColor = new Vec3(0.0f, 1.0f, 0.0f);
 
+        [Boom.EditorExposed("Checkpoint Sprite Names", "Comma-separated names of sprite entities to show when activated")]
+        private string _checkpointSpriteNames = "";
+
+        [Boom.EditorExposed("Sprite Display Duration", "How long to show the sprites in seconds")]
+        private float _spriteDisplayDuration = 2.0f;
+
+        [Boom.EditorExposed("Sprite Fade Speed", "Speed of the fade effect")]
+        private float _spriteFadeSpeed = 4.0f;
+
+        [Boom.EditorExposed("Float Speed", "Speed of the upward float movement")]
+        private float _floatSpeed = 50.0f;
+
+        [Boom.EditorExposed("Bob Speed", "Speed of the horizontal bobbing movement")]
+        private float _bobSpeed = 2.0f;
+
+        [Boom.EditorExposed("Bob Amount", "Amount of horizontal bobbing movement")]
+        private float _bobAmount = 20.0f;
+
         // Track if checkpoint was already activated
         private bool _activated = false;
         
@@ -37,6 +55,13 @@ namespace GameScripts
         private bool _wasAPressed = false;
 
         private List<ulong> _lightIDs = new List<ulong>();
+        private List<ulong> _spriteIDs = new List<ulong>();
+        private Dictionary<ulong, Vec3> _originalSpritePositions = new Dictionary<ulong, Vec3>();
+
+        // Sprite state
+        private float _spriteAlpha = 0.0f;
+        private float _spriteTimer = 0.0f;
+        private float _totalActiveTime = 0.0f;
 
         // Static instance tracking
         private static readonly Dictionary<ulong, CPTrigger> s_instances = new Dictionary<ulong, CPTrigger>();
@@ -49,7 +74,7 @@ namespace GameScripts
             // Apply editor parameters
             ScriptRegistry.ApplyParamsToExposedFields(this, jsonParams);
 
-            API.Log($"[CPTrigger] Starting on entity {Entity}. Light names: '{_lightNames}'");
+            API.Log($"[CPTrigger] Starting on entity {Entity}. Light names: '{_lightNames}', Sprites: '{_checkpointSpriteNames}'");
 
             // Find and initialize lights as OFF
             if (!string.IsNullOrEmpty(_lightNames))
@@ -69,6 +94,34 @@ namespace GameScripts
                         {
                             API.SetPointLightIntensity(id, 0.0f);
                         }
+                    }
+                }
+            }
+
+            // Initialize sprites if specified
+            _spriteIDs.Clear();
+            _originalSpritePositions.Clear();
+            if (!string.IsNullOrEmpty(_checkpointSpriteNames))
+            {
+                string[] names = _checkpointSpriteNames.Split(',');
+                foreach (string name in names)
+                {
+                    string trimmedName = name.Trim();
+                    ulong id = API.FindEntity(trimmedName);
+                    if (id != 0 && API.HasSprite(id))
+                    {
+                        _spriteIDs.Add(id);
+                        API.SetSpriteAlpha(id, 0.0f);
+                        
+                        // Store original world position
+                        if (API.HasTransform(id))
+                        {
+                            _originalSpritePositions[id] = API.GetPosition(id);
+                        }
+                    }
+                    else if (id == 0)
+                    {
+                        API.Log($"[CPTrigger] WARNING: Could not find sprite entity '{trimmedName}'");
                     }
                 }
             }
@@ -101,6 +154,55 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
+            // Handle sprites fade, movement and timer
+            if (_spriteIDs.Count > 0)
+            {
+                float targetAlpha = (_spriteTimer > 0) ? 1.0f : 0.0f;
+                
+                // Continue updating as long as it's visible or supposed to be visible
+                if (_spriteAlpha > 0.001f || targetAlpha > 0.001f)
+                {
+                    _spriteAlpha = Lerp(_spriteAlpha, targetAlpha, _spriteFadeSpeed * dt);
+                    
+                    // Always increment active time while visible so movement doesn't freeze during fade
+                    _totalActiveTime += dt;
+
+                    // Update movement for each sprite
+                    foreach (ulong id in _spriteIDs)
+                    {
+                        if (API.HasSprite(id))
+                        {
+                            API.SetSpriteAlpha(id, _spriteAlpha);
+
+                            // Apply world transform movement
+                            if (_originalSpritePositions.ContainsKey(id))
+                            {
+                                Vec3 originalPos = _originalSpritePositions[id];
+                                
+                                // Float up (+Y in world space)
+                                // Bob left/right (+X in world space)
+                                float offsetY = (_floatSpeed / 100f) * _totalActiveTime;
+                                float offsetX = (float)Math.Sin(_totalActiveTime * _bobSpeed) * (_bobAmount / 100f);
+
+                                Vec3 newPos = new Vec3(originalPos.X + offsetX, originalPos.Y + offsetY, originalPos.Z);
+                                API.SetPosition(id, newPos);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // Fully hidden: reset timer and alpha to zero
+                    _totalActiveTime = 0.0f;
+                    _spriteAlpha = 0.0f;
+                }
+
+                if (_spriteTimer > 0)
+                {
+                    _spriteTimer -= dt;
+                }
+            }
+
             // Only check for keys if player is in zone and checkpoint not yet activated
             if (!_playerInZone || _activated) return;
 
@@ -144,6 +246,13 @@ namespace GameScripts
                 player.UpdateCheckpoint(spawnPos);
                 player.RestoreHealth(2);
                 _activated = true;
+
+                // Trigger the sprites if specified
+                if (_spriteIDs.Count > 0)
+                {
+                    _spriteTimer = _spriteDisplayDuration;
+                    _totalActiveTime = 0.0f; // Restart animation timer
+                }
 
                 // Re-find light entities during activation to ensure they are found
                 _lightIDs.Clear();
@@ -205,6 +314,12 @@ namespace GameScripts
             if (s_instances.ContainsKey(Entity))
                 s_instances.Remove(Entity);
             API.UnregisterTriggerCallbacks(Entity);
+        }
+
+        private float Lerp(float a, float b, float t)
+        {
+            t = Math.Max(0f, Math.Min(1f, t));
+            return a + (b - a) * t;
         }
 
         private static void OnTriggerEnterCallback(ulong triggerEntity, ulong otherEntity)
