@@ -766,6 +766,17 @@ void AnimationTimelinePanel::RenderControlBar()
         ImGui::TextDisabled("|");
         ImGui::SameLine();
 
+        ImGui::SetNextItemWidth(100);
+        if (ImGui::DragInt("##SeqDur", &m_SequenceMaxFrame, 1.0f, 60, 18000, "%d frames"))
+        {
+            m_SequenceMaxFrame = std::max(60, m_SequenceMaxFrame); // Min 1 sec
+        }
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Cutscene max duration (frames at 60fps)");
+
+        ImGui::SameLine();
+        ImGui::TextDisabled("|");
+        ImGui::SameLine();
+
         // Add Track
         bool hasSelection = (m_Owner->SelectedEntity() != entt::null);
         if (hasSelection)
@@ -2207,16 +2218,15 @@ void AnimationTimelinePanel::SaveSequence(const std::string& path)
         return;
     }
 
-    // Frame Max is somewhat arbitrary based on longest keyframe, let's just use 600 default
-    int maxFrame = 600;
-    out << "DURATION " << maxFrame << "\n";
+    // Save User sequence frame length
+    out << "DURATION " << m_SequenceMaxFrame << "\n";
     for (const auto& track : m_SequenceTracks)
     {
         out << "TRACK \"" << track.entityName << "\" " << track.type << "\n";
         for (const auto& kf : track.keyFrames)
         {
             out << "KEY " << kf.frame << " " << kf.valueX << " " << kf.valueY << " " << kf.valueZ << " " << kf.valueW;
-            if ((track.type == 3 || track.type == 4 || track.type == 5) && !kf.valueStr.empty()) {
+            if (!kf.valueStr.empty()) {
                 out << " \"" << kf.valueStr << "\"";
             }
             out << "\n";
@@ -2249,7 +2259,9 @@ void AnimationTimelinePanel::LoadSequence(const std::string& path)
 
         if (token == "DURATION")
         {
-            // Skip duration max parsing
+            ss >> m_SequenceMaxFrame;
+            // Validate bounding
+            if (m_SequenceMaxFrame < 60) m_SequenceMaxFrame = 60;
         }
         else if (token == "TRACK")
         {
@@ -2275,15 +2287,13 @@ void AnimationTimelinePanel::LoadSequence(const std::string& path)
             SerializedKeyframe kf;
             ss >> kf.frame >> kf.valueX >> kf.valueY >> kf.valueZ >> kf.valueW;
             
-            if (currentTrack->type == 3 || currentTrack->type == 4 || currentTrack->type == 5)
-            {
-                std::string rest;
-                std::getline(ss, rest);
-                size_t q1 = rest.find('"');
-                size_t q2 = rest.rfind('"');
-                if (q1 != std::string::npos && q2 != std::string::npos && q2 > q1) {
-                    kf.valueStr = rest.substr(q1 + 1, q2 - q1 - 1);
-                }
+            // Unconditionally try to parse a trailing string if it exists (for Relative Anchors, LookAts, etc.)
+            std::string rest;
+            std::getline(ss, rest);
+            size_t q1 = rest.find('"');
+            size_t q2 = rest.rfind('"');
+            if (q1 != std::string::npos && q2 != std::string::npos && q2 > q1) {
+                kf.valueStr = rest.substr(q1 + 1, q2 - q1 - 1);
             }
 
             currentTrack->keyFrames.push_back(kf);

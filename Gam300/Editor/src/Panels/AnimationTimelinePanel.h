@@ -244,6 +244,8 @@ namespace EditorUI {
         
         char m_SaveSequenceFilename[128] = "NewCutscene"; 
         std::vector<std::string> m_AvailableCutsceneFiles;
+        int m_SequenceMaxFrame = 600; // Total frames for the current sequence
+
         
         struct SequenceMarkerScreenPos {
             int trackIndex;
@@ -253,6 +255,7 @@ namespace EditorUI {
         std::vector<SequenceMarkerScreenPos> m_SequenceMarkerScreenPositions;
         int m_HoveredSequenceTrackIndex = -1;
         int m_HoveredSequenceKeyframeIndex = -1;
+        int m_SelectedSequenceKeyframeIndex = -1;
         // --------------------------------
 
         // Transform gizmo state

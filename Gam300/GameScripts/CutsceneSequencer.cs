@@ -401,6 +401,11 @@ namespace GameScripts
                 if (track.type == 4)
                 {
                     if (track.keyframes.Count < 1) continue;
+                    
+                    if (currentFrame < track.keyframes[0].frame) continue; // DO NOT block other tracks until our start frame
+
+                    // Handoff logic: If LookAt track finishes its timeline, stop forcing focus so Rotation tracks can take over
+                    if (currentFrame > track.keyframes[track.keyframes.Count - 1].frame) continue;
 
                     // Find active keyframe
                     KeyFrame activeKF = null;
@@ -516,23 +521,64 @@ namespace GameScripts
                 // TRANSFORM TRACKS (Need at least 1 keyframe)
                 if (track.keyframes.Count == 0) continue;
 
-                // 1. Handle "Before Start" -> Hold First Keyframe
-                if (currentFrame <= track.keyframes[0].frame)
+                // 1. Handle "Before Start" -> Do Not Override (Allows other tracks to play cleanly)
+                if (currentFrame < track.keyframes[0].frame)
                 {
-                    KeyFrame k = track.keyframes[0];
-                    if (track.type == 0) API.TeleportRigidBody(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
-                    else if (track.type == 1) API.SetRotation(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
-                    else if (track.type == 2) API.SetScale(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
+                    continue;
+                }
+                
+                // 1b. NEW: Handle "After End" on Stacked Tracks -> Do Not Override
+                // If a track has fully played out and another track exists, holding the last frame will override newer tracks!
+                // To support easy C++ Sequencer stacking, dormant tracks should stop holding once they pass their final frame.
+                // We'll only hold if it's the absolute final frame of the whole cutscene duration, otherwise we assume a hand-off occurred.
+                // (Exceptions: Single-keyframe tracks should permanently hold their single value!)
+                if (track.keyframes.Count > 1 && currentFrame > track.keyframes[track.keyframes.Count - 1].frame)
+                {
+                    continue; // Let the next sequential track handle the entity now
+                }
+
+                // 2. Handle exactly at "End" -> Set Last Keyframe precisely
+                if (currentFrame == track.keyframes[track.keyframes.Count - 1].frame)
+                {
+                    KeyFrame k = track.keyframes[track.keyframes.Count - 1];
+                    float x = k.vX; float y = k.vY; float z = k.vZ;
+
+                    // Support Relative Anchors for Transform Tracks
+                    if (!string.IsNullOrEmpty(k.valStr) && k.valStr != "None")
+                    {
+                        ulong anchorID = API.FindEntity(k.valStr);
+                        if (anchorID != 0 && track.type == 0) // Only offset POSITION
+                        {
+                            Vec3 anchorPos = API.GetPosition(anchorID);
+                            x += anchorPos.X; y += anchorPos.Y; z += anchorPos.Z;
+                        }
+                    }
+
+                    if (track.type == 0) API.SetPosition(track.cachedEntityID, new Vec3(x, y, z));
+                    else if (track.type == 1) API.SetRotation(track.cachedEntityID, new Vec3(x, y, z));
+                    else if (track.type == 2) API.SetScale(track.cachedEntityID, new Vec3(x, y, z));
                     continue;
                 }
 
-                // 2. Handle "After End" -> Hold Last Keyframe
-                if (currentFrame >= track.keyframes[track.keyframes.Count - 1].frame)
+                // 2b. Handle Single-Keyframe Static Tracks
+                if (track.keyframes.Count == 1 && currentFrame >= track.keyframes[0].frame)
                 {
-                    KeyFrame k = track.keyframes[track.keyframes.Count - 1];
-                    if (track.type == 0) API.TeleportRigidBody(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
-                    else if (track.type == 1) API.SetRotation(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
-                    else if (track.type == 2) API.SetScale(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
+                    KeyFrame k = track.keyframes[0];
+                    float x = k.vX; float y = k.vY; float z = k.vZ;
+
+                    if (!string.IsNullOrEmpty(k.valStr) && k.valStr != "None")
+                    {
+                        ulong anchorID = API.FindEntity(k.valStr);
+                        if (anchorID != 0 && track.type == 0)
+                        {
+                            Vec3 anchorPos = API.GetPosition(anchorID);
+                            x += anchorPos.X; y += anchorPos.Y; z += anchorPos.Z;
+                        }
+                    }
+
+                    if (track.type == 0) API.SetPosition(track.cachedEntityID, new Vec3(x, y, z));
+                    else if (track.type == 1) API.SetRotation(track.cachedEntityID, new Vec3(x, y, z));
+                    else if (track.type == 2) API.SetScale(track.cachedEntityID, new Vec3(x, y, z));
                     continue;
                 }
 
@@ -558,10 +604,22 @@ namespace GameScripts
                     if (t < 0f) t = 0f;
                     if (t > 1f) t = 1f;
 
-                    // Lerp
+                    // Lerp Base Offsets
                     float x = Lerp(k1.vX, k2.vX, t);
                     float y = Lerp(k1.vY, k2.vY, t);
                     float z = Lerp(k1.vZ, k2.vZ, t);
+
+                    // Support Relative Anchors for Transform Tracks
+                    // We check k1's anchor because we are currently interpolating ALONG k1's path!
+                    if (!string.IsNullOrEmpty(k1.valStr) && k1.valStr != "None")
+                    {
+                        ulong anchorID = API.FindEntity(k1.valStr);
+                        if (anchorID != 0 && track.type == 0) // Only offset POSITION
+                        {
+                            Vec3 anchorPos = API.GetPosition(anchorID);
+                            x += anchorPos.X; y += anchorPos.Y; z += anchorPos.Z;
+                        }
+                    }
 
                     if (track.type == 0) // Pos
                     {
