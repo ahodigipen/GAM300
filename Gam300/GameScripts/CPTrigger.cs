@@ -29,6 +29,30 @@ namespace GameScripts
         [Boom.EditorExposed("Active Color", "Color of lights when activated")]
         private Vec3 _activeColor = new Vec3(0.0f, 1.0f, 0.0f);
 
+        [Boom.EditorExposed("Checkpoint Sprite Names", "Comma-separated names of sprite entities to show when activated")]
+        private string _checkpointSpriteNames = "";
+
+        [Boom.EditorExposed("Bobbing Sprite Names", "Comma-separated names of sprites that should perform the sin wave bobbing")]
+        private string _bobbingSpriteNames = "";
+
+        [Boom.EditorExposed("Floating Sprite Names", "Comma-separated names of sprites that should float upwards")]
+        private string _floatingSpriteNames = "";
+
+        [Boom.EditorExposed("Sprite Display Duration", "How long to show the sprites in seconds")]
+        private float _spriteDisplayDuration = 2.0f;
+
+        [Boom.EditorExposed("Sprite Fade Speed", "Speed of the fade effect")]
+        private float _spriteFadeSpeed = 4.0f;
+
+        [Boom.EditorExposed("Float Speed", "Speed of the upward float movement")]
+        private float _floatSpeed = 50.0f;
+
+        [Boom.EditorExposed("Bob Speed", "Speed of the horizontal bobbing movement")]
+        private float _bobSpeed = 2.0f;
+
+        [Boom.EditorExposed("Bob Amount", "Amount of horizontal bobbing movement")]
+        private float _bobAmount = 20.0f;
+
         // Track if checkpoint was already activated
         private bool _activated = false;
         
@@ -37,6 +61,15 @@ namespace GameScripts
         private bool _wasAPressed = false;
 
         private List<ulong> _lightIDs = new List<ulong>();
+        private List<ulong> _spriteIDs = new List<ulong>();
+        private HashSet<ulong> _bobbingSpriteIDs = new HashSet<ulong>();
+        private HashSet<ulong> _floatingSpriteIDs = new HashSet<ulong>();
+        private Dictionary<ulong, Vec3> _originalSpritePositions = new Dictionary<ulong, Vec3>();
+
+        // Sprite state
+        private float _spriteAlpha = 0.0f;
+        private float _spriteTimer = 0.0f;
+        private float _totalActiveTime = 0.0f;
 
         // Static instance tracking
         private static readonly Dictionary<ulong, CPTrigger> s_instances = new Dictionary<ulong, CPTrigger>();
@@ -49,7 +82,7 @@ namespace GameScripts
             // Apply editor parameters
             ScriptRegistry.ApplyParamsToExposedFields(this, jsonParams);
 
-            API.Log($"[CPTrigger] Starting on entity {Entity}. Light names: '{_lightNames}'");
+            API.Log($"[CPTrigger] Starting on entity {Entity}. Light names: '{_lightNames}', Sprites: '{_checkpointSpriteNames}'");
 
             // Find and initialize lights as OFF
             if (!string.IsNullOrEmpty(_lightNames))
@@ -69,6 +102,58 @@ namespace GameScripts
                         {
                             API.SetPointLightIntensity(id, 0.0f);
                         }
+                    }
+                }
+            }
+
+            // Initialize bobbing sprites lookup
+            _bobbingSpriteIDs.Clear();
+            if (!string.IsNullOrEmpty(_bobbingSpriteNames))
+            {
+                string[] names = _bobbingSpriteNames.Split(',');
+                foreach (string name in names)
+                {
+                    ulong id = API.FindEntity(name.Trim());
+                    if (id != 0) _bobbingSpriteIDs.Add(id);
+                }
+            }
+
+            // Initialize floating sprites lookup
+            _floatingSpriteIDs.Clear();
+            if (!string.IsNullOrEmpty(_floatingSpriteNames))
+            {
+                string[] names = _floatingSpriteNames.Split(',');
+                foreach (string name in names)
+                {
+                    ulong id = API.FindEntity(name.Trim());
+                    if (id != 0) _floatingSpriteIDs.Add(id);
+                }
+            }
+
+            // Initialize sprites if specified
+            _spriteIDs.Clear();
+            _originalSpritePositions.Clear();
+            if (!string.IsNullOrEmpty(_checkpointSpriteNames))
+            {
+                string[] names = _checkpointSpriteNames.Split(',');
+                foreach (string name in names)
+                {
+                    string trimmedName = name.Trim();
+                    ulong id = API.FindEntity(trimmedName);
+                    if (id != 0 && API.HasSprite(id))
+                    {
+                        _spriteIDs.Add(id);
+                        API.SetSpriteAlpha(id, 0.0f);
+                        
+                        // Store original world position
+                        if (API.HasTransform(id))
+                        {
+                            _originalSpritePositions[id] = API.GetPosition(id);
+                        }
+                    }
+                    else if (id == 0)
+                    {
+                        API.Log($"[CPTrigger] WARNING: Could not find sprite entity '{trimmedName}'");
                     }
                 }
             }
@@ -96,31 +181,147 @@ namespace GameScripts
             // Register callbacks
             API.RegisterTriggerEnterCallback(Entity, OnTriggerEnterCallback);
             API.RegisterTriggerExitCallback(Entity, OnTriggerExitCallback);
-            API.Log("[CPTrigger] Registered trigger callbacks. Press Q or Gamepad A to activate checkpoint.");
+            API.Log("[CPTrigger] Registered trigger callbacks. Checkpoint will activate on entry.");
         }
 
         public void OnUpdate(float dt)
         {
-            // Only check for keys if player is in zone and checkpoint not yet activated
-            if (!_playerInZone || _activated) return;
-
-            bool isQPressed = API.IsKeyDown(API.KEY_Q);
-            bool justPressedQ = isQPressed && !_wasQPressed;
-            _wasQPressed = isQPressed;
-
-            bool isAPressed = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A);
-            bool justPressedA = isAPressed && !_wasAPressed;
-            _wasAPressed = isAPressed;
-
-            if (justPressedQ || justPressedA)
+            // Handle sprites fade, movement and timer
+            if (_spriteIDs.Count > 0)
             {
-                API.Log("[CPTrigger] Activation input detected!");
-                ActivateCheckpoint();
+                float targetAlpha = (_spriteTimer > 0) ? 1.0f : 0.0f;
+                
+                // Continue updating as long as it's visible or supposed to be visible
+                if (_spriteAlpha > 0.001f || targetAlpha > 0.001f)
+                {
+                    _spriteAlpha = Lerp(_spriteAlpha, targetAlpha, _spriteFadeSpeed * dt);
+                    
+                    // Always increment active time while visible so movement doesn't freeze during fade
+                    _totalActiveTime += dt;
+
+                    // Update movement for each sprite
+                    foreach (ulong id in _spriteIDs)
+                    {
+                        if (API.HasSprite(id))
+                        {
+                            API.SetSpriteAlpha(id, _spriteAlpha);
+
+                            // Apply world transform movement
+                            if (_originalSpritePositions.ContainsKey(id))
+                            {
+                                Vec3 originalPos = _originalSpritePositions[id];
+                                
+                                // Float up (+Y in world space) ONLY if specified
+                                float offsetY = 0f;
+                                if (_floatingSpriteIDs.Contains(id))
+                                {
+                                    offsetY = (_floatSpeed / 100f) * _totalActiveTime;
+                                }
+                                
+                                // Bob left/right (+X in world space) ONLY if specified
+                                float offsetX = 0f;
+                                if (_bobbingSpriteIDs.Contains(id))
+                                {
+                                    offsetX = (float)Math.Sin(_totalActiveTime * _bobSpeed) * (_bobAmount / 100f);
+                                }
+
+                                Vec3 newPos = new Vec3(originalPos.X + offsetX, originalPos.Y + offsetY, originalPos.Z);
+                                API.SetPosition(id, newPos);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // Fully hidden: reset timer, alpha, and POSITIONS
+                    if (_totalActiveTime > 0.0f) // Only do this once when transitioning to hidden
+                    {
+                        foreach (ulong id in _spriteIDs)
+                        {
+                            if (API.HasSprite(id)) API.SetSpriteAlpha(id, 0.0f);
+                            
+                            if (_originalSpritePositions.ContainsKey(id))
+                            {
+                                API.SetPosition(id, _originalSpritePositions[id]);
+                            }
+                        }
+                    }
+                    
+                    _totalActiveTime = 0.0f;
+                    _spriteAlpha = 0.0f;
+                }
+
+                if (_spriteTimer > 0)
+                {
+                    _spriteTimer -= dt;
+                }
             }
         }
 
         private void ActivateCheckpoint()
         {
+            // Refresh sprite IDs and original positions during activation to be robust
+            _spriteIDs.Clear();
+            _originalSpritePositions.Clear();
+            _bobbingSpriteIDs.Clear();
+            _floatingSpriteIDs.Clear();
+
+            // Helper to collect all unique sprite IDs from all lists
+            HashSet<ulong> allFoundSprites = new HashSet<ulong>();
+
+            // 1. Collect main sprites
+            if (!string.IsNullOrEmpty(_checkpointSpriteNames))
+            {
+                foreach (string name in _checkpointSpriteNames.Split(','))
+                {
+                    ulong id = API.FindEntity(name.Trim());
+                    if (id != 0) allFoundSprites.Add(id);
+                }
+            }
+
+            // 2. Collect and identify bobbing sprites
+            if (!string.IsNullOrEmpty(_bobbingSpriteNames))
+            {
+                foreach (string name in _bobbingSpriteNames.Split(','))
+                {
+                    ulong id = API.FindEntity(name.Trim());
+                    if (id != 0)
+                    {
+                        allFoundSprites.Add(id); // Auto-add to alpha list
+                        _bobbingSpriteIDs.Add(id);
+                    }
+                }
+            }
+
+            // 3. Collect and identify floating sprites
+            if (!string.IsNullOrEmpty(_floatingSpriteNames))
+            {
+                foreach (string name in _floatingSpriteNames.Split(','))
+                {
+                    ulong id = API.FindEntity(name.Trim());
+                    if (id != 0)
+                    {
+                        allFoundSprites.Add(id); // Auto-add to alpha list
+                        _floatingSpriteIDs.Add(id);
+                    }
+                }
+            }
+
+            // Populate the active sprite list and store their starting positions
+            foreach (ulong id in allFoundSprites)
+            {
+                if (API.HasSprite(id))
+                {
+                    _spriteIDs.Add(id);
+                    if (API.HasTransform(id))
+                    {
+                        _originalSpritePositions[id] = API.GetPosition(id);
+                    }
+                }
+            }
+
+            API.Log($"[CPTrigger] Activation: Found {_spriteIDs.Count} sprites total ({_bobbingSpriteIDs.Count} bobbing, {_floatingSpriteIDs.Count} floating).");
+
             // Get the trigger's position and rotation
             Vec3 checkpointPos = API.GetPosition(Entity);
             Vec3 checkpointRot = API.GetRotation(Entity);
@@ -144,6 +345,20 @@ namespace GameScripts
                 player.UpdateCheckpoint(spawnPos);
                 player.RestoreHealth(2);
                 _activated = true;
+
+                // Trigger the sprites if specified
+                if (_spriteIDs.Count > 0)
+                {
+                    _spriteTimer = _spriteDisplayDuration;
+                    _totalActiveTime = 0.0f; // Restart animation timer
+                    _spriteAlpha = 0.0f;     // Ensure it starts from invisible
+                    
+                    // Force them to be invisible immediately before fade starts
+                    foreach (ulong id in _spriteIDs)
+                    {
+                        API.SetSpriteAlpha(id, 0.0f);
+                    }
+                }
 
                 // Re-find light entities during activation to ensure they are found
                 _lightIDs.Clear();
@@ -207,6 +422,12 @@ namespace GameScripts
             API.UnregisterTriggerCallbacks(Entity);
         }
 
+        private float Lerp(float a, float b, float t)
+        {
+            t = Math.Max(0f, Math.Min(1f, t));
+            return a + (b - a) * t;
+        }
+
         private static void OnTriggerEnterCallback(ulong triggerEntity, ulong otherEntity)
         {
             CPTrigger inst;
@@ -219,6 +440,9 @@ namespace GameScripts
 
             if (!inst._activated)
             {
+                // Activate checkpoint immediately on entry
+                inst.ActivateCheckpoint();
+                
                 // Show text if it exists on this entity
                 if (API.HasText(inst.Entity))
                 {
@@ -226,7 +450,7 @@ namespace GameScripts
                     color.W = 1.0f;
                     API.SetTextColor(inst.Entity, color);
                 }
-                API.Log("[CPTrigger] Player entered checkpoint zone. Press Q or Gamepad A to save checkpoint.");
+                API.Log("[CPTrigger] Player entered checkpoint zone. Checkpoint activated automatically.");
             }
         }
 

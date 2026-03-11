@@ -189,6 +189,15 @@ namespace GameScripts
                 API.CreateController(Entity, 0.8f, 4.8f);
                 API.Log("[PlayerMovement] Character controller created successfully");
                 
+                // NEW: Search for a scene-specific spawn point entity named "PlayerSpawn"
+                // This allows the user to set a different start point for each scene visually
+                ulong spawnPointID = API.FindEntity("PlayerSpawn");
+                if (spawnPointID != 0)
+                {
+                    _levelStartPos = API.GetPosition(spawnPointID);
+                    API.Log($"[PlayerMovement] Found scene-specific spawn point: {_levelStartPos}");
+                }
+
                 // Teleport to the designated level start position
                 TeleportToStart();
                 

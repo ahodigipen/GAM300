@@ -1,6 +1,75 @@
 Version: 1.0
 ENTITIES:
   - InfoComponent:
+      Parent: 0
+      Name: CPPopup
+      UID: 5670854238749381119
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.00936753303, 0.547778904, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.600000024, 0.129999995, 0.200000003]
+    SpriteComponent:
+      textureID: 3690738976007310336
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 0
+      Name: CPHealthNoti1
+      UID: 10056674103885732376
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.686113834, -0.269998848, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.100000001, 0.100000001, 0.5]
+    SpriteComponent:
+      textureID: 8937668490727203548
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 0
+      Name: PlayerSpawn
+      UID: 17719882336863887464
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-54.0522881, 1.28313935, 5.9679141]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.SpawnPoint
+      ParamsJSON: "{}"
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: Checkpoint0
+      UID: 13528504072371270834
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.226999998, 3.08800006, 7.48899984]
+        Rotate: [0, -0, 0]
+        Scale: [5, 5, 5]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.CPTrigger
+      ParamsJSON: "{\n  \"_activeColor\": {\n    \"X\": 0.07800000160932541,\n    \"Y\": 0.8270000219345093,\n    \"Z\": 0.5799999833106995\n  },\n  \"_bobAmount\": 5.0,\n  \"_bobSpeed\": 10.0,\n  \"_bobbingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_checkpointSpriteNames\": \"CPPopup\",\n  \"_floatSpeed\": 20.0,\n  \"_floatingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_forwardOffset\": -5.0,\n  \"_lightNames\": \"ResPoint1_Light_1,ResPoint1_Light_2,ResPoint1_Light_3\",\n  \"_spawnOffsetY\": 1.5\n}"
+  - InfoComponent:
       Parent: 15030438282683852635
       Name: AfterFirstTime_Talisman
       UID: 13001280208492585265
@@ -3185,7 +3254,7 @@ ENTITIES:
     PointLightComponent:
       Light:
         Radiance: [0.305882365, 0.827450991, 0.580392182]
-        Intensity: 2.5
+        Intensity: 0
         Range: 5.96999979
         BloomStrength: 1
   - InfoComponent:
@@ -3208,7 +3277,7 @@ ENTITIES:
     PointLightComponent:
       Light:
         Radiance: [0.305882365, 0.827450991, 0.580392182]
-        Intensity: 2.5
+        Intensity: 0
         Range: 5.96999979
         BloomStrength: 1
   - InfoComponent:
@@ -3903,9 +3972,9 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.CPTrigger
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_activeColor\": {\n    \"X\": 0.07800000160932541,\n    \"Y\": 0.210999995470047,\n    \"Z\": 0.14800000190734863\n  },\n  \"_bobAmount\": 5.0,\n  \"_bobSpeed\": 10.0,\n  \"_bobbingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_checkpointSpriteName\": \"CPHealthNoti\",\n  \"_checkpointSpriteNames\": \"CPPopup\",\n  \"_floatSpeed\": 20.0,\n  \"_floatingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_lightNames\": \"ResPoint2_Light_1,ResPoint2_Light_2,ResPoint2_Light_3\",\n  \"_spriteFadeSpeed\": 8.0\n}"
     TextComponent:
-      text: Press Q for Checkpoint
+      text: ""
       fontName: Roboto-Regular
       color: [1, 1, 1, 0]
       scale: 1
@@ -4303,7 +4372,7 @@ ENTITIES:
       SortOrder: 247
     TransformComponent:
       Transform:
-        Translate: [-55.2019997, 1.79999995, 5.01499987]
+        Translate: [-54.0522881, 1.28313935, 5.9679141]
         Rotate: [0, -91.9999924, 0]
         Scale: [0.0164994802, 0.0164999999, 0.0164994802]
     CharacterControllerComponent:
@@ -5336,8 +5405,8 @@ ENTITIES:
       SortOrder: 363
     TransformComponent:
       Transform:
-        Translate: [-21.8404694, 67.8877563, 31.9620342]
-        Rotate: [144.875, 34336.25, 180]
+        Translate: [17.1593742, 11.3747978, 17.7908058]
+        Rotate: [150.8125, 34689.875, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -13094,7 +13163,7 @@ ENTITIES:
     PointLightComponent:
       Light:
         Radiance: [0.304570347, 0.828431368, 0.581908524]
-        Intensity: 2.5
+        Intensity: 0
         Range: 5.96999979
         BloomStrength: 1
   - InfoComponent:
@@ -13787,7 +13856,7 @@ ENTITIES:
     PointLightComponent:
       Light:
         Radiance: [0.305882365, 0.827450991, 0.580392182]
-        Intensity: 2.5
+        Intensity: 0
         Range: 5.96999979
         BloomStrength: 1
   - InfoComponent:
@@ -14093,7 +14162,7 @@ ENTITIES:
     PointLightComponent:
       Light:
         Radiance: [0.305882365, 0.827450991, 0.580392182]
-        Intensity: 2
+        Intensity: 0
         Range: 10
         BloomStrength: 1
   - InfoComponent:
@@ -14116,7 +14185,7 @@ ENTITIES:
     PointLightComponent:
       Light:
         Radiance: [0.305882365, 0.827450991, 0.580392182]
-        Intensity: 0.800000012
+        Intensity: 0
         Range: 10
         BloomStrength: 1
   - InfoComponent:
@@ -18260,3 +18329,25 @@ ENTITIES:
         Intensity: 2.1400001
         FallOff: 1.70599997
         CutOff: -1.99100006
+  - InfoComponent:
+      Parent: 0
+      Name: CPHealthNoti
+      UID: 353132071611201198
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.747017562, -0.104072988, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.100000001, 0.100000001, 0.5]
+    SpriteComponent:
+      textureID: 8937668490727203548
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+    TextComponent:
+      text: ""
+      fontName: Roboto-Regular
+      color: [1, 1, 1, 1]
+      scale: 1
+      screenPosition: [100, 100]
+      renderAs3D: false
+      billboardMode: true
