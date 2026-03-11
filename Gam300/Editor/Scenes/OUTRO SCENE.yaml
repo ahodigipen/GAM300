@@ -1,0 +1,21 @@
+Version: 1.0
+ENTITIES:
+  - InfoComponent:
+      Parent: 0
+      Name: Outro Video
+      UID: 17292595608600819119
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    VideoComponent:
+      VideoPath: M5_Outro.mpeg
+      PlayOnStart: true
+      Loop: false
+      Volume: 1
+      PlaybackSpeed: 1
+      RenderAs3D: false
+      RemoveBlackBackground: false
+      TintColor: [1, 1, 1, 1]
