@@ -1,4 +1,4 @@
-using Boom;
+﻿using Boom;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -851,12 +851,9 @@ namespace GameScripts
                         if (PlayerInventory.TryAddFreezeCharge())
                         {
                             API.Log($"[PlayerMovement] Instant Pickup: Freeze Powerup (ID: {triggerEntity})");
-
-                            // Show pickup tutorial (first-time or repeat) for Talisman
-                            TutorialManager.ShowPickupTutorial(
-                                TutorialManager.ItemType.Talisman,
-                                PlayerInventory.GetTalismanPickupCount()
-                            );
+                            
+                            // Show tutorial on first freeze pickup
+                            TutorialManager.ShowFreezeTutorial();
                             
                             API.DestroyEntity(triggerEntity);
                         }

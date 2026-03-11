@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Boom;
 
 namespace GameScripts
@@ -15,7 +15,6 @@ namespace GameScripts
         public const string HOW_TO_PLAY_SCENE_NAME = "HowToPlay";
         public const string DEATH_SCENE_NAME = "DeathMenu";
         public const string END_SCENE_NAME = "EndMenu";
-        public const string INVENTORY_SCENE_NAME = "InventoryMenu";
 
         public const string POPUP_SCENE_NAME = "PopUpMenu";
         public const string LEVEL_1_UI = "Level1PopUp";
@@ -25,7 +24,6 @@ namespace GameScripts
         public static bool IsGamePaused = false;
         public static bool IsPlayerDead = false;
         public static bool IsGameEnded = false;
-        public static bool IsInventoryOpen = false;
 
         public static bool IsStartPopupActive = false;
         private static float _sceneInputDebounceTimer = 0.0f;
@@ -54,26 +52,17 @@ namespace GameScripts
             MainMenu
         }
 
-        public enum InventoryMenuAction
-        {
-            None,
-            Close
-        }
-
         public static PauseMenuAction s_RequestedPauseAction = PauseMenuAction.None;
         public static DeathMenuAction s_RequestedDeathAction = DeathMenuAction.None;
         public static EndMenuAction s_RequestedEndAction = EndMenuAction.None;
-        public static InventoryMenuAction s_RequestedInventoryAction = InventoryMenuAction.None;
 
         private static bool _p_KeyWasDown = false;
         private static bool _escape_KeyWasDown = false;
-        private static bool _i_KeyWasDown = false;
         private static bool _start_ButtonWasDown = false;
 
         public static PauseMenu s_ActivePauseMenuInstance = null;
         public static DeathMenu s_ActiveDeathMenuInstance = null;
         public static EndMenu s_ActiveEndMenuInstance = null;
-        public static InventoryMenu s_ActiveInventoryMenuInstance = null;
 
         public static void Start()
         {
@@ -84,7 +73,6 @@ namespace GameScripts
             IsGamePaused = false;
             IsPlayerDead = false;
             IsGameEnded = false;
-            IsInventoryOpen = false;
 
             IsStartPopupActive = false;
             _sceneInputDebounceTimer = 0.5f;
@@ -92,7 +80,6 @@ namespace GameScripts
             s_RequestedPauseAction = PauseMenuAction.None;
             s_RequestedDeathAction = DeathMenuAction.None;
             s_RequestedEndAction = EndMenuAction.None;
-            s_RequestedInventoryAction = InventoryMenuAction.None;
 
             _currentSceneName = API.GetCurrentSceneName();
             API.EnableFileWatcher(true);
@@ -102,7 +89,6 @@ namespace GameScripts
             s_ActivePauseMenuInstance = null;
             s_ActiveDeathMenuInstance = null;
             s_ActiveEndMenuInstance = null;
-            s_ActiveInventoryMenuInstance = null;
 
             SettingsManager.LoadSettings();
 
@@ -121,7 +107,6 @@ namespace GameScripts
                 API.LoadSceneAdditive(PAUSE_SCENE_NAME);
                 API.LoadSceneAdditive(DEATH_SCENE_NAME);
                 API.LoadSceneAdditive(END_SCENE_NAME);
-                API.LoadSceneAdditive(INVENTORY_SCENE_NAME);
             }
         }
 
@@ -205,12 +190,6 @@ namespace GameScripts
                 return;
             }
 
-            // Inventory
-            if (s_RequestedInventoryAction != InventoryMenuAction.None || IsInventoryOpen)
-            {
-                if (API.IsInventoryMenuLoaded()) UpdateInventoryMenu(dt);
-            }
-
             // Pause
             if (s_RequestedPauseAction == PauseMenuAction.MainMenu ||
                 s_RequestedPauseAction == PauseMenuAction.Restart ||
@@ -261,7 +240,6 @@ namespace GameScripts
 
             bool p_KeyDown = API.IsKeyDown(API.KEY_P);
             bool escape_KeyDown = API.IsKeyDown(API.KEY_ESCAPE);
-            bool i_KeyDown = API.IsKeyDown(API.KEY_I);
             bool ctrl_KeyDown = API.IsKeyDown(API.KEY_LEFT_CONTROL);
             bool start_ButtonDown = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_START);
 
@@ -272,7 +250,6 @@ namespace GameScripts
                 // Keep tracking key states to prevent bleed-through after tutorial dismissal
                 _escape_KeyWasDown = escape_KeyDown;
                 _p_KeyWasDown = p_KeyDown;
-                _i_KeyWasDown = i_KeyDown;
                 _start_ButtonWasDown = start_ButtonDown;
                 return;
             }
@@ -301,7 +278,6 @@ namespace GameScripts
                     // 3. Consume the key press so it doesn't trigger Pause Menu in the very next frame
                     _escape_KeyWasDown = true;
                     _p_KeyWasDown = true;
-                    _i_KeyWasDown = true;
                     _start_ButtonWasDown = true;
                     return;
                 }
@@ -309,7 +285,6 @@ namespace GameScripts
                 // Keep tracking key state while popup is active to prevent bleed-through
                 _escape_KeyWasDown = escape_KeyDown;
                 _p_KeyWasDown = p_KeyDown;
-                _i_KeyWasDown = i_KeyDown;
                 _start_ButtonWasDown = start_ButtonDown;
                 return;
             }
@@ -343,56 +318,6 @@ namespace GameScripts
                     return;
                 }
                 _p_KeyWasDown = p_KeyDown;
-
-                // Handle I key to open inventory
-                if (!IsInventoryOpen && i_KeyDown && !_i_KeyWasDown && !ctrl_KeyDown)
-                {
-                    API.Log("Opening inventory...");
-                    IsInventoryOpen = true;
-                    API.ShowInventoryMenu();
-                    API.EnableFileWatcher(false);
-
-                    _i_KeyWasDown = i_KeyDown;
-                    return;
-                }
-                _i_KeyWasDown = i_KeyDown;
-            }
-        }
-
-        private static void UpdateInventoryMenu(float dt)
-        {
-            bool i_KeyDown = API.IsKeyDown(API.KEY_I);
-
-            // Block closing inventory if a tutorial is active
-            if (TutorialManager.IsKeyTutorialActive() || TutorialManager.WasJustDismissed() ||
-                TutorialPopupTrigger.IsPopupActive() || TutorialPopupTrigger.WasJustDismissed())
-            {
-                _i_KeyWasDown = i_KeyDown;
-                // We don't return entirely, just bypass the close logic so the menu keeps rendering/updating
-                // But wait, the menu rendering is inside this function!
-                // Actually, the rest of this function processes the s_RequestedInventoryAction
-                // So bypassing the input check is enough.
-            }
-            else
-            {
-                // I key closes the inventory
-                if (i_KeyDown && !_i_KeyWasDown)
-                {
-                    s_RequestedInventoryAction = InventoryMenuAction.Close;
-                    _i_KeyWasDown = i_KeyDown;
-                }
-                _i_KeyWasDown = i_KeyDown;
-            }
-
-            switch (s_RequestedInventoryAction)
-            {
-                case InventoryMenuAction.Close:
-                    API.Log("Closing inventory...");
-                    s_RequestedInventoryAction = InventoryMenuAction.None;
-                    IsInventoryOpen = false;
-                    // API.UnloadInventoryMenu();
-                    API.EnableFileWatcher(true);
-                    return;
             }
         }
 

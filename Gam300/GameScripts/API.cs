@@ -1435,7 +1435,6 @@ namespace Boom
         public const int KEY_LEFT_CONTROL = 341;
         public const int KEY_LEFT_SHIFT = 340;
         public const int KEY_ESCAPE = 256;
-        public const int KEY_ENTER = 257;
         public const int KEY_F8 = 297;
 
         public const int MOUSE_LEFT = 0;
