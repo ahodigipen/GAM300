@@ -101,6 +101,36 @@ namespace GameScripts
                 // Teleport actor to new position (updates PhysX actor directly)
                 API.TeleportRigidBody(Entity, pos);
 
+                // Additional immediate check: the teleported object may overlap the player's
+                // controller without the rigidbody reporting a collision. Check player position
+                // each step and trigger death if the player is directly underneath the object.
+                ulong pEntity = PlayerMovement.GetPlayerEntity();
+                if (pEntity != 0 && API.HasTransform(pEntity) && API.HasTransform(Entity))
+                {
+                    Vec3 objPosNow = API.GetPosition(Entity);
+                    Vec3 playerPosNow = API.GetPosition(pEntity);
+                    float dxp = playerPosNow.X - objPosNow.X;
+                    float dzp = playerPosNow.Z - objPosNow.Z;
+                    float horiz = (float)System.Math.Sqrt(dxp * dxp + dzp * dzp);
+
+                    Vec3 scale = API.GetScale(Entity);
+                    float killRadius = Math.Max(scale.X, scale.Z) * 0.5f + 0.8f; // platform half-width + player radius
+
+                    // If player is directly underneath (within platform bounds) and below Y, consider hit
+                    if (horiz <= killRadius && playerPosNow.Y < objPosNow.Y + (scale.Y * 0.5f) + 1.0f)
+                    {
+                        API.Log("[FallingObject] Platform directly hit player during fall - triggering death");
+                        PlayerManager.GetPlayer()?.OnCaughtByEnemy(Entity);
+
+                        // Stop motion so the platform stays on the floor / doesn't continue teleporting
+                        Vec3 stop = new Vec3(0f, 0f, 0f);
+                        API.SetLinearVelocity(Entity, stop);
+                        _hasHit = true;
+                        _isFalling = false;
+                        return;
+                    }
+                }
+
                 // Check collision after move
                 if (API.IsColliding(Entity))
                 {
@@ -116,11 +146,14 @@ namespace GameScripts
                         float dzp = playerPosNow.Z - objPosNow.Z;
                         float horiz = (float)System.Math.Sqrt(dxp * dxp + dzp * dzp);
 
-                        // If player is directly underneath (within small radius) and below Y, consider hit
-                        if (horiz <= 1.5f && playerPosNow.Y < objPosNow.Y)
+                        Vec3 scale = API.GetScale(Entity);
+                        float killRadius = Math.Max(scale.X, scale.Z) * 0.5f + 0.8f; // platform half-width + player radius
+
+                        // If player is directly underneath (within platform bounds) and below Y, consider hit
+                        if (horiz <= killRadius && playerPosNow.Y < objPosNow.Y + (scale.Y * 0.5f) + 1.0f)
                         {
                             API.Log("[FallingObject] Platform hit player - triggering death (platform remains)");
-                            Entry.TriggerPlayerDeath();
+                            PlayerManager.GetPlayer()?.OnCaughtByEnemy(Entity);
 
                             // Stop motion so the platform stays on the floor
                             Vec3 stop = new Vec3(0f, 0f, 0f);
@@ -300,10 +333,6 @@ namespace GameScripts
             // downward velocity here so PhysX gravity and CCD (enabled engine-side)
             // can handle the fall and collision properly.
             API.Log($"[FallingObject] FallNow: letting physics gravity handle fall for Entity={Entity}");
-
-            API.PlaySoundAt("falling_obj_" + Entity, "Resources/Audio/rock_fall.wav", API.GetPosition(Entity), false);
-            API.SetSoundVolume("falling_obj_" + Entity, 1.0f);
-            API.Set3DMinMaxDistance("falling_obj_" + Entity, 1.0f, 40.0f);
         }
 
         public void OnDestroy()
