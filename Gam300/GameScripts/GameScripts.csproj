@@ -52,8 +52,10 @@
     <Compile Include="CutsceneController.cs" />
     <Compile Include="CutsceneSequencer.cs" />
     <Compile Include="FreezeOverlayBehavior.cs" />
+    <Compile Include="GammaSlider.cs" />
     <Compile Include="HoverMotion.cs" />
     <Compile Include="IntroCutscene.cs" />
+    <Compile Include="InventoryMenu.cs" />
     <Compile Include="LevelTransitionCutscene.cs" />
     <Compile Include="MazeGeneration.cs" />
     <Compile Include="MultiKeyDoor.cs" />
@@ -74,7 +76,6 @@
     <Compile Include="PlayerFootsteps.cs" />
     <Compile Include="PlayerManager.cs" />
     <Compile Include="KeyPickup.cs" />
-    <Compile Include="DoorTriggerLeft.cs" />
     <Compile Include="PlayerInventory.cs" />
     <Compile Include="BloodOverlayController.cs" />
     <Compile Include="SceneTransitionTrigger.cs" />
@@ -86,12 +87,11 @@
     <Compile Include="TutorialPopupTrigger.cs" />
     <Compile Include="TextTest.cs" />
     <Compile Include="UIEndController.cs" />
-    <Compile Include="UIFreezeController.cs" />
     <Compile Include="UIHoldController.cs" />
     <Compile Include="UIHeartController.cs" />
-    <Compile Include="UIKeyController.cs" />
     <Compile Include="UILocationController.cs" />
     <Compile Include="UIManager.cs" />
+    <Compile Include="WaypointIndicator.cs" />
     <Compile Include="VisionComponent.cs" />
     <Compile Include="Entry.cs" />
     <Compile Include="MovementAnimator.cs" />

@@ -1,4 +1,4 @@
-﻿using Boom;
+using Boom;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -300,6 +300,13 @@ namespace GameScripts
             API.PlaySoundAt("checkpoint_save", "Resources/Audio/playerPunch_1.wav", newCheckpoint, false);
             API.Set3DMinMaxDistance("checkpoint_save", 1.0f, 15.0f);
             API.SetSoundVolume("checkpoint_save", 0.8f);
+        }
+
+        public void RestoreHealth(int amount)
+        {
+            _health = Math.Min(_health + amount, _maxHealth);
+            HUD.SetHealth(_health, _maxHealth);
+            API.Log($"[PlayerMovement] Health restored by {amount}. Current health: {_health}/{_maxHealth}");
         }
 
         public void TeleportTo(Vec3 position)
@@ -851,9 +858,12 @@ namespace GameScripts
                         if (PlayerInventory.TryAddFreezeCharge())
                         {
                             API.Log($"[PlayerMovement] Instant Pickup: Freeze Powerup (ID: {triggerEntity})");
-                            
-                            // Show tutorial on first freeze pickup
-                            TutorialManager.ShowFreezeTutorial();
+
+                            // Show pickup tutorial (first-time or repeat) for Talisman
+                            TutorialManager.ShowPickupTutorial(
+                                TutorialManager.ItemType.Talisman,
+                                PlayerInventory.GetTalismanPickupCount()
+                            );
                             
                             API.DestroyEntity(triggerEntity);
                         }

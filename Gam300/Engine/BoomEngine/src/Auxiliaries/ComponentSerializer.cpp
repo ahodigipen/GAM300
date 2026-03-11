@@ -558,6 +558,12 @@ namespace Boom
                 e << YAML::Key << "FogDensity" << YAML::Value << sn.fogDensity;
                 e << YAML::Key << "FogHeightFalloff" << YAML::Value << sn.fogHeightFalloff;
                 e << YAML::Key << "FogHeight" << YAML::Value << sn.fogHeight;
+                e << YAML::Key << "TonemapExposure" << YAML::Value << sn.tonemapExposure;
+                e << YAML::Key << "TonemapGamma" << YAML::Value << sn.tonemapGamma;
+                e << YAML::Key << "TonemapWarmTint" << YAML::Value
+                    << YAML::Flow << YAML::BeginSeq
+                    << sn.tonemapWarmTint.r << sn.tonemapWarmTint.g << sn.tonemapWarmTint.b
+                    << YAML::EndSeq;
                 e << YAML::EndMap;
             },
             // ----- DESERIALIZE -----
@@ -606,6 +612,18 @@ namespace Boom
 
                 if (auto v = data["FogHeight"])
                     sn.fogHeight = v.as<float>(sn.fogHeight);
+
+                if (auto v = data["TonemapExposure"])
+                    sn.tonemapExposure = v.as<float>(sn.tonemapExposure);
+
+                if (auto v = data["TonemapGamma"])
+                    sn.tonemapGamma = v.as<float>(sn.tonemapGamma);
+
+                if (auto c = data["TonemapWarmTint"]; c && c.IsSequence() && c.size() == 3) {
+                    sn.tonemapWarmTint.r = c[0].as<float>(sn.tonemapWarmTint.r);
+                    sn.tonemapWarmTint.g = c[1].as<float>(sn.tonemapWarmTint.g);
+                    sn.tonemapWarmTint.b = c[2].as<float>(sn.tonemapWarmTint.b);
+                }
             }
         );
 

@@ -743,7 +743,14 @@ namespace Boom {
         }
 
         BOOM_INLINE void ShowFrame(bool useFBO) {
-            // Feed fog state into final shader before rendering
+            // Blend proximity red tint on top of the warm tint before sending to shader
+            glm::vec3 activeTint = tonemapWarmTint;
+            if (proximityRedAmount > 0.0f) {
+                float a = glm::clamp(proximityRedAmount, 0.0f, 1.0f);
+                glm::vec3 redTint{ 1.5f, 0.55f, 0.55f };
+                activeTint = glm::mix(tonemapWarmTint, redTint, a);
+            }
+            finalShader->SetToneMapping(tonemapExposure, tonemapGamma, activeTint);
             uint32_t depthTex = showLowPoly ? lowPolyFrame->GetDepthTexture() : frame->GetDepthTexture();
             finalShader->SetFog(enabledFog, fogColor, fogDensity, fogHeightFalloff, fogHeight,
                                 m_InvViewProj, m_CameraPosition, depthTex);
@@ -907,6 +914,14 @@ namespace Boom {
         float bloomThreshold{ 1.0f };
         int bloomIterations{ 10 };
         float pointLightBloomMultiplier{ 1.0f };  // Global multiplier for point light bloom contribution
+
+        // Tone mapping
+        float     tonemapExposure{ 1.0f };
+        float     tonemapGamma{ 2.2f };
+        glm::vec3 tonemapWarmTint{ 1.08f, 0.98f, 0.82f };
+
+        // Proximity danger red tint (set each frame from scripts; 0 = none, 1 = full red)
+        float proximityRedAmount{ 0.0f };
 
         // Volumetric fog toggles
         bool enabledFog{};

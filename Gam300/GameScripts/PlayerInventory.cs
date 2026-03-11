@@ -1,4 +1,4 @@
-﻿using Boom;
+using Boom;
 
 namespace GameScripts
 {
@@ -7,17 +7,39 @@ namespace GameScripts
     {
         private static int s_keyCount = 0;
 
-        // New: Track specific key types
+        // Track specific key identifiers for unlocking doors (e.g. "key1", "boss_key")
         private static System.Collections.Generic.HashSet<string> s_keyTypes = new System.Collections.Generic.HashSet<string>();
+
+        // Track key variants for UI counts (e.g. "MainDoor": 2, "SmallDoor": 1)
+        private static System.Collections.Generic.Dictionary<string, int> s_keyVariants =
+            new System.Collections.Generic.Dictionary<string, int>();
+
+        // Map from KeyType identifier to KeyVariant so we know which UI count to decrement
+        private static System.Collections.Generic.Dictionary<string, string> s_typeToVariant =
+            new System.Collections.Generic.Dictionary<string, string>();
+
+        // New: Track the order of item types in the player's inventory
+        public static System.Collections.Generic.List<string> s_inventorySlots = new System.Collections.Generic.List<string>();
 
         // New: Track if we are holding a freeze charge
         private static bool s_hasFreezeCharge = false;
+
+        // Pickup counts for tutorial system (tracks total lifetime pickups per item type)
+        private static int s_largeTokenPickupCount = 0;
+        private static int s_smallTokenPickupCount = 0;
+        private static int s_talismanPickupCount = 0;
 
         public static void Reset()
         {
             s_keyCount = 0;
             s_keyTypes.Clear();
+            s_keyVariants.Clear();
+            s_typeToVariant.Clear();
+            s_inventorySlots.Clear(); // Keep our new slots clean
             s_hasFreezeCharge = false; // Reset ability on game restart
+            s_largeTokenPickupCount = 0;
+            s_smallTokenPickupCount = 0;
+            s_talismanPickupCount = 0;
             TutorialManager.Reset(); // Reset tutorial states
             API.Log("[PlayerInventory] Reset");
         }
@@ -30,13 +52,39 @@ namespace GameScripts
             API.Log($"[PlayerInventory] Keys: {s_keyCount}");
         }
 
-        // New: Add a specific key type
-        public static void AddKey(string keyType)
+        // Add a specific key with its type identifier and variant count
+        public static void AddKey(string keyType, string keyVariant)
         {
-            if (string.IsNullOrEmpty(keyType)) return;
-            s_keyTypes.Add(keyType);
+            if (!string.IsNullOrEmpty(keyType))
+            {
+                s_keyTypes.Add(keyType);
+                if (!string.IsNullOrEmpty(keyVariant))
+                {
+                    s_typeToVariant[keyType] = keyVariant;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(keyVariant))
+            {
+                if (s_keyVariants.ContainsKey(keyVariant))
+                    s_keyVariants[keyVariant]++;
+                else
+                    s_keyVariants[keyVariant] = 1;
+
+                if (!s_inventorySlots.Contains(keyVariant))
+                {
+                    s_inventorySlots.Add(keyVariant);
+                }
+
+                // Increment pickup count for tutorial tracking
+                if (keyVariant == "MainDoor")
+                    s_largeTokenPickupCount++;
+                else if (keyVariant == "SmallDoor")
+                    s_smallTokenPickupCount++;
+            }
+
             s_keyCount++;
-            API.Log($"[PlayerInventory] Added key type '{keyType}'. Total keys: {s_keyCount}");
+            API.Log($"[PlayerInventory] Added key '{keyType}' (Variant: {keyVariant}). Total keys: {s_keyCount}");
         }
 
         public static bool HasKey()
@@ -44,7 +92,7 @@ namespace GameScripts
             return s_keyCount > 0;
         }
 
-        // New: Check if player has a specific key type
+        // Check if player has a specific key identifier (for opening doors)
         public static bool HasKey(string keyType)
         {
             if (string.IsNullOrEmpty(keyType)) return HasKey();
@@ -60,11 +108,26 @@ namespace GameScripts
             return true;
         }
 
-        // New: Consume a specific key type
-        public static bool ConsumeKey(string keyType)
+        // Consume a specific key identifier and decrement its corresponding variant count
+        public static bool ConsumeKeyType(string keyType)
         {
             if (string.IsNullOrEmpty(keyType)) return ConsumeKey();
             if (!s_keyTypes.Contains(keyType)) return false;
+
+            // Find and decrement the corresponding variant count
+            if (s_typeToVariant.TryGetValue(keyType, out string variant))
+            {
+                if (s_keyVariants.ContainsKey(variant) && s_keyVariants[variant] > 0)
+                {
+                    s_keyVariants[variant]--;
+                    
+                    if (s_keyVariants[variant] == 0)
+                    {
+                        s_inventorySlots.Remove(variant);
+                    }
+                }
+                s_typeToVariant.Remove(keyType);
+            }
 
             s_keyTypes.Remove(keyType);
             s_keyCount--;
@@ -73,6 +136,26 @@ namespace GameScripts
         }
 
         public static int GetKeyCount() => s_keyCount;
+
+        // Returns count of a specific key variant for UI (0 if none held)
+        public static int GetKeyCount(string keyVariant)
+        {
+            if (string.IsNullOrEmpty(keyVariant)) return s_keyCount;
+            return s_keyVariants.TryGetValue(keyVariant, out int count) ? count : 0;
+        }
+
+        // --- Tutorial Pickup Count Getters ---
+        public static int GetLargeTokenPickupCount() => s_largeTokenPickupCount;
+        public static int GetSmallTokenPickupCount() => s_smallTokenPickupCount;
+        public static int GetTalismanPickupCount() => s_talismanPickupCount;
+
+        // Returns a snapshot of currently held key identifiers.
+        public static string[] GetKeyTypes()
+        {
+            var arr = new string[s_keyTypes.Count];
+            s_keyTypes.CopyTo(arr);
+            return arr;
+        }
 
         // --- Freeze Ability Logic ---
 
@@ -88,6 +171,11 @@ namespace GameScripts
             }
 
             s_hasFreezeCharge = true;
+            s_talismanPickupCount++;
+            if (!s_inventorySlots.Contains("Freeze"))
+            {
+                s_inventorySlots.Add("Freeze");
+            }
             API.Log("[PlayerInventory] Freeze Charge Acquired! Press E to use.");
             return true;
         }
@@ -97,6 +185,7 @@ namespace GameScripts
             if (!s_hasFreezeCharge) return false;
 
             s_hasFreezeCharge = false;
+            s_inventorySlots.Remove("Freeze");
             API.Log("[PlayerInventory] Freeze Charge used.");
             return true;
         }

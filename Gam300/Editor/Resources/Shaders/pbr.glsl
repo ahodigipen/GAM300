@@ -407,7 +407,10 @@ vec3 ComputePointLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, f
         if (dist > lightRange)
             continue;
 
-        float attenuation = lightIntensity / (dist * dist);
+        // Smooth falloff near the range boundary (Unity-style windowing function).
+        // Reaches exactly 0 at lightRange instead of cutting off hard.
+        float rangeFalloff = pow(max(1.0 - pow(dist / lightRange, 4.0), 0.0), 2.0);
+        float attenuation = lightIntensity / (dist * dist) * rangeFalloff;
 
         vec3 lightContrib = (diffuse + specular) * lightRadiance * attenuation * nDotL;
         result += lightContrib;

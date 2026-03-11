@@ -13,14 +13,13 @@ namespace GameScripts
 
         private static UIManager s_instance = null;
 
-        private UIKeyController _keyUI;
         private UIHoldController _holdUI;
         private UIEndController _endUI;
         private UILocationController _locationUI;
         private UIHeartController _heartUI;  // *** NEW: Heart UI controller ***
-        private UIFreezeController _freezeUI; // *** NEW ***
         private UITutorialController _tutorialUI; // *** NEW: Tutorial UI controller ***
         private UIStanceController _stanceUI; // *** NEW: Crouch/Run UI controller ***
+        private WaypointIndicator _waypointUI; // Waypoint arrow indicator for keys
 
         public void OnStart(string jsonParams)
         {
@@ -28,9 +27,6 @@ namespace GameScripts
             s_instance = this;
 
             // Initialize all UI controllers
-            _keyUI = new UIKeyController { Entity = Entity };
-            _keyUI.OnStart(jsonParams);
-
             _holdUI = new UIHoldController { Entity = Entity };
             _holdUI.OnStart(jsonParams);
 
@@ -44,9 +40,6 @@ namespace GameScripts
             _heartUI = new UIHeartController { Entity = Entity };
             _heartUI.OnStart(jsonParams);
 
-            _freezeUI = new UIFreezeController { Entity = Entity };
-            _freezeUI.OnStart(jsonParams);
-
             // *** NEW: Initialize stance UI (crouch/run) ***
             _stanceUI = new UIStanceController { Entity = Entity };
             _stanceUI.OnStart(jsonParams);
@@ -55,21 +48,24 @@ namespace GameScripts
             _tutorialUI = new UITutorialController { Entity = Entity };
             _tutorialUI.OnStart(jsonParams);
 
-            API.Log("[UIManager] All UI systems initialized (including hearts and tutorials)");
+            // Initialize waypoint indicator for key navigation
+            _waypointUI = new WaypointIndicator { Entity = Entity };
+            _waypointUI.OnStart(jsonParams);
+
+            API.Log("[UIManager] All UI systems initialized (including hearts, tutorials, and waypoints)");
 
         }
 
         public void OnUpdate(float dt)
         {
             // Update all UI controllers
-            _keyUI?.OnUpdate(dt);
             _holdUI?.OnUpdate(dt);
             _endUI?.OnUpdate(dt);
             _locationUI?.OnUpdate(dt);
             _heartUI?.OnUpdate(dt);  // *** NEW: Update heart UI ***
-            _freezeUI?.OnUpdate(dt);
             _stanceUI?.OnUpdate(dt); // *** NEW: Update crouch/run UI ***
             _tutorialUI?.OnUpdate(dt);  // *** NEW: Update tutorial UI ***
+            _waypointUI?.OnUpdate(dt);  // Waypoint arrow indicator
         }
 
 
@@ -84,20 +80,7 @@ namespace GameScripts
 
         // ===== Static Public API =====
 
-        /// <summary>
-        /// Show the key pickup UI notification
-        /// </summary>
-        public static void ShowKeyPickup()
-        {
-            if (s_instance != null)
-            {
-                s_instance._keyUI?.ShowKey();
-            }
-            else
-            {
-                API.Log("[UIManager] No instance registered - cannot show key pickup UI");
-            }
-        }
+
 
         /// <summary>
         /// Show the "Hold to Crouch" prompt (backward compatible)

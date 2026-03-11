@@ -42,7 +42,21 @@ namespace Boom
         std::cout.flush();
 
         if (Boom::FontManager::GetInstance().Init()) {
-            Boom::FontManager::GetInstance().LoadFont("Roboto-Regular", "Resources/Fonts/Roboto-Regular.ttf", 48);
+            // Load all .ttf fonts from the Fonts directory
+            std::filesystem::path fontsDir = "Resources/Fonts";
+            if (std::filesystem::exists(fontsDir) && std::filesystem::is_directory(fontsDir)) {
+                for (const auto& entry : std::filesystem::directory_iterator(fontsDir)) {
+                    if (entry.is_regular_file() && entry.path().extension() == ".ttf") {
+                        std::string fontName = entry.path().stem().string();
+                        std::string fontPath = entry.path().string();
+                        Boom::FontManager::GetInstance().LoadFont(fontName, fontPath, 48);
+                        std::cout << "[RunContext] Loaded font: " << fontName << std::endl;
+                    }
+                }
+            } else {
+                // Fallback: load just Roboto-Regular if directory not found
+                Boom::FontManager::GetInstance().LoadFont("Roboto-Regular", "Resources/Fonts/Roboto-Regular.ttf", 48);
+            }
             std::cout << "[RunContext] Font System initialized successfully" << std::endl;
         } else {
             BOOM_ERROR("Failed to initialize Font Manager");
@@ -1375,8 +1389,21 @@ namespace Boom
                 ));
 
                 tc.transform.translate = m_Context->physics->ResolveThirdPersonCameraPosition(pivotPosition, desiredPosition);
+
+                // Apply camera shake (set from scripts via TriggerCameraShake)
+                // shakePhase accumulates continuously so oscillation never freezes,
+                // even when scripts reset shakeTimer every frame to sustain the effect.
+                if (cam.shakeTimer > 0.0f && cam.shakeDuration > 0.0f) {
+                    cam.shakeTimer = std::max(0.0f, cam.shakeTimer - dt);
+                    cam.shakePhase += dt * 47.3f;
+                    float fadeFraction = cam.shakeTimer / cam.shakeDuration;
+                    float intensity = cam.shakeIntensity * fadeFraction;
+                    tc.transform.translate.x += std::sinf(cam.shakePhase * 2.3f) * intensity;
+                    tc.transform.translate.y += std::sinf(cam.shakePhase * 1.9f + 1.1f) * intensity * 0.6f;
+                }
             }
         );
+
     }
 
 

@@ -489,6 +489,16 @@ namespace Boom {
         }
         return vol;
     }
+    // Gamma / Tone Mapping
+    static void ICALL_API_SetGamma(float gamma) {
+        if (!s_Ctx || !s_Ctx->renderer) return;
+        s_Ctx->renderer->tonemapGamma = (gamma < 0.5f ? 0.5f : (gamma > 4.0f ? 4.0f : gamma));
+    }
+
+    static float ICALL_API_GetGamma() {
+        if (!s_Ctx || !s_Ctx->renderer) return 2.2f;
+        return s_Ctx->renderer->tonemapGamma;
+    }
     // End Pause Menu
 
     // Death Menu
@@ -545,6 +555,27 @@ namespace Boom {
         if (s_Ctx && s_Ctx->app) {
             s_Ctx->app->SetGameEnd(isEnd);
         }
+    }
+
+    // Inventory Menu
+    static void ICALL_API_ShowInventoryMenu() {
+        if (!s_Ctx || !s_Ctx->app) return;
+        s_Ctx->app->ShowAdditiveScene(Boom::MenuType::Inventory);
+    }
+
+    static void ICALL_API_UnloadInventoryMenu() {
+        if (!s_Ctx || !s_Ctx->app) return;
+        s_Ctx->app->UnloadAdditiveScene(Boom::MenuType::Inventory);
+    }
+
+    static bool ICALL_API_IsInventoryMenuLoaded() {
+        if (!s_Ctx) return false;
+        auto view = s_Ctx->scene.view<Boom::MenuComponent>();
+        for (auto e : view) {
+            if (view.get<Boom::MenuComponent>(e).menuType == Boom::MenuType::Inventory)
+                return true;
+        }
+        return false;
     }
 
     // For freeze
@@ -724,6 +755,40 @@ namespace Boom {
         }
 
         return 0.0f; // No third-person camera found
+    }
+
+    // Trigger a positional camera shake on the third-person camera.
+    // intensity = max offset in world units; duration = seconds before it fades out.
+    // Scripts call this every frame (or on demand) to sustain the effect.
+    static void ICALL_API_TriggerCameraShake(float intensity, float duration) {
+        if (!s_Ctx) return;
+        auto view = s_Ctx->scene.view<ThirdPersonCameraComponent>();
+        if (!view.empty()) {
+            auto& cam = view.get<ThirdPersonCameraComponent>(*view.begin());
+            cam.shakeIntensity = intensity;
+            cam.shakeDuration  = duration;
+            cam.shakeTimer     = duration;
+        }
+    }
+
+    // Directly set the FOV of the main camera (use 0 to restore the default 45).
+    static void ICALL_API_SetCameraFOV(float fov) {
+        if (!s_Ctx) return;
+        auto view = s_Ctx->scene.view<CameraComponent>();
+        for (auto e : view) {
+            auto& cc = view.get<CameraComponent>(e);
+            if (cc.camera.cameraType == Camera3D::CameraType::Main) {
+                cc.camera.SetFOV(fov > 0.0f ? fov : 45.0f);
+                break;
+            }
+        }
+    }
+
+    // Set the proximity red tint amount (0 = none, 1 = full red).
+    // Blended on top of the scene warm tint each frame in the renderer.
+    static void ICALL_API_SetProximityRedTint(float amount) {
+        if (!s_Ctx || !s_Ctx->renderer) return;
+        s_Ctx->renderer->proximityRedAmount = glm::clamp(amount, 0.0f, 1.0f);
     }
 
     // Add near other ICALL functions (after ICALL_API_SetSoundPosition)
@@ -1223,6 +1288,57 @@ namespace Boom {
             return;
         }
         s_Ctx->scene.get<SpotLightComponent>(e).light.intensity = intensity;
+    }
+
+    // ========= POINTLIGHT COMPONENT INTERNAL CALLS =========
+    static bool ICALL_API_HasPointLight(uint64_t handle)
+    {
+        if (!s_Ctx) return false;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        return (e != entt::null && s_Ctx->scene.valid(e) && s_Ctx->scene.any_of<PointLightComponent>(e));
+    }
+
+    static void ICALL_API_GetPointLightColor(uint64_t handle, glm::vec3* outColor)
+    {
+        if (!outColor || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<PointLightComponent>(e)) {
+            *outColor = glm::vec3(1.0f);
+            return;
+        }
+        *outColor = s_Ctx->scene.get<PointLightComponent>(e).light.radiance;
+    }
+
+    static void ICALL_API_SetPointLightColor(uint64_t handle, glm::vec3* color)
+    {
+        if (!color || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<PointLightComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetPointLightColor: Entity doesn't have PointLightComponent");
+            return;
+        }
+        s_Ctx->scene.get<PointLightComponent>(e).light.radiance = *color;
+    }
+
+    static float ICALL_API_GetPointLightIntensity(uint64_t handle)
+    {
+        if (!s_Ctx) return 1.0f;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<PointLightComponent>(e)) {
+            return 1.0f;
+        }
+        return s_Ctx->scene.get<PointLightComponent>(e).light.intensity;
+    }
+
+    static void ICALL_API_SetPointLightIntensity(uint64_t handle, float intensity)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<PointLightComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetPointLightIntensity: Entity doesn't have PointLightComponent");
+            return;
+        }
+        s_Ctx->scene.get<PointLightComponent>(e).light.intensity = intensity;
     }
 
     // ========= VIDEO COMPONENT INTERNAL CALLS =========
@@ -2462,6 +2578,9 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetGameLogicPaused", (const void*)ICALL_API_SetGameLogicPaused);
         mono_add_internal_call("Boom.Native::Boom_API_SetGroupVolume", (const void*)ICALL_API_SetGroupVolume);
         mono_add_internal_call("Boom.Native::Boom_API_GetGroupVolume", (const void*)ICALL_API_GetGroupVolume);
+        // Gamma
+        mono_add_internal_call("Boom.Native::Boom_API_SetGamma", (const void*)ICALL_API_SetGamma);
+        mono_add_internal_call("Boom.Native::Boom_API_GetGamma", (const void*)ICALL_API_GetGamma);
 
         // Death Menu
         mono_add_internal_call("Boom.Native::Boom_API_UnloadDeathMenu", (const void*)ICALL_API_UnloadDeathMenu);
@@ -2517,6 +2636,9 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_AnimatorPlay", (const void*)ICALL_API_AnimatorPlay);
         mono_add_internal_call("Boom.Native::Boom_API_AnimatorSetStateMachineEnabled", (const void*)ICALL_API_AnimatorSetStateMachineEnabled);
         mono_add_internal_call("Boom.Native::Boom_API_GetThirdPersonCameraYaw", (const void*)ICALL_API_GetThirdPersonCameraYaw);
+        mono_add_internal_call("Boom.Native::Boom_API_TriggerCameraShake",      (const void*)ICALL_API_TriggerCameraShake);
+        mono_add_internal_call("Boom.Native::Boom_API_SetCameraFOV",            (const void*)ICALL_API_SetCameraFOV);
+        mono_add_internal_call("Boom.Native::Boom_API_SetProximityRedTint",     (const void*)ICALL_API_SetProximityRedTint);
 
         mono_add_internal_call("Boom.Native::Boom_API_HasCollider", (const void*)ICALL_API_HasCollider);
         mono_add_internal_call("Boom.Native::Boom_API_IsTrigger", (const void*)ICALL_API_IsTrigger);
@@ -2598,6 +2720,20 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetSpriteAlpha", (const void*)ICALL_API_SetSpriteAlpha);
         mono_add_internal_call("Boom.Native::Boom_API_SetSpriteTexture", (const void*)ICALL_API_SetSpriteTexture);
 
+        // SpotLight component internal calls
+        mono_add_internal_call("Boom.Native::Boom_API_HasSpotLight", (const void*)ICALL_API_HasSpotLight);
+        mono_add_internal_call("Boom.Native::Boom_API_GetSpotLightColor", (const void*)ICALL_API_GetSpotLightColor);
+        mono_add_internal_call("Boom.Native::Boom_API_SetSpotLightColor", (const void*)ICALL_API_SetSpotLightColor);
+        mono_add_internal_call("Boom.Native::Boom_API_GetSpotLightIntensity", (const void*)ICALL_API_GetSpotLightIntensity);
+        mono_add_internal_call("Boom.Native::Boom_API_SetSpotLightIntensity", (const void*)ICALL_API_SetSpotLightIntensity);
+
+        // PointLight component internal calls
+        mono_add_internal_call("Boom.Native::Boom_API_HasPointLight", (const void*)ICALL_API_HasPointLight);
+        mono_add_internal_call("Boom.Native::Boom_API_GetPointLightColor", (const void*)ICALL_API_GetPointLightColor);
+        mono_add_internal_call("Boom.Native::Boom_API_SetPointLightColor", (const void*)ICALL_API_SetPointLightColor);
+        mono_add_internal_call("Boom.Native::Boom_API_GetPointLightIntensity", (const void*)ICALL_API_GetPointLightIntensity);
+        mono_add_internal_call("Boom.Native::Boom_API_SetPointLightIntensity", (const void*)ICALL_API_SetPointLightIntensity);
+
         // Text Component functions
         mono_add_internal_call("Boom.Native::Boom_API_HasText", (const void*)ICALL_API_HasText);
         mono_add_internal_call("Boom.Native::Boom_API_GetText", (const void*)ICALL_API_GetText);
@@ -2615,6 +2751,13 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetSpotLightColor", (const void*)ICALL_API_SetSpotLightColor);
         mono_add_internal_call("Boom.Native::Boom_API_GetSpotLightIntensity", (const void*)ICALL_API_GetSpotLightIntensity);
         mono_add_internal_call("Boom.Native::Boom_API_SetSpotLightIntensity", (const void*)ICALL_API_SetSpotLightIntensity);
+
+        // PointLight component internal calls
+        mono_add_internal_call("Boom.Native::Boom_API_HasPointLight", (const void*)ICALL_API_HasPointLight);
+        mono_add_internal_call("Boom.Native::Boom_API_GetPointLightColor", (const void*)ICALL_API_GetPointLightColor);
+        mono_add_internal_call("Boom.Native::Boom_API_SetPointLightColor", (const void*)ICALL_API_SetPointLightColor);
+        mono_add_internal_call("Boom.Native::Boom_API_GetPointLightIntensity", (const void*)ICALL_API_GetPointLightIntensity);
+        mono_add_internal_call("Boom.Native::Boom_API_SetPointLightIntensity", (const void*)ICALL_API_SetPointLightIntensity);
 
         // Video component internal calls
         mono_add_internal_call("Boom.Native::Boom_API_HasVideoComponent", (const void*)ICALL_API_HasVideoComponent);
@@ -2648,6 +2791,10 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetParticleGravity", (const void*)ICALL_API_SetParticleGravity);
         mono_add_internal_call("Boom.Native::Boom_API_SetParticleSpeed", (const void*)ICALL_API_SetParticleSpeed);
         mono_add_internal_call("Boom.Native::Boom_API_SetParticleSize", (const void*)ICALL_API_SetParticleSize);
+        // Inventory Menu
+        mono_add_internal_call("Boom.Native::Boom_API_ShowInventoryMenu", (const void*)ICALL_API_ShowInventoryMenu);
+        mono_add_internal_call("Boom.Native::Boom_API_UnloadInventoryMenu", (const void*)ICALL_API_UnloadInventoryMenu);
+        mono_add_internal_call("Boom.Native::Boom_API_IsInventoryMenuLoaded", (const void*)ICALL_API_IsInventoryMenuLoaded);
 
     }
 }
