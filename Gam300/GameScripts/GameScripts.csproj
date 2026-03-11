@@ -92,6 +92,7 @@
     <Compile Include="UIHeartController.cs" />
     <Compile Include="UILocationController.cs" />
     <Compile Include="UIManager.cs" />
+    <Compile Include="WaypointIndicator.cs" />
     <Compile Include="VisionComponent.cs" />
     <Compile Include="Entry.cs" />
     <Compile Include="MovementAnimator.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="FPSLimitToggle.cs" />
     <Compile Include="PlayerMovement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpawnPoint.cs" />
     <Compile Include="VolumeSlider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

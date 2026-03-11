@@ -256,13 +256,13 @@ ASSETS:
         opacity: 1
         useWorldSpaceUV: false
         textureScale: 1
-      AlbedoMapID: 7615287053686789763
+      AlbedoMapID: 8136269060168121303
       NormalMapID: 15113893494084276294
       RoughnessMapID: 10099085680051845455
       MetallicMapID: 10099085680051845455
-      OcclusionMapID: 10115533348395846162
-      EmissiveMapID: 10463905360874748658
-      OpacityMapID: 0
+      OcclusionMapID: 8136269060168121303
+      EmissiveMapID: 0
+      OpacityMapID: 10115533348395846162
       DoubleSided: false
   - Type: MATERIAL
     UID: 5133027133074393065
@@ -397,24 +397,46 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
-    UID: 15114049110730279773
-    Name: metalgatetexture
-    Source: metalgatetexture
+    UID: 1190950372665560984
+    Name: NewBrickWall
+    Source: NewBrickWall
     Properties:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
+        roughness: 0
+        metallic: 0
+        occlusion: 0.589999974
+        opacity: 1
+        useWorldSpaceUV: true
+        textureScale: 9.89999962
+      AlbedoMapID: 3243208601200922329
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
+    UID: 6977112513598097705
+    Name: SkyBox
+    Source: SkyBox
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 1
+        metallic: 0
+        occlusion: 0.0599999987
         opacity: 1
         useWorldSpaceUV: false
         textureScale: 1
-      AlbedoMapID: 8538867989910609552
-      NormalMapID: 11205160342225508013
-      RoughnessMapID: 3390174833904116482
+      AlbedoMapID: 0
+      NormalMapID: 0
+      RoughnessMapID: 0
       MetallicMapID: 0
-      OcclusionMapID: 3390174833904116482
+      OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
       DoubleSided: false
@@ -441,24 +463,24 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
-    UID: 1190950372665560984
-    Name: NewBrickWall
-    Source: NewBrickWall
+    UID: 15114049110730279773
+    Name: metalgatetexture
+    Source: metalgatetexture
     Properties:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0
-        metallic: 0
-        occlusion: 0.589999974
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
         opacity: 1
-        useWorldSpaceUV: true
-        textureScale: 9.89999962
-      AlbedoMapID: 3243208601200922329
-      NormalMapID: 0
-      RoughnessMapID: 0
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 8538867989910609552
+      NormalMapID: 11205160342225508013
+      RoughnessMapID: 3390174833904116482
       MetallicMapID: 0
-      OcclusionMapID: 0
+      OcclusionMapID: 3390174833904116482
       EmissiveMapID: 0
       OpacityMapID: 0
       DoubleSided: false
@@ -563,8 +585,8 @@ ASSETS:
         occlusion: 0.970000029
         opacity: 1
         useWorldSpaceUV: true
-        textureScale: 8.60999966
-      AlbedoMapID: 10441627123981480612
+        textureScale: 4.71000004
+      AlbedoMapID: 13329287097237119223
       NormalMapID: 0
       RoughnessMapID: 0
       MetallicMapID: 0
@@ -607,8 +629,8 @@ ASSETS:
         occlusion: 0.850000024
         opacity: 1
         useWorldSpaceUV: true
-        textureScale: 4.71000004
-      AlbedoMapID: 13329287097237119223
+        textureScale: 11.6999998
+      AlbedoMapID: 13798099764045349811
       NormalMapID: 0
       RoughnessMapID: 0
       MetallicMapID: 0
@@ -661,28 +683,6 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
-    UID: 17505835518794492079
-    Name: Brick Rough Texture
-    Source: Brick Rough Texture
-    Properties:
-      Data:
-        emissive: [0, 0, 0]
-        albedo: [1, 1, 1]
-        roughness: 1
-        metallic: 0
-        occlusion: 0.879999995
-        opacity: 1
-        useWorldSpaceUV: false
-        textureScale: 1
-      AlbedoMapID: 4932857500842133020
-      NormalMapID: 0
-      RoughnessMapID: 0
-      MetallicMapID: 0
-      OcclusionMapID: 0
-      EmissiveMapID: 0
-      OpacityMapID: 0
-      DoubleSided: false
-  - Type: MATERIAL
     UID: 7666986193932932989
     Name: ToriGateTexture
     Source: ToriGateTexture
@@ -701,6 +701,28 @@ ASSETS:
       RoughnessMapID: 2904894310952634977
       MetallicMapID: 0
       OcclusionMapID: 2904894310952634977
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
+    UID: 17505835518794492079
+    Name: Brick Rough Texture
+    Source: Brick Rough Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 1
+        metallic: 0
+        occlusion: 0.879999995
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 4932857500842133020
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
       DoubleSided: false
@@ -812,6 +834,28 @@ ASSETS:
       MetallicMapID: 13001505720200933358
       OcclusionMapID: 13375616880279673200
       EmissiveMapID: 14479753821827653348
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
+    UID: 12018243770028113740
+    Name: Rock1tex
+    Source: Rock1tex
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0
+        metallic: 0
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 9252903905373106182
+      NormalMapID: 7037792216891810639
+      RoughnessMapID: 6352912862017329242
+      MetallicMapID: 0
+      OcclusionMapID: 6352912862017329242
+      EmissiveMapID: 0
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
@@ -1053,6 +1097,72 @@ ASSETS:
       RoughnessMapID: 11500642551985684746
       MetallicMapID: 1067949434389520343
       OcclusionMapID: 16291640152966140925
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
+    UID: 9510738795563815009
+    Name: DetectionRingTexture
+    Source: DetectionRingTexture
+    Properties:
+      Data:
+        emissive: [1, 1, 1]
+        albedo: [1, 1, 1]
+        roughness: 1
+        metallic: 1
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 66.6100006
+      AlbedoMapID: 8021377771889714829
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 8610249737563962830
+      DoubleSided: true
+  - Type: MATERIAL
+    UID: 13283460294142632874
+    Name: RockFloating
+    Source: RockFloating
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0
+        metallic: 0
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 13180466367383800159
+      NormalMapID: 6418363360470105948
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 12197171587709161459
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
+    UID: 11717196323718582073
+    Name: Rock2tex
+    Source: Rock2tex
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+        AlbedoMapID: 13930142241077068392
+      NormalMapID: 2348000828128838431
+      RoughnessMapID: 903363356353558548
+      MetallicMapID: 0
+      OcclusionMapID: 903363356353558548
       EmissiveMapID: 0
       OpacityMapID: 0
       DoubleSided: false
@@ -1684,6 +1794,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 11359675559428126135
+    Name: Inventory_Talisman
+    Source: Resources/Textures/PlayerUI/Inventory_Talisman.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 12247090417330245849
     Name: Outdoor_Stone_Lantern2_fire holder_BaseColor
     Source: Resources/Models/Props/Stone_Lantern_Textures/Outdoor_Stone_Lantern2_fire holder_BaseColor.png
@@ -1882,6 +2003,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 903363356353558548
+    Name: openPBR_shader1_occlusionRoughnessMetallicrock 2
+    Source: Resources/Models/Props/rocks 2/openPBR_shader1_occlusionRoughnessMetallicrock 2.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 3642533689205009707
     Name: ResumeButton_Clicked
     Source: Resources/Textures/MenusUI/ResumeButton_Clicked.png
@@ -1907,6 +2039,17 @@ ASSETS:
     UID: 9683671951523272381
     Name: heart_active
     Source: Resources/Textures/PlayerUI/heart_active.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 16217278603049084796
+    Name: FirstTime_Dialogue2_Talisman
+    Source: Resources/Textures/PlayerUI/FirstTime_Dialogue2_Talisman.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1948,6 +2091,28 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 9887804499288679027
+    Name: FirstTime_Dialogue1_Talisman
+    Source: Resources/Textures/PlayerUI/FirstTime_Dialogue1_Talisman.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 14205466992706534584
+    Name: Pillow_openPBR_shader1_Height
+    Source: Resources/Textures/Props Textures/Pillow_openPBR_shader1_Height.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 14205466992706534584
     Name: Pillow_openPBR_shader1_Height
     Source: Resources/Textures/Props Textures/Pillow_openPBR_shader1_Height.png
@@ -1980,6 +2145,17 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
+  - Type: TEXTURE
+    UID: 15182049477367409902
+    Name: E_OpenDoor
+    Source: Resources/Textures/PlayerUI/E_OpenDoor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
   - Type: TEXTURE
     UID: 18116571246883620302
     Name: Scissors_Ninja_Hood_Metallic
@@ -2036,9 +2212,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 11246060146662733147
-    Name: Scissors_Ninja_Body_Roughness
-    Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Body_Roughness.png
+    UID: 7568472483619014978
+    Name: Indoor_Lantern_Hanging_2_openPBR_shader1_BaseColor
+    Source: Resources/Models/Props/2_KEN_LanternTextures/Indoor_Lantern_Hanging_2_openPBR_shader1_BaseColor.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2047,9 +2223,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 7568472483619014978
-    Name: Indoor_Lantern_Hanging_2_openPBR_shader1_BaseColor
-    Source: Resources/Models/Props/2_KEN_LanternTextures/Indoor_Lantern_Hanging_2_openPBR_shader1_BaseColor.png
+    UID: 11246060146662733147
+    Name: Scissors_Ninja_Body_Roughness
+    Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Body_Roughness.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2094,6 +2270,28 @@ ASSETS:
     UID: 7119423401994078713
     Name: Scissors_Ninja_Hood_Roughness
     Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Hood_Roughness.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 14139683242845732920
+    Name: ResumeButton_Clicked
+    Source: Resources/Textures/MenusUI/ResumeButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 14533128348011895245
+    Name: AfterFirstTime_Talisman
+    Source: Resources/Textures/PlayerUI/AfterFirstTime_Talisman.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2190,6 +2388,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 6352912862017329242
+    Name: rocks_occlusionRoughnessMetallicrocks 1
+    Source: Resources/Models/Props/rocks 1/rocks_occlusionRoughnessMetallicrocks 1.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 17803026501501650564
     Name: Indoor_Lantern_Hanging_2_openPBR_shader1_Roughness
     Source: Resources/Models/Props/2_KEN_LanternTextures/Indoor_Lantern_Hanging_2_openPBR_shader1_Roughness.png
@@ -2212,6 +2421,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 8538867989910609552
+    Name: openPBR_shader1_baseColor
+    Source: Resources/Models/Props/metalgate_model n texture/openPBR_shader1_baseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 3615061789617660208
     Name: UI_Freeze_Unavailable
     Source: Resources/Textures/PlayerUI/UI_Freeze_Unavailable.png
@@ -2223,9 +2443,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 8538867989910609552
-    Name: openPBR_shader1_baseColor
-    Source: Resources/Models/Props/metalgate_model n texture/openPBR_shader1_baseColor.png
+    UID: 3615061789617660208
+    Name: UI_Freeze_Unavailable
+    Source: Resources/Textures/PlayerUI/UI_Freeze_Unavailable.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2270,6 +2490,28 @@ ASSETS:
     UID: 18036222300221331622
     Name: Indoor_Lantern_Hanging_2_openPBR_shader1_BaseColor
     Source: Resources/Models/Props/3_PON_LanternTextures/Indoor_Lantern_Hanging_2_openPBR_shader1_BaseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 9939195436459860698
+    Name: lambert1_normal
+    Source: Resources/Models/Props/Freeze/lambert1_normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 6418363360470105948
+    Name: rock floatinglambert1_normal
+    Source: Resources/Models/Props/rocks_island/rock floatinglambert1_normal.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2432,6 +2674,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 17705962514840769959
+    Name: Inventory_BigToken
+    Source: Resources/Textures/PlayerUI/Inventory_BigToken.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 13983692512001316939
     Name: MainMenuBackground
     Source: Resources/Textures/MenusUI/MainMenuBackground.png
@@ -2586,6 +2839,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 12197171587709161459
+    Name: rock floatinglambert1_occlusionRoughnessMetallic
+    Source: Resources/Models/Props/rocks_island/rock floatinglambert1_occlusionRoughnessMetallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 11023485835561908912
     Name: ReturnMenuButton
     Source: Resources/Textures/MenusUI/ReturnMenuButton.png
@@ -2652,6 +2916,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 3690738976007310336
+    Name: Checkpoint_Text
+    Source: Resources/Textures/PlayerUI/Checkpoint_Text.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
     UID: 9033368879326419558
     Name: Pillow_openPBR_shader1_Metallic
     Source: Resources/Textures/Props Textures/Pillow_openPBR_shader1_Metallic.png
@@ -2696,9 +2971,31 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 13407014795456209896
+    Name: FirstTime_Dialogue1_LargeToken
+    Source: Resources/Textures/PlayerUI/FirstTime_Dialogue1_LargeToken.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 2904894310952634977
     Name: Japanese table_openPBR_shader1_BaseColor
     Source: Resources/Textures/Props Textures/Japanese table_openPBR_shader1_BaseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 14773430658529372380
+    Name: Inventory_SmallToken
+    Source: Resources/Textures/PlayerUI/Inventory_SmallToken.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2938,9 +3235,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 5513232593970361308
-    Name: BIG_Gravestone_low_Gravestone_BaseColor
-    Source: Resources/Models/Props/Ressurection_Gravestone/Gravestone Textures/BIG_Gravestone_low_Gravestone_BaseColor.png
+    UID: 13329287097237119223
+    Name: grass big
+    Source: Resources/Textures/grass big.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2949,9 +3246,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 13329287097237119223
-    Name: grass big
-    Source: Resources/Textures/grass big.png
+    UID: 5513232593970361308
+    Name: BIG_Gravestone_low_Gravestone_BaseColor
+    Source: Resources/Models/Props/Ressurection_Gravestone/Gravestone Textures/BIG_Gravestone_low_Gravestone_BaseColor.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3026,9 +3323,31 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 11841953528712633732
+    Name: gardenfloor1024
+    Source: Resources/Textures/Floor Texture/gardenfloor1024.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 6158403341405184604
     Name: PAPER WALL128
     Source: Resources/Textures/PAPER WALL128.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 13180466367383800159
+    Name: rock floatinglambert1_baseColor
+    Source: Resources/Models/Props/rocks_island/rock floatinglambert1_baseColor.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3257,6 +3576,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 10729200541803145040
+    Name: Inventory_Talisman
+    Source: Resources/Textures/PlayerUI/Inventory_Talisman.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 5826171970229966582
     Name: ReturnMenuButton_Clicked
     Source: Resources/Textures/MenusUI/ReturnMenuButton_Clicked.png
@@ -3271,6 +3601,17 @@ ASSETS:
     UID: 10729200541803145040
     Name: Inventory_Talisman
     Source: Resources/Textures/PlayerUI/Inventory_Talisman.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 8124115684814999151
+    Name: NotEnoughKeys_Dialogue1
+    Source: Resources/Textures/PlayerUI/NotEnoughKeys_Dialogue1.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3356,6 +3697,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 3243208601200922329
+    Name: brickwalll 256
+    Source: Resources/Textures/brickwalll 256.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 11064058823704041102
     Name: NewGameButton_Clicked
     Source: Resources/Textures/MenusUI/NewGameButton_Clicked.png
@@ -3367,9 +3719,20 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 3243208601200922329
-    Name: brickwalll 256
-    Source: Resources/Textures/brickwalll 256.png
+    UID: 11064058823704041102
+    Name: NewGameButton_Clicked
+    Source: Resources/Textures/MenusUI/NewGameButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 16907912152131694649
+    Name: KeysNeeded_3
+    Source: Resources/Textures/PlayerUI/KeysNeeded_3.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3458,6 +3821,17 @@ ASSETS:
     UID: 13466075847250744873
     Name: lambert1_occlusionRoughnessMetallic
     Source: Resources/Models/Props/Freeze/lambert1_occlusionRoughnessMetallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 8021377771889714829
+    Name: DetectionCircleTexture (2)
+    Source: Resources/Textures/PlayerUI/DetectionCircleTexture (2).png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3983,6 +4357,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 2095542591466437198
+    Name: FirstTime_LargeToken
+    Source: Resources/Textures/PlayerUI/FirstTime_LargeToken.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 16630236395337500268
     Name: Inventory_BigToken
     Source: Resources/Textures/PlayerUI/Inventory_BigToken.png
@@ -4004,6 +4389,215 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
+  - Type: TEXTURE
+    UID: 8610249737563962830
+    Name: DetectionCircle (2)
+    Source: Resources/Textures/PlayerUI/DetectionCircle (2).png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 9252903905373106182
+    Name: rocks_baseColorrocks 1
+    Source: Resources/Models/Props/rocks 1/rocks_baseColorrocks 1.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 7037792216891810639
+    Name: rocks_normalrocks 1
+    Source: Resources/Models/Props/rocks 1/rocks_normalrocks 1.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 13930142241077068392
+    Name: openPBR_shader1_baseColorrock 2
+    Source: Resources/Models/Props/rocks 2/openPBR_shader1_baseColorrock 2.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 2348000828128838431
+    Name: openPBR_shader1_normalrock 2
+    Source: Resources/Models/Props/rocks 2/openPBR_shader1_normalrock 2.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 7309956214222652870
+    Name: AfterFirstTime_LargeToken
+    Source: Resources/Textures/PlayerUI/AfterFirstTime_LargeToken.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 13760466255290870570
+    Name: AfterFirstTime_SmallToken
+    Source: Resources/Textures/PlayerUI/AfterFirstTime_SmallToken.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 8992878750136671847
+    Name: BlackBackground
+    Source: Resources/Textures/PlayerUI/BlackBackground.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 6301776291998926800
+    Name: FirstTime_Dialogue1_SmallToken
+    Source: Resources/Textures/PlayerUI/FirstTime_Dialogue1_SmallToken.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 15546537028350727031
+    Name: FirstTime_Dialogue2_LargeToken
+    Source: Resources/Textures/PlayerUI/FirstTime_Dialogue2_LargeToken.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 3060421424103211675
+    Name: FirstTime_Dialogue2_SmallToken
+    Source: Resources/Textures/PlayerUI/FirstTime_Dialogue2_SmallToken.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 3701287540548707637
+    Name: FirstTime_Dialogue3_Talisman
+    Source: Resources/Textures/PlayerUI/FirstTime_Dialogue3_Talisman.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 9863810464068325906
+    Name: FirstTime_SmallToken
+    Source: Resources/Textures/PlayerUI/FirstTime_SmallToken.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 14409592044102443317
+    Name: FirstTime_Talisman
+    Source: Resources/Textures/PlayerUI/FirstTime_Talisman.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 10054434608805248514
+    Name: InventoryFull_Dialogue
+    Source: Resources/Textures/PlayerUI/InventoryFull_Dialogue.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 7848808138329234355
+    Name: KeysNeeded_1
+    Source: Resources/Textures/PlayerUI/KeysNeeded_1.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 5635867319670992902
+    Name: KeysNeeded_2
+    Source: Resources/Textures/PlayerUI/KeysNeeded_2.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 2652542492882879586
+    Name: NotEnoughKeys_Dialogue2
+    Source: Resources/Textures/PlayerUI/NotEnoughKeys_Dialogue2.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 8937668490727203548
+    Name: Health_Add
+    Source: Resources/Textures/PlayerUI/Health_Add.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
   - Type: SKYBOX
     UID: 4245843529762785392
     Name: NightSkyHDRI003_8K_HDR
@@ -4571,6 +5165,17 @@ ASSETS:
     UID: 12488520825890969207
     Name: Untitled
     Source: Resources/Models/Untitled.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 11704932561101383624
+    Name: rocks 1
+    Source: Resources/Models/Props/rocks 1/rocks 1.fbx
     Properties:
       Model Transform:
         transform:
@@ -5657,9 +6262,31 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
+    UID: 5470241165737121307
+    Name: rock 2
+    Source: Resources/Models/Props/rocks 2/rock 2.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
     UID: 18265481119490193399
     Name: M5_Daruma_Boss
     Source: Resources/Models/M5_Daruma_Boss.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 3978830521270443559
+    Name: rock floating
+    Source: Resources/Models/Props/rocks_island/rock floating.fbx
     Properties:
       Model Transform:
         transform:
@@ -6194,6 +6821,10 @@ ASSETS:
     UID: 4668787442050390265
     Name: Redlight
     Source: Resources/Audio/Redlight.wav
+  - Type: AUDIO
+    UID: 9911665564103461214
+    Name: doorLocked
+    Source: Resources/Audio/doorLocked.wav
   - Type: ANIMATION
     UID: 4483381614930560572
     Name: mixamo.com

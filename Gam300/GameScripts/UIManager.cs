@@ -20,6 +20,7 @@ namespace GameScripts
         private BloodOverlayController _bloodUI; // *** NEW: Blood overlay controller ***
         private UITutorialController _tutorialUI; // *** NEW: Tutorial UI controller ***
         private UIStanceController _stanceUI; // *** NEW: Crouch/Run UI controller ***
+        private WaypointIndicator _waypointUI; // Waypoint arrow indicator for keys
 
         public void OnStart(string jsonParams)
         {
@@ -52,7 +53,11 @@ namespace GameScripts
             _tutorialUI = new UITutorialController { Entity = Entity };
             _tutorialUI.OnStart(jsonParams);
 
-            API.Log("[UIManager] All UI systems initialized (including hearts and tutorials)");
+            // Initialize waypoint indicator for key navigation
+            _waypointUI = new WaypointIndicator { Entity = Entity };
+            _waypointUI.OnStart(jsonParams);
+
+            API.Log("[UIManager] All UI systems initialized (including hearts, tutorials, and waypoints)");
 
         }
 
@@ -66,6 +71,7 @@ namespace GameScripts
             _bloodUI?.OnUpdate(dt);  // *** NEW: Update blood UI ***
             _stanceUI?.OnUpdate(dt); // *** NEW: Update crouch/run UI ***
             _tutorialUI?.OnUpdate(dt);  // *** NEW: Update tutorial UI ***
+            _waypointUI?.OnUpdate(dt);  // Waypoint arrow indicator
         }
 
 
