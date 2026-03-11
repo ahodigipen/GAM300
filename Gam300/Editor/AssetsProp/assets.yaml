@@ -234,13 +234,13 @@ ASSETS:
         opacity: 1
         useWorldSpaceUV: false
         textureScale: 1
-      AlbedoMapID: 7615287053686789763
+      AlbedoMapID: 8136269060168121303
       NormalMapID: 15113893494084276294
       RoughnessMapID: 10099085680051845455
       MetallicMapID: 10099085680051845455
-      OcclusionMapID: 10115533348395846162
-      EmissiveMapID: 10463905360874748658
-      OpacityMapID: 0
+      OcclusionMapID: 8136269060168121303
+      EmissiveMapID: 0
+      OpacityMapID: 10115533348395846162
       DoubleSided: false
   - Type: MATERIAL
     UID: 5133027133074393065
@@ -815,6 +815,28 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
+    UID: 12018243770028113740
+    Name: Rock1tex
+    Source: Rock1tex
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0
+        metallic: 0
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 9252903905373106182
+      NormalMapID: 7037792216891810639
+      RoughnessMapID: 6352912862017329242
+      MetallicMapID: 0
+      OcclusionMapID: 6352912862017329242
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
     UID: 10338892533787968460
     Name: Tree Texture 2
     Source: Tree Texture 2
@@ -1034,6 +1056,50 @@ ASSETS:
       EmissiveMapID: 0
       OpacityMapID: 8610249737563962830
       DoubleSided: true
+  - Type: MATERIAL
+    UID: 13283460294142632874
+    Name: RockFloating
+    Source: RockFloating
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0
+        metallic: 0
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 13180466367383800159
+      NormalMapID: 6418363360470105948
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 12197171587709161459
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
+    UID: 11717196323718582073
+    Name: Rock2tex
+    Source: Rock2tex
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 13930142241077068392
+      NormalMapID: 2348000828128838431
+      RoughnessMapID: 903363356353558548
+      MetallicMapID: 0
+      OcclusionMapID: 903363356353558548
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
   - Type: PHYSICS_MESH
     UID: 8633576229273901496
     Name: Wall_With_Hole (Tri)
@@ -1651,6 +1717,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 11359675559428126135
+    Name: Inventory_Talisman
+    Source: Resources/Textures/PlayerUI/Inventory_Talisman.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 12247090417330245849
     Name: Outdoor_Stone_Lantern2_fire holder_BaseColor
     Source: Resources/Models/Props/Stone_Lantern_Textures/Outdoor_Stone_Lantern2_fire holder_BaseColor.png
@@ -1848,6 +1925,17 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
+  - Type: TEXTURE
+    UID: 903363356353558548
+    Name: openPBR_shader1_occlusionRoughnessMetallicrock 2
+    Source: Resources/Models/Props/rocks 2/openPBR_shader1_occlusionRoughnessMetallicrock 2.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
   - Type: TEXTURE
     UID: 3642533689205009707
     Name: ResumeButton_Clicked
@@ -2157,6 +2245,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 6352912862017329242
+    Name: rocks_occlusionRoughnessMetallicrocks 1
+    Source: Resources/Models/Props/rocks 1/rocks_occlusionRoughnessMetallicrocks 1.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
     UID: 17803026501501650564
     Name: Indoor_Lantern_Hanging_2_openPBR_shader1_Roughness
     Source: Resources/Models/Props/2_KEN_LanternTextures/Indoor_Lantern_Hanging_2_openPBR_shader1_Roughness.png
@@ -2244,6 +2343,17 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
+  - Type: TEXTURE
+    UID: 6418363360470105948
+    Name: rock floatinglambert1_normal
+    Source: Resources/Models/Props/rocks_island/rock floatinglambert1_normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
   - Type: TEXTURE
     UID: 14418593737196170531
     Name: Indoor_Lantern_Hanging_2_openPBR_shader1_Normal
@@ -2380,6 +2490,17 @@ ASSETS:
     UID: 327234960441928512
     Name: UI_Key
     Source: Resources/Textures/PlayerUI/UI_Key.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 17705962514840769959
+    Name: Inventory_BigToken
+    Source: Resources/Textures/PlayerUI/Inventory_BigToken.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2542,6 +2663,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 12197171587709161459
+    Name: rock floatinglambert1_occlusionRoughnessMetallic
+    Source: Resources/Models/Props/rocks_island/rock floatinglambert1_occlusionRoughnessMetallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
     UID: 11023485835561908912
     Name: ReturnMenuButton
     Source: Resources/Textures/MenusUI/ReturnMenuButton.png
@@ -2655,6 +2787,17 @@ ASSETS:
     UID: 2904894310952634977
     Name: Japanese table_openPBR_shader1_BaseColor
     Source: Resources/Textures/Props Textures/Japanese table_openPBR_shader1_BaseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 14773430658529372380
+    Name: Inventory_SmallToken
+    Source: Resources/Textures/PlayerUI/Inventory_SmallToken.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2981,6 +3124,17 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
+  - Type: TEXTURE
+    UID: 13180466367383800159
+    Name: rock floatinglambert1_baseColor
+    Source: Resources/Models/Props/rocks_island/rock floatinglambert1_baseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
   - Type: TEXTURE
     UID: 5425060527425539928
     Name: ROOFTILE128
@@ -3417,10 +3571,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 883033736161376587
     Name: UI_Running
@@ -3821,6 +3975,50 @@ ASSETS:
     UID: 8610249737563962830
     Name: DetectionCircle (2)
     Source: Resources/Textures/PlayerUI/DetectionCircle (2).png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 9252903905373106182
+    Name: rocks_baseColorrocks 1
+    Source: Resources/Models/Props/rocks 1/rocks_baseColorrocks 1.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 7037792216891810639
+    Name: rocks_normalrocks 1
+    Source: Resources/Models/Props/rocks 1/rocks_normalrocks 1.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 13930142241077068392
+    Name: openPBR_shader1_baseColorrock 2
+    Source: Resources/Models/Props/rocks 2/openPBR_shader1_baseColorrock 2.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 2348000828128838431
+    Name: openPBR_shader1_normalrock 2
+    Source: Resources/Models/Props/rocks 2/openPBR_shader1_normalrock 2.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -4384,6 +4582,17 @@ ASSETS:
     UID: 12488520825890969207
     Name: Untitled
     Source: Resources/Models/Untitled.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 11704932561101383624
+    Name: rocks 1
+    Source: Resources/Models/Props/rocks 1/rocks 1.fbx
     Properties:
       Model Transform:
         transform:
@@ -5462,6 +5671,28 @@ ASSETS:
     UID: 2915209680014061313
     Name: LEVEL2Walking
     Source: Resources/Models/Enemy/Patrol2Textures/LEVEL2Walking.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 5470241165737121307
+    Name: rock 2
+    Source: Resources/Models/Props/rocks 2/rock 2.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 3978830521270443559
+    Name: rock floating
+    Source: Resources/Models/Props/rocks_island/rock floating.fbx
     Properties:
       Model Transform:
         transform:
