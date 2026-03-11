@@ -24,6 +24,11 @@ namespace GameScripts
         // New: Track if we are holding a freeze charge
         private static bool s_hasFreezeCharge = false;
 
+        // Pickup counts for tutorial system (tracks total lifetime pickups per item type)
+        private static int s_largeTokenPickupCount = 0;
+        private static int s_smallTokenPickupCount = 0;
+        private static int s_talismanPickupCount = 0;
+
         public static void Reset()
         {
             s_keyCount = 0;
@@ -32,6 +37,9 @@ namespace GameScripts
             s_typeToVariant.Clear();
             s_inventorySlots.Clear(); // Keep our new slots clean
             s_hasFreezeCharge = false; // Reset ability on game restart
+            s_largeTokenPickupCount = 0;
+            s_smallTokenPickupCount = 0;
+            s_talismanPickupCount = 0;
             TutorialManager.Reset(); // Reset tutorial states
             API.Log("[PlayerInventory] Reset");
         }
@@ -67,6 +75,12 @@ namespace GameScripts
                 {
                     s_inventorySlots.Add(keyVariant);
                 }
+
+                // Increment pickup count for tutorial tracking
+                if (keyVariant == "MainDoor")
+                    s_largeTokenPickupCount++;
+                else if (keyVariant == "SmallDoor")
+                    s_smallTokenPickupCount++;
             }
 
             s_keyCount++;
@@ -130,6 +144,11 @@ namespace GameScripts
             return s_keyVariants.TryGetValue(keyVariant, out int count) ? count : 0;
         }
 
+        // --- Tutorial Pickup Count Getters ---
+        public static int GetLargeTokenPickupCount() => s_largeTokenPickupCount;
+        public static int GetSmallTokenPickupCount() => s_smallTokenPickupCount;
+        public static int GetTalismanPickupCount() => s_talismanPickupCount;
+
         // Returns a snapshot of currently held key identifiers.
         public static string[] GetKeyTypes()
         {
@@ -152,6 +171,7 @@ namespace GameScripts
             }
 
             s_hasFreezeCharge = true;
+            s_talismanPickupCount++;
             if (!s_inventorySlots.Contains("Freeze"))
             {
                 s_inventorySlots.Add("Freeze");

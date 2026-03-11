@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Boom;
 
 namespace GameScripts
@@ -223,7 +223,7 @@ namespace GameScripts
             {
                 if (API.IsPauseMenuLoaded()) UpdatePauseMenu(dt);
             }
-            else if (!IsInventoryOpen)
+            else
             {
                 UpdateGame(dt);
             }
@@ -345,7 +345,7 @@ namespace GameScripts
                 _p_KeyWasDown = p_KeyDown;
 
                 // Handle I key to open inventory
-                if (i_KeyDown && !_i_KeyWasDown && !ctrl_KeyDown)
+                if (!IsInventoryOpen && i_KeyDown && !_i_KeyWasDown && !ctrl_KeyDown)
                 {
                     API.Log("Opening inventory...");
                     IsInventoryOpen = true;
@@ -363,13 +363,26 @@ namespace GameScripts
         {
             bool i_KeyDown = API.IsKeyDown(API.KEY_I);
 
-            // I key closes the inventory
-            if (i_KeyDown && !_i_KeyWasDown)
+            // Block closing inventory if a tutorial is active
+            if (TutorialManager.IsKeyTutorialActive() || TutorialManager.WasJustDismissed() ||
+                TutorialPopupTrigger.IsPopupActive() || TutorialPopupTrigger.WasJustDismissed())
             {
-                s_RequestedInventoryAction = InventoryMenuAction.Close;
+                _i_KeyWasDown = i_KeyDown;
+                // We don't return entirely, just bypass the close logic so the menu keeps rendering/updating
+                // But wait, the menu rendering is inside this function!
+                // Actually, the rest of this function processes the s_RequestedInventoryAction
+                // So bypassing the input check is enough.
+            }
+            else
+            {
+                // I key closes the inventory
+                if (i_KeyDown && !_i_KeyWasDown)
+                {
+                    s_RequestedInventoryAction = InventoryMenuAction.Close;
+                    _i_KeyWasDown = i_KeyDown;
+                }
                 _i_KeyWasDown = i_KeyDown;
             }
-            _i_KeyWasDown = i_KeyDown;
 
             switch (s_RequestedInventoryAction)
             {

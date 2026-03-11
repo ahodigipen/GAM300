@@ -14,8 +14,8 @@ ENTITIES:
       text: 0
       fontName: Roboto-Regular
       color: [1, 1, 1, 1]
-      scale: 1
-      screenPosition: [1457, 758]
+      scale: 0.5
+      screenPosition: [1592, 802]
       renderAs3D: false
       billboardMode: true
     MenuComponent:
@@ -34,8 +34,8 @@ ENTITIES:
       text: 0
       fontName: Roboto-Regular
       color: [1, 1, 1, 1]
-      scale: 1
-      screenPosition: [1245, 758]
+      scale: 0.5
+      screenPosition: [1452, 802]
       renderAs3D: false
       billboardMode: true
     MenuComponent:
@@ -63,9 +63,9 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.600000024, 0.800000012, 2]
+        Translate: [0.75, 0.850000024, 2]
         Rotate: [0, 0, 0]
-        Scale: [0.300000012, 0.150000006, 1]
+        Scale: [0.200000003, 0.0900000036, 1]
     SpriteComponent:
       textureID: 6430292677676923924
       color: [0.435294122, 0.435294122, 0.435294122, 1]
@@ -86,8 +86,8 @@ ENTITIES:
       text: 0
       fontName: Roboto-Regular
       color: [1, 1, 1, 1]
-      scale: 1
-      screenPosition: [1354, 758]
+      scale: 0.5
+      screenPosition: [1523, 802]
       renderAs3D: false
       billboardMode: true
     MenuComponent:
@@ -116,9 +116,9 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.600000024, 0.800000012, 2.0999999]
+        Translate: [0.755999982, 0.860000014, 2.0999999]
         Rotate: [0, 0, 0]
-        Scale: [0.0500000007, 0.0500000007, 1]
+        Scale: [0.0299999993, 0.0599999987, 1]
     SpriteComponent:
       textureID: 0
       color: [1, 1, 1, 1]
@@ -132,9 +132,9 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.370000005, 0.800000012, 2.0999999]
+        Translate: [0.59799999, 0.860000014, 2.0999999]
         Rotate: [0, 0, 0]
-        Scale: [0.0500000007, 0.0500000007, 1]
+        Scale: [0.0299999993, 0.0599999987, 1]
     SpriteComponent:
       textureID: 0
       color: [1, 1, 1, 1]
@@ -148,9 +148,9 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.49000001, 0.800000012, 2.0999999]
+        Translate: [0.675999999, 0.860000014, 2.0999999]
         Rotate: [0, 0, 0]
-        Scale: [0.0500000007, 0.0500000007, 1]
+        Scale: [0.0299999993, 0.0599999987, 1]
     SpriteComponent:
       textureID: 0
       color: [1, 1, 1, 1]
@@ -164,9 +164,9 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.720000029, 0.800000012, 2.0999999]
+        Translate: [0.83099997, 0.860000014, 2.0999999]
         Rotate: [0, 0, 0]
-        Scale: [0.0500000007, 0.0500000007, 1]
+        Scale: [0.0299999993, 0.0599999987, 1]
     SpriteComponent:
       textureID: 0
       color: [1, 1, 1, 1]
@@ -180,9 +180,9 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.829999983, 0.800000012, 2.0999999]
+        Translate: [0.907999992, 0.860000014, 2.0999999]
         Rotate: [0, 0, 0]
-        Scale: [0.0500000007, 0.0500000007, 1]
+        Scale: [0.0299999993, 0.0599999987, 1]
     SpriteComponent:
       textureID: 0
       color: [1, 1, 1, 1]
@@ -203,8 +203,8 @@ ENTITIES:
       text: 0
       fontName: Roboto-Regular
       color: [1, 1, 1, 1]
-      scale: 1
-      screenPosition: [1565, 758]
+      scale: 0.5
+      screenPosition: [1663, 802]
       renderAs3D: false
       billboardMode: true
     MenuComponent:
@@ -223,8 +223,8 @@ ENTITIES:
       text: 0
       fontName: Roboto-Regular
       color: [1, 1, 1, 1]
-      scale: 1
-      screenPosition: [1670, 758]
+      scale: 0.5
+      screenPosition: [1734, 802]
       renderAs3D: false
       billboardMode: true
     MenuComponent:

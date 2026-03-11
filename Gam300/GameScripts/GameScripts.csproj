@@ -92,6 +92,7 @@
     <Compile Include="UIHeartController.cs" />
     <Compile Include="UILocationController.cs" />
     <Compile Include="UIManager.cs" />
+    <Compile Include="WaypointIndicator.cs" />
     <Compile Include="VisionComponent.cs" />
     <Compile Include="Entry.cs" />
     <Compile Include="MovementAnimator.cs" />

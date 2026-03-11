@@ -80,8 +80,14 @@ namespace GameScripts
             inst._collected = true;
             PlayerInventory.AddKey(inst._keyType, inst._keyVariant);
 
-            // Show tutorial on first key pickup
-            TutorialManager.ShowKeyTutorial();
+            // Show pickup tutorial (first-time or repeat) based on key variant
+            TutorialManager.ItemType itemType = (inst._keyVariant == "SmallDoor")
+                ? TutorialManager.ItemType.SmallToken
+                : TutorialManager.ItemType.LargeToken;
+            int pickupCount = (inst._keyVariant == "SmallDoor")
+                ? PlayerInventory.GetSmallTokenPickupCount()
+                : PlayerInventory.GetLargeTokenPickupCount();
+            TutorialManager.ShowPickupTutorial(itemType, pickupCount);
 
             // Play pickup SFX at key's position
             if (API.HasTransform(inst.Entity))
