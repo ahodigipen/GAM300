@@ -142,7 +142,7 @@ namespace GameScripts
 
             // Rotate the ring to point toward the target key (Y-axis only)
             Vec3 rot = API.GetRotation(_ringEntity);
-            API.SetRotation(_ringEntity, new Vec3(rot.X, _currentYawDeg, rot.Z));
+            API.SetRotation(_ringEntity, new Vec3(rot.X, _currentYawDeg + 180f, rot.Z));
 
             // Apply pulse to scale
             Vec3 pulsedScale = new Vec3(
