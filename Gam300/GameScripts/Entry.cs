@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Boom;
 
 namespace GameScripts
@@ -223,7 +223,7 @@ namespace GameScripts
             {
                 if (API.IsPauseMenuLoaded()) UpdatePauseMenu(dt);
             }
-            else if (!IsInventoryOpen)
+            else
             {
                 UpdateGame(dt);
             }
@@ -345,7 +345,7 @@ namespace GameScripts
                 _p_KeyWasDown = p_KeyDown;
 
                 // Handle I key to open inventory
-                if (i_KeyDown && !_i_KeyWasDown && !ctrl_KeyDown)
+                if (!IsInventoryOpen && i_KeyDown && !_i_KeyWasDown && !ctrl_KeyDown)
                 {
                     API.Log("Opening inventory...");
                     IsInventoryOpen = true;
