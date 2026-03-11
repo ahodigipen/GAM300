@@ -1,6 +1,23 @@
 Version: 1.0
 ENTITIES:
   - InfoComponent:
+      Parent: 0
+      Name: DetectionRing
+      UID: 44569852669512769
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-55.4091187, 1.39688909, 4.70937252]
+        Rotate: [173.225891, 30.1999817, -0.000197076006]
+        Scale: [0.555795014, 1.22484863, 1.15727234]
+    ModelComponent:
+      ModelID: 5963078964798272625
+      MaterialID: 9510738795563815009
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
       Parent: 9691864251179230668
       Name: PrisonGateBar8 (Copy) (Copy)
       UID: 15242036926005388192
@@ -2854,7 +2871,7 @@ ENTITIES:
       Transform:
         Translate: [-0.26146245, -0.298543572, -0.5]
         Rotate: [0, 0, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+        Scale: [0, 0, 0]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FreezeOverlayBehavior
@@ -4443,8 +4460,8 @@ ENTITIES:
       SortOrder: 308
     TransformComponent:
       Transform:
-        Translate: [0.386653662, 4.22016668, 14.1099358]
-        Rotate: [172.0625, 31493.0625, 180]
+        Translate: [-56.3637505, 8.31558609, 6.34110641]
+        Rotate: [102.8125, 31592.4375, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
