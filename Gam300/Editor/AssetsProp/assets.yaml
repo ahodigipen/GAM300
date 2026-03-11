@@ -111,28 +111,6 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
-    UID: 5492247716426239787
-    Name: spikes
-    Source: spikes
-    Properties:
-      Data:
-        emissive: [0, 0, 0]
-        albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
-        opacity: 1
-        useWorldSpaceUV: false
-        textureScale: 1
-      AlbedoMapID: 16212527279611504695
-      NormalMapID: 3958029045455338805
-      RoughnessMapID: 13339206725868457610
-      MetallicMapID: 5618225631434775639
-      OcclusionMapID: 0
-      EmissiveMapID: 0
-      OpacityMapID: 0
-      DoubleSided: false
-  - Type: MATERIAL
     UID: 9126702018428758169
     Name: Lamp Texture
     Source: Lamp Texture
@@ -173,6 +151,28 @@ ASSETS:
       RoughnessMapID: 6305281938924181745
       MetallicMapID: 9033368879326419558
       OcclusionMapID: 14205466992706534584
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
+    UID: 5492247716426239787
+    Name: spikes
+    Source: spikes
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 16212527279611504695
+      NormalMapID: 3958029045455338805
+      RoughnessMapID: 13339206725868457610
+      MetallicMapID: 5618225631434775639
+      OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
       DoubleSided: false
@@ -441,28 +441,6 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
-    UID: 8475851512635632909
-    Name: Wooden Wall Texture
-    Source: Wooden Wall Texture
-    Properties:
-      Data:
-        emissive: [0, 0, 0]
-        albedo: [1, 1, 1]
-        roughness: 1
-        metallic: 0
-        occlusion: 0.75999999
-        opacity: 1
-        useWorldSpaceUV: true
-        textureScale: 2.71000004
-      AlbedoMapID: 7176136387576027842
-      NormalMapID: 0
-      RoughnessMapID: 0
-      MetallicMapID: 0
-      OcclusionMapID: 0
-      EmissiveMapID: 0
-      OpacityMapID: 0
-      DoubleSided: false
-  - Type: MATERIAL
     UID: 1190950372665560984
     Name: NewBrickWall
     Source: NewBrickWall
@@ -477,6 +455,28 @@ ASSETS:
         useWorldSpaceUV: true
         textureScale: 9.89999962
       AlbedoMapID: 3243208601200922329
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
+    UID: 8475851512635632909
+    Name: Wooden Wall Texture
+    Source: Wooden Wall Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 1
+        metallic: 0
+        occlusion: 0.75999999
+        opacity: 1
+        useWorldSpaceUV: true
+        textureScale: 2.71000004
+      AlbedoMapID: 7176136387576027842
       NormalMapID: 0
       RoughnessMapID: 0
       MetallicMapID: 0
@@ -1034,6 +1034,28 @@ ASSETS:
       EmissiveMapID: 0
       OpacityMapID: 0
       DoubleSided: false
+  - Type: MATERIAL
+    UID: 5705719871047309081
+    Name: Daruma
+    Source: Daruma
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 9120633703760842616
+      NormalMapID: 4164839000983000245
+      RoughnessMapID: 11500642551985684746
+      MetallicMapID: 1067949434389520343
+      OcclusionMapID: 16291640152966140925
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
   - Type: PHYSICS_MESH
     UID: 8633576229273901496
     Name: Wall_With_Hole (Tri)
@@ -1445,6 +1467,17 @@ ASSETS:
     UID: 4067648091469832735
     Name: Ninja_occlusionRoughnessMetallic
     Source: Resources/Models/Enemy/Stationary Sentry/Ninja_occlusionRoughnessMetallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 11500642551985684746
+    Name: M5_Daruma_Boss_low_Daruma_Roughness
+    Source: Resources/Textures/Boss Level Textures/M5_Daruma_Boss_low_Daruma_Roughness.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2229,10 +2262,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 18036222300221331622
     Name: Indoor_Lantern_Hanging_2_openPBR_shader1_BaseColor
@@ -2867,10 +2900,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 4939597093217633384
     Name: detection bar - undetected mockup
@@ -3227,6 +3260,17 @@ ASSETS:
     UID: 5826171970229966582
     Name: ReturnMenuButton_Clicked
     Source: Resources/Textures/MenusUI/ReturnMenuButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 10729200541803145040
+    Name: Inventory_Talisman
+    Source: Resources/Textures/PlayerUI/Inventory_Talisman.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3593,10 +3637,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 5023320735450198536
     Name: M4_Sentry_untextured_Sentry_Normal
@@ -3780,10 +3824,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 8468023229066198610
     Name: rcok dorp_normal
@@ -3791,10 +3835,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 2808560457356840545
     Name: rcok dorp_occlusionRoughnessMetallic
@@ -3802,10 +3846,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 16084830197438479485
     Name: spikes_Height
@@ -3813,10 +3857,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 3958029045455338805
     Name: spikes_Normal
@@ -3824,10 +3868,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 5618225631434775639
     Name: spikes_Metallic
@@ -3835,24 +3879,14 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 11646206417746647323
     Name: spikes_Normal_OpenGL
     Source: Resources/Textures/Boss Level Textures/spikes_Normal_OpenGL.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-    UID: 11205160342225508013
-    Name: openPBR_shader1_normal
-    Source: Resources/Models/Props/metalgate_model n texture/openPBR_shader1_normal.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3864,6 +3898,105 @@ ASSETS:
     UID: 3390174833904116482
     Name: openPBR_shader1_occlusionRoughnessMetallic
     Source: Resources/Models/Props/metalgate_model n texture/openPBR_shader1_occlusionRoughnessMetallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 11205160342225508013
+    Name: openPBR_shader1_normal
+    Source: Resources/Models/Props/metalgate_model n texture/openPBR_shader1_normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 9120633703760842616
+    Name: M5_Daruma_Boss_low_Daruma_BaseColor
+    Source: Resources/Textures/Boss Level Textures/M5_Daruma_Boss_low_Daruma_BaseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 6863343813191663289
+    Name: M5_Daruma_Boss_low_Daruma_Emissive
+    Source: Resources/Textures/Boss Level Textures/M5_Daruma_Boss_low_Daruma_Emissive.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 16291640152966140925
+    Name: M5_Daruma_Boss_low_Daruma_Height
+    Source: Resources/Textures/Boss Level Textures/M5_Daruma_Boss_low_Daruma_Height.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 1067949434389520343
+    Name: M5_Daruma_Boss_low_Daruma_Metallic
+    Source: Resources/Textures/Boss Level Textures/M5_Daruma_Boss_low_Daruma_Metallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 4164839000983000245
+    Name: M5_Daruma_Boss_low_Daruma_Normal
+    Source: Resources/Textures/Boss Level Textures/M5_Daruma_Boss_low_Daruma_Normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 6430292677676923924
+    Name: Inventory
+    Source: Resources/Textures/PlayerUI/Inventory.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 16630236395337500268
+    Name: Inventory_BigToken
+    Source: Resources/Textures/PlayerUI/Inventory_BigToken.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 12976825985455489495
+    Name: Inventory_SmallToken
+    Source: Resources/Textures/PlayerUI/Inventory_SmallToken.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -5513,9 +5646,9 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 2915209680014061313
-    Name: LEVEL2Walking
-    Source: Resources/Models/Enemy/Patrol2Textures/LEVEL2Walking.fbx
+    UID: 2699849502320124829
+    Name: spikes
+    Source: Resources/Models/spikes.fbx
     Properties:
       Model Transform:
         transform:
@@ -5524,9 +5657,20 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 2699849502320124829
-    Name: spikes
-    Source: Resources/Models/spikes.fbx
+    UID: 18265481119490193399
+    Name: M5_Daruma_Boss
+    Source: Resources/Models/M5_Daruma_Boss.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 2915209680014061313
+    Name: LEVEL2Walking
+    Source: Resources/Models/Enemy/Patrol2Textures/LEVEL2Walking.fbx
     Properties:
       Model Transform:
         transform:

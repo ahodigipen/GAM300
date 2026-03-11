@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="API.cs" />
     <Compile Include="AttackSquash.cs" />
+    <Compile Include="BossHideSeekController.cs" />
     <Compile Include="BossCutsceneMovement.cs" />
     <Compile Include="CharacterAnimation.cs" />
     <Compile Include="CPTrigger.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="PlayerInventory.cs" />
     <Compile Include="BloodOverlayController.cs" />
     <Compile Include="SceneTransitionTrigger.cs" />
+    <Compile Include="SpikeDamage.cs" />
     <Compile Include="SettingsManager.cs" />
     <Compile Include="SpotlightFollower.cs" />
     <Compile Include="TutorialManager.cs" />

@@ -14485,7 +14485,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.SceneTransitionTrigger
-      ParamsJSON: "{\n  \"_sceneName\": \"WIP_BossStage\"\n}"
+      ParamsJSON: "{\n  \"_sceneName\": \"NewBossArena\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]

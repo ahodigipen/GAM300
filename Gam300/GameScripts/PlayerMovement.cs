@@ -37,6 +37,11 @@ namespace GameScripts
         private Vec3 _levelStartPos = new Vec3(0.914043128f, 1.8f, 13.9171219f);
         [Boom.EditorExposed("Level 2 Pos", "Specific coordinates for the 'Teleport to Level 2' action")]
         private Vec3 _level2Pos = new Vec3(-0.349f, 18.699f, 32.891f);
+        [Boom.EditorExposed("Controller Offset Y", "Vertical offset for the character controller (matches YAML LocalOffset)")]
+        private float _controllerOffsetY = 1.47f;
+
+        private static int s_persistedHealth = 5;
+        public static void ResetPersistedHealth() { s_persistedHealth = 5; }
 
         private int _health = 5;
         private int _maxHealth = 5;
@@ -179,7 +184,7 @@ namespace GameScripts
                 return;
             }
 
-            _health = _maxHealth;
+            _health = s_persistedHealth;
 
             _footstepComponent = new FootstepComponent { Entity = Entity };
             _footstepComponent.OnStart("");
@@ -241,6 +246,7 @@ namespace GameScripts
             }
 
             _health--;
+            s_persistedHealth = _health;
             HUD.SetHealth(_health, _maxHealth);
 
             Vec3 playerPos = API.GetPosition(Entity);
@@ -279,7 +285,11 @@ namespace GameScripts
         {
             _verticalVelocity = 0f;
 
-            API.TeleportController(Entity, _spawnPoint);
+            // Apply manual offset to the teleport position since API.TeleportController 
+            // ignores the localOffset in CharacterControllerComponent
+            Vec3 teleportPos = new Vec3(_spawnPoint.X, _spawnPoint.Y + _controllerOffsetY, _spawnPoint.Z);
+            API.TeleportController(Entity, teleportPos);
+            
             API.SetPosition(Entity, _spawnPoint);
 
             _isInvulnerable = true;
@@ -291,7 +301,7 @@ namespace GameScripts
             API.Log("[PlayerMovement] Player respawned - enemies notified");
             SpotlightFollower.ResetAllSpotlights();
 
-            API.Log($"[PlayerMovement] Respawned at ({_spawnPoint.X}, {_spawnPoint.Y}, {_spawnPoint.Z})");
+            API.Log($"[PlayerMovement] Respawned at ({_spawnPoint.X}, {_spawnPoint.Y}, {_spawnPoint.Z}) with Offset Y: {_controllerOffsetY}");
         }
 
         public void UpdateCheckpoint(Vec3 newCheckpoint)
@@ -305,6 +315,7 @@ namespace GameScripts
         public void RestoreHealth(int amount)
         {
             _health = Math.Min(_health + amount, _maxHealth);
+            s_persistedHealth = _health;
             HUD.SetHealth(_health, _maxHealth);
             API.Log($"[PlayerMovement] Health restored by {amount}. Current health: {_health}/{_maxHealth}");
         }
@@ -312,9 +323,14 @@ namespace GameScripts
         public void TeleportTo(Vec3 position)
         {
             _verticalVelocity = 0f;
-            API.TeleportController(Entity, position);
+
+            // Apply manual offset to the teleport position since API.TeleportController 
+            // ignores the localOffset in CharacterControllerComponent
+            Vec3 teleportPos = new Vec3(position.X, position.Y + _controllerOffsetY, position.Z);
+            API.TeleportController(Entity, teleportPos);
+
             API.SetPosition(Entity, position);
-            API.Log($"[PlayerMovement] Teleported to ({position.X:F2}, {position.Y:F2}, {position.Z:F2})");
+            API.Log($"[PlayerMovement] Teleported to ({position.X:F2}, {position.Y:F2}, {position.Z:F2}) with Offset Y: {_controllerOffsetY}");
         }
 
         public void TeleportToStart()
