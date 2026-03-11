@@ -1,5 +1,27 @@
 Version: 1.0
 ENTITIES:
+  - InfoComponent:
+      Parent: 0
+      Name: DetectionRing
+      UID: 44569852669512769
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-55.280201, 1.89560437, 4.56484985]
+        Rotate: [173.225891, 180, -0.000199298636]
+        Scale: [0.555795014, 1.22485924, 1.15727258]
+    ModelComponent:
+      ModelID: 5963078964798272625
+      MaterialID: 9510738795563815009
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 9691864251179230668
+      Name: PrisonGateBar8 (Copy) (Copy)
+      UID: 15242036926005388192
+      SortOrder: 0
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -8047,7 +8069,7 @@ ENTITIES:
       BloomThreshold: 0.467000008
       BloomIterations: 15
       PointLightBloomMultiplier: 3.89700007
-      FogEnabled: true
+      FogEnabled: false
       FogColor: [0.181372523, 0.181372523, 0.181372523]
       FogDensity: 0.075000003
       FogHeightFalloff: 0.0483999997
@@ -12509,8 +12531,8 @@ ENTITIES:
       SortOrder: 308
     TransformComponent:
       Transform:
-        Translate: [14.5044603, 27.383091, -11.2122784]
-        Rotate: [158.3125, 31712.9375, 180]
+        Translate: [-54.5498543, 6.64400816, 7.84178257]
+        Rotate: [137.6875, 31864.9375, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:

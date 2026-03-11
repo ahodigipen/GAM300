@@ -1012,6 +1012,28 @@ ASSETS:
       EmissiveMapID: 15849755688191928543
       OpacityMapID: 0
       DoubleSided: false
+  - Type: MATERIAL
+    UID: 9510738795563815009
+    Name: DetectionRingTexture
+    Source: DetectionRingTexture
+    Properties:
+      Data:
+        emissive: [1, 1, 1]
+        albedo: [1, 1, 1]
+        roughness: 1
+        metallic: 1
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 66.6100006
+      AlbedoMapID: 8021377771889714829
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 8610249737563962830
+      DoubleSided: true
   - Type: PHYSICS_MESH
     UID: 8633576229273901496
     Name: Wall_With_Hole (Tri)
@@ -3186,10 +3208,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 5826171970229966582
     Name: ReturnMenuButton_Clicked
@@ -3388,6 +3410,17 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
+  - Type: TEXTURE
+    UID: 8021377771889714829
+    Name: DetectionCircleTexture (2)
+    Source: Resources/Textures/PlayerUI/DetectionCircleTexture (2).png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
   - Type: TEXTURE
     UID: 883033736161376587
     Name: UI_Running
@@ -3758,10 +3791,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 16630236395337500268
     Name: Inventory_BigToken
@@ -3769,14 +3802,25 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 12976825985455489495
     Name: Inventory_SmallToken
     Source: Resources/Textures/PlayerUI/Inventory_SmallToken.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 8610249737563962830
+    Name: DetectionCircle (2)
+    Source: Resources/Textures/PlayerUI/DetectionCircle (2).png
     Properties:
       Data:
         CompileAsCompressed: true
