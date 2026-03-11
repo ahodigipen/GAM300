@@ -637,7 +637,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [25.6400471, 13.2942858, 25.2205582]
+        Translate: [20.1400471, 13.2942858, 25.2205582]
         Rotate: [0, 89.980217, 0]
         Scale: [0.0155476257, 0.0149805266, 0.0156289618]
     RigidBodyComponent:
@@ -677,7 +677,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [31.9671898, 9.59163475, -14.864954]
+        Translate: [31.9671898, -100, -14.864954]
         Rotate: [180, -57.9115143, -180]
         Scale: [0.019999994, 0.0199999977, 0.019999994]
     ModelComponent:
@@ -2735,8 +2735,8 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [9.27553558, 2.64499116, -14.2555885]
-        Rotate: [0, 185.230499, 0]
+        Translate: [-23.8271694, 2.55124044, 6.44024754]
+        Rotate: [0, 213.766785, 0]
         Scale: [68.965065, 68.9655151, 68.965065]
     ScriptComponent:
       Enabled: true
@@ -2756,7 +2756,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-23.8271694, 0.551240563, 6.44024754]
-        Rotate: [0, -45, 0]
+        Rotate: [0, 33.7667847, 0]
         Scale: [0.0145000974, 0.0145000005, 0.0145000974]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -4614,7 +4614,7 @@ ENTITIES:
       SortOrder: 71
     TransformComponent:
       Transform:
-        Translate: [37.1976051, 14.8798227, 24.2018642]
+        Translate: [37.1976051, -100, 24.2018642]
         Rotate: [-180, -57.9115143, 180]
         Scale: [0.019999994, 0.0199999977, 0.019999994]
     ModelComponent:
@@ -4674,7 +4674,7 @@ ENTITIES:
       SortOrder: 115
     TransformComponent:
       Transform:
-        Translate: [-22.6951981, 15.2434406, 18.8773727]
+        Translate: [-22.6951981, -100, 18.8773727]
         Rotate: [0, 89.980217, 0]
         Scale: [0.0199999828, 0.0199999977, 0.0199999958]
     ModelComponent:
@@ -4734,7 +4734,7 @@ ENTITIES:
       SortOrder: 63
     TransformComponent:
       Transform:
-        Translate: [-1.13976598, 20.8154068, 27.7488956]
+        Translate: [4.36023426, 20.8154068, 27.7488956]
         Rotate: [0, -0, 0]
         Scale: [0.0340266526, 0.0163607355, 0.0546085313]
     RigidBodyComponent:
@@ -4801,8 +4801,8 @@ ENTITIES:
       SortOrder: 96
     TransformComponent:
       Transform:
-        Translate: [36.643383, 21.1277924, -15.1234865]
-        Rotate: [0, -5.00895612e-06, 0]
+        Translate: [36.8592453, 23.0751801, -7.01719046]
+        Rotate: [0, 0, 0]
         Scale: [0.999980092, 0.625, 0.999996901]
     ScriptComponent:
       Enabled: true
@@ -5816,7 +5816,7 @@ ENTITIES:
         Rotate: [0, -0, 0]
         Scale: [1, 1, 1]
     TextComponent:
-      text: x1
+      text: ""
       fontName: Roboto-Regular
       color: [1, 1, 1, 0]
       scale: 1
@@ -6554,13 +6554,13 @@ ENTITIES:
       SortOrder: 295
     TransformComponent:
       Transform:
-        Translate: [-0.730000019, 20.7900009, 27.1350002]
-        Rotate: [0, 0, 0]
-        Scale: [12, 5, 0.699999988]
+        Translate: [-0.536688566, 20.7900009, 28.2091713]
+        Rotate: [0, -0, 0]
+        Scale: [12, 5, 1.48000002]
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.LevelTransitionCutscene
-      ParamsJSON: "{}"
+      TypeName: GameScripts.CutsceneSequencer
+      ParamsJSON: "{\n  \"BlockInput\": false,\n  \"CutsceneFile\": \"LevelTransitionCutscene.seq\"\n}"
   - InfoComponent:
       Parent: 0
       Name: Level 2 Map (4 CutScene)
@@ -6628,8 +6628,8 @@ ENTITIES:
       SortOrder: 78
     TransformComponent:
       Transform:
-        Translate: [0.383743823, 13.7294407, 18.0837364]
-        Rotate: [-0.0199341383, -0.019783644, -8.14222162e-11]
+        Translate: [14.5502615, 17.4710236, 18.0792179]
+        Rotate: [-0.0199341383, 89.9999695, -8.14222162e-11]
         Scale: [0.999999464, 0.999999881, 0.999999285]
     ScriptComponent:
       Enabled: true
@@ -6648,8 +6648,8 @@ ENTITIES:
       SortOrder: 65
     TransformComponent:
       Transform:
-        Translate: [-47.8231125, 32.3748283, 12.3560247]
-        Rotate: [0, 103.632004, 0]
+        Translate: [-61.9170876, 35.6151962, 15.9587202]
+        Rotate: [0, 1.7265625, 0]
         Scale: [0.999999166, 0.625000179, 0.999999166]
     ScriptComponent:
       Enabled: true
@@ -6668,8 +6668,8 @@ ENTITIES:
       SortOrder: 126
     TransformComponent:
       Transform:
-        Translate: [20.8361187, 13.8318195, 12.9704151]
-        Rotate: [0, -5.00895612e-06, 0]
+        Translate: [20.6923141, 17.5700226, -1.25755012]
+        Rotate: [0, 180.048203, 0]
         Scale: [0.999980092, 0.625, 0.999996901]
     ScriptComponent:
       Enabled: true
@@ -6688,8 +6688,8 @@ ENTITIES:
       SortOrder: 133
     TransformComponent:
       Transform:
-        Translate: [-10.7229681, 13.5036821, 32.3198776]
-        Rotate: [0, 90, 0]
+        Translate: [-15.7923765, 17.1915474, 31.8400154]
+        Rotate: [0, 89.9517517, 0]
         Scale: [0.95835644, 0.689458668, 0.998410165]
     ScriptComponent:
       Enabled: true
@@ -6708,8 +6708,8 @@ ENTITIES:
       SortOrder: 129
     TransformComponent:
       Transform:
-        Translate: [-30.4961529, 24.7257462, 11.4562502]
-        Rotate: [0, 180, 0]
+        Translate: [-30.8884735, 28.2398987, 9.24764252]
+        Rotate: [0, 179.930786, 0]
         Scale: [1, 0.62500006, 0.999999762]
     ScriptComponent:
       Enabled: true
@@ -6728,8 +6728,8 @@ ENTITIES:
       SortOrder: 109
     TransformComponent:
       Transform:
-        Translate: [-22.165781, 13.503686, 61.9170761]
-        Rotate: [0, 0, 0]
+        Translate: [-22.5737667, 17.605547, 57.3508263]
+        Rotate: [0, 357.360718, 0]
         Scale: [0.62500006, 1.00000453, 1.00000429]
     ScriptComponent:
       Enabled: true
@@ -6748,8 +6748,8 @@ ENTITIES:
       SortOrder: 72
     TransformComponent:
       Transform:
-        Translate: [-13.8966961, 13.503685, 45.3348427]
-        Rotate: [0, 180, 0]
+        Translate: [-13.3622093, 17.1915474, 57.9917946]
+        Rotate: [0, 179.999939, 0]
         Scale: [0.999999702, 0.625, 0.999999702]
     ScriptComponent:
       Enabled: true
@@ -6768,8 +6768,8 @@ ENTITIES:
       SortOrder: 43
     TransformComponent:
       Transform:
-        Translate: [-38.2900963, 24.7463894, -10.1274652]
-        Rotate: [0, 90, 0]
+        Translate: [-33.0254173, 28.2398987, -9.8121357]
+        Rotate: [0, 270, 0]
         Scale: [1.9999454, 1.25, 1.9999454]
     ScriptComponent:
       Enabled: true
@@ -6824,8 +6824,8 @@ ENTITIES:
       SortOrder: 393
     TransformComponent:
       Transform:
-        Translate: [20.6923141, 13.4210215, 13.0893068]
-        Rotate: [0, 1.98571761e-05, 0]
+        Translate: [20.6923141, 13.4210215, -1.16368175]
+        Rotate: [0, 0.0320504233, 0]
         Scale: [0.0200004503, 0.0199999996, 0.0200004503]
     RigidBodyComponent:
       RigidBody:
@@ -6921,7 +6921,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 2.29642749
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -6942,7 +6942,7 @@ ENTITIES:
       PatrolPoints:
         - [20.6923141, 13.3436022, -4.99530315]
         - [20.6923141, 13.3436022, 12.2504854]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -6955,7 +6955,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [17.540493, 15.4146328, 3.31294298]
-        Rotate: [5.00895476e-06, 308.311707, 5.00895476e-06]
+        Rotate: [5.00895476e-06, 331.68634, 5.00895476e-06]
         Scale: [66.4224625, 48.3170776, 102.520782]
     ScriptComponent:
       Enabled: true
@@ -6993,7 +6993,7 @@ ENTITIES:
         Scale: [0.800000012, 0.5, 1]
     SpriteComponent:
       textureID: 17735993601354122583
-      color: [1, 1, 1, 1.63056921e-32]
+      color: [1, 1, 1, 0]
       renderAs3D: false
   - ColliderComponent:
       Collider:
@@ -7328,7 +7328,7 @@ ENTITIES:
         Rotate: [0, -0, 0]
         Scale: [0.0500000007, 0.100000001, 0.5]
     SpriteComponent:
-      textureID: 3615061789617660208
+      textureID: 17435015903446098353
       color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
@@ -7338,8 +7338,8 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [9.27553558, 2.64499116, -14.2555885]
-        Rotate: [0, 185.230499, 0]
+        Translate: [9.27553558, 2.64499116, -12.913641]
+        Rotate: [0, 364.873474, 0]
         Scale: [68.965065, 68.9655151, 68.965065]
     ScriptComponent:
       Enabled: true
@@ -7565,8 +7565,8 @@ ENTITIES:
       SortOrder: 395
     TransformComponent:
       Transform:
-        Translate: [-47.6698189, 31.3661957, 12.9250517]
-        Rotate: [0, -74.3180008, 0]
+        Translate: [-61.9176025, 31.4661942, 15.8240366]
+        Rotate: [180, -1.22122931, 180]
         Scale: [0.0399999991, 0.0250000004, 0.0399999991]
     RigidBodyComponent:
       RigidBody:
@@ -7662,12 +7662,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 3.29642081
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-61.931736, 31.5150146, 12.930583]
+      Target: [-61.931736, 31.5150146, 12.1229267]
       Speed: 3.5
       ArriveRadius: 0.150000006
       Active: true
@@ -7685,7 +7685,7 @@ ENTITIES:
         - [-61.931736, 31.5150146, 12.930583]
         - [-61.931736, 31.5150146, 19.8704224]
         - [-61.931736, 31.5150146, 12.1229267]
-      PatrolIndex: 1
+      PatrolIndex: 3
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -7710,8 +7710,8 @@ ENTITIES:
       SortOrder: 143
     TransformComponent:
       Transform:
-        Translate: [-38.6638069, 24.0938988, -9.8121357]
-        Rotate: [0, 90, 0]
+        Translate: [-33.0254173, 24.1738987, -9.8121357]
+        Rotate: [180, 89.980217, 180]
         Scale: [0.0399999991, 0.0250000004, 0.0399999991]
     RigidBodyComponent:
       RigidBody:
@@ -7807,7 +7807,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 0.0216094516
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -7828,7 +7828,7 @@ ENTITIES:
       PatrolPoints:
         - [-54.9011459, 24.0937634, -9.8121357]
         - [-32.5454292, 24.0937634, -9.8121357]
-      PatrolIndex: 1
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -7853,8 +7853,8 @@ ENTITIES:
       SortOrder: 315
     TransformComponent:
       Transform:
-        Translate: [-30.7921524, 24.0738983, 11.0249243]
-        Rotate: [0, 1.00179122e-05, 0]
+        Translate: [-30.8884735, 24.1738987, 9.34151077]
+        Rotate: [0, -0.0460527763, 0]
         Scale: [0.0399999991, 0.0250000004, 0.0399999991]
     RigidBodyComponent:
       RigidBody:
@@ -7950,7 +7950,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 2.29642224
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -7996,8 +7996,8 @@ ENTITIES:
       SortOrder: 266
     TransformComponent:
       Transform:
-        Translate: [-22.3940487, 13.1255474, 61.8022499]
-        Rotate: [0, 0.00237773266, 0]
+        Translate: [-22.5694447, 13.1255484, 57.2570572]
+        Rotate: [180, 2.63933015, 180]
         Scale: [0.0400001854, 0.0250000004, 0.0400001854]
     RigidBodyComponent:
       RigidBody:
@@ -8093,12 +8093,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 2.29642367
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-22.3940144, 13.5177698, 62.6825676]
+      Target: [-22.3940144, 13.5177698, 53.4513855]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -8117,7 +8117,7 @@ ENTITIES:
         - [-22.3940144, 13.5177698, 63.557373]
         - [-22.3940144, 13.5177698, 53.4513855]
         - [-22.3940144, 13.5177698, 62.6825676]
-      PatrolIndex: 4
+      PatrolIndex: 3
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -8142,8 +8142,8 @@ ENTITIES:
       SortOrder: 336
     TransformComponent:
       Transform:
-        Translate: [-11.0493851, 13.1255436, 32.8526077]
-        Rotate: [0, 89.980217, 0]
+        Translate: [-15.8862457, 13.1255484, 31.8400154]
+        Rotate: [180, -89.9657364, 180]
         Scale: [0.0399999954, 0.0250000004, 0.0399999954]
     RigidBodyComponent:
       RigidBody:
@@ -8239,12 +8239,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 2.29642367
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-12.0609379, 13.4397764, 31.8400135]
+      Target: [-23.0942459, 13.4397764, 31.8400135]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -8285,8 +8285,8 @@ ENTITIES:
       SortOrder: 212
     TransformComponent:
       Transform:
-        Translate: [-13.3622046, 13.1255465, 43.6004944]
-        Rotate: [0, -9.92651112e-05, 0]
+        Translate: [-13.3622093, 13.1255484, 57.9917946]
+        Rotate: [0, -7.1944356e-05, 0]
         Scale: [0.0399999991, 0.0250000004, 0.0399999991]
     RigidBodyComponent:
       RigidBody:
@@ -8382,7 +8382,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 0.716429114
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -8403,7 +8403,7 @@ ENTITIES:
       PatrolPoints:
         - [-13.3622103, 13.4397764, 39.6917191]
         - [-13.3622103, 13.4397764, 58.4554634]
-      PatrolIndex: 1
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -8416,7 +8416,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-32.5929832, 24.2603378, -8.11126804]
-        Rotate: [0, 0, 0]
+        Rotate: [0, 151.68634, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -8931,8 +8931,8 @@ ENTITIES:
       SortOrder: 138
     TransformComponent:
       Transform:
-        Translate: [28.3395844, 14.0055027, 7.14299393]
-        Rotate: [0, -0, 0]
+        Translate: [28.3395844, 15.7193012, -0.842386603]
+        Rotate: [180, 2.23118004e-05, 180]
         Scale: [0.0200004727, 0.0199999996, 0.0200004727]
     RigidBodyComponent:
       RigidBody:
@@ -9028,12 +9028,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 2.17499352
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-4.40195179, 13.5951796, -10.1728048]
+      Target: [28.3395844, 19.7447033, -15.5547409]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -9130,7 +9130,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-46.1160126, 24.2603378, -18.4139233]
-        Rotate: [0, 0, 0]
+        Rotate: [0, 151.68634, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -9337,7 +9337,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 1
+          volume: 0.665000021
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -9460,8 +9460,8 @@ ENTITIES:
       SortOrder: 194
     TransformComponent:
       Transform:
-        Translate: [36.8592453, 19.7447033, -15.5547409]
-        Rotate: [0, -0, 0]
+        Translate: [36.8592453, 17.1448231, -7.10157013]
+        Rotate: [180, 2.23118004e-05, 180]
         Scale: [0.0200004727, 0.0199999996, 0.0200004727]
     RigidBodyComponent:
       RigidBody:
@@ -9557,12 +9557,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 2.17499328
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-4.40195179, 13.5951796, -10.1728048]
+      Target: [36.8592453, 19.1183891, -15.5547409]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -9578,7 +9578,7 @@ ENTITIES:
       PatrolPoints:
         - [36.8592453, 13.8080444, 11.1173725]
         - [36.8592453, 19.1183891, -15.5547409]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -9603,8 +9603,8 @@ ENTITIES:
       SortOrder: 422
     TransformComponent:
       Transform:
-        Translate: [0.0221523792, 13.4210205, 18.0792179]
-        Rotate: [0, 89.980217, 0]
+        Translate: [14.4563923, 13.4210224, 18.0792179]
+        Rotate: [180, -89.980217, 180]
         Scale: [0.0200004783, 0.0199999996, 0.0200004783]
     RigidBodyComponent:
       RigidBody:
@@ -9700,12 +9700,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 2.29642391
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [22.6875935, 13.4344044, 18.0792179]
+      Target: [-7.56895161, 13.4344044, 18.0792179]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -9721,7 +9721,7 @@ ENTITIES:
       PatrolPoints:
         - [22.6875935, 13.4344044, 18.0792179]
         - [-7.56895161, 13.4344044, 18.0792179]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -9746,8 +9746,8 @@ ENTITIES:
       SortOrder: 278
     TransformComponent:
       Transform:
-        Translate: [-22.3117981, 13.4210224, 3.95429873]
-        Rotate: [-0, 1.00179122e-05, -0]
+        Translate: [-22.3117981, 13.4210224, -8.14474869]
+        Rotate: [180, -1.8669336e-05, 180]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -9843,12 +9843,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 2.29642391
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-22.3117981, 13.5816135, 3.93043709]
+      Target: [-22.3117981, 13.5816135, -12.4054985]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -9906,7 +9906,7 @@ ENTITIES:
       SortOrder: 161
     TransformComponent:
       Transform:
-        Translate: [-0.699103594, 24.4291954, 11.0357838]
+        Translate: [-0.699103594, -100, 11.0357838]
         Rotate: [0, 180, 0]
         Scale: [0.0199999847, 0.0199999977, 0.0199999977]
     ModelComponent:
@@ -10008,7 +10008,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-64.1180191, 24.2603378, -1.22266841]
-        Rotate: [-180, 0, -180]
+        Rotate: [-180, 151.68634, -180]
         Scale: [0.0145000033, 0.0145000005, 0.0145000033]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -10156,7 +10156,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-17.1420422, 13.3514919, 18.490139]
-        Rotate: [-180, -0, -180]
+        Rotate: [-180, 151.68634, -180]
         Scale: [0.0145000033, 0.0145000005, 0.0145000033]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -10251,7 +10251,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [17.540493, 13.4146328, 3.31294298]
-        Rotate: [5.00895476e-06, 0, 5.00895476e-06]
+        Rotate: [5.00895476e-06, 151.68634, 5.00895476e-06]
         Scale: [0.0144999959, 0.0145000005, 0.0144999959]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -10346,7 +10346,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [9.27553558, 0.550991118, -12.913641]
-        Rotate: [0, 270, 0]
+        Rotate: [0, 184.873474, 0]
         Scale: [0.0145000946, 0.0145000005, 0.0145000946]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -10441,7 +10441,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 0.530518472, -13.2785921]
-        Rotate: [0, 90, 0]
+        Rotate: [0, 175.126587, 0]
         Scale: [0.0144997425, 0.0145000005, 0.0144997425]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -14703,22 +14703,22 @@ ENTITIES:
       SortOrder: 308
     TransformComponent:
       Transform:
-        Translate: [-2.06548595, 8.89649105, 10.7357025]
-        Rotate: [134.375, 27920.5625, 180]
+        Translate: [-1.81907439, 23.1578865, 23.4502716]
+        Rotate: [-22.0625572, -182.187561, 9.78378521e-05]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.00100000005
         FarPlane: 935.47998
-        FOV: 84
+        FOV: 77
     ThirdPersonCameraComponent:
       Target UID: 2377197601835279376
       Offset: [0.00999999978, 4.1500001, 0]
       Current Distance: 5
       Min Distance: 1
       Max Distance: 5
-      Current Yaw: -3412
-      Current Pitch: 15
+      Current Yaw: -2429
+      Current Pitch: 53
       Mouse Sensitivity: 1
       Scroll Sensitivity: 1
   - InfoComponent:
@@ -15581,8 +15581,8 @@ ENTITIES:
       SortOrder: 179
     TransformComponent:
       Transform:
-        Translate: [-55.2019997, 1.79999995, 5.01499987]
-        Rotate: [0, -91.9999924, 0]
+        Translate: [-6.15767241, 18.7437134, 28.8221855]
+        Rotate: [0, -88.9999542, 0]
         Scale: [0.0164994802, 0.0164999999, 0.0164994802]
     CharacterControllerComponent:
       Radius: 0.800000012
@@ -15736,7 +15736,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 4.52437348e-07
       BoolParams:
         IsMoving: false
         Sprint: false
@@ -15795,8 +15795,8 @@ ENTITIES:
       SortOrder: 106
     TransformComponent:
       Transform:
-        Translate: [12.0414486, 13.4996881, -9.91350651]
-        Rotate: [-0.0296053514, 77.6070023, 1.17258114e-09]
+        Translate: [11.0806284, 17.6360226, -10.1728048]
+        Rotate: [-0.0296053514, 89.9999695, 1.17258114e-09]
         Scale: [0.999962628, 0.99999994, 0.999974549]
     ScriptComponent:
       Enabled: true
@@ -15815,8 +15815,8 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-7.15782738, 2.53051853, -14.2555885]
-        Rotate: [0, 498.1521, 0]
+        Translate: [-7.15782738, 2.53051853, -13.2785921]
+        Rotate: [0, 355.126587, 0]
         Scale: [136.157349, 68.9649124, 68.9648361]
     ScriptComponent:
       Enabled: true
@@ -15848,7 +15848,7 @@ ENTITIES:
       SortOrder: 447
     TransformComponent:
       Transform:
-        Translate: [0.0392508507, 14.415617, 24.0143204]
+        Translate: [5.53925085, 14.415617, 24.0143204]
         Rotate: [0, -0, 0]
         Scale: [2.55416727, 1.88259518, 1.83383286]
     SoundComponent:
@@ -15857,7 +15857,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 1
+          volume: 0.644999981
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -15882,8 +15882,8 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-3.31616211, 38.7184448, 7.36401367]
-        Rotate: [-180, -0.156713367, -180]
+        Translate: [-17.1420422, 15.3514919, 18.490139]
+        Rotate: [-180, 331.68634, -180]
         Scale: [0.0199985746, 0.0199999996, 0.0199985746]
     ScriptComponent:
       Enabled: true
@@ -15985,7 +15985,7 @@ ENTITIES:
         Scale: [0.300000012, 0.349999994, 0.300000012]
     SpriteComponent:
       textureID: 13937156857161099910
-      color: [1, 1, 1, 0]
+      color: [1, 1, 1, 1.13369951e-36]
       renderAs3D: false
   - InfoComponent:
       Parent: 15030438282683852635
@@ -16368,8 +16368,8 @@ ENTITIES:
         Scale: [1, 1, 1]
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.IntroCutscene
-      ParamsJSON: "{}"
+      TypeName: GameScripts.CutsceneSequencer
+      ParamsJSON: "{\n  \"BlockInput\": false,\n  \"CutsceneFile\": \"IntroCutscene.seq\",\n  \"Loop\": false,\n  \"PlayOnStart\": true,\n  \"StartDelay\": 0.0\n}"
   - InfoComponent:
       Parent: 7684206646313759860
       Name: Sentry Vision Cone 5
@@ -16378,7 +16378,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-64.1180191, 26.2603378, -1.22266841]
-        Rotate: [-180, 309.264648, -180]
+        Rotate: [-180, 331.68634, -180]
         Scale: [66.4224243, 48.3170776, 102.520729]
     ScriptComponent:
       Enabled: true
@@ -16398,7 +16398,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-32.5929832, 26.2603378, -8.11126804]
-        Rotate: [0, 309.265076, 0]
+        Rotate: [0, 331.68634, 0]
         Scale: [66.4224243, 48.3170776, 102.520737]
     ScriptComponent:
       Enabled: true
@@ -16418,7 +16418,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-46.1160126, 26.2603378, -18.4139233]
-        Rotate: [0, 308.311707, 0]
+        Rotate: [0, 331.68634, 0]
         Scale: [66.4224167, 48.3170547, 102.520752]
     ScriptComponent:
       Enabled: true
@@ -16438,7 +16438,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [17.540493, 15.4146328, 3.31294298]
-        Rotate: [5.00895476e-06, 308.311707, 5.00895476e-06]
+        Rotate: [5.00895476e-06, 331.68634, 5.00895476e-06]
         Scale: [0.465116262, 0.50000006, 0.714285791]
     ScriptComponent:
       Enabled: true
@@ -16466,7 +16466,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/02.Night_Forest_Field_Stars_Loop.wav
           loop: true
-          volume: 0.448000014
+          volume: 0.144999996
           priority: 101
           pitch: 1
           stereoPan: 0
@@ -16530,8 +16530,8 @@ ENTITIES:
       SortOrder: 216
     TransformComponent:
       Transform:
-        Translate: [6.54703093, 13.4210215, 7.16827679]
-        Rotate: [0, 90, 0]
+        Translate: [-10.5578232, 13.4210224, 7.23706102]
+        Rotate: [180, -87.7742844, 180]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -16627,12 +16627,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 2.29642391
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [6.53378248, 13.5816135, 7.16827679]
+      Target: [-12.3275805, 13.5816135, 7.16827679]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -16726,46 +16726,6 @@ ENTITIES:
       Enabled: true
       TypeName: GameScripts.SceneTransitionTrigger
       ParamsJSON: "{\n  \"_sceneName\": \"WIP_BossStage\"\n}"
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [30, 82, 3]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: true
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: FreezePowerUp_2
-      UID: 10819433398759731482
-      SortOrder: 327
-    TransformComponent:
-      Transform:
-        Translate: [-0.118000001, 19.0394745, 30.0676765]
-        Rotate: [0, -0, 0]
-        Scale: [0.0292000007, 0.0292000007, 0.0292000007]
-    ModelComponent:
-      ModelID: 5551161321672247114
-      MaterialID: 16305148809392937752
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.HoverMotion
-      ParamsJSON: "{}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.0539215803, 0.554786682, 1]
-        Intensity: 2.1400001
-        FallOff: 1.70599997
-        CutOff: -1.99100006
   - InfoComponent:
       Parent: 0
       Name: level2_Railing_5 (Copy)
@@ -17410,9 +17370,9 @@ ENTITIES:
         Rotate: [0, -0, 0]
         Scale: [1, 1, 1]
     TextComponent:
-      text: ""
+      text: "GOD MODE: ON"
       fontName: Roboto-Regular
-      color: [0, 0, 0, 0]
+      color: [0, 1, 0, 1]
       scale: 1
       screenPosition: [339, 83]
       renderAs3D: false
@@ -17424,8 +17384,8 @@ ENTITIES:
       SortOrder: 57
     TransformComponent:
       Transform:
-        Translate: [6.69039631, 13.7294416, 7.03733635]
-        Rotate: [0, -90, 0]
+        Translate: [-10.4640255, 17.5700226, 7.24070644]
+        Rotate: [0, 87.7742615, 0]
         Scale: [0.624999762, 1.00000441, 1.00000429]
     ScriptComponent:
       Enabled: true
@@ -17444,8 +17404,8 @@ ENTITIES:
       SortOrder: 61
     TransformComponent:
       Transform:
-        Translate: [-22.7580338, 13.7294426, 4.0333848]
-        Rotate: [0, 180, 0]
+        Translate: [-22.3117981, 17.5700226, -8.05087948]
+        Rotate: [0, 0, 0]
         Scale: [0.999999762, 0.62500006, 0.999999762]
     ScriptComponent:
       Enabled: true
@@ -17837,8 +17797,8 @@ ENTITIES:
       SortOrder: 98
     TransformComponent:
       Transform:
-        Translate: [12.8473635, 13.2265387, -10.1728048]
-        Rotate: [0, -89.980217, 0]
+        Translate: [10.9867592, 13.4210224, -10.1728048]
+        Rotate: [180, -89.980217, 180]
         Scale: [0.0200004727, 0.0199999996, 0.0200004727]
     RigidBodyComponent:
       RigidBody:
@@ -17934,7 +17894,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 2.29642391
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -17955,7 +17915,7 @@ ENTITIES:
       PatrolPoints:
         - [20.3059769, 13.5951796, -10.1728048]
         - [-4.40195179, 13.5951796, -10.1728048]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -17968,7 +17928,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-74.4586716, 31.627758, 11.2935848]
-        Rotate: [180, -0, 180]
+        Rotate: [180, 151.68634, 180]
         Scale: [0.0145000033, 0.0145000005, 0.0145000033]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -18062,8 +18022,8 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-64.1180191, 26.2603378, -1.22266841]
-        Rotate: [-180, 309.264648, -180]
+        Translate: [-74.4586716, 33.627758, 11.2935848]
+        Rotate: [180, 331.68634, 180]
         Scale: [66.4224243, 48.3170776, 102.520729]
     ScriptComponent:
       Enabled: true
@@ -18095,8 +18055,8 @@ ENTITIES:
       SortOrder: 103
     TransformComponent:
       Transform:
-        Translate: [-78.8488159, 34.870575, -9.11146164]
-        Rotate: [0, 1.00179122e-05, 0]
+        Translate: [-30.9417915, 24.0739002, 25.0316277]
+        Rotate: [0, -1.02902627, 0]
         Scale: [0.0399999991, 0.0250000004, 0.0399999991]
     RigidBodyComponent:
       RigidBody:
@@ -18237,8 +18197,8 @@ ENTITIES:
       SortOrder: 73
     TransformComponent:
       Transform:
-        Translate: [-15.9240818, 13.9296732, 75.7746887]
-        Rotate: [0, 1.00179122e-05, 0]
+        Translate: [-19.4770851, 13.1049795, 75.7746887]
+        Rotate: [180, -89.8658295, 180]
         Scale: [0.0399999991, 0.0250000004, 0.0399999991]
     RigidBodyComponent:
       RigidBody:
@@ -18334,12 +18294,12 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0
+        Speed: 2.296422
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-30.8884773, 25.1219196, 23.4795647]
+      Target: [-25.1532955, 13.9296732, 75.7746887]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -19536,7 +19496,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [25.6311588, 14.415617, 24.4276352]
+        Translate: [20.1311588, 14.415617, 24.4276352]
         Rotate: [0, -0, 0]
         Scale: [0.656015575, 1.88259518, 1.28062582]
     SoundComponent:
@@ -19545,7 +19505,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 1
+          volume: 0.661000013
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -19592,7 +19552,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 1
+          volume: 0.648999989
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -19639,7 +19599,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 1
+          volume: 0.66900003
           priority: 128
           pitch: 1
           stereoPan: 0

@@ -555,7 +555,11 @@ namespace GameScripts
                     }
 
                     if (track.type == 0) API.SetPosition(track.cachedEntityID, new Vec3(x, y, z));
-                    else if (track.type == 1) API.SetRotation(track.cachedEntityID, new Vec3(x, y, z));
+                    else if (track.type == 1) 
+                    {
+                        if (((int)currentFrame) % 60 == 0) API.Log($"[CutsceneDebug] END-Rotating '{track.targetEntityName}' to {x:F2}, {y:F2}, {z:F2} (Frame {currentFrame})");
+                        API.SetRotation(track.cachedEntityID, new Vec3(x, y, z));
+                    }
                     else if (track.type == 2) API.SetScale(track.cachedEntityID, new Vec3(x, y, z));
                     continue;
                 }
@@ -577,7 +581,11 @@ namespace GameScripts
                     }
 
                     if (track.type == 0) API.SetPosition(track.cachedEntityID, new Vec3(x, y, z));
-                    else if (track.type == 1) API.SetRotation(track.cachedEntityID, new Vec3(x, y, z));
+                    else if (track.type == 1) 
+                    {
+                        if (((int)currentFrame) % 60 == 0) API.Log($"[CutsceneDebug] SNAP-Rotating '{track.targetEntityName}' to {x:F2}, {y:F2}, {z:F2} (Frame {currentFrame})");
+                        API.SetRotation(track.cachedEntityID, new Vec3(x, y, z));
+                    }
                     else if (track.type == 2) API.SetScale(track.cachedEntityID, new Vec3(x, y, z));
                     continue;
                 }
@@ -631,6 +639,7 @@ namespace GameScripts
                     }
                     else if (track.type == 1) // Rot
                     {
+                        if (((int)currentFrame) % 60 == 0) API.Log($"[CutsceneDebug] LERP-Rotating '{track.targetEntityName}' to {x:F2}, {y:F2}, {z:F2} (Frame {currentFrame})");
                         API.SetRotation(track.cachedEntityID, new Vec3(x, y, z));
                     }
                     else if (track.type == 2) // Scale

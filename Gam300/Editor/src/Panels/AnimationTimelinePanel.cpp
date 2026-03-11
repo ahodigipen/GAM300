@@ -103,6 +103,7 @@ AnimationTimelinePanel::AnimationTimelinePanel(Editor* owner)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     ResetCamera();
+    RefreshCutsceneFileList();
 }
 
 AnimationTimelinePanel::~AnimationTimelinePanel()
@@ -733,6 +734,12 @@ void AnimationTimelinePanel::RenderControlBar()
         ImGui::SameLine();
         
         // File dropdown
+        if (ImGui::Button("Refresh##RefreshSeq")) {
+            RefreshCutsceneFileList();
+        }
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Refresh Sequence List");
+        ImGui::SameLine();
+        
         ImGui::SetNextItemWidth(120);
         if (ImGui::BeginCombo("##FileList", "Select File..."))
         {
