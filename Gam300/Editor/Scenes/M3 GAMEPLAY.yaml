@@ -1798,7 +1798,7 @@ ENTITIES:
         Scale: [1, 1, 1]
     TextComponent:
       text: ""
-      fontName: Roboto-Regular
+      fontName: Cormorant-VariableFont_wght
       color: [0, 0, 0, 0]
       scale: 1
       screenPosition: [339, 83]
@@ -2839,7 +2839,7 @@ ENTITIES:
         Scale: [1, 1, 1]
     TextComponent:
       text: CTRL
-      fontName: Roboto-Regular
+      fontName: Cormorant-VariableFont_wght
       color: [1, 1, 1, 1]
       scale: 0.699999988
       screenPosition: [143, 22]
@@ -2854,7 +2854,7 @@ ENTITIES:
       Transform:
         Translate: [-0.26146245, -0.298543572, -0.5]
         Rotate: [0, 0, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+        Scale: [0, 0, 0]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FreezeOverlayBehavior
@@ -4443,8 +4443,8 @@ ENTITIES:
       SortOrder: 308
     TransformComponent:
       Transform:
-        Translate: [0.386653662, 4.22016668, 14.1099358]
-        Rotate: [172.0625, 31493.0625, 180]
+        Translate: [18.6756573, 26.4373512, -4.89545298]
+        Rotate: [130.6875, 31705.75, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -13171,7 +13171,7 @@ ENTITIES:
         Scale: [1, 1, 1]
     TextComponent:
       text: ""
-      fontName: Roboto-Regular
+      fontName: Cormorant-VariableFont_wght
       color: [1, 1, 1, 0]
       scale: 1
       screenPosition: [500, 440]

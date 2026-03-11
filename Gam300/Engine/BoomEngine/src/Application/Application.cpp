@@ -42,7 +42,21 @@ namespace Boom
         std::cout.flush();
 
         if (Boom::FontManager::GetInstance().Init()) {
-            Boom::FontManager::GetInstance().LoadFont("Roboto-Regular", "Resources/Fonts/Roboto-Regular.ttf", 48);
+            // Load all .ttf fonts from the Fonts directory
+            std::filesystem::path fontsDir = "Resources/Fonts";
+            if (std::filesystem::exists(fontsDir) && std::filesystem::is_directory(fontsDir)) {
+                for (const auto& entry : std::filesystem::directory_iterator(fontsDir)) {
+                    if (entry.is_regular_file() && entry.path().extension() == ".ttf") {
+                        std::string fontName = entry.path().stem().string();
+                        std::string fontPath = entry.path().string();
+                        Boom::FontManager::GetInstance().LoadFont(fontName, fontPath, 48);
+                        std::cout << "[RunContext] Loaded font: " << fontName << std::endl;
+                    }
+                }
+            } else {
+                // Fallback: load just Roboto-Regular if directory not found
+                Boom::FontManager::GetInstance().LoadFont("Roboto-Regular", "Resources/Fonts/Roboto-Regular.ttf", 48);
+            }
             std::cout << "[RunContext] Font System initialized successfully" << std::endl;
         } else {
             BOOM_ERROR("Failed to initialize Font Manager");
