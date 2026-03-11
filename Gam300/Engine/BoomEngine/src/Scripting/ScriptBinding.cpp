@@ -757,6 +757,40 @@ namespace Boom {
         return 0.0f; // No third-person camera found
     }
 
+    // Trigger a positional camera shake on the third-person camera.
+    // intensity = max offset in world units; duration = seconds before it fades out.
+    // Scripts call this every frame (or on demand) to sustain the effect.
+    static void ICALL_API_TriggerCameraShake(float intensity, float duration) {
+        if (!s_Ctx) return;
+        auto view = s_Ctx->scene.view<ThirdPersonCameraComponent>();
+        if (!view.empty()) {
+            auto& cam = view.get<ThirdPersonCameraComponent>(*view.begin());
+            cam.shakeIntensity = intensity;
+            cam.shakeDuration  = duration;
+            cam.shakeTimer     = duration;
+        }
+    }
+
+    // Directly set the FOV of the main camera (use 0 to restore the default 45).
+    static void ICALL_API_SetCameraFOV(float fov) {
+        if (!s_Ctx) return;
+        auto view = s_Ctx->scene.view<CameraComponent>();
+        for (auto e : view) {
+            auto& cc = view.get<CameraComponent>(e);
+            if (cc.camera.cameraType == Camera3D::CameraType::Main) {
+                cc.camera.SetFOV(fov > 0.0f ? fov : 45.0f);
+                break;
+            }
+        }
+    }
+
+    // Set the proximity red tint amount (0 = none, 1 = full red).
+    // Blended on top of the scene warm tint each frame in the renderer.
+    static void ICALL_API_SetProximityRedTint(float amount) {
+        if (!s_Ctx || !s_Ctx->renderer) return;
+        s_Ctx->renderer->proximityRedAmount = glm::clamp(amount, 0.0f, 1.0f);
+    }
+
     // Add near other ICALL functions (after ICALL_API_SetSoundPosition)
 
     // Physics line-of-sight raycast
@@ -2499,6 +2533,9 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_AnimatorPlay", (const void*)ICALL_API_AnimatorPlay);
         mono_add_internal_call("Boom.Native::Boom_API_AnimatorSetStateMachineEnabled", (const void*)ICALL_API_AnimatorSetStateMachineEnabled);
         mono_add_internal_call("Boom.Native::Boom_API_GetThirdPersonCameraYaw", (const void*)ICALL_API_GetThirdPersonCameraYaw);
+        mono_add_internal_call("Boom.Native::Boom_API_TriggerCameraShake",      (const void*)ICALL_API_TriggerCameraShake);
+        mono_add_internal_call("Boom.Native::Boom_API_SetCameraFOV",            (const void*)ICALL_API_SetCameraFOV);
+        mono_add_internal_call("Boom.Native::Boom_API_SetProximityRedTint",     (const void*)ICALL_API_SetProximityRedTint);
 
         mono_add_internal_call("Boom.Native::Boom_API_HasCollider", (const void*)ICALL_API_HasCollider);
         mono_add_internal_call("Boom.Native::Boom_API_IsTrigger", (const void*)ICALL_API_IsTrigger);
