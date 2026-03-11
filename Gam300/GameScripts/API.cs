@@ -112,6 +112,15 @@ namespace Boom
         internal extern static float Boom_API_GetThirdPersonCameraYaw();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_TriggerCameraShake(float intensity, float duration);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetCameraFOV(float fov);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetProximityRedTint(float amount);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern bool Boom_API_HasCollider(ulong handle);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -208,6 +217,13 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern float Boom_API_GetGroupVolume(string name);
+
+        // Gamma / Tone Mapping
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_SetGamma(float gamma);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern float Boom_API_GetGamma();
 
         // Death Menu
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -515,6 +531,16 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_DrawDebugLine(Vec3 start, Vec3 end, Vec3 color);
+
+        // Inventory Menu
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_ShowInventoryMenu();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_UnloadInventoryMenu();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern bool Boom_API_IsInventoryMenuLoaded();
     }
 
     // ========= DELEGATES =========
@@ -876,6 +902,15 @@ namespace Boom
         // ===== Camera =====
         public static float GetThirdPersonCameraYaw() => Native.Boom_API_GetThirdPersonCameraYaw();
 
+        /// <summary>Trigger a camera shake. intensity = max offset (world units). Call each frame to sustain.</summary>
+        public static void TriggerCameraShake(float intensity, float duration) => Native.Boom_API_TriggerCameraShake(intensity, duration);
+
+        /// <summary>Set the main camera FOV in degrees. Pass 45 to restore default.</summary>
+        public static void SetCameraFOV(float fov) => Native.Boom_API_SetCameraFOV(fov);
+
+        /// <summary>Set a red danger tint overlay (0 = none, 1 = full red). Reset to 0 when done.</summary>
+        public static void SetProximityRedTint(float amount) => Native.Boom_API_SetProximityRedTint(amount);
+
         // ===== Scene Management =====
         public static void LoadScene(string name) => Native.Boom_API_LoadScene(name);
         public static string GetCurrentSceneName() => Native.Boom_API_GetCurrentSceneName();
@@ -900,6 +935,10 @@ namespace Boom
             return Native.Boom_API_GetGroupVolume(groupName);
         }
 
+        // Gamma / Tone Mapping
+        public static void SetGamma(float gamma) => Native.Boom_API_SetGamma(gamma);
+        public static float GetGamma() => Native.Boom_API_GetGamma();
+
         // Death Menu
         public static void UnloadDeathMenu() => Native.Boom_API_UnloadDeathMenu();
         public static void ShowDeathMenu() => Native.Boom_API_ShowDeathMenu();
@@ -911,6 +950,11 @@ namespace Boom
         public static void ShowEndMenu() => Native.Boom_API_ShowEndMenu();
         public static bool IsEndMenuLoaded() => Native.Boom_API_IsEndMenuLoaded();
         public static void SetGameEnd(bool isEnd) => Native.Boom_API_SetGameEnd(isEnd);
+
+        // Inventory Menu
+        public static void ShowInventoryMenu() => Native.Boom_API_ShowInventoryMenu();
+        public static void UnloadInventoryMenu() => Native.Boom_API_UnloadInventoryMenu();
+        public static bool IsInventoryMenuLoaded() => Native.Boom_API_IsInventoryMenuLoaded();
 
         // Freeze
         public static void DestroyEntity(ulong entity) => Native.Boom_API_DestroyEntity(entity);
@@ -1457,6 +1501,7 @@ namespace Boom
         public const int KEY_F = 70;
         public const int KEY_G = 71;
         public const int KEY_H = 72;
+        public const int KEY_I = 73;
         public const int KEY_K = 75;
         public const int KEY_L = 76;
         public const int KEY_M = 77;

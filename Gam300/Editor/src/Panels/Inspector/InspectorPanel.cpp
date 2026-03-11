@@ -12,6 +12,7 @@
 #include "Audio/Audio.hpp"     // for SoundEngine (real-time audio preview)
 #include "Panels/DirectoryPanel.h"  // for ForceRefresh() on audio assets
 #include "Graphics/Renderer.h" // for material preview
+#include "Graphics/Text/FontManager.h" // for font dropdown in TextComponent
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <unordered_map>       // for audio preview tracking
@@ -993,17 +994,22 @@ namespace EditorUI {
                     ImGui::SetTooltip("Use \\n for newlines");
                 }
 
-                // Font name input
-                char fontBuffer[256];
-                strncpy_s(fontBuffer, textComp.fontName.c_str(), sizeof(fontBuffer) - 1);
-                fontBuffer[sizeof(fontBuffer) - 1] = '\0';
-
-                ImGui::Text("Font Name:");
-                if (ImGui::InputText("##fontName", fontBuffer, sizeof(fontBuffer))) {
-                    textComp.fontName = std::string(fontBuffer);
-                }
-                if (ImGui::IsItemHovered()) {
-                    ImGui::SetTooltip("e.g., 'Roboto-Regular' (must be loaded in FontManager)");
+                // Font dropdown - lists all fonts loaded in FontManager
+                ImGui::Text("Font:");
+                {
+                    auto fontNames = Boom::FontManager::GetInstance().GetLoadedFontNames();
+                    std::sort(fontNames.begin(), fontNames.end());
+                    const std::string& current = textComp.fontName;
+                    if (ImGui::BeginCombo("##fontName", current.empty() ? "None" : current.c_str())) {
+                        for (const auto& name : fontNames) {
+                            bool isSelected = (name == current);
+                            if (ImGui::Selectable(name.c_str(), isSelected))
+                                textComp.fontName = name;
+                            if (isSelected)
+                                ImGui::SetItemDefaultFocus();
+                        }
+                        ImGui::EndCombo();
+                    }
                 }
 
                 // Color picker
@@ -2940,8 +2946,8 @@ namespace EditorUI {
 
                     // 3. Define the Enum Names for the Dropdown
                     // These must match the order of your 'enum class MenuType'
-                    // Pause=0, Death=1, Settings=2, Main=3
-                    const char* menuTypeNames[] = { "Pause", "Death", "Settings", "Main", "End", "PopUp"};
+                    // Pause=0, Death=1, Settings=2, Main=3, End=4, PopUp=5, Inventory=6
+                    const char* menuTypeNames[] = { "Pause", "Death", "Settings", "Main", "End", "PopUp", "Inventory"};
 
                     // Convert current enum value to int for ImGui
                     int currentSelection = (int)comp->menuType;

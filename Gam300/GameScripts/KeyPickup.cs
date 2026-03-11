@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Boom;
 
@@ -13,6 +13,11 @@ namespace GameScripts
         // Key type identifier (e.g., "key1", "key2", "red_key", "blue_key")
         [Boom.EditorExposed("Key Type", "Unique identifier for this key (e.g., 'key1', 'key2')")]
         private string _keyType = "key1";
+
+        // Which specific door this opens — dropdown restricted to valid types
+        [Boom.EditorExposed("Key Variant", "Which door this key opens",
+            options: new[] { "MainDoor", "SmallDoor" })]
+        private string _keyVariant = "MainDoor";
 
         // Optional: sound to play on pickup
         [Boom.EditorExposed("Pickup Sound", "Sound played when the key is collected")]
@@ -73,8 +78,7 @@ namespace GameScripts
             }
 
             inst._collected = true;
-            PlayerInventory.AddKey(inst._keyType);
-            UIManager.ShowKeyPickup();
+            PlayerInventory.AddKey(inst._keyType, inst._keyVariant);
 
             // Show tutorial on first key pickup
             TutorialManager.ShowKeyTutorial();
@@ -94,7 +98,7 @@ namespace GameScripts
             var currentPos = API.GetPosition(inst.Entity);
             API.SetPosition(inst.Entity, new Vec3(currentPos.X, -100f, currentPos.Z));
 
-            API.Log($"[KeyPickup] Key '{inst._keyType}' collected! Total keys: {PlayerInventory.GetKeyCount()}");
+            API.Log($"[KeyPickup] {inst._keyType} '{inst._keyVariant}' collected! Total keys: {PlayerInventory.GetKeyCount()}");
         }
 
         private static void OnTriggerExit(ulong triggerEntity, ulong otherEntity)

@@ -6,7 +6,9 @@ namespace GameScripts
 {
     public static class SettingsManager
     {
-        private static string _path = "audiosettings.json";
+        private static string _path = "PauseSettings.json";
+
+        private const float DEFAULT_GAMMA = 2.2f;
 
         [Serializable]
         class SettingsData
@@ -14,6 +16,7 @@ namespace GameScripts
             public float Master = 1.0f;
             public float BGM = 1.0f;
             public float SFX = 1.0f;
+            public float Gamma = 2.2f;
         }
 
         public static void SaveSettings()
@@ -22,9 +25,10 @@ namespace GameScripts
             data.Master = API.GetGroupVolume("Master");
             data.BGM = API.GetGroupVolume("Music");
             data.SFX = API.GetGroupVolume("SFX");
+            data.Gamma = API.GetGamma();
 
             // Manually construct JSON string to avoid external dependencies
-            string json = $"{{\"Master\":{data.Master}, \"BGM\":{data.BGM}, \"SFX\":{data.SFX}}}";
+            string json = $"{{\"Master\":{data.Master}, \"BGM\":{data.BGM}, \"SFX\":{data.SFX}, \"Gamma\":{data.Gamma}}}";
 
             try
             {
@@ -45,15 +49,17 @@ namespace GameScripts
                 string json = File.ReadAllText(_path);
 
                 // Parse values using internal helper to avoid full JSON library requirements
-                float m = ParseJsonFloat(json, "Master");
-                float b = ParseJsonFloat(json, "BGM");
-                float s = ParseJsonFloat(json, "SFX");
+                float m = ParseJsonFloat(json, "Master", 1.0f);
+                float b = ParseJsonFloat(json, "BGM", 1.0f);
+                float s = ParseJsonFloat(json, "SFX", 1.0f);
+                float g = ParseJsonFloat(json, "Gamma", DEFAULT_GAMMA);
 
                 API.SetGroupVolume("Master", m);
                 API.SetGroupVolume("Music", b);
                 API.SetGroupVolume("SFX", s);
+                API.SetGamma(g);
 
-                API.Log($"[Settings] Loaded Successfully | Master: {m:0.00} | BGM: {b:0.00} | SFX: {s:0.00}");
+                API.Log($"[Settings] Loaded Successfully | Master: {m:0.00} | BGM: {b:0.00} | SFX: {s:0.00} | Gamma: {g:0.00}");
             }
             catch
             {
@@ -62,10 +68,10 @@ namespace GameScripts
         }
 
         // Basic string-based parser for simple JSON key-value pairs.
-        private static float ParseJsonFloat(string json, string key)
+        private static float ParseJsonFloat(string json, string key, float defaultValue = 1.0f)
         {
             int keyIndex = json.IndexOf(key);
-            if (keyIndex == -1) return 1.0f;
+            if (keyIndex == -1) return defaultValue;
 
             int valStart = json.IndexOf(":", keyIndex) + 1;
             int valEnd = json.IndexOf(",", valStart);
@@ -80,7 +86,7 @@ namespace GameScripts
                 return result;
             }
 
-            return 1.0f;
+            return defaultValue;
         }
     }
 }
