@@ -884,6 +884,11 @@ struct MenuComponent {
         float fogHeightFalloff = 0.5f;  // How fast fog thins with height (larger = thinner at height)
         float fogHeight = 0.0f;         // World-space Y below which fog is thickest
 
+        // Tone mapping settings
+        float tonemapExposure = 1.0f;
+        float tonemapGamma = 2.2f;
+        glm::vec3 tonemapWarmTint = glm::vec3(1.08f, 0.98f, 0.82f);
+
         XPROPERTY_DEF("SceneNavmeshComponent", SceneNavmeshComponent,
             obj_member<"NavmeshFile", &SceneNavmeshComponent::navmeshFile>,
             obj_member<"AmbientStrength", &SceneNavmeshComponent::ambientStrength>,
@@ -896,7 +901,10 @@ struct MenuComponent {
             obj_member<"FogColor", &SceneNavmeshComponent::fogColor>,
             obj_member<"FogDensity", &SceneNavmeshComponent::fogDensity>,
             obj_member<"FogHeightFalloff", &SceneNavmeshComponent::fogHeightFalloff>,
-            obj_member<"FogHeight", &SceneNavmeshComponent::fogHeight>)
+            obj_member<"FogHeight", &SceneNavmeshComponent::fogHeight>,
+            obj_member<"TonemapExposure", &SceneNavmeshComponent::tonemapExposure>,
+            obj_member<"TonemapGamma", &SceneNavmeshComponent::tonemapGamma>,
+            obj_member<"TonemapWarmTint", &SceneNavmeshComponent::tonemapWarmTint>)
     };
 
     struct DeactivatedComponent {
