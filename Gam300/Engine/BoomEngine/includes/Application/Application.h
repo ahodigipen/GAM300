@@ -555,6 +555,9 @@ namespace Boom
 				m_Context->renderer->fogDensity = sn.fogDensity;
 				m_Context->renderer->fogHeightFalloff = sn.fogHeightFalloff;
 				m_Context->renderer->fogHeight = sn.fogHeight;
+				m_Context->renderer->tonemapExposure = sn.tonemapExposure;
+				m_Context->renderer->tonemapGamma = sn.tonemapGamma;
+				m_Context->renderer->tonemapWarmTint = sn.tonemapWarmTint;
 				BOOM_INFO("[Scene] Applied scene settings: ambient={}, bloom={}, intensity={}, threshold={}, iterations={}, pointLightBloom={}, fog={}",
 					sn.ambientStrength, sn.bloomEnabled, sn.bloomIntensity, sn.bloomThreshold, sn.bloomIterations, sn.pointLightBloomMultiplier, sn.fogEnabled);
 			}

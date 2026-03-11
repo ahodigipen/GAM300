@@ -104,6 +104,9 @@ namespace EditorUI {
                 m.ctx->renderer->fogDensity                 = s.fogDensity;
                 m.ctx->renderer->fogHeightFalloff           = s.fogHeightFalloff;
                 m.ctx->renderer->fogHeight                  = s.fogHeight;
+                m.ctx->renderer->tonemapExposure            = s.tonemapExposure;
+                m.ctx->renderer->tonemapGamma               = s.tonemapGamma;
+                m.ctx->renderer->tonemapWarmTint            = s.tonemapWarmTint;
             }
         }
 
@@ -214,6 +217,9 @@ namespace EditorUI {
                     sceneComp.fogDensity = 0.01f;
                     sceneComp.fogHeightFalloff = 0.5f;
                     sceneComp.fogHeight = 0.0f;
+                    sceneComp.tonemapExposure = 1.0f;
+                    sceneComp.tonemapGamma = 2.2f;
+                    sceneComp.tonemapWarmTint = glm::vec3(1.08f, 0.98f, 0.82f);
                 }
                 auto& settings = m.ctx->scene.get<Boom::SceneNavmeshComponent>(sceneSettings);
 
@@ -286,13 +292,13 @@ namespace EditorUI {
                 ImGui::MenuItem("Picking ignore GUI", nullptr, &m.ctx->renderer->isPickIgnoreGUI);
 
                 if (ImGui::BeginMenu("Tone Mapping")) {
-                    ImGui::SliderFloat("Exposure",  &m.ctx->renderer->tonemapExposure,  0.0f, 4.0f);
-                    ImGui::SliderFloat("Gamma",     &m.ctx->renderer->tonemapGamma,     1.0f, 3.0f);
-                    ImGui::ColorEdit3 ("Warm Tint", &m.ctx->renderer->tonemapWarmTint.x);
+                    ImGui::SliderFloat("Exposure",  &settings.tonemapExposure,  0.0f, 4.0f);
+                    ImGui::SliderFloat("Gamma",     &settings.tonemapGamma,     1.0f, 3.0f);
+                    ImGui::ColorEdit3 ("Warm Tint", &settings.tonemapWarmTint.x);
                     if (ImGui::Button("Reset to Defaults")) {
-                        m.ctx->renderer->tonemapExposure  = 1.0f;
-                        m.ctx->renderer->tonemapGamma     = 2.2f;
-                        m.ctx->renderer->tonemapWarmTint  = glm::vec3(1.08f, 0.98f, 0.82f);
+                        settings.tonemapExposure  = 1.0f;
+                        settings.tonemapGamma     = 2.2f;
+                        settings.tonemapWarmTint  = glm::vec3(1.08f, 0.98f, 0.82f);
                     }
                     ImGui::EndMenu();
                 }

@@ -112,6 +112,15 @@ namespace Boom
         internal extern static float Boom_API_GetThirdPersonCameraYaw();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_TriggerCameraShake(float intensity, float duration);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetCameraFOV(float fov);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetProximityRedTint(float amount);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern bool Boom_API_HasCollider(ulong handle);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -892,6 +901,15 @@ namespace Boom
 
         // ===== Camera =====
         public static float GetThirdPersonCameraYaw() => Native.Boom_API_GetThirdPersonCameraYaw();
+
+        /// <summary>Trigger a camera shake. intensity = max offset (world units). Call each frame to sustain.</summary>
+        public static void TriggerCameraShake(float intensity, float duration) => Native.Boom_API_TriggerCameraShake(intensity, duration);
+
+        /// <summary>Set the main camera FOV in degrees. Pass 45 to restore default.</summary>
+        public static void SetCameraFOV(float fov) => Native.Boom_API_SetCameraFOV(fov);
+
+        /// <summary>Set a red danger tint overlay (0 = none, 1 = full red). Reset to 0 when done.</summary>
+        public static void SetProximityRedTint(float amount) => Native.Boom_API_SetProximityRedTint(amount);
 
         // ===== Scene Management =====
         public static void LoadScene(string name) => Native.Boom_API_LoadScene(name);
