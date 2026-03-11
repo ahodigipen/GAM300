@@ -1359,8 +1359,21 @@ namespace Boom
                 ));
 
                 tc.transform.translate = m_Context->physics->ResolveThirdPersonCameraPosition(pivotPosition, desiredPosition);
+
+                // Apply camera shake (set from scripts via TriggerCameraShake)
+                // shakePhase accumulates continuously so oscillation never freezes,
+                // even when scripts reset shakeTimer every frame to sustain the effect.
+                if (cam.shakeTimer > 0.0f && cam.shakeDuration > 0.0f) {
+                    cam.shakeTimer = std::max(0.0f, cam.shakeTimer - dt);
+                    cam.shakePhase += dt * 47.3f;
+                    float fadeFraction = cam.shakeTimer / cam.shakeDuration;
+                    float intensity = cam.shakeIntensity * fadeFraction;
+                    tc.transform.translate.x += std::sinf(cam.shakePhase * 2.3f) * intensity;
+                    tc.transform.translate.y += std::sinf(cam.shakePhase * 1.9f + 1.1f) * intensity * 0.6f;
+                }
             }
         );
+
     }
 
 

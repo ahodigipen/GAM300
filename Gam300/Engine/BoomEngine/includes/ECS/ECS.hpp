@@ -733,6 +733,12 @@ float     currentPitch = 20.0f;
 float     mouseSensitivity = 1.0f;
 float     scrollSensitivity = 1.0f;
 
+// Runtime-only camera effects (not serialized)
+float     shakeIntensity = 0.0f;   // Max positional shake offset in world units
+float     shakeDuration  = 0.0f;   // Total duration of current shake
+float     shakeTimer     = 0.0f;   // Remaining time
+float     shakePhase     = 0.0f;   // Continuously accumulated phase (never reset by scripts)
+
 // Add this back in
 XPROPERTY_DEF(
 "ThirdPersonCameraComponent", ThirdPersonCameraComponent,

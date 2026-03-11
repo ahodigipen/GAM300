@@ -21,6 +21,19 @@ namespace GameScripts
         [Boom.EditorExposed("Vertical Tolerance", "Vertical range (same floor)", 0.1f, 10f, true)]
         public float VerticalTolerance = 2.5f;         // Vertical range (same floor)
 
+        // Camera effects settings (FOV zoom is driven globally; red tint and shake are detection-bar driven)
+        [Boom.EditorExposed("Shake Threshold", "Detection ratio at which shake starts (0-1)", 0f, 1f, true)]
+        public float ShakeThreshold = 0.5f;
+
+        [Boom.EditorExposed("Max Shake Intensity", "Max camera shake offset in world units", 0f, 0.2f, true)]
+        public float MaxShakeIntensity = 0.06f;
+
+        [Boom.EditorExposed("Red Tint Threshold", "Detection ratio at which red tint starts (0-1)", 0f, 1f, true)]
+        public float RedTintThreshold = 0.5f;
+
+        [Boom.EditorExposed("Max Red Tint", "Screen red amount at full detection (0-1)", 0f, 1f, true)]
+        public float MaxRedTint = 0.4f;
+
         // State tracking
         private float _proximityTimer = 0f;
         private bool _isPlayerInRange = false;
@@ -107,6 +120,10 @@ namespace GameScripts
                 // Accumulate time while player is in range
                 _proximityTimer += dt;
 
+                // --- Progressive camera effects (scale with proximity ratio 0..1) ---
+                float t = Clamp01(_proximityTimer / DetectionDuration);
+                ApplyProximityEffects(t, dt);
+
                 // Check if detection threshold reached
                 if (!_hasTriggeredDetection && _proximityTimer >= DetectionDuration)
                 {
@@ -127,7 +144,7 @@ namespace GameScripts
             }
             else
             {
-                // Player left range - reset timer
+                // Player left range - reset timer and clear effects
                 if (_isPlayerInRange)
                 {
                     if (DebugLog)
@@ -160,7 +177,31 @@ namespace GameScripts
         }
 
         /// <summary>
-        /// Reset proximity timer and state
+        /// Apply red tint and shake scaled by detection ratio t (0..1).
+        /// FOV zoom is driven globally by the engine for all enemies.
+        /// </summary>
+        private void ApplyProximityEffects(float t, float dt)
+        {
+            // Red tint — ramps in once past the threshold
+            if (t > RedTintThreshold)
+            {
+                float tintT = Clamp01((t - RedTintThreshold) / (1.0f - RedTintThreshold));
+                API.SetProximityRedTint(tintT * MaxRedTint);
+            }
+
+            // Camera shake — starts once past the shake threshold, intensifies toward detection
+            if (t > ShakeThreshold)
+            {
+                float shakeT = Clamp01((t - ShakeThreshold) / (1.0f - ShakeThreshold));
+                float intensity = shakeT * MaxShakeIntensity;
+                // Re-trigger every frame with a short window so it sustains continuously.
+                // The engine accumulates shakePhase independently so oscillation never freezes.
+                API.TriggerCameraShake(intensity, 0.25f);
+            }
+        }
+
+        /// <summary>
+        /// Reset proximity timer and state. Shake fades out on its own via the engine timer.
         /// </summary>
         private void ResetProximityTimer()
         {
@@ -169,8 +210,12 @@ namespace GameScripts
                 _isPlayerInRange = false;
                 _proximityTimer = 0f;
                 _hasTriggeredDetection = false;
+                API.SetProximityRedTint(0f); // Clear red tint when player leaves range
+                // Shake fades naturally via the engine's shakeTimer decay — no hard reset needed.
             }
         }
+
+        private static float Clamp01(float v) => v < 0f ? 0f : v > 1f ? 1f : v;
 
         /// <summary>
         /// Force reset detection state (e.g., when enemy loses target)
