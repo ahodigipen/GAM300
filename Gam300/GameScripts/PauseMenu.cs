@@ -26,6 +26,7 @@ namespace GameScripts
         private VolumeSlider _masterSlider;
         private VolumeSlider _bgmSlider;
         private VolumeSlider _sfxSlider;
+        private GammaSlider  _gammaSlider;
 
         private enum PauseMenuState
         {
@@ -39,7 +40,7 @@ namespace GameScripts
         private bool _wasPausedLastFrame = false;
 
         // Controller navigation
-        // 0: Resume, 1: Restart, 2: Main Menu, 3: Quit, 4: Master, 5: BGM, 6: SFX
+        // 0: Resume, 1: Restart, 2: Main Menu, 3: Quit, 4: Master, 5: BGM, 6: SFX, 7: Gamma
         private int _selectedIndex = 0; 
         private bool _wasDpadUp = false;
         private bool _wasDpadDown = false;
@@ -70,6 +71,7 @@ namespace GameScripts
             _masterSlider = new VolumeSlider("Pause_Master_BG", "Pause_Master_Fill", "Pause_Master_Handle", "Master");
             _bgmSlider = new VolumeSlider("Pause_BGM_BG", "Pause_BGM_Fill", "Pause_BGM_Handle", "Music");
             _sfxSlider = new VolumeSlider("Pause_SFX_BG", "Pause_SFX_Fill", "Pause_SFX_Handle", "SFX");
+            _gammaSlider = new GammaSlider("Pause_Gamma_BG", "Pause_Gamma_Fill", "Pause_Gamma_Handle");
 
             _selectedIndex = 0;
             ResetButtonState();
@@ -108,6 +110,11 @@ namespace GameScripts
                 _sfxSlider.Update();
                 isAnyDragging = true;
             }
+            else if (_gammaSlider != null && _gammaSlider.IsDragging)
+            {
+                _gammaSlider.Update();
+                isAnyDragging = true;
+            }
             else
             {
                 if (_masterSlider != null)
@@ -126,6 +133,12 @@ namespace GameScripts
                 {
                     _sfxSlider.Update();
                     if (_sfxSlider.IsDragging) isAnyDragging = true;
+                }
+
+                if (!isAnyDragging && _gammaSlider != null)
+                {
+                    _gammaSlider.Update();
+                    if (_gammaSlider.IsDragging) isAnyDragging = true;
                 }
             }
 
@@ -166,12 +179,12 @@ namespace GameScripts
             // Vertical Navigation
             if ((dpadUp && !_wasDpadUp) || (stickUp && !_wasStickUp))
             {
-                _selectedIndex = (_selectedIndex - 1 + 7) % 7;
+                _selectedIndex = (_selectedIndex - 1 + 8) % 8;
                 UpdateVisuals();
             }
             if ((dpadDown && !_wasDpadDown) || (stickDown && !_wasStickDown))
             {
-                _selectedIndex = (_selectedIndex + 1) % 7;
+                _selectedIndex = (_selectedIndex + 1) % 8;
                 UpdateVisuals();
             }
 
@@ -189,16 +202,21 @@ namespace GameScripts
 
                 if (Math.Abs(moveAmount) > 0.0001f)
                 {
-                    VolumeSlider selectedSlider = null;
-                    string group = "";
-                    if (_selectedIndex == 4) { selectedSlider = _masterSlider; group = "Master"; }
-                    else if (_selectedIndex == 5) { selectedSlider = _bgmSlider; group = "Music"; }
-                    else if (_selectedIndex == 6) { selectedSlider = _sfxSlider; group = "SFX"; }
-
-                    if (selectedSlider != null)
+                    if (_selectedIndex == 4 && _masterSlider != null)
                     {
-                        float currentVal = API.GetGroupVolume(group);
-                        selectedSlider.SetValue(currentVal + moveAmount);
+                        _masterSlider.SetValue(API.GetGroupVolume("Master") + moveAmount);
+                    }
+                    else if (_selectedIndex == 5 && _bgmSlider != null)
+                    {
+                        _bgmSlider.SetValue(API.GetGroupVolume("Music") + moveAmount);
+                    }
+                    else if (_selectedIndex == 6 && _sfxSlider != null)
+                    {
+                        _sfxSlider.SetValue(API.GetGroupVolume("SFX") + moveAmount);
+                    }
+                    else if (_selectedIndex == 7 && _gammaSlider != null)
+                    {
+                        _gammaSlider.SetNormDelta(moveAmount);
                     }
                 }
             }
@@ -233,6 +251,7 @@ namespace GameScripts
             SetSliderHighlight("Pause_Master_BG", _selectedIndex == 4);
             SetSliderHighlight("Pause_BGM_BG", _selectedIndex == 5);
             SetSliderHighlight("Pause_SFX_BG", _selectedIndex == 6);
+            SetSliderHighlight("Pause_Gamma_BG", _selectedIndex == 7);
 
             // Highlight selected button
             if (_selectedIndex == 0) API.SetSpriteTexture(_resumeButtonID, RESUME_TEX_CLICKED);
@@ -263,7 +282,8 @@ namespace GameScripts
         {
             bool isAnySliderDragging = (_masterSlider != null && _masterSlider.IsDragging) ||
                                        (_bgmSlider != null && _bgmSlider.IsDragging) ||
-                                       (_sfxSlider != null && _sfxSlider.IsDragging);
+                                       (_sfxSlider != null && _sfxSlider.IsDragging) ||
+                                       (_gammaSlider != null && _gammaSlider.IsDragging);
 
             if (isAnySliderDragging) return;
 
@@ -294,6 +314,7 @@ namespace GameScripts
                 else if (IsSliderClicked("Pause_Master_BG", mousePos)) _selectedIndex = 4;
                 else if (IsSliderClicked("Pause_BGM_BG", mousePos)) _selectedIndex = 5;
                 else if (IsSliderClicked("Pause_SFX_BG", mousePos)) _selectedIndex = 6;
+                else if (IsSliderClicked("Pause_Gamma_BG", mousePos)) _selectedIndex = 7;
             }
         }
 

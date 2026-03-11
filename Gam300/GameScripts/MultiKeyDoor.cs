@@ -337,7 +337,7 @@ namespace GameScripts
             {
                 foreach (var key in inst._requiredKeysList)
                 {
-                    if (!PlayerInventory.ConsumeKey(key))
+                    if (!PlayerInventory.ConsumeKeyType(key))
                     {
                         API.Log($"[MultiKeyDoor] Failed to consume key type '{key}'.");
                     }

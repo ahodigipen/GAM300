@@ -397,24 +397,24 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
-    UID: 6977112513598097705
-    Name: SkyBox
-    Source: SkyBox
+    UID: 15114049110730279773
+    Name: metalgatetexture
+    Source: metalgatetexture
     Properties:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 1
-        metallic: 0
-        occlusion: 0.0599999987
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
         opacity: 1
         useWorldSpaceUV: false
         textureScale: 1
-      AlbedoMapID: 0
-      NormalMapID: 0
-      RoughnessMapID: 0
+      AlbedoMapID: 8538867989910609552
+      NormalMapID: 11205160342225508013
+      RoughnessMapID: 3390174833904116482
       MetallicMapID: 0
-      OcclusionMapID: 0
+      OcclusionMapID: 3390174833904116482
       EmissiveMapID: 0
       OpacityMapID: 0
       DoubleSided: false
@@ -455,6 +455,28 @@ ASSETS:
         useWorldSpaceUV: true
         textureScale: 2.71000004
       AlbedoMapID: 7176136387576027842
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
+    UID: 1190950372665560984
+    Name: NewBrickWall
+    Source: NewBrickWall
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0
+        metallic: 0
+        occlusion: 0.589999974
+        opacity: 1
+        useWorldSpaceUV: true
+        textureScale: 9.89999962
+      AlbedoMapID: 3243208601200922329
       NormalMapID: 0
       RoughnessMapID: 0
       MetallicMapID: 0
@@ -585,8 +607,8 @@ ASSETS:
         occlusion: 0.850000024
         opacity: 1
         useWorldSpaceUV: true
-        textureScale: 11.6999998
-      AlbedoMapID: 13798099764045349811
+        textureScale: 4.71000004
+      AlbedoMapID: 13329287097237119223
       NormalMapID: 0
       RoughnessMapID: 0
       MetallicMapID: 0
@@ -661,6 +683,28 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
+    UID: 7666986193932932989
+    Name: ToriGateTexture
+    Source: ToriGateTexture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 11747185493236518571
+      NormalMapID: 5134270148386981872
+      RoughnessMapID: 2904894310952634977
+      MetallicMapID: 0
+      OcclusionMapID: 2904894310952634977
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
     UID: 16814172849789012347
     Name: Outdoor Lamp Texture
     Source: Outdoor Lamp Texture
@@ -717,8 +761,8 @@ ASSETS:
         occlusion: 0.970000029
         opacity: 1
         useWorldSpaceUV: true
-        textureScale: 8.60999966
-      AlbedoMapID: 10441627123981480612
+        textureScale: 4.71000004
+      AlbedoMapID: 13329287097237119223
       NormalMapID: 0
       RoughnessMapID: 0
       MetallicMapID: 0
@@ -2146,6 +2190,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 8538867989910609552
+    Name: openPBR_shader1_baseColor
+    Source: Resources/Models/Props/metalgate_model n texture/openPBR_shader1_baseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 4197000569045631220
     Name: Lantern_Hanging_openPBR_shader1_Normal
     Source: Resources/Models/Props/2_KEN_LanternTextures/Lantern_Hanging_openPBR_shader1_Normal.png
@@ -2861,6 +2916,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 13329287097237119223
+    Name: grass big
+    Source: Resources/Textures/grass big.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 8031341649730841089
     Name: BIG_Gravestone_low_Gravestone_Height
     Source: Resources/Models/Props/Ressurection_Gravestone/Gravestone Textures/BIG_Gravestone_low_Gravestone_Height.png
@@ -3249,6 +3315,17 @@ ASSETS:
     UID: 11064058823704041102
     Name: NewGameButton_Clicked
     Source: Resources/Textures/MenusUI/NewGameButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 3243208601200922329
+    Name: brickwalll 256
+    Source: Resources/Textures/brickwalll 256.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3773,6 +3850,27 @@ ASSETS:
         alphaThreshold: 128
         mipLevel: 10
         isGamma: true
+    UID: 11205160342225508013
+    Name: openPBR_shader1_normal
+    Source: Resources/Models/Props/metalgate_model n texture/openPBR_shader1_normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 3390174833904116482
+    Name: openPBR_shader1_occlusionRoughnessMetallic
+    Source: Resources/Models/Props/metalgate_model n texture/openPBR_shader1_occlusionRoughnessMetallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: SKYBOX
     UID: 4245843529762785392
     Name: NightSkyHDRI003_8K_HDR
@@ -5396,6 +5494,17 @@ ASSETS:
     UID: 14124836796428390504
     Name: metal bar_uncloured
     Source: Resources/Models/Props/Steel Bar/metal bar_uncloured.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 1078495214741830672
+    Name: metalgate_uncoloured2
+    Source: Resources/Models/Props/metalgate_model n texture/metalgate_uncoloured2.fbx
     Properties:
       Model Transform:
         transform:

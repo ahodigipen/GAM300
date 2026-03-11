@@ -22,6 +22,14 @@ namespace Boom {
         void RenderText(const std::string& fontName, const std::string& text, float x, float y, float scale, glm::vec3 color, float textAlpha = 1.0f);
         void Cleanup();
 
+        std::vector<std::string> GetLoadedFontNames() const {
+            std::vector<std::string> names;
+            names.reserve(m_Fonts.size());
+            for (const auto& [name, font] : m_Fonts)
+                names.push_back(name);
+            return names;
+        }
+
     private:
         struct Glyph {
             glm::vec2 offset{};
