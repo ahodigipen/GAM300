@@ -11,6 +11,10 @@
 #include "Vendors/imgui/imgui.h"
 #include "Vendors/imGuizmo/ImGuizmo.h"
 #include "AI/DetourNavSystem.h"
+
+// Status string for UI display
+static std::string g_NavBakeStatus;
+
 namespace EditorUI {
 
     NavmeshPanel::NavmeshPanel(Editor* owner)
@@ -34,7 +38,7 @@ namespace EditorUI {
         RecastBakeInput out;
 
         if (!m_Ctx || !m_Ctx->assets) {
-            BOOM_ERROR("[NavBake] No AppContext/assets available.");
+            g_NavBakeStatus = "ERROR: No AppContext/assets available";
             return out;
         }
 
@@ -43,42 +47,51 @@ namespace EditorUI {
 
         size_t entCount = 0, usedCount = 0, triCount = 0;
 
-        // Do NOT require TransformComponent in the view. We’ll read it if present.
+        // Do NOT require TransformComponent in the view. We'll read it if present.
         auto view = reg.view<Boom::ModelComponent>();
 
         for (auto e : view) {
             ++entCount;
             const auto& mc = view.get<Boom::ModelComponent>(e);
-            if (mc.modelID == Boom::EMPTY_ASSET) continue;
+
+            if (mc.modelID == Boom::EMPTY_ASSET) {
+                continue;
+            }
 
             // Build transform matrix (identity if no TransformComponent)
             glm::mat4 M(1.f);
-            if (reg.any_of<Boom::TransformComponent>(e)) {
+            if (reg.all_of<Boom::TransformComponent>(e)) {
                 const auto& tr = reg.get<Boom::TransformComponent>(e);
-                // If your TransformComponent exposes transform.Matrix(), use it:
                 M = tr.transform.Matrix();
-                // If not, fallback (Z-up/2D example):
-                // M = glm::translate(glm::mat4(1.f), glm::vec3(tr.transform.translate, 0.f))
-                //   * glm::toMat4(glm::quat(glm::radians(tr.transform.rotate)))  // rotate is degrees
-                //   * glm::scale(glm::mat4(1.f), glm::vec3(tr.transform.scale, 1.f));
             }
 
             // Pull model from AssetRegistry
             auto* modelAsset = m_Ctx->assets->TryGet<Boom::ModelAsset>(mc.modelID);
-            if (!modelAsset || !modelAsset->data) continue;
+            if (!modelAsset || !modelAsset->data) {
+                continue;
+            }
 
-            // Expect StaticModel; skip otherwise
+            // Check if it's a StaticModel
             auto staticModel = std::dynamic_pointer_cast<Boom::StaticModel>(modelAsset->data);
-            if (!staticModel) continue;
+            if (!staticModel) {
+                continue;
+            }
 
             // Your submesh API (from your screenshot: .vtx (ShadedVert) / .idx)
             const auto& submeshes = staticModel->GetMeshData();
 
-            for (const auto& sub : submeshes) {
+            if (submeshes.empty()) {
+                continue;
+            }
+
+            for (size_t subIdx = 0; subIdx < submeshes.size(); ++subIdx) {
+                const auto& sub = submeshes[subIdx];
                 const auto& positions = sub.vtx; // std::vector<Boom::ShadedVert> (has glm::vec3 pos)
                 const auto& indices = sub.idx; // u16/u32
 
-                if (positions.empty() || indices.size() < 3) continue;
+                if (positions.empty() || indices.size() < 3) {
+                    continue;
+                }
 
                 const int base = static_cast<int>(out.verts.size() / 3);
 
@@ -102,21 +115,14 @@ namespace EditorUI {
             }
         }
 
-        BOOM_INFO("[NavBake] Gathered: {} entities scanned, {} submeshes used, {} triangles.",
-            entCount, usedCount, triCount);
-
-        if (entCount == 0) {
-            BOOM_WARN("[NavBake] View<ModelComponent>() is empty. Are you iterating the correct registry?");
-            BOOM_INFO("[NavBake] regs: &m_Ctx->scene={}, m_Reg={}, GetRegistry()={}",
-                (void*)&m_Ctx->scene, (void*)m_Reg, (void*)m_Owner->GetRegistry());
-        }
+        // Build status string for UI
+        char summary[256];
+        snprintf(summary, sizeof(summary), "Collected: %zu triangles from %zu submeshes",
+            triCount, usedCount);
+        g_NavBakeStatus = summary;
 
         return out;
     }
-
-
-
-
 
     void NavmeshPanel::Render()
     {
@@ -158,30 +164,41 @@ namespace EditorUI {
         // --- Bake button ---
         if (ImGui::Button("Bake Navmesh", ImVec2(-1, 32))) {
             if (!m_Reg) {
-                BOOM_ERROR("[NavBake] No registry available.");
+                g_NavBakeStatus = "ERROR: No registry available";
             }
             else {
                 std::string err;
                 RecastBakeInput in = GatherTriangleSoupFromScene(m_Ctx ? m_Ctx->scene : *m_Reg);
                 if (in.verts.empty() || in.tris.empty()) {
-                    BOOM_WARN("[NavBake] No geometry gathered. Check your Model asset CPU arrays.");
+                    g_NavBakeStatus = "FAILED: No geometry gathered";
                 }
                 else if (!RecastBakeToFile(in, m_Cfg, m_OutPath, &err)) {
-                    BOOM_ERROR("[NavBake] Bake failed: {}", err);
+                    g_NavBakeStatus = "FAILED: " + err;
                 }
                 else {
-                    BOOM_INFO("[NavBake] Success: {}", m_OutPath);
+                    g_NavBakeStatus = "SUCCESS: Saved to " + m_OutPath;
 
                     // Hot-reload into live runtime via AppInterface
                     if (m_App) {
                         if (auto* nav = m_App->GetNavSystem()) {
-                            if (nav->reloadFromFile(m_OutPath))
-                                BOOM_INFO("[Nav] Reloaded runtime navmesh: {}", m_OutPath);
-                            else
-                                BOOM_ERROR("[Nav] Reload failed for: {}", m_OutPath);
+                            nav->reloadFromFile(m_OutPath);
                         }
                     }
                 }
+            }
+        }
+
+        // Show status
+        if (!g_NavBakeStatus.empty()) {
+            ImGui::Separator();
+            if (g_NavBakeStatus.find("SUCCESS") != std::string::npos) {
+                ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "%s", g_NavBakeStatus.c_str());
+            }
+            else if (g_NavBakeStatus.find("FAILED") != std::string::npos || g_NavBakeStatus.find("ERROR") != std::string::npos) {
+                ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "%s", g_NavBakeStatus.c_str());
+            }
+            else {
+                ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "%s", g_NavBakeStatus.c_str());
             }
         }
 
@@ -255,7 +272,7 @@ namespace EditorUI {
                 }
 
                 if (ok) {
-                    BOOM_INFO("[Nav] Loaded: {}", full);
+                    g_NavBakeStatus = "Loaded: " + s_BinFiles[s_Selected];
 
                     if (m_Ctx) {
                         auto& reg = m_Ctx->scene;
@@ -265,7 +282,7 @@ namespace EditorUI {
                     }
                 }
                 else {
-                    BOOM_ERROR("[Nav] Failed to load: {}", full);
+                    g_NavBakeStatus = "FAILED: Could not load " + s_BinFiles[s_Selected];
                 }
             }
 
@@ -282,7 +299,7 @@ namespace EditorUI {
         else {
             ImGui::Checkbox("Draw Navmesh (edges + centroids)", &m_Ctx->ShowNavDebug);
             ImGui::SameLine();
-            // add more toggles if needed…
+            // add more toggles if needed
         }
 
         ImGui::End();
