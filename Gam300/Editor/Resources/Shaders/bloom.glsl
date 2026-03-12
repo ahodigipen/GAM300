@@ -22,9 +22,17 @@ uniform bool u_horizontalPass;
 uniform int u_frameHeight;
 uniform int u_frameWidth;
 
+vec3 ClampSafe(vec3 v)
+{
+    v.x = (isnan(v.x) || isinf(v.x)) ? 0.0 : v.x;
+    v.y = (isnan(v.y) || isinf(v.y)) ? 0.0 : v.y;
+    v.z = (isnan(v.z) || isinf(v.z)) ? 0.0 : v.z;
+    return v;
+}
+
 void main() 
 {             
-    vec3 color = texture(u_brightnessMap, uvs).rgb * WEIGHTS[0]; 
+    vec3 color = ClampSafe(texture(u_brightnessMap, uvs).rgb) * WEIGHTS[0];
 
     // vec2 texelSize = 1.0 / textureSize(u_brightnessMap, 0); with opengl 4.x
 
@@ -34,16 +42,16 @@ void main()
     {
         for(int i = 1; i < 5; ++i)
         {
-            color += texture(u_brightnessMap, uvs + vec2(texelSize.x * i, 0.0)).rgb * WEIGHTS[i];
-            color += texture(u_brightnessMap, uvs - vec2(texelSize.x * i, 0.0)).rgb * WEIGHTS[i];
+            color += ClampSafe(texture(u_brightnessMap, uvs + vec2(texelSize.x * i, 0.0)).rgb * WEIGHTS[i]);
+            color += ClampSafe(texture(u_brightnessMap, uvs - vec2(texelSize.x * i, 0.0)).rgb * WEIGHTS[i]);
         }
     }
     else 
     {
         for(int i = 1; i < 5; ++i) 
         {
-            color += texture(u_brightnessMap, uvs + vec2(0.0, texelSize.y * i)).rgb * WEIGHTS[i];
-            color += texture(u_brightnessMap, uvs - vec2(0.0, texelSize.y * i)).rgb * WEIGHTS[i];
+            color += ClampSafe(texture(u_brightnessMap, uvs + vec2(0.0, texelSize.y * i)).rgb * WEIGHTS[i]);
+            color += ClampSafe(texture(u_brightnessMap, uvs - vec2(0.0, texelSize.y * i)).rgb * WEIGHTS[i]);
         }
     }  
     out_fragment = vec4(color, 1.0);      

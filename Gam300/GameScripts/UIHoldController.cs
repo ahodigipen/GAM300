@@ -12,7 +12,7 @@ namespace GameScripts
     {
         public ulong Entity;
 
-        private string _holdSpriteName = "UI_Hold";
+        private string _holdSpriteName = "CTRL_Crouch";
         private ulong _holdSprite = 0;
 
         private float _fadeSpeed = 4.0f;        // Speed of fade in/out

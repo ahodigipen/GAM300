@@ -1,0 +1,339 @@
+using System;
+using Boom;
+
+namespace GameScripts
+{
+    public static class StoryDialogueManager
+    {
+        public enum SequenceType { None, StartCutscene, Checkpoint1 }
+        
+        private static SequenceType s_activeSequence = SequenceType.None;
+        private static int s_dialogueIndex = 0;
+
+        // Start Cutscene UI
+        private static ulong s_startD1 = 0;
+        private static ulong s_startD2 = 0;
+        private static ulong s_startD3 = 0;
+        private static ulong s_startD4 = 0;
+        private static ulong s_startD5 = 0;
+        private static ulong s_startD6 = 0;
+        private static ulong s_breakOut = 0;
+        private static ulong s_guardD1 = 0;
+        private static ulong s_guardD2 = 0;
+
+        // Checkpoint 1 UI
+        private static ulong s_cp1D1 = 0;
+        private static ulong s_cp1D2 = 0;
+
+        private static bool s_entitiesResolved = false;
+
+        private enum FadeMode { None, FadeIn, FadeOut }
+        private static FadeMode s_fadeMode = FadeMode.None;
+        private static float s_fadeTimer = 0f;
+        private const float FADE_DURATION = 0.25f;
+        private static ulong s_fadingEntity = 0;
+        
+        private static Action s_pendingAction = null;
+
+        private static bool s_enterWasDown = false;
+        private static bool s_eWasDown = false;
+        private static bool s_aButtonWasDown = false;
+        private static bool s_justDismissed = false;
+        private static Action s_onSequenceComplete = null;
+
+        // Delay before E_BreakOut appears after dialogue 6
+        private const float BREAK_OUT_DELAY = 5.0f;
+        private static float s_breakOutDelayTimer = 0f;
+        private static bool s_waitingForBreakOut = false;
+
+        public static void Reset()
+        {
+            s_activeSequence = SequenceType.None;
+            s_dialogueIndex = 0;
+            s_entitiesResolved = false;
+            
+            s_fadeMode = FadeMode.None;
+            s_fadeTimer = 0f;
+            s_fadingEntity = 0;
+            s_pendingAction = null;
+            
+            s_enterWasDown = false;
+            s_eWasDown = false;
+            s_aButtonWasDown = false;
+            s_justDismissed = false;
+            s_onSequenceComplete = null;
+            s_waitingForBreakOut = false;
+            s_breakOutDelayTimer = 0f;
+
+            s_startD1 = 0; s_startD2 = 0; s_startD3 = 0; s_startD4 = 0; s_startD5 = 0; s_startD6 = 0;
+            s_breakOut = 0; s_guardD1 = 0; s_guardD2 = 0;
+            s_cp1D1 = 0; s_cp1D2 = 0;
+        }
+
+        public static void PlayStartSequence()
+        {
+            if (s_activeSequence != SequenceType.None) return;
+            ResolveEntities();
+            s_activeSequence = SequenceType.StartCutscene;
+            s_dialogueIndex = 1;
+
+            s_enterWasDown = true;
+            s_eWasDown = true;
+            s_aButtonWasDown = true;
+
+            FadeInEntity(s_startD1);
+            API.SetGameLogicPaused(true);
+            API.Log("[StoryDialogueManager] Playing Start Sequence");
+        }
+
+        public static void PlayCheckpoint1Sequence(Action onComplete = null)
+        {
+            if (s_activeSequence != SequenceType.None) return;
+            ResolveEntities();
+            s_activeSequence = SequenceType.Checkpoint1;
+            s_dialogueIndex = 1;
+            s_onSequenceComplete = onComplete;
+
+            s_enterWasDown = true;
+            s_aButtonWasDown = true;
+
+            FadeInEntity(s_cp1D1);
+            API.SetGameLogicPaused(true);
+            API.Log("[StoryDialogueManager] Playing Checkpoint 1 Sequence");
+        }
+
+        public static bool IsSequenceActive()
+        {
+            // During the break-out delay window, the player can move freely
+            // so we do not report the sequence as active (which would force-pause via Entry)
+            if (s_waitingForBreakOut) return false;
+            return s_activeSequence != SequenceType.None;
+        }
+
+        public static bool WasJustDismissed()
+        {
+            return s_justDismissed;
+        }
+
+        public static void Update(float dt)
+        {
+            s_justDismissed = false;
+
+            // Tick the E_BreakOut appearance delay (game is unpaused here — player can move)
+            if (s_waitingForBreakOut)
+            {
+                s_breakOutDelayTimer -= dt;
+                if (s_breakOutDelayTimer <= 0f)
+                {
+                    s_waitingForBreakOut = false;
+                    // Re-pause now that the interactive prompt is about to appear
+                    API.SetGameLogicPaused(true);
+                    FadeInEntity(s_breakOut);
+                }
+                return; // No dialogue input during the wait
+            }
+            if (s_fadeMode != FadeMode.None)
+            {
+                s_fadeTimer += dt;
+                float t = Math.Min(1f, s_fadeTimer / FADE_DURATION);
+
+                if (s_fadeMode == FadeMode.FadeIn)
+                {
+                    SetAlpha(s_fadingEntity, t);
+                    if (t >= 1f)
+                    {
+                        s_fadeMode = FadeMode.None;
+                        s_fadeTimer = 0f;
+                        s_fadingEntity = 0;
+                    }
+                }
+                else
+                {
+                    SetAlpha(s_fadingEntity, 1f - t);
+                    if (t >= 1f)
+                    {
+                        SetAlpha(s_fadingEntity, 0f);
+                        s_fadeMode = FadeMode.None;
+                        s_fadeTimer = 0f;
+                        s_fadingEntity = 0;
+                        
+                        Action pending = s_pendingAction;
+                        s_pendingAction = null;
+                        pending?.Invoke();
+                    }
+                }
+            }
+
+            if (s_activeSequence == SequenceType.None || s_fadeMode != FadeMode.None) return;
+
+            bool enterDown = API.IsKeyDown(API.KEY_ENTER);
+            bool eDown = API.IsKeyDown(API.KEY_E);
+            bool aButtonDown = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A);
+
+            bool enterPressed = enterDown && !s_enterWasDown;
+            bool ePressed = eDown && !s_eWasDown;
+            bool aButtonPressed = aButtonDown && !s_aButtonWasDown;
+
+            s_enterWasDown = enterDown;
+            s_eWasDown = eDown;
+            s_aButtonWasDown = aButtonDown;
+
+            if (s_activeSequence == SequenceType.StartCutscene)
+            {
+                if (s_dialogueIndex == 7) // BreakOut
+                {
+                    if (ePressed)
+                    {
+                        AdvanceStartSequence();
+                    }
+                }
+                else
+                {
+                    // For the others, it's Enter or gamepad A
+                    if (enterPressed || aButtonPressed)
+                    {
+                        AdvanceStartSequence();
+                    }
+                }
+            }
+            else if (s_activeSequence == SequenceType.Checkpoint1)
+            {
+                if (enterPressed || aButtonPressed)
+                {
+                    AdvanceCheckpoint1Sequence();
+                }
+            }
+        }
+
+        private static void AdvanceStartSequence()
+        {
+            ulong currentEntity = GetStartSequenceEntity(s_dialogueIndex);
+            FadeOutEntity(currentEntity, () =>
+            {
+                s_dialogueIndex++;
+                if (s_dialogueIndex > 9)
+                {
+                    CloseSequence();
+                }
+                else if (s_dialogueIndex == 7) // E_BreakOut — insert delay
+                {
+                    s_waitingForBreakOut = true;
+                    s_breakOutDelayTimer = BREAK_OUT_DELAY;
+                }
+                else
+                {
+                    FadeInEntity(GetStartSequenceEntity(s_dialogueIndex));
+                }
+            });
+        }
+
+        private static void AdvanceCheckpoint1Sequence()
+        {
+            ulong currentEntity = s_dialogueIndex == 1 ? s_cp1D1 : s_cp1D2;
+            FadeOutEntity(currentEntity, () =>
+            {
+                s_dialogueIndex++;
+                if (s_dialogueIndex > 2)
+                {
+                    CloseSequence();
+                }
+                else
+                {
+                    FadeInEntity(s_cp1D2);
+                }
+            });
+        }
+
+        private static void CloseSequence()
+        {
+            s_activeSequence = SequenceType.None;
+            s_justDismissed = true;
+            API.SetGameLogicPaused(false);
+            API.Log("[StoryDialogueManager] Sequence closed");
+
+            Action cb = s_onSequenceComplete;
+            s_onSequenceComplete = null;
+            cb?.Invoke();
+        }
+
+        private static ulong GetStartSequenceEntity(int index)
+        {
+            switch (index)
+            {
+                case 1: return s_startD1;
+                case 2: return s_startD2;
+                case 3: return s_startD3;
+                case 4: return s_startD4;
+                case 5: return s_startD5;
+                case 6: return s_startD6;
+                case 7: return s_breakOut;
+                case 8: return s_guardD1;
+                case 9: return s_guardD2;
+                default: return 0;
+            }
+        }
+
+        private static void FadeInEntity(ulong entity)
+        {
+            if (entity == 0) return;
+            SetAlpha(entity, 0f);
+            s_fadingEntity = entity;
+            s_fadeMode = FadeMode.FadeIn;
+            s_fadeTimer = 0f;
+        }
+
+        private static void FadeOutEntity(ulong entity, Action onDone)
+        {
+            if (entity == 0)
+            {
+                onDone?.Invoke();
+                return;
+            }
+            s_fadingEntity = entity;
+            s_fadeMode = FadeMode.FadeOut;
+            s_fadeTimer = 0f;
+            s_pendingAction = onDone;
+        }
+
+        private static void SetAlpha(ulong entity, float alpha)
+        {
+            if (entity != 0 && API.HasSprite(entity))
+            {
+                API.SetSpriteAlpha(entity, alpha);
+            }
+        }
+
+        private static void ResolveEntities()
+        {
+            if (s_entitiesResolved) return;
+
+            s_startD1 = FindEntity("StartCutscene_Dialogue1");
+            s_startD2 = FindEntity("StartCutscene_Dialogue2");
+            s_startD3 = FindEntity("StartCutscene_Dialogue3");
+            s_startD4 = FindEntity("StartCutscene_Dialogue4");
+            s_startD5 = FindEntity("StartCutscene_Dialogue5");
+            s_startD6 = FindEntity("StartCutscene_Dialogue6");
+            s_breakOut = FindEntity("E_BreakOut");
+            s_guardD1 = FindEntity("EncounterPrisonGuard_Dialogue1");
+            s_guardD2 = FindEntity("EncounterPrisonGuard_Dialogue2");
+
+            s_cp1D1 = FindEntity("Checkpoint1_Dialogue1");
+            s_cp1D2 = FindEntity("Checkpoint1_Dialogue2");
+
+            // Hide all initially
+            SetAlpha(s_startD1, 0f); SetAlpha(s_startD2, 0f); SetAlpha(s_startD3, 0f);
+            SetAlpha(s_startD4, 0f); SetAlpha(s_startD5, 0f); SetAlpha(s_startD6, 0f);
+            SetAlpha(s_breakOut, 0f); SetAlpha(s_guardD1, 0f); SetAlpha(s_guardD2, 0f);
+            SetAlpha(s_cp1D1, 0f); SetAlpha(s_cp1D2, 0f);
+
+            s_entitiesResolved = true;
+        }
+
+        private static ulong FindEntity(string name)
+        {
+            ulong id = API.FindEntity(name);
+            if (id == 0) API.Log($"[StoryDialogueManager] WARNING: UI entity '{name}' not found");
+            return id;
+        }
+    }
+}
