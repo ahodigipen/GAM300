@@ -8,6 +8,7 @@ namespace GameScripts
         // Scene flow: MainMenu -> Cutscene -> Gameplay
         public const string CUTSCENE_SCENE_NAME = "START CUTSCENE";
         public const string GAMEPLAY_SCENE_NAME = "M3 GAMEPLAY";
+        public const string BOSS_ARENA_SCENE_NAME = "NewBossArena";
         public const string LEVEL_SCENE_NAME = GAMEPLAY_SCENE_NAME; // Alias for compatibility
 
         public const string PAUSE_SCENE_NAME = "PauseMenu";
@@ -122,8 +123,8 @@ namespace GameScripts
 
             _activePopupName = LEVEL_1_UI;
 
-            // Only pre-load menus for gameplay scene, not for cutscene
-            if (_currentSceneName == GAMEPLAY_SCENE_NAME)
+            // Only pre-load menus for gameplay scenes, not for cutscenes
+            if (_currentSceneName == GAMEPLAY_SCENE_NAME || _currentSceneName == BOSS_ARENA_SCENE_NAME)
             {
                 API.Log("Pre-loading pause menu additively...");
                 API.LoadSceneAdditive(PAUSE_SCENE_NAME);

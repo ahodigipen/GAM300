@@ -20,7 +20,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.0500000007, 11.2340002, -8.24983501]
+        Translate: [-0.0500000007, 11.2340002, -5.5]
         Rotate: [0, -0, 0]
         Scale: [10.3800001, 1.98000002, 1.38999999]
     ScriptComponent:
@@ -2199,8 +2199,8 @@ ENTITIES:
       SortOrder: 46
     TransformComponent:
       Transform:
-        Translate: [4.70865917, 18.7236004, 97.8761215]
-        Rotate: [133.1875, -654.197144, 180]
+        Translate: [-0.158268094, 21.0386276, -22.8048019]
+        Rotate: [160.25, -720.072144, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
