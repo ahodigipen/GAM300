@@ -868,17 +868,24 @@ namespace GameScripts
                         return;
                     }
 
-                    if (PlayerInventory.TryAddFreezeCharge())
+                    if (!PlayerInventory.HasFreezePower())
                     {
-                        API.Log($"[PlayerMovement] Instant Pickup: Freeze Powerup (ID: {triggerEntity})");
+                        if (PlayerInventory.TryAddFreezeCharge())
+                        {
+                            API.Log($"[PlayerMovement] Instant Pickup: Freeze Powerup (ID: {triggerEntity})");
 
-                        // Show pickup tutorial (first-time or repeat) for Talisman
-                        TutorialManager.ShowPickupTutorial(
-                            TutorialManager.ItemType.Talisman,
-                            PlayerInventory.GetTalismanPickupCount()
-                        );
-                        
-                        API.DestroyEntity(triggerEntity);
+                            // Show pickup tutorial (first-time or repeat) for Talisman
+                            TutorialManager.ShowPickupTutorial(
+                                TutorialManager.ItemType.Talisman,
+                                PlayerInventory.GetTalismanPickupCount()
+                            );
+                            
+                            API.DestroyEntity(triggerEntity);
+                        }
+                    }
+                    else
+                    {
+                        API.Log("[PlayerMovement] Inventory Full: Cannot pick up freeze.");
                     }
                     return;
                 }

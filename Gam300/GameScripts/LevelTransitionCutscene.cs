@@ -17,31 +17,8 @@ namespace GameScripts
         private bool _isPlaying = false;
         private bool _hasFinished = false;
 
-        private Action _onCompleteCallback = null;
-
-        // Static Registry for Callback Support
-        public static System.Collections.Generic.Dictionary<ulong, LevelTransitionCutscene> InstancesById = new System.Collections.Generic.Dictionary<ulong, LevelTransitionCutscene>();
-
-        public static void PlayWithCallback(string entityName, Action onComplete)
-        {
-            ulong id = API.FindEntity(entityName);
-            if (id != 0 && InstancesById.ContainsKey(id))
-            {
-                var script = InstancesById[id];
-                script._onCompleteCallback = onComplete;
-                script.Play();
-            }
-            else
-            {
-                API.Log($"[LevelTransitionCutscene] Could not find cutscene script on '{entityName}' — firing callback immediately.");
-                onComplete?.Invoke();
-            }
-        }
-
         public void OnStart(string jsonParams)
         {
-            InstancesById[Entity] = this;
-
             API.Log("[LevelTransitionCutscene] OnStart. Waiting for Trigger...");
             try
             {
@@ -81,13 +58,6 @@ namespace GameScripts
 
             API.Log("[LevelTransition] Player entered trigger! Starting Cutscene.");
             _hasTriggered = true;
-
-            Play();
-        }
-
-        public void Play()
-        {
-            if (!_initialized) return;
 
             // Auto-dismiss any active tutorials before starting cutscene
             if (TutorialManager.IsTutorialActive())
@@ -397,7 +367,6 @@ namespace GameScripts
                 if (skipPressed)
                 {
                     _sequencer.Skip();
-                    _elapsedTime = _totalDuration; // Fast-forward time so we finish immediately
                 }
              
                 _sequencer.OnUpdate(dt);
@@ -413,19 +382,11 @@ namespace GameScripts
                         _hasFinished = true;
                         _isPlaying = false;
                         UIManager.HideLetterbox();
-
-                        Action cb = _onCompleteCallback;
-                        _onCompleteCallback = null;
-                        cb?.Invoke();
                     }
                 }
             }
         }
 
-        public void OnDestroy() 
-        { 
-            if (InstancesById.ContainsKey(Entity)) InstancesById.Remove(Entity);
-            if (_sequencer != null) _sequencer.OnDestroy(); 
-        }
+        public void OnDestroy() { if (_sequencer != null) _sequencer.OnDestroy(); }
     }
 }

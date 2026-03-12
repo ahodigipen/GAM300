@@ -21,9 +21,6 @@ namespace GameScripts
         [Boom.EditorExposed("One Time Use", "If true, trigger only works once")]
         private bool _oneTimeUse = false;
 
-        [Boom.EditorExposed("Play Boss Transition Dialogue", "If true, plays boss transition dialogue before loading scene")]
-        private bool _playBossTransitionDialogue = false;
-
         // State
         private static readonly Dictionary<ulong, SceneTransitionTrigger> s_instances = new Dictionary<ulong, SceneTransitionTrigger>();
         private bool _hasTriggered = false;
@@ -102,24 +99,7 @@ namespace GameScripts
             inst._hasTriggered = true;
 
             // Start transition (with delay if configured)
-            if (inst._playBossTransitionDialogue)
-            {
-                API.Log($"[SceneTransitionTrigger] Playing Boss Transition Dialogue before transitioning to '{inst._sceneName}'.");
-                StoryDialogueManager.PlayBossTransitionSequence(() =>
-                {
-                    if (inst._transitionDelay > 0f)
-                    {
-                        inst._isTransitioning = true;
-                        inst._transitionTimer = inst._transitionDelay;
-                        API.Log($"[SceneTransitionTrigger] Transition to '{inst._sceneName}' will occur in {inst._transitionDelay:F1} seconds.");
-                    }
-                    else
-                    {
-                        inst.DoTransition();
-                    }
-                });
-            }
-            else if (inst._transitionDelay > 0f)
+            if (inst._transitionDelay > 0f)
             {
                 inst._isTransitioning = true;
                 inst._transitionTimer = inst._transitionDelay;
