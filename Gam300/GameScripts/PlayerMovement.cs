@@ -37,6 +37,11 @@ namespace GameScripts
         private Vec3 _levelStartPos = new Vec3(0.914043128f, 1.8f, 13.9171219f);
         [Boom.EditorExposed("Level 2 Pos", "Specific coordinates for the 'Teleport to Level 2' action")]
         private Vec3 _level2Pos = new Vec3(-0.349f, 18.699f, 32.891f);
+        [Boom.EditorExposed("Controller Offset Y", "Vertical offset for the character controller (matches YAML LocalOffset)")]
+        private float _controllerOffsetY = 1.47f;
+
+        private static int s_persistedHealth = 5;
+        public static void ResetPersistedHealth() { s_persistedHealth = 5; }
 
         private int _health = 5;
         private int _maxHealth = 5;
@@ -116,6 +121,8 @@ namespace GameScripts
 
         // ==== CRITICAL: Manual vertical velocity tracking for Character Controller ====
         private float _verticalVelocity = 0f;
+        // Track current forward movement speed for other systems (falling platforms prediction)
+        private float _currentMoveSpeed = 0f;
 
         // ==== Stealth Opacity Helper ====
         private void ApplyStealthOpacity(bool invisible)
@@ -172,7 +179,7 @@ namespace GameScripts
                 return;
             }
 
-            _health = _maxHealth;
+            _health = s_persistedHealth;
 
             _footstepComponent = new FootstepComponent { Entity = Entity };
             _footstepComponent.OnStart("");
@@ -219,6 +226,9 @@ namespace GameScripts
             _prevStealthInvisible = false;
             ApplyStealthOpacity(false);
 
+            // Initialize current move speed
+            _currentMoveSpeed = 0f;
+
             // Find god mode text entity (optional - add a TextComponent entity named "UI_GodMode" to scene)
             _godModeTextEntity = API.FindEntity("UI_GodMode");
             if (_godModeTextEntity != 0 && API.HasText(_godModeTextEntity))
@@ -243,6 +253,7 @@ namespace GameScripts
             }
 
             _health--;
+            s_persistedHealth = _health;
             HUD.SetHealth(_health, _maxHealth);
 
             Vec3 playerPos = API.GetPosition(Entity);
@@ -281,7 +292,11 @@ namespace GameScripts
         {
             _verticalVelocity = 0f;
 
-            API.TeleportController(Entity, _spawnPoint);
+            // Apply manual offset to the teleport position since API.TeleportController 
+            // ignores the localOffset in CharacterControllerComponent
+            Vec3 teleportPos = new Vec3(_spawnPoint.X, _spawnPoint.Y + _controllerOffsetY, _spawnPoint.Z);
+            API.TeleportController(Entity, teleportPos);
+            
             API.SetPosition(Entity, _spawnPoint);
 
             _isInvulnerable = true;
@@ -293,7 +308,7 @@ namespace GameScripts
             API.Log("[PlayerMovement] Player respawned - enemies notified");
             SpotlightFollower.ResetAllSpotlights();
 
-            API.Log($"[PlayerMovement] Respawned at ({_spawnPoint.X}, {_spawnPoint.Y}, {_spawnPoint.Z})");
+            API.Log($"[PlayerMovement] Respawned at ({_spawnPoint.X}, {_spawnPoint.Y}, {_spawnPoint.Z}) with Offset Y: {_controllerOffsetY}");
         }
 
         public void UpdateCheckpoint(Vec3 newCheckpoint)
@@ -307,6 +322,7 @@ namespace GameScripts
         public void RestoreHealth(int amount)
         {
             _health = Math.Min(_health + amount, _maxHealth);
+            s_persistedHealth = _health;
             HUD.SetHealth(_health, _maxHealth);
             API.Log($"[PlayerMovement] Health restored by {amount}. Current health: {_health}/{_maxHealth}");
         }
@@ -314,9 +330,14 @@ namespace GameScripts
         public void TeleportTo(Vec3 position)
         {
             _verticalVelocity = 0f;
-            API.TeleportController(Entity, position);
+
+            // Apply manual offset to the teleport position since API.TeleportController 
+            // ignores the localOffset in CharacterControllerComponent
+            Vec3 teleportPos = new Vec3(position.X, position.Y + _controllerOffsetY, position.Z);
+            API.TeleportController(Entity, teleportPos);
+
             API.SetPosition(Entity, position);
-            API.Log($"[PlayerMovement] Teleported to ({position.X:F2}, {position.Y:F2}, {position.Z:F2})");
+            API.Log($"[PlayerMovement] Teleported to ({position.X:F2}, {position.Y:F2}, {position.Z:F2}) with Offset Y: {_controllerOffsetY}");
         }
 
         public void TeleportToStart()
@@ -748,6 +769,8 @@ namespace GameScripts
                 }
                 velX = _rollDir.X * _rollSpeed;
                 velZ = _rollDir.Z * _rollSpeed;
+                // expose current move speed for external scripts
+                _currentMoveSpeed = (float)Math.Sqrt(velX * velX + velZ * velZ);
                 _isInvulnerable = true;
                 _wasCtrlPressed = ctrlDown;
 
@@ -761,6 +784,7 @@ namespace GameScripts
                 _rollTimer -= dt;
                 velX = _rollDir.X * _rollSpeed;
                 velZ = _rollDir.Z * _rollSpeed;
+                _currentMoveSpeed = (float)Math.Sqrt(velX * velX + velZ * velZ);
                 if (_rollTimer <= 0f)
                 {
                     _isRolling = false;
@@ -779,12 +803,13 @@ namespace GameScripts
                 _rollCooldownTimer = Math.Max(0f, _rollCooldownTimer - dt);
             _wasCtrlPressed = ctrlDown;
 
+            float speedXZ = (float)Math.Sqrt(velX * velX + velZ * velZ);
+            _currentMoveSpeed = speedXZ;
             Vec3 finalDisplacement = new Vec3(velX * dt, _verticalVelocity * dt, velZ * dt);
             API.MoveController(Entity, finalDisplacement, 0.001f, dt);
 
             if (_hasAnimator)
             {
-                float speedXZ = (float)Math.Sqrt(velX * velX + velZ * velZ);
                 _smoothedSpeed += (speedXZ - _smoothedSpeed) * Math.Min(1.0, SPEED_DAMP * dt);
                 API.AnimatorSetFloat(Entity, "Speed", (float)_smoothedSpeed);
                 API.AnimatorSetBool(Entity, "IsMoving", _smoothedSpeed > MOVE_EPS || hasInput);
@@ -991,6 +1016,12 @@ namespace GameScripts
         public static bool IsCrouching()
         {
             return s_instance != null && s_instance._isCrouching;
+        }
+
+        // Provide current forward speed (approx) for external systems
+        public static float GetCurrentMoveSpeed()
+        {
+            return s_instance != null ? s_instance._currentMoveSpeed : 0f;
         }
     }
 }

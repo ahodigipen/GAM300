@@ -133,6 +133,13 @@ namespace GameScripts
             }
         }
 
+        public static void OnSessionStart()
+        {
+            API.Log("[C#] Entry.OnSessionStart() called. Resetting global state...");
+            PlayerMovement.ResetPersistedHealth();
+            PlayerInventory.Reset();
+        }
+
         public static void TriggerModalPopup(string uiEntityName)
         {
             if (IsStartPopupActive) return; // Don't overlap popups
@@ -457,6 +464,7 @@ namespace GameScripts
                     IsGameEnded = false;
                     API.SetGameEnd(false);
                     PlayerInventory.Reset();
+                    PlayerMovement.ResetPersistedHealth();
                     API.EnableFileWatcher(true);
                     s_RequestedEndAction = EndMenuAction.None;
                     API.LoadScene(_currentSceneName);
@@ -480,6 +488,7 @@ namespace GameScripts
                     API.Log("DeathMenu: Restarting scene...");
                     IsPlayerDead = false;
                     PlayerInventory.Reset();
+                    PlayerMovement.ResetPersistedHealth();
                     API.SetPlayerDead(false);
                     API.EnableFileWatcher(true);
                     s_RequestedDeathAction = DeathMenuAction.None;
@@ -524,6 +533,7 @@ namespace GameScripts
                     API.Log("Restarting scene (Button Click)...");
                     IsGamePaused = false;
                     PlayerInventory.Reset();
+                    PlayerMovement.ResetPersistedHealth();
                     API.EnableFileWatcher(true);
                     s_RequestedPauseAction = PauseMenuAction.None;
                     API.LoadScene(_currentSceneName);

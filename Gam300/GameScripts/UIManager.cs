@@ -17,6 +17,7 @@ namespace GameScripts
         private UIEndController _endUI;
         private UILocationController _locationUI;
         private UIHeartController _heartUI;  // *** NEW: Heart UI controller ***
+        private BloodOverlayController _bloodUI; // *** NEW: Blood overlay controller ***
         private UITutorialController _tutorialUI; // *** NEW: Tutorial UI controller ***
         private UIStanceController _stanceUI; // *** NEW: Crouch/Run UI controller ***
         private WaypointIndicator _waypointUI; // Waypoint arrow indicator for keys
@@ -70,6 +71,10 @@ namespace GameScripts
             _locationUI = new UILocationController { Entity = Entity };
             _locationUI.OnStart(jsonParams);
 
+            // *** NEW: Initialize blood UI ***
+            _bloodUI = new BloodOverlayController { Entity = Entity };
+            _bloodUI.OnStart(jsonParams);
+
             // *** NEW: Initialize heart UI ***
             _heartUI = new UIHeartController { Entity = Entity };
             _heartUI.OnStart(jsonParams);
@@ -112,6 +117,7 @@ namespace GameScripts
             _endUI?.OnUpdate(dt);
             _locationUI?.OnUpdate(dt);
             _heartUI?.OnUpdate(dt);  // *** NEW: Update heart UI ***
+            _bloodUI?.OnUpdate(dt);  // *** NEW: Update blood UI ***
             _stanceUI?.OnUpdate(dt); // *** NEW: Update crouch/run UI ***
             _tutorialUI?.OnUpdate(dt);  // *** NEW: Update tutorial UI ***
             _waypointUI?.OnUpdate(dt);  // Waypoint arrow indicator

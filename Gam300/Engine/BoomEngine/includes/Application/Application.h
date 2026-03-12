@@ -249,6 +249,9 @@ namespace Boom
 			m_ShouldExit = false;
 
 			if (m_Context->scriptingSystem && m_Context->scriptingSystem->IsAlive()) {
+				// Reset global state for the session
+				m_Context->scriptingSystem->CallSessionStart();
+
 				// Call Entry.Start() first
 				m_Context->scriptingSystem->CallStart();
 

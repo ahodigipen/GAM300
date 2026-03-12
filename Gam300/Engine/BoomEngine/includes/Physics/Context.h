@@ -597,6 +597,10 @@ namespace Boom {
                 if (dyn) {
                     dyn->setLinearVelocity(ToPxVec3(body.initialVelocity));
                     dyn->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, body.type == RigidBody3D::KINEMATIC);
+                    // Enable continuous collision detection for dynamic bodies to reduce tunneling
+                    if (body.type == RigidBody3D::DYNAMIC) {
+                        dyn->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_CCD, true);
+                    }
                     dyn->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, body.freezeRotationX);
                     dyn->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, body.freezeRotationY);
                     dyn->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, body.freezeRotationZ);
