@@ -30,17 +30,34 @@ namespace Boom {
 
         void Init();
 
+        // Destroy all live GPU particle buffers — call this when leaving play mode so
+        // particles don't persist into the editor (they will be recreated on next Play)
+        void Reset()
+        {
+            for (auto& [key, gpu] : m_Emitters)
+                DestroyEmitterGPU(gpu);
+            m_Emitters.clear();
+            m_FrameSeed = 0;
+        }
+
         // CPU-side: orchestrate spawning counts, dispatch compute, clean up destroyed emitters
         void Update(float dt, EntityRegistry& registry, const glm::vec3& cameraPos);
 
         // GPU-side: bind render SSBOs, draw instanced billboards
         template<typename AssetRegistryT>
-        void Render(EntityRegistry& registry, AssetRegistryT& assets,
+        void Render(EntityRegistry& registry, AssetRegistryT& /*assets*/,
                     const glm::mat4& viewMatrix, const glm::mat4& projMatrix);
 
     private:
         void EnsureEmitterGPU(uint32_t key, int maxParticles);
-        void DestroyEmitterGPU(EmitterGPU& e);
+        void DestroyEmitterGPU(EmitterGPU& e)
+        {
+            if (e.particleSSBO)   glDeleteBuffers(1, &e.particleSSBO);
+            if (e.renderSSBO)     glDeleteBuffers(1, &e.renderSSBO);
+            if (e.counterBuffer)  glDeleteBuffers(1, &e.counterBuffer);
+            if (e.indirectBuffer) glDeleteBuffers(1, &e.indirectBuffer);
+            e = {};
+        }
 
         // Compile a single-stage compute program from file
         GLuint LoadComputeShader(const std::string& filename);
@@ -83,7 +100,7 @@ namespace Boom {
     // ──── Render template implementation ────────────────────────────────
 
     template<typename AssetRegistryT>
-    void ParticleSystem::Render(EntityRegistry& registry, AssetRegistryT& assets,
+    void ParticleSystem::Render(EntityRegistry& registry, AssetRegistryT& /*assets*/,
                                 const glm::mat4& viewMatrix, const glm::mat4& projMatrix)
     {
         if (!m_Initialized) Init();
@@ -100,6 +117,9 @@ namespace Boom {
         glUniformMatrix4fv(m_RenderLocs.uViewProj, 1, GL_FALSE, &viewProj[0][0]);
         glUniform3fv(m_RenderLocs.uCamRight, 1, &camRight[0]);
         glUniform3fv(m_RenderLocs.uCamUp, 1, &camUp[0]);
+
+        // Save blend state so we don't leak into fog/lighting passes that follow
+        GLboolean blendWasEnabled = glIsEnabled(GL_BLEND);
 
         // GL state for particles
         glEnable(GL_BLEND);
@@ -139,10 +159,12 @@ namespace Boom {
         glBindVertexArray(0);
         glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
 
-        // Restore state
+        // Restore all GL state so lights, fog, and GUI passes are unaffected
         glDepthMask(GL_TRUE);
         glEnable(GL_CULL_FACE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        if (!blendWasEnabled) glDisable(GL_BLEND);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);
 
         glUseProgram(0);
     }

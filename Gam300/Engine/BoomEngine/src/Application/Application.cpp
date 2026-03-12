@@ -359,8 +359,8 @@ namespace Boom
 
             SoundEngine::Instance().Update();
 
-            // Particle System Update (always runs - allows editor preview)
-            if (m_Context->particleSystem) {
+            // Particle System Update (only runs while playing, not while stopped or paused in editor)
+            if (m_Context->particleSystem && m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) {
                 glm::vec3 camPos = m_Context->renderer->GetCameraPosition();
                 m_Context->particleSystem->Update(static_cast<float>(m_Context->DeltaTime), m_Context->scene, camPos);
             }
@@ -950,6 +950,20 @@ namespace Boom
                     }
                 }
             }
+            // ParticleEmitterComponent picking — draw a small quad at world position so the
+            // entity can be selected in the editor even when it has no ModelComponent
+            else if (entity.Has<ParticleEmitterComponent>()) {
+                if (isPicking) {
+                    glm::mat4 worldMat = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+                    Transform3D pickTransform;
+                    pickTransform.translate = glm::vec3(worldMat[3]);
+                    pickTransform.rotate    = glm::vec3(0.0f);
+                    pickTransform.scale     = glm::vec3(0.5f); // fixed click-target size
+                    m_Context->renderer->SetPickUniform(entt::to_integral(entity.ID()));
+                    m_Context->renderer->DrawPick(pickTransform);
+                }
+                // Normal rendering is handled by the ParticleSystem pass after EndFrame()
+            }
             });
 
         // === INSTANCED RENDERING PASS ===
@@ -1001,7 +1015,9 @@ namespace Boom
             glDepthMask(GL_TRUE);
 
             // === PARTICLE RENDERING PASS ===
-            if (m_Context->particleSystem) {
+            // Must not run during the picking pass — the pick FBO is GL_R32UI and cannot
+            // receive the float RGBA outputs of the particle shader (corrupts pick IDs)
+            if (m_Context->particleSystem && !isPicking) {
                 Camera3D* particleCam = nullptr;
                 Transform3D particleCamT{};
                 EnttView<Entity, CameraComponent>([&](auto entity, CameraComponent& comp) {

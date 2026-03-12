@@ -405,6 +405,10 @@ namespace Boom
 			// Stop audio
 			SoundEngine::Instance().StopAll();
 
+			// Clear all live GPU particle buffers so no particles linger in the editor
+			if (m_Context->particleSystem)
+				m_Context->particleSystem->Reset();
+
 			BOOM_INFO("[Application] Exited play mode");
 		}
 
@@ -855,12 +859,13 @@ namespace Boom
 			int points = 0;
 
 			EnttView<Entity, PointLightComponent, TransformComponent>(
-				[&](auto, PointLightComponent& plc, TransformComponent& tc)
+				[&](auto entity, PointLightComponent& plc, TransformComponent&)
 				{
 					if (points >= MAX_POINT_LIGHTS) return;
 
+					glm::mat4 worldMat = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
 					GPUPointLight g{};
-					g.position_range = glm::vec4(tc.transform.translate, plc.light.range);
+					g.position_range = glm::vec4(glm::vec3(worldMat[3]), plc.light.range);
 					g.radiance_intensity = glm::vec4(plc.light.radiance, plc.light.intensity);
 					// Combine per-light bloom strength with global point light bloom multiplier
 					float finalBloomStrength = plc.light.bloomStrength * m_Context->renderer->pointLightBloomMultiplier;
@@ -877,17 +882,16 @@ namespace Boom
 			int directs = 0;
 
 			EnttView<Entity, DirectLightComponent, TransformComponent>(
-				[&](auto, DirectLightComponent& dlc, TransformComponent& tc)
+				[&](auto entity, DirectLightComponent& dlc, TransformComponent&)
 				{
 					if (directs >= MAX_DIR_LIGHTS) return;
 
-					GPUDirLight g{};
-					// Convert Euler rotation (degrees) to direction vector
-					glm::vec3 eulerRadians = glm::radians(tc.transform.rotate);
-					glm::quat rotation = glm::quat(eulerRadians);
-					glm::vec3 lightDir = rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+					glm::mat4 worldMat = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+					// Derive direction from world matrix so the light follows parent rotation
+					glm::vec3 lightDir = glm::normalize(glm::vec3(worldMat * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f)));
 
-					g.dir_intensity = glm::vec4(glm::normalize(lightDir), dlc.light.intensity);
+					GPUDirLight g{};
+					g.dir_intensity = glm::vec4(lightDir, dlc.light.intensity);
 					g.radiance = glm::vec4(dlc.light.radiance, 0.0f);
 					gpuDirs.push_back(g);
 					++directs;
@@ -901,19 +905,19 @@ namespace Boom
 			int spots = 0;
 
 			EnttView<Entity, SpotLightComponent, TransformComponent>(
-				[&](auto, SpotLightComponent& slc, TransformComponent& tc)
+				[&](auto entity, SpotLightComponent& slc, TransformComponent&)
 				{
 					if (spots >= MAX_SPOT_LIGHTS) return;
 
-					GPUSpotLight g{};
-					g.position_falloff = glm::vec4(tc.transform.translate, slc.light.fallOff);
-					// Convert Euler rotation (degrees) to direction vector
-					glm::vec3 eulerRadians = glm::radians(tc.transform.rotate);
-					glm::quat rotation = glm::quat(eulerRadians);
-					glm::vec3 lightDir = rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+					glm::mat4 worldMat = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+					glm::vec3 worldPos  = glm::vec3(worldMat[3]);
+					// Derive direction from world matrix so the light follows parent rotation
+					glm::vec3 lightDir  = glm::normalize(glm::vec3(worldMat * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f)));
 
-					g.dir_cutoff = glm::vec4(glm::normalize(lightDir), slc.light.cutOff);
-					g.radiance_intensity = glm::vec4(slc.light.radiance, slc.light.intensity);
+					GPUSpotLight g{};
+					g.position_falloff    = glm::vec4(worldPos, slc.light.fallOff);
+					g.dir_cutoff          = glm::vec4(lightDir, slc.light.cutOff);
+					g.radiance_intensity  = glm::vec4(slc.light.radiance, slc.light.intensity);
 					gpuSpots.push_back(g);
 					++spots;
 				});

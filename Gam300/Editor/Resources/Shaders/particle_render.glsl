@@ -61,11 +61,9 @@ void main() {
 
     if (FragColor.a < 0.01) discard;
 
-    // Bloom output: bright particles contribute to bloom
-    float brightness = dot(FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
-    if (brightness > 0.5)
-        out_brightness = vec4(FragColor.rgb * FragColor.a, FragColor.a);
-    else
-        out_brightness = vec4(0.0, 0.0, 0.0, FragColor.a);
+    // Do not write to the bloom buffer — with hundreds of bright particles the bloom
+    // pass becomes completely oversaturated and covers the entire screen.
+    // Particles achieve their glow appearance naturally through additive blending.
+    out_brightness = vec4(0.0, 0.0, 0.0, 0.0);
 }
 ==FRAGMENT==

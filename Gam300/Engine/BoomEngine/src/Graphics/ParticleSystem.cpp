@@ -278,16 +278,7 @@ namespace Boom {
         m_Emitters[key] = gpu;
     }
 
-    void ParticleSystem::DestroyEmitterGPU(EmitterGPU& e)
-    {
-        if (e.particleSSBO)  glDeleteBuffers(1, &e.particleSSBO);
-        if (e.renderSSBO)    glDeleteBuffers(1, &e.renderSSBO);
-        if (e.counterBuffer) glDeleteBuffers(1, &e.counterBuffer);
-        if (e.indirectBuffer) glDeleteBuffers(1, &e.indirectBuffer);
-        e = {};
-    }
-
-    void ParticleSystem::Update(float dt, EntityRegistry& registry, const glm::vec3& cameraPos)
+    void ParticleSystem::Update(float dt, EntityRegistry& registry, const glm::vec3& /*cameraPos*/)
     {
         if (!m_Initialized) Init();
         if (!m_SimulateProgram) return;
@@ -302,7 +293,6 @@ namespace Boom {
         glUseProgram(m_SimulateProgram);
         for (auto entity : view) {
             auto& emitter = view.get<ParticleEmitterComponent>(entity);
-            auto& tc      = view.get<TransformComponent>(entity);
             uint32_t key  = static_cast<uint32_t>(entity);
 
             // Auto-start
@@ -318,8 +308,10 @@ namespace Boom {
             EnsureEmitterGPU(key, emitter.maxParticles);
             auto& gpu = m_Emitters[key];
 
-            // Emitter world position
-            glm::vec3 worldPos = tc.transform.translate;
+            // Full world transform — walks the parent chain so particles follow
+            // whichever entity the emitter is attached to or parented under
+            glm::mat4 worldMat = GetWorldMatrix(registry, entity);
+            glm::vec3 worldPos = glm::vec3(worldMat[3]);
 
             // Calculate spawn count on CPU (cheap)
             int spawnCount = 0;
@@ -363,7 +355,14 @@ namespace Boom {
             glUniform1f(m_ComputeLocs.uShapeRadius, emitter.shapeRadius);
             glUniform1f(m_ComputeLocs.uShapeAngle, emitter.shapeAngle);
             glUniform3fv(m_ComputeLocs.uShapeSize, 1, &emitter.shapeSize[0]);
-            glUniform3fv(m_ComputeLocs.uDirection, 1, &emitter.direction[0]);
+            // Extract pure rotation from world matrix (remove scale from columns)
+            // so local-space direction is correctly oriented in world space, including parent rotation
+            glm::vec3 worldDir = glm::normalize(glm::mat3(
+                glm::normalize(glm::vec3(worldMat[0])),
+                glm::normalize(glm::vec3(worldMat[1])),
+                glm::normalize(glm::vec3(worldMat[2]))
+            ) * emitter.direction);
+            glUniform3fv(m_ComputeLocs.uDirection, 1, &worldDir[0]);
             glUniform1f(m_ComputeLocs.uStartSizeMin, emitter.startSizeMin);
             glUniform1f(m_ComputeLocs.uStartSizeMax, emitter.startSizeMax);
             glUniform1f(m_ComputeLocs.uEndSize, emitter.endSize);
