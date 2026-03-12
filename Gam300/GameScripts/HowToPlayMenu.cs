@@ -16,8 +16,15 @@ namespace GameScripts
         private enum MenuState
         {
             Idle,
-            ButtonDelay
+            ButtonDelay,
+            FadingOut
         }
+
+        // Fade state
+        private float _fadeTimer    = 0f;
+        private float _fadeDuration = 0.5f;
+        private bool  _isFadingIn   = false;
+        private float _fadeInTimer  = 0f;
 
         private MenuState _currentState = MenuState.Idle;
         private ulong _clickedButtonID = 0;
@@ -41,11 +48,30 @@ namespace GameScripts
             _currentState = MenuState.Idle;
             _clickedButtonID = 0;
 
+            // Fade in from black
+            API.SetScreenFadeAlpha(1f);
+            _isFadingIn  = true;
+            _fadeInTimer = 0f;
+
             UpdateVisuals();
         }
 
         public void OnUpdate(float dt)
         {
+            // Handle fade-in
+            if (_isFadingIn)
+            {
+                _fadeInTimer += dt;
+                float alpha = 1f - Math.Min(_fadeInTimer / _fadeDuration, 1f);
+                API.SetScreenFadeAlpha(alpha);
+                if (_fadeInTimer >= _fadeDuration)
+                {
+                    API.SetScreenFadeAlpha(0f);
+                    _isFadingIn = false;
+                }
+                return;
+            }
+
             // Always update hover effects
             _buttonFX?.Update(dt);
 
@@ -58,6 +84,16 @@ namespace GameScripts
 
                 case MenuState.ButtonDelay:
                     Update_ButtonDelay(dt);
+                    break;
+
+                case MenuState.FadingOut:
+                    _fadeTimer += dt;
+                    API.SetScreenFadeAlpha(Math.Min(_fadeTimer / _fadeDuration, 1f));
+                    if (_fadeTimer >= _fadeDuration)
+                    {
+                        API.SetScreenFadeAlpha(1f);
+                        API.LoadScene(Entry.MAIN_MENU_SCENE_NAME);
+                    }
                     break;
             }
         }
@@ -128,12 +164,15 @@ namespace GameScripts
 
         private void ExecuteClickAction()
         {
-            _currentState = MenuState.Idle;
-
             if (_clickedButtonID == _returnButtonID)
             {
                 API.Log(">> Return Button Clicked! Returning to Main Menu...");
-                API.LoadScene(Entry.MAIN_MENU_SCENE_NAME);
+                _currentState = MenuState.FadingOut;
+                _fadeTimer    = 0f;
+            }
+            else
+            {
+                _currentState = MenuState.Idle;
             }
         }
     }
