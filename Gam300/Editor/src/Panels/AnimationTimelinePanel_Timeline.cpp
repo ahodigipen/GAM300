@@ -96,6 +96,9 @@ void AnimationTimelinePanel::RenderTimelineRuler()
         }
     }
 
+    // Scale timeline duration based on Cutscene Sequence settings
+    duration = std::max(duration, m_SequenceMaxFrame / 60.0f);
+
     // Timeline ruler dimensions
     const float rulerHeight = 50.0f;
     ImVec2 rulerSize = ImVec2(ImGui::GetContentRegionAvail().x, rulerHeight);
@@ -260,7 +263,7 @@ void AnimationTimelinePanel::RenderTimelineRuler()
 
         char currentTimeLabel[64];
         snprintf(currentTimeLabel, sizeof(currentTimeLabel), "Frame %d / %d  (%.2fs / %.2fs)",
-                 currentFrame, totalFrames, m_CurrentTime, duration);
+            currentFrame, totalFrames, m_CurrentTime, duration);
 
         ImVec2 timeDisplaySize = ImGui::CalcTextSize(currentTimeLabel);
         float timeDisplayX = rulerPos.x + rulerSize.x - timeDisplaySize.x - 5.0f;  // 5px padding from right edge
@@ -318,7 +321,16 @@ void AnimationTimelinePanel::RenderTimelineRuler()
             // Update animator to this time (if we have one)
             if (m_Animator)
             {
-                m_Animator->SetTime(m_CurrentTime);
+                float clipDuration = 1.0f;
+                if (m_SelectedClipIndex >= 0 && static_cast<size_t>(m_SelectedClipIndex) < m_Animator->GetClipCount())
+                {
+                    const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
+                    if (clip) clipDuration = clip->duration;
+                }
+
+                // Do not let the bone skeleton animate past its own maximum frame
+                float animatorTime = std::min(m_CurrentTime, clipDuration);
+                m_Animator->SetTime(animatorTime);
                 m_Animator->Animate(0.0f);  // Update with 0 dt to just apply the time
             }
         }
@@ -366,6 +378,20 @@ void AnimationTimelinePanel::RenderTrackList()
         }
     }
 
+    // Expand timeline based on Cutscene Sequence settings
+    duration = std::max(duration, m_SequenceMaxFrame / 60.0f);
+
+    // Scale timeline to fit the furthest sequence keyframe if it extends even further
+    for (const auto& track : m_SequenceTracks)
+    {
+        if (!track.keyFrames.empty())
+        {
+            float maxTrackTime = (float)track.keyFrames.back().frame / 60.0f;
+            if (maxTrackTime > duration)
+                duration = maxTrackTime;
+        }
+    }
+
     // Clear keyframe and audio marker screen positions for this frame
     m_KeyframeScreenPositions.clear();
     m_AudioMarkerScreenPositions.clear();
@@ -385,19 +411,26 @@ void AnimationTimelinePanel::RenderTrackList()
         ImGui::Columns(2, "BoneTrackColumns", true);
         ImGui::SetColumnWidth(0, boneNameWidth);
 
-        // ========== AUDIO EVENTS TRACK (before bone tracks) ==========
-        RenderAudioTrack(duration);
+        // Only draw bone tracks if we have a model/animator
+        if (m_Animator && m_HasModel)
+        {
+            // ========== AUDIO EVENTS TRACK (before bone tracks) ==========
+            RenderAudioTrack(duration);
 
-        // Reduce indentation spacing to show more of bone names
-        ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 10.0f);  // Default is ~21
+            // Reduce indentation spacing to show more of bone names
+            ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 10.0f);  // Default is ~21
 
-        // Get the root joint from animator
-        const Boom::Joint& root = m_Animator->GetRoot();
+            // Get the root joint from animator
+            const Boom::Joint& root = m_Animator->GetRoot();
 
-        // Render bone hierarchy starting from root
-        RenderBoneTrack(root, duration);
+            // Render bone hierarchy starting from root
+            RenderBoneTrack(root, duration);
 
-        ImGui::PopStyleVar();  // IndentSpacing
+            ImGui::PopStyleVar();  // IndentSpacing
+        }
+
+        // Render Cutscene Sequence Tracks (Entity Transforms/Slots) - Independent of Animator
+        RenderSequenceTracks(duration);
 
         // End columns
         ImGui::Columns(1);
@@ -413,7 +446,7 @@ void AnimationTimelinePanel::RenderTrackList()
 
         // Check if mouse is in the track list area and window is hovered
         bool mouseInTrackArea = (mousePos.x >= childMin.x && mousePos.x <= childMax.x &&
-                                 mousePos.y >= childMin.y && mousePos.y <= childMax.y);
+            mousePos.y >= childMin.y && mousePos.y <= childMax.y);
         bool windowHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem);
 
         // Start box selection on left-click in empty space (not on keyframe, not dragging)
@@ -873,7 +906,7 @@ void AnimationTimelinePanel::RenderAudioTrack(float duration)
             // Circle shape for audio markers (different from keyframe diamonds)
             bool isSelected = (m_SelectedAudioEventIndex == (int)i);
             bool isHovered = (mousePos.x >= center.x - hitTestSize && mousePos.x <= center.x + hitTestSize &&
-                             mousePos.y >= center.y - hitTestSize && mousePos.y <= center.y + hitTestSize);
+                mousePos.y >= center.y - hitTestSize && mousePos.y <= center.y + hitTestSize);
 
             if (isHovered)
             {
@@ -967,8 +1000,8 @@ void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float dur
 
     // Tree node flags - SpanAvailWidth prevents text from overflowing column
     ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow
-                             | ImGuiTreeNodeFlags_OpenOnDoubleClick
-                             | ImGuiTreeNodeFlags_SpanAvailWidth;
+        | ImGuiTreeNodeFlags_OpenOnDoubleClick
+        | ImGuiTreeNodeFlags_SpanAvailWidth;
 
     // Highlight if selected
     if (joint.name == m_SelectedBoneName)
@@ -1054,7 +1087,7 @@ void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float dur
             std::string suffix = "... [" + std::to_string(joint.index) + "]";
 
             while (!truncated.empty() &&
-                   ImGui::CalcTextSize((truncated + suffix).c_str()).x > availableWidth)
+                ImGui::CalcTextSize((truncated + suffix).c_str()).x > availableWidth)
             {
                 truncated.pop_back();
             }
@@ -1223,7 +1256,7 @@ void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float dur
 
                     // Check if mouse is hovering over this keyframe
                     bool isHovered = (mousePos.x >= center.x - hitTestSize && mousePos.x <= center.x + hitTestSize &&
-                                      mousePos.y >= center.y - hitTestSize && mousePos.y <= center.y + hitTestSize);
+                        mousePos.y >= center.y - hitTestSize && mousePos.y <= center.y + hitTestSize);
 
                     // Determine color based on state (priority: dragging > selected > hovered > default)
                     ImU32 fillColor = IM_COL32(255, 200, 0, 255);  // Default gold
@@ -1277,7 +1310,7 @@ void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float dur
                         if (m_SelectedKeyframes.size() > 1 && isKeyframeSelected)
                         {
                             ImGui::SetTooltip("Keyframe at %.2fs\n%zu keyframes selected\nDrag to move all\nDel to delete all\nCtrl+Click to deselect",
-                                              kf.timeStamp, m_SelectedKeyframes.size());
+                                kf.timeStamp, m_SelectedKeyframes.size());
                         }
                         else
                         {
@@ -1377,7 +1410,7 @@ void AnimationTimelinePanel::RenderBoneTrack(const Boom::Joint& joint, float dur
                                 cmd.newTime = newTime;
 
                                 batchCmd.batchCommands.push_back(cmd);
-                                movedKeyframeNewTimes.push_back({selKf.boneName, newTime});
+                                movedKeyframeNewTimes.push_back({ selKf.boneName, newTime });
                             }
                         }
 
@@ -1550,4 +1583,419 @@ void AnimationTimelinePanel::DeleteSelectedKeyframes()
     ClearKeyframeSelection();
 
     BOOM_INFO("[Multiselect] Deleted {} keyframes", deleteCount);
+}
+
+// ========== Sequence Tracks Rendering ==========
+
+void AnimationTimelinePanel::RenderSequenceTracks(float duration)
+{
+    if (m_SequenceTracks.empty()) return;
+
+    // Small divider if we had bone tracks above
+    ImGui::Separator();
+    ImGui::TextDisabled("Entity Sequences");
+
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+    ImVec2 mousePos = ImGui::GetMousePos();
+    m_HoveredSequenceTrackIndex = -1;
+    m_HoveredSequenceKeyframeIndex = -1;
+
+    for (int tIdx = 0; tIdx < (int)m_SequenceTracks.size(); ++tIdx)
+    {
+        ImGui::PushID(tIdx); // Prevent ID overlap
+        auto& track = m_SequenceTracks[tIdx];
+
+        // === COLUMN 0: Track Label ===
+        ImVec2 rowStartPos = ImGui::GetCursorScreenPos();
+        float rowHeight = ImGui::GetTextLineHeightWithSpacing();
+
+        // Tree Node for expanding (though not hierarchical, useful for collapsing)
+        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+        if (m_SelectedSequenceTrack == tIdx) flags |= ImGuiTreeNodeFlags_Selected;
+
+        ImGui::TreeNodeEx((void*)(intptr_t)tIdx, flags, "%s", track.label.c_str());
+
+        if (ImGui::IsItemHovered())
+        {
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+            {
+                m_SelectedSequenceTrack = tIdx;
+            }
+            if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+            {
+                ImGui::OpenPopup("SequenceTrackPopup");
+            }
+        }
+
+        if (ImGui::BeginPopup("SequenceTrackPopup"))
+        {
+            if (ImGui::MenuItem("Add Keyframe"))
+            {
+                int clickFrame = (int)(m_CurrentTime * 60.0f);
+                float vX = 0, vY = 0, vZ = 0, vW = 0;
+                if (track.type == 2) { vX = 1; vY = 1; vZ = 1; } // Scale defaults
+                track.keyFrames.push_back({ clickFrame, vX, vY, vZ, vW });
+                track.keyFrameTimes.push_back(clickFrame);
+                std::sort(track.keyFrames.begin(), track.keyFrames.end(), [](const auto& a, const auto& b) { return a.frame < b.frame; });
+                std::sort(track.keyFrameTimes.begin(), track.keyFrameTimes.end());
+            }
+            if (ImGui::MenuItem("Delete Track"))
+            {
+                m_SequenceTracks.erase(m_SequenceTracks.begin() + tIdx);
+                ImGui::EndPopup();
+                ImGui::PopID(); // Pop before continuing
+                --tIdx;
+                continue; // Skip the rest for this deleted track
+            }
+            ImGui::EndPopup();
+        }
+
+        // === COLUMN 1: Timeline Track ===
+        ImGui::NextColumn();
+
+        ImVec2 timelineStartPos = ImGui::GetCursorScreenPos();
+        float timelineWidth = ImGui::GetColumnWidth(1) - 10.0f;
+        timelineStartPos.y = rowStartPos.y;
+
+        ImVec2 timelineMin = timelineStartPos;
+        ImVec2 timelineMax(timelineMin.x + timelineWidth, timelineMin.y + rowHeight);
+
+        // Draw track background (alternating color logic simplified)
+        ImU32 bgColor = (tIdx % 2 == 0) ? IM_COL32(35, 35, 35, 255) : IM_COL32(40, 40, 40, 255);
+        if (m_SelectedSequenceTrack == tIdx) bgColor = IM_COL32(50, 60, 80, 255);
+        drawList->AddRectFilled(timelineMin, timelineMax, bgColor);
+
+        // Grid lines
+        if (duration > 0.0f)
+        {
+            for (float t = 0.0f; t <= duration; t += 1.0f)
+            {
+                float x = timelineMin.x + (t / duration) * timelineWidth;
+                drawList->AddLine(ImVec2(x, timelineMin.y), ImVec2(x, timelineMax.y), IM_COL32(80, 80, 80, 255));
+            }
+        }
+
+        // Make the track area interactive for hovering/clicking
+        ImGui::SetCursorScreenPos(timelineMin);
+        ImGui::InvisibleButton(track.label.c_str(), ImVec2(timelineWidth, rowHeight));
+
+        static float s_RightClickX = 0;
+        if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+            s_RightClickX = mousePos.x;
+            ImGui::OpenPopup("TimelineTrackContext");
+        }
+
+        if (ImGui::BeginPopup("TimelineTrackContext"))
+        {
+            if (ImGui::MenuItem("Add Keyframe Here"))
+            {
+                float clickX = s_RightClickX - timelineMin.x;
+                float clickTime = (clickX / timelineWidth) * duration;
+                int clickFrame = (int)(clickTime * 60.0f);
+                float vX = 0, vY = 0, vZ = 0, vW = 0;
+                if (track.type == 2) { vX = 1; vY = 1; vZ = 1; }
+                track.keyFrames.push_back({ clickFrame, vX, vY, vZ, vW });
+                track.keyFrameTimes.push_back(clickFrame);
+                std::sort(track.keyFrames.begin(), track.keyFrames.end(), [](const auto& a, const auto& b) { return a.frame < b.frame; });
+                std::sort(track.keyFrameTimes.begin(), track.keyFrameTimes.end());
+            }
+            ImGui::EndPopup();
+        }
+
+        // Current time line
+        if (duration > 0.0f && m_CurrentTime >= 0.0f)
+        {
+            float normalizedTime = m_CurrentTime / duration;
+            normalizedTime = (normalizedTime < 0.0f) ? 0.0f : (normalizedTime > 1.0f) ? 1.0f : normalizedTime;
+            float x = timelineMin.x + normalizedTime * timelineWidth;
+            drawList->AddLine(ImVec2(x, timelineMin.y), ImVec2(x, timelineMax.y), IM_COL32(255, 0, 0, 255), 2.0f);
+        }
+
+        // Keyframes
+        if (duration > 0.0f)
+        {
+            for (size_t kIdx = 0; kIdx < track.keyFrames.size(); ++kIdx)
+            {
+                ImGui::PushID((int)kIdx);
+                const auto& kf = track.keyFrames[kIdx];
+
+                // Convert frame to seconds (assume 60fps)
+                float kfTime = (float)kf.frame / 60.0f;
+                float normalizedTime = kfTime / duration;
+                float x = timelineMin.x + normalizedTime * timelineWidth;
+
+                ImVec2 center(x, timelineMin.y + rowHeight * 0.5f);
+                float size = 4.0f;
+
+                // We check if it's within the currently scrolled view
+                // Actually, ImGui handles clipping automatically so we just draw the quad.
+
+                SequenceMarkerScreenPos markerPos;
+                markerPos.trackIndex = tIdx;
+                markerPos.keyframeIndex = (int)kIdx;
+                markerPos.screenPos = center;
+                m_SequenceMarkerScreenPositions.push_back(markerPos);
+
+                bool isHovered = (mousePos.x >= center.x - size - 2.0f && mousePos.x <= center.x + size + 2.0f &&
+                    mousePos.y >= center.y - size - 2.0f && mousePos.y <= center.y + size + 2.0f);
+
+                if (isHovered)
+                {
+                    m_HoveredSequenceTrackIndex = tIdx;
+                    m_HoveredSequenceKeyframeIndex = (int)kIdx;
+                }
+
+                ImU32 fillColor = IM_COL32(180, 180, 180, 255);
+                ImU32 outlineColor = IM_COL32(230, 230, 230, 255);
+
+                // Colors based on type
+                switch (track.type) {
+                case 0: fillColor = IM_COL32(200, 100, 100, 255); break; // Pos - Reddish
+                case 1: fillColor = IM_COL32(100, 200, 100, 255); break; // Rot - Greenish
+                case 2: fillColor = IM_COL32(100, 100, 200, 255); break; // Scale - Blueish
+                case 3: fillColor = IM_COL32(200, 200, 100, 255); break; // Anim - Yellow
+                }
+
+                if (isHovered)
+                {
+                    fillColor = IM_COL32(255, 255, 255, 255);
+                    size = 5.0f;
+                }
+
+                // Draw diamond shape
+                ImVec2 p1(center.x, center.y - size);
+                ImVec2 p2(center.x + size, center.y);
+                ImVec2 p3(center.x, center.y + size);
+                ImVec2 p4(center.x - size, center.y);
+
+                drawList->AddQuadFilled(p1, p2, p3, p4, fillColor);
+                drawList->AddQuad(p1, p2, p3, p4, outlineColor, 1.5f);
+
+                ImGui::PopID();
+            }
+        }
+
+        // Double click specific keyframe
+        if (m_HoveredSequenceTrackIndex == tIdx && m_HoveredSequenceKeyframeIndex != -1 && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+        {
+            m_SelectedSequenceTrack = tIdx;
+            m_SelectedSequenceKeyframeIndex = (int)m_HoveredSequenceKeyframeIndex;
+            ImGui::OpenPopup("EditSequenceKeyframePopup");
+        }
+
+        ImGui::NextColumn();
+
+        // Popup must be inside the ID scope so it matches
+        if (ImGui::BeginPopup("EditSequenceKeyframePopup"))
+        {
+            if (m_SelectedSequenceTrack >= 0 && m_SelectedSequenceTrack < m_SequenceTracks.size())
+            {
+                auto& editTrack = m_SequenceTracks[m_SelectedSequenceTrack];
+
+                // Find the closest keyframe to the current time, or just edit the exact one we clicked
+                int compareFrame = (int)(m_CurrentTime * 60.0f);
+                SerializedKeyframe* kf_data = nullptr;
+
+                if (m_SelectedSequenceKeyframeIndex != -1 && m_SelectedSequenceKeyframeIndex < editTrack.keyFrames.size()) {
+                    kf_data = &editTrack.keyFrames[m_SelectedSequenceKeyframeIndex];
+                }
+                else if (m_HoveredSequenceKeyframeIndex != -1 && m_HoveredSequenceKeyframeIndex < editTrack.keyFrames.size()) {
+                    kf_data = &editTrack.keyFrames[m_HoveredSequenceKeyframeIndex];
+                }
+                else {
+                    // If we didn't specify, just find the closest
+                    for (auto& kf : editTrack.keyFrames) {
+                        if (std::abs(kf.frame - compareFrame) < 5) {
+                            kf_data = &kf;
+                            break;
+                        }
+                    }
+                }
+
+                if (kf_data) {
+                    ImGui::Text("%s", editTrack.label.c_str());
+                    ImGui::Text("Frame: %d (%.2fs)", kf_data->frame, kf_data->frame / 60.0f);
+                    ImGui::Separator();
+
+                    if (editTrack.type <= 2) { // Pos/Rot/Scale
+                        ImGui::DragFloat("X", &kf_data->valueX, 0.1f);
+                        ImGui::DragFloat("Y", &kf_data->valueY, 0.1f);
+                        ImGui::DragFloat("Z", &kf_data->valueZ, 0.1f);
+
+                        ImGui::Separator();
+
+                        std::vector<std::string> entityNames;
+                        entityNames.push_back("None");
+
+                        if (m_Owner && m_Owner->GetContext())
+                        {
+                            auto& reg = m_Owner->GetContext()->scene;
+                            auto view = reg.view<Boom::InfoComponent>();
+                            for (auto e : view)
+                            {
+                                const auto& info = view.get<Boom::InfoComponent>(e);
+                                if (!info.name.empty())
+                                {
+                                    entityNames.push_back(info.name);
+                                }
+                            }
+                        }
+
+                        const char* preview = kf_data->valueStr.empty() ? "None" : kf_data->valueStr.c_str();
+                        if (ImGui::BeginCombo("Relative Anchor", preview))
+                        {
+                            static char searchBufferAnchor[256] = "";
+                            ImGui::InputTextWithHint("##SearchAnchor", "Search entities...", searchBufferAnchor, sizeof(searchBufferAnchor));
+                            ImGui::Separator();
+
+                            std::string searchLower = searchBufferAnchor;
+                            std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), ::tolower);
+
+                            for (const auto& name : entityNames)
+                            {
+                                std::string nameLower = name;
+                                std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
+
+                                if (searchLower.empty() || nameLower.find(searchLower) != std::string::npos)
+                                {
+                                    bool is_selected = (kf_data->valueStr == name);
+                                    if (ImGui::Selectable(name.c_str(), is_selected))
+                                    {
+                                        kf_data->valueStr = (name == "None") ? "" : name;
+                                        searchBufferAnchor[0] = '\0';
+                                    }
+                                    if (is_selected) ImGui::SetItemDefaultFocus();
+                                }
+                            }
+                            ImGui::EndCombo();
+                        }
+                    }
+                    else if (editTrack.type == 3) // Animation
+                    {
+                        std::vector<std::string> animNames;
+                        animNames.push_back("None");
+
+                        if (m_Owner && m_Owner->GetContext())
+                        {
+                            auto& reg = m_Owner->GetContext()->scene;
+                            entt::entity e = Boom::FindEntityByName(reg, editTrack.entityName);
+                            if (reg.valid(e) && reg.all_of<Boom::AnimatorComponent>(e))
+                            {
+                                const auto& ac = reg.get<Boom::AnimatorComponent>(e);
+                                if (ac.animator)
+                                {
+                                    for (size_t i = 0; i < ac.animator->GetClipCount(); ++i)
+                                    {
+                                        const auto* c = ac.animator->GetClip(i);
+                                        if (c) animNames.push_back(c->name);
+                                    }
+                                }
+                            }
+                        }
+
+                        const char* preview = kf_data->valueStr.empty() ? "None" : kf_data->valueStr.c_str();
+                        if (ImGui::BeginCombo("Animation Name", preview))
+                        {
+                            for (const auto& name : animNames)
+                            {
+                                bool is_selected = (kf_data->valueStr == name);
+                                if (ImGui::Selectable(name.c_str(), is_selected))
+                                {
+                                    kf_data->valueStr = name;
+                                }
+                                if (is_selected) ImGui::SetItemDefaultFocus();
+                            }
+                            ImGui::EndCombo();
+                        }
+                    }
+                    else if (editTrack.type == 4) // LookAt Target
+                    {
+                        std::vector<std::string> entityNames;
+                        entityNames.push_back("None");
+
+                        if (m_Owner && m_Owner->GetContext())
+                        {
+                            auto& reg = m_Owner->GetContext()->scene;
+                            auto view = reg.view<Boom::InfoComponent>();
+                            for (auto e : view)
+                            {
+                                const auto& info = view.get<Boom::InfoComponent>(e);
+                                if (!info.name.empty())
+                                {
+                                    entityNames.push_back(info.name);
+                                }
+                            }
+                        }
+
+                        const char* preview = kf_data->valueStr.empty() ? "None" : kf_data->valueStr.c_str();
+                        if (ImGui::BeginCombo("Target Entity", preview))
+                        {
+                            static char searchBuffer[256] = "";
+                            ImGui::InputTextWithHint("##SearchTarget", "Search entities...", searchBuffer, sizeof(searchBuffer));
+                            ImGui::Separator();
+
+                            std::string searchLower = searchBuffer;
+                            std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), ::tolower);
+
+                            for (const auto& name : entityNames)
+                            {
+                                std::string nameLower = name;
+                                std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
+
+                                // Only show if it matches the search filter
+                                if (searchLower.empty() || nameLower.find(searchLower) != std::string::npos)
+                                {
+                                    bool is_selected = (kf_data->valueStr == name);
+                                    if (ImGui::Selectable(name.c_str(), is_selected))
+                                    {
+                                        kf_data->valueStr = (name == "None") ? "" : name;
+                                        searchBuffer[0] = '\0'; // Clear search box on selection
+                                    }
+                                    if (is_selected) ImGui::SetItemDefaultFocus();
+                                }
+                            }
+                            ImGui::EndCombo();
+                        }
+                    }
+                    else if (editTrack.type == 5) // Event Trigger
+                    {
+                        char buffer[256];
+                        strncpy_s(buffer, sizeof(buffer), kf_data->valueStr.c_str(), _TRUNCATE);
+                        if (ImGui::InputText("Event Function", buffer, sizeof(buffer)))
+                        {
+                            kf_data->valueStr = std::string(buffer);
+                        }
+                    }
+
+                    ImGui::Separator();
+                    if (ImGui::Button("Delete Keyframe"))
+                    {
+                        // Cache the frame value before we invalidate the pointer by erasing the vector element!
+                        int frameToDelete = kf_data->frame;
+                        
+                        // Find and remove from editTrack.keyFrames and keyFrameTimes
+                        auto it = std::find_if(editTrack.keyFrames.begin(), editTrack.keyFrames.end(), [frameToDelete](const SerializedKeyframe& k) { return k.frame == frameToDelete; });
+                        if (it != editTrack.keyFrames.end()) editTrack.keyFrames.erase(it);
+
+                        auto timeIt = std::find(editTrack.keyFrameTimes.begin(), editTrack.keyFrameTimes.end(), frameToDelete);
+                        if (timeIt != editTrack.keyFrameTimes.end()) editTrack.keyFrameTimes.erase(timeIt);
+
+                        m_SelectedSequenceKeyframeIndex = -1;
+                        ImGui::CloseCurrentPopup();
+                    }
+                }
+                else {
+                    ImGui::TextDisabled("No keyframe found at current time.");
+                }
+            }
+            ImGui::Separator();
+            if (ImGui::Button("Close", ImVec2(120, 0))) {
+                m_SelectedSequenceKeyframeIndex = -1;
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
+
+        ImGui::PopID(); // End ID scope for this track
+    }
 }

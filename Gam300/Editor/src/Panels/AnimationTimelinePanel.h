@@ -75,6 +75,27 @@ namespace EditorUI {
         }
     };
 
+    // --- SEQUENCER STRUCTURES ---
+    struct SerializedKeyframe {
+        int frame;
+        float time;
+        float valueX, valueY, valueZ, valueW;
+        std::string valueStr;
+    };
+
+    struct SequenceTrack {
+        std::string entityName;
+        std::string label;
+        int type; // 0=Pos, 1=Rot, 2=Scale, 3=Anim, 4=LookAt, 5=Event
+        std::vector<SerializedKeyframe> keyFrames;
+        std::vector<int> keyFrameTimes;
+    };
+
+    struct DeferredTrack {
+        std::string entityName;
+        int type; // 0=Pos, 1=Rot, 2=Scale, etc.
+    };
+
     /**
      * @brief Animation Timeline Editor - Unity-style animation editing with integrated 3D preview
      *
@@ -137,6 +158,16 @@ namespace EditorUI {
         // Keyframe recording
         Boom::KeyFrame CaptureCurrentBoneTransform(const std::string& boneName);  // Capture bone's current pose
 
+        // --- CUTSCENE SEQUENCER METHODS ---
+        void SaveSequence(const std::string& path);
+        void LoadSequence(const std::string& path);
+        void AddTrack(const std::string& entityName, int propertyType);
+        void ApplySequenceFrame(int frame);
+        void RefreshCutsceneFileList();
+
+        void RenderSequenceTracks(float duration); // Draws the entity tracks below bone tracks
+        // ----------------------------------
+
     private:
         Editor* m_Owner = nullptr;
         Boom::AppInterface* m_App = nullptr;
@@ -198,6 +229,30 @@ namespace EditorUI {
         std::string m_HoveredBoneNameViewport;  // Bone currently hovered in 3D viewport
         ImVec2 m_ViewportMousePos = { 0.0f, 0.0f };  // Mouse position relative to viewport
 
+        // --- CUTSCENE SEQUENCER STATE ---
+        std::vector<SequenceTrack> m_SequenceTracks;
+        std::vector<DeferredTrack> m_DeferredTracks;
+
+        int m_SelectedSequenceTrack = -1;
+        bool m_ShowAddTrackPopup = false;
+        std::string m_PendingEntityName;
+
+        char m_SaveSequenceFilename[128] = "NewCutscene";
+        std::vector<std::string> m_AvailableCutsceneFiles;
+        int m_SequenceMaxFrame = 600; // Total frames for the current sequence
+
+
+        struct SequenceMarkerScreenPos {
+            int trackIndex;
+            int keyframeIndex;
+            ImVec2 screenPos;
+        };
+        std::vector<SequenceMarkerScreenPos> m_SequenceMarkerScreenPositions;
+        int m_HoveredSequenceTrackIndex = -1;
+        int m_HoveredSequenceKeyframeIndex = -1;
+        int m_SelectedSequenceKeyframeIndex = -1;
+        // --------------------------------
+
         // Transform gizmo state
         int m_GizmoOperation = 120;  // ImGuizmo::ROTATE (120 = rotate, default for animation editing)
         int m_GizmoMode = 1;       // ImGuizmo::WORLD (1 = world space, 0 = local space)
@@ -231,8 +286,8 @@ namespace EditorUI {
 
         // Box/marquee selection state
         bool m_IsBoxSelecting = false;           // Currently drawing a selection box?
-        ImVec2 m_BoxSelectStart = {0, 0};        // Start position of box selection (screen coords)
-        ImVec2 m_BoxSelectEnd = {0, 0};          // Current end position of box selection
+        ImVec2 m_BoxSelectStart = { 0, 0 };        // Start position of box selection (screen coords)
+        ImVec2 m_BoxSelectEnd = { 0, 0 };          // Current end position of box selection
         bool m_BoxSelectAdditive = false;        // Ctrl held = add to selection instead of replace
 
         // Keyframe screen positions (populated during rendering for box selection)

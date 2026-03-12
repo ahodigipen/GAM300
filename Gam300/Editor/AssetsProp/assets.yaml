@@ -1932,10 +1932,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 3642533689205009707
     Name: ResumeButton_Clicked
@@ -1970,6 +1970,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 16217278603049084796
+    Name: FirstTime_Dialogue2_Talisman
+    Source: Resources/Textures/PlayerUI/FirstTime_Dialogue2_Talisman.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 9425825932550323732
     Name: lantern_colour_1_Normal
     Source: Resources/Models/Props/lantern mat/lantern_colour_1_Normal.png
@@ -1984,6 +1995,17 @@ ASSETS:
     UID: 5635053925849247296
     Name: Pillow_openPBR_shader1_Normal
     Source: Resources/Textures/Props Textures/Pillow_openPBR_shader1_Normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 9887804499288679027
+    Name: FirstTime_Dialogue1_Talisman
+    Source: Resources/Textures/PlayerUI/FirstTime_Dialogue1_Talisman.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2035,6 +2057,17 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
+  - Type: TEXTURE
+    UID: 15182049477367409902
+    Name: E_OpenDoor
+    Source: Resources/Textures/PlayerUI/E_OpenDoor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
   - Type: TEXTURE
     UID: 18116571246883620302
     Name: Scissors_Ninja_Hood_Metallic
@@ -2091,9 +2124,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 11246060146662733147
-    Name: Scissors_Ninja_Body_Roughness
-    Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Body_Roughness.png
+    UID: 7568472483619014978
+    Name: Indoor_Lantern_Hanging_2_openPBR_shader1_BaseColor
+    Source: Resources/Models/Props/2_KEN_LanternTextures/Indoor_Lantern_Hanging_2_openPBR_shader1_BaseColor.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2102,9 +2135,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 7568472483619014978
-    Name: Indoor_Lantern_Hanging_2_openPBR_shader1_BaseColor
-    Source: Resources/Models/Props/2_KEN_LanternTextures/Indoor_Lantern_Hanging_2_openPBR_shader1_BaseColor.png
+    UID: 11246060146662733147
+    Name: Scissors_Ninja_Body_Roughness
+    Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Body_Roughness.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2160,6 +2193,17 @@ ASSETS:
     UID: 10845518425233378224
     Name: RestartButton_Clicked
     Source: Resources/Textures/MenusUI/RestartButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 14533128348011895245
+    Name: AfterFirstTime_Talisman
+    Source: Resources/Textures/PlayerUI/AfterFirstTime_Talisman.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2251,10 +2295,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 17803026501501650564
     Name: Indoor_Lantern_Hanging_2_openPBR_shader1_Roughness
@@ -2350,10 +2394,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 14418593737196170531
     Name: Indoor_Lantern_Hanging_2_openPBR_shader1_Normal
@@ -2669,10 +2713,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 11023485835561908912
     Name: ReturnMenuButton
@@ -2740,6 +2784,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 3690738976007310336
+    Name: Checkpoint_Text
+    Source: Resources/Textures/PlayerUI/Checkpoint_Text.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
     UID: 9033368879326419558
     Name: Pillow_openPBR_shader1_Metallic
     Source: Resources/Textures/Props Textures/Pillow_openPBR_shader1_Metallic.png
@@ -2776,6 +2831,17 @@ ASSETS:
     UID: 6305281938924181745
     Name: Pillow_openPBR_shader1_Roughness
     Source: Resources/Textures/Props Textures/Pillow_openPBR_shader1_Roughness.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 13407014795456209896
+    Name: FirstTime_Dialogue1_LargeToken
+    Source: Resources/Textures/PlayerUI/FirstTime_Dialogue1_LargeToken.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3131,10 +3197,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 5425060527425539928
     Name: ROOFTILE128
@@ -3378,6 +3444,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 8124115684814999151
+    Name: NotEnoughKeys_Dialogue1
+    Source: Resources/Textures/PlayerUI/NotEnoughKeys_Dialogue1.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 13437075076958739875
     Name: lambert1_normal
     Source: Resources/Models/Props/door token texture n models/lambert1_normal.png
@@ -3469,6 +3546,17 @@ ASSETS:
     UID: 11064058823704041102
     Name: NewGameButton_Clicked
     Source: Resources/Textures/MenusUI/NewGameButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 16907912152131694649
+    Name: KeysNeeded_3
+    Source: Resources/Textures/PlayerUI/KeysNeeded_3.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3950,6 +4038,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 2095542591466437198
+    Name: FirstTime_LargeToken
+    Source: Resources/Textures/PlayerUI/FirstTime_LargeToken.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 16630236395337500268
     Name: Inventory_BigToken
     Source: Resources/Textures/PlayerUI/Inventory_BigToken.png
@@ -3989,10 +4088,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 7037792216891810639
     Name: rocks_normalrocks 1
@@ -4000,10 +4099,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 13930142241077068392
     Name: openPBR_shader1_baseColorrock 2
@@ -4011,14 +4110,168 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 2348000828128838431
     Name: openPBR_shader1_normalrock 2
     Source: Resources/Models/Props/rocks 2/openPBR_shader1_normalrock 2.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 7309956214222652870
+    Name: AfterFirstTime_LargeToken
+    Source: Resources/Textures/PlayerUI/AfterFirstTime_LargeToken.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 13760466255290870570
+    Name: AfterFirstTime_SmallToken
+    Source: Resources/Textures/PlayerUI/AfterFirstTime_SmallToken.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 8992878750136671847
+    Name: BlackBackground
+    Source: Resources/Textures/PlayerUI/BlackBackground.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 6301776291998926800
+    Name: FirstTime_Dialogue1_SmallToken
+    Source: Resources/Textures/PlayerUI/FirstTime_Dialogue1_SmallToken.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 15546537028350727031
+    Name: FirstTime_Dialogue2_LargeToken
+    Source: Resources/Textures/PlayerUI/FirstTime_Dialogue2_LargeToken.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 3060421424103211675
+    Name: FirstTime_Dialogue2_SmallToken
+    Source: Resources/Textures/PlayerUI/FirstTime_Dialogue2_SmallToken.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 3701287540548707637
+    Name: FirstTime_Dialogue3_Talisman
+    Source: Resources/Textures/PlayerUI/FirstTime_Dialogue3_Talisman.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 9863810464068325906
+    Name: FirstTime_SmallToken
+    Source: Resources/Textures/PlayerUI/FirstTime_SmallToken.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 14409592044102443317
+    Name: FirstTime_Talisman
+    Source: Resources/Textures/PlayerUI/FirstTime_Talisman.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 10054434608805248514
+    Name: InventoryFull_Dialogue
+    Source: Resources/Textures/PlayerUI/InventoryFull_Dialogue.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 7848808138329234355
+    Name: KeysNeeded_1
+    Source: Resources/Textures/PlayerUI/KeysNeeded_1.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 5635867319670992902
+    Name: KeysNeeded_2
+    Source: Resources/Textures/PlayerUI/KeysNeeded_2.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 2652542492882879586
+    Name: NotEnoughKeys_Dialogue2
+    Source: Resources/Textures/PlayerUI/NotEnoughKeys_Dialogue2.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 8937668490727203548
+    Name: Health_Add
+    Source: Resources/Textures/PlayerUI/Health_Add.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -5668,17 +5921,6 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 2915209680014061313
-    Name: LEVEL2Walking
-    Source: Resources/Models/Enemy/Patrol2Textures/LEVEL2Walking.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
     UID: 5470241165737121307
     Name: rock 2
     Source: Resources/Models/Props/rocks 2/rock 2.fbx
@@ -5693,6 +5935,17 @@ ASSETS:
     UID: 3978830521270443559
     Name: rock floating
     Source: Resources/Models/Props/rocks_island/rock floating.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 2915209680014061313
+    Name: LEVEL2Walking
+    Source: Resources/Models/Enemy/Patrol2Textures/LEVEL2Walking.fbx
     Properties:
       Model Transform:
         transform:
@@ -6216,6 +6469,10 @@ ASSETS:
     UID: 4668787442050390265
     Name: Redlight
     Source: Resources/Audio/Redlight.wav
+  - Type: AUDIO
+    UID: 9911665564103461214
+    Name: doorLocked
+    Source: Resources/Audio/doorLocked.wav
   - Type: ANIMATION
     UID: 4483381614930560572
     Name: mixamo.com

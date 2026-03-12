@@ -34,9 +34,9 @@ namespace EditorUI {
     class BonePoseCommand : public ICommand {
     public:
         BonePoseCommand(AnimationTimelinePanel* panel,
-                       const std::string& boneName,
-                       const BonePose& oldPose,
-                       const BonePose& newPose)
+            const std::string& boneName,
+            const BonePose& oldPose,
+            const BonePose& newPose)
             : m_Panel(panel)
             , m_BoneName(boneName)
             , m_OldPose(oldPose)
@@ -132,6 +132,36 @@ void AnimationTimelinePanel::Render()
     }
 
     m_LastFrameTime = currentFrameTime;
+
+    // Process deferred Sequence Tracks
+    if (!m_DeferredTracks.empty())
+    {
+        for (const auto& dt : m_DeferredTracks)
+        {
+            SequenceTrack newTrack;
+            newTrack.entityName = dt.entityName;
+            newTrack.type = dt.type;
+            const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot", "Look At Target", "Event Trigger" };
+            newTrack.label = dt.entityName + " : " + (dt.type >= 0 && dt.type < 6 ? typeNames[dt.type] : "Unknown");
+            m_SequenceTracks.push_back(newTrack);
+        }
+        m_DeferredTracks.clear();
+    }
+
+    // Process deferred Sequence Tracks
+    if (!m_DeferredTracks.empty())
+    {
+        for (const auto& dt : m_DeferredTracks)
+        {
+            SequenceTrack newTrack;
+            newTrack.entityName = dt.entityName;
+            newTrack.type = dt.type;
+            const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot", "Look At Target", "Event Trigger" };
+            newTrack.label = dt.entityName + " : " + (dt.type >= 0 && dt.type < 6 ? typeNames[dt.type] : "Unknown");
+            m_SequenceTracks.push_back(newTrack);
+        }
+        m_DeferredTracks.clear();
+    }
 
     // Update playback time (independent from game scene)
     if (m_Animator && m_SelectedClipIndex >= 0)
@@ -682,6 +712,114 @@ void AnimationTimelinePanel::RenderControlBar()
     }
     ImGui::PopStyleColor(3); // Pop Model & Playback colors
 
+    // ========== SECTION 1.5: CUTSCENE SEQUENCES ==========
+    ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.5f, 0.3f, 0.5f, 0.8f));
+    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.55f, 0.35f, 0.55f, 0.9f));
+    ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.6f, 0.4f, 0.6f, 1.0f));
+
+    if (ImGui::CollapsingHeader("Cutscene Sequences", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        ImGui::Indent(10.0f);
+
+        // Save/Load
+        ImGui::SetNextItemWidth(150);
+        ImGui::InputText("##SequenceFile", m_SaveSequenceFilename, IM_ARRAYSIZE(m_SaveSequenceFilename));
+        ImGui::SameLine();
+
+        // File dropdown
+        if (ImGui::Button("Refresh##RefreshSeq")) {
+            RefreshCutsceneFileList();
+        }
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Refresh Sequence List");
+        ImGui::SameLine();
+
+        ImGui::SetNextItemWidth(120);
+        if (ImGui::BeginCombo("##FileList", "Select File..."))
+        {
+            for (const auto& f : m_AvailableCutsceneFiles)
+            {
+                if (ImGui::Selectable(f.c_str()))
+                {
+                    std::string justName = f.substr(0, f.find_last_of('.'));
+                    strcpy_s(m_SaveSequenceFilename, justName.c_str());
+                }
+            }
+            ImGui::EndCombo();
+        }
+
+        ImGui::SameLine();
+        std::string filename = m_SaveSequenceFilename;
+        if (filename.empty()) filename = "NewCutscene";
+        std::string fullPath = "Resources/Cutscenes/" + filename + ".seq";
+
+        if (ImGui::Button("Load seq"))
+        {
+            LoadSequence(fullPath);
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Save seq"))
+        {
+            SaveSequence(fullPath);
+        }
+
+        ImGui::SameLine();
+        ImGui::TextDisabled("|");
+        ImGui::SameLine();
+
+        ImGui::SetNextItemWidth(100);
+        if (ImGui::DragInt("##SeqDur", &m_SequenceMaxFrame, 1.0f, 60, 18000, "%d frames"))
+        {
+            m_SequenceMaxFrame = std::max(60, m_SequenceMaxFrame); // Min 1 sec
+        }
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Cutscene max duration (frames at 60fps)");
+
+        ImGui::SameLine();
+        ImGui::TextDisabled("|");
+        ImGui::SameLine();
+
+        // Add Track
+        bool hasSelection = (m_Owner->SelectedEntity() != entt::null);
+        if (hasSelection)
+        {
+            auto entityID = m_Owner->SelectedEntity();
+            std::string name = "Entity";
+            if (m_Ctx && m_Ctx->scene.valid(entityID) && m_Ctx->scene.all_of<Boom::InfoComponent>(entityID)) {
+                name = m_Ctx->scene.get<Boom::InfoComponent>(entityID).name;
+            }
+
+            if (ImGui::Button(("Add Track: " + name).c_str()))
+            {
+                ImGui::OpenPopup("AddTrackPropPopup");
+                m_PendingEntityName = name;
+            }
+        }
+        else
+        {
+            ImGui::BeginDisabled();
+            ImGui::Button("Select Entity to Add Track");
+            ImGui::EndDisabled();
+        }
+
+        if (ImGui::BeginPopup("AddTrackPropPopup"))
+        {
+            ImGui::TextDisabled("Property");
+            ImGui::Separator();
+            const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot", "Look At Target", "Event Trigger" };
+            for (int i = 0; i < 6; i++)
+            {
+                if (ImGui::Selectable(typeNames[i]))
+                {
+                    AddTrack(m_PendingEntityName, i);
+                }
+            }
+            ImGui::EndPopup();
+        }
+
+        ImGui::Unindent(10.0f);
+        ImGui::Spacing();
+    }
+    ImGui::PopStyleColor(3);
+
     // ========== SECTION 2: EDITING TOOLS ==========
     // Green tint for editing tools section
     ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.2f, 0.5f, 0.3f, 0.8f));
@@ -716,152 +854,152 @@ void AnimationTimelinePanel::RenderControlBar()
         }
         ImGui::EndDisabled();
 
-    // Keyboard shortcuts - only process when Animation Timeline window is focused
-    // The Editor's global undo/redo is skipped when this window is focused (see Editor.cpp)
-    if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
-    {
-        ImGuiIO& io = ImGui::GetIO();
-        if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z) && !io.KeyShift)
+        // Keyboard shortcuts - only process when Animation Timeline window is focused
+        // The Editor's global undo/redo is skipped when this window is focused (see Editor.cpp)
+        if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
         {
-            Undo();
-        }
-        if (io.KeyCtrl && (ImGui::IsKeyPressed(ImGuiKey_Y) || (ImGui::IsKeyPressed(ImGuiKey_Z) && io.KeyShift)))
-        {
-            Redo();
-        }
-    }
-
-    // Gizmo mode keyboard shortcuts (W/E/R/T/K) - only when viewport is focused
-    if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
-    {
-        ImGuiIO& io = ImGui::GetIO();
-        if (ImGui::IsKeyPressed(ImGuiKey_W, false)) {
-            // Only allow translate if not in rotation-only mode
-            if (!m_RotationOnlyMode) {
-                m_GizmoOperation = 7;  // ImGuizmo::TRANSLATE
-            }
-            else {
-                BOOM_WARN("[Gizmo] Translation disabled in Rotation-Only mode. Uncheck 'Rotation Only' to enable.");
-            }
-        }
-        if (ImGui::IsKeyPressed(ImGuiKey_E, false)) {
-            m_GizmoOperation = 120;  // ImGuizmo::ROTATE
-        }
-        if (ImGui::IsKeyPressed(ImGuiKey_R, false)) {
-            // Only allow scale if not in rotation-only mode
-            if (!m_RotationOnlyMode) {
-                m_GizmoOperation = 896;  // ImGuizmo::SCALE
-            }
-            else {
-                BOOM_WARN("[Gizmo] Scaling disabled in Rotation-Only mode. Uncheck 'Rotation Only' to enable.");
-            }
-        }
-        if (ImGui::IsKeyPressed(ImGuiKey_T, false)) {
-            m_GizmoMode = (m_GizmoMode == 0) ? 1 : 0;  // Toggle LOCAL (0) / WORLD (1)
-            BOOM_INFO("[Gizmo] Toggled to {} space", m_GizmoMode == 1 ? "WORLD" : "LOCAL");
-        }
-
-        // K key - Add keyframe at current time for selected bone
-        if (ImGui::IsKeyPressed(ImGuiKey_K, false))
-        {
-            if (!m_SelectedBoneName.empty() && m_Animator && m_SelectedClipIndex >= 0)
+            ImGuiIO& io = ImGui::GetIO();
+            if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z) && !io.KeyShift)
             {
-                // Capture current bone transform
-                Boom::KeyFrame kf = CaptureCurrentBoneTransform(m_SelectedBoneName);
+                Undo();
+            }
+            if (io.KeyCtrl && (ImGui::IsKeyPressed(ImGuiKey_Y) || (ImGui::IsKeyPressed(ImGuiKey_Z) && io.KeyShift)))
+            {
+                Redo();
+            }
+        }
 
-                if (kf.timeStamp >= 0.0f)  // Valid capture
-                {
-                    // Create and execute ADD command
-                    KeyframeCommand cmd;
-                    cmd.type = KeyframeCommand::ADD;
-                    cmd.boneName = m_SelectedBoneName;
-                    cmd.keyframe = kf;
-                    ExecuteCommand(cmd);
-
-                    BOOM_INFO("[Keyframe Record] Captured pose for bone '{}' at time {:.2f}s",
-                              m_SelectedBoneName.c_str(), (double)kf.timeStamp);
+        // Gizmo mode keyboard shortcuts (W/E/R/T/K) - only when viewport is focused
+        if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
+        {
+            ImGuiIO& io = ImGui::GetIO();
+            if (ImGui::IsKeyPressed(ImGuiKey_W, false)) {
+                // Only allow translate if not in rotation-only mode
+                if (!m_RotationOnlyMode) {
+                    m_GizmoOperation = 7;  // ImGuizmo::TRANSLATE
                 }
-                else
-                {
-                    BOOM_WARN("[Keyframe Record] Failed to capture bone transform for '{}'", m_SelectedBoneName.c_str());
+                else {
+                    BOOM_WARN("[Gizmo] Translation disabled in Rotation-Only mode. Uncheck 'Rotation Only' to enable.");
                 }
             }
-            else if (m_SelectedBoneName.empty())
-            {
-                BOOM_WARN("[Keyframe Record] No bone selected - select a bone first!");
+            if (ImGui::IsKeyPressed(ImGuiKey_E, false)) {
+                m_GizmoOperation = 120;  // ImGuizmo::ROTATE
             }
-            else if (!m_Animator)
-            {
-                BOOM_WARN("[Keyframe Record] No animator loaded");
+            if (ImGui::IsKeyPressed(ImGuiKey_R, false)) {
+                // Only allow scale if not in rotation-only mode
+                if (!m_RotationOnlyMode) {
+                    m_GizmoOperation = 896;  // ImGuizmo::SCALE
+                }
+                else {
+                    BOOM_WARN("[Gizmo] Scaling disabled in Rotation-Only mode. Uncheck 'Rotation Only' to enable.");
+                }
             }
-            else if (m_SelectedClipIndex < 0)
-            {
-                BOOM_WARN("[Keyframe Record] No clip selected");
+            if (ImGui::IsKeyPressed(ImGuiKey_T, false)) {
+                m_GizmoMode = (m_GizmoMode == 0) ? 1 : 0;  // Toggle LOCAL (0) / WORLD (1)
+                BOOM_INFO("[Gizmo] Toggled to {} space", m_GizmoMode == 1 ? "WORLD" : "LOCAL");
             }
-        }
 
-        // Delete key - Delete selected keyframes OR audio events
-        if (ImGui::IsKeyPressed(ImGuiKey_Delete, false))
-        {
-            if (!m_SelectedKeyframes.empty())
+            // K key - Add keyframe at current time for selected bone
+            if (ImGui::IsKeyPressed(ImGuiKey_K, false))
             {
-                DeleteSelectedKeyframes();
-            }
-            else if (m_SelectedAudioEventIndex >= 0)
-            {
-                // Delete selected audio event using command system for undo/redo
-                if (m_Animator && m_SelectedClipIndex >= 0)
+                if (!m_SelectedBoneName.empty() && m_Animator && m_SelectedClipIndex >= 0)
                 {
-                    auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
-                    if (clip && m_SelectedAudioEventIndex < (int)clip->audioEvents.size())
+                    // Capture current bone transform
+                    Boom::KeyFrame kf = CaptureCurrentBoneTransform(m_SelectedBoneName);
+
+                    if (kf.timeStamp >= 0.0f)  // Valid capture
                     {
+                        // Create and execute ADD command
                         KeyframeCommand cmd;
-                        cmd.type = KeyframeCommand::AUDIO_REMOVE;
-                        cmd.audioEventIndex = static_cast<size_t>(m_SelectedAudioEventIndex);
-                        cmd.audioEvent = clip->audioEvents[m_SelectedAudioEventIndex];  // Store for undo
+                        cmd.type = KeyframeCommand::ADD;
+                        cmd.boneName = m_SelectedBoneName;
+                        cmd.keyframe = kf;
                         ExecuteCommand(cmd);
 
-                        m_SelectedAudioEventIndex = -1;
+                        BOOM_INFO("[Keyframe Record] Captured pose for bone '{}' at time {:.2f}s",
+                            m_SelectedBoneName.c_str(), (double)kf.timeStamp);
+                    }
+                    else
+                    {
+                        BOOM_WARN("[Keyframe Record] Failed to capture bone transform for '{}'", m_SelectedBoneName.c_str());
                     }
                 }
-            }
-        }
-
-        // Escape key - Clear keyframe selection or audio event selection
-        if (ImGui::IsKeyPressed(ImGuiKey_Escape, false))
-        {
-            if (!m_SelectedKeyframes.empty())
-            {
-                ClearKeyframeSelection();
-            }
-            else if (m_SelectedAudioEventIndex >= 0)
-            {
-                m_SelectedAudioEventIndex = -1;
-            }
-        }
-
-        // Ctrl+A - Select all keyframes in current clip
-        if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_A, false))
-        {
-            if (m_Animator && m_SelectedClipIndex >= 0)
-            {
-                const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
-                if (clip)
+                else if (m_SelectedBoneName.empty())
                 {
-                    ClearKeyframeSelection();
-                    // Iterate all tracks and select all keyframes
-                    for (const auto& [boneName, track] : clip->tracks)
+                    BOOM_WARN("[Keyframe Record] No bone selected - select a bone first!");
+                }
+                else if (!m_Animator)
+                {
+                    BOOM_WARN("[Keyframe Record] No animator loaded");
+                }
+                else if (m_SelectedClipIndex < 0)
+                {
+                    BOOM_WARN("[Keyframe Record] No clip selected");
+                }
+            }
+
+            // Delete key - Delete selected keyframes OR audio events
+            if (ImGui::IsKeyPressed(ImGuiKey_Delete, false))
+            {
+                if (!m_SelectedKeyframes.empty())
+                {
+                    DeleteSelectedKeyframes();
+                }
+                else if (m_SelectedAudioEventIndex >= 0)
+                {
+                    // Delete selected audio event using command system for undo/redo
+                    if (m_Animator && m_SelectedClipIndex >= 0)
                     {
-                        for (size_t i = 0; i < track.size(); ++i)
+                        auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+                        if (clip && m_SelectedAudioEventIndex < (int)clip->audioEvents.size())
                         {
-                            SelectKeyframe(boneName, i, true);  // Add to selection
+                            KeyframeCommand cmd;
+                            cmd.type = KeyframeCommand::AUDIO_REMOVE;
+                            cmd.audioEventIndex = static_cast<size_t>(m_SelectedAudioEventIndex);
+                            cmd.audioEvent = clip->audioEvents[m_SelectedAudioEventIndex];  // Store for undo
+                            ExecuteCommand(cmd);
+
+                            m_SelectedAudioEventIndex = -1;
                         }
                     }
-                    BOOM_INFO("[Multiselect] Selected {} keyframes", m_SelectedKeyframes.size());
+                }
+            }
+
+            // Escape key - Clear keyframe selection or audio event selection
+            if (ImGui::IsKeyPressed(ImGuiKey_Escape, false))
+            {
+                if (!m_SelectedKeyframes.empty())
+                {
+                    ClearKeyframeSelection();
+                }
+                else if (m_SelectedAudioEventIndex >= 0)
+                {
+                    m_SelectedAudioEventIndex = -1;
+                }
+            }
+
+            // Ctrl+A - Select all keyframes in current clip
+            if (io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_A, false))
+            {
+                if (m_Animator && m_SelectedClipIndex >= 0)
+                {
+                    const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
+                    if (clip)
+                    {
+                        ClearKeyframeSelection();
+                        // Iterate all tracks and select all keyframes
+                        for (const auto& [boneName, track] : clip->tracks)
+                        {
+                            for (size_t i = 0; i < track.size(); ++i)
+                            {
+                                SelectKeyframe(boneName, i, true);  // Add to selection
+                            }
+                        }
+                        BOOM_INFO("[Multiselect] Selected {} keyframes", m_SelectedKeyframes.size());
+                    }
                 }
             }
         }
-    }
 
         ImGui::SameLine(0, 20);
         ImGui::Text("|");
@@ -958,7 +1096,7 @@ void AnimationTimelinePanel::RenderControlBar()
             if (ImGui::IsItemHovered())
             {
                 ImGui::SetTooltip("Add keyframe for '%s' at current time (%.2fs)\nOr press K key",
-                                m_SelectedBoneName.c_str(), m_CurrentTime);
+                    m_SelectedBoneName.c_str(), m_CurrentTime);
             }
         }
         else
@@ -977,16 +1115,16 @@ void AnimationTimelinePanel::RenderControlBar()
         if (!m_SelectedKeyframes.empty())
         {
             ImGui::TextColored(ImVec4(0.5f, 0.8f, 1.0f, 1.0f), "| %zu keyframe%s selected",
-                              m_SelectedKeyframes.size(),
-                              m_SelectedKeyframes.size() == 1 ? "" : "s");
+                m_SelectedKeyframes.size(),
+                m_SelectedKeyframes.size() == 1 ? "" : "s");
             if (ImGui::IsItemHovered())
             {
                 ImGui::SetTooltip("Multiselect shortcuts:\n"
-                                 "  Ctrl+Click: Add/remove from selection\n"
-                                 "  Ctrl+A: Select all keyframes\n"
-                                 "  Delete: Delete selected keyframes\n"
-                                 "  Escape: Clear selection\n"
-                                 "  Drag: Move all selected together");
+                    "  Ctrl+Click: Add/remove from selection\n"
+                    "  Ctrl+A: Select all keyframes\n"
+                    "  Delete: Delete selected keyframes\n"
+                    "  Escape: Clear selection\n"
+                    "  Drag: Move all selected together");
             }
         }
 
@@ -1048,7 +1186,7 @@ void AnimationTimelinePanel::RenderControlBar()
                 if (ImGui::IsItemHovered())
                 {
                     ImGui::SetTooltip("Clear manual pose for selected bone '%s'\n(Ctrl+Z to undo)",
-                                    m_SelectedBoneName.c_str());
+                        m_SelectedBoneName.c_str());
                 }
             }
 
@@ -1146,549 +1284,549 @@ void AnimationTimelinePanel::RenderControlBar()
             ImGui::Text("Clip:");
             ImGui::SameLine();
 
-        // Animation clip dropdown - proportional width (15% of window, min 120, max 250)
-        float clipDropdownWidth = ImGui::GetWindowWidth() * 0.15f;
-        clipDropdownWidth = (clipDropdownWidth < 120.0f) ? 120.0f : (clipDropdownWidth > 250.0f) ? 250.0f : clipDropdownWidth;
-        ImGui::SetNextItemWidth(clipDropdownWidth);
-        std::string clipDisplayName = "Select clip...";
-        if (m_SelectedClipIndex >= 0)
-        {
-            clipDisplayName = m_Animator->GetClip(m_SelectedClipIndex)->name;
-            if (m_ClipModified)
+            // Animation clip dropdown - proportional width (15% of window, min 120, max 250)
+            float clipDropdownWidth = ImGui::GetWindowWidth() * 0.15f;
+            clipDropdownWidth = (clipDropdownWidth < 120.0f) ? 120.0f : (clipDropdownWidth > 250.0f) ? 250.0f : clipDropdownWidth;
+            ImGui::SetNextItemWidth(clipDropdownWidth);
+            std::string clipDisplayName = "Select clip...";
+            if (m_SelectedClipIndex >= 0)
             {
-                clipDisplayName += " *";  // Asterisk indicates unsaved changes
-            }
-        }
-        if (ImGui::BeginCombo("##AnimClip", clipDisplayName.c_str()))
-        {
-            for (size_t i = 0; i < m_Animator->GetClipCount(); ++i)
-            {
-                const auto* clip = m_Animator->GetClip(i);
-                if (!clip) continue;
-
-                bool isSelected = (m_SelectedClipIndex == (int)i);
-                if (ImGui::Selectable(clip->name.c_str(), isSelected))
+                clipDisplayName = m_Animator->GetClip(m_SelectedClipIndex)->name;
+                if (m_ClipModified)
                 {
-                    m_SelectedClipIndex = (int)i;
-                    m_Animator->PlayClip(i);  // Switch to this clip
-                    m_CurrentTime = 0.0f;     // Reset time
-                    m_IsPlaying = false;      // Stop playback when switching clips
-                    m_ClipModified = false;   // Reset dirty flag for new clip
-                }
-
-                if (isSelected)
-                {
-                    ImGui::SetItemDefaultFocus();
+                    clipDisplayName += " *";  // Asterisk indicates unsaved changes
                 }
             }
-            ImGui::EndCombo();
-        }
-
-        // Clip management buttons
-        ImGui::SameLine();
-        if (ImGui::Button("New"))
-        {
-            ImGui::OpenPopup("CreateClipPopup");
-        }
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetTooltip("Create a new animation clip");
-        }
-
-        ImGui::SameLine();
-        ImGui::BeginDisabled(m_SelectedClipIndex < 0);
-        if (ImGui::Button("Duplicate"))
-        {
-            if (m_Animator && m_SelectedClipIndex >= 0 && m_SelectedClipIndex < (int)m_Animator->GetClipCount())
+            if (ImGui::BeginCombo("##AnimClip", clipDisplayName.c_str()))
             {
-                auto* sourceClip = m_Animator->GetClipMutable(m_SelectedClipIndex);
-                if (sourceClip)
+                for (size_t i = 0; i < m_Animator->GetClipCount(); ++i)
                 {
-                    // Create a deep copy of the clip
-                    auto newClip = std::make_shared<Boom::AnimationClip>();
-                    newClip->name = sourceClip->name + " Copy";
-                    newClip->duration = sourceClip->duration;
-                    newClip->ticksPerSecond = sourceClip->ticksPerSecond;
-                    newClip->filePath = sourceClip->filePath;
-                    newClip->tracks = sourceClip->tracks;  // Deep copy tracks
+                    const auto* clip = m_Animator->GetClip(i);
+                    if (!clip) continue;
 
-                    // Add to animator
-                    m_Animator->AddClip(newClip);
-                    m_SelectedClipIndex = (int)m_Animator->GetClipCount() - 1;
-                    m_Animator->PlayClip(m_SelectedClipIndex);
-                    m_CurrentTime = 0.0f;
-                    m_IsPlaying = false;
-
-                    BOOM_INFO("[AnimTimeline] Duplicated clip '{}' as '{}'",
-                              sourceClip->name, newClip->name);
-                }
-            }
-        }
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetTooltip("Duplicate selected animation clip");
-        }
-        ImGui::EndDisabled();
-
-        ImGui::SameLine();
-        ImGui::BeginDisabled(m_SelectedClipIndex < 0);
-        if (ImGui::Button("Rename"))
-        {
-            if (m_Animator && m_SelectedClipIndex >= 0)
-            {
-                ImGui::OpenPopup("RenameClipPopup");
-            }
-        }
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetTooltip("Rename selected animation clip");
-        }
-        ImGui::EndDisabled();
-
-        ImGui::SameLine();
-        ImGui::BeginDisabled(m_SelectedClipIndex < 0 || (m_Animator && m_Animator->GetClipCount() <= 1));
-        if (ImGui::Button("Delete"))
-        {
-            if (m_Animator && m_SelectedClipIndex >= 0)
-            {
-                ImGui::OpenPopup("DeleteClipConfirm");
-            }
-        }
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetTooltip("Delete selected animation clip");
-        }
-        ImGui::EndDisabled();
-
-        ImGui::SameLine();
-        ImGui::BeginDisabled(m_SelectedClipIndex < 0);
-        if (ImGui::Button("Save"))
-        {
-            if (m_Animator && m_SelectedClipIndex >= 0)
-            {
-                ImGui::OpenPopup("SaveClipPopup");
-            }
-        }
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetTooltip("Save animation clip to .anim file");
-        }
-        ImGui::EndDisabled();
-
-        // Apply to Entity button - syncs changes without saving to file
-        ImGui::SameLine();
-        bool canApply = (m_SelectedClipIndex >= 0 && m_SourceEntityID != entt::null && !m_StandaloneMode);
-        ImGui::BeginDisabled(!canApply);
-        if (ImGui::Button("Apply"))
-        {
-            if (m_Animator && m_SelectedClipIndex >= 0 && m_Ctx && m_SourceEntityID != entt::null)
-            {
-                if (m_Ctx->scene.valid(m_SourceEntityID))
-                {
-                    Boom::Entity entity(&m_Ctx->scene, static_cast<Boom::EntityID>(m_SourceEntityID));
-                    if (entity.Has<Boom::AnimatorComponent>())
+                    bool isSelected = (m_SelectedClipIndex == (int)i);
+                    if (ImGui::Selectable(clip->name.c_str(), isSelected))
                     {
-                        auto& animComp = entity.Get<Boom::AnimatorComponent>();
-                        if (animComp.animator)
+                        m_SelectedClipIndex = (int)i;
+                        m_Animator->PlayClip(i);  // Switch to this clip
+                        m_CurrentTime = 0.0f;     // Reset time
+                        m_IsPlaying = false;      // Stop playback when switching clips
+                        m_ClipModified = false;   // Reset dirty flag for new clip
+                    }
+
+                    if (isSelected)
+                    {
+                        ImGui::SetItemDefaultFocus();
+                    }
+                }
+                ImGui::EndCombo();
+            }
+
+            // Clip management buttons
+            ImGui::SameLine();
+            if (ImGui::Button("New"))
+            {
+                ImGui::OpenPopup("CreateClipPopup");
+            }
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::SetTooltip("Create a new animation clip");
+            }
+
+            ImGui::SameLine();
+            ImGui::BeginDisabled(m_SelectedClipIndex < 0);
+            if (ImGui::Button("Duplicate"))
+            {
+                if (m_Animator && m_SelectedClipIndex >= 0 && m_SelectedClipIndex < (int)m_Animator->GetClipCount())
+                {
+                    auto* sourceClip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+                    if (sourceClip)
+                    {
+                        // Create a deep copy of the clip
+                        auto newClip = std::make_shared<Boom::AnimationClip>();
+                        newClip->name = sourceClip->name + " Copy";
+                        newClip->duration = sourceClip->duration;
+                        newClip->ticksPerSecond = sourceClip->ticksPerSecond;
+                        newClip->filePath = sourceClip->filePath;
+                        newClip->tracks = sourceClip->tracks;  // Deep copy tracks
+
+                        // Add to animator
+                        m_Animator->AddClip(newClip);
+                        m_SelectedClipIndex = (int)m_Animator->GetClipCount() - 1;
+                        m_Animator->PlayClip(m_SelectedClipIndex);
+                        m_CurrentTime = 0.0f;
+                        m_IsPlaying = false;
+
+                        BOOM_INFO("[AnimTimeline] Duplicated clip '{}' as '{}'",
+                            sourceClip->name, newClip->name);
+                    }
+                }
+            }
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::SetTooltip("Duplicate selected animation clip");
+            }
+            ImGui::EndDisabled();
+
+            ImGui::SameLine();
+            ImGui::BeginDisabled(m_SelectedClipIndex < 0);
+            if (ImGui::Button("Rename"))
+            {
+                if (m_Animator && m_SelectedClipIndex >= 0)
+                {
+                    ImGui::OpenPopup("RenameClipPopup");
+                }
+            }
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::SetTooltip("Rename selected animation clip");
+            }
+            ImGui::EndDisabled();
+
+            ImGui::SameLine();
+            ImGui::BeginDisabled(m_SelectedClipIndex < 0 || (m_Animator && m_Animator->GetClipCount() <= 1));
+            if (ImGui::Button("Delete"))
+            {
+                if (m_Animator && m_SelectedClipIndex >= 0)
+                {
+                    ImGui::OpenPopup("DeleteClipConfirm");
+                }
+            }
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::SetTooltip("Delete selected animation clip");
+            }
+            ImGui::EndDisabled();
+
+            ImGui::SameLine();
+            ImGui::BeginDisabled(m_SelectedClipIndex < 0);
+            if (ImGui::Button("Save"))
+            {
+                if (m_Animator && m_SelectedClipIndex >= 0)
+                {
+                    ImGui::OpenPopup("SaveClipPopup");
+                }
+            }
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::SetTooltip("Save animation clip to .anim file");
+            }
+            ImGui::EndDisabled();
+
+            // Apply to Entity button - syncs changes without saving to file
+            ImGui::SameLine();
+            bool canApply = (m_SelectedClipIndex >= 0 && m_SourceEntityID != entt::null && !m_StandaloneMode);
+            ImGui::BeginDisabled(!canApply);
+            if (ImGui::Button("Apply"))
+            {
+                if (m_Animator && m_SelectedClipIndex >= 0 && m_Ctx && m_SourceEntityID != entt::null)
+                {
+                    if (m_Ctx->scene.valid(m_SourceEntityID))
+                    {
+                        Boom::Entity entity(&m_Ctx->scene, static_cast<Boom::EntityID>(m_SourceEntityID));
+                        if (entity.Has<Boom::AnimatorComponent>())
                         {
-                            // Get the clip from timeline and COPY its data to entity
-                            // We copy instead of sharing to keep timeline and entity clips independent
-                            // This prevents gizmo manipulations from affecting the entity directly
-                            const auto* timelineClip = m_Animator->GetClip(m_SelectedClipIndex);
-                            if (timelineClip)
+                            auto& animComp = entity.Get<Boom::AnimatorComponent>();
+                            if (animComp.animator)
                             {
-                                // Create a copy of the clip data for the entity
-                                auto entityClip = std::make_shared<Boom::AnimationClip>();
-                                entityClip->name = timelineClip->name;
-                                entityClip->duration = timelineClip->duration;
-                                entityClip->ticksPerSecond = timelineClip->ticksPerSecond;
-                                entityClip->filePath = timelineClip->filePath;
-                                entityClip->tracks = timelineClip->tracks;  // Deep copy tracks
-                                entityClip->audioEvents = timelineClip->audioEvents;  // Copy audio events
-
-                                if (m_SelectedClipIndex < (int)animComp.animator->GetClipCount())
+                                // Get the clip from timeline and COPY its data to entity
+                                // We copy instead of sharing to keep timeline and entity clips independent
+                                // This prevents gizmo manipulations from affecting the entity directly
+                                const auto* timelineClip = m_Animator->GetClip(m_SelectedClipIndex);
+                                if (timelineClip)
                                 {
-                                    // Replace existing clip with copied data
-                                    animComp.animator->SetClip(m_SelectedClipIndex, entityClip);
-                                    BOOM_INFO("[AnimTimeline] Copied clip data to entity (index {})", m_SelectedClipIndex);
+                                    // Create a copy of the clip data for the entity
+                                    auto entityClip = std::make_shared<Boom::AnimationClip>();
+                                    entityClip->name = timelineClip->name;
+                                    entityClip->duration = timelineClip->duration;
+                                    entityClip->ticksPerSecond = timelineClip->ticksPerSecond;
+                                    entityClip->filePath = timelineClip->filePath;
+                                    entityClip->tracks = timelineClip->tracks;  // Deep copy tracks
+                                    entityClip->audioEvents = timelineClip->audioEvents;  // Copy audio events
+
+                                    if (m_SelectedClipIndex < (int)animComp.animator->GetClipCount())
+                                    {
+                                        // Replace existing clip with copied data
+                                        animComp.animator->SetClip(m_SelectedClipIndex, entityClip);
+                                        BOOM_INFO("[AnimTimeline] Copied clip data to entity (index {})", m_SelectedClipIndex);
+                                    }
+                                    else
+                                    {
+                                        // Add the copied clip to entity
+                                        animComp.animator->AddClip(entityClip);
+                                        BOOM_INFO("[AnimTimeline] Added copied clip '{}' to entity", entityClip->name);
+                                    }
+
+                                    // NOTE: We do NOT clear the state machine here!
+                                    // The state machine is managed by the Animator Graph panel.
+                                    // We only update the clip data, not the playback mode.
+
+                                    // Sync the current time to entity (for preview purposes)
+                                    animComp.animator->SetTime(m_CurrentTime);
+
+                                    // Force immediate joint transform update
+                                    animComp.animator->UpdateJointsFromCurrentTime();
+
+                                    // Clear manual bone poses so animation plays cleanly
+                                    m_ManualBonePoses.clear();
+                                    m_HasManualPoses = false;
+
+                                    BOOM_INFO("[AnimTimeline] Applied - entity clip updated (clip: '{}', time: {:.2f}, audioEvents: {})",
+                                        entityClip->name, m_CurrentTime, entityClip->audioEvents.size());
                                 }
-                                else
-                                {
-                                    // Add the copied clip to entity
-                                    animComp.animator->AddClip(entityClip);
-                                    BOOM_INFO("[AnimTimeline] Added copied clip '{}' to entity", entityClip->name);
-                                }
-
-                                // NOTE: We do NOT clear the state machine here!
-                                // The state machine is managed by the Animator Graph panel.
-                                // We only update the clip data, not the playback mode.
-
-                                // Sync the current time to entity (for preview purposes)
-                                animComp.animator->SetTime(m_CurrentTime);
-
-                                // Force immediate joint transform update
-                                animComp.animator->UpdateJointsFromCurrentTime();
-
-                                // Clear manual bone poses so animation plays cleanly
-                                m_ManualBonePoses.clear();
-                                m_HasManualPoses = false;
-
-                                BOOM_INFO("[AnimTimeline] Applied - entity clip updated (clip: '{}', time: {:.2f}, audioEvents: {})",
-                                    entityClip->name, m_CurrentTime, entityClip->audioEvents.size());
                             }
                         }
                     }
                 }
             }
-        }
-        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-        {
-            if (!canApply)
+            if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
             {
-                // Explain why button is disabled
-                if (m_StandaloneMode)
+                if (!canApply)
                 {
-                    ImGui::SetTooltip("Apply is disabled in standalone mode.\nSelect an entity with AnimatorComponent to apply changes.");
-                }
-                else if (m_SourceEntityID == entt::null)
-                {
-                    ImGui::SetTooltip("Apply is disabled - no entity selected.\nSelect an entity with AnimatorComponent in the Hierarchy.");
-                }
-                else if (m_SelectedClipIndex < 0)
-                {
-                    ImGui::SetTooltip("Apply is disabled - no clip selected.\nSelect an animation clip first.");
+                    // Explain why button is disabled
+                    if (m_StandaloneMode)
+                    {
+                        ImGui::SetTooltip("Apply is disabled in standalone mode.\nSelect an entity with AnimatorComponent to apply changes.");
+                    }
+                    else if (m_SourceEntityID == entt::null)
+                    {
+                        ImGui::SetTooltip("Apply is disabled - no entity selected.\nSelect an entity with AnimatorComponent in the Hierarchy.");
+                    }
+                    else if (m_SelectedClipIndex < 0)
+                    {
+                        ImGui::SetTooltip("Apply is disabled - no clip selected.\nSelect an animation clip first.");
+                    }
+                    else
+                    {
+                        ImGui::SetTooltip("Apply is disabled.");
+                    }
                 }
                 else
                 {
-                    ImGui::SetTooltip("Apply is disabled.");
+                    ImGui::SetTooltip("Apply changes to entity and clear manual poses\n(Preview animation in real-time)");
                 }
             }
-            else
+            ImGui::EndDisabled();
+
+            // Create clip popup
+            if (ImGui::BeginPopup("CreateClipPopup"))
             {
-                ImGui::SetTooltip("Apply changes to entity and clear manual poses\n(Preview animation in real-time)");
-            }
-        }
-        ImGui::EndDisabled();
+                static char clipName[128] = "New Clip";
+                static float clipDuration = 1.0f;
+                static float clipFPS = 30.0f;
 
-        // Create clip popup
-        if (ImGui::BeginPopup("CreateClipPopup"))
-        {
-            static char clipName[128] = "New Clip";
-            static float clipDuration = 1.0f;
-            static float clipFPS = 30.0f;
+                ImGui::Text("Create New Animation Clip");
+                ImGui::Separator();
 
-            ImGui::Text("Create New Animation Clip");
-            ImGui::Separator();
+                ImGui::InputText("Name", clipName, sizeof(clipName));
+                ImGui::InputFloat("Duration (s)", &clipDuration, 0.1f, 1.0f, "%.2f");
+                ImGui::InputFloat("FPS", &clipFPS, 1.0f, 10.0f, "%.1f");
 
-            ImGui::InputText("Name", clipName, sizeof(clipName));
-            ImGui::InputFloat("Duration (s)", &clipDuration, 0.1f, 1.0f, "%.2f");
-            ImGui::InputFloat("FPS", &clipFPS, 1.0f, 10.0f, "%.1f");
+                if (clipDuration < 0.01f) clipDuration = 0.01f;
+                if (clipFPS < 1.0f) clipFPS = 1.0f;
 
-            if (clipDuration < 0.01f) clipDuration = 0.01f;
-            if (clipFPS < 1.0f) clipFPS = 1.0f;
-
-            if (ImGui::Button("Create", ImVec2(120, 0)))
-            {
-                if (m_Animator)
+                if (ImGui::Button("Create", ImVec2(120, 0)))
                 {
-                    auto newClip = std::make_shared<Boom::AnimationClip>();
-                    newClip->name = std::string(clipName);
-                    newClip->duration = clipDuration;
-                    newClip->ticksPerSecond = clipFPS;
-                    newClip->filePath = "";  // No source file
+                    if (m_Animator)
+                    {
+                        auto newClip = std::make_shared<Boom::AnimationClip>();
+                        newClip->name = std::string(clipName);
+                        newClip->duration = clipDuration;
+                        newClip->ticksPerSecond = clipFPS;
+                        newClip->filePath = "";  // No source file
 
-                    // Add to animator
-                    m_Animator->AddClip(newClip);
-                    m_SelectedClipIndex = (int)m_Animator->GetClipCount() - 1;
-                    m_Animator->PlayClip(m_SelectedClipIndex);
-                    m_CurrentTime = 0.0f;
-                    m_IsPlaying = false;
+                        // Add to animator
+                        m_Animator->AddClip(newClip);
+                        m_SelectedClipIndex = (int)m_Animator->GetClipCount() - 1;
+                        m_Animator->PlayClip(m_SelectedClipIndex);
+                        m_CurrentTime = 0.0f;
+                        m_IsPlaying = false;
 
-                    BOOM_INFO("[AnimTimeline] Created new clip '{}'", newClip->name);
+                        BOOM_INFO("[AnimTimeline] Created new clip '{}'", newClip->name);
 
-                    // Reset form
-                    strcpy_s(clipName, sizeof(clipName), "New Clip");
-                    clipDuration = 1.0f;
-                    clipFPS = 30.0f;
+                        // Reset form
+                        strcpy_s(clipName, sizeof(clipName), "New Clip");
+                        clipDuration = 1.0f;
+                        clipFPS = 30.0f;
+                    }
+                    ImGui::CloseCurrentPopup();
                 }
-                ImGui::CloseCurrentPopup();
+
+                ImGui::SameLine();
+                if (ImGui::Button("Cancel", ImVec2(120, 0)))
+                {
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::EndPopup();
             }
 
-            ImGui::SameLine();
-            if (ImGui::Button("Cancel", ImVec2(120, 0)))
+            // Rename clip popup
+            if (ImGui::BeginPopup("RenameClipPopup"))
             {
-                ImGui::CloseCurrentPopup();
+                static char newName[128] = "";
+                static bool firstOpen = true;
+
+                if (firstOpen)
+                {
+                    if (m_Animator && m_SelectedClipIndex >= 0)
+                    {
+                        auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+                        if (clip)
+                        {
+                            strncpy_s(newName, sizeof(newName), clip->name.c_str(), _TRUNCATE);
+                        }
+                    }
+                    firstOpen = false;
+                }
+
+                ImGui::Text("Rename Animation Clip");
+                ImGui::Separator();
+
+                ImGui::InputText("New Name", newName, sizeof(newName));
+
+                if (ImGui::Button("Rename", ImVec2(120, 0)))
+                {
+                    if (m_Animator && m_SelectedClipIndex >= 0)
+                    {
+                        auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+                        if (clip && strlen(newName) > 0)
+                        {
+                            std::string oldName = clip->name;
+                            clip->name = std::string(newName);
+                            BOOM_INFO("[AnimTimeline] Renamed clip '{}' to '{}'", oldName, clip->name);
+                        }
+                    }
+                    firstOpen = true;
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::SameLine();
+                if (ImGui::Button("Cancel", ImVec2(120, 0)))
+                {
+                    firstOpen = true;
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::EndPopup();
             }
 
-            ImGui::EndPopup();
-        }
+            // Delete clip confirmation popup
+            if (ImGui::BeginPopupModal("DeleteClipConfirm", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+            {
+                if (m_Animator && m_SelectedClipIndex >= 0)
+                {
+                    const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
+                    if (clip)
+                    {
+                        ImGui::Text("Are you sure you want to delete clip:");
+                        ImGui::TextColored(ImVec4(1, 1, 0, 1), "  %s", clip->name.c_str());
+                        ImGui::Text("This action cannot be undone!");
+                    }
+                }
 
-        // Rename clip popup
-        if (ImGui::BeginPopup("RenameClipPopup"))
-        {
-            static char newName[128] = "";
-            static bool firstOpen = true;
+                ImGui::Separator();
 
-            if (firstOpen)
+                if (ImGui::Button("Delete", ImVec2(120, 0)))
+                {
+                    if (m_Animator && m_SelectedClipIndex >= 0 && m_Animator->GetClipCount() > 1)
+                    {
+                        const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
+                        std::string clipName = clip ? clip->name : "Unknown";
+
+                        m_Animator->RemoveClip(m_SelectedClipIndex);
+                        BOOM_INFO("[AnimTimeline] Deleted clip '{}'", clipName);
+
+                        // Select the first remaining clip
+                        if (m_Animator->GetClipCount() > 0)
+                        {
+                            m_SelectedClipIndex = 0;
+                            m_Animator->PlayClip(0);
+                            m_CurrentTime = 0.0f;
+                            m_IsPlaying = false;
+                        }
+                        else
+                        {
+                            m_SelectedClipIndex = -1;
+                        }
+                    }
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::SameLine();
+                if (ImGui::Button("Cancel", ImVec2(120, 0)))
+                {
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::EndPopup();
+            }
+
+            // Save clip popup
+            if (ImGui::BeginPopup("SaveClipPopup"))
             {
                 if (m_Animator && m_SelectedClipIndex >= 0)
                 {
                     auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
                     if (clip)
                     {
-                        strncpy_s(newName, sizeof(newName), clip->name.c_str(), _TRUNCATE);
-                    }
-                }
-                firstOpen = false;
-            }
+                        static char saveNameBuffer[128] = "";
+                        static bool initBuffer = true;
 
-            ImGui::Text("Rename Animation Clip");
-            ImGui::Separator();
-
-            ImGui::InputText("New Name", newName, sizeof(newName));
-
-            if (ImGui::Button("Rename", ImVec2(120, 0)))
-            {
-                if (m_Animator && m_SelectedClipIndex >= 0)
-                {
-                    auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
-                    if (clip && strlen(newName) > 0)
-                    {
-                        std::string oldName = clip->name;
-                        clip->name = std::string(newName);
-                        BOOM_INFO("[AnimTimeline] Renamed clip '{}' to '{}'", oldName, clip->name);
-                    }
-                }
-                firstOpen = true;
-                ImGui::CloseCurrentPopup();
-            }
-
-            ImGui::SameLine();
-            if (ImGui::Button("Cancel", ImVec2(120, 0)))
-            {
-                firstOpen = true;
-                ImGui::CloseCurrentPopup();
-            }
-
-            ImGui::EndPopup();
-        }
-
-        // Delete clip confirmation popup
-        if (ImGui::BeginPopupModal("DeleteClipConfirm", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-        {
-            if (m_Animator && m_SelectedClipIndex >= 0)
-            {
-                const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
-                if (clip)
-                {
-                    ImGui::Text("Are you sure you want to delete clip:");
-                    ImGui::TextColored(ImVec4(1, 1, 0, 1), "  %s", clip->name.c_str());
-                    ImGui::Text("This action cannot be undone!");
-                }
-            }
-
-            ImGui::Separator();
-
-            if (ImGui::Button("Delete", ImVec2(120, 0)))
-            {
-                if (m_Animator && m_SelectedClipIndex >= 0 && m_Animator->GetClipCount() > 1)
-                {
-                    const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
-                    std::string clipName = clip ? clip->name : "Unknown";
-
-                    m_Animator->RemoveClip(m_SelectedClipIndex);
-                    BOOM_INFO("[AnimTimeline] Deleted clip '{}'", clipName);
-
-                    // Select the first remaining clip
-                    if (m_Animator->GetClipCount() > 0)
-                    {
-                        m_SelectedClipIndex = 0;
-                        m_Animator->PlayClip(0);
-                        m_CurrentTime = 0.0f;
-                        m_IsPlaying = false;
-                    }
-                    else
-                    {
-                        m_SelectedClipIndex = -1;
-                    }
-                }
-                ImGui::CloseCurrentPopup();
-            }
-
-            ImGui::SameLine();
-            if (ImGui::Button("Cancel", ImVec2(120, 0)))
-            {
-                ImGui::CloseCurrentPopup();
-            }
-
-            ImGui::EndPopup();
-        }
-
-        // Save clip popup
-        if (ImGui::BeginPopup("SaveClipPopup"))
-        {
-            if (m_Animator && m_SelectedClipIndex >= 0)
-            {
-                auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
-                if (clip)
-                {
-                    static char saveNameBuffer[128] = "";
-                    static bool initBuffer = true;
-
-                    if (initBuffer || ImGui::IsWindowAppearing())
-                    {
-                        // Pre-fill with clip name (sanitized for filename)
-                        std::string safeName = clip->name;
-                        std::replace(safeName.begin(), safeName.end(), ' ', '_');
-                        strncpy_s(saveNameBuffer, sizeof(saveNameBuffer), safeName.c_str(), _TRUNCATE);
-                        initBuffer = false;
-                    }
-
-                    ImGui::Text("Save Animation Clip to .anim File");
-                    ImGui::Separator();
-
-                    ImGui::Text("Filename:");
-                    ImGui::SetNextItemWidth(250.0f);
-                    ImGui::InputText("##SaveFileName", saveNameBuffer, sizeof(saveNameBuffer));
-                    ImGui::SameLine();
-                    ImGui::TextDisabled(".anim");
-
-                    // Show preview path
-                    std::string previewPath = "Resources/Animations/" + std::string(saveNameBuffer) + ".anim";
-                    ImGui::TextDisabled("Path: %s", previewPath.c_str());
-
-                    ImGui::Spacing();
-
-                    if (ImGui::Button("Save", ImVec2(120, 0)))
-                    {
-                        std::string filename = saveNameBuffer;
-                        if (!filename.empty())
+                        if (initBuffer || ImGui::IsWindowAppearing())
                         {
-                            std::string filepath = "Resources/Animations/" + filename + ".anim";
+                            // Pre-fill with clip name (sanitized for filename)
+                            std::string safeName = clip->name;
+                            std::replace(safeName.begin(), safeName.end(), ' ', '_');
+                            strncpy_s(saveNameBuffer, sizeof(saveNameBuffer), safeName.c_str(), _TRUNCATE);
+                            initBuffer = false;
+                        }
 
-                            if (Boom::SaveAnimationClip(*clip, filepath))
+                        ImGui::Text("Save Animation Clip to .anim File");
+                        ImGui::Separator();
+
+                        ImGui::Text("Filename:");
+                        ImGui::SetNextItemWidth(250.0f);
+                        ImGui::InputText("##SaveFileName", saveNameBuffer, sizeof(saveNameBuffer));
+                        ImGui::SameLine();
+                        ImGui::TextDisabled(".anim");
+
+                        // Show preview path
+                        std::string previewPath = "Resources/Animations/" + std::string(saveNameBuffer) + ".anim";
+                        ImGui::TextDisabled("Path: %s", previewPath.c_str());
+
+                        ImGui::Spacing();
+
+                        if (ImGui::Button("Save", ImVec2(120, 0)))
+                        {
+                            std::string filename = saveNameBuffer;
+                            if (!filename.empty())
                             {
-                                // Update clip's filePath to point to the saved .anim file
-                                clip->filePath = filepath;
-                                m_ClipModified = false;  // Clear dirty flag
-                                BOOM_INFO("[AnimTimeline] Saved clip '{}' to {}", clip->name, filepath);
+                                std::string filepath = "Resources/Animations/" + filename + ".anim";
 
-                                // Sync changes back to the entity's animator
-                                if (m_SourceEntityID != entt::null && m_Ctx)
+                                if (Boom::SaveAnimationClip(*clip, filepath))
                                 {
-                                    if (m_Ctx->scene.valid(m_SourceEntityID))
+                                    // Update clip's filePath to point to the saved .anim file
+                                    clip->filePath = filepath;
+                                    m_ClipModified = false;  // Clear dirty flag
+                                    BOOM_INFO("[AnimTimeline] Saved clip '{}' to {}", clip->name, filepath);
+
+                                    // Sync changes back to the entity's animator
+                                    if (m_SourceEntityID != entt::null && m_Ctx)
                                     {
-                                        Boom::Entity entity(&m_Ctx->scene, static_cast<Boom::EntityID>(m_SourceEntityID));
-                                        if (entity.Has<Boom::AnimatorComponent>())
+                                        if (m_Ctx->scene.valid(m_SourceEntityID))
                                         {
-                                            auto& animComp = entity.Get<Boom::AnimatorComponent>();
-                                            if (animComp.animator && m_SelectedClipIndex >= 0)
+                                            Boom::Entity entity(&m_Ctx->scene, static_cast<Boom::EntityID>(m_SourceEntityID));
+                                            if (entity.Has<Boom::AnimatorComponent>())
                                             {
-                                                // Get shared clip pointer from timeline
-                                                auto timelineClipPtr = m_Animator->GetClipShared(m_SelectedClipIndex);
-                                                if (timelineClipPtr)
+                                                auto& animComp = entity.Get<Boom::AnimatorComponent>();
+                                                if (animComp.animator && m_SelectedClipIndex >= 0)
                                                 {
-                                                    // Share clip pointer with entity
-                                                    if (m_SelectedClipIndex < (int)animComp.animator->GetClipCount())
+                                                    // Get shared clip pointer from timeline
+                                                    auto timelineClipPtr = m_Animator->GetClipShared(m_SelectedClipIndex);
+                                                    if (timelineClipPtr)
                                                     {
-                                                        animComp.animator->SetClip(m_SelectedClipIndex, timelineClipPtr);
+                                                        // Share clip pointer with entity
+                                                        if (m_SelectedClipIndex < (int)animComp.animator->GetClipCount())
+                                                        {
+                                                            animComp.animator->SetClip(m_SelectedClipIndex, timelineClipPtr);
+                                                        }
+                                                        else
+                                                        {
+                                                            animComp.animator->AddClip(timelineClipPtr);
+                                                        }
+
+                                                        // NOTE: We do NOT clear the state machine here!
+                                                        // The state machine is managed by the Animator Graph panel.
+                                                        // We only sync the clip data.
+
+                                                        // Sync current time for preview
+                                                        animComp.animator->SetTime(m_CurrentTime);
+                                                        animComp.animator->UpdateJointsFromCurrentTime();
+
+                                                        // Clear manual poses
+                                                        m_ManualBonePoses.clear();
+                                                        m_HasManualPoses = false;
+
+                                                        BOOM_INFO("[AnimTimeline] Synced - entity clip updated (audioEvents: {})",
+                                                            timelineClipPtr->audioEvents.size());
                                                     }
-                                                    else
-                                                    {
-                                                        animComp.animator->AddClip(timelineClipPtr);
-                                                    }
-
-                                                    // NOTE: We do NOT clear the state machine here!
-                                                    // The state machine is managed by the Animator Graph panel.
-                                                    // We only sync the clip data.
-
-                                                    // Sync current time for preview
-                                                    animComp.animator->SetTime(m_CurrentTime);
-                                                    animComp.animator->UpdateJointsFromCurrentTime();
-
-                                                    // Clear manual poses
-                                                    m_ManualBonePoses.clear();
-                                                    m_HasManualPoses = false;
-
-                                                    BOOM_INFO("[AnimTimeline] Synced - entity clip updated (audioEvents: {})",
-                                                        timelineClipPtr->audioEvents.size());
                                                 }
                                             }
                                         }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                BOOM_ERROR("[AnimTimeline] Failed to save clip to {}", filepath);
-                            }
+                                else
+                                {
+                                    BOOM_ERROR("[AnimTimeline] Failed to save clip to {}", filepath);
+                                }
 
+                                initBuffer = true;
+                                ImGui::CloseCurrentPopup();
+                            }
+                        }
+
+                        ImGui::SameLine();
+                        if (ImGui::Button("Cancel", ImVec2(120, 0)))
+                        {
                             initBuffer = true;
                             ImGui::CloseCurrentPopup();
                         }
                     }
+                }
+                ImGui::EndPopup();
+            }
 
+            // Display clip information
+            if (m_SelectedClipIndex >= 0 && m_SelectedClipIndex < (int)m_Animator->GetClipCount())
+            {
+                const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
+                if (clip)
+                {
                     ImGui::SameLine();
-                    if (ImGui::Button("Cancel", ImVec2(120, 0)))
+                    ImGui::Text("|");
+
+                    if (!m_CompactMode)
                     {
-                        initBuffer = true;
-                        ImGui::CloseCurrentPopup();
+                        // Full info display
+                        // Duration display
+                        ImGui::SameLine();
+                        ImGui::Text("Duration: %.2fs", clip->duration);
+
+                        // FPS / Ticks per second
+                        ImGui::SameLine();
+                        ImGui::Text("| FPS: %.1f", clip->ticksPerSecond);
+
+                        // Frame count (approximate)
+                        int frameCount = (int)(clip->duration * clip->ticksPerSecond);
+                        ImGui::SameLine();
+                        ImGui::Text("| Frames: %d", frameCount);
+
+                        // Current time / Total time
+                        ImGui::SameLine();
+                        ImGui::Text("| Time: %.2f / %.2f", m_CurrentTime, clip->duration);
+
+                        // DEBUG: Playback state
+                        ImGui::SameLine();
+                        ImGui::TextColored(m_IsPlaying ? ImVec4(0, 1, 0, 1) : ImVec4(1, 0, 0, 1),
+                            "| %s", m_IsPlaying ? "PLAYING" : "PAUSED");
+
+                        ImGui::SameLine();
+                        ImGui::TextColored(m_Loop ? ImVec4(0, 1, 1, 1) : ImVec4(0.5f, 0.5f, 0.5f, 1),
+                            "| Loop: %s", m_Loop ? "ON" : "OFF");
+                    }
+                    else
+                    {
+                        // Compact mode - just essentials
+                        ImGui::SameLine();
+                        ImGui::Text("%.2fs", clip->duration);
+
+                        ImGui::SameLine();
+                        ImGui::TextColored(m_IsPlaying ? ImVec4(0, 1, 0, 1) : ImVec4(1, 0, 0, 1),
+                            "| %s", m_IsPlaying ? "►" : "■");
                     }
                 }
             }
-            ImGui::EndPopup();
-        }
-
-        // Display clip information
-        if (m_SelectedClipIndex >= 0 && m_SelectedClipIndex < (int)m_Animator->GetClipCount())
-        {
-            const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
-            if (clip)
-            {
-                ImGui::SameLine();
-                ImGui::Text("|");
-
-                if (!m_CompactMode)
-                {
-                    // Full info display
-                    // Duration display
-                    ImGui::SameLine();
-                    ImGui::Text("Duration: %.2fs", clip->duration);
-
-                    // FPS / Ticks per second
-                    ImGui::SameLine();
-                    ImGui::Text("| FPS: %.1f", clip->ticksPerSecond);
-
-                    // Frame count (approximate)
-                    int frameCount = (int)(clip->duration * clip->ticksPerSecond);
-                    ImGui::SameLine();
-                    ImGui::Text("| Frames: %d", frameCount);
-
-                    // Current time / Total time
-                    ImGui::SameLine();
-                    ImGui::Text("| Time: %.2f / %.2f", m_CurrentTime, clip->duration);
-
-                    // DEBUG: Playback state
-                    ImGui::SameLine();
-                    ImGui::TextColored(m_IsPlaying ? ImVec4(0, 1, 0, 1) : ImVec4(1, 0, 0, 1),
-                        "| %s", m_IsPlaying ? "PLAYING" : "PAUSED");
-
-                    ImGui::SameLine();
-                    ImGui::TextColored(m_Loop ? ImVec4(0, 1, 1, 1) : ImVec4(0.5f, 0.5f, 0.5f, 1),
-                        "| Loop: %s", m_Loop ? "ON" : "OFF");
-                }
-                else
-                {
-                    // Compact mode - just essentials
-                    ImGui::SameLine();
-                    ImGui::Text("%.2fs", clip->duration);
-
-                    ImGui::SameLine();
-                    ImGui::TextColored(m_IsPlaying ? ImVec4(0, 1, 0, 1) : ImVec4(1, 0, 0, 1),
-                        "| %s", m_IsPlaying ? "►" : "■");
-                }
-            }
-        }
 
             ImGui::Unindent(10.0f);
             ImGui::Spacing();
@@ -1734,36 +1872,36 @@ void AnimationTimelinePanel::ExecuteSingleCommand(const KeyframeCommand& cmd)
         break;
 
     case KeyframeCommand::REMOVE:
+    {
+        // Find by timestamp, not index (index may be stale)
+        int idx = FindKeyframeByTimestamp(cmd.boneName, cmd.keyframe.timeStamp);
+        if (idx >= 0)
         {
-            // Find by timestamp, not index (index may be stale)
-            int idx = FindKeyframeByTimestamp(cmd.boneName, cmd.keyframe.timeStamp);
-            if (idx >= 0)
-            {
-                m_Animator->RemoveKeyframe(m_SelectedClipIndex, cmd.boneName, static_cast<size_t>(idx));
-            }
+            m_Animator->RemoveKeyframe(m_SelectedClipIndex, cmd.boneName, static_cast<size_t>(idx));
         }
-        break;
+    }
+    break;
 
     case KeyframeCommand::MOVE:
+    {
+        // Find by old timestamp
+        int idx = FindKeyframeByTimestamp(cmd.boneName, cmd.oldTime);
+        if (idx >= 0)
         {
-            // Find by old timestamp
-            int idx = FindKeyframeByTimestamp(cmd.boneName, cmd.oldTime);
-            if (idx >= 0)
-            {
-                m_Animator->UpdateKeyframeTime(m_SelectedClipIndex, cmd.boneName, static_cast<size_t>(idx), cmd.newTime);
-            }
+            m_Animator->UpdateKeyframeTime(m_SelectedClipIndex, cmd.boneName, static_cast<size_t>(idx), cmd.newTime);
         }
-        break;
+    }
+    break;
 
     case KeyframeCommand::BONE_POSE:
-        {
-            BonePose newPose;
-            newPose.position = cmd.newPosition;
-            newPose.rotation = cmd.newRotation;
-            newPose.scale = cmd.newScale;
-            SetBonePose(cmd.boneName, newPose);
-        }
-        break;
+    {
+        BonePose newPose;
+        newPose.position = cmd.newPosition;
+        newPose.rotation = cmd.newRotation;
+        newPose.scale = cmd.newScale;
+        SetBonePose(cmd.boneName, newPose);
+    }
+    break;
 
     case KeyframeCommand::BATCH:
         // Execute all sub-commands in order
@@ -1774,37 +1912,37 @@ void AnimationTimelinePanel::ExecuteSingleCommand(const KeyframeCommand& cmd)
         break;
 
     case KeyframeCommand::AUDIO_ADD:
+    {
+        auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+        if (clip)
         {
-            auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
-            if (clip)
-            {
-                clip->audioEvents.push_back(cmd.audioEvent);
-                BOOM_INFO("[Undo/Redo] Added audio event '{}' at {:.2f}s", cmd.audioEvent.eventName, cmd.audioEvent.timeStamp);
-            }
+            clip->audioEvents.push_back(cmd.audioEvent);
+            BOOM_INFO("[Undo/Redo] Added audio event '{}' at {:.2f}s", cmd.audioEvent.eventName, cmd.audioEvent.timeStamp);
         }
-        break;
+    }
+    break;
 
     case KeyframeCommand::AUDIO_EDIT:
+    {
+        auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+        if (clip && cmd.audioEventIndex < clip->audioEvents.size())
         {
-            auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
-            if (clip && cmd.audioEventIndex < clip->audioEvents.size())
-            {
-                clip->audioEvents[cmd.audioEventIndex] = cmd.audioEvent;
-                BOOM_INFO("[Undo/Redo] Updated audio event '{}' at {:.2f}s", cmd.audioEvent.eventName, cmd.audioEvent.timeStamp);
-            }
+            clip->audioEvents[cmd.audioEventIndex] = cmd.audioEvent;
+            BOOM_INFO("[Undo/Redo] Updated audio event '{}' at {:.2f}s", cmd.audioEvent.eventName, cmd.audioEvent.timeStamp);
         }
-        break;
+    }
+    break;
 
     case KeyframeCommand::AUDIO_REMOVE:
+    {
+        auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+        if (clip && cmd.audioEventIndex < clip->audioEvents.size())
         {
-            auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
-            if (clip && cmd.audioEventIndex < clip->audioEvents.size())
-            {
-                clip->audioEvents.erase(clip->audioEvents.begin() + cmd.audioEventIndex);
-                BOOM_INFO("[Undo/Redo] Removed audio event '{}' at {:.2f}s", cmd.audioEvent.eventName, cmd.audioEvent.timeStamp);
-            }
+            clip->audioEvents.erase(clip->audioEvents.begin() + cmd.audioEventIndex);
+            BOOM_INFO("[Undo/Redo] Removed audio event '{}' at {:.2f}s", cmd.audioEvent.eventName, cmd.audioEvent.timeStamp);
         }
-        break;
+    }
+    break;
     }
 }
 
@@ -1816,15 +1954,15 @@ void AnimationTimelinePanel::UndoSingleCommand(const KeyframeCommand& cmd)
     switch (cmd.type)
     {
     case KeyframeCommand::ADD:
+    {
+        // Undo ADD = remove the keyframe (find by timestamp)
+        int idx = FindKeyframeByTimestamp(cmd.boneName, cmd.keyframe.timeStamp);
+        if (idx >= 0)
         {
-            // Undo ADD = remove the keyframe (find by timestamp)
-            int idx = FindKeyframeByTimestamp(cmd.boneName, cmd.keyframe.timeStamp);
-            if (idx >= 0)
-            {
-                m_Animator->RemoveKeyframe(m_SelectedClipIndex, cmd.boneName, static_cast<size_t>(idx));
-            }
+            m_Animator->RemoveKeyframe(m_SelectedClipIndex, cmd.boneName, static_cast<size_t>(idx));
         }
-        break;
+    }
+    break;
 
     case KeyframeCommand::REMOVE:
         // Undo REMOVE = add it back
@@ -1832,26 +1970,26 @@ void AnimationTimelinePanel::UndoSingleCommand(const KeyframeCommand& cmd)
         break;
 
     case KeyframeCommand::MOVE:
+    {
+        // Undo MOVE = find by newTime and set back to oldTime
+        int idx = FindKeyframeByTimestamp(cmd.boneName, cmd.newTime);
+        if (idx >= 0)
         {
-            // Undo MOVE = find by newTime and set back to oldTime
-            int idx = FindKeyframeByTimestamp(cmd.boneName, cmd.newTime);
-            if (idx >= 0)
-            {
-                m_Animator->UpdateKeyframeTime(m_SelectedClipIndex, cmd.boneName, static_cast<size_t>(idx), cmd.oldTime);
-            }
+            m_Animator->UpdateKeyframeTime(m_SelectedClipIndex, cmd.boneName, static_cast<size_t>(idx), cmd.oldTime);
         }
-        break;
+    }
+    break;
 
     case KeyframeCommand::BONE_POSE:
-        {
-            // Undo BONE_POSE = restore old pose
-            BonePose oldPose;
-            oldPose.position = cmd.oldPosition;
-            oldPose.rotation = cmd.oldRotation;
-            oldPose.scale = cmd.oldScale;
-            SetBonePose(cmd.boneName, oldPose);
-        }
-        break;
+    {
+        // Undo BONE_POSE = restore old pose
+        BonePose oldPose;
+        oldPose.position = cmd.oldPosition;
+        oldPose.rotation = cmd.oldRotation;
+        oldPose.scale = cmd.oldScale;
+        SetBonePose(cmd.boneName, oldPose);
+    }
+    break;
 
     case KeyframeCommand::BATCH:
         // Undo batch = undo all sub-commands in REVERSE order
@@ -1862,51 +2000,51 @@ void AnimationTimelinePanel::UndoSingleCommand(const KeyframeCommand& cmd)
         break;
 
     case KeyframeCommand::AUDIO_ADD:
+    {
+        // Undo AUDIO_ADD = remove the audio event (find by timestamp)
+        auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+        if (clip)
         {
-            // Undo AUDIO_ADD = remove the audio event (find by timestamp)
-            auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
-            if (clip)
+            // Find the event by timestamp (more reliable than index after multiple operations)
+            for (auto it = clip->audioEvents.begin(); it != clip->audioEvents.end(); ++it)
             {
-                // Find the event by timestamp (more reliable than index after multiple operations)
-                for (auto it = clip->audioEvents.begin(); it != clip->audioEvents.end(); ++it)
+                if (std::abs(it->timeStamp - cmd.audioEvent.timeStamp) < 0.001f &&
+                    it->soundFile == cmd.audioEvent.soundFile)
                 {
-                    if (std::abs(it->timeStamp - cmd.audioEvent.timeStamp) < 0.001f &&
-                        it->soundFile == cmd.audioEvent.soundFile)
-                    {
-                        BOOM_INFO("[Undo] Removed audio event '{}' at {:.2f}s", it->eventName, it->timeStamp);
-                        clip->audioEvents.erase(it);
-                        break;
-                    }
+                    BOOM_INFO("[Undo] Removed audio event '{}' at {:.2f}s", it->eventName, it->timeStamp);
+                    clip->audioEvents.erase(it);
+                    break;
                 }
             }
         }
-        break;
+    }
+    break;
 
     case KeyframeCommand::AUDIO_EDIT:
+    {
+        // Undo AUDIO_EDIT = restore old audio event state
+        auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+        if (clip && cmd.audioEventIndex < clip->audioEvents.size())
         {
-            // Undo AUDIO_EDIT = restore old audio event state
-            auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
-            if (clip && cmd.audioEventIndex < clip->audioEvents.size())
-            {
-                clip->audioEvents[cmd.audioEventIndex] = cmd.oldAudioEvent;
-                BOOM_INFO("[Undo] Restored audio event '{}' at {:.2f}s", cmd.oldAudioEvent.eventName, cmd.oldAudioEvent.timeStamp);
-            }
+            clip->audioEvents[cmd.audioEventIndex] = cmd.oldAudioEvent;
+            BOOM_INFO("[Undo] Restored audio event '{}' at {:.2f}s", cmd.oldAudioEvent.eventName, cmd.oldAudioEvent.timeStamp);
         }
-        break;
+    }
+    break;
 
     case KeyframeCommand::AUDIO_REMOVE:
+    {
+        // Undo AUDIO_REMOVE = insert the audio event back at original index
+        auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
+        if (clip)
         {
-            // Undo AUDIO_REMOVE = insert the audio event back at original index
-            auto* clip = m_Animator->GetClipMutable(m_SelectedClipIndex);
-            if (clip)
-            {
-                // Insert at original position (or at end if index is out of range)
-                size_t insertIdx = (cmd.audioEventIndex <= clip->audioEvents.size()) ? cmd.audioEventIndex : clip->audioEvents.size();
-                clip->audioEvents.insert(clip->audioEvents.begin() + insertIdx, cmd.audioEvent);
-                BOOM_INFO("[Undo] Restored audio event '{}' at {:.2f}s", cmd.audioEvent.eventName, cmd.audioEvent.timeStamp);
-            }
+            // Insert at original position (or at end if index is out of range)
+            size_t insertIdx = (cmd.audioEventIndex <= clip->audioEvents.size()) ? cmd.audioEventIndex : clip->audioEvents.size();
+            clip->audioEvents.insert(clip->audioEvents.begin() + insertIdx, cmd.audioEvent);
+            BOOM_INFO("[Undo] Restored audio event '{}' at {:.2f}s", cmd.audioEvent.eventName, cmd.audioEvent.timeStamp);
         }
-        break;
+    }
+    break;
     }
 }
 
@@ -2044,3 +2182,273 @@ void AnimationTimelinePanel::RecordBonePoseChange(const std::string& boneName, c
 
     BOOM_INFO("[BonePose] Recorded pose change for bone '{}' (undoable)", boneName.c_str());
 }
+
+// ==================== CUTSCENE UTILITIES ====================
+
+void AnimationTimelinePanel::AddTrack(const std::string& entityName, int propertyType)
+{
+    m_DeferredTracks.push_back({ entityName, propertyType });
+}
+
+void AnimationTimelinePanel::RefreshCutsceneFileList()
+{
+    m_AvailableCutsceneFiles.clear();
+    std::string path = "Resources/Cutscenes";
+    if (!std::filesystem::exists(path)) return;
+
+    for (const auto& entry : std::filesystem::directory_iterator(path))
+    {
+        if (entry.path().extension() == ".seq")
+        {
+            m_AvailableCutsceneFiles.push_back(entry.path().filename().string());
+        }
+    }
+}
+
+void AnimationTimelinePanel::SaveSequence(const std::string& path)
+{
+    std::filesystem::path fsPath(path);
+    if (fsPath.has_parent_path()) {
+        std::filesystem::create_directories(fsPath.parent_path());
+    }
+
+    std::ofstream out(path);
+    if (!out.is_open()) {
+        BOOM_ERROR("Failed to save sequence: {}", path);
+        return;
+    }
+
+    // Save User sequence frame length
+    out << "DURATION " << m_SequenceMaxFrame << "\n";
+    for (const auto& track : m_SequenceTracks)
+    {
+        out << "TRACK \"" << track.entityName << "\" " << track.type << "\n";
+        for (const auto& kf : track.keyFrames)
+        {
+            out << "KEY " << kf.frame << " " << kf.valueX << " " << kf.valueY << " " << kf.valueZ << " " << kf.valueW;
+            if (!kf.valueStr.empty()) {
+                out << " \"" << kf.valueStr << "\"";
+            }
+            out << "\n";
+        }
+    }
+    out.close();
+    BOOM_INFO("Saved sequence to {}", path);
+    RefreshCutsceneFileList();
+}
+
+void AnimationTimelinePanel::LoadSequence(const std::string& path)
+{
+    std::ifstream in(path);
+    if (!in.is_open()) {
+        BOOM_ERROR("Failed to load sequence: {}", path);
+        return;
+    }
+
+    m_SequenceTracks.clear();
+    std::string line, token;
+    SequenceTrack* currentTrack = nullptr;
+
+    const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot", "Look At Target", "Event Trigger" };
+
+    while (std::getline(in, line))
+    {
+        if (line.empty()) continue;
+        std::stringstream ss(line);
+        ss >> token;
+
+        if (token == "DURATION")
+        {
+            ss >> m_SequenceMaxFrame;
+            // Validate bounding
+            if (m_SequenceMaxFrame < 60) m_SequenceMaxFrame = 60;
+        }
+        else if (token == "TRACK")
+        {
+            size_t firstQuote = line.find('"');
+            size_t lastQuote = line.rfind('"');
+            if (firstQuote != std::string::npos && lastQuote != std::string::npos)
+            {
+                std::string entityName = line.substr(firstQuote + 1, lastQuote - firstQuote - 1);
+                std::string typeStr = line.substr(lastQuote + 2);
+                int type = std::stoi(typeStr);
+
+                SequenceTrack newTrack;
+                newTrack.entityName = entityName;
+                newTrack.type = type;
+                newTrack.label = entityName + " : " + (type >= 0 && type < 6 ? typeNames[type] : "Unknown");
+
+                m_SequenceTracks.push_back(newTrack);
+                currentTrack = &m_SequenceTracks.back();
+            }
+        }
+        else if (token == "KEY" && currentTrack)
+        {
+            SerializedKeyframe kf;
+            ss >> kf.frame >> kf.valueX >> kf.valueY >> kf.valueZ >> kf.valueW;
+
+            // Unconditionally try to parse a trailing string if it exists (for Relative Anchors, LookAts, etc.)
+            std::string rest;
+            std::getline(ss, rest);
+            size_t q1 = rest.find('"');
+            size_t q2 = rest.rfind('"');
+            if (q1 != std::string::npos && q2 != std::string::npos && q2 > q1) {
+                kf.valueStr = rest.substr(q1 + 1, q2 - q1 - 1);
+            }
+
+            currentTrack->keyFrames.push_back(kf);
+            currentTrack->keyFrameTimes.push_back(kf.frame);
+        }
+    }
+    in.close();
+    BOOM_INFO("Loaded sequence from {}", path);
+}
+
+void AnimationTimelinePanel::ApplySequenceFrame(int frame)
+{
+    if (!m_Owner || !m_Owner->GetContext()) return;
+    auto& reg = m_Owner->GetContext()->scene;
+
+    for (const auto& track : m_SequenceTracks)
+    {
+        // 1. Find Entity
+        entt::entity e = Boom::FindEntityByName(reg, track.entityName);
+        if (!reg.valid(e)) continue;
+        if (!reg.all_of<Boom::TransformComponent>(e)) continue;
+
+        auto& tc = reg.get<Boom::TransformComponent>(e);
+        // ------------------ Non-Interpolated Tracks ------------------
+        if (track.type == 3 || track.type == 4 || track.type == 5)
+        {
+            const SerializedKeyframe* activeKF = nullptr;
+            for (auto& kf : track.keyFrames) {
+                if (frame >= kf.frame) activeKF = &kf;
+                else break;
+            }
+
+            if (activeKF && !activeKF->valueStr.empty() && activeKF->valueStr != "None")
+            {
+                if (track.type == 3) // Animation
+                {
+                    if (reg.all_of<Boom::AnimatorComponent>(e))
+                    {
+                        auto& ac = reg.get<Boom::AnimatorComponent>(e);
+                        if (ac.animator) {
+                            std::string clipName = activeKF->valueStr;
+                            int clipIndex = -1;
+                            for (size_t i = 0; i < ac.animator->GetClipCount(); ++i) {
+                                const auto* c = ac.animator->GetClip(i);
+                                if (c && c->name == clipName) {
+                                    clipIndex = (int)i;
+                                    break;
+                                }
+                            }
+
+                            if (clipIndex != -1)
+                            {
+                                ac.animator->SetStateMachineEnabled(false);
+                                if (ac.animator->GetCurrentClip() != clipIndex) {
+                                    ac.animator->PlayClip(clipIndex);
+                                }
+
+                                float timeInSeconds = (float)(frame - activeKF->frame) / 60.0f;
+                                const auto* clip = ac.animator->GetClip(clipIndex);
+                                float tps = clip ? clip->ticksPerSecond : 25.0f;
+                                if (tps <= 0.0f) tps = 25.0f;
+
+                                ac.animator->SetTime(timeInSeconds * tps);
+                                ac.animator->UpdateJointsFromCurrentTime();
+                            }
+                        }
+                    }
+                }
+                else if (track.type == 4) // Look At Target Preview
+                {
+                    entt::entity targetE = Boom::FindEntityByName(reg, activeKF->valueStr);
+                    if (reg.valid(targetE))
+                    {
+                        glm::vec3 targetPos = Boom::GetWorldPosition(reg, targetE);
+                        targetPos.y += 1.5f; // Match C# script offset
+
+                        glm::vec3 camPos = Boom::GetWorldPosition(reg, e);
+                        float dx = targetPos.x - camPos.x;
+                        float dz = targetPos.z - camPos.z;
+                        float dy = targetPos.y - camPos.y;
+
+                        float dist = std::sqrt(dx * dx + dz * dz);
+                        float pitch = std::atan2(dy, dist);
+                        float yaw = 0.0f;
+
+                        auto& camTransform = reg.get<Boom::TransformComponent>(e);
+                        if (dist < 0.5f) {
+                            yaw = camTransform.transform.rotate.y * glm::pi<float>() / 180.0f;
+                        }
+                        else {
+                            yaw = std::atan2(dx, dz);
+                        }
+
+                        // Editor Transform uses Degrees. Convert Radians to Degrees.
+                        camTransform.transform.rotate = glm::vec3(
+                            -pitch * 180.0f / glm::pi<float>(),
+                            yaw * 180.0f / glm::pi<float>(),
+                            0.0f
+                        );
+                    }
+                }
+                // Event logic is runtime-only and handled natively in C# via CutsceneSequencer.cs
+                continue; // Skip the interpolation block
+            }
+
+            // ------------------ Interpolated Tracks (Pos, Rot, Scale) ------------------
+            if (track.keyFrames.size() < 2) continue; // Need at least 2 to interpolate
+
+            const SerializedKeyframe* k1 = nullptr;
+            const SerializedKeyframe* k2 = nullptr;
+
+            for (size_t i = 0; i < track.keyFrames.size() - 1; i++)
+            {
+                if (frame >= track.keyFrames[i].frame && frame <= track.keyFrames[i + 1].frame)
+                {
+                    k1 = &track.keyFrames[i];
+                    k2 = &track.keyFrames[i + 1];
+                    break;
+                }
+            }
+
+            if (k1 && k2)
+            {
+
+                // Lerp Transform Values
+                float range = (float)(k2->frame - k1->frame);
+                float t = 0.0f;
+                if (range > 0.0001f) t = (frame - k1->frame) / range;
+                if (t < 0.0f) t = 0.0f;
+                if (t > 1.0f) t = 1.0f;
+
+                float valX = k1->valueX + (k2->valueX - k1->valueX) * t;
+                float valY = k1->valueY + (k2->valueY - k1->valueY) * t;
+                float valZ = k1->valueZ + (k2->valueZ - k1->valueZ) * t;
+
+                if (track.type == 0) // Position
+                {
+                    tc.transform.translate = { valX, valY, valZ };
+                }
+                else if (track.type == 1) // Rotation
+                {
+                    tc.transform.rotate = { valX, valY, valZ };
+                }
+                else if (track.type == 2) // Scale
+                {
+                    tc.transform.scale = { valX, valY, valZ };
+                }
+                else if (track.type == 4 || track.type == 5)
+                {
+                    // Safely ignore these in the Editor preview loop as they involve Game Logic 
+                    // LookAt targets and Event Trigger bindings runs in C# natively.
+                    continue;
+                }
+            }
+        }
+    }
+}
+
