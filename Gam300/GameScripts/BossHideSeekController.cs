@@ -81,6 +81,31 @@ namespace GameScripts
         private Vec3 _colorGreen = new Vec3(0, 1, 0);
         private float _debugLogTimer = 0f;
 
+        // Turn sound
+        private const string TURN_SOUND_NAME = "BossTurnLoop";
+        private const string TURN_SOUND_PATH = "Resources/Audio/BossTurn_Loop.wav";
+        private bool _wasTurning = false;
+
+        [Boom.EditorExposed("Turn Sound Volume", "Volume of the turning sound (0.0 - 1.0)")]
+        private float _turnSoundVolume = 1.0f;
+
+        // Warning sound (plays when turning towards player)
+        private const string WARNING_SOUND_NAME = "BossWarning";
+        private static readonly string[] WARNING_SOUND_PATHS = new string[]
+        {
+            "Resources/Audio/Boss_Warning_02.wav",
+            "Resources/Audio/Boss_Warning_03.wav",
+            "Resources/Audio/Boss_Warning_04.wav",
+            "Resources/Audio/Boss_Warning_05.wav",
+            "Resources/Audio/Boss_Warning_06.wav",
+            "Resources/Audio/Boss_Warning_07.wav",
+            "Resources/Audio/Boss_Warning_08.wav"
+        };
+        private static Random _warningRandom = new Random();
+
+        [Boom.EditorExposed("Warning Sound Volume", "Volume of the warning sound (0.0 - 1.0)")]
+        private float _warningSoundVolume = 1.0f;
+
         public void OnStart(string jsonParams)
         {
             s_instances[Entity] = this;
@@ -105,6 +130,14 @@ namespace GameScripts
             _isTurning = false;
             _hasDealtDamage = false;
             _catchTimer = _catchDelay;
+            // Stop turn sound if playing
+            if (_wasTurning)
+            {
+                API.StopSound(TURN_SOUND_NAME);
+                _wasTurning = false;
+            }
+            // Stop warning sound
+            API.StopSound(WARNING_SOUND_NAME);
             StopCountdown();
             Vec3 rot = API.GetRotation(Entity);
             rot.Y = _currentYRotation;
@@ -131,18 +164,46 @@ namespace GameScripts
                     _isWatching = !_isWatching;
                     _targetYRotation = _isWatching ? _watchingYaw : _restingYaw;
                     UpdateLights(_isWatching ? _colorRed : _colorGreen, _isWatching ? _redIntensity : _greenIntensity);
-                    if (!_isWatching) StopCountdown();
+                    if (!_isWatching)
+                    {
+                        StopCountdown();
+                        // Stop warning sound when turning away from player
+                        API.StopSound(WARNING_SOUND_NAME);
+                    }
                 }
                 if (_isWatching) UpdateDetection(dt);
             }
 
             if (_isTurning)
             {
+                // Start turn sound when turning begins
+                if (!_wasTurning)
+                {
+                    API.PlaySound(TURN_SOUND_NAME, TURN_SOUND_PATH, true);
+                    API.SetSoundVolume(TURN_SOUND_NAME, _turnSoundVolume);
+                    _wasTurning = true;
+                }
+
                 float angleDiff = _targetYRotation - _currentYRotation;
                 while (angleDiff > 180f) angleDiff -= 360f;
                 while (angleDiff < -180f) angleDiff += 360f;
                 float step = _rotationSpeed * dt;
-                if (Math.Abs(angleDiff) <= step) { _currentYRotation = _targetYRotation; _isTurning = false; }
+                if (Math.Abs(angleDiff) <= step)
+                {
+                    _currentYRotation = _targetYRotation;
+                    _isTurning = false;
+                    // Stop turn sound when turning ends
+                    API.StopSound(TURN_SOUND_NAME);
+                    _wasTurning = false;
+
+                    // Play warning sound after turning completes, only if now watching player
+                    if (_isWatching)
+                    {
+                        string randomWarning = WARNING_SOUND_PATHS[_warningRandom.Next(WARNING_SOUND_PATHS.Length)];
+                        API.PlaySound(WARNING_SOUND_NAME, randomWarning, true);
+                        API.SetSoundVolume(WARNING_SOUND_NAME, _warningSoundVolume);
+                    }
+                }
                 else { _currentYRotation += Math.Sign(angleDiff) * step; }
                 Vec3 rot = API.GetRotation(Entity);
                 rot.Y = _currentYRotation;
@@ -275,6 +336,18 @@ namespace GameScripts
         }
 
         private Vec3 ParseVec3(string csv, Vec3 def) { try { string[] p = csv.Split(','); return new Vec3(float.Parse(p[0]), float.Parse(p[1]), float.Parse(p[2])); } catch { return def; } }
-        public void OnDestroy() { if (s_instances.ContainsKey(Entity)) s_instances.Remove(Entity); PlayerManager.UnregisterEnemy(this); }
+        public void OnDestroy()
+        {
+            // Stop turn sound on destroy
+            if (_wasTurning)
+            {
+                API.StopSound(TURN_SOUND_NAME);
+                _wasTurning = false;
+            }
+            // Stop warning sound on destroy
+            API.StopSound(WARNING_SOUND_NAME);
+            if (s_instances.ContainsKey(Entity)) s_instances.Remove(Entity);
+            PlayerManager.UnregisterEnemy(this);
+        }
     }
 }
