@@ -25,6 +25,41 @@ namespace GameScripts
             }
         }
 
+        // Play a named cutscene and fire a callback when it finishes or is skipped.
+        public static void PlayWithCallback(string entityName, Action onComplete)
+        {
+            ulong id = API.FindEntity(entityName);
+            if (id != 0 && InstancesById.ContainsKey(id))
+            {
+                var seq = InstancesById[id];
+                seq._onCompleteCallback = onComplete;
+                seq.Play();
+            }
+            else
+            {
+                API.Log($"[Cutscene] Could not find cutscene script on '{entityName}' — firing callback immediately.");
+                onComplete?.Invoke();
+            }
+        }
+
+        // Returns true if any sequencer started via PlayWithCallback is currently playing.
+        // Used by Entry to keep game paused during a callback-triggered cutscene.
+        public static bool IsCallbackCutsceenPlaying()
+        {
+            foreach (var kv in InstancesById)
+                if (kv.Value._isPlaying && kv.Value._onCompleteCallback != null) return true;
+            return false;
+        }
+
+        // Called from Entry.Update so callback-triggered cutscenes tick even while game logic is paused.
+        // Normal cutscenes (Level 2 etc.) tick via their own OnUpdate — this does NOT touch them.
+        public static void UpdateIfActive(float dt)
+        {
+            foreach (var kv in InstancesById)
+                if (kv.Value._isPlaying && kv.Value._onCompleteCallback != null)
+                    kv.Value.OnUpdate(dt);
+        }
+
         // Properties (Exposed to Editor)
         [Boom.EditorExposed("Cutscene File", "The .seq file to load from Resources/Cutscenes/")]
         public string CutsceneFile = "Test.seq";
@@ -56,6 +91,7 @@ namespace GameScripts
         private float _delayTimer = 0f;
         private float _logTimer = 0f;
         private int _duration = 600;
+        private Action _onCompleteCallback = null;
 
         public class KeyFrame
         {
@@ -207,13 +243,11 @@ namespace GameScripts
 
             PlayerMovement.CutsceneMode = false;
 
-            // NEW: Re-enable Engine ThirdPersonCamera logic
+            // Re-enable Engine ThirdPersonCamera logic
             API.SetCutsceneMode(false);
 
             // Stop letterbox animation
             UIManager.HideLetterbox();
-
-            // Re-enable state machines for all affected entities
 
             // Re-enable state machines for all affected entities
             foreach (var t in _tracks)
@@ -222,13 +256,16 @@ namespace GameScripts
                 {
                     if (API.HasAnimator(t.cachedEntityID))
                     {
-                        // Force reset to empty or Idle before re-enabling SM
-                        // otherwise the old clip might keep looping
                         API.AnimatorPlay(t.cachedEntityID, "");
                         API.AnimatorSetStateMachineEnabled(t.cachedEntityID, true);
                     }
                 }
             }
+
+            // Fire and clear completion callback
+            Action cb = _onCompleteCallback;
+            _onCompleteCallback = null;
+            cb?.Invoke();
         }
 
         public void OnUpdate(float dt)

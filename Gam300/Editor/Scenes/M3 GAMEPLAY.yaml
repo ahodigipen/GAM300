@@ -832,7 +832,7 @@ ENTITIES:
       SortOrder: 46
     TransformComponent:
       Transform:
-        Translate: [-54.0522881, 0.113139331, 5.9679141]
+        Translate: [0, -9999, 0]
         Rotate: [173.225891, 310.295502, -0.000199298636]
         Scale: [0.521856189, 1.15006506, 1.08660555]
     ModelComponent:
@@ -5630,7 +5630,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.29133058
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -5663,11 +5663,11 @@ ENTITIES:
       SortOrder: 379
     TransformComponent:
       Transform:
-        Translate: [-0.796772301, -0.770739496, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.100000001, 0.100000001, 0.5]
+        Translate: [0.899999976, -0.770739496, 0]
+        Rotate: [0, 0, 0]
+        Scale: [0.0599999987, 0.100000001, 0.5]
     SpriteComponent:
-      textureID: 883033736161376587
+      textureID: 2900915588722288564
       color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
@@ -6337,7 +6337,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 3.29133034
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -6625,7 +6625,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.29133058
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -6768,7 +6768,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 1.63341022
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -6914,7 +6914,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.29133058
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -7057,7 +7057,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.29133058
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -8107,7 +8107,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.3920958
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -8250,7 +8250,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.29133058
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -8393,7 +8393,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.29133058
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -13829,7 +13829,7 @@ ENTITIES:
       SortOrder: 247
     TransformComponent:
       Transform:
-        Translate: [-54.0522881, -0.186860681, 5.9679141]
+        Translate: [-54.0522881, 1.28313935, 5.9679141]
         Rotate: [0, -91.9999924, 0]
         Scale: [0.0164994802, 0.0164999999, 0.0164994802]
     CharacterControllerComponent:
@@ -14241,16 +14241,16 @@ ENTITIES:
       ParamsJSON: "{}"
   - InfoComponent:
       Parent: 15030438282683852635
-      Name: UI_Hold
+      Name: CTRL_Crouch
       UID: 9281200604267375397
       SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0.40993607, -0.351144314, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.300000012, 0.349999994, 0.300000012]
+        Rotate: [0, 0, 0]
+        Scale: [0.25, 0.0900000036, 0.300000012]
     SpriteComponent:
-      textureID: 13937156857161099910
+      textureID: 11063674576259295404
       color: [1, 1, 1, 0]
       renderAs3D: false
   - InfoComponent:
@@ -14573,23 +14573,19 @@ ENTITIES:
       RemoveBlackBackground: true
       TintColor: [1, 1, 1, 1]
   - InfoComponent:
-      Parent: 0
-      Name: UI_Stance_Text
-      UID: 799560869092660199
-      SortOrder: 222
+      Parent: 15030438282683852635
+      Name: Crouch_FirstTime_Dialogue4
+      UID: 17426193737871796914
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, 0, 0]
+        Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    TextComponent:
-      text: CTRL
-      fontName: Cormorant-VariableFont_wght
-      color: [1, 1, 1, 1]
-      scale: 0.699999988
-      screenPosition: [143, 22]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 1675251116774239397
+      color: [1, 1, 1, 0]
       renderAs3D: false
-      billboardMode: true
   - InfoComponent:
       Parent: 0
       Name: Intro CutScene
@@ -14603,7 +14599,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.CutsceneSequencer
-      ParamsJSON: "{\n  \"BlockInput\": false,\n  \"CutsceneFile\": \"IntroCutscene.seq\",\n  \"PlayOnStart\": true\n}"
+      ParamsJSON: "{\n  \"BlockInput\": false,\n  \"CutsceneFile\": \"IntroCutscene.seq\",\n  \"PlayOnStart\": false\n}"
   - InfoComponent:
       Parent: 7684206646313759860
       Name: Sentry Vision Cone 5
@@ -14841,7 +14837,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.2913301
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -15628,7 +15624,7 @@ ENTITIES:
       fontName: Cormorant-VariableFont_wght
       color: [0, 0, 0, 0]
       scale: 1
-      screenPosition: [339, 83]
+      screenPosition: [100, 83]
       renderAs3D: false
       billboardMode: true
   - InfoComponent:
@@ -16148,7 +16144,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.29133058
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -18296,7 +18292,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.CPTrigger
-      ParamsJSON: "{\n  \"_activeColor\": {\n    \"X\": 0.07800000160932541,\n    \"Y\": 0.8270000219345093,\n    \"Z\": 0.5799999833106995\n  },\n  \"_bobAmount\": 5.0,\n  \"_bobSpeed\": 10.0,\n  \"_bobbingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_checkpointSpriteNames\": \"CPPopup\",\n  \"_floatSpeed\": 20.0,\n  \"_floatingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_forwardOffset\": -5.0,\n  \"_lightNames\": \"ResPoint1_Light_1,ResPoint1_Light_2,ResPoint1_Light_3\",\n  \"_spawnOffsetY\": 1.5\n}"
+      ParamsJSON: "{\n  \"_activeColor\": {\n    \"X\": 0.07800000160932541,\n    \"Y\": 0.8270000219345093,\n    \"Z\": 0.5799999833106995\n  },\n  \"_bobAmount\": 5.0,\n  \"_bobSpeed\": 10.0,\n  \"_bobbingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_checkpointSpriteNames\": \"CPPopup\",\n  \"_floatSpeed\": 20.0,\n  \"_floatingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_forwardOffset\": -5.0,\n  \"_lightNames\": \"ResPoint1_Light_1,ResPoint1_Light_2,ResPoint1_Light_3\",\n  \"_spawnOffsetY\": 1.5,\n  \"_triggerIntroCutscene\": true\n}"
   - InfoComponent:
       Parent: 0
       Name: PlayerSpawn
@@ -18627,4 +18623,200 @@ ENTITIES:
     SpriteComponent:
       textureID: 9870814164832527259
       color: [0, 0, 0, 1]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: Crouch_FirstTime_Dialogue1
+      UID: 3957505532815248706
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, 0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 15364468852678004646
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: Crouch_FirstTime_Dialogue2
+      UID: 10666103553690766721
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, 0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 17822574376099780435
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: Crouch_FirstTime_Dialogue3
+      UID: 8035403347555011041
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, 0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 12468824706065626304
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: StartCutscene_Dialogue1
+      UID: 7649599826924151235
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, 0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 3415610121296560794
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: StartCutscene_Dialogue2
+      UID: 2687846477924534240
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, 0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 1495054568968275175
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: StartCutscene_Dialogue3
+      UID: 2490986152176356736
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, 0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 6999238442563118516
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: StartCutscene_Dialogue4
+      UID: 8218317693701373100
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, 0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 12278568808582628673
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: StartCutscene_Dialogue5
+      UID: 5411667516100329507
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, 0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 7108622298376919790
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: StartCutscene_Dialogue6
+      UID: 13420558737131518241
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, 0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 367559179714889467
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: E_BreakOut
+      UID: 1014882402874434462
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.40993607, -0.351144314, 0]
+        Rotate: [0, 0, 0]
+        Scale: [0.25, 0.0900000036, 0.300000012]
+    SpriteComponent:
+      textureID: 5423514755823872091
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: EncounterPrisonGuard_Dialogue1
+      UID: 3049540091344939127
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, 0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 2021043633113812075
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: EncounterPrisonGuard_Dialogue2
+      UID: 7554466058286192276
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, 0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 2629327657053304990
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: Checkpoint1_Dialogue1
+      UID: 11197880381142153049
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, 0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 15496482806259426187
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: Checkpoint1_Dialogue2
+      UID: 7666749640936526087
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, 0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 16104766830198919102
+      color: [1, 1, 1, 0]
       renderAs3D: false

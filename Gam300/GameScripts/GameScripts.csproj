@@ -50,6 +50,7 @@
     <Compile Include="CPTrigger.cs" />
     <Compile Include="CrouchTutorialManager.cs" />
     <Compile Include="CutsceneController.cs" />
+    <Compile Include="StoryDialogueManager.cs" />
     <Compile Include="CutsceneSequencer.cs" />
     <Compile Include="FreezeOverlayBehavior.cs" />
     <Compile Include="GammaSlider.cs" />
