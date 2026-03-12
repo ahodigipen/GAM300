@@ -264,8 +264,6 @@ namespace Boom {
             if (PxRigidDynamic* dyn = rb.actor->is<PxRigidDynamic>())
             {
                 dyn->setLinearVelocity(PxVec3(vel->x, vel->y, vel->z));
-                // Ensure actor wakes up when scripts set velocity so it is simulated immediately
-                dyn->wakeUp();
             }
         }
     }
@@ -909,16 +907,6 @@ namespace Boom {
                 collider.Collider.Shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
                 collider.Collider.Shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, false);
             }
-                // Wake associated rigidbody actor so it participates in simulation immediately
-                // Also ensure dynamic actors are awake after flag changes
-                if (s_Ctx->scene.any_of<RigidBodyComponent>(e)) {
-                    auto& rb = s_Ctx->scene.get<RigidBodyComponent>(e).RigidBody;
-                    if (rb.actor) {
-                        if (PxRigidDynamic* dyn = rb.actor->is<PxRigidDynamic>()) {
-                            dyn->wakeUp();
-                        }
-                    }
-                }
         }
     }
 
@@ -999,15 +987,10 @@ namespace Boom {
                 return;
             }
 
-            // Prepare boxed uint64 arguments for delegate invocation
-            MonoClass* uint64Class = mono_get_uint64_class();
-            MonoDomain* domain = mono_domain_get();
-            MonoObject* boxedArg0 = mono_value_box(domain, uint64Class, &triggerEntity);
-            MonoObject* boxedArg1 = mono_value_box(domain, uint64Class, &otherEntity);
-
+            // Prepare arguments for delegate invocation
             void* args[2];
-            args[0] = boxedArg0;
-            args[1] = boxedArg1;
+            args[0] = &triggerEntity;
+            args[1] = &otherEntity;
 
             // Invoke the delegate safely using Mono runtime
             MonoObject* exc = nullptr;
@@ -1060,15 +1043,10 @@ namespace Boom {
                 return;
             }
 
-            // Prepare boxed uint64 arguments for delegate invocation
-            MonoClass* uint64Class = mono_get_uint64_class();
-            MonoDomain* domain = mono_domain_get();
-            MonoObject* boxedArg0 = mono_value_box(domain, uint64Class, &triggerEntity);
-            MonoObject* boxedArg1 = mono_value_box(domain, uint64Class, &otherEntity);
-
+            // Prepare arguments for delegate invocation
             void* args[2];
-            args[0] = boxedArg0;
-            args[1] = boxedArg1;
+            args[0] = &triggerEntity;
+            args[1] = &otherEntity;
 
             // Invoke the delegate safely using Mono runtime
             MonoObject* exc = nullptr;
@@ -2257,9 +2235,6 @@ namespace Boom {
 
                     // Teleport the actor
                     dyn->setGlobalPose(newPose);
-
-                        // Ensure CCD is enabled on teleport to avoid tunneling when enabling simulation
-                        dyn->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_CCD, true);
 
                     // Wake the actor up in case it was sleeping
                     dyn->wakeUp();
