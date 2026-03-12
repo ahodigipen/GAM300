@@ -92,6 +92,19 @@ namespace EditorUI {
 
                 ImGui::Dummy(viewportSize);
 
+                // Frustum cull debug rectangle
+                auto* app = static_cast<Boom::Application*>(m_Ctx->app);
+                if (app && app->frustumCullingEnabled && app->frustumCullDebugLines)
+                {
+                    const float s = app->frustumCullScale;
+                    const ImVec2 center(cursorPos.x + viewportSize.x * 0.5f, cursorPos.y + viewportSize.y * 0.5f);
+                    const ImVec2 half(viewportSize.x * 0.5f * s, viewportSize.y * 0.5f * s);
+                    const ImVec2 rectMin(center.x - half.x, center.y - half.y);
+                    const ImVec2 rectMax(center.x + half.x, center.y + half.y);
+                    ImDrawList* dl = ImGui::GetWindowDrawList();
+                    dl->AddRect(rectMin, rectMax, IM_COL32(255, 80, 0, 220), 0.0f, 0, 2.0f);
+                }
+
                 // Get viewport bounds FIRST
                 const ImVec2 itemMin = ImGui::GetItemRectMin();
                 const ImVec2 itemMax = ImGui::GetItemRectMax();

@@ -289,6 +289,15 @@ namespace EditorUI {
                 }				
                 ImGui::MenuItem("Bloom", nullptr, &m.ctx->renderer->enabledBloom);
 
+                if (ImGui::BeginMenu("Frustum Culling"))
+                {
+                    auto* app = static_cast<Boom::Application*>(m.ctx->app);
+                    ImGui::MenuItem("Enable",      nullptr, &app->frustumCullingEnabled);
+                    ImGui::MenuItem("Debug Lines", nullptr, &app->frustumCullDebugLines);
+                    ImGui::SliderFloat("Scale", &app->frustumCullScale, 0.1f, 1.0f);
+                    ImGui::EndMenu();
+                }
+
                 ImGui::MenuItem("Picking ignore GUI", nullptr, &m.ctx->renderer->isPickIgnoreGUI);
 
                 if (ImGui::BeginMenu("Tone Mapping")) {

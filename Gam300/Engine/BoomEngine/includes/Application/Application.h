@@ -114,7 +114,10 @@ namespace Boom
 		float m_TestRot = 0.0f;
 
 		bool m_PhysDebugViz = false;
-		bool m_Is30FPSLimit = false; // Toggle for 30fps testing
+		bool m_Is30FPSLimit = false;
+		bool frustumCullingEnabled = true;
+		float frustumCullScale = 1.0f;
+		bool frustumCullDebugLines = false;
 
 		// --- Mono State ---
 		MonoDomain* m_MonoRootDomain = nullptr;
@@ -140,6 +143,11 @@ namespace Boom
 		void DrawScriptLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec3& color) {
 			m_ScriptLines.push_back({ p0, p1, color });
 		}
+
+		struct LocalAabb { glm::vec3 min, max; };
+
+		glm::mat4 m_ViewProjection{ 1.f };
+		std::unordered_map<AssetID, LocalAabb> m_AabbCache;
 
 		/**
 		* @brief Constructs the Application, assigns its unique ID, and allocates the AppContext.
@@ -197,6 +205,8 @@ namespace Boom
 		void RenderScene(bool isPicking = false);
 		void RenderTextOverlay();
 		void RenderSpriteOverlay();
+
+		LocalAabb GetOrComputeLocalAabb(AssetID modelID);
 
 		/**
 		* @brief Enters play mode (like Unity's Play button)
@@ -1418,6 +1428,7 @@ namespace Boom
 		BOOM_INLINE void CleanupCurrentScene()
 		{
 			BOOM_INFO("[Scene] Cleaning up current scene...");
+			m_AabbCache.clear();
 
 			// Destroy character controllers first
 			m_Context->physics->DestroyAllControllers();

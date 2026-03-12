@@ -409,6 +409,7 @@ namespace Boom
                 dbgView = comp.camera.View(transform);
                 dbgProj = comp.camera.Projection(m_Context->renderer->Aspect());
                 dbgCamPos = transform.translate;
+                m_ViewProjection = dbgProj * dbgView;
                 });
 
             // Skybox FIRST (so GUI blends against it)
@@ -700,6 +701,51 @@ namespace Boom
         }
     }
 
+    Application::LocalAabb Application::GetOrComputeLocalAabb(AssetID modelID)
+    {
+        auto it = m_AabbCache.find(modelID);
+        if (it != m_AabbCache.end()) return it->second;
+
+        ModelAsset* asset = m_Context->assets->TryGet<ModelAsset>(modelID);
+        if (!asset || !asset->data) {
+            m_AabbCache[modelID] = { glm::vec3(0.f), glm::vec3(0.f) };
+            return m_AabbCache[modelID];
+        }
+
+        glm::vec3 lo(FLT_MAX), hi(-FLT_MAX);
+        auto* staticModel = dynamic_cast<StaticModel*>(asset->data.get());
+        if (staticModel) {
+            for (const auto& mesh : staticModel->GetMeshData()) {
+                for (const auto& vert : mesh.vtx) {
+                    lo = glm::min(lo, vert.pos);
+                    hi = glm::max(hi, vert.pos);
+                }
+            }
+        }
+
+        if (lo.x > hi.x) {
+            lo = glm::vec3(-1.f);
+            hi = glm::vec3(1.f);
+        }
+
+        glm::mat4 modelT = asset->data->modelTransform.Matrix();
+        glm::vec3 corners[8];
+        for (int i = 0; i < 8; ++i) {
+            glm::vec4 t = modelT * glm::vec4(i & 1 ? hi.x : lo.x, i & 2 ? hi.y : lo.y, i & 4 ? hi.z : lo.z, 1.f);
+            corners[i] = glm::vec3(t);
+        }
+
+        lo = corners[0];
+        hi = corners[0];
+        for (int i = 1; i < 8; ++i) {
+            lo = glm::min(lo, corners[i]);
+            hi = glm::max(hi, corners[i]);
+        }
+
+        m_AabbCache[modelID] = { lo, hi };
+        return m_AabbCache[modelID];
+    }
+
     //picking currently should only work on objects with model
     void Application::RenderScene(bool isPicking)
     {
@@ -789,6 +835,12 @@ namespace Boom
                 glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
                 Transform3D worldTransform;
                 DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
+
+                if (!isPicking && frustumCullingEnabled) {
+                    LocalAabb aabb = GetOrComputeLocalAabb(comp.modelID);
+                    if (aabb.min != aabb.max && Boom::IsAabbOutsideFrustum(m_ViewProjection * worldMatrix, aabb.min, aabb.max, frustumCullScale))
+                        return;
+                }
 
                 if (isPicking) {
                     // Picking pass - always use immediate draw
