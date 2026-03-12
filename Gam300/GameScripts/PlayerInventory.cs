@@ -21,8 +21,8 @@ namespace GameScripts
         // New: Track the order of item types in the player's inventory
         public static System.Collections.Generic.List<string> s_inventorySlots = new System.Collections.Generic.List<string>();
 
-        // New: Track if we are holding a freeze charge
-        private static bool s_hasFreezeCharge = false;
+        // Track the count of freeze charges
+        private static int s_freezeChargeCount = 0;
 
         // Pickup counts for tutorial system (tracks total lifetime pickups per item type)
         private static int s_largeTokenPickupCount = 0;
@@ -36,7 +36,7 @@ namespace GameScripts
             s_keyVariants.Clear();
             s_typeToVariant.Clear();
             s_inventorySlots.Clear(); // Keep our new slots clean
-            s_hasFreezeCharge = false; // Reset ability on game restart
+            s_freezeChargeCount = 0; // Reset ability on game restart
             s_largeTokenPickupCount = 0;
             s_smallTokenPickupCount = 0;
             s_talismanPickupCount = 0;
@@ -159,34 +159,33 @@ namespace GameScripts
 
         // --- Freeze Ability Logic ---
 
-        public static bool HasFreezePower() => s_hasFreezeCharge;
+        public static bool HasFreezePower() => s_freezeChargeCount > 0;
+        public static int GetFreezeChargeCount() => s_freezeChargeCount;
 
         // Returns true if picked up successfully, false if full
         public static bool TryAddFreezeCharge()
         {
-            if (s_hasFreezeCharge)
-            {
-                API.Log("[PlayerInventory] Cannot pick up Freeze: Already holding one!");
-                return false;
-            }
 
-            s_hasFreezeCharge = true;
+            s_freezeChargeCount++;
             s_talismanPickupCount++;
             if (!s_inventorySlots.Contains("Freeze"))
             {
                 s_inventorySlots.Add("Freeze");
             }
-            API.Log("[PlayerInventory] Freeze Charge Acquired! Press E to use.");
+            API.Log($"[PlayerInventory] Freeze Charge Acquired! Count: {s_freezeChargeCount}. Press E to use.");
             return true;
         }
 
         public static bool ConsumeFreezeCharge()
         {
-            if (!s_hasFreezeCharge) return false;
+            if (s_freezeChargeCount <= 0) return false;
 
-            s_hasFreezeCharge = false;
-            s_inventorySlots.Remove("Freeze");
-            API.Log("[PlayerInventory] Freeze Charge used.");
+            s_freezeChargeCount--;
+            if (s_freezeChargeCount == 0)
+            {
+                s_inventorySlots.Remove("Freeze");
+            }
+            API.Log($"[PlayerInventory] Freeze Charge used. Left: {s_freezeChargeCount}");
             return true;
         }
     }

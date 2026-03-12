@@ -37,8 +37,8 @@ namespace EditorUI {
         bool* showPlaybackControls{ nullptr };
         bool* showConsole{ nullptr };
         bool* showAudio{ nullptr };
-		bool* showResources{ nullptr };
-		bool* showDirectory{ nullptr };
+        bool* showResources{ nullptr };
+        bool* showDirectory{ nullptr };
         bool* showAnimatorGraph{ nullptr };
         bool* showSkeletonTree{ nullptr };
         bool* showModelPreview{ nullptr };
@@ -50,7 +50,7 @@ namespace EditorUI {
         bool* showExportDialog{ nullptr };
 
         // Selected entity handle (optional; used by Save/Delete Selected)
-        entt::entity selectedEntity{ entt::null};
+        entt::entity selectedEntity{ entt::null };
 
         // Scene name text buffer (for Save/Save As defaults)
         char* sceneNameBuffer{ nullptr };

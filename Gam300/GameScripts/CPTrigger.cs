@@ -38,6 +38,12 @@ namespace GameScripts
         [Boom.EditorExposed("Floating Sprite Names", "Comma-separated names of sprites that should float upwards")]
         private string _floatingSpriteNames = "";
 
+        [Boom.EditorExposed("Intro Cutscene", "Whether to play the intro cutscene and checkpoint dialogue when activated")]
+        private bool _triggerIntroCutscene = false;
+
+        [Boom.EditorExposed("Cutscene Entity Name", "Name of the entity with CutsceneSequencer to play (only used if Trigger Intro Cutscene is true)")]
+        private string _cutsceneEntityName = "Intro CutScene";
+
         [Boom.EditorExposed("Sprite Display Duration", "How long to show the sprites in seconds")]
         private float _spriteDisplayDuration = 2.0f;
 
@@ -70,6 +76,8 @@ namespace GameScripts
         private float _spriteAlpha = 0.0f;
         private float _spriteTimer = 0.0f;
         private float _totalActiveTime = 0.0f;
+        // Fired once when sprites fully fade out (used to chain cutscene after UI)
+        private Action _spriteOnCompleteAction = null;
 
         // Static instance tracking
         private static readonly Dictionary<ulong, CPTrigger> s_instances = new Dictionary<ulong, CPTrigger>();
@@ -97,7 +105,7 @@ namespace GameScripts
                         if (API.HasSpotLight(id))
                         {
                             API.SetSpotLightIntensity(id, 0.0f);
-                        }
+                          }
                         else if (API.HasPointLight(id))
                         {
                             API.SetPointLightIntensity(id, 0.0f);
@@ -245,6 +253,11 @@ namespace GameScripts
                                 API.SetPosition(id, _originalSpritePositions[id]);
                             }
                         }
+
+                        // Fire the on-complete callback once sprites have fully hidden
+                        Action cb = _spriteOnCompleteAction;
+                        _spriteOnCompleteAction = null;
+                        cb?.Invoke();
                     }
                     
                     _totalActiveTime = 0.0f;
@@ -350,14 +363,22 @@ namespace GameScripts
                 if (_spriteIDs.Count > 0)
                 {
                     _spriteTimer = _spriteDisplayDuration;
-                    _totalActiveTime = 0.0f; // Restart animation timer
-                    _spriteAlpha = 0.0f;     // Ensure it starts from invisible
-                    
-                    // Force them to be invisible immediately before fade starts
+                    _totalActiveTime = 0.0f;
+                    _spriteAlpha = 0.0f;
                     foreach (ulong id in _spriteIDs)
-                    {
                         API.SetSpriteAlpha(id, 0.0f);
-                    }
+                }
+
+                if (_triggerIntroCutscene)
+                {
+                    // After sprites fade out, THEN play cutscene, THEN play dialogue
+                    _spriteOnCompleteAction = () =>
+                    {
+                        CutsceneSequencer.PlayWithCallback(_cutsceneEntityName, () =>
+                        {
+                            StoryDialogueManager.PlayCheckpoint1Sequence();
+                        });
+                    };
                 }
 
                 // Re-find light entities during activation to ensure they are found

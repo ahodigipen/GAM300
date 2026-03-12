@@ -59,6 +59,31 @@ namespace EditorUI {
         glm::vec3 scale;
     };
 
+    // --- CUTSCENE SEQUENCER DATA ---
+    struct SerializedKeyframe
+    {
+        int frame;
+        float valueX, valueY, valueZ, valueW; // Support up to Vec4
+        std::string valueStr; // For Animation names
+    };
+
+    struct SequenceTrack
+    {
+        std::string label; // Display Name (e.g. "Player : Position")
+        std::string entityName; // Actual Entity Name
+        int type; // 0 = Position, 1 = Rotation, etc.
+        std::vector<int> keyFrameTimes;
+        std::vector<SerializedKeyframe> keyFrames;
+        bool expanded = true;
+    };
+
+    struct DeferredTrack
+    {
+        std::string entityName;
+        int type;
+    };
+    // -------------------------------
+
     // Selected keyframe identifier (for multiselect)
     struct SelectedKeyframe {
         std::string boneName;
@@ -73,27 +98,6 @@ namespace EditorUI {
         bool operator==(const SelectedKeyframe& other) const {
             return boneName == other.boneName && keyframeIndex == other.keyframeIndex;
         }
-    };
-
-    // --- SEQUENCER STRUCTURES ---
-    struct SerializedKeyframe {
-        int frame;
-        float time;
-        float valueX, valueY, valueZ, valueW;
-        std::string valueStr;
-    };
-
-    struct SequenceTrack {
-        std::string entityName;
-        std::string label;
-        int type; // 0=Pos, 1=Rot, 2=Scale, 3=Anim, 4=LookAt, 5=Event
-        std::vector<SerializedKeyframe> keyFrames;
-        std::vector<int> keyFrameTimes;
-    };
-
-    struct DeferredTrack {
-        std::string entityName;
-        int type; // 0=Pos, 1=Rot, 2=Scale, etc.
     };
 
     /**
@@ -175,6 +179,7 @@ namespace EditorUI {
 
         // Loaded model (from selected entity OR standalone)
         std::shared_ptr<Boom::Model> m_Model;
+        uint64_t m_MaterialID = 0;
         std::shared_ptr<Boom::Animator> m_Animator;  // Our independent cloned animator
         std::shared_ptr<Boom::Animator> m_SourceAnimator;  // The original animator we cloned from (for change detection)
         entt::entity m_SourceEntityID = entt::null;  // Track which entity we cloned from
