@@ -18,6 +18,7 @@ namespace GameScripts
         public const string INVENTORY_SCENE_NAME = "InventoryMenu";
 
         public const string OUTRO_SCENE_NAME = "OUTRO SCENE";
+        public const string BOSS_ARENA_SCENE_NAME = "NewBossArena";
         public const string POPUP_SCENE_NAME = "PopUpMenu";
         public const string LEVEL_1_UI = "Level1PopUp";
         public static string _activePopupName = "";
@@ -73,6 +74,7 @@ namespace GameScripts
         private static bool _i_KeyWasDown = false;
         private static bool _start_ButtonWasDown = false;
         private static bool _rightBracket_KeyWasDown = false;
+        private static bool _leftBracket_KeyWasDown = false;
 
         public static PauseMenu s_ActivePauseMenuInstance = null;
         public static DeathMenu s_ActiveDeathMenuInstance = null;
@@ -404,6 +406,17 @@ namespace GameScripts
                     return;
                 }
                 _rightBracket_KeyWasDown = rightBracket_KeyDown;
+
+                // Handle [ key to transition to Boss Arena
+                bool leftBracket_KeyDown = API.IsKeyDown(API.KEY_LEFT_BRACKET);
+                if (leftBracket_KeyDown && !_leftBracket_KeyWasDown)
+                {
+                    API.Log("[Entry] '[' pressed - transitioning to Boss Arena...");
+                    _leftBracket_KeyWasDown = leftBracket_KeyDown;
+                    API.LoadScene(BOSS_ARENA_SCENE_NAME);
+                    return;
+                }
+                _leftBracket_KeyWasDown = leftBracket_KeyDown;
             }
         }
 

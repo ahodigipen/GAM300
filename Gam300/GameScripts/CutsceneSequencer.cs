@@ -175,7 +175,8 @@ namespace GameScripts
                     API.Log($"[CutsceneSequencer] WARNING: Play On Trigger is enabled but entity {Entity} has no collider!");
                 }
             }
-            else if (PlayOnStart)
+
+            if (PlayOnStart)
             {
                 if (StartDelay > 0f)
                 {
@@ -241,6 +242,9 @@ namespace GameScripts
 
             // Reset animation cache on play
             foreach (var t in _tracks) t.lastAnim = "";
+
+            // Snap immediately on first frame
+            ApplyTracks(0f);
         }
 
         public void RecalculateDuration()
@@ -470,63 +474,60 @@ namespace GameScripts
                     }
                     continue;
                 }
-
-
                 // LOOK AT TRACK (Type 4)
                 if (track.type == 4)
                 {
                     if (track.keyframes.Count < 1) continue;
-
-                    if (currentFrame < track.keyframes[0].frame) continue; // DO NOT block other tracks until our start frame
-
-                    // Handoff logic: If LookAt track finishes its timeline, stop forcing focus so Rotation tracks can take over
+                    if (currentFrame < track.keyframes[0].frame) continue;
                     if (currentFrame > track.keyframes[track.keyframes.Count - 1].frame) continue;
 
-                    // Find active keyframe
-                    KeyFrame activeKF = null;
-                    for (int i = 0; i < track.keyframes.Count; i++)
+                    // Find keyframes to interpolate between
+                    KeyFrame k1 = null, k2 = null;
+                    for (int i = 0; i < track.keyframes.Count - 1; i++)
                     {
-                        if (currentFrame >= track.keyframes[i].frame) activeKF = track.keyframes[i];
-                        else break;
-                    }
-
-                    if (activeKF != null && !string.IsNullOrEmpty(activeKF.valStr) && activeKF.valStr != "None")
-                    {
-                        ulong targetID = API.FindEntity(activeKF.valStr);
-                        if (targetID != 0)
+                        if (currentFrame >= track.keyframes[i].frame && currentFrame < track.keyframes[i + 1].frame)
                         {
-                            Vec3 targetPos = API.GetPosition(targetID);
-                            // Offset to look at Head/Chest (approx 1.5m up) instead of feet/pivot
-                            targetPos.Y += 1.5f;
-
-                            Vec3 camPos = API.GetPosition(track.cachedEntityID);
-
-                            float dx = targetPos.X - camPos.X;
-                            float dz = targetPos.Z - camPos.Z;
-                            float dy = targetPos.Y - camPos.Y;
-
-                            // Pitch
-                            float dist = (float)Math.Sqrt(dx * dx + dz * dz);
-                            // TRY RADIANS (Remove 180/PI)
-                            float pitch = (float)(Math.Atan2(dy, dist));
-
-                            // Yaw
-                            float yaw;
-                            // SINGULARITY CHECK
-                            if (dist < 0.5f)
-                            {
-                                yaw = API.GetRotation(track.cachedEntityID).Y;
-                            }
-                            else
-                            {
-                                // TRY RADIANS (Remove 180/PI)
-                                yaw = (float)(Math.Atan2(dx, dz));
-                            }
-
-                            // X=Pitch, Y=Yaw, Z=Roll
-                            API.SetRotation(track.cachedEntityID, new Vec3(-pitch, yaw, 0f));
+                            k1 = track.keyframes[i];
+                            k2 = track.keyframes[i + 1];
+                            break;
                         }
                     }
+
+                    Vec3 targetPos;
+                    if (k1 != null && k2 != null)
+                    {
+                        float range = (float)(k2.frame - k1.frame);
+                        float t = (range > 0.0001f) ? (currentFrame - k1.frame) / range : 1f;
+
+                        ulong id1 = API.FindEntity(k1.valStr);
+                        ulong id2 = API.FindEntity(k2.valStr);
+                        Vec3 p1 = (id1 != 0) ? API.GetPosition(id1) : API.GetPosition(track.cachedEntityID);
+                        Vec3 p2 = (id2 != 0) ? API.GetPosition(id2) : API.GetPosition(track.cachedEntityID);
+                        
+                        // Vertical Offset for "Chest Height"
+                        p1.Y += 1.5f; p2.Y += 1.5f;
+
+                        targetPos = new Vec3(Lerp(p1.X, p2.X, t), Lerp(p1.Y, p2.Y, t), Lerp(p1.Z, p2.Z, t));
+                    }
+                    else
+                    {
+                        // Final keyframe hold
+                        KeyFrame k = track.keyframes[track.keyframes.Count - 1];
+                        ulong id = API.FindEntity(k.valStr);
+                        targetPos = (id != 0) ? API.GetPosition(id) : API.GetPosition(track.cachedEntityID);
+                        targetPos.Y += 1.5f;
+                    }
+
+                    Vec3 camPos = API.GetPosition(track.cachedEntityID);
+                    float dx = targetPos.X - camPos.X;
+                    float dy = targetPos.Y - camPos.Y;
+                    float dz = targetPos.Z - camPos.Z;
+                    float dist = (float)Math.Sqrt(dx * dx + dz * dz);
+
+                    float pitch = (float)Math.Atan2(dy, dist);
+                    float yaw = (dist < 0.1f) ? API.GetRotation(track.cachedEntityID).Y : (float)Math.Atan2(dx, dz);
+
+                    API.SetRotation(track.cachedEntityID, new Vec3(-pitch, yaw, 0f));
                     continue;
                 }
 
@@ -687,39 +688,36 @@ namespace GameScripts
                     if (t < 0f) t = 0f;
                     if (t > 1f) t = 1f;
 
-                    // Lerp Base Offsets
-                    float x = Lerp(k1.vX, k2.vX, t);
-                    float y = Lerp(k1.vY, k2.vY, t);
-                    float z = Lerp(k1.vZ, k2.vZ, t);
-
                     // Support Relative Anchors for Transform Tracks
-                    // We check k1's anchor because we are currently interpolating ALONG k1's path!
-                    if (!string.IsNullOrEmpty(k1.valStr) && k1.valStr != "None")
+                    if (track.type == 0) // POSITION
                     {
-                        ulong anchorID = API.FindEntity(k1.valStr);
-                        if (anchorID != 0 && track.type == 0) // Only offset POSITION
+                        // Calculate world positions for both keyframes k1 and k2
+                        Vec3 p1 = new Vec3(k1.vX, k1.vY, k1.vZ);
+                        if (!string.IsNullOrEmpty(k1.valStr) && k1.valStr != "None")
                         {
-                            Vec3 anchorPos = API.GetPosition(anchorID);
-                            x += anchorPos.X; y += anchorPos.Y; z += anchorPos.Z;
+                            ulong anchorID1 = API.FindEntity(k1.valStr);
+                            if (anchorID1 != 0) p1 = (k1.vX == 0 && k1.vY == 0 && k1.vZ == 0) ? API.GetPosition(anchorID1) : p1 + API.GetPosition(anchorID1);
                         }
-                    }
 
-                    if (track.type == 0) // Pos
-                    {
-                        // DEBUG: Log the position we are setting
-                        if (((int)currentFrame) % 120 == 0) API.Log($"[CutsceneDebug] Moving '{track.targetEntityName}' to {x:F2}, {y:F2}, {z:F2}");
+                        Vec3 p2 = new Vec3(k2.vX, k2.vY, k2.vZ);
+                        if (!string.IsNullOrEmpty(k2.valStr) && k2.valStr != "None")
+                        {
+                            ulong anchorID2 = API.FindEntity(k2.valStr);
+                            if (anchorID2 != 0) p2 = (k2.vX == 0 && k2.vY == 0 && k2.vZ == 0) ? API.GetPosition(anchorID2) : p2 + API.GetPosition(anchorID2);
+                        }
 
-                        // Use SetPosition for generic objects (works for Camera too)
-                        API.SetPosition(track.cachedEntityID, new Vec3(x, y, z));
+                        // Lerp between the two world positions
+                        Vec3 finalPos = new Vec3(Lerp(p1.X, p2.X, t), Lerp(p1.Y, p2.Y, t), Lerp(p1.Z, p2.Z, t));
+                        API.SetPosition(track.cachedEntityID, finalPos);
                     }
-                    else if (track.type == 1) // Rot
+                    else // ROTATION / SCALE
                     {
-                        if (((int)currentFrame) % 60 == 0) API.Log($"[CutsceneDebug] LERP-Rotating '{track.targetEntityName}' to {x:F2}, {y:F2}, {z:F2} (Frame {currentFrame})");
-                        API.SetRotation(track.cachedEntityID, new Vec3(x, y, z));
-                    }
-                    else if (track.type == 2) // Scale
-                    {
-                        API.SetScale(track.cachedEntityID, new Vec3(x, y, z));
+                        float x = Lerp(k1.vX, k2.vX, t);
+                        float y = Lerp(k1.vY, k2.vY, t);
+                        float z = Lerp(k1.vZ, k2.vZ, t);
+
+                        if (track.type == 1) API.SetRotation(track.cachedEntityID, new Vec3(x, y, z));
+                        else if (track.type == 2) API.SetScale(track.cachedEntityID, new Vec3(x, y, z));
                     }
                 }
             }

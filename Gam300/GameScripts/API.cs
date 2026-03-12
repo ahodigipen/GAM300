@@ -1,4 +1,4 @@
-﻿// Boom/API.cs - FIXED VERSION
+// Boom/API.cs - FIXED VERSION
 using Boom;
 using System;
 using System.Linq;
@@ -1526,6 +1526,7 @@ namespace Boom
         public const int KEY_F6 = 295;
         public const int KEY_F7 = 296;
         public const int KEY_F8 = 297;
+        public const int KEY_LEFT_BRACKET = 91;
         public const int KEY_RIGHT_BRACKET = 93;
 
         public const int MOUSE_LEFT = 0;
