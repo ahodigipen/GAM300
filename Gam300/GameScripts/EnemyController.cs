@@ -86,6 +86,9 @@ namespace GameScripts
         [Boom.EditorExposed("Require Line of Sight", "Whether the enemy needs clear line of sight to detect the player")]
         private bool _visionRequireLineOfSight = true;
 
+        [Boom.EditorExposed("Show Vision Cone", "Draw the vision cone in-scene (visible without debug mode)")]
+        private bool _showVisionCone = false;
+
         // Vision system
         private VisionComponent _vision;
 
@@ -179,6 +182,14 @@ namespace GameScripts
 
             // Update vision system (always active)
             _vision?.OnUpdate(dt);
+
+            // Draw vision cone in-scene (no debug mode needed)
+            if (_showVisionCone)
+            {
+                bool alert = _vision?.GetState() == VisionComponent.VisionState.Alert;
+                Vec4 color = alert ? new Vec4(1f, 0.1f, 0.1f, 0.35f) : new Vec4(0f, 1f, 0.2f, 0.25f);
+                API.DrawDebugVisionCone(Entity, _visionDetectionRange, _visionDetectionAngle * 0.5f, color);
+            }
 
             // Update proximity detection (only if enabled)
             if (EnemyDetection)

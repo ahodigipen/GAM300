@@ -68,9 +68,6 @@ namespace GameScripts
         // Track if checkpoint was already activated
         private bool _activated = false;
         
-        private bool _playerInZone = false;
-        private bool _wasQPressed = false;
-        private bool _wasAPressed = false;
 
         private List<ulong> _lightIDs = new List<ulong>();
         private List<ulong> _spriteIDs = new List<ulong>();
@@ -490,8 +487,6 @@ namespace GameScripts
             // Only player triggers this
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
 
-            inst._playerInZone = true;
-
             if (!inst._activated)
             {
                 // Activate checkpoint immediately on entry
@@ -515,8 +510,6 @@ namespace GameScripts
 
             // Only player triggers this
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
-
-            inst._playerInZone = false;
 
             // Hide text if it exists on this entity
             if (API.HasText(inst.Entity))

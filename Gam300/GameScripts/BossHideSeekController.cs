@@ -159,7 +159,23 @@ namespace GameScripts
             if (!API.HasTransform(Entity)) return;
             if (_drawVisionDebug) DrawDebugVision();
             if (!_isActive) return;
-            if (Entry.IsPlayerDead) { if (_isCountingDown) StopCountdown(); return; }
+            if (Entry.IsPlayerDead)
+            {
+                if (_isCountingDown) StopCountdown();
+                // Stop all boss sounds when player dies
+                if (_wasTurning)
+                {
+                    API.StopSound(TURN_SOUND_NAME);
+                    _wasTurning = false;
+                }
+                if (_isWaitingToTurn)
+                {
+                    API.StopSound(WARNING_SOUND_NAME);
+                    _isWaitingToTurn = false;
+                    _warningTimer = 0f;
+                }
+                return;
+            }
 
             if (_activationTimer < _activationDelay) { _activationTimer += dt; return; }
 

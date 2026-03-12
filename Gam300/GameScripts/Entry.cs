@@ -120,6 +120,9 @@ namespace GameScripts
 
             API.Log("[C#] Entry.Start() called for scene: " + _currentSceneName);
 
+            // Fade in from black at every scene start
+            SceneFader.StartFadeIn(0.6f);
+
             _activePopupName = LEVEL_1_UI;
 
             // Only pre-load menus for gameplay scene, not for cutscene
@@ -175,6 +178,12 @@ namespace GameScripts
 
         public static void Update(float dt)
         {
+            // Always advance the screen fader first
+            SceneFader.Update(dt);
+
+            // Block all game logic while fading out to a new scene
+            if (SceneFader.IsFadingOut) return;
+
             if (_sceneInputDebounceTimer > 0.0f)
             {
                 _sceneInputDebounceTimer -= dt;
@@ -400,7 +409,7 @@ namespace GameScripts
                 {
                     API.Log("[Entry] ']' pressed - transitioning to Outro Scene...");
                     _rightBracket_KeyWasDown = rightBracket_KeyDown;
-                    API.LoadScene(OUTRO_SCENE_NAME);
+                    SceneFader.FadeToScene(OUTRO_SCENE_NAME);
                     return;
                 }
                 _rightBracket_KeyWasDown = rightBracket_KeyDown;
@@ -456,7 +465,7 @@ namespace GameScripts
                     API.SetGameEnd(false);
                     API.EnableFileWatcher(true);
                     s_RequestedEndAction = EndMenuAction.None;
-                    API.LoadScene(MAIN_MENU_SCENE_NAME);
+                    SceneFader.FadeToScene(MAIN_MENU_SCENE_NAME);
                     return;
 
                 case EndMenuAction.Restart:
@@ -467,7 +476,7 @@ namespace GameScripts
                     PlayerMovement.ResetPersistedHealth();
                     API.EnableFileWatcher(true);
                     s_RequestedEndAction = EndMenuAction.None;
-                    API.LoadScene(_currentSceneName);
+                    SceneFader.FadeToScene(_currentSceneName);
                     return;
             }
         }
@@ -482,7 +491,7 @@ namespace GameScripts
                     API.SetPlayerDead(false);
                     API.EnableFileWatcher(true);
                     s_RequestedDeathAction = DeathMenuAction.None;
-                    API.LoadScene(MAIN_MENU_SCENE_NAME);
+                    SceneFader.FadeToScene(MAIN_MENU_SCENE_NAME);
                     return;
                 case DeathMenuAction.Restart:
                     API.Log("DeathMenu: Restarting scene...");
@@ -492,7 +501,7 @@ namespace GameScripts
                     API.SetPlayerDead(false);
                     API.EnableFileWatcher(true);
                     s_RequestedDeathAction = DeathMenuAction.None;
-                    API.LoadScene(_currentSceneName);
+                    SceneFader.FadeToScene(_currentSceneName);
                     return;
             }
         }
@@ -526,7 +535,7 @@ namespace GameScripts
                     IsGamePaused = false;
                     API.EnableFileWatcher(true);
                     s_RequestedPauseAction = PauseMenuAction.None;
-                    API.LoadScene(MAIN_MENU_SCENE_NAME);
+                    SceneFader.FadeToScene(MAIN_MENU_SCENE_NAME);
                     return;
 
                 case PauseMenuAction.Restart:
@@ -536,7 +545,7 @@ namespace GameScripts
                     PlayerMovement.ResetPersistedHealth();
                     API.EnableFileWatcher(true);
                     s_RequestedPauseAction = PauseMenuAction.None;
-                    API.LoadScene(_currentSceneName);
+                    SceneFader.FadeToScene(_currentSceneName);
                     return;
 
                 case PauseMenuAction.Quit:

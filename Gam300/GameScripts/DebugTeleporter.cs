@@ -12,8 +12,10 @@ namespace GameScripts
     {
         public ulong Entity;
 
+#pragma warning disable CS0414
         [Boom.EditorExposed("--- LEVEL NAVIGATION ---", "Visual separator", 0, 0, false)]
         private bool _header = false;
+#pragma warning restore CS0414
 
         [Boom.EditorExposed("GO: Level Start", "Shortcut: F1", 0, 0, false)]
         private bool _teleportToStart = false;

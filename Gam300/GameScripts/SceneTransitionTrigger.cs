@@ -26,9 +26,12 @@ namespace GameScripts
 
         // State
         private static readonly Dictionary<ulong, SceneTransitionTrigger> s_instances = new Dictionary<ulong, SceneTransitionTrigger>();
-        private bool _hasTriggered = false;
-        private bool _isTransitioning = false;
+        private bool  _hasTriggered    = false;
+        private bool  _isTransitioning = false;   // delay countdown
         private float _transitionTimer = 0f;
+        private bool  _isFadingOut     = false;   // fade-to-black before load
+        private float _fadeTimer       = 0f;
+        private const float FADE_DURATION = 0.25f;
 
         public void OnStart(string jsonParams)
         {
@@ -59,13 +62,28 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
-            // Handle delayed transition
+            // Step 1 — optional delay before starting the fade
             if (_isTransitioning)
             {
                 _transitionTimer -= dt;
                 if (_transitionTimer <= 0f)
                 {
                     _isTransitioning = false;
+                    StartFadeOut();
+                }
+                return;
+            }
+
+            // Step 2 — fade to black, then load
+            if (_isFadingOut)
+            {
+                _fadeTimer += dt;
+                float alpha = Math.Min(_fadeTimer / FADE_DURATION, 1f);
+                API.SetScreenFadeAlpha(alpha);
+                if (_fadeTimer >= FADE_DURATION)
+                {
+                    API.SetScreenFadeAlpha(1f);
+                    _isFadingOut = false;
                     DoTransition();
                 }
             }
@@ -123,17 +141,24 @@ namespace GameScripts
             {
                 inst._isTransitioning = true;
                 inst._transitionTimer = inst._transitionDelay;
-                API.Log($"[SceneTransitionTrigger] Transition to '{inst._sceneName}' will occur in {inst._transitionDelay:F1} seconds.");
+                API.Log($"[SceneTransitionTrigger] Transition to '{inst._sceneName}' in {inst._transitionDelay:F1}s then fade.");
             }
             else
             {
-                inst.DoTransition();
+                inst.StartFadeOut();
             }
         }
 
         private static void OnTriggerExit(ulong triggerEntity, ulong otherEntity)
         {
             // Not needed for scene transition
+        }
+
+        private void StartFadeOut()
+        {
+            _isFadingOut = true;
+            _fadeTimer   = 0f;
+            API.Log($"[SceneTransitionTrigger] Fading out before loading: '{_sceneName}'");
         }
 
         private void DoTransition()
