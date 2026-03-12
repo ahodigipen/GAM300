@@ -110,16 +110,9 @@ namespace GameScripts
         private HashSet<ulong> _freezePickupIDs = new HashSet<ulong>();
         private const int MAX_PICKUPS_TO_CHECK = 10;
 
-        // ==== Gravity constant ====a
+        // ==== Gravity constant ====
         private const float GRAVITY = 50f;
         private const float GROUND_STICK = -5.0f;
-
-        // ==== Editor Action Triggers ====
-        [Boom.EditorExposed("Teleport to Start", "Internal trigger for editor button", 0, 0, false)]
-        private bool _teleportToStartTrigger = false;
-        [Boom.EditorExposed("Teleport to CP", "Internal trigger for editor button", 0, 0, false)]
-        private bool _teleportToCPTrigger = false;
-        private bool _teleportToLevel2Trigger = false;
 
         // ==== CRITICAL: Manual vertical velocity tracking for Character Controller ====
         private float _verticalVelocity = 0f;
@@ -336,6 +329,11 @@ namespace GameScripts
             RespawnAtCheckpoint();
         }
 
+        public void TeleportToLevel2()
+        {
+            TeleportTo(_level2Pos);
+        }
+
         private void RegisterTriggerCallbacksOnAllTriggers()
         {
             _freezePickupIDs.Clear();
@@ -448,23 +446,6 @@ namespace GameScripts
 
             UpdateFade(dt);
             if (!API.HasTransform(Entity) || !API.HasScript(Entity)) return;
-
-            // --- Handle Editor Teleport Triggers ---
-            if (_teleportToStartTrigger)
-            {
-                _teleportToStartTrigger = false;
-                TeleportToStart();
-            }
-            if (_teleportToCPTrigger)
-            {
-                _teleportToCPTrigger = false;
-                TeleportToLastCheckpoint();
-            }
-            if (_teleportToLevel2Trigger)
-            {
-                _teleportToLevel2Trigger = false;
-                TeleportTo(_level2Pos);
-            }
 
             FreezeManager.Update(dt);
 

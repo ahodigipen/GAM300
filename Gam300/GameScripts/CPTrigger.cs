@@ -105,7 +105,7 @@ namespace GameScripts
                         if (API.HasSpotLight(id))
                         {
                             API.SetSpotLightIntensity(id, 0.0f);
-                        }
+                          }
                         else if (API.HasPointLight(id))
                         {
                             API.SetPointLightIntensity(id, 0.0f);
