@@ -256,7 +256,7 @@ ENTITIES:
         Scale: [0.0399999991, 0.0599999987, 0.0799999982]
     SpriteComponent:
       textureID: 9683671951523272381
-      color: [1, 1, 1, 0]
+      color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 0
@@ -270,7 +270,7 @@ ENTITIES:
         Scale: [0.0399999991, 0.0599999987, 0.0799999982]
     SpriteComponent:
       textureID: 9683671951523272381
-      color: [1, 1, 1, 0]
+      color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 0
@@ -2948,7 +2948,7 @@ ENTITIES:
           maxDistance: 15
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.CrouchTriggerZone
+      TypeName: GameScripts.CrouchTriggerArea
       ParamsJSON: "{}"
   - ColliderComponent:
       Collider:
@@ -2995,7 +2995,7 @@ ENTITIES:
           maxDistance: 15
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.CrouchTriggerZone
+      TypeName: GameScripts.CrouchTriggerArea
       ParamsJSON: "{}"
   - ColliderComponent:
       Collider:
@@ -3042,7 +3042,7 @@ ENTITIES:
           maxDistance: 15
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.CrouchTriggerZone
+      TypeName: GameScripts.CrouchTriggerArea
       ParamsJSON: "{}"
   - ColliderComponent:
       Collider:
@@ -3089,7 +3089,7 @@ ENTITIES:
           maxDistance: 15
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.CrouchTriggerZone
+      TypeName: GameScripts.CrouchTriggerArea
       ParamsJSON: "{}"
   - ColliderComponent:
       Collider:
@@ -3136,7 +3136,7 @@ ENTITIES:
           maxDistance: 15
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.CrouchTriggerZone
+      TypeName: GameScripts.CrouchTriggerArea
       ParamsJSON: "{}"
   - ColliderComponent:
       Collider:
@@ -3183,7 +3183,7 @@ ENTITIES:
           maxDistance: 15
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.CrouchTriggerZone
+      TypeName: GameScripts.CrouchTriggerArea
       ParamsJSON: "{}"
   - ColliderComponent:
       Collider:
