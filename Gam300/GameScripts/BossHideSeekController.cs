@@ -106,6 +106,13 @@ namespace GameScripts
         [Boom.EditorExposed("Warning Sound Volume", "Volume of the warning sound (0.0 - 1.0)")]
         private float _warningSoundVolume = 1.0f;
 
+        [Boom.EditorExposed("Warning Delay", "Seconds to wait after warning before turning")]
+        private float _warningDelay = 3.0f;
+
+        private bool _isWaitingToTurn = false;
+        private float _warningTimer = 0f;
+        private bool _pendingWatchState = false;
+
         public void OnStart(string jsonParams)
         {
             s_instances[Entity] = this;
@@ -128,6 +135,8 @@ namespace GameScripts
             _timer = 0f;
             _activationTimer = 0f;
             _isTurning = false;
+            _isWaitingToTurn = false;
+            _warningTimer = 0f;
             _hasDealtDamage = false;
             _catchTimer = _catchDelay;
             // Stop turn sound if playing
@@ -154,21 +163,48 @@ namespace GameScripts
 
             if (_activationTimer < _activationDelay) { _activationTimer += dt; return; }
 
+            // Warning phase - play warning sound and wait before turning towards player
+            if (_isWaitingToTurn)
+            {
+                _warningTimer += dt;
+                if (_warningTimer >= _warningDelay)
+                {
+                    _isWaitingToTurn = false;
+                    _warningTimer = 0f;
+                    // Now actually start the turn
+                    _isTurning = true;
+                    _isWatching = _pendingWatchState;
+                    _targetYRotation = _isWatching ? _watchingYaw : _restingYaw;
+                    UpdateLights(_isWatching ? _colorRed : _colorGreen, _isWatching ? _redIntensity : _greenIntensity);
+                }
+                return; // Don't do anything else while waiting
+            }
+
             if (!_isTurning)
             {
                 _timer += dt;
                 if (_timer >= _rotationInterval)
                 {
                     _timer = 0f;
-                    _isTurning = true;
-                    _isWatching = !_isWatching;
-                    _targetYRotation = _isWatching ? _watchingYaw : _restingYaw;
-                    UpdateLights(_isWatching ? _colorRed : _colorGreen, _isWatching ? _redIntensity : _greenIntensity);
-                    if (!_isWatching)
+                    _pendingWatchState = !_isWatching;
+
+                    if (_pendingWatchState)
                     {
+                        // About to turn towards player - play warning first, then wait
+                        string randomWarning = WARNING_SOUND_PATHS[_warningRandom.Next(WARNING_SOUND_PATHS.Length)];
+                        API.PlaySound(WARNING_SOUND_NAME, randomWarning, false);
+                        API.SetSoundVolume(WARNING_SOUND_NAME, _warningSoundVolume);
+                        _isWaitingToTurn = true;
+                        _warningTimer = 0f;
+                    }
+                    else
+                    {
+                        // Turning away from player - no warning, turn immediately
+                        _isTurning = true;
+                        _isWatching = false;
+                        _targetYRotation = _restingYaw;
+                        UpdateLights(_colorGreen, _greenIntensity);
                         StopCountdown();
-                        // Stop warning sound when turning away from player
-                        API.StopSound(WARNING_SOUND_NAME);
                     }
                 }
                 if (_isWatching) UpdateDetection(dt);
@@ -195,14 +231,6 @@ namespace GameScripts
                     // Stop turn sound when turning ends
                     API.StopSound(TURN_SOUND_NAME);
                     _wasTurning = false;
-
-                    // Play warning sound after turning completes, only if now watching player
-                    if (_isWatching)
-                    {
-                        string randomWarning = WARNING_SOUND_PATHS[_warningRandom.Next(WARNING_SOUND_PATHS.Length)];
-                        API.PlaySound(WARNING_SOUND_NAME, randomWarning, true);
-                        API.SetSoundVolume(WARNING_SOUND_NAME, _warningSoundVolume);
-                    }
                 }
                 else { _currentYRotation += Math.Sign(angleDiff) * step; }
                 Vec3 rot = API.GetRotation(Entity);
