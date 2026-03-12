@@ -6,8 +6,8 @@ namespace GameScripts
     public class VisionComponent
     {
         public ulong Entity;
-        private static bool _linecastAvailable = true;
-        private static bool _warnedNoLinecast = false;
+        private bool _linecastAvailable = true;
+        private bool _warnedNoLinecast = false;
 
         public delegate void VisionEventHandler(ulong target, Vec3 position);
         public event VisionEventHandler OnTargetDetected;
