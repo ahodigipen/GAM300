@@ -595,8 +595,8 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, 10.3000002, -13]
-        Rotate: [0, -0, 0]
+        Translate: [0.529999971, 11.9584293, -8.93846703]
+        Rotate: [0, 3.50971746, 0]
         Scale: [0.0160000008, 0.0160000008, 0.0160000008]
     CharacterControllerComponent:
       Radius: 0.800000012
@@ -1085,22 +1085,22 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.579782605, 25.2128944, 82.9215775]
-        Rotate: [138.460007, 2513.72607, 180]
+        Translate: [-4.44796944, 14.6470556, -14.8422375]
+        Rotate: [-211.6875, -53.9471741, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.00100000005
         FarPlane: 935.47998
-        FOV: 59
+        FOV: 75
     ThirdPersonCameraComponent:
       Target UID: 15509033343906787136
       Offset: [0.00999999978, 4.55000019, -1.00999999]
       Current Distance: 5
       Min Distance: 1
       Max Distance: 5
-      Current Yaw: -5763.49023
-      Current Pitch: 37
+      Current Yaw: -7150.49023
+      Current Pitch: -85
       Mouse Sensitivity: 1
       Scroll Sensitivity: 1
   - ColliderComponent:
@@ -1373,7 +1373,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.123197496, 15.896699, 4.99707031]
+        Translate: [0.123197496, 10.2579775, 4.99707031]
         Rotate: [89.9999847, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
@@ -1413,7 +1413,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [3.29633808, 16, 10]
+        Translate: [3.29633808, 10.2579775, 10]
         Rotate: [90, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
@@ -1453,7 +1453,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.155175328, 16, 15]
+        Translate: [-0.155175328, 10.2579775, 15]
         Rotate: [89.9999847, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
@@ -1493,7 +1493,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-3.52764249, 16, 15]
+        Translate: [-3.52764249, 10.2579775, 15]
         Rotate: [90, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
@@ -2065,7 +2065,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.155175328, 16, 51]
+        Translate: [-0.155175328, 10.2579775, 51]
         Rotate: [90, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
@@ -2105,7 +2105,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.155175328, 16, 65]
+        Translate: [-0.155175328, 10.2579775, 65]
         Rotate: [90, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
@@ -2145,7 +2145,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.155175328, 16, 68.3099976]
+        Translate: [-0.155175328, 10.2579775, 68.3099976]
         Rotate: [90, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
@@ -2185,7 +2185,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-3.42499995, 16, 68.3099976]
+        Translate: [-3.42499995, 10.2579775, 68.3099976]
         Rotate: [90, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
@@ -2225,7 +2225,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [2.65499997, 16, 72.3799973]
+        Translate: [2.65499997, 10.2579775, 72.3799973]
         Rotate: [90, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
@@ -2265,7 +2265,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-3.875, 16, 78.4300003]
+        Translate: [-3.875, 10.2579775, 78.4300003]
         Rotate: [90, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
@@ -2305,7 +2305,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.0250000004, 16, 78.3700027]
+        Translate: [-0.0250000004, 10.2579775, 78.3700027]
         Rotate: [90, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
@@ -2523,7 +2523,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.0250000004, 16, 85.1600037]
+        Translate: [-0.0250000004, 10.2579775, 85.1600037]
         Rotate: [90, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
@@ -2563,7 +2563,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [3.2249999, 16, 92.5599976]
+        Translate: [3.2249999, 10.2579775, 92.5599976]
         Rotate: [90, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
@@ -2603,7 +2603,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-2.85500002, 16, 92.5599976]
+        Translate: [-2.85500002, 10.2579775, 92.5599976]
         Rotate: [90, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
@@ -2643,7 +2643,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-2.85500002, 16, 96.1600037]
+        Translate: [-2.85500002, 10.2579775, 96.1600037]
         Rotate: [90, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
@@ -2683,7 +2683,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.375, 16, 96.1600037]
+        Translate: [0.375, 10.2579775, 96.1600037]
         Rotate: [90, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
@@ -2723,7 +2723,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-2.85500002, 16, 100.709999]
+        Translate: [-2.85500002, 10.2579775, 100.709999]
         Rotate: [90, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
@@ -2989,7 +2989,7 @@ ENTITIES:
         Scale: [0.0399999991, 0.0599999987, 0.0799999982]
     SpriteComponent:
       textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
+      color: [1, 1, 1, 0]
       renderAs3D: false
   - ColliderComponent:
       Collider:
@@ -3006,15 +3006,15 @@ ENTITIES:
         Type: BOX
     InfoComponent:
       Parent: 0
-      Name: Respawn point
+      Name: PlayerSpawn
       UID: 13742085224280917219
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.529999971, 11.9584293, -8.93846703]
+        Translate: [0.529999971, 10.5480003, -13.2679996]
         Rotate: [0, -0, 0]
         Scale: [1, 1, 1]
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.CPTrigger
+      TypeName: GameScripts.SpawnPoint
       ParamsJSON: "{}"
