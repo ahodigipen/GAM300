@@ -85,6 +85,12 @@ namespace GameScripts
         [Boom.EditorExposed("Start Delay", "Seconds to wait before starting", 0.0f, 60.0f, true)]
         public float StartDelay = 0.0f;
 
+        [Boom.EditorExposed("Play On Trigger", "Whether the cutscene plays when an entity enters the collider trigger")]
+        public bool PlayOnTrigger = false;
+
+        [Boom.EditorExposed("Trigger Once", "If true, the cutscene can only be triggered once")]
+        public bool TriggerOnce = true;
+
         private float _currentTime = 0f;
         private bool _isPlaying = false;
         private bool _pendingPlay = false;
@@ -92,6 +98,7 @@ namespace GameScripts
         private float _logTimer = 0f;
         private int _duration = 600;
         private Action _onCompleteCallback = null;
+        private bool _hasTriggered = false;
 
         public class KeyFrame
         {
@@ -153,13 +160,22 @@ namespace GameScripts
 
             API.Log($"[CutsceneDebug] OnStart Called. Raw Params: '{jsonParams}'");
 
-            // Parse JSON Params - No longer needed, EditorExposed handles this.
-            // The manual JSON parsing block has been removed as EditorExposed fields now handle these properties.
-
             API.Log($"[Cutscene] Initializing... File: '{CutsceneFile}', BlockInput: {BlockInput}, Delay: {StartDelay}");
             LoadCutscene(CutsceneFile);
 
-            if (PlayOnStart)
+            if (PlayOnTrigger)
+            {
+                if (API.HasCollider(Entity))
+                {
+                    API.RegisterTriggerEnterCallback(Entity, OnTriggerEnterCallback);
+                    API.Log($"[CutsceneSequencer] Registered trigger callback on entity {Entity}.");
+                }
+                else
+                {
+                    API.Log($"[CutsceneSequencer] WARNING: Play On Trigger is enabled but entity {Entity} has no collider!");
+                }
+            }
+            else if (PlayOnStart)
             {
                 if (StartDelay > 0f)
                 {
@@ -172,6 +188,21 @@ namespace GameScripts
                     Play();
                 }
             }
+        }
+
+        private void OnTriggerEnterCallback(ulong triggerEntity, ulong otherEntity)
+        {
+            if (TriggerOnce && _hasTriggered) return;
+            if (_isPlaying) return;
+
+            // Only trigger for the player
+            ulong playerID = API.FindEntity("Player");
+            if (playerID == 0) playerID = PlayerMovement.GetPlayerEntity();
+            if (otherEntity != playerID) return;
+
+            API.Log($"[CutsceneSequencer] Trigger entered by player. Playing cutscene.");
+            _hasTriggered = true;
+            Play();
         }
 
         private void RegisterInstance()

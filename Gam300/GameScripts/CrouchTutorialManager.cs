@@ -57,9 +57,6 @@ namespace GameScripts
 
             FadeInEntity(s_eDialogue1);
 
-            if (s_eTutorialDimBG != 0 && API.HasSprite(s_eTutorialDimBG))
-                API.SetSpriteAlpha(s_eTutorialDimBG, DIM_BG_ALPHA);
-
             s_state = TutorialState.ShowingDialogue1;
             API.Log("[CrouchTutorialManager] First-time crouch tutorial started. Showing Dialogue 1.");
 
@@ -186,9 +183,6 @@ namespace GameScripts
 
             FadeOutEntity(currentEntity, () =>
             {
-                if (s_eTutorialDimBG != 0 && API.HasSprite(s_eTutorialDimBG))
-                    API.SetSpriteAlpha(s_eTutorialDimBG, 0f);
-
                 s_state = TutorialState.None;
                 s_justDismissed = true;
                 s_hasCompletedTutorial = true;
@@ -253,9 +247,6 @@ namespace GameScripts
             s_eDialogue2 = FindAndLog("Crouch_FirstTime_Dialogue2");
             s_eDialogue3 = FindAndLog("Crouch_FirstTime_Dialogue3");
             s_eDialogue4 = FindAndLog("Crouch_FirstTime_Dialogue4");
-
-            // Re-using the same darkened background sprite from the standard tutorials
-            s_eTutorialDimBG = FindAndLog("Tutorial_BlackBackground");
 
             s_entitiesResolved = true;
         }

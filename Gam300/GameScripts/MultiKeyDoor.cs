@@ -62,7 +62,13 @@ namespace GameScripts
         [Boom.EditorExposed("Door Locked Sound", "Sound played when door is locked")]
         private string _doorLockedSoundPath = "Resources/Audio/doorLocked.wav";
 
+        [Boom.EditorExposed("Lock Entity Name", "Name of the lock entity to hide when the door opens (leave empty for none)")]
+        private string _lockEntityName = "";
+
         private List<string> _requiredKeysList = new List<string>();
+
+        // Lock entity
+        private ulong _lockEntity = 0;
 
         // Cached positions and direction
         private Vec3 _basePos;
@@ -236,6 +242,16 @@ namespace GameScripts
             _eCurrentAlpha = 0f;
             _eFadeState = EPromptFadeState.None;
 
+            // Find lock entity
+            if (!string.IsNullOrWhiteSpace(_lockEntityName))
+            {
+                _lockEntity = API.FindEntity(_lockEntityName);
+                if (_lockEntity == 0)
+                    API.Log($"[MultiKeyDoor] WARNING: Could not find lock entity '{_lockEntityName}'.");
+                else
+                    API.Log($"[MultiKeyDoor] Lock entity '{_lockEntityName}' found (id={_lockEntity}).");
+            }
+
             API.RegisterTriggerEnterCallback(Entity, OnTriggerEnter);
             API.RegisterTriggerExitCallback(Entity, OnTriggerExit);
             API.Log("[MultiKeyDoor] Registered trigger callbacks.");
@@ -358,8 +374,16 @@ namespace GameScripts
 
                             _opening = true;
                             _closing = false;
-                            
-                            if (_ePromptEntity != 0) 
+
+                            // Vanish the lock entity
+                            if (_lockEntity != 0)
+                            {
+                                Vec3 lp = API.GetPosition(_lockEntity);
+                                API.SetPosition(_lockEntity, new Vec3(lp.X, -100f, lp.Z));
+                                API.Log($"[MultiKeyDoor] Lock entity '{_lockEntityName}' vanished.");
+                            }
+
+                            if (_ePromptEntity != 0)
                             {
                                 _eFadeState = EPromptFadeState.FadeOut;
                                 _eFadeTimer = (1f - _eCurrentAlpha) * E_FADE_DURATION;
@@ -545,13 +569,23 @@ namespace GameScripts
 
         // ── Fade helpers ──────────────────────────────────────────────────────
 
-        /// <summary>Apply the same alpha to all dialogue panel entities.</summary>
         private void ApplyDialoguePanelAlpha(float alpha)
         {
-            if (_keysNeededEntity != 0 && API.HasSprite(_keysNeededEntity))
-                API.SetSpriteAlpha(_keysNeededEntity, alpha);
             if (_dialogueEntity != 0 && API.HasSprite(_dialogueEntity))
                 API.SetSpriteAlpha(_dialogueEntity, alpha);
+
+            if (_keysNeededEntity != 0 && API.HasSprite(_keysNeededEntity))
+            {
+                if (_pendingAction == PendingAction.AdvanceToDialogue2 ||
+                    (_dialogueState == DialogueState.Dialogue2 && _fadeMode == FadeMode.FadeIn))
+                {
+                    API.SetSpriteAlpha(_keysNeededEntity, 1f);
+                }
+                else
+                {
+                    API.SetSpriteAlpha(_keysNeededEntity, alpha);
+                }
+            }
         }
 
         /// <summary>Run the queued action after a fade-out finishes.</summary>
@@ -564,15 +598,21 @@ namespace GameScripts
                     _dialogueState = DialogueState.Dialogue2;
                     if (_dialogueEntity != 0)
                         API.SetSpriteTexture(_dialogueEntity, "Resources/Textures/PlayerUI/NotEnoughKeys_Dialogue2.png");
-                    // Reset panel alpha to 0, then fade in
-                    ApplyDialoguePanelAlpha(0f);
+                    
+                    // Reset text panel alpha to 0, then fade in (leave KeysNeeded at 1)
+                    if (_dialogueEntity != 0) API.SetSpriteAlpha(_dialogueEntity, 0f);
+                    
                     _fadeMode  = FadeMode.FadeIn;
                     _fadeTimer = 0f;
                     break;
 
                 case PendingAction.CloseDialogue:
                     _pendingAction = PendingAction.None;
-                    ApplyDialoguePanelAlpha(0f);
+                    
+                    // Force fully hidden
+                    if (_dialogueEntity != 0) API.SetSpriteAlpha(_dialogueEntity, 0f);
+                    if (_keysNeededEntity != 0) API.SetSpriteAlpha(_keysNeededEntity, 0f);
+                    
                     _dialogueState = DialogueState.None;
                     s_activeDialogueDoor = null;
                     if (_ePromptEntity != 0) 

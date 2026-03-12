@@ -38,7 +38,7 @@ namespace GameScripts
         [Boom.EditorExposed("Floating Sprite Names", "Comma-separated names of sprites that should float upwards")]
         private string _floatingSpriteNames = "";
 
-        [Boom.EditorExposed("Trigger Intro Cutscene", "Whether to play the intro cutscene and checkpoint dialogue when activated")]
+        [Boom.EditorExposed("Intro Cutscene", "Whether to play the intro cutscene and checkpoint dialogue when activated")]
         private bool _triggerIntroCutscene = false;
 
         [Boom.EditorExposed("Cutscene Entity Name", "Name of the entity with CutsceneSequencer to play (only used if Trigger Intro Cutscene is true)")]
@@ -102,7 +102,7 @@ namespace GameScripts
                         if (API.HasSpotLight(id))
                         {
                             API.SetSpotLightIntensity(id, 0.0f);
-                        }
+                          }
                         else if (API.HasPointLight(id))
                         {
                             API.SetPointLightIntensity(id, 0.0f);

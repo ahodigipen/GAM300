@@ -3232,7 +3232,16 @@ namespace EditorUI {
                             if (!field.tooltip.empty() && ImGui::IsItemHovered()) {
                                 ImGui::SetTooltip("%s", field.tooltip.c_str());
                             }
-                            ImGui::SameLine(150);
+
+                            // --- FOOLPROOF ALIGNMENT ---
+                            ImGui::SameLine(); // Automatically places cursor safely right after the text
+
+                            // If the cursor is still before our 150px column mark, push it forward
+                            if (ImGui::GetCursorPosX() < 150.0f) {
+                                ImGui::SetCursorPosX(150.0f);
+                            }
+                            // ---------------------------
+
                             ImGui::SetNextItemWidth(-1);
 
                             // Helper lambda to update both live instance AND Params for serialization
