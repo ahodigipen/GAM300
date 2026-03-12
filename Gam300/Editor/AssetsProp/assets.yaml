@@ -1158,7 +1158,7 @@ ASSETS:
         opacity: 1
         useWorldSpaceUV: false
         textureScale: 1
-        AlbedoMapID: 13930142241077068392
+      AlbedoMapID: 13930142241077068392
       NormalMapID: 2348000828128838431
       RoughnessMapID: 903363356353558548
       MetallicMapID: 0
@@ -2102,9 +2102,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 14205466992706534584
-    Name: Pillow_openPBR_shader1_Height
-    Source: Resources/Textures/Props Textures/Pillow_openPBR_shader1_Height.png
+    UID: 5698233998109750678
+    Name: M4_Player_T-Pose_SamuraiTexture_Height
+    Source: Resources/Textures/M4_PlayerTextures/M4_Player_T-Pose_SamuraiTexture_Height.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2322,6 +2322,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 14533128348011895245
+    Name: AfterFirstTime_Talisman
+    Source: Resources/Textures/PlayerUI/AfterFirstTime_Talisman.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 11307617190584154139
     Name: Ninja_baseColor
     Source: Resources/Models/Enemy/Stationary Sentry/Ninja_baseColor.png
@@ -2443,9 +2454,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 3615061789617660208
-    Name: UI_Freeze_Unavailable
-    Source: Resources/Textures/PlayerUI/UI_Freeze_Unavailable.png
+    UID: 7684017362689627028
+    Name: Lantern_Hanging_openPBR_shader1_Height
+    Source: Resources/Models/Props/2_KEN_LanternTextures/Lantern_Hanging_openPBR_shader1_Height.png
     Properties:
       Data:
         CompileAsCompressed: true

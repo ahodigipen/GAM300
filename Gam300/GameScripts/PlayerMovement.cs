@@ -128,6 +128,8 @@ namespace GameScripts
 
         // ==== CRITICAL: Manual vertical velocity tracking for Character Controller ====
         private float _verticalVelocity = 0f;
+        // Track current forward movement speed for other systems (falling platforms prediction)
+        private float _currentMoveSpeed = 0f;
 
         // ==== Stealth Opacity Helper ====
         private void ApplyStealthOpacity(bool invisible)
@@ -230,6 +232,9 @@ namespace GameScripts
             HUD.SetHealth(_health, _maxHealth);
             _prevStealthInvisible = false;
             ApplyStealthOpacity(false);
+
+            // Initialize current move speed
+            _currentMoveSpeed = 0f;
 
             // Find god mode text entity (optional - add a TextComponent entity named "UI_GodMode" to scene)
             _godModeTextEntity = API.FindEntity("UI_GodMode");
@@ -783,6 +788,8 @@ namespace GameScripts
                 }
                 velX = _rollDir.X * _rollSpeed;
                 velZ = _rollDir.Z * _rollSpeed;
+                // expose current move speed for external scripts
+                _currentMoveSpeed = (float)Math.Sqrt(velX * velX + velZ * velZ);
                 _isInvulnerable = true;
                 _wasCtrlPressed = ctrlDown;
 
@@ -796,6 +803,7 @@ namespace GameScripts
                 _rollTimer -= dt;
                 velX = _rollDir.X * _rollSpeed;
                 velZ = _rollDir.Z * _rollSpeed;
+                _currentMoveSpeed = (float)Math.Sqrt(velX * velX + velZ * velZ);
                 if (_rollTimer <= 0f)
                 {
                     _isRolling = false;
@@ -814,12 +822,13 @@ namespace GameScripts
                 _rollCooldownTimer = Math.Max(0f, _rollCooldownTimer - dt);
             _wasCtrlPressed = ctrlDown;
 
+            float speedXZ = (float)Math.Sqrt(velX * velX + velZ * velZ);
+            _currentMoveSpeed = speedXZ;
             Vec3 finalDisplacement = new Vec3(velX * dt, _verticalVelocity * dt, velZ * dt);
             API.MoveController(Entity, finalDisplacement, 0.001f, dt);
 
             if (_hasAnimator)
             {
-                float speedXZ = (float)Math.Sqrt(velX * velX + velZ * velZ);
                 _smoothedSpeed += (speedXZ - _smoothedSpeed) * Math.Min(1.0, SPEED_DAMP * dt);
                 API.AnimatorSetFloat(Entity, "Speed", (float)_smoothedSpeed);
                 API.AnimatorSetBool(Entity, "IsMoving", _smoothedSpeed > MOVE_EPS || hasInput);
@@ -1026,6 +1035,12 @@ namespace GameScripts
         public static bool IsCrouching()
         {
             return s_instance != null && s_instance._isCrouching;
+        }
+
+        // Provide current forward speed (approx) for external systems
+        public static float GetCurrentMoveSpeed()
+        {
+            return s_instance != null ? s_instance._currentMoveSpeed : 0f;
         }
     }
 }

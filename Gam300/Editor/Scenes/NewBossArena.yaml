@@ -595,7 +595,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.529999971, 11.9584293, -8.93846703]
+        Translate: [1.30214961e-09, 10.7093639, -13.2679996]
         Rotate: [0, 3.50971746, 0]
         Scale: [0.0160000008, 0.0160000008, 0.0160000008]
     CharacterControllerComponent:
@@ -764,14 +764,14 @@ ENTITIES:
       ParamsJSON: "{\n  \"_controllerOffsetY\": 2.0,\n  \"_level2Pos\": {\n    \"X\": 0.0,\n    \"Y\": 10.0,\n    \"Z\": 0.0\n  },\n  \"_levelStartPos\": {\n    \"X\": 0.0,\n    \"Y\": 10.300000190734863,\n    \"Z\": -13.0\n  }\n}"
   - InfoComponent:
       Parent: 0
-      Name: Wall (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
+      Name: Back_Black_Wall
       UID: 17057980568177196576
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [15.853529, 8.84638023, -13.7181578]
-        Rotate: [0, 89.980217, 0]
-        Scale: [17.9384842, 38.7943497, 5.40150738]
+        Translate: [-0.360000014, 17.4659996, -40.530407]
+        Rotate: [0, -0, 0]
+        Scale: [24.9279995, 22.2040005, 4.40199995]
     ModelComponent:
       ModelID: 7633162898494281895
       MaterialID: 10986001470646938493
@@ -821,8 +821,8 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [1.99271512, 36.1773148, 4.17501259]
-        Rotate: [173.088013, -5.61999989, 136.881989]
-        Scale: [1.00000012, 1, 1.00008571]
+        Rotate: [177.34996, -9.26683426, 116.963753]
+        Scale: [0.999996066, 0.999992132, 1.00008273]
     DirectLightComponent:
       Light:
         Radiance: [1, 1, 1]
@@ -908,15 +908,15 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [3.44039917, 12.6357822, -22.125]
-        Rotate: [0, 89.980217, 0]
-        Scale: [1.581002, 1.09745085, 6.61477613]
+        Translate: [1.50999999, 12.6357822, -26.1009998]
+        Rotate: [0, 90, 0]
+        Scale: [2.17000008, 1.09745085, 3.53999996]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [1.581002, 1.09745085, 6.61477613]
+        Previous Scale: [2.17000008, 1.09745085, 3.53999996]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -935,7 +935,7 @@ ENTITIES:
       SortOrder: 0
     SceneNavmeshComponent:
       NavmeshFile: ""
-      AmbientStrength: 0.312000006
+      AmbientStrength: 0
       BloomEnabled: false
       BloomIntensity: 1
       BloomThreshold: 1
@@ -956,7 +956,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [3.29823232, 60.7797966, 48.05233]
+        Translate: [-3.32175469, 60.7797966, 48.05233]
         Rotate: [180, -82.6712646, 123.757835]
         Scale: [0.999997079, 0.999999881, 0.999999106]
     SpotLightComponent:
@@ -972,9 +972,9 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-13.3995094, 18, -18.2467995]
-        Rotate: [0, -0, 0]
-        Scale: [1, 20.8787899, 39.3113823]
+        Translate: [-0.606000006, 18, -45.8989983]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.99999994, 20.8787899, 25.3610001]
     ModelComponent:
       ModelID: 7633162898494281895
       MaterialID: 6104124486273075758
@@ -1085,22 +1085,22 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-4.44796944, 14.6470556, -14.8422375]
-        Rotate: [-211.6875, -53.9471741, 180]
+        Translate: [0.132200286, 16.9694653, -18.9748726]
+        Rotate: [160, 1.49034953, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.00100000005
         FarPlane: 935.47998
-        FOV: 75
+        FOV: 83
     ThirdPersonCameraComponent:
       Target UID: 15509033343906787136
       Offset: [0.00999999978, 4.55000019, -1.00999999]
       Current Distance: 5
       Min Distance: 1
       Max Distance: 5
-      Current Yaw: -7150.49023
-      Current Pitch: -85
+      Current Yaw: -7921.49023
+      Current Pitch: 20
       Mouse Sensitivity: 1
       Scroll Sensitivity: 1
   - ColliderComponent:
@@ -1145,7 +1145,7 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Wall
+      Name: left main wall
       UID: 8261118590240462762
       SortOrder: 0
     TransformComponent:
@@ -1162,14 +1162,21 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: LightPoint
-      UID: 2106348438969185543
+      Name: Top_Black_Wall
+      UID: 2009953532560172724
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [1.07700002, 17.3896294, -3.56820607]
-        Rotate: [67.8669968, 36.7610016, 14.1389999]
-        Scale: [0.999990106, 0.999870121, 0.99986285]
+        Translate: [-0.00999999978, 30.6159992, -25.3239994]
+        Rotate: [89.9999847, -0, 0]
+        Scale: [26.1779995, 38.5859985, 4.58099985]
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 10986001470646938493
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
       Parent: 0
       Name: Wall (Copy) (Copy) (Copy)
@@ -2989,7 +2996,7 @@ ENTITIES:
         Scale: [0.0399999991, 0.0599999987, 0.0799999982]
     SpriteComponent:
       textureID: 9683671951523272381
-      color: [1, 1, 1, 0]
+      color: [1, 1, 1, 1]
       renderAs3D: false
   - ColliderComponent:
       Collider:
@@ -3011,10 +3018,112 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.529999971, 10.5480003, -13.2679996]
+        Translate: [0, 10.5480003, -13.2679996]
         Rotate: [0, -0, 0]
         Scale: [1, 1, 1]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.SpawnPoint
       ParamsJSON: "{}"
+  - InfoComponent:
+      Parent: 0
+      Name: right main wall
+      UID: 13836464900825464380
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-13.3995094, 18, -22]
+        Rotate: [0, -0, 0]
+        Scale: [1, 20.8787899, 46]
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 6104124486273075758
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Main_Wall_Left_Fill
+      UID: 1676710222772089113
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [9.36600018, 11.9738646, -22.1669159]
+        Rotate: [0, -0, 0]
+        Scale: [5.55999994, 3.52900004, 44.2949982]
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 6104124486273075758
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Main_Wall_Left_Fill_2
+      UID: 3924406664193600481
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [10.5609999, 14.9178638, -22.1669159]
+        Rotate: [0, -0, 0]
+        Scale: [3.3900001, 2.35899997, 45.1549988]
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 6104124486273075758
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Main_Wall_Right_Fill
+      UID: 3234482310908122713
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-10.1195097, 11.9738646, -22.1669159]
+        Rotate: [0, -0, 0]
+        Scale: [5.55999994, 3.52900004, 44.2949982]
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 6104124486273075758
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Main_Wall_Right_Fill_2
+      UID: 10157873360059342858
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-11.2045097, 14.9178638, -22.1669159]
+        Rotate: [0, -0, 0]
+        Scale: [3.3900001, 2.35899997, 45.1549988]
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 6104124486273075758
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Wall Black left
+      UID: 8593746788102248021
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [15.853529, 8.84638023, -13.7181578]
+        Rotate: [0, 89.980217, 0]
+        Scale: [17.9384842, 38.7943497, 5.40150738]
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 10986001470646938493
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
