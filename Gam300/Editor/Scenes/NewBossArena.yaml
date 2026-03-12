@@ -494,7 +494,7 @@ ENTITIES:
       ParamsJSON: "{}"
   - InfoComponent:
       Parent: 0
-      Name: New Entity
+      Name: bgm
       UID: 10417744123136772025
       SortOrder: 0
     TransformComponent:
@@ -530,7 +530,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: true
+        IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
@@ -554,7 +554,7 @@ ENTITIES:
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
-        Type: DYNAMIC
+        Type: STATIC
     ModelComponent:
       ModelID: 15991448755648030033
       MaterialID: 1483718607493874943
@@ -565,7 +565,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -574,7 +574,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: true
+        IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
@@ -598,7 +598,7 @@ ENTITIES:
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
-        Type: DYNAMIC
+        Type: STATIC
     ModelComponent:
       ModelID: 15991448755648030033
       MaterialID: 1483718607493874943
@@ -609,7 +609,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -618,7 +618,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: true
+        IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
@@ -630,8 +630,8 @@ ENTITIES:
       SortOrder: 4
     TransformComponent:
       Transform:
-        Translate: [-2.85500002, 15, 92.5599976]
-        Rotate: [90, -0, 0]
+        Translate: [-2.77393556, 15, 92.5599976]
+        Rotate: [89.9999847, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
       RigidBody:
@@ -642,7 +642,7 @@ ENTITIES:
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
-        Type: DYNAMIC
+        Type: STATIC
     ModelComponent:
       ModelID: 15991448755648030033
       MaterialID: 1483718607493874943
@@ -653,7 +653,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -662,7 +662,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: true
+        IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
@@ -674,8 +674,8 @@ ENTITIES:
       SortOrder: 94
     TransformComponent:
       Transform:
-        Translate: [3.2249999, 15, 92.5599976]
-        Rotate: [90, -0, 0]
+        Translate: [2.87585163, 15, 92.5599976]
+        Rotate: [89.9999847, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
       RigidBody:
@@ -686,7 +686,7 @@ ENTITIES:
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
-        Type: DYNAMIC
+        Type: STATIC
     ModelComponent:
       ModelID: 15991448755648030033
       MaterialID: 1483718607493874943
@@ -697,7 +697,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -706,7 +706,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: true
+        IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
@@ -730,7 +730,7 @@ ENTITIES:
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
-        Type: DYNAMIC
+        Type: STATIC
     ModelComponent:
       ModelID: 15991448755648030033
       MaterialID: 1483718607493874943
@@ -741,7 +741,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0.670000017, 0]
@@ -928,7 +928,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: true
+        IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
@@ -952,7 +952,7 @@ ENTITIES:
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
-        Type: DYNAMIC
+        Type: STATIC
     ModelComponent:
       ModelID: 15991448755648030033
       MaterialID: 1483718607493874943
@@ -963,7 +963,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -972,7 +972,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: true
+        IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
@@ -996,7 +996,7 @@ ENTITIES:
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
-        Type: DYNAMIC
+        Type: STATIC
     ModelComponent:
       ModelID: 15991448755648030033
       MaterialID: 1483718607493874943
@@ -1007,7 +1007,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -1016,7 +1016,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: true
+        IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
@@ -1028,8 +1028,8 @@ ENTITIES:
       SortOrder: 51
     TransformComponent:
       Transform:
-        Translate: [2.65499997, 15, 72.3799973]
-        Rotate: [90, -0, 0]
+        Translate: [2.30673289, 15, 72.0815811]
+        Rotate: [89.9999847, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
       RigidBody:
@@ -1040,7 +1040,7 @@ ENTITIES:
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
-        Type: DYNAMIC
+        Type: STATIC
     ModelComponent:
       ModelID: 15991448755648030033
       MaterialID: 1483718607493874943
@@ -1051,7 +1051,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -1060,7 +1060,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: true
+        IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
@@ -1084,7 +1084,7 @@ ENTITIES:
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
-        Type: DYNAMIC
+        Type: STATIC
     ModelComponent:
       ModelID: 15991448755648030033
       MaterialID: 1483718607493874943
@@ -1095,7 +1095,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -1104,7 +1104,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: true
+        IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
@@ -1117,7 +1117,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-0.155175328, 15, 68.3099976]
-        Rotate: [90, -0, 0]
+        Rotate: [89.9999847, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
       RigidBody:
@@ -1128,7 +1128,7 @@ ENTITIES:
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
-        Type: DYNAMIC
+        Type: STATIC
     ModelComponent:
       ModelID: 15991448755648030033
       MaterialID: 1483718607493874943
@@ -1139,7 +1139,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -1148,7 +1148,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: true
+        IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
@@ -1172,7 +1172,7 @@ ENTITIES:
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
-        Type: DYNAMIC
+        Type: STATIC
     ModelComponent:
       ModelID: 15991448755648030033
       MaterialID: 1483718607493874943
@@ -1183,7 +1183,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -1192,7 +1192,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: true
+        IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
@@ -1204,8 +1204,8 @@ ENTITIES:
       SortOrder: 34
     TransformComponent:
       Transform:
-        Translate: [-0.155175328, 15, 51]
-        Rotate: [90, -0, 0]
+        Translate: [-0.155175328, 15, 51.3407516]
+        Rotate: [89.9999847, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     RigidBodyComponent:
       RigidBody:
@@ -1216,7 +1216,7 @@ ENTITIES:
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
-        Type: DYNAMIC
+        Type: STATIC
     ModelComponent:
       ModelID: 15991448755648030033
       MaterialID: 1483718607493874943
@@ -1227,7 +1227,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1768,7 +1768,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: true
+        IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
@@ -1792,7 +1792,7 @@ ENTITIES:
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
-        Type: DYNAMIC
+        Type: STATIC
     ModelComponent:
       ModelID: 15991448755648030033
       MaterialID: 1483718607493874943
@@ -1803,7 +1803,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -1812,7 +1812,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: true
+        IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
@@ -1836,7 +1836,7 @@ ENTITIES:
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
-        Type: DYNAMIC
+        Type: STATIC
     ModelComponent:
       ModelID: 15991448755648030033
       MaterialID: 1483718607493874943
@@ -1847,7 +1847,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -1856,7 +1856,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: true
+        IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
@@ -1880,7 +1880,7 @@ ENTITIES:
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
-        Type: DYNAMIC
+        Type: STATIC
     ModelComponent:
       ModelID: 15991448755648030033
       MaterialID: 1483718607493874943
@@ -1891,7 +1891,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -1900,7 +1900,7 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
-        IsTrigger: true
+        IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
@@ -1924,7 +1924,7 @@ ENTITIES:
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
-        Type: DYNAMIC
+        Type: STATIC
     ModelComponent:
       ModelID: 15991448755648030033
       MaterialID: 1483718607493874943
@@ -1935,7 +1935,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -2062,46 +2062,6 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Floor3
-      UID: 9723282308036547868
-      SortOrder: 50
-    TransformComponent:
-      Transform:
-        Translate: [-3.5, 8.84638023, 60]
-        Rotate: [0, -0, 0]
-        Scale: [3.5, 2.60136342, 120.305]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [3.5, 2.60136342, 120.305]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 7633162898494281895
-      MaterialID: 5692762562094318330
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
   - InfoComponent:
       Parent: 0
       Name: LightBossSmallRight3
@@ -2199,14 +2159,14 @@ ENTITIES:
       SortOrder: 46
     TransformComponent:
       Transform:
-        Translate: [-0.158268094, 21.0386276, -22.8048019]
-        Rotate: [160.25, -720.072144, 180]
+        Translate: [-0.309204131, 19.2854691, -26.607317]
+        Rotate: [163.9375, -721.634644, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.00100000005
         FarPlane: 935.47998
-        FOV: 94
+        FOV: 100
     ThirdPersonCameraComponent:
       Target UID: 15509033343906787136
       Offset: [0.00999999978, 4.55000019, -1.00999999]
@@ -2266,15 +2226,15 @@ ENTITIES:
       SortOrder: 78
     TransformComponent:
       Transform:
-        Translate: [0, 8.84638023, 60]
+        Translate: [0, 6.62599993, 60]
         Rotate: [0, -0, 0]
-        Scale: [3.5, 2.60136342, 120.305]
+        Scale: [10.1999998, 7, 120.305]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [3.5, 2.60136342, 120.305]
+        Previous Scale: [10.1999998, 7, 120.305]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -2342,7 +2302,7 @@ ENTITIES:
     SpotLightComponent:
       Light:
         Radiance: [0, 1, 0]
-        Intensity: 50
+        Intensity: 100
         FallOff: 0
         CutOff: -1.06099999
   - InfoComponent:
@@ -2406,46 +2366,6 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Floor2 (Copy)
-      UID: 9023908058172210237
-      SortOrder: 45
-    TransformComponent:
-      Transform:
-        Translate: [3.5, 8.84638023, 60]
-        Rotate: [0, -0, 0]
-        Scale: [3.5, 2.60136342, 120.304733]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [3.5, 2.60136342, 120.304733]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 7633162898494281895
-      MaterialID: 5692762562094318330
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
   - InfoComponent:
       Parent: 0
       Name: BOSS
@@ -2453,7 +2373,7 @@ ENTITIES:
       SortOrder: 55
     TransformComponent:
       Transform:
-        Translate: [-0.419950008, 16.9999981, 116.735748]
+        Translate: [-0.419950008, 17, 116.735748]
         Rotate: [-5.00895612e-06, 0, -5.00895612e-06]
         Scale: [2, 2, 2]
     ModelComponent:
@@ -2466,7 +2386,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.BossHideSeekController
-      ParamsJSON: "{\n  \"_activationDelay\": 0.0,\n  \"_catchDelay\": 0.5,\n  \"_detectionRange\": 200.0,\n  \"_flipForward\": false,\n  \"_greenIntensity\": 50.0,\n  \"_invertForward\": true,\n  \"_lightNamesCSV\": \"LightMain,LightShadows\",\n  \"_redIntensity\": 50.0,\n  \"_restingYaw\": 0.0,\n  \"_rotationInterval\": 6.0,\n  \"_rotationSpeed\": 120.0,\n  \"_startFacingForward\": false,\n  \"_targetNamesCSV\": \"Samurai\",\n  \"_verticalTolerance\": 8.0,\n  \"_watchingYaw\": 180.0\n}"
+      ParamsJSON: "{\n  \"_activationDelay\": 0.0,\n  \"_catchDelay\": 0.5,\n  \"_detectionRange\": 200.0,\n  \"_flipForward\": false,\n  \"_greenIntensitiesCSV\": \"100.0,1.0\",\n  \"_greenIntensity\": 25.0,\n  \"_invertForward\": true,\n  \"_lightNamesCSV\": \"LightMain,LightShadows\",\n  \"_redIntensitiesCSV\": \"100.0,1.0\",\n  \"_redIntensity\": 25.0,\n  \"_restingYaw\": 0.0,\n  \"_rotationInterval\": 6.0,\n  \"_rotationSpeed\": 120.0,\n  \"_startFacingForward\": false,\n  \"_targetNamesCSV\": \"Samurai\",\n  \"_verticalTolerance\": 8.0,\n  \"_watchingYaw\": 180.0\n}"
     SpotLightComponent:
       Light:
         Radiance: [1, 1, 1]
@@ -3327,7 +3247,7 @@ ENTITIES:
         Scale: [1, 0.999999881, 0.999999881]
     DirectLightComponent:
       Light:
-        Radiance: [1, 0, 0]
+        Radiance: [0, 1, 0]
         Intensity: 1
   - InfoComponent:
       Parent: 0
@@ -3988,3 +3908,37 @@ ENTITIES:
         Intensity: 10
         FallOff: 0.949999988
         CutOff: 0.75999999
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: MoveToOutro
+      UID: 13125061118457097182
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 13.3929167, 114.822235]
+        Rotate: [0, -0, 0]
+        Scale: [9.60000038, 5.63999987, 2.93000007]
+    ModelComponent:
+      ModelID: 0
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.SceneTransitionTrigger
+      ParamsJSON: "{\n  \"_oneTimeUse\": true,\n  \"_sceneName\": \"OUTRO SCENE\"\n}"

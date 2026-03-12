@@ -32,10 +32,8 @@ namespace GameScripts
                 _slotTexts[i] = API.FindEntity($"Inventory_Slot{slotNum}_Text");
             }
 
-            // Only hide at startup when we are loaded from the gameplay scene.
-            // When opening InventoryMenu.yaml directly in the editor,
-            // Entry._currentSceneName is null so we skip this and preserve edit-time alpha.
-            if (Entry._currentSceneName == Entry.GAMEPLAY_SCENE_NAME)
+            // Only hide at startup when we are loaded from a gameplay scene.
+            if (Entry._currentSceneName == Entry.GAMEPLAY_SCENE_NAME || Entry._currentSceneName == Entry.BOSS_ARENA_SCENE_NAME)
             {
                 HideAll();
             }
@@ -43,8 +41,8 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
-            // Do nothing outside of the gameplay scene (e.g. when editing the scene file directly)
-            if (Entry._currentSceneName != Entry.GAMEPLAY_SCENE_NAME) return;
+            // Do nothing outside of a gameplay scene (e.g. when editing the scene file directly)
+            if (Entry._currentSceneName != Entry.GAMEPLAY_SCENE_NAME && Entry._currentSceneName != Entry.BOSS_ARENA_SCENE_NAME) return;
             if (Entry.IsInventoryOpen)
             {
                 SetSpriteAlpha(_bgEntity, 1.0f);

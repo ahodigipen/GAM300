@@ -1290,6 +1290,57 @@ namespace Boom {
         s_Ctx->scene.get<SpotLightComponent>(e).light.intensity = intensity;
     }
 
+    // ========= DIRECTLIGHT COMPONENT INTERNAL CALLS =========
+    static bool ICALL_API_HasDirectLight(uint64_t handle)
+    {
+        if (!s_Ctx) return false;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        return (e != entt::null && s_Ctx->scene.valid(e) && s_Ctx->scene.any_of<DirectLightComponent>(e));
+    }
+
+    static void ICALL_API_GetDirectLightColor(uint64_t handle, glm::vec3* outColor)
+    {
+        if (!outColor || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<DirectLightComponent>(e)) {
+            *outColor = glm::vec3(1.0f);
+            return;
+        }
+        *outColor = s_Ctx->scene.get<DirectLightComponent>(e).light.radiance;
+    }
+
+    static void ICALL_API_SetDirectLightColor(uint64_t handle, glm::vec3* color)
+    {
+        if (!color || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<DirectLightComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetDirectLightColor: Entity doesn't have DirectLightComponent");
+            return;
+        }
+        s_Ctx->scene.get<DirectLightComponent>(e).light.radiance = *color;
+    }
+
+    static float ICALL_API_GetDirectLightIntensity(uint64_t handle)
+    {
+        if (!s_Ctx) return 1.0f;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<DirectLightComponent>(e)) {
+            return 1.0f;
+        }
+        return s_Ctx->scene.get<DirectLightComponent>(e).light.intensity;
+    }
+
+    static void ICALL_API_SetDirectLightIntensity(uint64_t handle, float intensity)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<DirectLightComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetDirectLightIntensity: Entity doesn't have DirectLightComponent");
+            return;
+        }
+        s_Ctx->scene.get<DirectLightComponent>(e).light.intensity = intensity;
+    }
+
     // ========= POINTLIGHT COMPONENT INTERNAL CALLS =========
     static bool ICALL_API_HasPointLight(uint64_t handle)
     {
@@ -2617,20 +2668,6 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetSpriteAlpha", (const void*)ICALL_API_SetSpriteAlpha);
         mono_add_internal_call("Boom.Native::Boom_API_SetSpriteTexture", (const void*)ICALL_API_SetSpriteTexture);
 
-        // SpotLight component internal calls
-        mono_add_internal_call("Boom.Native::Boom_API_HasSpotLight", (const void*)ICALL_API_HasSpotLight);
-        mono_add_internal_call("Boom.Native::Boom_API_GetSpotLightColor", (const void*)ICALL_API_GetSpotLightColor);
-        mono_add_internal_call("Boom.Native::Boom_API_SetSpotLightColor", (const void*)ICALL_API_SetSpotLightColor);
-        mono_add_internal_call("Boom.Native::Boom_API_GetSpotLightIntensity", (const void*)ICALL_API_GetSpotLightIntensity);
-        mono_add_internal_call("Boom.Native::Boom_API_SetSpotLightIntensity", (const void*)ICALL_API_SetSpotLightIntensity);
-
-        // PointLight component internal calls
-        mono_add_internal_call("Boom.Native::Boom_API_HasPointLight", (const void*)ICALL_API_HasPointLight);
-        mono_add_internal_call("Boom.Native::Boom_API_GetPointLightColor", (const void*)ICALL_API_GetPointLightColor);
-        mono_add_internal_call("Boom.Native::Boom_API_SetPointLightColor", (const void*)ICALL_API_SetPointLightColor);
-        mono_add_internal_call("Boom.Native::Boom_API_GetPointLightIntensity", (const void*)ICALL_API_GetPointLightIntensity);
-        mono_add_internal_call("Boom.Native::Boom_API_SetPointLightIntensity", (const void*)ICALL_API_SetPointLightIntensity);
-
         // Text Component functions
         mono_add_internal_call("Boom.Native::Boom_API_HasText", (const void*)ICALL_API_HasText);
         mono_add_internal_call("Boom.Native::Boom_API_GetText", (const void*)ICALL_API_GetText);
@@ -2655,6 +2692,13 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetPointLightColor", (const void*)ICALL_API_SetPointLightColor);
         mono_add_internal_call("Boom.Native::Boom_API_GetPointLightIntensity", (const void*)ICALL_API_GetPointLightIntensity);
         mono_add_internal_call("Boom.Native::Boom_API_SetPointLightIntensity", (const void*)ICALL_API_SetPointLightIntensity);
+
+        // DirectLight component internal calls
+        mono_add_internal_call("Boom.Native::Boom_API_HasDirectLight", (const void*)ICALL_API_HasDirectLight);
+        mono_add_internal_call("Boom.Native::Boom_API_GetDirectLightColor", (const void*)ICALL_API_GetDirectLightColor);
+        mono_add_internal_call("Boom.Native::Boom_API_SetDirectLightColor", (const void*)ICALL_API_SetDirectLightColor);
+        mono_add_internal_call("Boom.Native::Boom_API_GetDirectLightIntensity", (const void*)ICALL_API_GetDirectLightIntensity);
+        mono_add_internal_call("Boom.Native::Boom_API_SetDirectLightIntensity", (const void*)ICALL_API_SetDirectLightIntensity);
 
         // Video component internal calls
         mono_add_internal_call("Boom.Native::Boom_API_HasVideoComponent", (const void*)ICALL_API_HasVideoComponent);

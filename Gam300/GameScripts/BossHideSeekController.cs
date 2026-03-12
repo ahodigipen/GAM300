@@ -51,11 +51,11 @@ namespace GameScripts
         [Boom.EditorExposed("Green Light Color (R,G,B)", "Color when resting")]
         private string _greenColorCSV = "0.0,1.0,0.0";
 
-        [Boom.EditorExposed("Red Intensity", "Intensity when watching")]
-        private float _redIntensity = 5.0f;
+        [Boom.EditorExposed("Red Intensities (CSV)", "Intensity for each light when watching")]
+        private string _redIntensitiesCSV = "5.0,5.0,5.0";
 
-        [Boom.EditorExposed("Green Intensity", "Intensity when resting")]
-        private float _greenIntensity = 2.0f;
+        [Boom.EditorExposed("Green Intensities (CSV)", "Intensity for each light when resting")]
+        private string _greenIntensitiesCSV = "2.0,2.0,2.0";
 
         [Boom.EditorExposed("Warning Text Entity", "UI text name")]
         private string _warningTextEntityName = "UI_WarningText";
@@ -67,6 +67,9 @@ namespace GameScripts
         private bool _drawVisionDebug = true;
 
         private List<ulong> _lightEntities = new List<ulong>();
+        private List<float> _redIntensities = new List<float>();
+        private List<float> _greenIntensities = new List<float>();
+
         private ulong _warningText = 0;
         private float _timer = 0f;
         private bool _isTurning = false;
@@ -117,14 +120,34 @@ namespace GameScripts
         {
             s_instances[Entity] = this;
             if (!API.HasTransform(Entity)) return;
+            
             _colorRed = ParseVec3(_redColorCSV, new Vec3(1, 0, 0));
             _colorGreen = ParseVec3(_greenColorCSV, new Vec3(0, 1, 0));
+            
             _lightEntities.Clear();
             string[] names = _lightNamesCSV.Split(',');
             foreach (var name in names) { ulong id = API.FindEntity(name.Trim()); if (id != 0) _lightEntities.Add(id); }
+
+            _redIntensities = ParseFloatList(_redIntensitiesCSV, _lightEntities.Count, 5.0f);
+            _greenIntensities = ParseFloatList(_greenIntensitiesCSV, _lightEntities.Count, 2.0f);
+
             _warningText = API.FindEntity(_warningTextEntityName);
             ResetToRestingState();
             PlayerManager.RegisterEnemy(this);
+        }
+
+        private List<float> ParseFloatList(string csv, int count, float defaultVal)
+        {
+            List<float> list = new List<float>();
+            string[] parts = csv.Split(',');
+            for (int i = 0; i < count; i++)
+            {
+                if (i < parts.Length && float.TryParse(parts[i].Trim(), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float val))
+                    list.Add(val);
+                else
+                    list.Add(defaultVal);
+            }
+            return list;
         }
 
         private void ResetToRestingState()
@@ -139,19 +162,13 @@ namespace GameScripts
             _warningTimer = 0f;
             _hasDealtDamage = false;
             _catchTimer = _catchDelay;
-            // Stop turn sound if playing
-            if (_wasTurning)
-            {
-                API.StopSound(TURN_SOUND_NAME);
-                _wasTurning = false;
-            }
-            // Stop warning sound
+            if (_wasTurning) { API.StopSound(TURN_SOUND_NAME); _wasTurning = false; }
             API.StopSound(WARNING_SOUND_NAME);
             StopCountdown();
             Vec3 rot = API.GetRotation(Entity);
             rot.Y = _currentYRotation;
             API.SetRotation(Entity, rot);
-            UpdateLights(_colorGreen, _greenIntensity);
+            UpdateLights(_colorGreen, _greenIntensities);
         }
 
         public void OnUpdate(float dt)
@@ -163,7 +180,6 @@ namespace GameScripts
 
             if (_activationTimer < _activationDelay) { _activationTimer += dt; return; }
 
-            // Warning phase - play warning sound and wait before turning towards player
             if (_isWaitingToTurn)
             {
                 _warningTimer += dt;
@@ -171,13 +187,12 @@ namespace GameScripts
                 {
                     _isWaitingToTurn = false;
                     _warningTimer = 0f;
-                    // Now actually start the turn
                     _isTurning = true;
                     _isWatching = _pendingWatchState;
                     _targetYRotation = _isWatching ? _watchingYaw : _restingYaw;
-                    UpdateLights(_isWatching ? _colorRed : _colorGreen, _isWatching ? _redIntensity : _greenIntensity);
+                    UpdateLights(_isWatching ? _colorRed : _colorGreen, _isWatching ? _redIntensities : _greenIntensities);
                 }
-                return; // Don't do anything else while waiting
+                return;
             }
 
             if (!_isTurning)
@@ -190,7 +205,6 @@ namespace GameScripts
 
                     if (_pendingWatchState)
                     {
-                        // About to turn towards player - play warning first, then wait
                         string randomWarning = WARNING_SOUND_PATHS[_warningRandom.Next(WARNING_SOUND_PATHS.Length)];
                         API.PlaySound(WARNING_SOUND_NAME, randomWarning, false);
                         API.SetSoundVolume(WARNING_SOUND_NAME, _warningSoundVolume);
@@ -199,11 +213,10 @@ namespace GameScripts
                     }
                     else
                     {
-                        // Turning away from player - no warning, turn immediately
                         _isTurning = true;
                         _isWatching = false;
                         _targetYRotation = _restingYaw;
-                        UpdateLights(_colorGreen, _greenIntensity);
+                        UpdateLights(_colorGreen, _greenIntensities);
                         StopCountdown();
                     }
                 }
@@ -212,40 +225,22 @@ namespace GameScripts
 
             if (_isTurning)
             {
-                // Start turn sound when turning begins
-                if (!_wasTurning)
-                {
-                    API.PlaySound(TURN_SOUND_NAME, TURN_SOUND_PATH, true);
-                    API.SetSoundVolume(TURN_SOUND_NAME, _turnSoundVolume);
-                    _wasTurning = true;
-                }
-
+                if (!_wasTurning) { API.PlaySound(TURN_SOUND_NAME, TURN_SOUND_PATH, true); API.SetSoundVolume(TURN_SOUND_NAME, _turnSoundVolume); _wasTurning = true; }
                 float angleDiff = _targetYRotation - _currentYRotation;
                 while (angleDiff > 180f) angleDiff -= 360f;
                 while (angleDiff < -180f) angleDiff += 360f;
                 float step = _rotationSpeed * dt;
-                if (Math.Abs(angleDiff) <= step)
-                {
-                    _currentYRotation = _targetYRotation;
-                    _isTurning = false;
-                    // Stop turn sound when turning ends
-                    API.StopSound(TURN_SOUND_NAME);
-                    _wasTurning = false;
-                }
+                if (Math.Abs(angleDiff) <= step) { _currentYRotation = _targetYRotation; _isTurning = false; API.StopSound(TURN_SOUND_NAME); _wasTurning = false; }
                 else { _currentYRotation += Math.Sign(angleDiff) * step; }
-                Vec3 rot = API.GetRotation(Entity);
-                rot.Y = _currentYRotation;
-                API.SetRotation(Entity, rot);
+                Vec3 rot = API.GetRotation(Entity); rot.Y = _currentYRotation; API.SetRotation(Entity, rot);
             }
         }
 
         private void DrawDebugVision()
         {
-            Vec3 pos = API.GetPosition(Entity);
-            pos.Y += 1.5f;
+            Vec3 pos = API.GetPosition(Entity); pos.Y += 1.5f;
             float yawRad = _currentYRotation * (float)Math.PI / 180.0f;
-            float fx = (float)Math.Sin(yawRad);
-            float fz = (float)Math.Cos(yawRad);
+            float fx = (float)Math.Sin(yawRad); float fz = (float)Math.Cos(yawRad);
             if (_inverseForward) { fx = -fx; fz = -fz; }
             Vec3 forward = new Vec3(fx, 0, fz);
             Vec3 end = new Vec3(pos.X + forward.X * 10f, pos.Y, pos.Z + forward.Z * 10f);
@@ -261,7 +256,7 @@ namespace GameScripts
                     boss._isActive = true;
                     boss._timer = 0f;
                     boss._activationTimer = 0f;
-                    boss.UpdateLights(boss._isWatching ? boss._colorRed : boss._colorGreen, boss._isWatching ? boss._redIntensity : boss._greenIntensity);
+                    boss.UpdateLights(boss._isWatching ? boss._colorRed : boss._colorGreen, boss._isWatching ? boss._redIntensities : boss._greenIntensities);
                 }
             }
         }
@@ -271,111 +266,52 @@ namespace GameScripts
             _debugLogTimer += dt;
             bool log = (_debugLogTimer >= 0.5f) && _showDebugLogs;
             if (log) _debugLogTimer = 0f;
-
             ulong player = PlayerMovement.GetPlayerEntity();
             if (player == 0) player = API.FindEntity("Player");
             if (player == 0) return;
-
             if (PlayerMovement.IsPlayerInvisibleToEnemies()) { if (_isCountingDown) StopCountdown(); return; }
-
-            Vec3 bPos = API.GetPosition(Entity);
-            Vec3 pPos = API.GetPosition(player);
-
+            Vec3 bPos = API.GetPosition(Entity); Vec3 pPos = API.GetPosition(player);
             if (Math.Abs(pPos.Y - bPos.Y) > _verticalTolerance) { if (_isCountingDown) StopCountdown(); return; }
-
-            float dx = pPos.X - bPos.X;
-            float dz = pPos.Z - bPos.Z;
-            float dist = (float)Math.Sqrt(dx * dx + dz * dz);
-
+            float dx = pPos.X - bPos.X; float dz = pPos.Z - bPos.Z; float dist = (float)Math.Sqrt(dx * dx + dz * dz);
             if (dist < _detectionRange)
             {
                 float yawRad = _currentYRotation * (float)Math.PI / 180.0f;
-                float fx = (float)Math.Sin(yawRad);
-                float fz = (float)Math.Cos(yawRad);
+                float fx = (float)Math.Sin(yawRad); float fz = (float)Math.Cos(yawRad);
                 if (_inverseForward) { fx = -fx; fz = -fz; }
-                
-                float tx = dx / dist;
-                float tz = dz / dist;
-
+                float tx = dx / dist; float tz = dz / dist;
                 float dot = tx * fx + tz * fz;
                 float cosHalf = (float)Math.Cos((_detectionAngle * 0.5f) * Math.PI / 180.0);
-
                 if (log) Console.WriteLine($"[BossHideSeek] Watch: Dist:{dist:F1}, Dot:{dot:F2} (Target:{cosHalf:F2})");
-
                 if (dot > cosHalf)
                 {
-                    if (!_isCountingDown) {
-                        _isCountingDown = true;
-                        _catchTimer = _catchDelay;
-                        ShowWarningText(true);
-                        Console.WriteLine("[BossHideSeek] >>> SPOTTED! <<<");
-                    }
-                    _catchTimer -= dt;
-                    UpdateWarningText(_catchTimer);
-                    if (_catchTimer <= 0f && !_hasDealtDamage) {
-                        _hasDealtDamage = true;
-                        ShowWarningText(false);
-                        Console.WriteLine("[BossHideSeek] !!! CAUGHT !!!");
-                        PlayerManager.NotifyPlayerCaught(Entity);
-                    }
+                    if (!_isCountingDown) { _isCountingDown = true; _catchTimer = _catchDelay; ShowWarningText(true); Console.WriteLine("[BossHideSeek] >>> SPOTTED! <<<"); }
+                    _catchTimer -= dt; UpdateWarningText(_catchTimer);
+                    if (_catchTimer <= 0f && !_hasDealtDamage) { _hasDealtDamage = true; ShowWarningText(false); Console.WriteLine("[BossHideSeek] !!! CAUGHT !!!"); PlayerManager.NotifyPlayerCaught(Entity); }
                     return;
                 }
             }
             if (_isCountingDown) StopCountdown();
         }
 
-        private void StopCountdown()
-        {
-            if (!_isCountingDown) return;
-            _isCountingDown = false;
-            _catchTimer = _catchDelay;
-            ShowWarningText(false);
-            if (_showDebugLogs) Console.WriteLine("[BossHideSeek] Lost Sight.");
-        }
+        private void StopCountdown() { if (!_isCountingDown) return; _isCountingDown = false; _catchTimer = _catchDelay; ShowWarningText(false); if (_showDebugLogs) Console.WriteLine("[BossHideSeek] Lost Sight."); }
+        public void OnPlayerRespawned() { _isActive = false; ResetToRestingState(); }
 
-        public void OnPlayerRespawned()
+        private void UpdateLights(Vec3 color, List<float> intensities)
         {
-            _isActive = false; 
-            ResetToRestingState();
-        }
-
-        private void UpdateLights(Vec3 color, float intensity)
-        {
-            foreach (var l in _lightEntities)
+            for (int i = 0; i < _lightEntities.Count; i++)
             {
+                ulong l = _lightEntities[i];
+                float intensity = (i < intensities.Count) ? intensities[i] : 1.0f;
+
                 if (API.HasSpotLight(l)) { API.SetSpotLightColor(l, color); API.SetSpotLightIntensity(l, intensity); }
                 else if (API.HasPointLight(l)) { API.SetPointLightColor(l, color); API.SetPointLightIntensity(l, intensity); }
+                else if (API.HasDirectLight(l)) { API.SetDirectLightColor(l, color); API.SetDirectLightIntensity(l, intensity); }
             }
         }
 
-        private void ShowWarningText(bool show)
-        {
-            if (_warningText == 0 || !API.HasText(_warningText)) return;
-            var c = API.GetTextColor(_warningText);
-            c.W = show ? 1f : 0f;
-            API.SetTextColor(_warningText, c);
-        }
-
-        private void UpdateWarningText(float remaining)
-        {
-            if (_warningText == 0 || !API.HasText(_warningText)) return;
-            int s = (int)System.Math.Ceiling(System.Math.Max(0.0f, remaining));
-            API.SetText(_warningText, "Spotted! HIDE in " + s + "s!");
-        }
-
+        private void ShowWarningText(bool show) { if (_warningText == 0 || !API.HasText(_warningText)) return; var c = API.GetTextColor(_warningText); c.W = show ? 1f : 0f; API.SetTextColor(_warningText, c); }
+        private void UpdateWarningText(float remaining) { if (_warningText == 0 || !API.HasText(_warningText)) return; int s = (int)System.Math.Ceiling(System.Math.Max(0.0f, remaining)); API.SetText(_warningText, "Spotted! HIDE in " + s + "s!"); }
         private Vec3 ParseVec3(string csv, Vec3 def) { try { string[] p = csv.Split(','); return new Vec3(float.Parse(p[0]), float.Parse(p[1]), float.Parse(p[2])); } catch { return def; } }
-        public void OnDestroy()
-        {
-            // Stop turn sound on destroy
-            if (_wasTurning)
-            {
-                API.StopSound(TURN_SOUND_NAME);
-                _wasTurning = false;
-            }
-            // Stop warning sound on destroy
-            API.StopSound(WARNING_SOUND_NAME);
-            if (s_instances.ContainsKey(Entity)) s_instances.Remove(Entity);
-            PlayerManager.UnregisterEnemy(this);
-        }
+        public void OnDestroy() { if (_wasTurning) { API.StopSound(TURN_SOUND_NAME); _wasTurning = false; } API.StopSound(WARNING_SOUND_NAME); if (s_instances.ContainsKey(Entity)) s_instances.Remove(Entity); PlayerManager.UnregisterEnemy(this); }
     }
 }

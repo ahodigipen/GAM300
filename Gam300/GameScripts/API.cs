@@ -488,6 +488,22 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_SetPointLightIntensity(ulong handle, float intensity);
 
+        // ========= DIRECTLIGHT COMPONENT INTERNAL CALLS =========
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Boom_API_HasDirectLight(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_GetDirectLightColor(ulong handle, out Vec3 color);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetDirectLightColor(ulong handle, ref Vec3 color);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static float Boom_API_GetDirectLightIntensity(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetDirectLightIntensity(ulong handle, float intensity);
+
         // ========= VIDEO COMPONENT INTERNAL CALLS =========
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Boom_API_HasVideoComponent(ulong handle);
@@ -1342,6 +1358,27 @@ namespace Boom
         public static void SetPointLightIntensity(ulong entity, float intensity)
         {
             Native.Boom_API_SetPointLightIntensity(entity, intensity);
+        }
+
+        // ========= DIRECTLIGHT COMPONENT METHODS =========
+        public static bool HasDirectLight(ulong entity) => Native.Boom_API_HasDirectLight(entity);
+
+        public static Vec3 GetDirectLightColor(ulong entity)
+        {
+            Native.Boom_API_GetDirectLightColor(entity, out Vec3 color);
+            return color;
+        }
+
+        public static void SetDirectLightColor(ulong entity, Vec3 color)
+        {
+            Native.Boom_API_SetDirectLightColor(entity, ref color);
+        }
+
+        public static float GetDirectLightIntensity(ulong entity) => Native.Boom_API_GetDirectLightIntensity(entity);
+
+        public static void SetDirectLightIntensity(ulong entity, float intensity)
+        {
+            Native.Boom_API_SetDirectLightIntensity(entity, intensity);
         }
 
         // ========== VIDEO COMPONENT API ==========

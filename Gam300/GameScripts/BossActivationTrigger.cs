@@ -26,11 +26,6 @@ namespace GameScripts
                 return;
             }
 
-            if (!API.IsTrigger(Entity))
-            {
-                API.SetTrigger(Entity, true);
-            }
-
             API.RegisterTriggerEnterCallback(Entity, OnTriggerEnter);
         }
 

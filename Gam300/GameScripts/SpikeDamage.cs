@@ -30,12 +30,6 @@ namespace GameScripts
                 return;
             }
 
-            if (!API.IsTrigger(Entity))
-            {
-                API.SetTrigger(Entity, true);
-                API.Log("[SpikeDamage] Collider set to IsTrigger = true.");
-            }
-
             API.RegisterTriggerEnterCallback(Entity, OnTriggerEnter);
             API.Log($"[SpikeDamage] Initialized on Entity {Entity}. InstantKill: {_instantKill}");
         }
