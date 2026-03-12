@@ -257,6 +257,7 @@ namespace GameScripts
             if (!enterPressed && !aButtonPressed) return;
 
             // ENTER pressed — advance state machine
+            API.PlaySound("sfx_ui_click", "Resources/Audio/uiClick.wav", false);
             AdvanceState();
         }
 

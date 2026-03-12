@@ -158,6 +158,7 @@ namespace GameScripts
             {
                 if (enterPressed || aButtonPressed)
                 {
+                    API.PlaySound("sfx_ui_click", "Resources/Audio/uiClick.wav", false);
                     AdvanceStartSequence();
                 }
             }
@@ -165,6 +166,7 @@ namespace GameScripts
             {
                 if (enterPressed || aButtonPressed)
                 {
+                    API.PlaySound("sfx_ui_click", "Resources/Audio/uiClick.wav", false);
                     AdvanceCheckpoint1Sequence();
                 }
             }

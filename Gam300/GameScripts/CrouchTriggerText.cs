@@ -67,14 +67,10 @@ namespace GameScripts
             // *** CRITICAL: Notify PlayerMovement that we're in a crouch zone ***
             PlayerMovement.SetInCrouchZone(true);
 
-            // *** Show the "Hold to Crouch" UI prompt or tutorial***
+            // *** Show crouch tutorial on first entry ***
             if (!CrouchTutorialManager.HasCompletedTutorial())
             {
                 CrouchTutorialManager.ShowTutorial();
-            }
-            else
-            {
-                UIManager.ShowHoldPrompt();
             }
 
             // Optional: Play warning sound
@@ -100,8 +96,7 @@ namespace GameScripts
             // *** CRITICAL: Notify PlayerMovement that we left the crouch zone ***
             PlayerMovement.SetInCrouchZone(false);
 
-            // *** Hide the "Hold to Crouch" UI prompt ***
-            UIManager.HideHoldPrompt();
+
 
             API.Log("[CrouchTriggerZone] Player exited crouch zone - hiding UI prompt + notifying PlayerMovement");
         }

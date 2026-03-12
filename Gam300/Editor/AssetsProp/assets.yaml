@@ -3455,17 +3455,6 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 11063674576259295404
-    Name: CTRL_Crouch
-    Source: Resources/Textures/PlayerUI/CTRL_Crouch.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
     UID: 8124115684814999151
     Name: NotEnoughKeys_Dialogue1
     Source: Resources/Textures/PlayerUI/NotEnoughKeys_Dialogue1.png
@@ -4495,10 +4484,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 12896261092017281121
     Name: CanCrouch
@@ -4506,10 +4495,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 15435352864565154533
     Name: LockopenPBR_shader1_baseColor
@@ -4517,10 +4506,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 934373211665423018
     Name: LockopenPBR_shader1_normal
@@ -4528,10 +4517,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 8813242198036643513
     Name: LockopenPBR_shader1_occlusionRoughnessMetallic
@@ -4539,10 +4528,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: SKYBOX
     UID: 4245843529762785392
     Name: NightSkyHDRI003_8K_HDR
@@ -6207,9 +6196,9 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 2915209680014061313
-    Name: LEVEL2Walking
-    Source: Resources/Models/Enemy/Patrol2Textures/LEVEL2Walking.fbx
+    UID: 12205784983460827261
+    Name: lock_uncoloured
+    Source: Resources/Models/Props/lock/lock_uncoloured.fbx
     Properties:
       Model Transform:
         transform:
@@ -6218,9 +6207,9 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 12205784983460827261
-    Name: lock_uncoloured
-    Source: Resources/Models/Props/lock/lock_uncoloured.fbx
+    UID: 2915209680014061313
+    Name: LEVEL2Walking
+    Source: Resources/Models/Enemy/Patrol2Textures/LEVEL2Walking.fbx
     Properties:
       Model Transform:
         transform:
@@ -6748,6 +6737,10 @@ ASSETS:
     UID: 9911665564103461214
     Name: doorLocked
     Source: Resources/Audio/doorLocked.wav
+  - Type: AUDIO
+    UID: 1843884016243883010
+    Name: uiClick
+    Source: Resources/Audio/uiClick.wav
   - Type: ANIMATION
     UID: 4483381614930560572
     Name: mixamo.com

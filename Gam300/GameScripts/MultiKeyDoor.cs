@@ -670,6 +670,8 @@ namespace GameScripts
 
             if (!enterPressed) return;
 
+            API.PlaySound("sfx_ui_click", "Resources/Audio/uiClick.wav", false);
+
             // Skip remaining fade-in immediately
             if (door._fadeMode == FadeMode.FadeIn)
             {

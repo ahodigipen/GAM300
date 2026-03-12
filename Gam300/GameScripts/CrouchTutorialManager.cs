@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Boom;
 
 namespace GameScripts
@@ -149,6 +149,7 @@ namespace GameScripts
 
             if (!enterPressed && !aButtonPressed) return;
 
+            API.PlaySound("sfx_ui_click", "Resources/Audio/uiClick.wav", false);
             AdvanceState();
         }
 
@@ -189,10 +190,6 @@ namespace GameScripts
 
                 // Unpause the game
                 API.SetGameLogicPaused(false);
-
-                // Automatically show the "CTRL_Crouch" prompt right after closing 
-                // since they are still standing in the trigger zone.
-                UIManager.ShowHoldPrompt();
 
                 API.Log($"[CrouchTutorialManager] Tutorial closed. Game resumed.");
             });
