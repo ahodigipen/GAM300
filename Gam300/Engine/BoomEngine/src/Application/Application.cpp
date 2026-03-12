@@ -723,6 +723,11 @@ namespace Boom
             }
         }
 
+        auto* skeletalModel = dynamic_cast<SkeletalModel*>(asset->data.get());
+        if (skeletalModel) {
+            skeletalModel->GetBindPoseAabb(lo, hi);
+        }
+
         if (lo.x > hi.x) {
             lo = glm::vec3(-1.f);
             hi = glm::vec3(1.f);
@@ -838,6 +843,20 @@ namespace Boom
 
                 if (!isPicking && frustumCullingEnabled) {
                     LocalAabb aabb = GetOrComputeLocalAabb(comp.modelID);
+                    if (hasAnimator) {
+                        const auto& an = entity.Get<AnimatorComponent>();
+                        if (an.animator) {
+                            glm::mat4 modelT = model.data->modelTransform.Matrix();
+                            for (const auto& line : an.animator->GetSkeletonLines()) {
+                                glm::vec3 s = glm::vec3(modelT * glm::vec4(line.start, 1.f));
+                                glm::vec3 e = glm::vec3(modelT * glm::vec4(line.end, 1.f));
+                                aabb.min = glm::min(aabb.min, s);
+                                aabb.min = glm::min(aabb.min, e);
+                                aabb.max = glm::max(aabb.max, s);
+                                aabb.max = glm::max(aabb.max, e);
+                            }
+                        }
+                    }
                     if (aabb.min != aabb.max && Boom::IsAabbOutsideFrustum(m_ViewProjection * worldMatrix, aabb.min, aabb.max, frustumCullScale))
                         return;
                 }

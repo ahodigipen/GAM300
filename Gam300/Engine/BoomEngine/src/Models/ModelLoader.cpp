@@ -278,6 +278,10 @@ SkeletalModel::SkeletalModel(const SkeletalModelLoadContext& context) {
 
     // Create GPU meshes from pre-loaded data (main thread only)
     for (const auto& meshData : context.meshes) {
+        for (const auto& vert : meshData.vtx) {
+            m_BindPoseMin = glm::min(m_BindPoseMin, vert.pos);
+            m_BindPoseMax = glm::max(m_BindPoseMax, vert.pos);
+        }
         MeshData<SkeletalVertex> copy = meshData;
         auto mesh = std::make_unique<SkeletalMesh>(std::move(copy));
         meshes.push_back(std::move(mesh));

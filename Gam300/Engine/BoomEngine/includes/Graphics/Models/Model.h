@@ -422,7 +422,10 @@ namespace Boom {
 					vertex.uv.x = ai_mesh->mTextureCoords[0][i].x;
 					vertex.uv.y = ai_mesh->mTextureCoords[0][i].y;
 				}
-				
+
+				m_BindPoseMin = glm::min(m_BindPoseMin, vertex.pos);
+				m_BindPoseMax = glm::max(m_BindPoseMax, vertex.pos);
+
 				// push vertex
 				data.vtx.push_back(std::move(vertex));
 			}
@@ -464,10 +467,23 @@ namespace Boom {
 
 		}
 
+	public:
+		/*
+		 * Returns the axis-aligned bounding box of the skeletal mesh in bind (rest) pose.
+		 * Used by the frustum culler as a conservative base bound; callers with an active
+		 * animator should expand this box with the current joint positions.
+		 */
+		BOOM_INLINE void GetBindPoseAabb(glm::vec3& outMin, glm::vec3& outMax) const {
+			outMin = m_BindPoseMin;
+			outMax = m_BindPoseMax;
+		}
+
 	private:
 		std::vector<std::unique_ptr<SkeletalMesh>> meshes;
 		std::shared_ptr<Animator> m_Animator;
 		uint32_t m_JointCount = 0;
+		glm::vec3 m_BindPoseMin{ 1e30f, 1e30f, 1e30f };
+		glm::vec3 m_BindPoseMax{ -1e30f, -1e30f, -1e30f };
 	};
 
 	// helper type definitions
