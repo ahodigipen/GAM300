@@ -65,7 +65,7 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: NewFloatingLantern13 (Copy)
+      Name: NewFloatingLanternLevel2_3
       UID: 9804259445576629334
       SortOrder: 0
     TransformComponent:
@@ -86,7 +86,7 @@ ENTITIES:
       ParamsJSON: "{\n  \"_hoverSpeed\": 0.8999999761581421\n}"
   - InfoComponent:
       Parent: 0
-      Name: NewFloatingLantern13 (Copy)
+      Name: NewFloatingLanternLevel2_2
       UID: 11905369377969975434
       SortOrder: 0
     TransformComponent:
@@ -107,7 +107,7 @@ ENTITIES:
       ParamsJSON: "{\n  \"_hoverSpeed\": 1.2000000476837158\n}"
   - InfoComponent:
       Parent: 0
-      Name: NewFloatingLantern13 (Copy)
+      Name: NewFloatingLanternLevel2_1
       UID: 13234812751762122764
       SortOrder: 0
     TransformComponent:
@@ -128,12 +128,12 @@ ENTITIES:
       ParamsJSON: "{\n  \"_hoverSpeed\": 0.699999988079071\n}"
   - InfoComponent:
       Parent: 0
-      Name: NewFloatingLantern13 (Copy)
+      Name: NewFloatingLantern13
       UID: 7192403057349951969
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-3.65386295, 25.5752773, 11.7307339]
+        Translate: [-3.17404819, 25.5752773, 11.7307339]
         Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
@@ -2131,55 +2131,15 @@ ENTITIES:
       SortOrder: 117
     TransformComponent:
       Transform:
-        Translate: [-34.0879784, 13.3026581, 69.6555405]
+        Translate: [-32.5335922, 13.3026581, 69.6555405]
         Rotate: [0, -0, 0]
-        Scale: [0.0160000008, 0.0228911508, 0.0546085313]
+        Scale: [0.0300497245, 0.0228911508, 0.0546085313]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0160000008, 0.0228911508, 0.0546085313]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 1078495214741830672
-      MaterialID: 15114049110730279773
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 4.57268572, -0.0516800247]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [210.400238, 400.735352, 13.6377716]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        ShowPhysicsDebug: false
-        PhysicsMesh: 15733493288687535467
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: NewDoor3
-      UID: 1998902794834786642
-      SortOrder: 122
-    TransformComponent:
-      Transform:
-        Translate: [-30.7789841, 13.3783541, 69.6261749]
-        Rotate: [0, -0, 0]
-        Scale: [0.015610734, 0.022821473, 0.0546085313]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.015610734, 0.022821473, 0.0546085313]
+        Previous Scale: [0.0300497245, 0.0228911508, 0.0546085313]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -2583,7 +2543,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 1.22219992
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -2608,7 +2568,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"_entityName\": \"Patrol enemy 2\",\n  \"_spotlightName\": \"Patrol Vision Cone 2\"\n}"
+      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Patrol enemy 2\",\n  \"_spotlightName\": \"Patrol Vision Cone 2\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0.105033845, -0.0754480362, -0.0170534942]
@@ -3638,7 +3598,7 @@ ENTITIES:
         Scale: [0.0207892749, 0.207735717, 0.0700263679]
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 6104124486273075758
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3655,7 +3615,7 @@ ENTITIES:
         Scale: [0.0207892749, 0.207735717, 0.0700263679]
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 6104124486273075758
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3890,7 +3850,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.754247e-19
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -4651,7 +4611,7 @@ ENTITIES:
       SortOrder: 247
     TransformComponent:
       Transform:
-        Translate: [-54.0522881, -0.186860681, 5.9679141]
+        Translate: [-54.0522881, 1.28313935, 5.9679141]
         Rotate: [0, -91.9999924, 0]
         Scale: [0.0164994802, 0.0164999999, 0.0164994802]
     CharacterControllerComponent:
@@ -4820,74 +4780,6 @@ ENTITIES:
       ParamsJSON: "{\n  \"_levelStartPos\": {\n    \"X\": -55.20199966430664,\n    \"Y\": 1.7999999523162842,\n    \"Z\": 5.014999866485596\n  },\n  \"_teleportToStartTrigger\": false\n}"
   - InfoComponent:
       Parent: 0
-      Name: Slope_To_Floor_4
-      UID: 16971308981666661812
-      SortOrder: 478
-    TransformComponent:
-      Transform:
-        Translate: [-5.74949598, 27.2761364, -68.4480591]
-        Rotate: [-90, -180, 0]
-        Scale: [0.800000012, 1.28999996, 0.569999993]
-    ModelComponent:
-      ModelID: 12907306951145530752
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Slope_To_Floor_4
-      UID: 7414217602248962368
-      SortOrder: 334
-    TransformComponent:
-      Transform:
-        Translate: [3.82375813, 27.2757206, -68.4524078]
-        Rotate: [-90, -180, 0]
-        Scale: [0.800000012, 1.28999996, 0.569999993]
-    ModelComponent:
-      ModelID: 12907306951145530752
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Stairs_To_Level_4
-      UID: 18171915684282977524
-      SortOrder: 490
-    TransformComponent:
-      Transform:
-        Translate: [0.112765431, 28.8956814, -68.2000122]
-        Rotate: [0, 89.980217, 0]
-        Scale: [0.99999994, 0.319999993, 2.06999969]
-    ModelComponent:
-      ModelID: 17773246069672836568
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Ground_To_Level_4
-      UID: 2785878939097235308
-      SortOrder: 252
-    TransformComponent:
-      Transform:
-        Translate: [-1.17319596, 23.5724277, -55.4904709]
-        Rotate: [0, 0, 0]
-        Scale: [0.379999995, 1, 1.60000002]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 5692762562094318330
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
       Name: Wall_To_Level_4
       UID: 4088013001839752820
       SortOrder: 272
@@ -4996,23 +4888,6 @@ ENTITIES:
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 6104124486273075758
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Roof_Floor_4
-      UID: 9902595753491289907
-      SortOrder: 374
-    TransformComponent:
-      Transform:
-        Translate: [-11.4286013, 27.2315941, -43.8359489]
-        Rotate: [0, 0, 0]
-        Scale: [1.10000002, 0.25, 0.75999999]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 5692762562094318330
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -5241,7 +5116,7 @@ ENTITIES:
       SortOrder: 323
     TransformComponent:
       Transform:
-        Translate: [-65.4899979, 38.2306747, 7.52897549]
+        Translate: [-65.4899979, 38.2306747, -0.0657016039]
         Rotate: [-89.9720306, 89.944046, 0.0279764533]
         Scale: [1.99999988, 1.99999976, 1.99999964]
     ModelComponent:
@@ -5264,7 +5139,7 @@ ENTITIES:
       SortOrder: 392
     TransformComponent:
       Transform:
-        Translate: [-65.4902573, 37.9816856, 14.7301979]
+        Translate: [-65.4902573, 37.9816856, 11.320364]
         Rotate: [-89.9720306, 89.944046, 0.0279764533]
         Scale: [1.99999988, 1.99999976, 1.99999964]
     ModelComponent:
@@ -5384,9 +5259,9 @@ ENTITIES:
       SortOrder: 368
     TransformComponent:
       Transform:
-        Translate: [15.0132399, 21.2858295, 25.3724995]
-        Rotate: [-90, -180, 0]
-        Scale: [2.5, 2.5, 2.5]
+        Translate: [-15.9706564, 21.2858295, 25.3724995]
+        Rotate: [90, 5.00895612e-06, -180]
+        Scale: [2.49998379, 2.49998379, 2.49998379]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 9126702018428758169
@@ -5684,14 +5559,14 @@ ENTITIES:
       SortOrder: 363
     TransformComponent:
       Transform:
-        Translate: [-36.2326393, 25.6022396, 69.0215759]
-        Rotate: [144.625, 34866.5625, 180]
+        Translate: [36.2734299, 25.0818729, -9.90566921]
+        Rotate: [147.5, 37508.75, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.00100000005
         FarPlane: 935.47998
-        FOV: 77
+        FOV: 92
     ThirdPersonCameraComponent:
       Target UID: 2377197601835279376
       Offset: [0.00999999978, 4.1500001, 0]
@@ -5920,9 +5795,9 @@ ENTITIES:
       SortOrder: 219
     TransformComponent:
       Transform:
-        Translate: [23.7648296, 21.0400009, 20.714262]
-        Rotate: [-90, -90, 0]
-        Scale: [2.5, 2.5, 2.5]
+        Translate: [23.7648296, 19.2088547, 11.1971741]
+        Rotate: [-89.9555817, -89.944046, -0.0423971936]
+        Scale: [2.5, 2.5, 2.49999499]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 9126702018428758169
@@ -6595,9 +6470,9 @@ ENTITIES:
       SortOrder: 220
     TransformComponent:
       Transform:
-        Translate: [23.6426105, 18.8042793, -6.06337023]
-        Rotate: [-90, -90, 0]
-        Scale: [2.5, 2.5, 2.5]
+        Translate: [23.6426105, 18.8042793, 0.721004486]
+        Rotate: [-89.9555817, -89.944046, -0.0423971936]
+        Scale: [2.5, 2.5, 2.49999452]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 9126702018428758169
@@ -6846,23 +6721,6 @@ ENTITIES:
         Intensity: 3.3599999
         Range: 3.61999989
         BloomStrength: 1
-  - InfoComponent:
-      Parent: 0
-      Name: Floating_Platform (Copy)
-      UID: 2056440296524787262
-      SortOrder: 239
-    TransformComponent:
-      Transform:
-        Translate: [23.0639954, 34.1080399, 55.6328506]
-        Rotate: [-51.3779106, 54.0332718, 3.69135189]
-        Scale: [2.47998714, 2.47992134, 2.47992611]
-    ModelComponent:
-      ModelID: 17511859142013007442
-      MaterialID: 13283460294142632874
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
   - ColliderComponent:
       Collider:
         LocalPosition: [0.336021096, -0.253547609, -0.010500473]
@@ -7430,9 +7288,9 @@ ENTITIES:
       SortOrder: 293
     TransformComponent:
       Transform:
-        Translate: [20.4207706, 21.0399895, 25.3731709]
-        Rotate: [-90, 180, 0]
-        Scale: [2.5, 2.5, 2.5]
+        Translate: [16.6625462, 21.0399895, 25.3731709]
+        Rotate: [90, -5.00895612e-06, -180]
+        Scale: [2.4999938, 2.4999938, 2.4999938]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 9126702018428758169
@@ -8764,23 +8622,6 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Floor_4
-      UID: 4918625632145337744
-      SortOrder: 287
-    TransformComponent:
-      Transform:
-        Translate: [-1.16658056, 29.2030125, -92.1585541]
-        Rotate: [0, 0, 0]
-        Scale: [1.20000005, 0.430000007, 3.75]
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 6104124486273075758
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
       Name: Base_Floor_4
       UID: 2190075676593154955
       SortOrder: 244
@@ -8951,68 +8792,17 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Floating_Platform
-      UID: 7686139830452718370
-      SortOrder: 338
+      Name: Floating_Platform (Copy) (Copy)
+      UID: 5617282457787672008
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-9.07210922, 41.6555748, -89.5403824]
-        Rotate: [-52.1570015, 0, 0]
-        Scale: [3, 3, 3]
+        Translate: [-2.67585754, 26.5630512, 91.6949921]
+        Rotate: [179.330276, 66.8208466, -172.236084]
+        Scale: [0.00999999978, 0.0100000016, 0.0100000007]
     ModelComponent:
-      ModelID: 17511859142013007442
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Floating_Platform
-      UID: 11729297249889730486
-      SortOrder: 394
-    TransformComponent:
-      Transform:
-        Translate: [-3.8817277, 48.7154236, -98.5415649]
-        Rotate: [-83.8909988, 0, 0]
-        Scale: [4, 4, 4]
-    ModelComponent:
-      ModelID: 17511859142013007442
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Floating_Platform
-      UID: 17354752070664653093
-      SortOrder: 481
-    TransformComponent:
-      Transform:
-        Translate: [46.2252541, 34.1080399, 26.7586994]
-        Rotate: [-51.3779106, 54.0332718, 3.69135189]
-        Scale: [2.47998714, 2.47992134, 2.47992611]
-    ModelComponent:
-      ModelID: 17511859142013007442
+      ModelID: 3978830521270443559
       MaterialID: 13283460294142632874
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Platform_Floor_5
-      UID: 7871732944255032664
-      SortOrder: 345
-    TransformComponent:
-      Transform:
-        Translate: [-0.521252096, 66.5829697, -92.2309723]
-        Rotate: [90, 0, 0]
-        Scale: [2.5, 2.5, 1]
-    ModelComponent:
-      ModelID: 10044660999367352520
-      MaterialID: 5692762562094318330
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -9139,8 +8929,8 @@ ENTITIES:
       SortOrder: 378
     TransformComponent:
       Transform:
-        Translate: [-54.8674393, 25.9061451, -6.99502563]
-        Rotate: [180, -5.00895612e-06, 180]
+        Translate: [-55.8793907, 25.9061451, -6.99502563]
+        Rotate: [-180, -5.00895612e-06, -180]
         Scale: [0.0250000004, 0.0250000004, 0.0250000004]
     RigidBodyComponent:
       RigidBody:
@@ -9407,9 +9197,9 @@ ENTITIES:
       SortOrder: 411
     TransformComponent:
       Transform:
-        Translate: [-27.9699993, 30.8564072, -4.6309967]
-        Rotate: [-90, -90, 0]
-        Scale: [2, 2, 2]
+        Translate: [-27.9699993, 28.8407803, -10.7084599]
+        Rotate: [-89.9720306, -89.944046, -0.0279764533]
+        Scale: [1.99999988, 1.99999976, 1.99999964]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 9126702018428758169
@@ -9430,7 +9220,7 @@ ENTITIES:
       SortOrder: 336
     TransformComponent:
       Transform:
-        Translate: [-27.9699993, 33.2314072, -19.653017]
+        Translate: [-27.9699993, 33.2314072, -18.5247345]
         Rotate: [-90.0002823, -84.0602646, 0.000247512973]
         Scale: [1.99998677, 1.99998581, 1.99999511]
     ModelComponent:
@@ -9706,9 +9496,9 @@ ENTITIES:
       SortOrder: 465
     TransformComponent:
       Transform:
-        Translate: [-5.81922483, 31.2680721, -74.2551575]
-        Rotate: [-90, 0, 0]
-        Scale: [2, 2, 2]
+        Translate: [-74.633606, 31.5542393, 7.01814938]
+        Rotate: [-89.9999847, 0, 0]
+        Scale: [2, 1.99994576, 1.99994576]
     ModelComponent:
       ModelID: 17971063540041505471
       MaterialID: 16814172849789012347
@@ -9723,9 +9513,9 @@ ENTITIES:
       SortOrder: 415
     TransformComponent:
       Transform:
-        Translate: [3.79427958, 31.2679996, -74.2549973]
-        Rotate: [-90, 0, 0]
-        Scale: [2, 2, 2]
+        Translate: [51.6260414, 34.1231651, 18.5722198]
+        Rotate: [-89.9999847, 0, 0]
+        Scale: [2, 1.9999485, 1.9999485]
     ModelComponent:
       ModelID: 17971063540041505471
       MaterialID: 16814172849789012347
@@ -9740,9 +9530,9 @@ ENTITIES:
       SortOrder: 290
     TransformComponent:
       Transform:
-        Translate: [2.52886105, 31.2679996, -89.1905746]
-        Rotate: [-90, 0, 0]
-        Scale: [2, 2, 2]
+        Translate: [-35.7746506, 13.3090296, 67.281723]
+        Rotate: [-89.9999847, 0, 0]
+        Scale: [2, 1.99995184, 1.99995184]
     ModelComponent:
       ModelID: 17971063540041505471
       MaterialID: 16814172849789012347
@@ -9757,9 +9547,9 @@ ENTITIES:
       SortOrder: 217
     TransformComponent:
       Transform:
-        Translate: [11.1570415, 31.6630154, -103.532608]
-        Rotate: [-90, 0, 0]
-        Scale: [2, 2, 2]
+        Translate: [46.9385986, 39.3618927, 36.2527275]
+        Rotate: [-87.1900864, 35.5217285, 12.6436701]
+        Scale: [1.99999833, 1.99992728, 1.99991703]
     ModelComponent:
       ModelID: 17971063540041505471
       MaterialID: 16814172849789012347
@@ -9774,9 +9564,9 @@ ENTITIES:
       SortOrder: 265
     TransformComponent:
       Transform:
-        Translate: [-17.3380222, 31.6630001, -109.257034]
-        Rotate: [-90, 0, 0]
-        Scale: [2, 2, 2]
+        Translate: [-36.8270607, 24.2751026, -2.29094076]
+        Rotate: [-89.9999847, 0, 0]
+        Scale: [2, 1.99993348, 1.99993348]
     ModelComponent:
       ModelID: 17971063540041505471
       MaterialID: 16814172849789012347
@@ -10508,7 +10298,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.20598435
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -10651,7 +10441,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.20598435
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -10794,7 +10584,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.35891342
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -11224,149 +11014,6 @@ ENTITIES:
       textureID: 947084306896258002
       color: [0.196078435, 0.196078435, 0.196078435, 1]
       renderAs3D: false
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 1.98000002, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [100, 200, 100]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: CAPSULE
-    InfoComponent:
-      Parent: 0
-      Name: Patrol Enemy SR2
-      UID: 18088432713603204107
-      SortOrder: 207
-    TransformComponent:
-      Transform:
-        Translate: [30.6306591, 15.7330904, -0.932564199]
-        Rotate: [180, 1.34808314, 180]
-        Scale: [0.0200004727, 0.0199999996, 0.0200004727]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0200004727, 0.0199999996, 0.0200004727]
-        FreezeRotationX: true
-        FreezeRotationY: true
-        FreezeRotationZ: true
-        Type: DYNAMIC
-    ModelComponent:
-      ModelID: 12439106707269888329
-      MaterialID: 14920165367361296626
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-    SoundComponent:
-      Entries:
-        - name: _footstepSoundPath
-          filePaths:
-            - Resources/Audio/footstep_stone_1.wav
-          loop: false
-          volume: 0.527999997
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 20.5
-        - name: _alertSoundPath
-          filePaths:
-            - Resources/Audio/VO_Patrol_Alert_020.wav
-          loop: false
-          volume: 0.832000017
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 0.5
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _gruntSoundPath
-          filePaths:
-            - Resources/Audio/VO_Patrol_001.wav
-          loop: false
-          volume: 0.653999984
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.600000024
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 26
-    AnimatorComponent:
-      Clips:
-        - name: mixamo.com
-          filePath: ""
-        - name: ROCK_WALKING
-          filePath: Resources/Animations/ROCK_WALKING.anim
-      States:
-        - name: State 0
-          clipIndex: 1
-          speed: 0.330000013
-          loop: false
-          transitions:
-            - targetStateIndex: 0
-              conditionType: 0
-              parameterName: IsWalking
-              floatValue: 0
-              boolValue: false
-              transitionDuration: 0.469999999
-              hasExitTime: false
-              exitTime: 0.899999976
-      FloatParams:
-        Speed: 2.02322531
-      BoolParams:
-        ApplyRootMotion: false
-      CurrentStateIndex: 0
-    NavAgentComponent:
-      Target: [28.3395844, 19.7447033, -15.5547409]
-      Speed: 2.5
-      ArriveRadius: 0.150000006
-      Active: true
-      RepathCooldown: 0.25
-      RetargetDistance: 0.5
-      FollowName: ""
-    AIComponent:
-      Mode: 0
-      PlayerName: ""
-      DetectRadius: 8
-      LoseRadius: 12
-      IdleWait: 1
-      PatrolPoints:
-        - [28.3395844, 19.7447033, -15.5547409]
-        - [28.3395844, 14.0055027, 7.14299393]
-      PatrolIndex: 0
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"_entityName\": \"Patrol Enemy SR2\",\n  \"_spotlightName\": \"\"\n}"
   - InfoComponent:
       Parent: 0
       Name: QuitButton
@@ -11698,8 +11345,8 @@ ENTITIES:
       SortOrder: 267
     TransformComponent:
       Transform:
-        Translate: [-35.61483, 24.1844692, 22.9105568]
-        Rotate: [180, -5.00895567e-06, 180]
+        Translate: [-35.61483, 23.7709599, 22.9105568]
+        Rotate: [-180, -5.00895567e-06, -180]
         Scale: [0.022100836, 0.019929938, 0.0158881806]
     RigidBodyComponent:
       RigidBody:
@@ -11713,7 +11360,7 @@ ENTITIES:
         Type: STATIC
     ModelComponent:
       ModelID: 13196777273589981794
-      MaterialID: 15937630629384441243
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -11728,32 +11375,32 @@ ENTITIES:
         Restitution: 0.100000001
         IsTrigger: false
         ShowPhysicsDebug: false
-        PhysicsMesh: 745832861092578866
-        SurfaceType: DEFAULT
-        Type: TRIANGLE_MESH
+        PhysicsMesh: 0
+        SurfaceType: WOOD
+        Type: BOX
     InfoComponent:
       Parent: 0
-      Name: 2ndFloorPlatform (Copy)
-      UID: 11219956585080537341
-      SortOrder: 386
+      Name: rampBridge
+      UID: 15544624509406073066
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-41.0712051, 34.4977417, 11.7124043]
-        Rotate: [-180, -5.00895567e-06, -180]
-        Scale: [0.022100836, 0.019929938, 0.0158881806]
+        Translate: [-40.8189888, 37.3500748, 7.39727974]
+        Rotate: [0, -0, 0]
+        Scale: [6.6946578, 0.912999988, 31.2439976]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.022100836, 0.019929938, 0.0158881806]
+        Previous Scale: [6.6946578, 0.912999988, 31.2439976]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
-      ModelID: 9363644534041975679
-      MaterialID: 6104124486273075758
+      ModelID: 7633162898494281895
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -11987,7 +11634,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.20598435
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -12130,7 +11777,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.20598292
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -12273,7 +11920,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.20598435
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -12419,7 +12066,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.20598459
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -12562,7 +12209,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 4.25598431
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -12705,7 +12352,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 3.20598364
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -13079,7 +12726,7 @@ ENTITIES:
         Scale: [0.0207892749, 0.207735717, 0.0700263679]
     ModelComponent:
       ModelID: 1441742420851203854
-      MaterialID: 6104124486273075758
+      MaterialID: 8475851512635632909
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -13414,7 +13061,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.20598435
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -13730,15 +13377,15 @@ ENTITIES:
       SortOrder: 301
     TransformComponent:
       Transform:
-        Translate: [-37.7301292, 25.2593002, 11.8024521]
+        Translate: [-37.7301292, 25.2593002, 4.34255362]
         Rotate: [0, 89.980217, 0]
-        Scale: [0.874041855, 1.78718531, 0.0700263679]
+        Scale: [0.388922572, 1.78718531, 0.0700263679]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.874041855, 1.78718531, 0.0700263679]
+        Previous Scale: [0.388922572, 1.78718531, 0.0700263679]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -13918,17 +13565,17 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Floating_Platform (Copy)
-      UID: 6428371624427495636
-      SortOrder: 309
+      Name: Floating_Platform (Copy) (Copy) (Copy)
+      UID: 3553177384485777881
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [2.12977314, 56.1651993, -93.8769531]
-        Rotate: [-79.4929962, 0, 0]
-        Scale: [8, 8, 8]
+        Translate: [53.7253418, 26.1309509, 21.4238434]
+        Rotate: [179.330276, 66.8208466, -172.236084]
+        Scale: [0.00999999978, 0.0100000016, 0.0100000007]
     ModelComponent:
-      ModelID: 17511859142013007442
-      MaterialID: 2930779482462285987
+      ModelID: 3978830521270443559
+      MaterialID: 13283460294142632874
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -13980,9 +13627,9 @@ ENTITIES:
       SortOrder: 441
     TransformComponent:
       Transform:
-        Translate: [53.7253418, 26.1309509, 20.5415936]
-        Rotate: [179.330276, 66.8208466, -172.236084]
-        Scale: [0.00999999978, 0.0100000016, 0.0100000007]
+        Translate: [29.6246185, 29.5410118, 41.3409843]
+        Rotate: [-13.4180202, 61.3980598, -6.37730837]
+        Scale: [0.00999999978, 0.0100000016, 0.00999999978]
     ModelComponent:
       ModelID: 3978830521270443559
       MaterialID: 13283460294142632874
@@ -14015,23 +13662,6 @@ ENTITIES:
         BloomStrength: 1
   - InfoComponent:
       Parent: 0
-      Name: Floating_Platform (Copy)
-      UID: 9246103761456589430
-      SortOrder: 364
-    TransformComponent:
-      Transform:
-        Translate: [29.7377052, 32.4047813, 49.7581062]
-        Rotate: [-96.1832886, -9.90736294, 6.85342836]
-        Scale: [7.99996567, 7.99992275, 7.99988651]
-    ModelComponent:
-      ModelID: 17511859142013007442
-      MaterialID: 13283460294142632874
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
       Name: Fruit_Tree_Outside_Hut (Copy)
       UID: 6922343175630016845
       SortOrder: 322
@@ -14055,46 +13685,12 @@ ENTITIES:
         BloomStrength: 1
   - InfoComponent:
       Parent: 0
-      Name: Floating_Platform (Copy)
-      UID: 13922555561772580315
-      SortOrder: 435
-    TransformComponent:
-      Transform:
-        Translate: [-4.99109173, 33.1643753, 91.1625443]
-        Rotate: [-81.7531815, 62.6780167, 14.8391628]
-        Scale: [7.99996138, 7.99975824, 7.99976826]
-    ModelComponent:
-      ModelID: 17511859142013007442
-      MaterialID: 13283460294142632874
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Floating_Platform (Copy)
-      UID: 14846230719888992454
-      SortOrder: 448
-    TransformComponent:
-      Transform:
-        Translate: [-6.85163116, 41.7346764, 99.4627914]
-        Rotate: [-51.3779106, 54.0332718, 3.69135189]
-        Scale: [2.47998714, 2.47992134, 2.47992611]
-    ModelComponent:
-      ModelID: 17511859142013007442
-      MaterialID: 13283460294142632874
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
       Name: Fruit_Tree_Outside_Hut (Copy) (Copy) (Copy)
       UID: 1497887184480010032
       SortOrder: 231
     TransformComponent:
       Transform:
-        Translate: [28.0257587, 33.0339546, 50.7736397]
+        Translate: [28.0257587, 37.1964607, 41.3980598]
         Rotate: [0, -0, 0]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     ModelComponent:
@@ -15882,7 +15478,7 @@ ENTITIES:
       ParamsJSON: "{\n  \"_hoverSpeed\": 0.699999988079071\n}"
   - InfoComponent:
       Parent: 0
-      Name: NewFloatingLantern13
+      Name: NewFloatingLanternLevel2_4
       UID: 11803336315591054942
       SortOrder: 170
     TransformComponent:
@@ -16474,9 +16070,9 @@ ENTITIES:
       SortOrder: 81
     TransformComponent:
       Transform:
-        Translate: [32.6948166, 5.4712491, 6.09309292]
-        Rotate: [0, -0, 0]
-        Scale: [0.0190636702, 0.0190636702, 0.0190636702]
+        Translate: [47.7703171, 39.0838737, 40.8685608]
+        Rotate: [-3.65100118e-06, 40.5357132, 7.15216541]
+        Scale: [0.0261172242, 0.0229647812, 0.0261172298]
     ModelComponent:
       ModelID: 2284009292012450060
       MaterialID: 7666986193932932989
@@ -16613,8 +16209,8 @@ ENTITIES:
       SortOrder: 112
     TransformComponent:
       Transform:
-        Translate: [-23.8271694, 0.551240563, 6.44024754]
-        Rotate: [0, 135, 0]
+        Translate: [-23.8271694, 0.45710063, 6.44024754]
+        Rotate: [180, 45, 180]
         Scale: [0.0145000974, 0.0145000005, 0.0145000974]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -18284,7 +17880,7 @@ ENTITIES:
       SortOrder: 46
     TransformComponent:
       Transform:
-        Translate: [-54.0522881, 0.113139331, 5.9679141]
+        Translate: [0, -9999, 0]
         Rotate: [173.225891, 310.295471, -0.000199298636]
         Scale: [0.511389732, 1.12699902, 1.06481218]
     ModelComponent:
@@ -18720,3 +18316,402 @@ ENTITIES:
       textureID: 0
       color: [1, 1, 1, 0]
       renderAs3D: false
+  - InfoComponent:
+      Parent: 0
+      Name: LightBall_1Level2_1
+      UID: 4251786160894587629
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-35.7141533, 14.8509645, 67.2473755]
+        Rotate: [0, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 11565258723769024311
+      MaterialID: 8803557448742180096
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.701960802, 0.423529416]
+        Intensity: 11.3699999
+        Range: 13.29
+        BloomStrength: 1
+  - InfoComponent:
+      Parent: 0
+      Name: LightBall_1Level2_2
+      UID: 17076905169720757841
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-36.815979, 25.8250847, -2.28328943]
+        Rotate: [0, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 11565258723769024311
+      MaterialID: 8803557448742180096
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.701960802, 0.423529416]
+        Intensity: 11.3699999
+        Range: 13.29
+        BloomStrength: 1
+  - InfoComponent:
+      Parent: 0
+      Name: LightBall_1Level2_3
+      UID: 17169608575041282535
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-74.6352234, 33.0774841, 6.98454094]
+        Rotate: [0, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 11565258723769024311
+      MaterialID: 8803557448742180096
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.701960802, 0.423529416]
+        Intensity: 11.3699999
+        Range: 13.29
+        BloomStrength: 1
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 2061877446978793964
+        SurfaceType: STONE
+        Type: CONVEX_MESH
+    InfoComponent:
+      Parent: 0
+      Name: Ramplevel2_1
+      UID: 13021145597020368945
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-50.9548836, 29.1280003, 22.5637207]
+        Rotate: [0, 89.980217, 0]
+        Scale: [11.6099129, 0.864339352, 1.73730302]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [11.6099129, 0.864339352, 1.73730302]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 14419591904238952119
+      MaterialID: 6104124486273075758
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: RockContainer
+      UID: 15238825171871222376
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-18.5026245, 13.4312372, 78.6659927]
+        Rotate: [0, -0, 0]
+        Scale: [0.239800036, 0.239800036, 0.239800036]
+  - InfoComponent:
+      Parent: 0
+      Name: rockLvl2 (Copy)
+      UID: 10234627860239221329
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-20.1171818, 12.2074451, 81.8873978]
+        Rotate: [-1.19224687e-05, -74.8684921, 2.00121076e-06]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ModelComponent:
+      ModelID: 11704932561101383624
+      MaterialID: 12018243770028113740
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: rockLvl2 (Copy) (Copy)
+      UID: 9457618880830509969
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-23.9110088, 11.9019032, 84.9108124]
+        Rotate: [180, -37.1480827, 180]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ModelComponent:
+      ModelID: 11704932561101383624
+      MaterialID: 12018243770028113740
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: rockLvl2 (Copy) (Copy) (Copy)
+      UID: 5053834592382628609
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-24.6021557, 12.033803, 80.1981964]
+        Rotate: [2.5494495e-07, 57.7629395, 3.0210083e-07]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ModelComponent:
+      ModelID: 11704932561101383624
+      MaterialID: 12018243770028113740
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: ramp
+      UID: 9741472842833761569
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-40.7266922, 30.4237061, 15.908617]
+        Rotate: [0, -0, 0]
+        Scale: [6.77100563, 12.9629669, 13.9101582]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [6.77100563, 12.9629669, 13.9101582]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 6104124486273075758
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Sentry_SR1_180
+      UID: 1926680086160732726
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [27.457325, 15.2255497, 0.404775023]
+        Rotate: [180, 74.341011, 180]
+        Scale: [0.0144998673, 0.0145000014, 0.0144998431]
+    ModelComponent:
+      ModelID: 12373711864448078618
+      MaterialID: 1781146247448718189
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _turnSoundPath1
+          filePaths:
+            - Resources/Audio/StatueTurn_01.wav
+          loop: false
+          volume: 0.537999988
+          priority: 117
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 15.6000004
+        - name: _turnSoundPath2
+          filePaths:
+            - Resources/Audio/StatueTurn_02.wav
+          loop: false
+          volume: 0.521000028
+          priority: 110
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 19.7999992
+        - name: _turnSoundPath3
+          filePaths:
+            - Resources/Audio/StatueTurn_03.wav
+          loop: false
+          volume: 0.527999997
+          priority: 116
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 17
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/VO_Statue_003.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 0.5
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.EnemyController
+      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Sentry_SR1_180\",\n  \"_rotationAngle\": 180.0\n}"
+  - InfoComponent:
+      Parent: 1926680086160732726
+      Name: Sentry Vision Cone_SR180
+      UID: 10323525089573234495
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-17.1420422, 15.3514919, 18.490139]
+        Rotate: [-180, 270, -180]
+        Scale: [0.0199985746, 0.0199999996, 0.0199985746]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.SpotlightFollower
+      ParamsJSON: "{\n  \"targetName\": \"Sentry_SR1_180\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [1, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 0
+      Name: Floating_Platform (Copy) (Copy)
+      UID: 7837053477850169799
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [50.0776825, 29.5410118, 41.4247169]
+        Rotate: [-177.355621, 73.6499557, -169.111649]
+        Scale: [0.0124000153, 0.0124000069, 0.0124000162]
+    ModelComponent:
+      ModelID: 3978830521270443559
+      MaterialID: 13283460294142632874
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: ToriGate1 (Copy) (Copy)
+      UID: 398082652898778402
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [32.6948166, 5.4712491, 6.09309292]
+        Rotate: [0, -0, 0]
+        Scale: [0.0190636702, 0.0190636702, 0.0190636702]
+    ModelComponent:
+      ModelID: 2284009292012450060
+      MaterialID: 7666986193932932989
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Pagoda_Stone_Lamp (Copy)
+      UID: 12923414350332905103
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [29.9146099, 37.1985283, 37.5301666]
+        Rotate: [-89.9999847, 0, 0]
+        Scale: [2, 1.99993896, 1.99993896]
+    ModelComponent:
+      ModelID: 17971063540041505471
+      MaterialID: 16814172849789012347
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: LightBall_1 (Copy) (Copy) (Copy) (Copy)
+      UID: 16865113504049310298
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [46.6345482, 40.8637505, 36.2866096]
+        Rotate: [0, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 11565258723769024311
+      MaterialID: 8803557448742180096
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.701960802, 0.423529416]
+        Intensity: 19.6499996
+        Range: 23.8299999
+        BloomStrength: 1
