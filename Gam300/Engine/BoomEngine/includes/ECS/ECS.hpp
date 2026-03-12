@@ -28,6 +28,7 @@ namespace Boom {
  DEACTIVATED_TAG,
  VIDEO,
  CHARACTER_CONTROLLER,
+ PARTICLE_EMITTER,
  COUNT
  };
  constexpr std::string_view COMPONENT_NAMES[]{
@@ -52,6 +53,7 @@ namespace Boom {
  "Deactivated Tag",      //18
  "Video",                //19
  "Character Controller", //20
+ "Particle Emitter",     //21
  "Count"
 
  };
@@ -1020,6 +1022,89 @@ struct MenuComponent {
             obj_member<"ContactOffset", &CharacterControllerComponent::contactOffset>,
             obj_member<"LocalOffset", &CharacterControllerComponent::localOffset>,
             obj_member<"SlopeLimit", &CharacterControllerComponent::slopeLimit>
+        )
+    };
+
+    // ─── Particle Emitter Component ─────────────────────────────────────
+    struct ParticleEmitterComponent {
+        BOOM_INLINE ParticleEmitterComponent(const ParticleEmitterComponent&) = default;
+        BOOM_INLINE ParticleEmitterComponent() = default;
+
+        // Emission
+        float emissionRate    = 20.0f;   // particles per second
+        int   maxParticles    = 500;     // pool size
+        bool  looping         = true;
+        float duration        = 5.0f;    // emitter lifetime if not looping (seconds)
+        bool  playOnStart     = true;
+
+        // Particle lifetime
+        float lifetimeMin     = 1.0f;    // seconds
+        float lifetimeMax     = 3.0f;
+
+        // Initial speed
+        float speedMin        = 1.0f;
+        float speedMax        = 3.0f;
+
+        // Spawn shape: 0 = point, 1 = sphere, 2 = cone, 3 = box
+        int   shapeType       = 0;
+        float shapeRadius     = 1.0f;    // sphere/cone radius
+        float shapeAngle      = 25.0f;   // cone half-angle (degrees)
+        glm::vec3 shapeSize   = glm::vec3(1.0f); // box half-extents
+
+        // Direction (for cone/directional emission; local space)
+        glm::vec3 direction   = glm::vec3(0.0f, 1.0f, 0.0f);
+
+        // Gravity multiplier (applied as world-Y acceleration)
+        float gravity         = -9.81f;
+
+        // Size over lifetime
+        float startSizeMin    = 0.1f;
+        float startSizeMax    = 0.3f;
+        float endSize         = 0.0f;    // size at death (lerped)
+
+        // Color over lifetime
+        glm::vec4 startColor  = glm::vec4(1.0f, 0.9f, 0.3f, 1.0f);  // warm yellow
+        glm::vec4 endColor    = glm::vec4(1.0f, 0.2f, 0.0f, 0.0f);  // fade-out red
+
+        // Texture (AssetID for sprite sheet; 0 = default white)
+        AssetID textureID     = EMPTY_ASSET;
+
+        // Billboard mode: true = always face camera
+        bool billboard        = true;
+
+        // Additive blending (fire/sparks) vs alpha blending (smoke/dust)
+        bool additiveBlend    = false;
+
+        // Runtime state (not serialized)
+        bool  isPlaying       = false;
+        float emitterTimer    = 0.0f;   // time since emitter started
+        float spawnAccum      = 0.0f;   // fractional particle accumulator
+
+        XPROPERTY_DEF(
+            "ParticleEmitterComponent", ParticleEmitterComponent,
+            obj_member<"EmissionRate",  &ParticleEmitterComponent::emissionRate>,
+            obj_member<"MaxParticles",  &ParticleEmitterComponent::maxParticles>,
+            obj_member<"Looping",       &ParticleEmitterComponent::looping>,
+            obj_member<"Duration",      &ParticleEmitterComponent::duration>,
+            obj_member<"PlayOnStart",   &ParticleEmitterComponent::playOnStart>,
+            obj_member<"LifetimeMin",   &ParticleEmitterComponent::lifetimeMin>,
+            obj_member<"LifetimeMax",   &ParticleEmitterComponent::lifetimeMax>,
+            obj_member<"SpeedMin",      &ParticleEmitterComponent::speedMin>,
+            obj_member<"SpeedMax",      &ParticleEmitterComponent::speedMax>,
+            obj_member<"ShapeType",     &ParticleEmitterComponent::shapeType>,
+            obj_member<"ShapeRadius",   &ParticleEmitterComponent::shapeRadius>,
+            obj_member<"ShapeAngle",    &ParticleEmitterComponent::shapeAngle>,
+            obj_member<"ShapeSize",     &ParticleEmitterComponent::shapeSize>,
+            obj_member<"Direction",     &ParticleEmitterComponent::direction>,
+            obj_member<"Gravity",       &ParticleEmitterComponent::gravity>,
+            obj_member<"StartSizeMin",  &ParticleEmitterComponent::startSizeMin>,
+            obj_member<"StartSizeMax",  &ParticleEmitterComponent::startSizeMax>,
+            obj_member<"EndSize",       &ParticleEmitterComponent::endSize>,
+            obj_member<"StartColor",    &ParticleEmitterComponent::startColor>,
+            obj_member<"EndColor",      &ParticleEmitterComponent::endColor>,
+            obj_member<"TextureID",     &ParticleEmitterComponent::textureID>,
+            obj_member<"Billboard",     &ParticleEmitterComponent::billboard>,
+            obj_member<"AdditiveBlend", &ParticleEmitterComponent::additiveBlend>
         )
     };
 

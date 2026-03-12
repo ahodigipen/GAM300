@@ -2441,6 +2441,109 @@ namespace Boom {
         return false;
     }
 
+    // ─── Particle Emitter Script Bindings ─────────────────────────────
+
+    static bool ICALL_API_HasParticleEmitter(uint64_t handle)
+    {
+        if (!s_Ctx) return false;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        return (e != entt::null && s_Ctx->scene.valid(e) && s_Ctx->scene.any_of<ParticleEmitterComponent>(e));
+    }
+
+    static void ICALL_API_PlayParticleEmitter(uint64_t handle)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (!pe) return;
+        pe->isPlaying = true;
+        pe->emitterTimer = 0.0f;
+        pe->spawnAccum = 0.0f;
+    }
+
+    static void ICALL_API_StopParticleEmitter(uint64_t handle)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (!pe) return;
+        pe->isPlaying = false;
+    }
+
+    static bool ICALL_API_IsParticleEmitterPlaying(uint64_t handle)
+    {
+        if (!s_Ctx) return false;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return false;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        return pe && pe->isPlaying;
+    }
+
+    static void ICALL_API_SetParticleEmissionRate(uint64_t handle, float rate)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) pe->emissionRate = rate;
+    }
+
+    static float ICALL_API_GetParticleEmissionRate(uint64_t handle)
+    {
+        if (!s_Ctx) return 0.0f;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return 0.0f;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        return pe ? pe->emissionRate : 0.0f;
+    }
+
+    static void ICALL_API_SetParticleStartColor(uint64_t handle, float r, float g, float b, float a)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) pe->startColor = glm::vec4(r, g, b, a);
+    }
+
+    static void ICALL_API_SetParticleEndColor(uint64_t handle, float r, float g, float b, float a)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) pe->endColor = glm::vec4(r, g, b, a);
+    }
+
+    static void ICALL_API_SetParticleGravity(uint64_t handle, float gravity)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) pe->gravity = gravity;
+    }
+
+    static void ICALL_API_SetParticleSpeed(uint64_t handle, float speedMin, float speedMax)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) { pe->speedMin = speedMin; pe->speedMax = speedMax; }
+    }
+
+    static void ICALL_API_SetParticleSize(uint64_t handle, float startMin, float startMax, float endSize)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) { pe->startSizeMin = startMin; pe->startSizeMax = startMax; pe->endSize = endSize; }
+    }
+
     void RegisterScriptInternalCalls(AppContext* ctx)
     {
         s_Ctx = ctx;
@@ -2676,6 +2779,18 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetCutsceneMode", (const void*)ICALL_API_SetCutsceneMode);
         mono_add_internal_call("Boom.Native::Boom_API_DrawDebugLine", (const void*)ICALL_API_DrawDebugLine);
 
+        // Particle Emitter internal calls
+        mono_add_internal_call("Boom.Native::Boom_API_HasParticleEmitter", (const void*)ICALL_API_HasParticleEmitter);
+        mono_add_internal_call("Boom.Native::Boom_API_PlayParticleEmitter", (const void*)ICALL_API_PlayParticleEmitter);
+        mono_add_internal_call("Boom.Native::Boom_API_StopParticleEmitter", (const void*)ICALL_API_StopParticleEmitter);
+        mono_add_internal_call("Boom.Native::Boom_API_IsParticleEmitterPlaying", (const void*)ICALL_API_IsParticleEmitterPlaying);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleEmissionRate", (const void*)ICALL_API_SetParticleEmissionRate);
+        mono_add_internal_call("Boom.Native::Boom_API_GetParticleEmissionRate", (const void*)ICALL_API_GetParticleEmissionRate);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleStartColor", (const void*)ICALL_API_SetParticleStartColor);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleEndColor", (const void*)ICALL_API_SetParticleEndColor);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleGravity", (const void*)ICALL_API_SetParticleGravity);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleSpeed", (const void*)ICALL_API_SetParticleSpeed);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleSize", (const void*)ICALL_API_SetParticleSize);
         // Inventory Menu
         mono_add_internal_call("Boom.Native::Boom_API_ShowInventoryMenu", (const void*)ICALL_API_ShowInventoryMenu);
         mono_add_internal_call("Boom.Native::Boom_API_UnloadInventoryMenu", (const void*)ICALL_API_UnloadInventoryMenu);
