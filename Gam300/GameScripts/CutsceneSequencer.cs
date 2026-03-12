@@ -482,25 +482,25 @@ namespace GameScripts
                     if (currentFrame > track.keyframes[track.keyframes.Count - 1].frame) continue;
 
                     // Find keyframes to interpolate between
-                    KeyFrame k1 = null, k2 = null;
+                    KeyFrame lk1 = null, lk2 = null;
                     for (int i = 0; i < track.keyframes.Count - 1; i++)
                     {
                         if (currentFrame >= track.keyframes[i].frame && currentFrame < track.keyframes[i + 1].frame)
                         {
-                            k1 = track.keyframes[i];
-                            k2 = track.keyframes[i + 1];
+                            lk1 = track.keyframes[i];
+                            lk2 = track.keyframes[i + 1];
                             break;
                         }
                     }
 
                     Vec3 targetPos;
-                    if (k1 != null && k2 != null)
+                    if (lk1 != null && lk2 != null)
                     {
-                        float range = (float)(k2.frame - k1.frame);
-                        float t = (range > 0.0001f) ? (currentFrame - k1.frame) / range : 1f;
+                        float range = (float)(lk2.frame - lk1.frame);
+                        float t = (range > 0.0001f) ? (currentFrame - lk1.frame) / range : 1f;
 
-                        ulong id1 = API.FindEntity(k1.valStr);
-                        ulong id2 = API.FindEntity(k2.valStr);
+                        ulong id1 = API.FindEntity(lk1.valStr);
+                        ulong id2 = API.FindEntity(lk2.valStr);
                         Vec3 p1 = (id1 != 0) ? API.GetPosition(id1) : API.GetPosition(track.cachedEntityID);
                         Vec3 p2 = (id2 != 0) ? API.GetPosition(id2) : API.GetPosition(track.cachedEntityID);
                         
@@ -512,8 +512,8 @@ namespace GameScripts
                     else
                     {
                         // Final keyframe hold
-                        KeyFrame k = track.keyframes[track.keyframes.Count - 1];
-                        ulong id = API.FindEntity(k.valStr);
+                        KeyFrame fk = track.keyframes[track.keyframes.Count - 1];
+                        ulong id = API.FindEntity(fk.valStr);
                         targetPos = (id != 0) ? API.GetPosition(id) : API.GetPosition(track.cachedEntityID);
                         targetPos.Y += 1.5f;
                     }
@@ -667,57 +667,55 @@ namespace GameScripts
                 }
 
                 // 3. Interpolate between Keyframes
-                KeyFrame k1 = null, k2 = null;
+                KeyFrame iKF1 = null, iKF2 = null;
                 for (int i = 0; i < track.keyframes.Count - 1; i++)
                 {
                     if (currentFrame >= track.keyframes[i].frame && currentFrame < track.keyframes[i + 1].frame)
                     {
-                        k1 = track.keyframes[i];
-                        k2 = track.keyframes[i + 1];
+                        iKF1 = track.keyframes[i];
+                        iKF2 = track.keyframes[i + 1];
                         break;
                     }
                 }
 
-                if (k1 != null && k2 != null)
+                if (iKF1 != null && iKF2 != null)
                 {
-                    float range = (float)(k2.frame - k1.frame);
-                    float t = 0.0f;
-                    if (range > 0.0001f) t = (currentFrame - k1.frame) / range;
+                    float range = (float)(iKF2.frame - iKF1.frame);
+                    float t = (range > 0.0001f) ? (currentFrame - iKF1.frame) / range : 0f;
+                    if (t < 0f) t = 0f; if (t > 1f) t = 1f;
 
-                    // Clamp t just in case
-                    if (t < 0f) t = 0f;
-                    if (t > 1f) t = 1f;
-
-                    // Support Relative Anchors for Transform Tracks
                     if (track.type == 0) // POSITION
                     {
-                        // Calculate world positions for both keyframes k1 and k2
-                        Vec3 p1 = new Vec3(k1.vX, k1.vY, k1.vZ);
-                        if (!string.IsNullOrEmpty(k1.valStr) && k1.valStr != "None")
+                        // Calculate World P1
+                        float p1X = iKF1.vX, p1Y = iKF1.vY, p1Z = iKF1.vZ;
+                        if (!string.IsNullOrEmpty(iKF1.valStr) && iKF1.valStr != "None")
                         {
-                            ulong anchorID1 = API.FindEntity(k1.valStr);
-                            if (anchorID1 != 0) p1 = (k1.vX == 0 && k1.vY == 0 && k1.vZ == 0) ? API.GetPosition(anchorID1) : p1 + API.GetPosition(anchorID1);
+                            ulong anchorID = API.FindEntity(iKF1.valStr);
+                            if (anchorID != 0) { Vec3 anchorPos = API.GetPosition(anchorID); p1X += anchorPos.X; p1Y += anchorPos.Y; p1Z += anchorPos.Z; }
                         }
 
-                        Vec3 p2 = new Vec3(k2.vX, k2.vY, k2.vZ);
-                        if (!string.IsNullOrEmpty(k2.valStr) && k2.valStr != "None")
+                        // Calculate World P2
+                        float p2X = iKF2.vX, p2Y = iKF2.vY, p2Z = iKF2.vZ;
+                        if (!string.IsNullOrEmpty(iKF2.valStr) && iKF2.valStr != "None")
                         {
-                            ulong anchorID2 = API.FindEntity(k2.valStr);
-                            if (anchorID2 != 0) p2 = (k2.vX == 0 && k2.vY == 0 && k2.vZ == 0) ? API.GetPosition(anchorID2) : p2 + API.GetPosition(anchorID2);
+                            ulong anchorID = API.FindEntity(iKF2.valStr);
+                            if (anchorID != 0) { Vec3 anchorPos = API.GetPosition(anchorID); p2X += anchorPos.X; p2Y += anchorPos.Y; p2Z += anchorPos.Z; }
                         }
 
-                        // Lerp between the two world positions
-                        Vec3 finalPos = new Vec3(Lerp(p1.X, p2.X, t), Lerp(p1.Y, p2.Y, t), Lerp(p1.Z, p2.Z, t));
-                        API.SetPosition(track.cachedEntityID, finalPos);
+                        // Lerp World Positions
+                        float finalX = Lerp(p1X, p2X, t);
+                        float finalY = Lerp(p1Y, p2Y, t);
+                        float finalZ = Lerp(p1Z, p2Z, t);
+                        API.SetPosition(track.cachedEntityID, new Vec3(finalX, finalY, finalZ));
                     }
                     else // ROTATION / SCALE
                     {
-                        float x = Lerp(k1.vX, k2.vX, t);
-                        float y = Lerp(k1.vY, k2.vY, t);
-                        float z = Lerp(k1.vZ, k2.vZ, t);
+                        float valX = Lerp(iKF1.vX, iKF2.vX, t);
+                        float valY = Lerp(iKF1.vY, iKF2.vY, t);
+                        float valZ = Lerp(iKF1.vZ, iKF2.vZ, t);
 
-                        if (track.type == 1) API.SetRotation(track.cachedEntityID, new Vec3(x, y, z));
-                        else if (track.type == 2) API.SetScale(track.cachedEntityID, new Vec3(x, y, z));
+                        if (track.type == 1) API.SetRotation(track.cachedEntityID, new Vec3(valX, valY, valZ));
+                        else if (track.type == 2) API.SetScale(track.cachedEntityID, new Vec3(valX, valY, valZ));
                     }
                 }
             }
