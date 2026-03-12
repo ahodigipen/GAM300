@@ -115,6 +115,7 @@ namespace GameScripts
                             API.SetScreenFadeAlpha(0f);
                             _fadeState = FadeState.Done;
                             API.Log("[PrisonBreak] Sequence complete.");
+                            StoryDialogueManager.PlayGuardSequence();
                         }
                         break;
                     }
@@ -145,6 +146,9 @@ namespace GameScripts
         private void Activate()
         {
             _activated = true;
+            ulong eBreakOutID = API.FindEntity("E_BreakOut");
+            if (eBreakOutID != 0) API.SetSpriteAlpha(eBreakOutID, 0f);
+            
             _fadeState  = FadeState.FadingOut;
             _fadeTimer  = 0f;
             API.Log("[PrisonBreak] Activated – starting fade-to-black sequence.");
@@ -193,6 +197,8 @@ namespace GameScripts
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
 
             inst._playerInZone = true;
+            ulong eBreakOutID = API.FindEntity("E_BreakOut");
+            if (eBreakOutID != 0 && !inst._activated) API.SetSpriteAlpha(eBreakOutID, 1f);
             API.Log("[PrisonBreak] Player entered zone. Press E to trigger.");
         }
 
@@ -203,6 +209,8 @@ namespace GameScripts
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
 
             inst._playerInZone = false;
+            ulong eBreakOutID = API.FindEntity("E_BreakOut");
+            if (eBreakOutID != 0 && !inst._activated) API.SetSpriteAlpha(eBreakOutID, 0f);
             API.Log("[PrisonBreak] Player left zone.");
         }
     }
