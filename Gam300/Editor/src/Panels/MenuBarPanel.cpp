@@ -33,27 +33,26 @@ namespace EditorUI {
 
             // If your Editor stores the "show panel" flags, wire them here.
             // Example (pseudo):
-             m.showInspector        = &m_Owner->m_ShowInspector;
-             m.showHierarchy        = &m_Owner->m_ShowHierarchy;
-             m.showViewport         = &m_Owner->m_ShowViewport;
-             m.showPrefabBrowser    = &m_Owner->m_ShowPrefabBrowser;
-             m.showPerformance      = &m_Owner->m_ShowPerformance;
-             m.showPlaybackControls = &m_Owner->m_ShowPlaybackControls;
-             m.showConsole          = &m_Owner->m_ShowConsole;
-             m.showAudio            = &m_Owner->m_ShowAudio;
-			 m.showResources        = &m_Owner->m_ShowResources;
-			 m.showDirectory        = &m_Owner->m_ShowDirectory;
-             m.showAnimatorGraph    = &m_Owner->m_ShowAnimatorGraph;
-             m.showModelPreview     = &m_Owner->m_ShowModelPreview;
-             m.showAnimationTimeline = &m_Owner->m_ShowAnimationTimeline;
-             //Dialog flags & helpers can also be wired here if Editor exposes them.
-             m.showSaveDialog = &m_Owner->m_ShowSaveDialog;
-             m.showLoadDialog = &m_Owner->m_ShowLoadDialog;
-             m.showExportDialog = &m_Owner->m_ShowExportDialog;
-             m.sceneNameBuffer = m_Owner->m_SceneNameBuffer;
-             m.sceneNameBufferSize = sizeof(m_Owner->m_SceneNameBuffer);
+            m.showInspector = &m_Owner->m_ShowInspector;
+            m.showHierarchy = &m_Owner->m_ShowHierarchy;
+            m.showViewport = &m_Owner->m_ShowViewport;
+            m.showPrefabBrowser = &m_Owner->m_ShowPrefabBrowser;
+            m.showPerformance = &m_Owner->m_ShowPerformance;
+            m.showPlaybackControls = &m_Owner->m_ShowPlaybackControls;
+            m.showConsole = &m_Owner->m_ShowConsole;
+            m.showAudio = &m_Owner->m_ShowAudio;
+            m.showResources = &m_Owner->m_ShowResources;
+            m.showDirectory = &m_Owner->m_ShowDirectory;
+            m.showAnimatorGraph = &m_Owner->m_ShowAnimatorGraph;
+            m.showModelPreview = &m_Owner->m_ShowModelPreview;
+            //Dialog flags & helpers can also be wired here if Editor exposes them.
+            m.showSaveDialog = &m_Owner->m_ShowSaveDialog;
+            m.showLoadDialog = &m_Owner->m_ShowLoadDialog;
+            m.showExportDialog = &m_Owner->m_ShowExportDialog;
+            m.sceneNameBuffer = m_Owner->m_SceneNameBuffer;
+            m.sceneNameBufferSize = sizeof(m_Owner->m_SceneNameBuffer);
 
-             m.RefreshSceneList = [this](bool force){ m_Owner->RefreshSceneList(force); };
+            m.RefreshSceneList = [this](bool force) { m_Owner->RefreshSceneList(force); };
         }
     }
 
@@ -93,20 +92,17 @@ namespace EditorUI {
             entt::entity sceneSettings = Boom::TryGetSceneSettings(m.ctx->scene);
             if (sceneSettings != entt::null && m.ctx->scene.all_of<Boom::SceneNavmeshComponent>(sceneSettings)) {
                 auto& s = m.ctx->scene.get<Boom::SceneNavmeshComponent>(sceneSettings);
-                m.ctx->renderer->AmbientStrength()          = s.ambientStrength;
-                m.ctx->renderer->enabledBloom               = s.bloomEnabled;
-                m.ctx->renderer->bloomIntensity             = s.bloomIntensity;
-                m.ctx->renderer->bloomThreshold             = s.bloomThreshold;
-                m.ctx->renderer->bloomIterations            = s.bloomIterations;
-                m.ctx->renderer->pointLightBloomMultiplier  = s.pointLightBloomMultiplier;
-                m.ctx->renderer->enabledFog                 = s.fogEnabled;
-                m.ctx->renderer->fogColor                   = s.fogColor;
-                m.ctx->renderer->fogDensity                 = s.fogDensity;
-                m.ctx->renderer->fogHeightFalloff           = s.fogHeightFalloff;
-                m.ctx->renderer->fogHeight                  = s.fogHeight;
-                m.ctx->renderer->tonemapExposure            = s.tonemapExposure;
-                m.ctx->renderer->tonemapGamma               = s.tonemapGamma;
-                m.ctx->renderer->tonemapWarmTint            = s.tonemapWarmTint;
+                m.ctx->renderer->AmbientStrength() = s.ambientStrength;
+                m.ctx->renderer->enabledBloom = s.bloomEnabled;
+                m.ctx->renderer->bloomIntensity = s.bloomIntensity;
+                m.ctx->renderer->bloomThreshold = s.bloomThreshold;
+                m.ctx->renderer->bloomIterations = s.bloomIterations;
+                m.ctx->renderer->pointLightBloomMultiplier = s.pointLightBloomMultiplier;
+                m.ctx->renderer->enabledFog = s.fogEnabled;
+                m.ctx->renderer->fogColor = s.fogColor;
+                m.ctx->renderer->fogDensity = s.fogDensity;
+                m.ctx->renderer->fogHeightFalloff = s.fogHeightFalloff;
+                m.ctx->renderer->fogHeight = s.fogHeight;
             }
         }
 
@@ -171,11 +167,11 @@ namespace EditorUI {
             if (m.showPlaybackControls) ImGui::MenuItem("Playback Controls", nullptr, m.showPlaybackControls);
             if (m.showConsole)          ImGui::MenuItem("Debug Console", nullptr, m.showConsole);
             if (m.showAudio)            ImGui::MenuItem("Audio", nullptr, m.showAudio);
-			if (m.showResources)     ImGui::MenuItem("Resources", nullptr, m.showResources);
-			if (m.showDirectory)       ImGui::MenuItem("Directory", nullptr, m.showDirectory);
+            if (m.showResources)     ImGui::MenuItem("Resources", nullptr, m.showResources);
+            if (m.showDirectory)       ImGui::MenuItem("Directory", nullptr, m.showDirectory);
             if (m.showAnimatorGraph)    ImGui::MenuItem("Animator Graph", nullptr, m.showAnimatorGraph);
             if (m.showModelPreview)     ImGui::MenuItem("Model Preview", nullptr, m.showModelPreview);
-            if (m.showAnimationTimeline) ImGui::MenuItem("Animation Timeline", nullptr, m.showAnimationTimeline);
+            if (m_Owner)                ImGui::MenuItem("Sequencer", nullptr, &m_Owner->m_ShowSequencer);
             ImGui::EndMenu();
         }
 
@@ -217,9 +213,6 @@ namespace EditorUI {
                     sceneComp.fogDensity = 0.01f;
                     sceneComp.fogHeightFalloff = 0.5f;
                     sceneComp.fogHeight = 0.0f;
-                    sceneComp.tonemapExposure = 1.0f;
-                    sceneComp.tonemapGamma = 2.2f;
-                    sceneComp.tonemapWarmTint = glm::vec3(1.08f, 0.98f, 0.82f);
                 }
                 auto& settings = m.ctx->scene.get<Boom::SceneNavmeshComponent>(sceneSettings);
 
@@ -252,7 +245,7 @@ namespace EditorUI {
                         // Value synced to renderer below
                     }
                     ImGui::TextDisabled("(?) Multiplies bloom contribution from all point lights.\n"
-                                       "Individual lights can also have their own BloomStrength.");
+                        "Individual lights can also have their own BloomStrength.");
 
                     ImGui::EndMenu();
                 }
@@ -286,19 +279,19 @@ namespace EditorUI {
                         m.ctx->ShowPhysicsDebug = physDebugViz;  // Keep context in sync
                         BOOM_INFO("[Options] Physics Debug Visualization (Collision Lines): {}", physDebugViz ? "ON" : "OFF");
                     }
-                }				
+                }
                 ImGui::MenuItem("Bloom", nullptr, &m.ctx->renderer->enabledBloom);
 
                 ImGui::MenuItem("Picking ignore GUI", nullptr, &m.ctx->renderer->isPickIgnoreGUI);
 
                 if (ImGui::BeginMenu("Tone Mapping")) {
-                    ImGui::SliderFloat("Exposure",  &settings.tonemapExposure,  0.0f, 4.0f);
-                    ImGui::SliderFloat("Gamma",     &settings.tonemapGamma,     1.0f, 3.0f);
-                    ImGui::ColorEdit3 ("Warm Tint", &settings.tonemapWarmTint.x);
+                    ImGui::SliderFloat("Exposure", &m.ctx->renderer->tonemapExposure, 0.0f, 4.0f);
+                    ImGui::SliderFloat("Gamma", &m.ctx->renderer->tonemapGamma, 1.0f, 3.0f);
+                    ImGui::ColorEdit3("Warm Tint", &m.ctx->renderer->tonemapWarmTint.x);
                     if (ImGui::Button("Reset to Defaults")) {
-                        settings.tonemapExposure  = 1.0f;
-                        settings.tonemapGamma     = 2.2f;
-                        settings.tonemapWarmTint  = glm::vec3(1.08f, 0.98f, 0.82f);
+                        m.ctx->renderer->tonemapExposure = 1.0f;
+                        m.ctx->renderer->tonemapGamma = 2.2f;
+                        m.ctx->renderer->tonemapWarmTint = glm::vec3(1.08f, 0.98f, 0.82f);
                     }
                     ImGui::EndMenu();
                 }
@@ -308,7 +301,7 @@ namespace EditorUI {
                     ImGui::MenuItem("Toggle DepthBuffer", nullptr, &m.ctx->renderer->isDepthBufferView);
                     ImGui::EndMenu();
                 }
-                
+
             }
             ImGui::EndMenu();
         }
@@ -360,7 +353,8 @@ namespace EditorUI {
                         }
 
                         BOOM_INFO("[Editor] Created {} (with undo)", name);
-                    } else {
+                    }
+                    else {
                         // Fallback: Create without undo
                         go.Attach<InfoComponent>().name = name;
                         go.Attach<TransformComponent>(); // default transform
@@ -401,7 +395,7 @@ namespace EditorUI {
                     childInfo.parent = parentUID;
 
                     BOOM_INFO("[MenuBar] Created test hierarchy: Parent (UID:{}) with Child (UID:{}, parent:{})",
-                             parentUID, childInfo.uid, childInfo.parent);
+                        parentUID, childInfo.uid, childInfo.parent);
                     BOOM_INFO("[MenuBar] Parent at world (0,0,0), Child at local (2,0,0) -> should appear at world (2,0,0)");
                     BOOM_INFO("[MenuBar] When you move Parent, Child should follow!");
 
@@ -412,7 +406,7 @@ namespace EditorUI {
             ImGui::Separator();
 
             if (ImGui::MenuItem("Save Selected as Prefab")) {
-                if ( m.selectedEntity != entt::null) {
+                if (m.selectedEntity != entt::null) {
                     if (m.showSavePrefabDialog) *m.showSavePrefabDialog = true;
                 }
             }

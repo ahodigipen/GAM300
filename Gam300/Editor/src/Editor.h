@@ -25,10 +25,10 @@ namespace EditorUI {
     class ViewportPanel;
     class PerformancePanel;
     class PlaybackControlsPanel;
-	class NavmeshPanel;
+    class NavmeshPanel;
     class AnimatorGraphPanel;
     class ModelPreviewPanel;
-    class AnimationTimelinePanel;
+    class SequencerPanel;
     class CommandHistory;  // Forward-declare CommandHistory
     // FIXED: Now inherits from AppInterface (complete definition included above)
     class Editor : public Boom::AppInterface {
@@ -70,7 +70,7 @@ namespace EditorUI {
         }
 
     public:
-      
+
         char m_SceneNameBuffer[256] = {};
         ImGuiContext* m_ImGuiContext = nullptr;
         entt::registry* m_Registry = nullptr;
@@ -85,12 +85,12 @@ namespace EditorUI {
         bool m_ShowPlaybackControls = true;
         bool m_ShowConsole = true;
         bool m_ShowAudio = true;
-		bool m_ShowResources = true;
-		bool m_ShowDirectory = true;
+        bool m_ShowResources = true;
+        bool m_ShowDirectory = true;
         bool m_ShowNavmesh = true;
         bool m_ShowAnimatorGraph = true;
         bool m_ShowModelPreview = false;
-        bool m_ShowAnimationTimeline = false;
+        bool m_ShowSequencer = false;
         bool m_ShowSaveDialog = false;
         bool m_ShowLoadDialog = false;
         bool m_ShowSavePrefabDialog = false;
@@ -106,10 +106,10 @@ namespace EditorUI {
         std::unique_ptr<ViewportPanel>          m_Viewport;
         std::unique_ptr<PerformancePanel>       m_Performance;
         std::unique_ptr<PlaybackControlsPanel>  m_Playback;
-		std::unique_ptr<NavmeshPanel>            m_Navmesh;
+        std::unique_ptr<NavmeshPanel>            m_Navmesh;
         std::unique_ptr<AnimatorGraphPanel>     m_AnimatorGraph;
         std::unique_ptr<ModelPreviewPanel>      m_ModelPreview;
-        std::unique_ptr<AnimationTimelinePanel> m_AnimationTimeline;
+        std::unique_ptr<SequencerPanel>         m_Sequencer;
 
         // Undo/Redo
         std::unique_ptr<CommandHistory>         m_CommandHistory;

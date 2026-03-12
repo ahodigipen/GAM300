@@ -103,6 +103,7 @@ AnimationTimelinePanel::AnimationTimelinePanel(Editor* owner)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     ResetCamera();
+    RefreshCutsceneFileList();
 }
 
 AnimationTimelinePanel::~AnimationTimelinePanel()
@@ -117,8 +118,7 @@ void AnimationTimelinePanel::Render()
     if (!m_Owner || !m_App) return;
 
     // Create the animation editor window
-    ImGui::SetNextWindowSize(ImVec2(1200, 800), ImGuiCond_FirstUseEver);
-    ImGui::Begin("Animation Timeline", &m_Owner->m_ShowAnimationTimeline);
+    // (Rendered inside SequencerPanel child window now)
 
     // ===== PLAYBACK UPDATE: Independent timeline =====
     float currentFrameTime = (float)ImGui::GetTime();
@@ -225,6 +225,12 @@ void AnimationTimelinePanel::Render()
         }
     }
 
+    // Always apply sequence frames during playback OR scrubbing
+    if (m_IsPlaying || m_IsDraggingTimeline)
+    {
+        ApplySequenceFrame((int)(m_CurrentTime * 60.0f));
+    }
+
     // Get selected entity and load model/animator (only if not in standalone mode)
     auto selectedID = m_App->SelectedEntity();
 
@@ -276,7 +282,6 @@ void AnimationTimelinePanel::Render()
         m_UndoStack.clear();
         m_RedoStack.clear();
 
-        ImGui::End();  // Must end the window before returning
         return;
     }
 
@@ -428,12 +433,13 @@ void AnimationTimelinePanel::Render()
         {
             auto& modelComp = selected.Get<Boom::ModelComponent>();
 
-            if (modelComp.modelID != Boom::EMPTY_ASSET && m_Ctx && m_Ctx->assets)
+            if (modelComp.modelID != 0 && m_Ctx && m_Ctx->assets)
             {
                 Boom::ModelAsset* modelAsset = m_Ctx->assets->TryGet<Boom::ModelAsset>(modelComp.modelID);
                 if (modelAsset && modelAsset->data)
                 {
                     m_Model = modelAsset->data;
+                    m_MaterialID = modelComp.materialID;
                     m_HasModel = true;
                 }
                 else
@@ -441,6 +447,7 @@ void AnimationTimelinePanel::Render()
                     if (!m_StandaloneMode)
                     {
                         m_Model.reset();
+                        m_MaterialID = 0;
                         m_HasModel = false;
                     }
                     BOOM_ERROR("[AnimationTimeline] Failed to load model from asset registry");
@@ -451,6 +458,7 @@ void AnimationTimelinePanel::Render()
                 if (!m_StandaloneMode)
                 {
                     m_Model.reset();
+                    m_MaterialID = 0;
                     m_HasModel = false;
                 }
             }
@@ -460,6 +468,7 @@ void AnimationTimelinePanel::Render()
             if (!m_StandaloneMode)
             {
                 m_Model.reset();
+                m_MaterialID = 0;
                 m_HasModel = false;
             }
         }
@@ -496,8 +505,6 @@ void AnimationTimelinePanel::Render()
 
     // Section 4: Track List (bottom - remaining space)
     RenderTrackList();
-
-    ImGui::End();
 }
 
 void AnimationTimelinePanel::RenderControlBar()
