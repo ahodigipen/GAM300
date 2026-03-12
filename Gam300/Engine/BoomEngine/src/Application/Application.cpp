@@ -681,13 +681,13 @@ namespace Boom
 
             m_Context->renderer->ShowFrame(showFrame);
 
-            // Render 2D sprites and text at full resolution on top of the composited frame when in low poly mode
-            if (m_Context->renderer->showLowPoly) {
+            // Always render 2D sprites and text after compositing: avoids volumetric fog and ensures sprites draw on top of text
+            {
                 m_Context->renderer->BeginFullResOverlay(showFrame);
                 m_Context->renderer->SetSpriteToneMap(true);
+                RenderTextOverlay();   // Text first so sprites draw on top
                 RenderSpriteOverlay();
                 m_Context->renderer->SetSpriteToneMap(false);
-                RenderTextOverlay();
                 m_Context->renderer->EndFullResOverlay();
             }
 
@@ -1006,12 +1006,7 @@ namespace Boom
                 m_Context->renderer->SetPickUniform(std::get<2>(gui)); //entity should be of type uint32_t
                 m_Context->renderer->DrawPick(std::get<1>(gui));
             }
-            else if (!m_Context->renderer->showLowPoly) {
-                // Skip 2D sprite rendering when low poly is active; sprites will be rendered at full resolution after compositing
-                TextureAsset* texture{ m_Context->assets->TryGet<TextureAsset>(std::get<0>(gui).textureID) };
-                if (texture)
-                    m_Context->renderer->DrawQuad(texture->data, std::get<1>(gui), std::get<0>(gui).color);
-            }
+            // 2D sprites are always rendered in the post-composite overlay pass to avoid volumetric fog
         }
 
         // Restore depth state so subsequent passes (debug lines, etc.) work correctly
@@ -1019,8 +1014,8 @@ namespace Boom
         glDepthFunc(GL_LESS);
 
         // --- RENDER ALL TEXT COMPONENTS ---
-        // Skip text when low poly is active; text will be rendered at full resolution after compositing
-        if (!isPicking && !m_Context->renderer->showLowPoly) {
+        // Text is always rendered in the post-composite overlay pass to avoid volumetric fog
+        if (false && !isPicking) {
             // Get active camera for 3D text projection
             Camera3D* textActiveCam = nullptr;
             Transform3D textCamTransform{};

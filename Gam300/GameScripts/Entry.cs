@@ -181,6 +181,9 @@ namespace GameScripts
 
             // Update crouch dialogue input
             CrouchTutorialManager.Update(dt);
+            
+            // Update global UI manager (handles letterbox, hearts, etc.)
+            UIManager.Update(dt);
 
             // Update door dialogue input
             MultiKeyDoor.UpdateDialogue(dt);

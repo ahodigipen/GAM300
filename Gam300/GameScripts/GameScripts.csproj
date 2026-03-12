@@ -88,6 +88,7 @@
     <Compile Include="TextTest.cs" />
     <Compile Include="UIEndController.cs" />
     <Compile Include="UIHoldController.cs" />
+    <Compile Include="UILetterboxController.cs" />
     <Compile Include="UIHeartController.cs" />
     <Compile Include="UILocationController.cs" />
     <Compile Include="UIManager.cs" />
