@@ -178,9 +178,12 @@ namespace GameScripts
             // Update tutorial popup trigger (handles Level 2 popup input even when paused)
             TutorialPopupTrigger.Update(dt);
 
+            // Update door dialogue input
+            MultiKeyDoor.UpdateDialogue(dt);
+
             // Update game logic pause state
-            // If any popup/tutorial is active, we force the game to stay paused
-            API.SetGameLogicPaused(IsGamePaused || IsStartPopupActive || TutorialManager.IsTutorialActive() || TutorialPopupTrigger.IsPopupActive());
+            // If any popup/tutorial/dialogue is active, we force the game to stay paused
+            API.SetGameLogicPaused(IsGamePaused || IsStartPopupActive || TutorialManager.IsTutorialActive() || TutorialPopupTrigger.IsPopupActive() || MultiKeyDoor.IsDialogueActive());
             API.SetPlayerDead(IsPlayerDead);
             API.SetGameEnd(IsGameEnded);
 
@@ -269,9 +272,10 @@ namespace GameScripts
             bool start_ButtonDown = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_START);
             bool rightBracket_KeyDown = API.IsKeyDown(API.KEY_RIGHT_BRACKET);
 
-            // Handle Tutorial - Skip all input if any tutorial active OR just dismissed this frame
+            // Handle Tutorial/Dialogue - Skip all input if any tutorial active OR just dismissed this frame
             if (TutorialManager.IsKeyTutorialActive() || TutorialManager.WasJustDismissed() ||
-                TutorialPopupTrigger.IsPopupActive() || TutorialPopupTrigger.WasJustDismissed())
+                TutorialPopupTrigger.IsPopupActive() || TutorialPopupTrigger.WasJustDismissed() ||
+                MultiKeyDoor.IsDialogueActive())
             {
                 // Keep tracking key states to prevent bleed-through after tutorial dismissal
                 _escape_KeyWasDown = escape_KeyDown;
@@ -379,9 +383,10 @@ namespace GameScripts
         {
             bool i_KeyDown = API.IsKeyDown(API.KEY_I);
 
-            // Block closing inventory if a tutorial is active
+            // Block closing inventory if a tutorial or door dialogue is active
             if (TutorialManager.IsKeyTutorialActive() || TutorialManager.WasJustDismissed() ||
-                TutorialPopupTrigger.IsPopupActive() || TutorialPopupTrigger.WasJustDismissed())
+                TutorialPopupTrigger.IsPopupActive() || TutorialPopupTrigger.WasJustDismissed() ||
+                MultiKeyDoor.IsDialogueActive())
             {
                 _i_KeyWasDown = i_KeyDown;
                 // We don't return entirely, just bypass the close logic so the menu keeps rendering/updating

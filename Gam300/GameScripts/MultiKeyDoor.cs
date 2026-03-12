@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Boom;
 
@@ -42,9 +42,25 @@ namespace GameScripts
             options: new[] { "left", "right", "front", "back" })]
         private string _slideDirection = "left";
 
+        [Boom.EditorExposed("Is Main Door", "If true, shows dialogue on failure. If false, just plays locked sound.")]
+        private bool _isMainDoor = false;
+
+        // UI Entity Names
+        [Boom.EditorExposed("E Prompt Name", "Name of the UI entity for 'E to interact'")]
+        private string _ePromptName = "UI_E_OpenDoor";
+
+        [Boom.EditorExposed("Keys Needed UI Name", "Name of the UI entity showing missing keys photo")]
+        private string _keysNeededName = "UI_KeysNeeded";
+
+        [Boom.EditorExposed("Dialogue UI Name", "Name of the UI entity showing dialogue text image")]
+        private string _dialogueName = "UI_NotEnoughKeysDialogue";
+
         // Audio
         [Boom.EditorExposed("Door Sound", "Sound played when door opens/closes")]
         private string _doorSoundPath = "Resources/Audio/unlock.wav";
+
+        [Boom.EditorExposed("Door Locked Sound", "Sound played when door is locked")]
+        private string _doorLockedSoundPath = "Resources/Audio/doorLocked.wav";
 
         private List<string> _requiredKeysList = new List<string>();
 
@@ -57,18 +73,23 @@ namespace GameScripts
         private ulong _doorEntity = 0;
         private Vec3 _doorOffset; // Offset from trigger to door
 
-        // "No Key" message
-        private ulong _noKeyTextEntity = 0;
-        private string _noKeyMessage = "This door is locked, need to find a key.";
-        private enum MessageState { Hidden, Typing, Displaying, FadingOut }
-        private MessageState _messageState = MessageState.Hidden;
-        private float _typewriterTimer = 0f;
-        private int _currentCharIndex = 0;
-        private const float CHARS_PER_SECOND = 20f; // Typing speed
-        private const float DISPLAY_DURATION = 2f; // How long to show full message
-        private const float FADE_OUT_SPEED = 2f; // Fade out speed
-        private float _displayTimer = 0f;
-        private float _messageAlpha = 1f;
+        // Interaction State
+        private bool _playerInRange = false;
+        private ulong _ePromptEntity = 0;
+        private ulong _keysNeededEntity = 0;
+        private ulong _dialogueEntity = 0;
+
+        private enum DialogueState { None, Dialogue1, Dialogue2 }
+        private DialogueState _dialogueState = DialogueState.None;
+
+        private bool _eWasDown = false;
+        private bool _enterWasDown = false;
+        private const int KEY_E = 69;
+        private const int KEY_ENTER = 257;
+
+        // Static tracking for active dialogue (drives pause from Entry.cs)
+        private static MultiKeyDoor s_activeDialogueDoor = null;
+        private static bool s_dialogueEnterWasDown = false;
 
         // State
         private static readonly Dictionary<ulong, MultiKeyDoor> s_instances = new Dictionary<ulong, MultiKeyDoor>();
@@ -177,13 +198,23 @@ namespace GameScripts
             API.Log($"[MultiKeyDoor] Trigger basePos=({_basePos.X:F2},{_basePos.Y:F2},{_basePos.Z:F2}) targetPos=({_targetPos.X:F2},{_targetPos.Y:F2},{_targetPos.Z:F2})");
             API.Log($"[MultiKeyDoor] Door offset=({_doorOffset.X:F2},{_doorOffset.Y:F2},{_doorOffset.Z:F2})");
 
-            // Find and initialize the "no key" text entity
-            _noKeyTextEntity = API.FindEntity("UI_NoKeyText");
-            if (_noKeyTextEntity != 0 && API.HasText(_noKeyTextEntity))
+            // Find and initialize UI entities
+            _ePromptEntity = API.FindEntity(_ePromptName);
+            if (_ePromptEntity != 0 && API.HasSprite(_ePromptEntity))
             {
-                API.SetText(_noKeyTextEntity, "");
-                API.SetTextColor(_noKeyTextEntity, new Vec4(1, 1, 1, 0)); // White text, 0 alpha
-                API.Log("[MultiKeyDoor] Initialized UI_NoKeyText");
+                API.SetSpriteAlpha(_ePromptEntity, 0f);
+            }
+
+            _keysNeededEntity = API.FindEntity(_keysNeededName);
+            if (_keysNeededEntity != 0 && API.HasSprite(_keysNeededEntity))
+            {
+                API.SetSpriteAlpha(_keysNeededEntity, 0f);
+            }
+
+            _dialogueEntity = API.FindEntity(_dialogueName);
+            if (_dialogueEntity != 0 && API.HasSprite(_dialogueEntity))
+            {
+                API.SetSpriteAlpha(_dialogueEntity, 0f);
             }
 
             API.RegisterTriggerEnterCallback(Entity, OnTriggerEnter);
@@ -195,8 +226,122 @@ namespace GameScripts
         {
             if (_doorEntity == 0) return;
 
-            // Update "no key" message typewriter effect
-            UpdateNoKeyMessage(dt);
+            // Handle Interaction logic
+            bool eDown = API.IsKeyDown(KEY_E);
+            bool enterDown = API.IsKeyDown(KEY_ENTER);
+
+            bool ePressed = eDown && !_eWasDown;
+            bool enterPressed = enterDown && !_enterWasDown;
+
+            _eWasDown = eDown;
+            _enterWasDown = enterDown;
+
+            if (_playerInRange && !_opening && !NearlyEqual(API.GetPosition(Entity), _targetPos))
+            {
+                if (_dialogueState == DialogueState.None)
+                {
+                    if (ePressed)
+                    {
+                        // Check keys
+                        List<string> missingKeys = new List<string>();
+                        foreach (var key in _requiredKeysList)
+                        {
+                            if (!PlayerInventory.HasKey(key))
+                            {
+                                missingKeys.Add(key);
+                            }
+                        }
+
+                        if (missingKeys.Count > 0)
+                        {
+                            if (_isMainDoor)
+                            {
+                                // Start dialogue and pause
+                                _dialogueState = DialogueState.Dialogue1;
+                                s_activeDialogueDoor = this;
+                                s_dialogueEnterWasDown = true; // prevent immediate advance
+                                API.SetGameLogicPaused(true);
+                                API.Log("[MultiKeyDoor] Dialogue started - game paused.");
+
+                                // Hide E prompt
+                                if (_ePromptEntity != 0) API.SetSpriteAlpha(_ePromptEntity, 0f);
+
+                                // Show KeysNeeded
+                                if (_keysNeededEntity != 0)
+                                {
+                                    int count = Math.Min(3, missingKeys.Count);
+                                    API.SetSpriteTexture(_keysNeededEntity, $"Resources/Textures/PlayerUI/KeysNeeded_{count}.png");
+                                    API.SetSpriteAlpha(_keysNeededEntity, 1f);
+                                }
+
+                                // Show Dialogue 1
+                                if (_dialogueEntity != 0)
+                                {
+                                    API.SetSpriteTexture(_dialogueEntity, "Resources/Textures/PlayerUI/NotEnoughKeys_Dialogue1.png");
+                                    API.SetSpriteAlpha(_dialogueEntity, 1f);
+                                }
+
+                                // Play locked sound immediately as dialogue appears
+                                API.PlaySound("sfx_door_locked_2d", _doorLockedSoundPath, false);
+                                API.SetSoundVolume("sfx_door_locked_2d", 1.0f);
+                            }
+                            else
+                            {
+                                // Play locked sound
+                                API.PlaySound("sfx_door_locked_2d", _doorLockedSoundPath, false);
+                                API.SetSoundVolume("sfx_door_locked_2d", 1.0f);
+                            }
+                        }
+                        else
+                        {
+                            // Open door
+                            if (_consumeKey)
+                            {
+                                foreach (var key in _requiredKeysList)
+                                {
+                                    PlayerInventory.ConsumeKeyType(key);
+                                }
+                            }
+
+                            _opening = true;
+                            _closing = false;
+                            
+                            if (_ePromptEntity != 0) API.SetSpriteAlpha(_ePromptEntity, 0f);
+
+                            API.PlaySound("sfx_door_slide_open_2d", _doorSoundPath, false);
+                            API.SetSoundVolume("sfx_door_slide_open_2d", 1.0f);
+                            API.Log("[MultiKeyDoor] Door opening.");
+                        }
+                    }
+                }
+                else
+                {
+                    if (enterPressed)
+                    {
+                        if (_dialogueState == DialogueState.Dialogue1)
+                        {
+                            _dialogueState = DialogueState.Dialogue2;
+                            if (_dialogueEntity != 0)
+                            {
+                                API.SetSpriteTexture(_dialogueEntity, "Resources/Textures/PlayerUI/NotEnoughKeys_Dialogue2.png");
+                            }
+                        }
+                        else if (_dialogueState == DialogueState.Dialogue2)
+                        {
+                            _dialogueState = DialogueState.None;
+                            s_activeDialogueDoor = null;
+                            if (_keysNeededEntity != 0) API.SetSpriteAlpha(_keysNeededEntity, 0f);
+                            if (_dialogueEntity != 0) API.SetSpriteAlpha(_dialogueEntity, 0f);
+                            
+                            // Return E prompt
+                            if (_ePromptEntity != 0) API.SetSpriteAlpha(_ePromptEntity, 1f);
+
+                            API.SetGameLogicPaused(false);
+                            API.Log("[MultiKeyDoor] Dialogue ended - game resumed.");
+                        }
+                    }
+                }
+            }
 
             // Handle delayed close
             if (_autoCloseOnExit && _closeDelay > 0f && !_opening && _closing)
@@ -309,49 +454,11 @@ namespace GameScripts
             // If already open or opening, do nothing further
             if (inst._opening || NearlyEqual(API.GetPosition(inst.Entity), inst._targetPos)) return;
 
-            // Collect missing keys
-            List<string> missingKeys = new List<string>();
-            foreach (var key in inst._requiredKeysList)
+            inst._playerInRange = true;
+            if (inst._ePromptEntity != 0 && inst._dialogueState == DialogueState.None)
             {
-                if (!PlayerInventory.HasKey(key))
-                {
-                    missingKeys.Add(key);
-                }
+                API.SetSpriteAlpha(inst._ePromptEntity, 1f);
             }
-
-            if (missingKeys.Count > 0)
-            {
-                // Show dynamic missing keys message
-                if (missingKeys.Count > 1) {
-                    inst.ShowNoKeyMessage($"This door is locked, missing {missingKeys.Count} keys.");
-                }
-                else {
-                    inst.ShowNoKeyMessage($"This door is locked, missing {missingKeys.Count} key.");
-                }
-
-                return;
-            }
-
-            // All keys are present - consume them
-            if (inst._consumeKey)
-            {
-                foreach (var key in inst._requiredKeysList)
-                {
-                    if (!PlayerInventory.ConsumeKeyType(key))
-                    {
-                        API.Log($"[MultiKeyDoor] Failed to consume key type '{key}'.");
-                    }
-                }
-            }
-
-            // Start opening (sliding left)
-            inst._opening = true;
-            inst._closing = false;
-
-            var pos = API.GetPosition(inst._doorEntity);
-            API.PlaySound("sfx_door_slide_open_2d", inst._doorSoundPath, false);
-            API.SetSoundVolume("sfx_door_slide_open_2d", 1.0f);
-            API.Log("[MultiKeyDoor] Playing door open sound.");
         }
 
         private static void OnTriggerExit(ulong triggerEntity, ulong otherEntity)
@@ -361,6 +468,16 @@ namespace GameScripts
 
             // Only react to player exiting
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
+
+            inst._playerInRange = false;
+
+            // Hide UI elements
+            if (inst._ePromptEntity != 0) API.SetSpriteAlpha(inst._ePromptEntity, 0f);
+            if (inst._keysNeededEntity != 0) API.SetSpriteAlpha(inst._keysNeededEntity, 0f);
+            if (inst._dialogueEntity != 0) API.SetSpriteAlpha(inst._dialogueEntity, 0f);
+
+            inst._dialogueState = DialogueState.None;
+
             if (!inst._autoCloseOnExit) return;
 
             // Queue close (optionally with delay)
@@ -372,82 +489,48 @@ namespace GameScripts
         }
 
         /// <summary>
-        /// Show the "no key" message with typewriter effect
+        /// Returns true while a main door dialogue is showing.
+        /// Called from Entry.Update() to keep the game paused.
         /// </summary>
-        private void ShowNoKeyMessage(string customMessage = null)
+        public static bool IsDialogueActive()
         {
-            if (_noKeyTextEntity == 0 || !API.HasText(_noKeyTextEntity)) return;
-
-            if (customMessage != null)
-            {
-                _noKeyMessage = customMessage;
-            }
-
-            // Restart typing effect even if currently displayed to update text dynamically
-            _messageState = MessageState.Typing;
-            _currentCharIndex = 0;
-            _typewriterTimer = 0f;
-            _messageAlpha = 1f;
-            API.SetText(_noKeyTextEntity, "");
-            API.SetTextColor(_noKeyTextEntity, new Vec4(1, 1, 1, 1)); // White, full alpha
-            API.Log("[MultiKeyDoor] Starting 'no key' message: " + _noKeyMessage);
+            return s_activeDialogueDoor != null && s_activeDialogueDoor._dialogueState != DialogueState.None;
         }
 
         /// <summary>
-        /// Update the typewriter effect and fade out
+        /// Input handler for the dialogue - must be called from Entry.Update() so it
+        /// runs even while game logic is paused.
         /// </summary>
-        private void UpdateNoKeyMessage(float dt)
+        public static void UpdateDialogue(float dt)
         {
-            if (_noKeyTextEntity == 0 || !API.HasText(_noKeyTextEntity)) return;
-            if (_messageState == MessageState.Hidden) return;
+            if (s_activeDialogueDoor == null) return;
 
-            switch (_messageState)
+            bool enterDown = API.IsKeyDown(KEY_ENTER);
+            bool enterPressed = enterDown && !s_dialogueEnterWasDown;
+            s_dialogueEnterWasDown = enterDown;
+
+            if (!enterPressed) return;
+
+            if (s_activeDialogueDoor._dialogueState == DialogueState.Dialogue1)
             {
-                case MessageState.Typing:
-                    _typewriterTimer += dt;
-                    float charsToShow = _typewriterTimer * CHARS_PER_SECOND;
-                    int targetIndex = (int)charsToShow;
+                s_activeDialogueDoor._dialogueState = DialogueState.Dialogue2;
+                if (s_activeDialogueDoor._dialogueEntity != 0)
+                {
+                    API.SetSpriteTexture(s_activeDialogueDoor._dialogueEntity, "Resources/Textures/PlayerUI/NotEnoughKeys_Dialogue2.png");
+                }
+            }
+            else if (s_activeDialogueDoor._dialogueState == DialogueState.Dialogue2)
+            {
+                MultiKeyDoor door = s_activeDialogueDoor;
+                s_activeDialogueDoor = null;
 
-                    if (targetIndex > _currentCharIndex)
-                    {
-                        _currentCharIndex = Math.Min(targetIndex, _noKeyMessage.Length);
-                        string displayText = _noKeyMessage.Substring(0, _currentCharIndex);
-                        API.SetText(_noKeyTextEntity, displayText);
+                door._dialogueState = DialogueState.None;
+                if (door._keysNeededEntity != 0) API.SetSpriteAlpha(door._keysNeededEntity, 0f);
+                if (door._dialogueEntity != 0)   API.SetSpriteAlpha(door._dialogueEntity, 0f);
+                if (door._ePromptEntity != 0)    API.SetSpriteAlpha(door._ePromptEntity, 1f);
 
-                        // Check if we've typed the full message
-                        if (_currentCharIndex >= _noKeyMessage.Length)
-                        {
-                            _messageState = MessageState.Displaying;
-                            _displayTimer = DISPLAY_DURATION;
-                            API.Log("[MultiKeyDoor] Finished typing message, displaying");
-                        }
-                    }
-                    break;
-
-                case MessageState.Displaying:
-                    _displayTimer -= dt;
-                    if (_displayTimer <= 0f)
-                    {
-                        _messageState = MessageState.FadingOut;
-                        API.Log("[MultiKeyDoor] Starting fade out");
-                    }
-                    break;
-
-                case MessageState.FadingOut:
-                    _messageAlpha -= FADE_OUT_SPEED * dt;
-                    if (_messageAlpha <= 0f)
-                    {
-                        _messageAlpha = 0f;
-                        API.SetTextColor(_noKeyTextEntity, new Vec4(1, 1, 1, 0));
-                        API.SetText(_noKeyTextEntity, "");
-                        _messageState = MessageState.Hidden;
-                        API.Log("[MultiKeyDoor] Message hidden");
-                    }
-                    else
-                    {
-                        API.SetTextColor(_noKeyTextEntity, new Vec4(1, 1, 1, _messageAlpha));
-                    }
-                    break;
+                // Signal Entry.cs to unpause (IsDialogueActive() is now false)
+                API.Log("[MultiKeyDoor] Dialogue ended via UpdateDialogue.");
             }
         }
 
@@ -493,6 +576,22 @@ namespace GameScripts
                     case "autoclose":
                     case "autocloseonexit":
                         if (bool.TryParse(val, out b)) _autoCloseOnExit = b;
+                        break;
+
+                    case "ismaindoor":
+                        if (bool.TryParse(val, out b)) _isMainDoor = b;
+                        break;
+                        
+                    case "epromptname":
+                        _ePromptName = val;
+                        break;
+
+                    case "keysneededname":
+                        _keysNeededName = val;
+                        break;
+
+                    case "dialoguename":
+                        _dialogueName = val;
                         break;
 
                     case "closedelay":

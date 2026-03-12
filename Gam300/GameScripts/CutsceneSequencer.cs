@@ -9,7 +9,7 @@ namespace GameScripts
     {
         public ulong Entity;
 
-        // Static Registry by ID
+        // Static Registry by ID (Used by animation tracks/events)
         public static System.Collections.Generic.Dictionary<ulong, CutsceneSequencer> InstancesById = new System.Collections.Generic.Dictionary<ulong, CutsceneSequencer>();
 
         public static void PlayCutscene(string entityName)
@@ -25,14 +25,29 @@ namespace GameScripts
             }
         }
 
-        // Properties
+        // Properties (Exposed to Editor)
+        [Boom.EditorExposed("Cutscene File", "The .seq file to load from Resources/Cutscenes/")]
         public string CutsceneFile = "Test.seq";
-        public bool PlayOnStart = false;
-        public bool Loop = false;
-        public bool BlockInput = true; // Default to TRUE for cinematic feel
-        public bool ConsoleDebug = true; // Default ON: Logs position/target every sec
-        public bool VisualDebug = false; // Default OFF: Draws lines
 
+        [Boom.EditorExposed("Play On Start", "Whether the cutscene plays automatically when the scene loads")]
+        public bool PlayOnStart = false;
+
+        [Boom.EditorExposed("Loop Cutscene", "Whether the sequence loops at the end")]
+        public bool Loop = false;
+
+        [Boom.EditorExposed("Block Input", "Whether player input is disabled during the cutscene")]
+        public bool BlockInput = true;
+
+        [Boom.EditorExposed("Allow Skip", "Whether the player can press a button to skip the cinematic")]
+        public bool AllowSkip = true;
+
+        [Boom.EditorExposed("Console Debug", "Log position and sequencer events to the console")]
+        public bool ConsoleDebug = true;
+
+        [Boom.EditorExposed("Visual Debug", "Draw lines indicating track paths")]
+        public bool VisualDebug = false;
+
+        [Boom.EditorExposed("Start Delay", "Seconds to wait before starting", 0.0f, 60.0f, true)]
         public float StartDelay = 0.0f;
 
         private float _currentTime = 0f;
@@ -54,7 +69,7 @@ namespace GameScripts
         {
             public string label; // "EntityName : Type"
             public string targetEntityName;
-            public int type; // 0=Pos, 1=Rot, 2=Scale, 3=Anim, 4=LookAt
+            public int type; // 0=Pos, 1=Rot, 2=Scale, 3=Anim, 4=Look At
             public List<KeyFrame> keyframes = new List<KeyFrame>();
             public ulong cachedEntityID = 0;
             public string lastAnim = ""; // Cache to prevent spamming Play
@@ -102,85 +117,8 @@ namespace GameScripts
 
             API.Log($"[CutsceneDebug] OnStart Called. Raw Params: '{jsonParams}'");
 
-            // Parse JSON Params
-            if (!string.IsNullOrEmpty(jsonParams) && jsonParams != "{}")
-            {
-                try
-                {
-                    // Simple manual parsing since we lack a JSON lib
-                    // Expect: { "CutsceneFile": "Name.seq", "PlayOnStart": true }
-
-                    // 1. CutsceneFile
-                    if (jsonParams.Contains("\"CutsceneFile\""))
-                    {
-                        int keyIdx = jsonParams.IndexOf("\"CutsceneFile\"");
-                        int valStart = jsonParams.IndexOf(":", keyIdx) + 1;
-                        int valQuote1 = jsonParams.IndexOf("\"", valStart);
-                        int valQuote2 = jsonParams.IndexOf("\"", valQuote1 + 1);
-                        if (valQuote1 != -1 && valQuote2 != -1)
-                        {
-                            CutsceneFile = jsonParams.Substring(valQuote1 + 1, valQuote2 - valQuote1 - 1);
-                            API.Log($"[CutsceneDebug] Parsed CutsceneFile: '{CutsceneFile}'");
-                        }
-                    }
-
-                    // 2. PlayOnStart
-                    if (jsonParams.Contains("\"PlayOnStart\""))
-                    {
-                        // Simplify: Just check if "PlayOnStart" is followed by "true" (ignoring strict structure)
-                        int keyIdx = jsonParams.IndexOf("\"PlayOnStart\"");
-                        string afterKey = jsonParams.Substring(keyIdx);
-                        if (afterKey.Contains("true"))
-                        {
-                            PlayOnStart = true;
-                            API.Log("[CutsceneDebug] Parsed PlayOnStart: TRUE");
-                        }
-                        else if (afterKey.Contains("false"))
-                        {
-                            PlayOnStart = false;
-                            API.Log("[CutsceneDebug] Parsed PlayOnStart: FALSE");
-                        }
-                    }
-
-                    // 3. StartDelay (New)
-                    if (jsonParams.Contains("\"StartDelay\""))
-                    {
-                        int keyIdx = jsonParams.IndexOf("\"StartDelay\"");
-                        int valStart = jsonParams.IndexOf(":", keyIdx) + 1;
-                        // Find number
-                        // This is a rough parser, assumes delay is a number
-                        string after = jsonParams.Substring(valStart);
-                        string numStr = "";
-                        foreach (char c in after)
-                        {
-                            if (char.IsDigit(c) || c == '.') numStr += c;
-                            else if (numStr.Length > 0 && (c == ',' || c == '}' || char.IsWhiteSpace(c))) break;
-                            else if (char.IsWhiteSpace(c)) continue;
-                            else break;
-                        }
-                        float.TryParse(numStr, out StartDelay);
-                        API.Log($"[CutsceneDebug] Parsed StartDelay: {StartDelay}");
-                    }
-
-                    // 4. BlockInput (New)
-                    if (jsonParams.Contains("\"BlockInput\""))
-                    {
-                        int keyIdx = jsonParams.IndexOf("\"BlockInput\"");
-                        string afterKey = jsonParams.Substring(keyIdx);
-                        if (afterKey.Contains("false"))
-                        {
-                            BlockInput = false;
-                            API.Log("[CutsceneDebug] Parsed BlockInput: FALSE");
-                        }
-                        else
-                        {
-                            BlockInput = true; // Default or explicit true
-                            API.Log("[CutsceneDebug] Parsed BlockInput: TRUE");
-                        }
-                    }
-                }
-                catch (Exception e) { API.Log("[Cutscene] JSON Parse Error: " + e.Message); }
-            }
+            // Parse JSON Params - No longer needed, EditorExposed handles this.
+            // The manual JSON parsing block has been removed as EditorExposed fields now handle these properties.
 
             API.Log($"[Cutscene] Initializing... File: '{CutsceneFile}', BlockInput: {BlockInput}, Delay: {StartDelay}");
             LoadCutscene(CutsceneFile);
@@ -302,6 +240,16 @@ namespace GameScripts
                 }
 
                 if (!_isPlaying) return;
+
+                // INPUT SKIPPING
+                if (AllowSkip)
+                {
+                    if (API.IsKeyDown(API.KEY_SPACE) || API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_START) || API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A))
+                    {
+                        Skip();
+                        return;
+                    }
+                }
 
                 _currentTime += dt * 60.0f; // Convert time to frames
 
@@ -454,6 +402,11 @@ namespace GameScripts
                 {
                     if (track.keyframes.Count < 1) continue;
 
+                    if (currentFrame < track.keyframes[0].frame) continue; // DO NOT block other tracks until our start frame
+
+                    // Handoff logic: If LookAt track finishes its timeline, stop forcing focus so Rotation tracks can take over
+                    if (currentFrame > track.keyframes[track.keyframes.Count - 1].frame) continue;
+
                     // Find active keyframe
                     KeyFrame activeKF = null;
                     for (int i = 0; i < track.keyframes.Count; i++)
@@ -503,26 +456,137 @@ namespace GameScripts
                 }
 
 
-                // TRANSFORM TRACKS (Need at least 1 keyframe)
-                if (track.keyframes.Count == 0) continue;
-
-                // 1. Handle "Before Start" -> Hold First Keyframe
-                if (currentFrame <= track.keyframes[0].frame)
+                // EVENT TRIGGER TRACK (Type 5)
+                if (track.type == 5)
                 {
-                    KeyFrame k = track.keyframes[0];
-                    if (track.type == 0) API.TeleportRigidBody(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
-                    else if (track.type == 1) API.SetRotation(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
-                    else if (track.type == 2) API.SetScale(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
+                    if (track.keyframes.Count < 1) continue;
+
+                    // Find active keyframe
+                    KeyFrame activeKF = null;
+                    for (int i = 0; i < track.keyframes.Count; i++)
+                    {
+                        if (currentFrame >= track.keyframes[i].frame) activeKF = track.keyframes[i];
+                        else break;
+                    }
+
+                    if (activeKF != null && !string.IsNullOrEmpty(activeKF.valStr) && activeKF.valStr != "None")
+                    {
+                        if (track.lastAnim != activeKF.valStr)
+                        {
+                            track.lastAnim = activeKF.valStr;
+                            API.Log($"[CutsceneSequencer] Triggering Event: {activeKF.valStr}");
+
+                            try
+                            {
+                                // We assume format "GameScripts.ClassName.MethodName"
+                                int lastDotPos = activeKF.valStr.LastIndexOf('.');
+                                if (lastDotPos > 0 && lastDotPos < activeKF.valStr.Length - 1)
+                                {
+                                    string className = activeKF.valStr.Substring(0, lastDotPos);
+                                    string methodName = activeKF.valStr.Substring(lastDotPos + 1);
+
+                                    Type type = Type.GetType(className);
+                                    if (type != null)
+                                    {
+                                        System.Reflection.MethodInfo method = type.GetMethod(methodName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                                        if (method != null)
+                                        {
+                                            method.Invoke(null, null);
+                                        }
+                                        else
+                                        {
+                                            API.Log($"[CutsceneSequencer] Event Error: Static method '{methodName}' not found on '{className}'");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        API.Log($"[CutsceneSequencer] Event Error: Class '{className}' not found.");
+                                    }
+                                }
+                                else
+                                {
+                                    API.Log($"[CutsceneSequencer] Event format must be 'Namespace.Class.Method'. Received: {activeKF.valStr}");
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                API.Log($"[CutsceneSequencer] Failed to trigger event '{activeKF.valStr}': {ex.Message}");
+                            }
+                        }
+                    }
                     continue;
                 }
 
-                // 2. Handle "After End" -> Hold Last Keyframe
-                if (currentFrame >= track.keyframes[track.keyframes.Count - 1].frame)
+
+                // TRANSFORM TRACKS (Need at least 1 keyframe)
+                if (track.keyframes.Count == 0) continue;
+
+                // 1. Handle "Before Start" -> Do Not Override (Allows other tracks to play cleanly)
+                if (currentFrame < track.keyframes[0].frame)
+                {
+                    continue;
+                }
+
+                // 1b. NEW: Handle "After End" on Stacked Tracks -> Do Not Override
+                // If a track has fully played out and another track exists, holding the last frame will override newer tracks!
+                // To support easy C++ Sequencer stacking, dormant tracks should stop holding once they pass their final frame.
+                // We'll only hold if it's the absolute final frame of the whole cutscene duration, otherwise we assume a hand-off occurred.
+                // (Exceptions: Single-keyframe tracks should permanently hold their single value!)
+                if (track.keyframes.Count > 1 && currentFrame > track.keyframes[track.keyframes.Count - 1].frame)
+                {
+                    continue; // Let the next sequential track handle the entity now
+                }
+
+                // 2. Handle exactly at "End" -> Set Last Keyframe precisely
+                if (currentFrame == track.keyframes[track.keyframes.Count - 1].frame)
                 {
                     KeyFrame k = track.keyframes[track.keyframes.Count - 1];
-                    if (track.type == 0) API.TeleportRigidBody(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
-                    else if (track.type == 1) API.SetRotation(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
-                    else if (track.type == 2) API.SetScale(track.cachedEntityID, new Vec3(k.vX, k.vY, k.vZ));
+                    float x = k.vX; float y = k.vY; float z = k.vZ;
+
+                    // Support Relative Anchors for Transform Tracks
+                    if (!string.IsNullOrEmpty(k.valStr) && k.valStr != "None")
+                    {
+                        ulong anchorID = API.FindEntity(k.valStr);
+                        if (anchorID != 0 && track.type == 0) // Only offset POSITION
+                        {
+                            Vec3 anchorPos = API.GetPosition(anchorID);
+                            x += anchorPos.X; y += anchorPos.Y; z += anchorPos.Z;
+                        }
+                    }
+
+                    if (track.type == 0) API.SetPosition(track.cachedEntityID, new Vec3(x, y, z));
+                    else if (track.type == 1)
+                    {
+                        if (((int)currentFrame) % 60 == 0) API.Log($"[CutsceneDebug] END-Rotating '{track.targetEntityName}' to {x:F2}, {y:F2}, {z:F2} (Frame {currentFrame})");
+                        API.SetRotation(track.cachedEntityID, new Vec3(x, y, z));
+                    }
+                    else if (track.type == 2) API.SetScale(track.cachedEntityID, new Vec3(x, y, z));
+                    continue;
+                }
+
+                // 2b. Handle Single-Keyframe Static Tracks
+                if (track.keyframes.Count == 1 && currentFrame >= track.keyframes[0].frame)
+                {
+                    KeyFrame k = track.keyframes[0];
+                    float x = k.vX; float y = k.vY; float z = k.vZ;
+
+                    if (!string.IsNullOrEmpty(k.valStr) && k.valStr != "None")
+                    {
+                        ulong anchorID = API.FindEntity(k.valStr);
+                        if (anchorID != 0 && track.type == 0)
+                        {
+                            Vec3 anchorPos = API.GetPosition(anchorID);
+                            x += anchorPos.X; y += anchorPos.Y; z += anchorPos.Z;
+                        }
+                    }
+
+                    if (track.type == 0) API.SetPosition(track.cachedEntityID, new Vec3(x, y, z));
+                    else if (track.type == 1)
+                    {
+                        if (((int)currentFrame) % 60 == 0) API.Log($"[CutsceneDebug] SNAP-Rotating '{track.targetEntityName}' to {x:F2}, {y:F2}, {z:F2} (Frame {currentFrame})");
+                        API.SetRotation(track.cachedEntityID, new Vec3(x, y, z));
+                    }
+                    else if (track.type == 2) API.SetScale(track.cachedEntityID, new Vec3(x, y, z));
                     continue;
                 }
 
@@ -548,10 +612,22 @@ namespace GameScripts
                     if (t < 0f) t = 0f;
                     if (t > 1f) t = 1f;
 
-                    // Lerp
+                    // Lerp Base Offsets
                     float x = Lerp(k1.vX, k2.vX, t);
                     float y = Lerp(k1.vY, k2.vY, t);
                     float z = Lerp(k1.vZ, k2.vZ, t);
+
+                    // Support Relative Anchors for Transform Tracks
+                    // We check k1's anchor because we are currently interpolating ALONG k1's path!
+                    if (!string.IsNullOrEmpty(k1.valStr) && k1.valStr != "None")
+                    {
+                        ulong anchorID = API.FindEntity(k1.valStr);
+                        if (anchorID != 0 && track.type == 0) // Only offset POSITION
+                        {
+                            Vec3 anchorPos = API.GetPosition(anchorID);
+                            x += anchorPos.X; y += anchorPos.Y; z += anchorPos.Z;
+                        }
+                    }
 
                     if (track.type == 0) // Pos
                     {
@@ -563,6 +639,7 @@ namespace GameScripts
                     }
                     else if (track.type == 1) // Rot
                     {
+                        if (((int)currentFrame) % 60 == 0) API.Log($"[CutsceneDebug] LERP-Rotating '{track.targetEntityName}' to {x:F2}, {y:F2}, {z:F2} (Frame {currentFrame})");
                         API.SetRotation(track.cachedEntityID, new Vec3(x, y, z));
                     }
                     else if (track.type == 2) // Scale
