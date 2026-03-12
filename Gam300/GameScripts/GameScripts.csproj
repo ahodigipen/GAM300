@@ -71,6 +71,7 @@
     <Compile Include="PatrolSpotlightFollower.cs" />
     <Compile Include="ProximityDetectionComponent.cs" />
     <Compile Include="CreditsScroll.cs" />
+    <Compile Include="OutroScene.cs" />
     <Compile Include="DigiPenSplash.cs" />
     <Compile Include="DeathMenu.cs" />
     <Compile Include="EndMenu.cs" />
