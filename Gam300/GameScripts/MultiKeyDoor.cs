@@ -545,13 +545,23 @@ namespace GameScripts
 
         // ── Fade helpers ──────────────────────────────────────────────────────
 
-        /// <summary>Apply the same alpha to all dialogue panel entities.</summary>
         private void ApplyDialoguePanelAlpha(float alpha)
         {
-            if (_keysNeededEntity != 0 && API.HasSprite(_keysNeededEntity))
-                API.SetSpriteAlpha(_keysNeededEntity, alpha);
             if (_dialogueEntity != 0 && API.HasSprite(_dialogueEntity))
                 API.SetSpriteAlpha(_dialogueEntity, alpha);
+
+            if (_keysNeededEntity != 0 && API.HasSprite(_keysNeededEntity))
+            {
+                if (_pendingAction == PendingAction.AdvanceToDialogue2 ||
+                    (_dialogueState == DialogueState.Dialogue2 && _fadeMode == FadeMode.FadeIn))
+                {
+                    API.SetSpriteAlpha(_keysNeededEntity, 1f);
+                }
+                else
+                {
+                    API.SetSpriteAlpha(_keysNeededEntity, alpha);
+                }
+            }
         }
 
         /// <summary>Run the queued action after a fade-out finishes.</summary>
@@ -564,15 +574,21 @@ namespace GameScripts
                     _dialogueState = DialogueState.Dialogue2;
                     if (_dialogueEntity != 0)
                         API.SetSpriteTexture(_dialogueEntity, "Resources/Textures/PlayerUI/NotEnoughKeys_Dialogue2.png");
-                    // Reset panel alpha to 0, then fade in
-                    ApplyDialoguePanelAlpha(0f);
+                    
+                    // Reset text panel alpha to 0, then fade in (leave KeysNeeded at 1)
+                    if (_dialogueEntity != 0) API.SetSpriteAlpha(_dialogueEntity, 0f);
+                    
                     _fadeMode  = FadeMode.FadeIn;
                     _fadeTimer = 0f;
                     break;
 
                 case PendingAction.CloseDialogue:
                     _pendingAction = PendingAction.None;
-                    ApplyDialoguePanelAlpha(0f);
+                    
+                    // Force fully hidden
+                    if (_dialogueEntity != 0) API.SetSpriteAlpha(_dialogueEntity, 0f);
+                    if (_keysNeededEntity != 0) API.SetSpriteAlpha(_keysNeededEntity, 0f);
+                    
                     _dialogueState = DialogueState.None;
                     s_activeDialogueDoor = null;
                     if (_ePromptEntity != 0) 
