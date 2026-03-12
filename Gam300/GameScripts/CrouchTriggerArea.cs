@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Boom;
 
@@ -9,11 +9,11 @@ namespace GameScripts
     /// Shows "Hold to Crouch" UI prompt when player enters
     /// Hides the prompt when player exits
     /// </summary>
-    public class CrouchTriggerZone
+    public class CrouchTriggerArea
     {
         public ulong Entity;
 
-        private static readonly Dictionary<ulong, CrouchTriggerZone> s_instances = new Dictionary<ulong, CrouchTriggerZone>();
+        private static readonly Dictionary<ulong, CrouchTriggerArea> s_instances = new Dictionary<ulong, CrouchTriggerArea>();
 
         // Optional: Play a sound when entering the zone
         [Boom.EditorExposed("Play Sound On Enter", "Whether to play a sound when player enters the zone")]
@@ -28,7 +28,7 @@ namespace GameScripts
 
             if (!API.HasCollider(Entity))
             {
-                API.Log("[CrouchTriggerZone] WARNING: Entity has no collider. Trigger will not work.");
+                API.Log("[CrouchTriggerArea] WARNING: Entity has no collider. Trigger will not work.");
                 return;
             }
 
@@ -36,12 +36,12 @@ namespace GameScripts
             if (!API.IsTrigger(Entity))
             {
                 API.SetTrigger(Entity, true);
-                API.Log("[CrouchTriggerZone] Collider set to IsTrigger = true.");
+                API.Log("[CrouchTriggerArea] Collider set to IsTrigger = true.");
             }
 
             API.RegisterTriggerEnterCallback(Entity, OnTriggerEnter);
             API.RegisterTriggerExitCallback(Entity, OnTriggerExit);
-            API.Log($"[CrouchTriggerZone] Registered trigger callbacks for entity {Entity}.");
+            API.Log($"[CrouchTriggerArea] Registered trigger callbacks for entity {Entity}.");
         }
 
         public void OnUpdate(float dt)
@@ -58,7 +58,7 @@ namespace GameScripts
 
         private static void OnTriggerEnter(ulong triggerEntity, ulong otherEntity)
         {
-            CrouchTriggerZone inst;
+            CrouchTriggerArea inst;
             if (!s_instances.TryGetValue(triggerEntity, out inst)) return;
 
             // Only react when the player enters this trigger
@@ -67,11 +67,8 @@ namespace GameScripts
             // *** CRITICAL: Notify PlayerMovement that we're in a crouch zone ***
             PlayerMovement.SetInCrouchZone(true);
 
-            // *** Show crouch tutorial on first entry ***
-            if (!CrouchTutorialManager.HasCompletedTutorial())
-            {
-                CrouchTutorialManager.ShowTutorial();
-            }
+            // *** Show the "Hold to Crouch" UI prompt ***
+            UIManager.ShowHoldPrompt();
 
             // Optional: Play warning sound
             if (inst._playSoundOnEnter && API.HasTransform(inst.Entity))
@@ -82,12 +79,12 @@ namespace GameScripts
                 API.Set3DMinMaxDistance("sfx_crouch_zone_enter", 1.0f, 12.0f);
             }
 
-            API.Log("[CrouchTriggerZone] Player entered crouch zone - showing UI prompt + notifying PlayerMovement");
+            API.Log("[CrouchTriggerArea] Player entered crouch zone - showing UI prompt + notifying PlayerMovement");
         }
 
         private static void OnTriggerExit(ulong triggerEntity, ulong otherEntity)
         {
-            CrouchTriggerZone inst;
+            CrouchTriggerArea inst;
             if (!s_instances.TryGetValue(triggerEntity, out inst)) return;
 
             // Only react when the player exits this trigger
@@ -96,9 +93,10 @@ namespace GameScripts
             // *** CRITICAL: Notify PlayerMovement that we left the crouch zone ***
             PlayerMovement.SetInCrouchZone(false);
 
+            // *** Hide the "Hold to Crouch" UI prompt ***
+            UIManager.HideHoldPrompt();
 
-
-            API.Log("[CrouchTriggerZone] Player exited crouch zone - hiding UI prompt + notifying PlayerMovement");
+            API.Log("[CrouchTriggerArea] Player exited crouch zone - hiding UI prompt + notifying PlayerMovement");
         }
     }
 }

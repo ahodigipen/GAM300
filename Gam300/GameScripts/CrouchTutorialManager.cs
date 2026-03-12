@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Boom;
 
 namespace GameScripts
@@ -56,9 +56,6 @@ namespace GameScripts
             s_aButtonWasDown = true;
 
             FadeInEntity(s_eDialogue1);
-
-            if (s_eTutorialDimBG != 0 && API.HasSprite(s_eTutorialDimBG))
-                API.SetSpriteAlpha(s_eTutorialDimBG, DIM_BG_ALPHA);
 
             s_state = TutorialState.ShowingDialogue1;
             API.Log("[CrouchTutorialManager] First-time crouch tutorial started. Showing Dialogue 1.");
@@ -152,6 +149,7 @@ namespace GameScripts
 
             if (!enterPressed && !aButtonPressed) return;
 
+            API.PlaySound("sfx_ui_click", "Resources/Audio/uiClick.wav", false);
             AdvanceState();
         }
 
@@ -186,19 +184,12 @@ namespace GameScripts
 
             FadeOutEntity(currentEntity, () =>
             {
-                if (s_eTutorialDimBG != 0 && API.HasSprite(s_eTutorialDimBG))
-                    API.SetSpriteAlpha(s_eTutorialDimBG, 0f);
-
                 s_state = TutorialState.None;
                 s_justDismissed = true;
                 s_hasCompletedTutorial = true;
 
                 // Unpause the game
                 API.SetGameLogicPaused(false);
-
-                // Automatically show the "CTRL_Crouch" prompt right after closing 
-                // since they are still standing in the trigger zone.
-                UIManager.ShowHoldPrompt();
 
                 API.Log($"[CrouchTutorialManager] Tutorial closed. Game resumed.");
             });
@@ -253,9 +244,6 @@ namespace GameScripts
             s_eDialogue2 = FindAndLog("Crouch_FirstTime_Dialogue2");
             s_eDialogue3 = FindAndLog("Crouch_FirstTime_Dialogue3");
             s_eDialogue4 = FindAndLog("Crouch_FirstTime_Dialogue4");
-
-            // Re-using the same darkened background sprite from the standard tutorials
-            s_eTutorialDimBG = FindAndLog("Tutorial_BlackBackground");
 
             s_entitiesResolved = true;
         }

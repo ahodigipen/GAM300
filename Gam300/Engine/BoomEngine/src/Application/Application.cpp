@@ -169,6 +169,8 @@ namespace Boom
                 std::cout << "[RunContext] Calling GameScripts Entry:Start()..." << std::endl;
                 std::cout.flush();
 
+                m_Context->scriptingSystem->CallSessionStart();
+
                 if (!m_Context->scriptingSystem->CallStart()) {
                     BOOM_ERROR("[Scripting] GameScripts.Entry:Start() failed");
                 }

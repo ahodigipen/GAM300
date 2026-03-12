@@ -41,11 +41,6 @@ namespace GameScripts
         private static bool s_justDismissed = false;
         private static Action s_onSequenceComplete = null;
 
-        // Delay before E_BreakOut appears after dialogue 6
-        private const float BREAK_OUT_DELAY = 5.0f;
-        private static float s_breakOutDelayTimer = 0f;
-        private static bool s_waitingForBreakOut = false;
-
         public static void Reset()
         {
             s_activeSequence = SequenceType.None;
@@ -62,8 +57,6 @@ namespace GameScripts
             s_aButtonWasDown = false;
             s_justDismissed = false;
             s_onSequenceComplete = null;
-            s_waitingForBreakOut = false;
-            s_breakOutDelayTimer = 0f;
 
             s_startD1 = 0; s_startD2 = 0; s_startD3 = 0; s_startD4 = 0; s_startD5 = 0; s_startD6 = 0;
             s_breakOut = 0; s_guardD1 = 0; s_guardD2 = 0;
@@ -104,9 +97,6 @@ namespace GameScripts
 
         public static bool IsSequenceActive()
         {
-            // During the break-out delay window, the player can move freely
-            // so we do not report the sequence as active (which would force-pause via Entry)
-            if (s_waitingForBreakOut) return false;
             return s_activeSequence != SequenceType.None;
         }
 
@@ -118,20 +108,6 @@ namespace GameScripts
         public static void Update(float dt)
         {
             s_justDismissed = false;
-
-            // Tick the E_BreakOut appearance delay (game is unpaused here — player can move)
-            if (s_waitingForBreakOut)
-            {
-                s_breakOutDelayTimer -= dt;
-                if (s_breakOutDelayTimer <= 0f)
-                {
-                    s_waitingForBreakOut = false;
-                    // Re-pause now that the interactive prompt is about to appear
-                    API.SetGameLogicPaused(true);
-                    FadeInEntity(s_breakOut);
-                }
-                return; // No dialogue input during the wait
-            }
             if (s_fadeMode != FadeMode.None)
             {
                 s_fadeTimer += dt;
@@ -180,26 +156,17 @@ namespace GameScripts
 
             if (s_activeSequence == SequenceType.StartCutscene)
             {
-                if (s_dialogueIndex == 7) // BreakOut
+                if (enterPressed || aButtonPressed)
                 {
-                    if (ePressed)
-                    {
-                        AdvanceStartSequence();
-                    }
-                }
-                else
-                {
-                    // For the others, it's Enter or gamepad A
-                    if (enterPressed || aButtonPressed)
-                    {
-                        AdvanceStartSequence();
-                    }
+                    API.PlaySound("sfx_ui_click", "Resources/Audio/uiClick.wav", false);
+                    AdvanceStartSequence();
                 }
             }
             else if (s_activeSequence == SequenceType.Checkpoint1)
             {
                 if (enterPressed || aButtonPressed)
                 {
+                    API.PlaySound("sfx_ui_click", "Resources/Audio/uiClick.wav", false);
                     AdvanceCheckpoint1Sequence();
                 }
             }
@@ -211,20 +178,34 @@ namespace GameScripts
             FadeOutEntity(currentEntity, () =>
             {
                 s_dialogueIndex++;
-                if (s_dialogueIndex > 9)
+                if (s_dialogueIndex == 7) // Cutscene part 1 is done
                 {
                     CloseSequence();
                 }
-                else if (s_dialogueIndex == 7) // E_BreakOut — insert delay
+                else if (s_dialogueIndex > 9)
                 {
-                    s_waitingForBreakOut = true;
-                    s_breakOutDelayTimer = BREAK_OUT_DELAY;
+                    CloseSequence();
                 }
                 else
                 {
                     FadeInEntity(GetStartSequenceEntity(s_dialogueIndex));
                 }
             });
+        }
+
+        public static void PlayGuardSequence()
+        {
+            if (s_activeSequence != SequenceType.None) return;
+            ResolveEntities();
+            s_activeSequence = SequenceType.StartCutscene;
+            s_dialogueIndex = 8; // Start at GuardD1
+
+            s_enterWasDown = true;
+            s_aButtonWasDown = true;
+
+            FadeInEntity(s_guardD1);
+            API.SetGameLogicPaused(true);
+            API.Log("[StoryDialogueManager] Playing Guard Sequence");
         }
 
         private static void AdvanceCheckpoint1Sequence()

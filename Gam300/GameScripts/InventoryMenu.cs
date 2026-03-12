@@ -73,7 +73,7 @@ namespace GameScripts
                         else if (itemType == "Freeze")
                         {
                             API.SetSpriteTexture(_slotIcons[i], FREEZE_TEX);
-                            SetText(_slotTexts[i], PlayerInventory.HasFreezePower() ? "1" : "0");
+                            SetText(_slotTexts[i], $"{PlayerInventory.GetFreezeChargeCount()}");
                         }
                     }
                     else

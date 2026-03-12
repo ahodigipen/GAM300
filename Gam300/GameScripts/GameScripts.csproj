@@ -45,14 +45,19 @@
   <ItemGroup>
     <Compile Include="API.cs" />
     <Compile Include="AttackSquash.cs" />
+    <Compile Include="BossActivationTrigger.cs" />
+    <Compile Include="BossHideSeekController.cs" />
+    <Compile Include="BossController.cs" />
     <Compile Include="BossCutsceneMovement.cs" />
     <Compile Include="CharacterAnimation.cs" />
     <Compile Include="CPTrigger.cs" />
+    <Compile Include="CrouchTriggerArea.cs" />
     <Compile Include="CrouchTutorialManager.cs" />
     <Compile Include="CutsceneController.cs" />
     <Compile Include="PrisonBreak.cs" />
     <Compile Include="StoryDialogueManager.cs" />
     <Compile Include="CutsceneSequencer.cs" />
+    <Compile Include="FallingObject.cs" />
     <Compile Include="FreezeOverlayBehavior.cs" />
     <Compile Include="GammaSlider.cs" />
     <Compile Include="HoverMotion.cs" />
@@ -64,6 +69,8 @@
     <Compile Include="PatrolMultiDirectionSpotlight.cs" />
     <Compile Include="PatrolSpotlightFollower.cs" />
     <Compile Include="ProximityDetectionComponent.cs" />
+    <Compile Include="CreditsScroll.cs" />
+    <Compile Include="DigiPenSplash.cs" />
     <Compile Include="DeathMenu.cs" />
     <Compile Include="EndMenu.cs" />
     <Compile Include="EndZoneTrigger.cs" />
@@ -81,6 +88,7 @@
     <Compile Include="PlayerInventory.cs" />
     <Compile Include="BloodOverlayController.cs" />
     <Compile Include="SceneTransitionTrigger.cs" />
+    <Compile Include="SpikeDamage.cs" />
     <Compile Include="SettingsManager.cs" />
     <Compile Include="SpotlightFollower.cs" />
     <Compile Include="TutorialManager.cs" />
@@ -100,6 +108,7 @@
     <Compile Include="MovementAnimator.cs" />
     <Compile Include="EnemyController.cs" />
     <Compile Include="FPSLimitToggle.cs" />
+    <Compile Include="DebugTeleporter.cs" />
     <Compile Include="PlayerMovement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpawnPoint.cs" />

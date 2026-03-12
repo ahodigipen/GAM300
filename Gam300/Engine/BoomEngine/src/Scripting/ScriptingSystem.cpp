@@ -98,6 +98,14 @@ namespace Boom {
         return m_Mono.InvokeStatic("GameScripts.Entry:Start()");
     }
 
+    bool ScriptingSystem::CallSessionStart()
+    {
+        if (!m_Alive || !m_Scripts)
+            return false;
+
+        return m_Mono.InvokeStatic("GameScripts.Entry:OnSessionStart()");
+    }
+
     bool ScriptingSystem::CallUpdate(float dt)
     {
         if (!m_Alive || !m_Scripts)
