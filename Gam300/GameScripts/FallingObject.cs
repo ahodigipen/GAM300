@@ -4,7 +4,7 @@ using Boom;
 namespace GameScripts
 {
     // FallingObject: placed above the player path. Starts falling when player walks toward it.
-    public class FallingObject
+    public class FallingObject : IEnemyController
     {
         public ulong Entity;
 
@@ -45,7 +45,10 @@ namespace GameScripts
             // Make sure entity exists and has transform
             if (!API.HasTransform(Entity)) return;
 
-            API.Log($"[FallingObject] OnStart Entity={Entity}, triggerRadius={_triggerRadius}, fallSpeed={_fallSpeed}");
+            // API.Log($"[FallingObject] OnStart Entity={Entity}, triggerRadius={_triggerRadius}, fallSpeed={_fallSpeed}");
+
+            // Record initial position so we can keep the object locked in place until triggered.
+            _initialPosition = API.GetPosition(Entity);
 
             // Keep the collider as a trigger initially so the dynamic rigidbody does not
             // immediately fall under gravity. We'll clear the trigger when the object
@@ -53,26 +56,20 @@ namespace GameScripts
             if (API.HasCollider(Entity))
             {
                 API.SetTrigger(Entity, true);
-                API.Log($"[FallingObject] Collider set to trigger=true on start for Entity={Entity}");
+                // API.Log($"[FallingObject] Collider set to trigger=true on start for Entity={Entity}");
 
                 // Ensure the body has no initial velocity
                 Vec3 zero = new Vec3(0f, 0f, 0f);
                 API.SetLinearVelocity(Entity, zero);
             }
 
-            // Record initial position so we can keep the object locked in place until triggered.
-            if (API.HasTransform(Entity))
-            {
-                _initialPosition = API.GetPosition(Entity);
-            }
-
-            // Ensure the object is not affected by physics until triggered (engine-specific)
-            // We rely on SetLinearVelocity to move it when falling.
+            // Register with PlayerManager to receive OnPlayerRespawned calls
+            PlayerManager.RegisterEnemy(this);
         }
 
         public void OnUpdate(float dt)
         {
-            API.Log($"[FallingObject] OnUpdate E={Entity} isFalling={_isFalling} hasFallen={_hasFallen} enableTimer={_enableTimer:F3}");
+            // API.Log($"[FallingObject] OnUpdate E={Entity} isFalling={_isFalling} hasFallen={_hasFallen} enableTimer={_enableTimer:F3}");
 
             // If currently falling, perform kinematic step-by-step teleport to avoid tunneling
             if (_isFalling)
@@ -272,7 +269,7 @@ namespace GameScripts
 
             float predictedDistance = forwardSpeed * tFall;
 
-            API.Log($"[FallingObject] horizDist={horizDist:F2} forwardSpeed={forwardSpeed:F2} tFall={tFall:F2} predictedDistance={predictedDistance:F2} lastHoriz={_lastHorizontalDistance:F2}");
+            // API.Log($"[FallingObject] horizDist={horizDist:F2} forwardSpeed={forwardSpeed:F2} tFall={tFall:F2} predictedDistance={predictedDistance:F2} lastHoriz={_lastHorizontalDistance:F2}");
 
             // Debug: force fall if within radius
             if (_debugForceFallInRadius && horizDist <= _triggerRadius)
@@ -335,9 +332,39 @@ namespace GameScripts
             API.Log($"[FallingObject] FallNow: letting physics gravity handle fall for Entity={Entity}");
         }
 
+        public void OnPlayerRespawned()
+        {
+            API.Log($"[FallingObject] OnPlayerRespawned Entity={Entity}");
+
+            // Reset state
+            _hasFallen = false;
+            _isFalling = false;
+            _hasHit = false;
+            _fallVelocity = 0f;
+            _armed = true;
+            _enableTimer = 0f;
+            _lastHorizontalDistance = float.MaxValue;
+
+            // Reset physics and position
+            if (API.HasTransform(Entity))
+            {
+                API.SetPosition(Entity, _initialPosition);
+                API.TeleportRigidBody(Entity, _initialPosition);
+                
+                Vec3 zero = new Vec3(0f, 0f, 0f);
+                API.SetLinearVelocity(Entity, zero);
+            }
+
+            // Re-arm trigger
+            if (API.HasCollider(Entity))
+            {
+                API.SetTrigger(Entity, true);
+            }
+        }
+
         public void OnDestroy()
         {
-            // cleanup if needed
+            PlayerManager.UnregisterEnemy(this);
         }
     }
 }
