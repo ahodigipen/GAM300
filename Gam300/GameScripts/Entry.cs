@@ -178,6 +178,9 @@ namespace GameScripts
             // Update tutorial popup trigger (handles Level 2 popup input even when paused)
             TutorialPopupTrigger.Update(dt);
 
+            // Update global UI manager (handles letterbox, hearts, etc.)
+            UIManager.Update(dt);
+
             // Update door dialogue input
             MultiKeyDoor.UpdateDialogue(dt);
 

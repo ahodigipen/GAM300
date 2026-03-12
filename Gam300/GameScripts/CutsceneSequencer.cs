@@ -1,4 +1,4 @@
-﻿using Boom;
+using Boom;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -166,6 +166,9 @@ namespace GameScripts
             // NEW: Disable Engine ThirdPersonCamera logic
             API.SetCutsceneMode(true);
 
+            // Trigger letterbox animation
+            UIManager.ShowLetterbox();
+
             // Recalculate duration in case tracks were added programmatically
             RecalculateDuration();
 
@@ -193,6 +196,7 @@ namespace GameScripts
             API.Log("[CutsceneSequencer] Skip triggered.");
             _currentTime = _duration;
             ApplyTracks(_duration); // Force final state
+            UIManager.HideLetterbox();
             Stop();
         }
 
@@ -205,6 +209,9 @@ namespace GameScripts
 
             // NEW: Re-enable Engine ThirdPersonCamera logic
             API.SetCutsceneMode(false);
+
+            // Stop letterbox animation
+            UIManager.HideLetterbox();
 
             // Re-enable state machines for all affected entities
 

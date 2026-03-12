@@ -1,4 +1,4 @@
-﻿using Boom;
+using Boom;
 using System;
 using System.Collections.Generic;
 
@@ -238,8 +238,7 @@ namespace GameScripts
                     // Start tracking playback
                     _isPlaying = true;
                     _elapsedTime = 0f;
-
-                    API.Log("[IntroCutscene] Delayed Play() executed.");
+                    API.Log($"[IntroCutscene] Delayed Play() executed. Duration: {_totalDuration:F2}s");
                 }
                 return;
             }
@@ -273,7 +272,8 @@ namespace GameScripts
                     {
                         _hasFinished = true;
                         _isPlaying = false;
-                        API.Log("[IntroCutscene] Cutscene Sequence Complete. Triggering Entry Popup.");
+                        // Stop letterbox animation explicitly
+                        UIManager.HideLetterbox();
 
                         // Call Entry to show the popup
                         Entry.OnCutsceneCompleted();
