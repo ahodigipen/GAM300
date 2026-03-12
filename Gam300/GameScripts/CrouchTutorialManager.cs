@@ -23,10 +23,6 @@ namespace GameScripts
         private static ulong s_eDialogue3 = 0;
         private static ulong s_eDialogue4 = 0;
 
-        // Background dimming (reused from main tutorial manager but tracked separately if needed)
-        private static ulong s_eTutorialDimBG = 0;
-        private const float DIM_BG_ALPHA = 1.0f;
-
         private static bool s_entitiesResolved = false;
 
         // Fade state
@@ -92,7 +88,6 @@ namespace GameScripts
             s_eDialogue2 = 0;
             s_eDialogue3 = 0;
             s_eDialogue4 = 0;
-            s_eTutorialDimBG = 0;
 
             API.Log("[CrouchTutorialManager] Reset");
         }

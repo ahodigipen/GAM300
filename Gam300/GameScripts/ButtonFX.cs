@@ -43,6 +43,7 @@ namespace GameScripts
             // Preload sounds so first play is instant
             API.PreloadSound("ui_hover", HOVER_SOUND_PATH);
             API.PreloadSound("ui_click", CLICK_SOUND_PATH);
+            API.SetSoundVolume("ui_hover", 0.5f);
         }
 
         /// <summary>
@@ -56,15 +57,17 @@ namespace GameScripts
             {
                 if (_buttonIDs[i] == 0) continue;
 
-                // Determine if hovered
-                bool hovered = false;
+                // Determine if hovered — only update state when mouse position is valid
+                // to avoid resetting hover state each frame when viewport pos is unavailable
+                bool hovered = _wasHovered[i];
                 if (hasMousePos)
+                {
                     hovered = API.Check2DViewportClick(_buttonIDs[i], mousePos.X, mousePos.Y);
-
-                // Play hover sound on enter
-                if (hovered && !_wasHovered[i])
-                    API.PlaySound("ui_hover", HOVER_SOUND_PATH);
-                _wasHovered[i] = hovered;
+                    // Play hover sound only on enter (first frame hover becomes true)
+                    if (hovered && !_wasHovered[i])
+                        API.PlaySound("ui_hover", HOVER_SOUND_PATH);
+                    _wasHovered[i] = hovered;
+                }
 
                 // Animate lerp t toward 1 (pressed) or back to 0 (normal)
                 float targetT = hovered ? 1f : 0f;
