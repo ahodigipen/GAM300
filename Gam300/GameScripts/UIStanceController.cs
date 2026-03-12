@@ -17,8 +17,8 @@ namespace GameScripts
         private ulong _stanceSpriteEntity = 0;
 
         // Texture file paths (use exact asset names)
-        private const string CROUCH_TEXTURE = "Resources/Textures/PlayerUI/UI_Crouching.png";
-        private const string RUN_TEXTURE = "Resources/Textures/PlayerUI/UI_Running.png";
+        private const string CROUCH_TEXTURE = "Resources/Textures/PlayerUI/CanCrouch.png";
+        private const string RUN_TEXTURE = "Resources/Textures/PlayerUI/CannotCrouch.png";
 
         // Track current texture to avoid redundant swaps
         private string _currentTexture = string.Empty;
@@ -54,13 +54,13 @@ namespace GameScripts
         private void UpdateVisuals(float dt)
         {
             // --- CROUCH / RUN UI (single sprite) ---
-            bool isCrouching = API.IsKeyDown(API.KEY_LEFT_CONTROL);
+            bool canCrouch = PlayerMovement.IsInCrouchZone();
 
             if (_stanceSpriteEntity == 0 || !API.HasSprite(_stanceSpriteEntity))
                 return;
 
             // Determine desired texture and alpha behavior
-            string desiredTexture = isCrouching ? CROUCH_TEXTURE : RUN_TEXTURE;
+            string desiredTexture = canCrouch ? CROUCH_TEXTURE : RUN_TEXTURE;
 
             if (_currentTexture != desiredTexture)
             {

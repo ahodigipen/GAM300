@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Boom;
 
@@ -67,8 +67,15 @@ namespace GameScripts
             // *** CRITICAL: Notify PlayerMovement that we're in a crouch zone ***
             PlayerMovement.SetInCrouchZone(true);
 
-            // *** Show the "Hold to Crouch" UI prompt ***
-            UIManager.ShowHoldPrompt();
+            // *** Show the "Hold to Crouch" UI prompt or tutorial***
+            if (!CrouchTutorialManager.HasCompletedTutorial())
+            {
+                CrouchTutorialManager.ShowTutorial();
+            }
+            else
+            {
+                UIManager.ShowHoldPrompt();
+            }
 
             // Optional: Play warning sound
             if (inst._playSoundOnEnter && API.HasTransform(inst.Entity))

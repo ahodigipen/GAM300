@@ -79,6 +79,13 @@ namespace GameScripts
         private ulong _keysNeededEntity = 0;
         private ulong _dialogueEntity = 0;
 
+        // E Prompt Fade State
+        private enum EPromptFadeState { None, FadeIn, FadeOut }
+        private EPromptFadeState _eFadeState = EPromptFadeState.None;
+        private float _eFadeTimer = 0f;
+        private const float E_FADE_DURATION = 0.25f;
+        private float _eCurrentAlpha = 0f;
+
         private enum DialogueState { None, Dialogue1, Dialogue2 }
         private DialogueState _dialogueState = DialogueState.None;
 
@@ -226,6 +233,9 @@ namespace GameScripts
                 API.SetSpriteAlpha(_dialogueEntity, 0f);
             }
 
+            _eCurrentAlpha = 0f;
+            _eFadeState = EPromptFadeState.None;
+
             API.RegisterTriggerEnterCallback(Entity, OnTriggerEnter);
             API.RegisterTriggerExitCallback(Entity, OnTriggerExit);
             API.Log("[MultiKeyDoor] Registered trigger callbacks.");
@@ -234,6 +244,34 @@ namespace GameScripts
         public void OnUpdate(float dt)
         {
             if (_doorEntity == 0) return;
+
+            // Handle E Prompt Fading
+            if (_ePromptEntity != 0 && _eFadeState != EPromptFadeState.None)
+            {
+                _eFadeTimer += dt;
+                float t = Math.Min(1f, _eFadeTimer / E_FADE_DURATION);
+
+                if (_eFadeState == EPromptFadeState.FadeIn)
+                {
+                    _eCurrentAlpha = t;
+                    API.SetSpriteAlpha(_ePromptEntity, _eCurrentAlpha);
+                    if (t >= 1f)
+                    {
+                        _eFadeState = EPromptFadeState.None;
+                        _eFadeTimer = 0f;
+                    }
+                }
+                else if (_eFadeState == EPromptFadeState.FadeOut)
+                {
+                    _eCurrentAlpha = 1f - t;
+                    API.SetSpriteAlpha(_ePromptEntity, _eCurrentAlpha);
+                    if (t >= 1f)
+                    {
+                        _eFadeState = EPromptFadeState.None;
+                        _eFadeTimer = 0f;
+                    }
+                }
+            }
 
             // Handle Interaction logic
             bool eDown = API.IsKeyDown(KEY_E);
@@ -273,7 +311,11 @@ namespace GameScripts
                                 API.Log("[MultiKeyDoor] Dialogue started - game paused.");
 
                                 // Hide E prompt
-                                if (_ePromptEntity != 0) API.SetSpriteAlpha(_ePromptEntity, 0f);
+                                if (_ePromptEntity != 0) 
+                                {
+                                    _eFadeState = EPromptFadeState.FadeOut;
+                                    _eFadeTimer = (1f - _eCurrentAlpha) * E_FADE_DURATION;
+                                }
 
                                 // Prepare and fade-in KeysNeeded + Dialogue 1
                                 if (_keysNeededEntity != 0)
@@ -317,7 +359,11 @@ namespace GameScripts
                             _opening = true;
                             _closing = false;
                             
-                            if (_ePromptEntity != 0) API.SetSpriteAlpha(_ePromptEntity, 0f);
+                            if (_ePromptEntity != 0) 
+                            {
+                                _eFadeState = EPromptFadeState.FadeOut;
+                                _eFadeTimer = (1f - _eCurrentAlpha) * E_FADE_DURATION;
+                            }
 
                             API.PlaySound("sfx_door_slide_open_2d", _doorSoundPath, false);
                             API.SetSoundVolume("sfx_door_slide_open_2d", 1.0f);
@@ -446,7 +492,8 @@ namespace GameScripts
             inst._playerInRange = true;
             if (inst._ePromptEntity != 0 && inst._dialogueState == DialogueState.None)
             {
-                API.SetSpriteAlpha(inst._ePromptEntity, 1f);
+                inst._eFadeState = EPromptFadeState.FadeIn;
+                inst._eFadeTimer = inst._eCurrentAlpha * E_FADE_DURATION;
             }
         }
 
@@ -464,7 +511,11 @@ namespace GameScripts
             inst._fadeMode  = FadeMode.None;
             inst._fadeTimer = 0f;
             inst._pendingAction = PendingAction.None;
-            if (inst._ePromptEntity != 0) API.SetSpriteAlpha(inst._ePromptEntity, 0f);
+            if (inst._ePromptEntity != 0) 
+            {
+                inst._eFadeState = EPromptFadeState.FadeOut;
+                inst._eFadeTimer = (1f - inst._eCurrentAlpha) * E_FADE_DURATION;
+            }
             if (inst._keysNeededEntity != 0) API.SetSpriteAlpha(inst._keysNeededEntity, 0f);
             if (inst._dialogueEntity != 0) API.SetSpriteAlpha(inst._dialogueEntity, 0f);
 
@@ -524,7 +575,11 @@ namespace GameScripts
                     ApplyDialoguePanelAlpha(0f);
                     _dialogueState = DialogueState.None;
                     s_activeDialogueDoor = null;
-                    if (_ePromptEntity != 0) API.SetSpriteAlpha(_ePromptEntity, 1f);
+                    if (_ePromptEntity != 0) 
+                    {
+                        _eFadeState = EPromptFadeState.FadeIn;
+                        _eFadeTimer = _eCurrentAlpha * E_FADE_DURATION;
+                    }
                     API.SetGameLogicPaused(false);
                     API.Log("[MultiKeyDoor] Dialogue ended - game resumed.");
                     break;

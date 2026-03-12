@@ -112,6 +112,7 @@ namespace GameScripts
             // Clear stale static registries from previous play session
             SpotlightFollower.ClearRegistry();
             TutorialManager.Reset();
+            CrouchTutorialManager.Reset();
 
             API.Log("[C#] Entry.Start() called for scene: " + _currentSceneName);
 
@@ -178,12 +179,15 @@ namespace GameScripts
             // Update tutorial popup trigger (handles Level 2 popup input even when paused)
             TutorialPopupTrigger.Update(dt);
 
+            // Update crouch dialogue input
+            CrouchTutorialManager.Update(dt);
+
             // Update door dialogue input
             MultiKeyDoor.UpdateDialogue(dt);
 
             // Update game logic pause state
             // If any popup/tutorial/dialogue is active, we force the game to stay paused
-            API.SetGameLogicPaused(IsGamePaused || IsStartPopupActive || TutorialManager.IsTutorialActive() || TutorialPopupTrigger.IsPopupActive() || MultiKeyDoor.IsDialogueActive());
+            API.SetGameLogicPaused(IsGamePaused || IsStartPopupActive || TutorialManager.IsTutorialActive() || TutorialPopupTrigger.IsPopupActive() || MultiKeyDoor.IsDialogueActive() || CrouchTutorialManager.IsTutorialActive());
             API.SetPlayerDead(IsPlayerDead);
             API.SetGameEnd(IsGameEnded);
 
@@ -275,7 +279,7 @@ namespace GameScripts
             // Handle Tutorial/Dialogue - Skip all input if any tutorial active OR just dismissed this frame
             if (TutorialManager.IsKeyTutorialActive() || TutorialManager.WasJustDismissed() ||
                 TutorialPopupTrigger.IsPopupActive() || TutorialPopupTrigger.WasJustDismissed() ||
-                MultiKeyDoor.IsDialogueActive())
+                MultiKeyDoor.IsDialogueActive() || CrouchTutorialManager.IsTutorialActive() || CrouchTutorialManager.WasJustDismissed())
             {
                 // Keep tracking key states to prevent bleed-through after tutorial dismissal
                 _escape_KeyWasDown = escape_KeyDown;
@@ -386,7 +390,7 @@ namespace GameScripts
             // Block closing inventory if a tutorial or door dialogue is active
             if (TutorialManager.IsKeyTutorialActive() || TutorialManager.WasJustDismissed() ||
                 TutorialPopupTrigger.IsPopupActive() || TutorialPopupTrigger.WasJustDismissed() ||
-                MultiKeyDoor.IsDialogueActive())
+                MultiKeyDoor.IsDialogueActive() || CrouchTutorialManager.IsTutorialActive() || CrouchTutorialManager.WasJustDismissed())
             {
                 _i_KeyWasDown = i_KeyDown;
                 // We don't return entirely, just bypass the close logic so the menu keeps rendering/updating
