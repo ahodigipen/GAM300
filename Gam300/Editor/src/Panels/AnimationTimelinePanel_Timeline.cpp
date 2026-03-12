@@ -318,7 +318,7 @@ void AnimationTimelinePanel::RenderTimelineRuler()
 
             m_CurrentTime = normalizedTime * duration;
 
-            // Update animator to this time (if we have one)
+            // Update animator to this time, but clamp it to the bone clip's actual length!
             if (m_Animator)
             {
                 float clipDuration = 1.0f;
@@ -363,13 +363,11 @@ void AnimationTimelinePanel::RenderTrackList()
     if (!m_Animator || !m_HasModel)
     {
         ImGui::TextDisabled("No model loaded");
-        ImGui::EndGroup();
-        return;
     }
 
     // Get animation duration for timeline scaling
     float duration = 1.0f;  // Default
-    if (m_SelectedClipIndex >= 0 && static_cast<size_t>(m_SelectedClipIndex) < m_Animator->GetClipCount())
+    if (m_Animator && m_SelectedClipIndex >= 0 && static_cast<size_t>(m_SelectedClipIndex) < m_Animator->GetClipCount())
     {
         const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
         if (clip)
@@ -1970,14 +1968,11 @@ void AnimationTimelinePanel::RenderSequenceTracks(float duration)
                     ImGui::Separator();
                     if (ImGui::Button("Delete Keyframe"))
                     {
-                        // Cache the frame value before we invalidate the pointer by erasing the vector element!
-                        int frameToDelete = kf_data->frame;
-                        
                         // Find and remove from editTrack.keyFrames and keyFrameTimes
-                        auto it = std::find_if(editTrack.keyFrames.begin(), editTrack.keyFrames.end(), [frameToDelete](const SerializedKeyframe& k) { return k.frame == frameToDelete; });
+                        auto it = std::find_if(editTrack.keyFrames.begin(), editTrack.keyFrames.end(), [&](const SerializedKeyframe& k) { return k.frame == kf_data->frame; });
                         if (it != editTrack.keyFrames.end()) editTrack.keyFrames.erase(it);
 
-                        auto timeIt = std::find(editTrack.keyFrameTimes.begin(), editTrack.keyFrameTimes.end(), frameToDelete);
+                        auto timeIt = std::find(editTrack.keyFrameTimes.begin(), editTrack.keyFrameTimes.end(), kf_data->frame);
                         if (timeIt != editTrack.keyFrameTimes.end()) editTrack.keyFrameTimes.erase(timeIt);
 
                         m_SelectedSequenceKeyframeIndex = -1;
