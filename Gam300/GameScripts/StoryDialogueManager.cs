@@ -5,7 +5,7 @@ namespace GameScripts
 {
     public static class StoryDialogueManager
     {
-        public enum SequenceType { None, StartCutscene, Checkpoint1 }
+        public enum SequenceType { None, StartCutscene, Checkpoint1, Checkpoint2 }
         
         private static SequenceType s_activeSequence = SequenceType.None;
         private static int s_dialogueIndex = 0;
@@ -24,6 +24,15 @@ namespace GameScripts
         // Checkpoint 1 UI
         private static ulong s_cp1D1 = 0;
         private static ulong s_cp1D2 = 0;
+
+        // Checkpoint 2 UI
+        private static ulong s_cp2D1 = 0;
+        private static ulong s_cp2D2 = 0;
+        private static ulong s_cp2D3 = 0;
+        private static ulong s_cp2D4 = 0;
+        private static ulong s_cp2D5 = 0;
+        private static ulong s_redMeter = 0;
+        private static ulong s_tutorialBlackBackground = 0;
 
         private static bool s_entitiesResolved = false;
 
@@ -61,6 +70,7 @@ namespace GameScripts
             s_startD1 = 0; s_startD2 = 0; s_startD3 = 0; s_startD4 = 0; s_startD5 = 0; s_startD6 = 0;
             s_breakOut = 0; s_guardD1 = 0; s_guardD2 = 0;
             s_cp1D1 = 0; s_cp1D2 = 0;
+            s_cp2D1 = 0; s_cp2D2 = 0; s_cp2D3 = 0; s_cp2D4 = 0; s_cp2D5 = 0; s_redMeter = 0; s_tutorialBlackBackground = 0;
         }
 
         public static void PlayStartSequence()
@@ -93,6 +103,22 @@ namespace GameScripts
             FadeInEntity(s_cp1D1);
             API.SetGameLogicPaused(true);
             API.Log("[StoryDialogueManager] Playing Checkpoint 1 Sequence");
+        }
+
+        public static void PlayCheckpoint2Sequence(Action onComplete = null)
+        {
+            if (s_activeSequence != SequenceType.None) return;
+            ResolveEntities();
+            s_activeSequence = SequenceType.Checkpoint2;
+            s_dialogueIndex = 1;
+            s_onSequenceComplete = onComplete;
+
+            s_enterWasDown = true;
+            s_aButtonWasDown = true;
+
+            FadeInEntity(s_cp2D1);
+            API.SetGameLogicPaused(true);
+            API.Log("[StoryDialogueManager] Playing Checkpoint 2 Sequence");
         }
 
         public static bool IsSequenceActive()
@@ -170,6 +196,14 @@ namespace GameScripts
                     AdvanceCheckpoint1Sequence();
                 }
             }
+            else if (s_activeSequence == SequenceType.Checkpoint2)
+            {
+                if (enterPressed || aButtonPressed)
+                {
+                    API.PlaySound("sfx_ui_click", "Resources/Audio/uiClick.wav", false);
+                    AdvanceCheckpoint2Sequence();
+                }
+            }
         }
 
         private static void AdvanceStartSequence()
@@ -221,6 +255,51 @@ namespace GameScripts
                 else
                 {
                     FadeInEntity(s_cp1D2);
+                }
+            });
+        }
+
+        private static void AdvanceCheckpoint2Sequence()
+        {
+            ulong currentEntity = 0;
+            switch(s_dialogueIndex)
+            {
+                case 1: currentEntity = s_cp2D1; break;
+                case 2: currentEntity = s_cp2D2; break;
+                case 3: currentEntity = s_cp2D3; break;
+                case 4: currentEntity = s_cp2D4; break;
+                case 5: currentEntity = s_cp2D5; break;
+            }
+
+            if (s_dialogueIndex == 4)
+            {
+                SetAlpha(s_redMeter, 0f);
+                SetAlpha(s_tutorialBlackBackground, 0f);
+            }
+
+            FadeOutEntity(currentEntity, () =>
+            {
+                s_dialogueIndex++;
+                if (s_dialogueIndex > 5)
+                {
+                    CloseSequence();
+                }
+                else
+                {
+                    ulong nextEntity = 0;
+                    switch(s_dialogueIndex)
+                    {
+                        case 2: nextEntity = s_cp2D2; break;
+                        case 3: nextEntity = s_cp2D3; break;
+                        case 4: nextEntity = s_cp2D4; break;
+                        case 5: nextEntity = s_cp2D5; break;
+                    }
+                    if (s_dialogueIndex == 4)
+                    {
+                        SetAlpha(s_redMeter, 1f);
+                        SetAlpha(s_tutorialBlackBackground, 1f);
+                    }
+                    FadeInEntity(nextEntity);
                 }
             });
         }
@@ -301,11 +380,22 @@ namespace GameScripts
             s_cp1D1 = FindEntity("Checkpoint1_Dialogue1");
             s_cp1D2 = FindEntity("Checkpoint1_Dialogue2");
 
+            s_cp2D1 = FindEntity("Checkpoint2_Dialogue1");
+            s_cp2D2 = FindEntity("Checkpoint2_Dialogue2");
+            s_cp2D3 = FindEntity("Checkpoint2_Dialogue3");
+            s_cp2D4 = FindEntity("Checkpoint2_Dialogue4");
+            s_cp2D5 = FindEntity("Checkpoint2_Dialogue5");
+            s_redMeter = FindEntity("RedMeter");
+            s_tutorialBlackBackground = FindEntity("Tutorial_BlackBackground");
+
             // Hide all initially
             SetAlpha(s_startD1, 0f); SetAlpha(s_startD2, 0f); SetAlpha(s_startD3, 0f);
             SetAlpha(s_startD4, 0f); SetAlpha(s_startD5, 0f); SetAlpha(s_startD6, 0f);
             SetAlpha(s_breakOut, 0f); SetAlpha(s_guardD1, 0f); SetAlpha(s_guardD2, 0f);
             SetAlpha(s_cp1D1, 0f); SetAlpha(s_cp1D2, 0f);
+            SetAlpha(s_cp2D1, 0f); SetAlpha(s_cp2D2, 0f); SetAlpha(s_cp2D3, 0f);
+            SetAlpha(s_cp2D4, 0f); SetAlpha(s_cp2D5, 0f); SetAlpha(s_redMeter, 0f);
+            SetAlpha(s_tutorialBlackBackground, 0f);
 
             s_entitiesResolved = true;
         }

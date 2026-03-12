@@ -41,6 +41,9 @@ namespace GameScripts
         [Boom.EditorExposed("Intro Cutscene", "Whether to play the intro cutscene and checkpoint dialogue when activated")]
         private bool _triggerIntroCutscene = false;
 
+        [Boom.EditorExposed("Is Checkpoint 2", "Whether to play the Checkpoint 2 dialogue sequence instead of Checkpoint 1")]
+        private bool _isCheckpoint2 = false;
+
         [Boom.EditorExposed("Cutscene Entity Name", "Name of the entity with CutsceneSequencer to play (only used if Trigger Intro Cutscene is true)")]
         private string _cutsceneEntityName = "Intro CutScene";
 
@@ -374,10 +377,27 @@ namespace GameScripts
                     // After sprites fade out, THEN play cutscene, THEN play dialogue
                     _spriteOnCompleteAction = () =>
                     {
-                        CutsceneSequencer.PlayWithCallback(_cutsceneEntityName, () =>
+                        Action playDialogue = () =>
                         {
-                            StoryDialogueManager.PlayCheckpoint1Sequence();
-                        });
+                            if (_isCheckpoint2)
+                            {
+                                StoryDialogueManager.PlayCheckpoint2Sequence();
+                            }
+                            else
+                            {
+                                StoryDialogueManager.PlayCheckpoint1Sequence();
+                            }
+                        };
+                        
+                        ulong cutsceneId = API.FindEntity(_cutsceneEntityName);
+                        if (cutsceneId != 0 && LevelTransitionCutscene.InstancesById.ContainsKey(cutsceneId))
+                        {
+                            LevelTransitionCutscene.PlayWithCallback(_cutsceneEntityName, playDialogue);
+                        }
+                        else
+                        {
+                            CutsceneSequencer.PlayWithCallback(_cutsceneEntityName, playDialogue);
+                        }
                     };
                 }
 
