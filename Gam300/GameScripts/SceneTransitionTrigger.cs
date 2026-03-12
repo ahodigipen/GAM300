@@ -46,11 +46,8 @@ namespace GameScripts
                 return;
             }
 
-            if (!API.IsTrigger(Entity))
-            {
-                API.SetTrigger(Entity, true);
-                API.Log("[SceneTransitionTrigger] Collider set to IsTrigger = true.");
-            }
+            // REMOVED: API.SetTrigger(true) call here to avoid PhysX state conflicts.
+            // Ensure "Is Trigger" is checked in the Editor for this entity.
 
             API.RegisterTriggerEnterCallback(Entity, OnTriggerEnter);
             API.RegisterTriggerExitCallback(Entity, OnTriggerExit);
@@ -59,7 +56,7 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
-            // Handle delayed transition
+            // Handle transition logic in Update instead of Callback
             if (_isTransitioning)
             {
                 _transitionTimer -= dt;
@@ -88,7 +85,6 @@ namespace GameScripts
             // Check if already triggered and one-time use
             if (inst._hasTriggered && inst._oneTimeUse)
             {
-                API.Log("[SceneTransitionTrigger] Trigger already used (one-time use).");
                 return;
             }
 
@@ -101,44 +97,33 @@ namespace GameScripts
 
             inst._hasTriggered = true;
 
-            // Start transition (with delay if configured)
+            // ALWAYS defer the transition to OnUpdate to avoid loading scenes during a Physics Callback.
+            // This prevents the "PxScene::simulate: Simulation is still processing" crash.
             if (inst._playBossTransitionDialogue)
             {
-                API.Log($"[SceneTransitionTrigger] Playing Boss Transition Dialogue before transitioning to '{inst._sceneName}'.");
+                API.Log($"[SceneTransitionTrigger] Starting sequence for '{inst._sceneName}'.");
                 StoryDialogueManager.PlayBossTransitionSequence(() =>
                 {
-                    if (inst._transitionDelay > 0f)
-                    {
-                        inst._isTransitioning = true;
-                        inst._transitionTimer = inst._transitionDelay;
-                        API.Log($"[SceneTransitionTrigger] Transition to '{inst._sceneName}' will occur in {inst._transitionDelay:F1} seconds.");
-                    }
-                    else
-                    {
-                        inst.DoTransition();
-                    }
+                    inst._isTransitioning = true;
+                    inst._transitionTimer = Math.Max(0.01f, inst._transitionDelay);
                 });
-            }
-            else if (inst._transitionDelay > 0f)
-            {
-                inst._isTransitioning = true;
-                inst._transitionTimer = inst._transitionDelay;
-                API.Log($"[SceneTransitionTrigger] Transition to '{inst._sceneName}' will occur in {inst._transitionDelay:F1} seconds.");
             }
             else
             {
-                inst.DoTransition();
+                inst._isTransitioning = true;
+                // Even with 0 delay, we use a tiny 0.01s delay to push it to the next frame.
+                inst._transitionTimer = Math.Max(0.01f, inst._transitionDelay);
+                API.Log($"[SceneTransitionTrigger] Deferring transition to '{inst._sceneName}' to next frame.");
             }
         }
 
         private static void OnTriggerExit(ulong triggerEntity, ulong otherEntity)
         {
-            // Not needed for scene transition
         }
 
         private void DoTransition()
         {
-            API.Log($"[SceneTransitionTrigger] Loading scene: '{_sceneName}'");
+            API.Log($"[SceneTransitionTrigger] Executing deferred load for: '{_sceneName}'");
             API.LoadScene(_sceneName);
         }
     }
