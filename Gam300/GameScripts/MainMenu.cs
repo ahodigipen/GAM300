@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Boom;
 
 namespace GameScripts
@@ -18,6 +18,8 @@ namespace GameScripts
         private ulong _newGameButtonID;
         private ulong _howToPlayButtonID;
         private ulong _quitButtonID;
+
+        private ButtonFX _buttonFX;
 
         private enum MenuState
         {
@@ -49,6 +51,8 @@ namespace GameScripts
             _howToPlayButtonID = API.FindEntity("HowToPlayButton");
             _quitButtonID = API.FindEntity("QuitButton");
 
+            _buttonFX = new ButtonFX(_newGameButtonID, _howToPlayButtonID, _quitButtonID);
+
             _currentState = MenuState.Idle;
             _clickedButtonID = 0;
             _selectedIndex = -1;
@@ -61,6 +65,9 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
+            // Always update hover effects (indent + sound)
+            _buttonFX?.Update(dt);
+
             switch (_currentState)
             {
                 case MenuState.Idle:
@@ -97,6 +104,7 @@ namespace GameScripts
                     (stickUp && !_wasStickUp) || (stickDown && !_wasStickDown))
                 {
                     _selectedIndex = 0;
+                    _buttonFX?.SetControllerSelection(_selectedIndex);
                     UpdateVisuals();
 
                     // Update "was" flags to prevent double-input this frame
@@ -120,11 +128,13 @@ namespace GameScripts
             if ((dpadUp && !_wasDpadUp) || (stickUp && !_wasStickUp))
             {
                 _selectedIndex = (_selectedIndex - 1 + 3) % 3;
+                _buttonFX?.SetControllerSelection(_selectedIndex);
                 UpdateVisuals();
             }
             if ((dpadDown && !_wasDpadDown) || (stickDown && !_wasStickDown))
             {
                 _selectedIndex = (_selectedIndex + 1) % 3;
+                _buttonFX?.SetControllerSelection(_selectedIndex);
                 UpdateVisuals();
             }
 
@@ -199,6 +209,7 @@ namespace GameScripts
         {
             _currentState = MenuState.ButtonDelay;
             _clickedButtonID = buttonID;
+            ButtonFX.PlayClickSound();
 
             // Set the texture
             if (buttonID == _newGameButtonID)

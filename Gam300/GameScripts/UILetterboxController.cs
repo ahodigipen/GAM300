@@ -11,9 +11,6 @@ namespace GameScripts
     {
         public ulong Entity;
 
-        private string _topBarName = "UI_LetterboxTop";
-        private string _bottomBarName = "UI_LetterboxBottom";
-        
         private ulong _topBar = 0;
         private ulong _bottomBar = 0;
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Boom;
 
 namespace GameScripts
@@ -13,6 +13,8 @@ namespace GameScripts
 
         private ulong _mainMenuButtonID;
         private ulong _backgroundID;
+
+        private ButtonFX _buttonFX;
 
         private enum EndMenuState
         {
@@ -31,10 +33,12 @@ namespace GameScripts
         public void OnStart(string jsonParams)
         {
             API.Log("EndMenu OnStart Running...");
-            Entry.s_ActiveEndMenuInstance = this; 
+            Entry.s_ActiveEndMenuInstance = this;
 
             _mainMenuButtonID = API.FindEntity("End_ReturnButton");
             _backgroundID = API.FindEntity("End_Background");
+
+            _buttonFX = new ButtonFX(_mainMenuButtonID);
 
             ResetButtonState();
         }
@@ -56,6 +60,8 @@ namespace GameScripts
             if (!Entry.IsGameEnded) return;
             if (Entry.s_RequestedEndAction != Entry.EndMenuAction.None) return;
 
+            // Always update hover effects
+            _buttonFX?.Update(dt);
 
             // 3. State Machine
             switch (_currentState)
@@ -82,6 +88,7 @@ namespace GameScripts
             _currentState = EndMenuState.WaitingForMouseUp;
             _clickedButtonID = 0;
             _buttonDelayTimer = 0.0f;
+            _buttonFX?.Reset();
 
             if (_mainMenuButtonID != 0)
                 API.SetSpriteTexture(_mainMenuButtonID, MAINMENU_TEX_NORMAL);
@@ -113,6 +120,7 @@ namespace GameScripts
             _currentState = EndMenuState.ButtonDelay;
             _clickedButtonID = buttonID;
             _buttonDelayTimer = 0.0f;
+            ButtonFX.PlayClickSound();
 
             if (buttonID == _mainMenuButtonID)
                 API.SetSpriteTexture(buttonID, MAINMENU_TEX_CLICKED);

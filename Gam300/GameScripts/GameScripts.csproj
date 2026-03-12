@@ -49,6 +49,7 @@
     <Compile Include="BossHideSeekController.cs" />
     <Compile Include="BossController.cs" />
     <Compile Include="BossCutsceneMovement.cs" />
+    <Compile Include="ButtonFX.cs" />
     <Compile Include="CharacterAnimation.cs" />
     <Compile Include="CPTrigger.cs" />
     <Compile Include="CrouchTriggerArea.cs" />
@@ -87,6 +88,7 @@
     <Compile Include="KeyPickup.cs" />
     <Compile Include="PlayerInventory.cs" />
     <Compile Include="BloodOverlayController.cs" />
+    <Compile Include="SceneFader.cs" />
     <Compile Include="SceneTransitionTrigger.cs" />
     <Compile Include="SpikeDamage.cs" />
     <Compile Include="SettingsManager.cs" />

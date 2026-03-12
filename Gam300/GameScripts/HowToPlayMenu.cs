@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Boom;
 
 namespace GameScripts
@@ -11,11 +11,20 @@ namespace GameScripts
 
         private ulong _returnButtonID;
 
+        private ButtonFX _buttonFX;
+
         private enum MenuState
         {
             Idle,
-            ButtonDelay
+            ButtonDelay,
+            FadingOut
         }
+
+        // Fade state
+        private float _fadeTimer    = 0f;
+        private float _fadeDuration = 0.5f;
+        private bool  _isFadingIn   = false;
+        private float _fadeInTimer  = 0f;
 
         private MenuState _currentState = MenuState.Idle;
         private ulong _clickedButtonID = 0;
@@ -34,14 +43,38 @@ namespace GameScripts
 
             if (_returnButtonID == 0) API.Log("Warning: Return Button not found!");
 
+            _buttonFX = new ButtonFX(_returnButtonID);
+
             _currentState = MenuState.Idle;
             _clickedButtonID = 0;
+
+            // Fade in from black
+            API.SetScreenFadeAlpha(1f);
+            _isFadingIn  = true;
+            _fadeInTimer = 0f;
 
             UpdateVisuals();
         }
 
         public void OnUpdate(float dt)
         {
+            // Handle fade-in
+            if (_isFadingIn)
+            {
+                _fadeInTimer += dt;
+                float alpha = 1f - Math.Min(_fadeInTimer / _fadeDuration, 1f);
+                API.SetScreenFadeAlpha(alpha);
+                if (_fadeInTimer >= _fadeDuration)
+                {
+                    API.SetScreenFadeAlpha(0f);
+                    _isFadingIn = false;
+                }
+                return;
+            }
+
+            // Always update hover effects
+            _buttonFX?.Update(dt);
+
             switch (_currentState)
             {
                 case MenuState.Idle:
@@ -51,6 +84,16 @@ namespace GameScripts
 
                 case MenuState.ButtonDelay:
                     Update_ButtonDelay(dt);
+                    break;
+
+                case MenuState.FadingOut:
+                    _fadeTimer += dt;
+                    API.SetScreenFadeAlpha(Math.Min(_fadeTimer / _fadeDuration, 1f));
+                    if (_fadeTimer >= _fadeDuration)
+                    {
+                        API.SetScreenFadeAlpha(1f);
+                        API.LoadScene(Entry.MAIN_MENU_SCENE_NAME);
+                    }
                     break;
             }
         }
@@ -63,8 +106,8 @@ namespace GameScripts
             bool bPressed = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_B);
             bool startPressed = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_START);
 
-            if ((aPressed && !_wasAButtonPressed) || 
-                (bPressed && !_wasBButtonPressed) || 
+            if ((aPressed && !_wasAButtonPressed) ||
+                (bPressed && !_wasBButtonPressed) ||
                 (startPressed && !_wasStartButtonPressed))
             {
                 if (_returnButtonID != 0) StartClickDelay(_returnButtonID);
@@ -113,6 +156,7 @@ namespace GameScripts
         {
             _currentState = MenuState.ButtonDelay;
             _clickedButtonID = buttonID;
+            ButtonFX.PlayClickSound();
 
             if (buttonID == _returnButtonID)
                 API.SetSpriteTexture(buttonID, RETURN_TEX_CLICKED);
@@ -120,12 +164,15 @@ namespace GameScripts
 
         private void ExecuteClickAction()
         {
-            _currentState = MenuState.Idle;
-
             if (_clickedButtonID == _returnButtonID)
             {
                 API.Log(">> Return Button Clicked! Returning to Main Menu...");
-                API.LoadScene(Entry.MAIN_MENU_SCENE_NAME);
+                _currentState = MenuState.FadingOut;
+                _fadeTimer    = 0f;
+            }
+            else
+            {
+                _currentState = MenuState.Idle;
             }
         }
     }

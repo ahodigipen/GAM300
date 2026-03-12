@@ -30,6 +30,7 @@
     <ClCompile Include="src\Models\ModelLoader.cpp" />
     <ClCompile Include="src\Graphics\Video\VideoPlayer.cpp" />
     <ClCompile Include="src\Graphics\Video\VideoSystem.cpp" />
+    <ClCompile Include="src\Graphics\ParticleSystem.cpp" />
     <ClCompile Include="src\Graphics\Instancing\InstanceManager.cpp" />
     <ClCompile Include="src\Graphics\Text\FontManager.cpp" />
   </ItemGroup>
@@ -110,6 +111,7 @@
     <ClInclude Include="includes\Graphics\Shaders\PickingShader.h" />
     <ClInclude Include="includes\Graphics\Video\VideoPlayer.h" />
     <ClInclude Include="includes\Graphics\Video\VideoSystem.h" />
+    <ClInclude Include="includes\Graphics\ParticleSystem.h" />
     <ClInclude Include="..\..\..\..\..\..\Downloads\pl_mpeg-master\pl_mpeg-master\pl_mpeg.h" />
     <ClInclude Include="includes\Graphics\Video\pl_mpeg.h" />
     <ClInclude Include="includes\Graphics\Text\FontManager.h" />
