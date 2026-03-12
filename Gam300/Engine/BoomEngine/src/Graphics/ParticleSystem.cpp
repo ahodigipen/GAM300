@@ -384,24 +384,17 @@ namespace Boom {
             glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER,
                                 0, sizeof(GLuint), sizeof(GLuint));
             // writeOffset = sizeof(GLuint) = instanceCount field in DrawArraysIndirectCommand
-
-            // === DIAGNOSTIC: read back alive count (remove after debugging) ===
-            if (m_FrameSeed % 60 == 0) {
-                GLuint readBack[2] = {0, 0};
-                glBindBuffer(GL_SHADER_STORAGE_BUFFER, gpu.counterBuffer);
-                glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, 2 * sizeof(GLuint), readBack);
-                BOOM_INFO("[ParticleSystem] Entity {} | alive: {} | spawnLeft: {} | spawnRequested: {}",
-                          key, readBack[0], readBack[1], spawnCount);
-
-                // Also check GL errors
-                GLenum err = glGetError();
-                if (err != GL_NO_ERROR)
-                    BOOM_ERROR("[ParticleSystem] GL error after dispatch: 0x{:X}", err);
-            }
         }
 
         glUseProgram(0);
         glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
+        glBindBuffer(GL_COPY_READ_BUFFER, 0);
+        glBindBuffer(GL_COPY_WRITE_BUFFER, 0);
+
+        // Unbind SSBO slots 0-2 so no other render pass accidentally reads particle buffers
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, 0);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, 0);
 
         // Clean up emitters for destroyed entities
         for (auto it = m_Emitters.begin(); it != m_Emitters.end(); ) {
