@@ -6326,8 +6326,8 @@ ENTITIES:
       SortOrder: 393
     TransformComponent:
       Transform:
-        Translate: [16.8952351, 31.4474964, -20.9111633]
-        Rotate: [-208.1875, 4338.125, 180]
+        Translate: [-0.0616739132, 6.64943886, -16.6000252]
+        Rotate: [-232.125, 4322.25, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -10389,7 +10389,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-7.15782738, 0.530518472, -13.2785921]
-        Rotate: [0, 0, 0]
+        Rotate: [0, 270, 0]
         Scale: [0.0144997425, 0.0145000005, 0.0144997425]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -10475,7 +10475,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.EnemyController
-      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_pingPong\": true,\n  \"_rotation\": false,\n  \"_rotationAngle\": 180.0,\n  \"_visionDetectionRange\": 20.841999053955078\n}"
+      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_pingPong\": true,\n  \"_rotation\": true,\n  \"_rotationAngle\": 180.0,\n  \"_visionDetectionRange\": 20.841999053955078\n}"
   - InfoComponent:
       Parent: 0
       Name: Sentry_2
@@ -10484,7 +10484,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [9.27553558, 0.550991118, -12.913641]
-        Rotate: [0, 0, 0]
+        Rotate: [0, 90, 0]
         Scale: [0.0145000946, 0.0145000005, 0.0145000946]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -10570,7 +10570,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.EnemyController
-      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Sentry_2\",\n  \"_pingPong\": true,\n  \"_rotation\": true,\n  \"_rotationAngle\": 180.0,\n  \"_visionDetectionRange\": 20.775999069213867\n}"
+      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Sentry_2\",\n  \"_pingPong\": true,\n  \"_rotation\": false,\n  \"_rotationAngle\": 180.0,\n  \"_visionDetectionRange\": 20.775999069213867\n}"
   - InfoComponent:
       Parent: 0
       Name: Sentry_4
