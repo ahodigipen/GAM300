@@ -44,6 +44,9 @@ namespace GameScripts
         [Boom.EditorExposed("Is Checkpoint 2", "Whether to play the Checkpoint 2 dialogue sequence instead of Checkpoint 1")]
         private bool _isCheckpoint2 = false;
 
+        [Boom.EditorExposed("Is Boss Checkpoint", "Whether to play the Boss Checkpoint dialogue sequence (overrides Checkpoint 2)")]
+        private bool _isBossCheckpoint = false;
+
         [Boom.EditorExposed("Cutscene Entity Name", "Name of the entity with CutsceneSequencer to play (only used if Trigger Intro Cutscene is true)")]
         private string _cutsceneEntityName = "Intro CutScene";
 
@@ -372,23 +375,28 @@ namespace GameScripts
                         API.SetSpriteAlpha(id, 0.0f);
                 }
 
+                // Prepare the action to start the dialogue sequence
+                Action playDialogue = () =>
+                {
+                    if (_isBossCheckpoint)
+                    {
+                        StoryDialogueManager.PlayBossCheckpointSequence();
+                    }
+                    else if (_isCheckpoint2)
+                    {
+                        StoryDialogueManager.PlayCheckpoint2Sequence();
+                    }
+                    else
+                    {
+                        StoryDialogueManager.PlayCheckpoint1Sequence();
+                    }
+                };
+
                 if (_triggerIntroCutscene)
                 {
                     // After sprites fade out, THEN play cutscene, THEN play dialogue
                     _spriteOnCompleteAction = () =>
                     {
-                        Action playDialogue = () =>
-                        {
-                            if (_isCheckpoint2)
-                            {
-                                StoryDialogueManager.PlayCheckpoint2Sequence();
-                            }
-                            else
-                            {
-                                StoryDialogueManager.PlayCheckpoint1Sequence();
-                            }
-                        };
-                        
                         ulong cutsceneId = API.FindEntity(_cutsceneEntityName);
                         if (cutsceneId != 0 && LevelTransitionCutscene.InstancesById.ContainsKey(cutsceneId))
                         {
@@ -399,6 +407,11 @@ namespace GameScripts
                             CutsceneSequencer.PlayWithCallback(_cutsceneEntityName, playDialogue);
                         }
                     };
+                }
+                else if (_isBossCheckpoint || _isCheckpoint2 || _checkpointSpriteNames != "")
+                {
+                    // If no cutscene, just play dialogue after sprites fade
+                    _spriteOnCompleteAction = playDialogue;
                 }
 
                 // Re-find light entities during activation to ensure they are found

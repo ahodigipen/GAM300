@@ -5,7 +5,7 @@ namespace GameScripts
 {
     public static class StoryDialogueManager
     {
-        public enum SequenceType { None, StartCutscene, Checkpoint1, Checkpoint2 }
+        public enum SequenceType { None, StartCutscene, Checkpoint1, Checkpoint2, BossCheckpoint, BossTransition }
         
         private static SequenceType s_activeSequence = SequenceType.None;
         private static int s_dialogueIndex = 0;
@@ -33,6 +33,14 @@ namespace GameScripts
         private static ulong s_cp2D5 = 0;
         private static ulong s_redMeter = 0;
         private static ulong s_tutorialBlackBackground = 0;
+
+        // Boss Checkpoint UI
+        private static ulong s_bossCpD1 = 0;
+        private static ulong s_bossCpD2 = 0;
+        private static ulong s_bossCpD3 = 0;
+        private static ulong s_bossCpD4 = 0;
+        private static ulong s_bossCpD5 = 0;
+        private static ulong s_tutorialWhiteBackground = 0;
 
         private static bool s_entitiesResolved = false;
 
@@ -71,6 +79,7 @@ namespace GameScripts
             s_breakOut = 0; s_guardD1 = 0; s_guardD2 = 0;
             s_cp1D1 = 0; s_cp1D2 = 0;
             s_cp2D1 = 0; s_cp2D2 = 0; s_cp2D3 = 0; s_cp2D4 = 0; s_cp2D5 = 0; s_redMeter = 0; s_tutorialBlackBackground = 0;
+            s_bossCpD1 = 0; s_bossCpD2 = 0; s_bossCpD3 = 0; s_bossCpD4 = 0; s_bossCpD5 = 0; s_tutorialWhiteBackground = 0;
         }
 
         public static void PlayStartSequence()
@@ -119,6 +128,39 @@ namespace GameScripts
             FadeInEntity(s_cp2D1);
             API.SetGameLogicPaused(true);
             API.Log("[StoryDialogueManager] Playing Checkpoint 2 Sequence");
+        }
+
+        public static void PlayBossCheckpointSequence(Action onComplete = null)
+        {
+            if (s_activeSequence != SequenceType.None) return;
+            ResolveEntities();
+            s_activeSequence = SequenceType.BossCheckpoint;
+            s_dialogueIndex = 1;
+            s_onSequenceComplete = onComplete;
+
+            s_enterWasDown = true;
+            s_aButtonWasDown = true;
+
+            FadeInEntity(s_bossCpD1);
+            API.SetGameLogicPaused(true);
+            API.Log("[StoryDialogueManager] Playing Boss Checkpoint Sequence");
+        }
+
+        public static void PlayBossTransitionSequence(Action onComplete = null)
+        {
+            if (s_activeSequence != SequenceType.None) return;
+            ResolveEntities();
+            s_activeSequence = SequenceType.BossTransition;
+            s_dialogueIndex = 4;
+            s_onSequenceComplete = onComplete;
+
+            s_enterWasDown = true;
+            s_aButtonWasDown = true;
+
+            SetAlpha(s_tutorialWhiteBackground, 1f);
+            FadeInEntity(s_bossCpD4);
+            API.SetGameLogicPaused(true);
+            API.Log("[StoryDialogueManager] Playing Boss Transition Sequence");
         }
 
         public static bool IsSequenceActive()
@@ -202,6 +244,22 @@ namespace GameScripts
                 {
                     API.PlaySound("sfx_ui_click", "Resources/Audio/uiClick.wav", false);
                     AdvanceCheckpoint2Sequence();
+                }
+            }
+            else if (s_activeSequence == SequenceType.BossCheckpoint)
+            {
+                if (enterPressed || aButtonPressed)
+                {
+                    API.PlaySound("sfx_ui_click", "Resources/Audio/uiClick.wav", false);
+                    AdvanceBossCheckpointSequence();
+                }
+            }
+            else if (s_activeSequence == SequenceType.BossTransition)
+            {
+                if (enterPressed || aButtonPressed)
+                {
+                    API.PlaySound("sfx_ui_click", "Resources/Audio/uiClick.wav", false);
+                    AdvanceBossTransitionSequence();
                 }
             }
         }
@@ -304,6 +362,55 @@ namespace GameScripts
             });
         }
 
+        private static void AdvanceBossCheckpointSequence()
+        {
+            ulong currentEntity = 0;
+            switch(s_dialogueIndex)
+            {
+                case 1: currentEntity = s_bossCpD1; break;
+                case 2: currentEntity = s_bossCpD2; break;
+                case 3: currentEntity = s_bossCpD3; break;
+            }
+
+            FadeOutEntity(currentEntity, () =>
+            {
+                s_dialogueIndex++;
+                if (s_dialogueIndex > 3)
+                {
+                    CloseSequence();
+                }
+                else
+                {
+                    ulong nextEntity = 0;
+                    switch(s_dialogueIndex)
+                    {
+                        case 2: nextEntity = s_bossCpD2; break;
+                        case 3: nextEntity = s_bossCpD3; break;
+                    }
+                    FadeInEntity(nextEntity);
+                }
+            });
+        }
+
+        private static void AdvanceBossTransitionSequence()
+        {
+            ulong currentEntity = s_dialogueIndex == 4 ? s_bossCpD4 : s_bossCpD5;
+
+            FadeOutEntity(currentEntity, () =>
+            {
+                s_dialogueIndex++;
+                if (s_dialogueIndex > 5)
+                {
+                    SetAlpha(s_tutorialWhiteBackground, 0f);
+                    CloseSequence();
+                }
+                else
+                {
+                    FadeInEntity(s_bossCpD5);
+                }
+            });
+        }
+
         private static void CloseSequence()
         {
             s_activeSequence = SequenceType.None;
@@ -387,6 +494,12 @@ namespace GameScripts
             s_cp2D5 = FindEntity("Checkpoint2_Dialogue5");
             s_redMeter = FindEntity("RedMeter");
             s_tutorialBlackBackground = FindEntity("Tutorial_BlackBackground");
+            s_bossCpD1 = FindEntity("BossCheckpoint_Dialogue1");
+            s_bossCpD2 = FindEntity("BossCheckpoint_Dialogue2");
+            s_bossCpD3 = FindEntity("BossCheckpoint_Dialogue3");
+            s_bossCpD4 = FindEntity("BossCheckpoint_Dialogue4");
+            s_bossCpD5 = FindEntity("BossCheckpoint_Dialogue5");
+            s_tutorialWhiteBackground = FindEntity("Tutorial_WhiteBackground");
 
             // Hide all initially
             SetAlpha(s_startD1, 0f); SetAlpha(s_startD2, 0f); SetAlpha(s_startD3, 0f);
@@ -396,6 +509,8 @@ namespace GameScripts
             SetAlpha(s_cp2D1, 0f); SetAlpha(s_cp2D2, 0f); SetAlpha(s_cp2D3, 0f);
             SetAlpha(s_cp2D4, 0f); SetAlpha(s_cp2D5, 0f); SetAlpha(s_redMeter, 0f);
             SetAlpha(s_tutorialBlackBackground, 0f);
+            SetAlpha(s_bossCpD1, 0f); SetAlpha(s_bossCpD2, 0f); SetAlpha(s_bossCpD3, 0f);
+            SetAlpha(s_bossCpD4, 0f); SetAlpha(s_bossCpD5, 0f); SetAlpha(s_tutorialWhiteBackground, 0f);
 
             s_entitiesResolved = true;
         }

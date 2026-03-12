@@ -2,6 +2,90 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 15030438282683852635
+      Name: BossCheckpoint_Dialogue5
+      UID: 9136984647256212271
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 20.0100002]
+        Rotate: [0, 0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 13835020763985653587
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: BossCheckpoint_Dialogue4
+      UID: 15458038247668333900
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 20.0100002]
+        Rotate: [0, 0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 8481271093951499456
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: BossCheckpoint_Dialogue3
+      UID: 13320291116013040365
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 20.0100002]
+        Rotate: [0, 0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 16134441578369664165
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: BossCheckpoint_Dialogue2
+      UID: 13751728581172022717
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 20.0100002]
+        Rotate: [0, 0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 4701116167440719570
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: BossCheckpoint_Dialogue1
+      UID: 11539577855315149168
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 20.0100002]
+        Rotate: [0, 0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 4092832143501226655
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: Tutorial_WhiteBackground
+      UID: 2711598763269282223
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 20]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    SpriteComponent:
+      textureID: 16173087357529396361
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 15030438282683852635
       Name: RedMeter
       UID: 1083799543936927466
       SortOrder: 0
@@ -13617,14 +13701,14 @@ ENTITIES:
       SortOrder: 393
     TransformComponent:
       Transform:
-        Translate: [-1.64699256, 22.6425591, 28.5988083]
-        Rotate: [-201.75, 4337.8125, 180]
+        Translate: [-4.66472197, 1.82940924, 0.0647518188]
+        Rotate: [-188, 4406.5, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.00100000005
         FarPlane: 935.47998
-        FOV: 100
+        FOV: 97
     ThirdPersonCameraComponent:
       Target UID: 2377197601835279376
       Offset: [0.00999999978, 4.1500001, 0]
@@ -15453,7 +15537,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.SceneTransitionTrigger
-      ParamsJSON: "{\n  \"_sceneName\": \"WIP_BossStage\"\n}"
+      ParamsJSON: "{\n  \"_oneTimeUse\": true,\n  \"_playBossTransitionDialogue\": true,\n  \"_sceneName\": \"NewBossArena\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -19885,3 +19969,30 @@ ENTITIES:
         Intensity: 2.1400001
         FallOff: 1.70599997
         CutOff: -1.99100006
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: BossCheckpoint
+      UID: 13655531057377124656
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-41.2799988, 27.1499996, -31.1000004]
+        Rotate: [0, -0, 0]
+        Scale: [5, 5, 6.5999999]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.CPTrigger
+      ParamsJSON: "{\n  \"_activeColor\": {\n    \"X\": 0.07800000160932541,\n    \"Y\": 0.8270000219345093,\n    \"Z\": 0.5799999833106995\n  },\n  \"_bobAmount\": 5.0,\n  \"_bobSpeed\": 10.0,\n  \"_bobbingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_checkpointSpriteNames\": \"CPPopup\",\n  \"_cutsceneEntityName\": \"\",\n  \"_floatSpeed\": 20.0,\n  \"_floatingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_forwardOffset\": -5.0,\n  \"_isBossCheckpoint\": true,\n  \"_lightNames\": \"ResPoint1_Light_1,ResPoint1_Light_2,ResPoint1_Light_3\"\n}"
