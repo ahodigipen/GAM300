@@ -45,7 +45,7 @@ namespace GameScripts
 
         // Debug
         [Boom.EditorExposed("Debug Log", "Enable proximity detection debug logging")]
-        public bool DebugLog = true;  // Enable by default for testing
+        public bool DebugLog = false;  // Enable by default for testing
         private float _debugTimer = 0f;
 
         /// <summary>
