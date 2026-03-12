@@ -60,6 +60,16 @@ namespace GameScripts
 
         private static bool s_entitiesResolved = false;
 
+        // ── Fade state ───────────────────────────────────────────────────────
+        private enum FadeMode { None, FadeIn, FadeOut }
+        private static FadeMode  s_fadeMode    = FadeMode.None;
+        private static float     s_fadeTimer   = 0f;
+        private const  float     FADE_DURATION = 0.25f;
+        // Currently fading entity (only one at a time for tutorial)
+        private static ulong     s_fadingEntity = 0;
+        // Action to run when current fade-out finishes
+        private static System.Action s_pendingAfterFadeOut = null;
+
         // ── Frame-level flags ───────────────────────────────────────────────
         private static bool s_justDismissed = false;
 
@@ -93,12 +103,12 @@ namespace GameScripts
 
             if (pickupCount == 1)
             {
-                // First-time sequence: Show item sprite AND Dialogue 1 simultaneously
-                ulong itemSprite = GetEntityForState(TutorialState.ShowingFirstTimeItem, item);
-                ShowSprite(itemSprite);
-
+                // First-time sequence: item sprite appears right away; dialogue text fades in.
+                ulong itemSprite  = GetEntityForState(TutorialState.ShowingFirstTimeItem, item);
                 ulong diag1Sprite = GetEntityForState(TutorialState.ShowingDialogue1, item);
-                ShowSprite(diag1Sprite);
+
+                SetEntityAlpha(itemSprite,  1f);   // item art: shown immediately (no fade needed)
+                FadeInEntity(diag1Sprite);          // dialogue text: fades in smoothly
 
                 // Show black background only for first-time tutorial
                 if (s_eTutorialDimBG != 0 && API.HasSprite(s_eTutorialDimBG))
@@ -111,7 +121,7 @@ namespace GameScripts
             {
                 // Repeat pickup
                 ulong repeatSprite = GetEntityForState(TutorialState.ShowingRepeatItem, item);
-                ShowSprite(repeatSprite);
+                FadeInEntity(repeatSprite);
                 s_state = TutorialState.ShowingRepeatItem;
                 API.Log($"[TutorialManager] Repeat pickup #{pickupCount} for {item}. Showing repeat sprite.");
             }
@@ -134,22 +144,24 @@ namespace GameScripts
         /// <summary>Reset all tutorial state (called on game restart via PlayerInventory.Reset).</summary>
         public static void Reset()
         {
-            // Hide any currently visible sprites
+            // Immediately hide any currently visible sprites (no graceful fade on reset)
             if (s_state != TutorialState.None)
             {
-                HideCurrentSprite();
-                // Also hide the base item sprite if it was a first-time sequence
-                if (s_activeItem != default || s_state != TutorialState.None)
-                {
-                    HideSprite(GetEntityForState(TutorialState.ShowingFirstTimeItem, s_activeItem));
-                }
+                SetEntityAlpha(GetEntityForState(s_state, s_activeItem), 0f);
+                SetEntityAlpha(GetEntityForState(TutorialState.ShowingFirstTimeItem, s_activeItem), 0f);
             }
+            // Kill any in-progress fade
+            if (s_fadingEntity != 0) SetEntityAlpha(s_fadingEntity, 0f);
 
             s_state          = TutorialState.None;
             s_justDismissed  = false;
             s_enterWasDown   = false;
             s_aButtonWasDown = false;
             s_entitiesResolved = false;
+            s_fadeMode       = FadeMode.None;
+            s_fadeTimer      = 0f;
+            s_fadingEntity   = 0;
+            s_pendingAfterFadeOut = null;
 
             // Clear all cached entity IDs (scene may reload)
             s_eFirstTime_LargeToken      = 0;
@@ -194,7 +206,43 @@ namespace GameScripts
         {
             s_justDismissed = false;
 
+            // --- Tick any active fade ---
+            if (s_fadeMode != FadeMode.None)
+            {
+                s_fadeTimer += dt;
+                float t = Math.Min(1f, s_fadeTimer / FADE_DURATION);
+
+                if (s_fadeMode == FadeMode.FadeIn)
+                {
+                    SetEntityAlpha(s_fadingEntity, t);
+                    if (t >= 1f)
+                    {
+                        s_fadeMode  = FadeMode.None;
+                        s_fadeTimer = 0f;
+                        s_fadingEntity = 0;
+                    }
+                }
+                else // FadeOut
+                {
+                    SetEntityAlpha(s_fadingEntity, 1f - t);
+                    if (t >= 1f)
+                    {
+                        SetEntityAlpha(s_fadingEntity, 0f);
+                        s_fadeMode  = FadeMode.None;
+                        s_fadeTimer = 0f;
+                        s_fadingEntity = 0;
+
+                        System.Action pending = s_pendingAfterFadeOut;
+                        s_pendingAfterFadeOut = null;
+                        pending?.Invoke();
+                    }
+                }
+            }
+
             if (s_state == TutorialState.None) return;
+
+            // Block input while fading — only advance state after fades settle
+            if (s_fadeMode != FadeMode.None) return;
 
             // --- Input edge detection: ENTER key (GLFW 257) and gamepad A button ---
             bool enterDown   = API.IsKeyDown(API.KEY_ENTER);
@@ -247,53 +295,88 @@ namespace GameScripts
 
         private static void TransitionTo(TutorialState next)
         {
-            // Hide current sprite
-            HideCurrentSprite();
+            // Fade out the current sprite, then swap to the next
+            ulong currentEntity = GetEntityForState(s_state, s_activeItem);
+            TutorialState capturedNext = next;
 
-            // Show next sprite
-            s_state = next;
-            ulong nextEntity = GetEntityForState(next, s_activeItem);
-            ShowSprite(nextEntity);
-
-            API.Log($"[TutorialManager] Advancing to state {next} for {s_activeItem}.");
+            FadeOutEntity(currentEntity, () =>
+            {
+                // State changes happen after fade-out completes
+                s_state = capturedNext;
+                ulong nextEntity = GetEntityForState(capturedNext, s_activeItem);
+                FadeInEntity(nextEntity);
+                API.Log($"[TutorialManager] Advancing to state {capturedNext} for {s_activeItem}.");
+            });
         }
 
         private static void CloseTutorial()
         {
-            HideCurrentSprite();
+            ulong currentEntity = GetEntityForState(s_state, s_activeItem);
+            ulong baseItemEntity = GetEntityForState(TutorialState.ShowingFirstTimeItem, s_activeItem);
+            ItemType capturedItem = s_activeItem;
 
-            // Always ensure the base item sprite is hidden (it persists through first-time dialogues)
-            ulong baseItemSprite = GetEntityForState(TutorialState.ShowingFirstTimeItem, s_activeItem);
-            HideSprite(baseItemSprite);
+            FadeOutEntity(currentEntity, () =>
+            {
+                // Also hide the base item sprite (shown alongside Dialogue 1)
+                SetEntityAlpha(baseItemEntity, 0f);
 
-            // Hide dimmed background
-            if (s_eTutorialDimBG != 0 && API.HasSprite(s_eTutorialDimBG))
-                API.SetSpriteAlpha(s_eTutorialDimBG, 0f);
+                // Hide dimmed background
+                if (s_eTutorialDimBG != 0 && API.HasSprite(s_eTutorialDimBG))
+                    API.SetSpriteAlpha(s_eTutorialDimBG, 0f);
 
-            s_state = TutorialState.None;
-            s_justDismissed = true;
-            API.SetGameLogicPaused(false);
-            API.Log($"[TutorialManager] Tutorial closed for {s_activeItem}. Game resumed.");
+                s_state = TutorialState.None;
+                s_justDismissed = true;
+                API.SetGameLogicPaused(false);
+                API.Log($"[TutorialManager] Tutorial closed for {capturedItem}. Game resumed.");
+            });
         }
 
         private static void HideCurrentSprite()
         {
             ulong entity = GetEntityForState(s_state, s_activeItem);
-            HideSprite(entity);
+            SetEntityAlpha(entity, 0f);
+        }
+
+        /// <summary>Fade-in a single entity.</summary>
+        private static void FadeInEntity(ulong entity)
+        {
+            if (entity == 0) return;
+            SetEntityAlpha(entity, 0f);
+            s_fadingEntity = entity;
+            s_fadeMode     = FadeMode.FadeIn;
+            s_fadeTimer    = 0f;
+        }
+
+        /// <summary>Fade-out a single entity, then run <paramref name="onDone"/>.</summary>
+        private static void FadeOutEntity(ulong entity, System.Action onDone)
+        {
+            if (entity == 0)
+            {
+                // Nothing to fade out — run callback immediately
+                onDone?.Invoke();
+                return;
+            }
+            s_fadingEntity        = entity;
+            s_fadeMode            = FadeMode.FadeOut;
+            s_fadeTimer           = 0f;
+            s_pendingAfterFadeOut = onDone;
         }
 
         private static void ShowSprite(ulong entity)
         {
-            if (entity == 0) return;
-            if (API.HasSprite(entity))
-                API.SetSpriteAlpha(entity, 1f);
+            FadeInEntity(entity);
         }
 
         private static void HideSprite(ulong entity)
         {
+            SetEntityAlpha(entity, 0f);
+        }
+
+        private static void SetEntityAlpha(ulong entity, float alpha)
+        {
             if (entity == 0) return;
             if (API.HasSprite(entity))
-                API.SetSpriteAlpha(entity, 0f);
+                API.SetSpriteAlpha(entity, alpha);
         }
 
         /// <summary>Returns the cached entity ID for the given state + item combination.</summary>

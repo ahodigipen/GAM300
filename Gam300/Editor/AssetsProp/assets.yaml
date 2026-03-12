@@ -749,6 +749,28 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
+    UID: 582744548933188495
+    Name: LockTexture
+    Source: LockTexture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 15435352864565154533
+      NormalMapID: 934373211665423018
+      RoughnessMapID: 8813242198036643513
+      MetallicMapID: 8813242198036643513
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
     UID: 7355395803280547314
     Name: GrassTexture
     Source: GrassTexture
@@ -987,7 +1009,7 @@ ASSETS:
       RoughnessMapID: 16020172605613763140
       MetallicMapID: 13151331475481834137
       OcclusionMapID: 0
-      EmissiveMapID: 12920481796716859627
+      EmissiveMapID: 0
       OpacityMapID: 17522809466322833643
       DoubleSided: false
   - Type: MATERIAL
@@ -1849,6 +1871,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 2021043633113812075
+    Name: EncounterPrisonGuard_Dialogue1
+    Source: Resources/Textures/PlayerUI/EncounterPrisonGuard_Dialogue1.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 17039813470002885239
     Name: Lantern_Hanging_openPBR_shader1_BaseColor
     Source: Resources/Models/Props/2_KEN_LanternTextures/Lantern_Hanging_openPBR_shader1_BaseColor.png
@@ -1863,17 +1896,6 @@ ASSETS:
     UID: 13175597232551743125
     Name: Scissors_Ninja_Body_BaseColor
     Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Body_BaseColor.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
-    UID: 2280421147345790035
-    Name: FreezeTutorial
-    Source: Resources/Textures/PlayerUI/FreezeTutorial.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2270,6 +2292,17 @@ ASSETS:
     UID: 6744359996713554799
     Name: Indoor_Lantern_Hanging_2_openPBR_shader1_Height
     Source: Resources/Models/Props/2_KEN_LanternTextures/Indoor_Lantern_Hanging_2_openPBR_shader1_Height.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 1675251116774239397
+    Name: Crouch_FirstTime_Dialogue4
+    Source: Resources/Textures/PlayerUI/Crouch_FirstTime_Dialogue4.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2784,6 +2817,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 1495054568968275175
+    Name: StartCutscene_Dialogue2
+    Source: Resources/Textures/PlayerUI/StartCutscene_Dialogue2.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 17703832789455133950
     Name: M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Metallic
     Source: Resources/Models/Enemy/Patrol2Textures/M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Metallic.png
@@ -2941,17 +2985,6 @@ ASSETS:
     UID: 8136269060168121303
     Name: Sakura Tree_occlusionRoughnessMetallic
     Source: Resources/Textures/Props Textures/SakuraV2_Textures/Sakura Tree_occlusionRoughnessMetallic.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
-    UID: 7833154610195326373
-    Name: KeyTutorial
-    Source: Resources/Textures/PlayerUI/KeyTutorial.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3422,6 +3455,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 11063674576259295404
+    Name: CTRL_Crouch
+    Source: Resources/Textures/PlayerUI/CTRL_Crouch.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 8124115684814999151
     Name: NotEnoughKeys_Dialogue1
     Source: Resources/Textures/PlayerUI/NotEnoughKeys_Dialogue1.png
@@ -3480,6 +3524,17 @@ ASSETS:
     UID: 15235968341662935537
     Name: UnfilledBar
     Source: Resources/Textures/MenusUI/UnfilledBar.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 9870814164832527259
+    Name: Letterbox (add to top and bottom of screen)
+    Source: Resources/Textures/Letterbox (add to top and bottom of screen).png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3865,6 +3920,17 @@ ASSETS:
     UID: 5151690296781102116
     Name: Bar_openPBR_shader1_normal
     Source: Resources/Models/Props/Steel Bar/Bar_openPBR_shader1_normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 17369170056814538460
+    Name: CanCrouch
+    Source: Resources/Textures/PlayerUI/CanCrouch.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -4279,6 +4345,204 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
+  - Type: TEXTURE
+    UID: 15364468852678004646
+    Name: Crouch_FirstTime_Dialogue1
+    Source: Resources/Textures/PlayerUI/Crouch_FirstTime_Dialogue1.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 18098834388803981355
+    Name: CannotCrouch
+    Source: Resources/Textures/PlayerUI/CannotCrouch.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 15496482806259426187
+    Name: Checkpoint1_Dialogue1
+    Source: Resources/Textures/PlayerUI/Checkpoint1_Dialogue1.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 16104766830198919102
+    Name: Checkpoint1_Dialogue2
+    Source: Resources/Textures/PlayerUI/Checkpoint1_Dialogue2.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 17822574376099780435
+    Name: Crouch_FirstTime_Dialogue2
+    Source: Resources/Textures/PlayerUI/Crouch_FirstTime_Dialogue2.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 12468824706065626304
+    Name: Crouch_FirstTime_Dialogue3
+    Source: Resources/Textures/PlayerUI/Crouch_FirstTime_Dialogue3.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 3415610121296560794
+    Name: StartCutscene_Dialogue1
+    Source: Resources/Textures/PlayerUI/StartCutscene_Dialogue1.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 2629327657053304990
+    Name: EncounterPrisonGuard_Dialogue2
+    Source: Resources/Textures/PlayerUI/EncounterPrisonGuard_Dialogue2.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 5423514755823872091
+    Name: E_BreakOut
+    Source: Resources/Textures/PlayerUI/E_BreakOut.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 6999238442563118516
+    Name: StartCutscene_Dialogue3
+    Source: Resources/Textures/PlayerUI/StartCutscene_Dialogue3.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 12278568808582628673
+    Name: StartCutscene_Dialogue4
+    Source: Resources/Textures/PlayerUI/StartCutscene_Dialogue4.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 7108622298376919790
+    Name: StartCutscene_Dialogue5
+    Source: Resources/Textures/PlayerUI/StartCutscene_Dialogue5.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 367559179714889467
+    Name: StartCutscene_Dialogue6
+    Source: Resources/Textures/PlayerUI/StartCutscene_Dialogue6.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 2900915588722288564
+    Name: CannotCrouch
+    Source: Resources/Textures/PlayerUI/CannotCrouch.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 12896261092017281121
+    Name: CanCrouch
+    Source: Resources/Textures/PlayerUI/CanCrouch.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 15435352864565154533
+    Name: LockopenPBR_shader1_baseColor
+    Source: Resources/Models/Props/lock/LockopenPBR_shader1_baseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 934373211665423018
+    Name: LockopenPBR_shader1_normal
+    Source: Resources/Models/Props/lock/LockopenPBR_shader1_normal.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 8813242198036643513
+    Name: LockopenPBR_shader1_occlusionRoughnessMetallic
+    Source: Resources/Models/Props/lock/LockopenPBR_shader1_occlusionRoughnessMetallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
   - Type: SKYBOX
     UID: 4245843529762785392
     Name: NightSkyHDRI003_8K_HDR
@@ -5946,6 +6210,17 @@ ASSETS:
     UID: 2915209680014061313
     Name: LEVEL2Walking
     Source: Resources/Models/Enemy/Patrol2Textures/LEVEL2Walking.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+      HasJoints: false
+  - Type: MODEL
+    UID: 12205784983460827261
+    Name: lock_uncoloured
+    Source: Resources/Models/Props/lock/lock_uncoloured.fbx
     Properties:
       Model Transform:
         transform:

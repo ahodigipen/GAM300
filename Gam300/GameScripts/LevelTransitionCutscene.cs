@@ -1,4 +1,4 @@
-﻿using Boom;
+using Boom;
 using System;
 using System.Collections.Generic;
 
@@ -378,9 +378,10 @@ namespace GameScripts
                     _elapsedTime += dt;
                     if (_elapsedTime >= _totalDuration)
                     {
+                        API.Log("[LevelTransition] Cutscene Finished.");
                         _hasFinished = true;
                         _isPlaying = false;
-                        API.Log("[LevelTransition] Cutscene Finished.");
+                        UIManager.HideLetterbox();
                     }
                 }
             }
