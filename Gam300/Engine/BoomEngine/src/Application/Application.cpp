@@ -695,12 +695,12 @@ namespace Boom
 
             m_Context->renderer->ShowFrame(showFrame);
 
-            // Always render 2D sprites and text after compositing: avoids volumetric fog and ensures sprites draw on top of text
+            // Always render 2D sprites and text after compositing: avoids volumetric fog and ensures text draws on top of sprites
             {
                 m_Context->renderer->BeginFullResOverlay(showFrame);
                 m_Context->renderer->SetSpriteToneMap(true);
-                RenderTextOverlay();   // Text first so sprites draw on top
                 RenderSpriteOverlay();
+                RenderTextOverlay();   // Text after sprites so text draws on top
                 m_Context->renderer->SetSpriteToneMap(false);
                 m_Context->renderer->EndFullResOverlay();
             }
