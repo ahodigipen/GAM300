@@ -100,21 +100,6 @@ namespace GameScripts
                 return;
             }
 
-            // Step 2 — fade to black, then load
-            if (_isFadingOut)
-            {
-                _fadeTimer += dt;
-                float alpha = Math.Min(_fadeTimer / FADE_DURATION, 1f);
-                API.SetScreenFadeAlpha(alpha);
-                if (_fadeTimer >= FADE_DURATION)
-                {
-                    API.SetScreenFadeAlpha(1f);
-                    _isFadingOut = false;
-                    DoTransition();
-                }
-                return;
-            }
-
             if (_hasTriggered && _oneTimeUse) return;
 
             // Handle manual interaction
@@ -171,46 +156,6 @@ namespace GameScripts
             if (inst._promptEntity != 0 && (!inst._hasTriggered || !inst._oneTimeUse))
             {
                 API.SetSpriteAlpha(inst._promptEntity, 1f);
-                API.Log("[SceneTransitionTrigger] Trigger already used (one-time use).");
-                return;
-            }
-
-            // Check if scene name is valid
-            if (string.IsNullOrWhiteSpace(inst._sceneName))
-            {
-                API.Log("[SceneTransitionTrigger] ERROR: Scene name is empty!");
-                return;
-            }
-
-            inst._hasTriggered = true;
-
-            // Start transition (with delay if configured)
-            if (inst._playBossTransitionDialogue)
-            {
-                API.Log($"[SceneTransitionTrigger] Playing Boss Transition Dialogue before transitioning to '{inst._sceneName}'.");
-                StoryDialogueManager.PlayBossTransitionSequence(() =>
-                {
-                    if (inst._transitionDelay > 0f)
-                    {
-                        inst._isTransitioning = true;
-                        inst._transitionTimer = inst._transitionDelay;
-                        API.Log($"[SceneTransitionTrigger] Transition to '{inst._sceneName}' will occur in {inst._transitionDelay:F1} seconds.");
-                    }
-                    else
-                    {
-                        inst.DoTransition();
-                    }
-                });
-            }
-            else if (inst._transitionDelay > 0f)
-            {
-                inst._isTransitioning = true;
-                inst._transitionTimer = inst._transitionDelay;
-                API.Log($"[SceneTransitionTrigger] Transition to '{inst._sceneName}' in {inst._transitionDelay:F1}s then fade.");
-            }
-            else
-            {
-                inst.StartFadeOut();
             }
             
             API.Log("[SceneTransitionTrigger] Player in range. Press E or Gamepad A to transition.");
@@ -225,13 +170,6 @@ namespace GameScripts
 
             inst._playerInRange = false;
             if (inst._promptEntity != 0) API.SetSpriteAlpha(inst._promptEntity, 0f);
-        }
-
-        private void StartFadeOut()
-        {
-            _isFadingOut = true;
-            _fadeTimer   = 0f;
-            API.Log($"[SceneTransitionTrigger] Fading out before loading: '{_sceneName}'");
         }
 
         private void StartFadeOut()
