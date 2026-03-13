@@ -539,6 +539,7 @@ namespace GameScripts
                             PlayerInventory.ConsumeFreezeCharge();
                             Vec3 playerPos = API.GetPosition(Entity);
                             FreezeManager.TriggerFreeze(playerPos, _freezeRadius, _freezeDuration);
+                            API.Log("[PlayerMovement] Freeze activated! (Input: E or Gamepad X/Y)");
                         }
                         else
                         {

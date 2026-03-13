@@ -306,6 +306,7 @@ namespace GameScripts
             bool p_KeyDown = API.IsKeyDown(API.KEY_P);
             bool escape_KeyDown = API.IsKeyDown(API.KEY_ESCAPE);
             bool i_KeyDown = API.IsKeyDown(API.KEY_I);
+            bool inventory_ButtonDown = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_BACK);
             bool ctrl_KeyDown = API.IsKeyDown(API.KEY_LEFT_CONTROL);
             bool start_ButtonDown = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_START);
             bool rightBracket_KeyDown = API.IsKeyDown(API.KEY_RIGHT_BRACKET);
@@ -319,7 +320,7 @@ namespace GameScripts
                 // Keep tracking key states to prevent bleed-through after tutorial dismissal
                 _escape_KeyWasDown = escape_KeyDown;
                 _p_KeyWasDown = p_KeyDown;
-                _i_KeyWasDown = i_KeyDown;
+                _i_KeyWasDown = i_KeyDown || inventory_ButtonDown;
                 _start_ButtonWasDown = start_ButtonDown;
                 _rightBracket_KeyWasDown = rightBracket_KeyDown;
                 return;
@@ -357,7 +358,7 @@ namespace GameScripts
                 // Keep tracking key state while popup is active to prevent bleed-through
                 _escape_KeyWasDown = escape_KeyDown;
                 _p_KeyWasDown = p_KeyDown;
-                _i_KeyWasDown = i_KeyDown;
+                _i_KeyWasDown = i_KeyDown || inventory_ButtonDown;
                 _start_ButtonWasDown = start_ButtonDown;
                 _rightBracket_KeyWasDown = rightBracket_KeyDown;
                 return;
@@ -393,18 +394,18 @@ namespace GameScripts
                 }
                 _p_KeyWasDown = p_KeyDown;
 
-                // Handle I key to open inventory
-                if (!IsInventoryOpen && i_KeyDown && !_i_KeyWasDown && !ctrl_KeyDown)
+                // Handle I key or Gamepad Back to open inventory
+                if (!IsInventoryOpen && (i_KeyDown || inventory_ButtonDown) && !_i_KeyWasDown && !ctrl_KeyDown)
                 {
                     API.Log("Opening inventory...");
                     IsInventoryOpen = true;
                     API.ShowInventoryMenu();
                     API.EnableFileWatcher(false);
 
-                    _i_KeyWasDown = i_KeyDown;
+                    _i_KeyWasDown = true;
                     return;
                 }
-                _i_KeyWasDown = i_KeyDown;
+                _i_KeyWasDown = i_KeyDown || inventory_ButtonDown;
 
                 // Handle ] key to transition to Outro Scene
                 if (rightBracket_KeyDown && !_rightBracket_KeyWasDown)
@@ -432,6 +433,7 @@ namespace GameScripts
         private static void UpdateInventoryMenu(float dt)
         {
             bool i_KeyDown = API.IsKeyDown(API.KEY_I);
+            bool inventory_ButtonDown = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_BACK);
 
             // Block closing inventory if a tutorial or door dialogue is active
             if (TutorialManager.IsKeyTutorialActive() || TutorialManager.WasJustDismissed() ||
@@ -439,7 +441,7 @@ namespace GameScripts
                 MultiKeyDoor.IsDialogueActive() || CrouchTutorialManager.IsTutorialActive() || CrouchTutorialManager.WasJustDismissed() ||
                 StoryDialogueManager.IsSequenceActive() || StoryDialogueManager.WasJustDismissed())
             {
-                _i_KeyWasDown = i_KeyDown;
+                _i_KeyWasDown = i_KeyDown || inventory_ButtonDown;
                 // We don't return entirely, just bypass the close logic so the menu keeps rendering/updating
                 // But wait, the menu rendering is inside this function!
                 // Actually, the rest of this function processes the s_RequestedInventoryAction
@@ -447,13 +449,16 @@ namespace GameScripts
             }
             else
             {
-                // I key closes the inventory
-                if (i_KeyDown && !_i_KeyWasDown)
+                // I key or Gamepad Back closes the inventory
+                if ((i_KeyDown || inventory_ButtonDown) && !_i_KeyWasDown)
                 {
                     s_RequestedInventoryAction = InventoryMenuAction.Close;
-                    _i_KeyWasDown = i_KeyDown;
+                    _i_KeyWasDown = true;
                 }
-                _i_KeyWasDown = i_KeyDown;
+                else
+                {
+                    _i_KeyWasDown = i_KeyDown || inventory_ButtonDown;
+                }
             }
 
             switch (s_RequestedInventoryAction)

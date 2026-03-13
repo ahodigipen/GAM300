@@ -46,8 +46,8 @@ namespace GameScripts
         private bool _isMainDoor = false;
 
         // UI Entity Names
-        [Boom.EditorExposed("E Prompt Name", "Name of the UI entity for 'E to interact'")]
-        private string _ePromptName = "UI_E_OpenDoor";
+        [Boom.EditorExposed("Interaction Prompt Name", "Name of the UI entity for interaction (e.g. 'A to interact')")]
+        private string _ePromptName = "UI_A_Interact";
 
         [Boom.EditorExposed("Keys Needed UI Name", "Name of the UI entity showing missing keys photo")]
         private string _keysNeededName = "UI_KeysNeeded";
@@ -85,7 +85,7 @@ namespace GameScripts
         private ulong _keysNeededEntity = 0;
         private ulong _dialogueEntity = 0;
 
-        // E Prompt Fade State
+        // E Prompt Fade State (used for interaction prompt)
         private enum EPromptFadeState { None, FadeIn, FadeOut }
         private EPromptFadeState _eFadeState = EPromptFadeState.None;
         private float _eFadeTimer = 0f;
@@ -95,9 +95,9 @@ namespace GameScripts
         private enum DialogueState { None, Dialogue1, Dialogue2 }
         private DialogueState _dialogueState = DialogueState.None;
 
-        private bool _eWasDown = false;
+        private bool _interactWasDown = false;
         private bool _enterWasDown = false;
-        private const int KEY_E = 69;
+        private const int KEY_E = 69; 
         private const int KEY_ENTER = 257;
 
         // Static tracking for active dialogue (drives pause from Entry.cs)
@@ -290,20 +290,20 @@ namespace GameScripts
             }
 
             // Handle Interaction logic
-            bool eDown = API.IsKeyDown(KEY_E);
+            bool interactDown = API.IsKeyDown(KEY_E) || (API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A));
             bool enterDown = API.IsKeyDown(KEY_ENTER);
 
-            bool ePressed = eDown && !_eWasDown;
+            bool interactPressed = interactDown && !_interactWasDown;
             bool enterPressed = enterDown && !_enterWasDown;
 
-            _eWasDown = eDown;
+            _interactWasDown = interactDown;
             _enterWasDown = enterDown;
 
             if (_playerInRange && !_opening && !NearlyEqual(API.GetPosition(Entity), _targetPos))
             {
                 if (_dialogueState == DialogueState.None)
                 {
-                    if (ePressed)
+                    if (interactPressed)
                     {
                         // Check keys
                         List<string> missingKeys = new List<string>();

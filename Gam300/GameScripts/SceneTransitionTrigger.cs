@@ -21,6 +21,9 @@ namespace GameScripts
         [Boom.EditorExposed("One Time Use", "If true, trigger only works once")]
         private bool _oneTimeUse = false;
 
+        [Boom.EditorExposed("Interaction Prompt Name", "Name of the UI entity for interaction (e.g. 'A to interact')")]
+        private string _promptName = "UI_A_Interact";
+
         // State
         private static readonly Dictionary<ulong, SceneTransitionTrigger> s_instances = new Dictionary<ulong, SceneTransitionTrigger>();
         private bool  _hasTriggered    = false;
@@ -29,6 +32,12 @@ namespace GameScripts
         private bool  _isFadingOut     = false;   // fade-to-black before load
         private float _fadeTimer       = 0f;
         private const float FADE_DURATION = 0.25f;
+
+        private bool _playerInRange = false;
+        private bool _interactWasDown = false;
+        private ulong _promptEntity = 0;
+
+        private const int KEY_E = 69; // Changed back to E for interaction
 
         public void OnStart(string jsonParams)
         {
@@ -52,6 +61,12 @@ namespace GameScripts
                 API.Log("[SceneTransitionTrigger] Collider set to IsTrigger = true.");
             }
 
+            _promptEntity = API.FindEntity(_promptName);
+            if (_promptEntity != 0 && API.HasSprite(_promptEntity))
+            {
+                API.SetSpriteAlpha(_promptEntity, 0f);
+            }
+
             API.RegisterTriggerEnterCallback(Entity, OnTriggerEnter);
             API.RegisterTriggerExitCallback(Entity, OnTriggerExit);
             API.Log($"[SceneTransitionTrigger] Registered trigger callbacks. Will transition to: '{_sceneName}'");
@@ -59,19 +74,7 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
-            // Step 1 — optional delay before starting the fade
-            if (_isTransitioning)
-            {
-                _transitionTimer -= dt;
-                if (_transitionTimer <= 0f)
-                {
-                    _isTransitioning = false;
-                    StartFadeOut();
-                }
-                return;
-            }
-
-            // Step 2 — fade to black, then load
+            // Handle fade and transition
             if (_isFadingOut)
             {
                 _fadeTimer += dt;
@@ -83,6 +86,55 @@ namespace GameScripts
                     _isFadingOut = false;
                     DoTransition();
                 }
+                return;
+            }
+
+            if (_isTransitioning)
+            {
+                _transitionTimer -= dt;
+                if (_transitionTimer <= 0f)
+                {
+                    _isTransitioning = false;
+                    StartFadeOut();
+                }
+                return;
+            }
+
+            if (_hasTriggered && _oneTimeUse) return;
+
+            // Handle manual interaction
+            bool interactDown = API.IsKeyDown(KEY_E) || (API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A));
+            bool interactPressed = interactDown && !_interactWasDown;
+            _interactWasDown = interactDown;
+
+            if (_playerInRange && interactPressed)
+            {
+                TriggerTransition();
+            }
+        }
+
+        private void TriggerTransition()
+        {
+            // Check if scene name is valid
+            if (string.IsNullOrWhiteSpace(_sceneName))
+            {
+                API.Log("[SceneTransitionTrigger] ERROR: Scene name is empty!");
+                return;
+            }
+
+            _hasTriggered = true;
+            if (_promptEntity != 0) API.SetSpriteAlpha(_promptEntity, 0f);
+
+            // Start transition (with delay if configured)
+            if (_transitionDelay > 0f)
+            {
+                _isTransitioning = true;
+                _transitionTimer = _transitionDelay;
+                API.Log($"[SceneTransitionTrigger] Transition to '{_sceneName}' in {_transitionDelay:F1}s then fade.");
+            }
+            else
+            {
+                StartFadeOut();
             }
         }
 
@@ -100,38 +152,24 @@ namespace GameScripts
             // Only react when the player enters this trigger
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
 
-            // Check if already triggered and one-time use
-            if (inst._hasTriggered && inst._oneTimeUse)
+            inst._playerInRange = true;
+            if (inst._promptEntity != 0 && (!inst._hasTriggered || !inst._oneTimeUse))
             {
-                API.Log("[SceneTransitionTrigger] Trigger already used (one-time use).");
-                return;
+                API.SetSpriteAlpha(inst._promptEntity, 1f);
             }
-
-            // Check if scene name is valid
-            if (string.IsNullOrWhiteSpace(inst._sceneName))
-            {
-                API.Log("[SceneTransitionTrigger] ERROR: Scene name is empty!");
-                return;
-            }
-
-            inst._hasTriggered = true;
-
-            // Start transition (with delay if configured)
-            if (inst._transitionDelay > 0f)
-            {
-                inst._isTransitioning = true;
-                inst._transitionTimer = inst._transitionDelay;
-                API.Log($"[SceneTransitionTrigger] Transition to '{inst._sceneName}' in {inst._transitionDelay:F1}s then fade.");
-            }
-            else
-            {
-                inst.StartFadeOut();
-            }
+            
+            API.Log("[SceneTransitionTrigger] Player in range. Press E or Gamepad A to transition.");
         }
 
         private static void OnTriggerExit(ulong triggerEntity, ulong otherEntity)
         {
-            // Not needed for scene transition
+            SceneTransitionTrigger inst;
+            if (!s_instances.TryGetValue(triggerEntity, out inst)) return;
+
+            if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
+
+            inst._playerInRange = false;
+            if (inst._promptEntity != 0) API.SetSpriteAlpha(inst._promptEntity, 0f);
         }
 
         private void StartFadeOut()
