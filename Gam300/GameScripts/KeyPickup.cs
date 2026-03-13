@@ -23,16 +23,9 @@ namespace GameScripts
         [Boom.EditorExposed("Pickup Sound", "Sound played when the key is collected")]
         private string _pickupSound = "Resources/Audio/pickup.wav";
 
-        [Boom.EditorExposed("Interaction Prompt Name", "Name of the UI entity for interaction (e.g. 'A to interact')")]
-        private string _promptName = "UI_A_Interact";
-
         private static readonly Dictionary<ulong, KeyPickup> s_instances = new Dictionary<ulong, KeyPickup>();
         private bool _collected = false;
         private bool _playerInRange = false;
-        private bool _interactWasDown = false;
-        private ulong _promptEntity = 0;
-
-        private const int KEY_E = 69; // Changed back to E for interaction
 
         public void OnStart(string jsonParams)
         {
@@ -51,12 +44,6 @@ namespace GameScripts
                 API.Log("[KeyPickup] Collider set to IsTrigger = true.");
             }
 
-            _promptEntity = API.FindEntity(_promptName);
-            if (_promptEntity != 0 && API.HasSprite(_promptEntity))
-            {
-                API.SetSpriteAlpha(_promptEntity, 0f);
-            }
-
             API.RegisterTriggerEnterCallback(Entity, OnTriggerEnter);
             API.RegisterTriggerExitCallback(Entity, OnTriggerExit);
             API.Log("[KeyPickup] Registered trigger callbacks.");
@@ -66,11 +53,7 @@ namespace GameScripts
         {
             if (_collected) return;
 
-            bool interactDown = API.IsKeyDown(KEY_E) || (API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A));
-            bool interactPressed = interactDown && !_interactWasDown;
-            _interactWasDown = interactDown;
-
-            if (_playerInRange && interactPressed)
+            if (_playerInRange)
             {
                 Collect();
             }
@@ -81,14 +64,11 @@ namespace GameScripts
             // Don't allow pickup if any popup/tutorial is active (prevents UI overlap)
             if (TutorialPopupTrigger.IsPopupActive() || TutorialManager.IsTutorialActive())
             {
-                API.Log("[KeyPickup] Cannot pickup key - another popup/tutorial is active");
                 return;
             }
 
             _collected = true;
             PlayerInventory.AddKey(_keyType, _keyVariant);
-
-            if (_promptEntity != 0) API.SetSpriteAlpha(_promptEntity, 0f);
 
             // Show pickup tutorial (first-time or repeat) based on key variant
             TutorialManager.ItemType itemType = (_keyVariant == "SmallDoor")
@@ -135,9 +115,7 @@ namespace GameScripts
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
 
             inst._playerInRange = true;
-            if (inst._promptEntity != 0) API.SetSpriteAlpha(inst._promptEntity, 1f);
-            
-            API.Log("[KeyPickup] Player in range. Press E or Gamepad A to pick up.");
+            API.Log("[KeyPickup] Player in range. Automatic pickup triggered.");
         }
 
         private static void OnTriggerExit(ulong triggerEntity, ulong otherEntity)
@@ -148,7 +126,6 @@ namespace GameScripts
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
 
             inst._playerInRange = false;
-            if (inst._promptEntity != 0) API.SetSpriteAlpha(inst._promptEntity, 0f);
         }
     }
 }

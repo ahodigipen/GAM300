@@ -47,7 +47,7 @@ namespace GameScripts
 
         // UI Entity Names
         [Boom.EditorExposed("Interaction Prompt Name", "Name of the UI entity for interaction (e.g. 'A to interact')")]
-        private string _ePromptName = "UI_A_Interact";
+        private string _ePromptName = "UI_E_OpenDoor";
 
         [Boom.EditorExposed("Keys Needed UI Name", "Name of the UI entity showing missing keys photo")]
         private string _keysNeededName = "UI_KeysNeeded";

@@ -126,7 +126,7 @@ namespace GameScripts
             }
 
             // ── Interaction detection (F key or Gamepad A) ───────────────────────────
-            bool interactDown = API.IsKeyDown(API.KEY_F) || (API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A));
+            bool interactDown = API.IsKeyDown(API.KEY_E) || (API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A));
 
             if (_playerInZone && !_activated && interactDown && !_wasEPressed)
                 Activate();

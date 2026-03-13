@@ -111,28 +111,6 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
-    UID: 9126702018428758169
-    Name: Lamp Texture
-    Source: Lamp Texture
-    Properties:
-      Data:
-        emissive: [0, 0, 0]
-        albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
-        opacity: 1
-        useWorldSpaceUV: false
-        textureScale: 1
-      AlbedoMapID: 1821848361694167965
-      NormalMapID: 7568472483619014978
-      RoughnessMapID: 0
-      MetallicMapID: 0
-      OcclusionMapID: 0
-      EmissiveMapID: 0
-      OpacityMapID: 0
-      DoubleSided: false
-  - Type: MATERIAL
     UID: 295392599374634747
     Name: Cushion Texture
     Source: Cushion Texture
@@ -172,6 +150,28 @@ ASSETS:
       NormalMapID: 3958029045455338805
       RoughnessMapID: 13339206725868457610
       MetallicMapID: 5618225631434775639
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
+    UID: 9126702018428758169
+    Name: Lamp Texture
+    Source: Lamp Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 1821848361694167965
+      NormalMapID: 7568472483619014978
+      RoughnessMapID: 0
+      MetallicMapID: 0
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
@@ -1651,17 +1651,6 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 18015433039280727800
-    Name: UI_Running
-    Source: Resources/Textures/PlayerUI/UI_Running.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
     UID: 4669697712673348506
     Name: Scissors_Ninja_Body_Normal
     Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Body_Normal.png
@@ -1764,6 +1753,17 @@ ASSETS:
     UID: 15873517341497826991
     Name: lantern_colour_2_BaseMap
     Source: Resources/Models/Props/lantern mat/lantern_colour_2_BaseMap.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 8481271093951499456
+    Name: BossCheckpoint_Dialogue4
+    Source: Resources/Textures/PlayerUI/BossCheckpoint_Dialogue4.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2124,6 +2124,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 12527843001639722738
+    Name: Checkpoint2_Dialogue5
+    Source: Resources/Textures/PlayerUI/Checkpoint2_Dialogue5.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 14205466992706534584
     Name: Pillow_openPBR_shader1_Height
     Source: Resources/Textures/Props Textures/Pillow_openPBR_shader1_Height.png
@@ -2179,6 +2190,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 16738226509792806577
+    Name: lantern_colour_1_MaskMap
+    Source: Resources/Models/Props/lantern mat/lantern_colour_1_MaskMap.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 15182049477367409902
     Name: E_OpenDoor
     Source: Resources/Textures/PlayerUI/E_OpenDoor.png
@@ -2193,17 +2215,6 @@ ASSETS:
     UID: 18116571246883620302
     Name: Scissors_Ninja_Hood_Metallic
     Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Hood_Metallic.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
-    UID: 16738226509792806577
-    Name: lantern_colour_1_MaskMap
-    Source: Resources/Models/Props/lantern mat/lantern_colour_1_MaskMap.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2443,17 +2454,6 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 3615061789617660208
-    Name: UI_Freeze_Unavailable
-    Source: Resources/Textures/PlayerUI/UI_Freeze_Unavailable.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
     UID: 8538867989910609552
     Name: openPBR_shader1_baseColor
     Source: Resources/Models/Props/metalgate_model n texture/openPBR_shader1_baseColor.png
@@ -2674,17 +2674,6 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 327234960441928512
-    Name: UI_Key
-    Source: Resources/Textures/PlayerUI/UI_Key.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
     UID: 17705962514840769959
     Name: Inventory_BigToken
     Source: Resources/Textures/PlayerUI/Inventory_BigToken.png
@@ -2718,17 +2707,6 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 4292453219005343617
-    Name: UI_Crouching
-    Source: Resources/Textures/PlayerUI/UI_Crouching.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
     UID: 2000641971401327177
     Name: folder
     Source: Resources/Textures/Icons/folder.png
@@ -2743,6 +2721,17 @@ ASSETS:
     UID: 13175659529161961824
     Name: funeral pallet 2
     Source: Resources/Textures/Props Textures/funeral pallet 2.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 16134441578369664165
+    Name: BossCheckpoint_Dialogue3
+    Source: Resources/Textures/PlayerUI/BossCheckpoint_Dialogue3.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2883,31 +2872,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 17435015903446098353
-    Name: UI_Freeze_Available
-    Source: Resources/Textures/PlayerUI/UI_Freeze_Available.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
     UID: 15172731084930672394
     Name: script
     Source: Resources/Textures/Icons/script.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
-    UID: 13937156857161099910
-    Name: UI_Hold
-    Source: Resources/Textures/PlayerUI/UI_Hold.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3224,28 +3191,6 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 10859442647390974736
-    Name: UI_Freeze_Available
-    Source: Resources/Textures/PlayerUI/UI_Freeze_Available.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
-    UID: 12107251372306002725
-    Name: UI_Freeze_Unavailable
-    Source: Resources/Textures/PlayerUI/UI_Freeze_Unavailable.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
     UID: 13329287097237119223
     Name: grass big
     Source: Resources/Textures/grass big.png
@@ -3543,17 +3488,6 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 12936131708983895469
-    Name: UI_Tutorial
-    Source: Resources/Textures/PlayerUI/UI_Tutorial.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
     UID: 2676478744274535465
     Name: ReturnButton_Clicked
     Source: Resources/Textures/MenusUI/ReturnButton_Clicked.png
@@ -3821,28 +3755,6 @@ ASSETS:
     UID: 8021377771889714829
     Name: DetectionCircleTexture (2)
     Source: Resources/Textures/PlayerUI/DetectionCircleTexture (2).png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
-    UID: 883033736161376587
-    Name: UI_Running
-    Source: Resources/Textures/PlayerUI/UI_Running.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
-    UID: 7848094390213021062
-    Name: UI_Crouching
-    Source: Resources/Textures/PlayerUI/UI_Crouching.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -4811,6 +4723,105 @@ ASSETS:
     UID: 8813242198036643513
     Name: LockopenPBR_shader1_occlusionRoughnessMetallic
     Source: Resources/Models/Props/lock/LockopenPBR_shader1_occlusionRoughnessMetallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 4092832143501226655
+    Name: BossCheckpoint_Dialogue1
+    Source: Resources/Textures/PlayerUI/BossCheckpoint_Dialogue1.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 4701116167440719570
+    Name: BossCheckpoint_Dialogue2
+    Source: Resources/Textures/PlayerUI/BossCheckpoint_Dialogue2.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 13835020763985653587
+    Name: BossCheckpoint_Dialogue5
+    Source: Resources/Textures/PlayerUI/BossCheckpoint_Dialogue5.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 6991287239145553094
+    Name: Checkpoint2_Dialogue1
+    Source: Resources/Textures/PlayerUI/Checkpoint2_Dialogue1.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 9449392762567328883
+    Name: Checkpoint2_Dialogue2
+    Source: Resources/Textures/PlayerUI/Checkpoint2_Dialogue2.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 4095643092533174752
+    Name: Checkpoint2_Dialogue3
+    Source: Resources/Textures/PlayerUI/Checkpoint2_Dialogue3.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 11556852226015552069
+    Name: Checkpoint2_Dialogue4
+    Source: Resources/Textures/PlayerUI/Checkpoint2_Dialogue4.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 10093195128299075526
+    Name: RedMeter
+    Source: Resources/Textures/PlayerUI/RedMeter.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 16173087357529396361
+    Name: WhiteBackground
+    Source: Resources/Textures/PlayerUI/WhiteBackground.png
     Properties:
       Data:
         CompileAsCompressed: true
