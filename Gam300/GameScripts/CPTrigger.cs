@@ -38,7 +38,7 @@ namespace GameScripts
         [Boom.EditorExposed("Floating Sprite Names", "Comma-separated names of sprites that should float upwards")]
         private string _floatingSpriteNames = "";
 
-        [Boom.EditorExposed("Intro Cutscene", "Whether to play the intro cutscene and checkpoint dialogue when activated")]
+        [Boom.EditorExposed("Is Checkpoint 1", "Whether to play the intro cutscene and checkpoint dialogue when activated")]
         private bool _triggerIntroCutscene = false;
 
         [Boom.EditorExposed("Is Checkpoint 2", "Whether to play the Checkpoint 2 dialogue sequence instead of Checkpoint 1")]
