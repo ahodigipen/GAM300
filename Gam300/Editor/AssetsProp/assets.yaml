@@ -111,28 +111,6 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
-    UID: 5492247716426239787
-    Name: spikes
-    Source: spikes
-    Properties:
-      Data:
-        emissive: [0, 0, 0]
-        albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
-        opacity: 1
-        useWorldSpaceUV: false
-        textureScale: 1
-      AlbedoMapID: 16212527279611504695
-      NormalMapID: 3958029045455338805
-      RoughnessMapID: 13339206725868457610
-      MetallicMapID: 5618225631434775639
-      OcclusionMapID: 0
-      EmissiveMapID: 0
-      OpacityMapID: 0
-      DoubleSided: false
-  - Type: MATERIAL
     UID: 9126702018428758169
     Name: Lamp Texture
     Source: Lamp Texture
@@ -173,6 +151,28 @@ ASSETS:
       RoughnessMapID: 6305281938924181745
       MetallicMapID: 9033368879326419558
       OcclusionMapID: 14205466992706534584
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
+    UID: 5492247716426239787
+    Name: spikes
+    Source: spikes
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 16212527279611504695
+      NormalMapID: 3958029045455338805
+      RoughnessMapID: 13339206725868457610
+      MetallicMapID: 5618225631434775639
+      OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
       DoubleSided: false
@@ -1101,6 +1101,28 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
+    UID: 11044385319620449257
+    Name: OldGrassTexture
+    Source: OldGrassTexture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.839999974
+        metallic: 0
+        occlusion: 0.360000014
+        opacity: 1
+        useWorldSpaceUV: true
+        textureScale: 76.5100021
+      AlbedoMapID: 13329287097237119223
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
     UID: 5705719871047309081
     Name: Daruma
     Source: Daruma
@@ -1128,7 +1150,7 @@ ASSETS:
     Source: DetectionRingTexture
     Properties:
       Data:
-        emissive: [1, 1, 1]
+        emissive: [0, 0, 0]
         albedo: [1, 1, 1]
         roughness: 1
         metallic: 1
@@ -1958,21 +1980,10 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
-  - Type: TEXTURE  
+  - Type: TEXTURE
     UID: 2021043633113812075
     Name: EncounterPrisonGuard_Dialogue1
     Source: Resources/Textures/PlayerUI/EncounterPrisonGuard_Dialogue1.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
-    UID: 17039813470002885239
-    Name: Lantern_Hanging_openPBR_shader1_BaseColor
-    Source: Resources/Models/Props/2_KEN_LanternTextures/Lantern_Hanging_openPBR_shader1_BaseColor.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2916,9 +2927,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 3690738976007310336
-    Name: Checkpoint_Text
-    Source: Resources/Textures/PlayerUI/Checkpoint_Text.png
+    UID: 1495054568968275175
+    Name: StartCutscene_Dialogue2
+    Source: Resources/Textures/PlayerUI/StartCutscene_Dialogue2.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2927,9 +2938,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 1495054568968275175
-    Name: StartCutscene_Dialogue2
-    Source: Resources/Textures/PlayerUI/StartCutscene_Dialogue2.png
+    UID: 3690738976007310336
+    Name: Checkpoint_Text
+    Source: Resources/Textures/PlayerUI/Checkpoint_Text.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2952,17 +2963,6 @@ ASSETS:
     UID: 9033368879326419558
     Name: Pillow_openPBR_shader1_Metallic
     Source: Resources/Textures/Props Textures/Pillow_openPBR_shader1_Metallic.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
-    UID: 17703832789455133950
-    Name: M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Metallic
-    Source: Resources/Models/Enemy/Patrol2Textures/M4_Patrol_Enemy_2_SCISSORS_Scissors_Patrol_Metallic.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3106,17 +3106,6 @@ ASSETS:
     UID: 7615287053686789763
     Name: Sakura Tree_baseColor2
     Source: Resources/Textures/Props Textures/Sakura Tree_baseColor2.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
-    UID: 7833154610195326373
-    Name: KeyTutorial
-    Source: Resources/Textures/PlayerUI/KeyTutorial.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3587,17 +3576,6 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 11063674576259295404
-    Name: CTRL_Crouch
-    Source: Resources/Textures/PlayerUI/CTRL_Crouch.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
     UID: 8124115684814999151
     Name: NotEnoughKeys_Dialogue1
     Source: Resources/Textures/PlayerUI/NotEnoughKeys_Dialogue1.png
@@ -3612,17 +3590,6 @@ ASSETS:
     UID: 5826171970229966582
     Name: ReturnMenuButton_Clicked
     Source: Resources/Textures/MenusUI/ReturnMenuButton_Clicked.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
-    UID: 8124115684814999151
-    Name: NotEnoughKeys_Dialogue1
-    Source: Resources/Textures/PlayerUI/NotEnoughKeys_Dialogue1.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3967,10 +3934,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 12277248767035463145
     Name: M4_Player_T-Pose_SamuraiTexture_BaseColor
@@ -4357,6 +4324,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 367559179714889467
+    Name: StartCutscene_Dialogue6
+    Source: Resources/Textures/PlayerUI/StartCutscene_Dialogue6.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 16291640152966140925
     Name: M5_Daruma_Boss_low_Daruma_Height
     Source: Resources/Textures/Boss Level Textures/M5_Daruma_Boss_low_Daruma_Height.png
@@ -4643,20 +4621,20 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 17311541046891597403
-    Name: M5_Daruma_Boss_low_Daruma_Emissive2
-    Source: Resources/Textures/Boss Level Textures/M5_Daruma_Boss_low_Daruma_Emissive2.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
     UID: 15364468852678004646
     Name: Crouch_FirstTime_Dialogue1
     Source: Resources/Textures/PlayerUI/Crouch_FirstTime_Dialogue1.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 17311541046891597403
+    Name: M5_Daruma_Boss_low_Daruma_Emissive2
+    Source: Resources/Textures/Boss Level Textures/M5_Daruma_Boss_low_Daruma_Emissive2.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -4786,9 +4764,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 367559179714889467
-    Name: StartCutscene_Dialogue6
-    Source: Resources/Textures/PlayerUI/StartCutscene_Dialogue6.png
+    UID: 2900915588722288564
+    Name: CannotCrouch
+    Source: Resources/Textures/PlayerUI/CannotCrouch.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -4797,27 +4775,16 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 2900915588722288564
-    Name: CannotCrouch
-    Source: Resources/Textures/PlayerUI/CannotCrouch.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
     UID: 12896261092017281121
     Name: CanCrouch
     Source: Resources/Textures/PlayerUI/CanCrouch.png
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 15435352864565154533
     Name: LockopenPBR_shader1_baseColor
@@ -4825,10 +4792,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 934373211665423018
     Name: LockopenPBR_shader1_normal
@@ -4836,10 +4803,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 8813242198036643513
     Name: LockopenPBR_shader1_occlusionRoughnessMetallic
@@ -4847,10 +4814,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: SKYBOX
     UID: 4245843529762785392
     Name: NightSkyHDRI003_8K_HDR
@@ -6548,9 +6515,9 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 2915209680014061313
-    Name: LEVEL2Walking
-    Source: Resources/Models/Enemy/Patrol2Textures/LEVEL2Walking.fbx
+    UID: 12205784983460827261
+    Name: lock_uncoloured
+    Source: Resources/Models/Props/lock/lock_uncoloured.fbx
     Properties:
       Model Transform:
         transform:
@@ -6559,9 +6526,9 @@ ASSETS:
           Scale: [1, 1, 1]
       HasJoints: false
   - Type: MODEL
-    UID: 12205784983460827261
-    Name: lock_uncoloured
-    Source: Resources/Models/Props/lock/lock_uncoloured.fbx
+    UID: 2915209680014061313
+    Name: LEVEL2Walking
+    Source: Resources/Models/Enemy/Patrol2Textures/LEVEL2Walking.fbx
     Properties:
       Model Transform:
         transform:
@@ -7089,6 +7056,14 @@ ASSETS:
     UID: 9911665564103461214
     Name: doorLocked
     Source: Resources/Audio/doorLocked.wav
+  - Type: AUDIO
+    UID: 11857608696320442786
+    Name: Star Wars Main Theme song
+    Source: Resources/Audio/Star Wars Main Theme song.wav
+  - Type: AUDIO
+    UID: 1843884016243883010
+    Name: uiClick
+    Source: Resources/Audio/uiClick.wav
   - Type: ANIMATION
     UID: 4483381614930560572
     Name: mixamo.com
