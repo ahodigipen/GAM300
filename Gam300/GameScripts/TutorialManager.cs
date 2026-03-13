@@ -64,7 +64,7 @@ namespace GameScripts
         private enum FadeMode { None, FadeIn, FadeOut }
         private static FadeMode  s_fadeMode    = FadeMode.None;
         private static float     s_fadeTimer   = 0f;
-        private const  float     FADE_DURATION = 0.25f;
+        private const  float     FADE_DURATION = 0.15f;
         // Currently fading entity (only one at a time for tutorial)
         private static ulong     s_fadingEntity = 0;
         // Action to run when current fade-out finishes

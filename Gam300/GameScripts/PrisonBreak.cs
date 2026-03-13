@@ -46,6 +46,14 @@ namespace GameScripts
         private FadeState _fadeState = FadeState.None;
         private float _fadeTimer = 0f;
 
+        // E Prompt Fade State
+        private enum EPromptFadeState { None, FadeIn, FadeOut }
+        private EPromptFadeState _eFadeState = EPromptFadeState.None;
+        private float _eFadeTimer = 0f;
+        private const float E_FADE_DURATION = 0.15f;
+        private float _eCurrentAlpha = 0f;
+        private ulong _eBreakOutEntity = 0;
+
         // ─── Lifecycle ──────────────────────────────────────────────────────
 
         public void OnStart(string jsonParams)
@@ -62,6 +70,12 @@ namespace GameScripts
             if (!API.IsTrigger(Entity))
                 API.SetTrigger(Entity, true);
 
+            _eBreakOutEntity = API.FindEntity("E_BreakOut");
+            if (_eBreakOutEntity != 0 && API.HasSprite(_eBreakOutEntity))
+            {
+                API.SetSpriteAlpha(_eBreakOutEntity, 0f);
+            }
+
             API.RegisterTriggerEnterCallback(Entity, OnTriggerEnter);
             API.RegisterTriggerExitCallback(Entity, OnTriggerExit);
             API.Log("[PrisonBreak] Ready. Player must enter the zone and press E.");
@@ -69,6 +83,33 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
+            // Handle E Prompt Fading
+            if (_eBreakOutEntity != 0 && _eFadeState != EPromptFadeState.None)
+            {
+                _eFadeTimer += dt;
+                float t = Math.Min(1f, _eFadeTimer / E_FADE_DURATION);
+
+                if (_eFadeState == EPromptFadeState.FadeIn)
+                {
+                    _eCurrentAlpha = t;
+                    API.SetSpriteAlpha(_eBreakOutEntity, _eCurrentAlpha);
+                    if (t >= 1f)
+                    {
+                        _eFadeState = EPromptFadeState.None;
+                        _eFadeTimer = 0f;
+                    }
+                }
+                else if (_eFadeState == EPromptFadeState.FadeOut)
+                {
+                    _eCurrentAlpha = 1f - t;
+                    API.SetSpriteAlpha(_eBreakOutEntity, _eCurrentAlpha);
+                    if (t >= 1f)
+                    {
+                        _eFadeState = EPromptFadeState.None;
+                        _eFadeTimer = 0f;
+                    }
+                }
+            }
             // ── Fade / sequence state machine ────────────────────────────
             if (_fadeState != FadeState.None && _fadeState != FadeState.Done)
             {
@@ -146,8 +187,12 @@ namespace GameScripts
         private void Activate()
         {
             _activated = true;
-            ulong eBreakOutID = API.FindEntity("E_BreakOut");
-            if (eBreakOutID != 0) API.SetSpriteAlpha(eBreakOutID, 0f);
+            
+            if (_eBreakOutEntity != 0) 
+            {
+                _eFadeState = EPromptFadeState.FadeOut;
+                _eFadeTimer = (1f - _eCurrentAlpha) * E_FADE_DURATION;
+            }
             
             _fadeState  = FadeState.FadingOut;
             _fadeTimer  = 0f;
@@ -197,8 +242,12 @@ namespace GameScripts
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
 
             inst._playerInZone = true;
-            ulong eBreakOutID = API.FindEntity("E_BreakOut");
-            if (eBreakOutID != 0 && !inst._activated) API.SetSpriteAlpha(eBreakOutID, 1f);
+            
+            if (inst._eBreakOutEntity != 0 && !inst._activated) 
+            {
+                inst._eFadeState = EPromptFadeState.FadeIn;
+                inst._eFadeTimer = inst._eCurrentAlpha * E_FADE_DURATION;
+            }
             API.Log("[PrisonBreak] Player entered zone. Press E to trigger.");
         }
 
@@ -209,8 +258,12 @@ namespace GameScripts
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
 
             inst._playerInZone = false;
-            ulong eBreakOutID = API.FindEntity("E_BreakOut");
-            if (eBreakOutID != 0 && !inst._activated) API.SetSpriteAlpha(eBreakOutID, 0f);
+            
+            if (inst._eBreakOutEntity != 0 && !inst._activated) 
+            {
+                inst._eFadeState = EPromptFadeState.FadeOut;
+                inst._eFadeTimer = (1f - inst._eCurrentAlpha) * E_FADE_DURATION;
+            }
             API.Log("[PrisonBreak] Player left zone.");
         }
     }

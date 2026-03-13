@@ -89,7 +89,7 @@ namespace GameScripts
         private enum EPromptFadeState { None, FadeIn, FadeOut }
         private EPromptFadeState _eFadeState = EPromptFadeState.None;
         private float _eFadeTimer = 0f;
-        private const float E_FADE_DURATION = 0.25f;
+        private const float E_FADE_DURATION = 0.15f;
         private float _eCurrentAlpha = 0f;
 
         private enum DialogueState { None, Dialogue1, Dialogue2 }
