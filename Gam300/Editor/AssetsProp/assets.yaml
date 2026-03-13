@@ -111,28 +111,6 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
-    UID: 295392599374634747
-    Name: Cushion Texture
-    Source: Cushion Texture
-    Properties:
-      Data:
-        emissive: [0, 0, 0]
-        albedo: [1, 1, 1]
-        roughness: 0.810000002
-        metallic: 0
-        occlusion: 0.800000012
-        opacity: 1
-        useWorldSpaceUV: false
-        textureScale: 1
-      AlbedoMapID: 2408227857109572219
-      NormalMapID: 5635053925849247296
-      RoughnessMapID: 6305281938924181745
-      MetallicMapID: 9033368879326419558
-      OcclusionMapID: 14205466992706534584
-      EmissiveMapID: 0
-      OpacityMapID: 0
-      DoubleSided: false
-  - Type: MATERIAL
     UID: 5492247716426239787
     Name: spikes
     Source: spikes
@@ -177,6 +155,28 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
+    UID: 295392599374634747
+    Name: Cushion Texture
+    Source: Cushion Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.810000002
+        metallic: 0
+        occlusion: 0.800000012
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 2408227857109572219
+      NormalMapID: 5635053925849247296
+      RoughnessMapID: 6305281938924181745
+      MetallicMapID: 9033368879326419558
+      OcclusionMapID: 14205466992706534584
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
     UID: 8803557448742180096
     Name: light
     Source: light
@@ -217,7 +217,7 @@ ASSETS:
       RoughnessMapID: 17384339938560687904
       MetallicMapID: 0
       OcclusionMapID: 0
-      EmissiveMapID: 0
+      EmissiveMapID: 183969138529929306
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
@@ -349,7 +349,7 @@ ASSETS:
       RoughnessMapID: 13175597232551743125
       MetallicMapID: 0
       OcclusionMapID: 0
-      EmissiveMapID: 17639289908748203916
+      EmissiveMapID: 14479753821827653348
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
@@ -1794,6 +1794,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 183969138529929306
+    Name: Lion_Statue2_Lion_Emissive
+    Source: Resources/Models/Props/Lion_Statue/Lion_Statue2_Lion_Emissive.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 9814913805119522920
     Name: Lantern_Hanging_openPBR_shader1_Normal
     Source: Resources/Models/Props/3_PON_LanternTextures/Lantern_Hanging_openPBR_shader1_Normal.png
@@ -2190,6 +2201,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 18116571246883620302
+    Name: Scissors_Ninja_Hood_Metallic
+    Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Hood_Metallic.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 16738226509792806577
     Name: lantern_colour_1_MaskMap
     Source: Resources/Models/Props/lantern mat/lantern_colour_1_MaskMap.png
@@ -2204,17 +2226,6 @@ ASSETS:
     UID: 15182049477367409902
     Name: E_OpenDoor
     Source: Resources/Textures/PlayerUI/E_OpenDoor.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
-    UID: 18116571246883620302
-    Name: Scissors_Ninja_Hood_Metallic
-    Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Hood_Metallic.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -6556,6 +6567,10 @@ ASSETS:
     Name: footstep_tatami_4
     Source: Resources/Audio/footstep_tatami_4.wav
   - Type: AUDIO
+    UID: 12394405760678373422
+    Name: Boss_Warning_03
+    Source: Resources/Audio/Boss_Warning_03.wav
+  - Type: AUDIO
     UID: 12267195745784827679
     Name: Kairos_Cave-Vuk_Loop
     Source: Resources/Audio/Kairos_Cave-Vuk_Loop.wav
@@ -6832,6 +6847,10 @@ ASSETS:
     Name: footstep_sand_2
     Source: Resources/Audio/footstep_sand_2.wav
   - Type: AUDIO
+    UID: 9758338697769796824
+    Name: Boss_Warning_05
+    Source: Resources/Audio/Boss_Warning_05.wav
+  - Type: AUDIO
     UID: 7850781228654886895
     Name: footstep_sand_3
     Source: Resources/Audio/footstep_sand_3.wav
@@ -7075,6 +7094,30 @@ ASSETS:
     UID: 1843884016243883010
     Name: uiClick
     Source: Resources/Audio/uiClick.wav
+  - Type: AUDIO
+    UID: 6917296380560878073
+    Name: BossTurn_Loop
+    Source: Resources/Audio/BossTurn_Loop.wav
+  - Type: AUDIO
+    UID: 11670507172985411025
+    Name: Boss_Warning_02
+    Source: Resources/Audio/Boss_Warning_02.wav
+  - Type: AUDIO
+    UID: 2122097343859867211
+    Name: Boss_Warning_04
+    Source: Resources/Audio/Boss_Warning_04.wav
+  - Type: AUDIO
+    UID: 4900589656928435925
+    Name: Boss_Warning_06
+    Source: Resources/Audio/Boss_Warning_06.wav
+  - Type: AUDIO
+    UID: 12667430816839063842
+    Name: Boss_Warning_07
+    Source: Resources/Audio/Boss_Warning_07.wav
+  - Type: AUDIO
+    UID: 6149701185527340143
+    Name: Boss_Warning_08
+    Source: Resources/Audio/Boss_Warning_08.wav
   - Type: ANIMATION
     UID: 4483381614930560572
     Name: mixamo.com
