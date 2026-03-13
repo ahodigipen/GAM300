@@ -655,6 +655,9 @@ namespace GameScripts
         private void SetRotationAndSpotlight(float yaw)
         {
             API.SetRotationY(Entity, yaw);
+            // Keep VisionComponent in sync with the authoritative yaw so the cone
+            // always matches the visual rotation, not whatever GetRotation() returns.
+            _vision?.SetFacingYaw(yaw);
             // Spotlight rotation is handled by SpotlightFollower with isPatrolEnemy=true
         }
 

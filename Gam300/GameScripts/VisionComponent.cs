@@ -40,6 +40,22 @@ namespace GameScripts
         private float _alertTimer;
         private Vec3 _lastKnownTargetPosition;
 
+        // Optional override: when set, the vision cone uses this yaw instead of reading
+        // API.GetRotation(Entity).Y. Use this when the controller sets rotation via
+        // SetRotationY (which may not be reflected by GetRotation).
+        private bool _hasFacingOverride = false;
+        private float _facingOverrideYawDeg = 0f;
+
+        /// <summary>
+        /// Override the facing direction used for vision cone checks.
+        /// Call this every frame from controllers that use SetRotationY.
+        /// </summary>
+        public void SetFacingYaw(float yawDegrees)
+        {
+            _hasFacingOverride = true;
+            _facingOverrideYawDeg = yawDegrees;
+        }
+
         public void OnStart(string jsonParams)
         {
             ValidateEntity();
@@ -146,7 +162,8 @@ namespace GameScripts
             float tx = dx / dist;
             float tz = dz / dist;
 
-            float yawRad = enemyRot.Y * (float)Math.PI / 180f;
+            float facingYawDeg = _hasFacingOverride ? _facingOverrideYawDeg : enemyRot.Y;
+            float yawRad = facingYawDeg * (float)Math.PI / 180f;
             float fx = (float)Math.Sin(yawRad);
             float fz = (float)Math.Cos(yawRad);
 
