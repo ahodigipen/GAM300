@@ -664,11 +664,12 @@ namespace GameScripts
             }
 
             // ── Input ─────────────────────────────────────────────────────────
-            bool enterDown = API.IsKeyDown(KEY_ENTER);
-            bool enterPressed = enterDown && !s_dialogueEnterWasDown;
-            s_dialogueEnterWasDown = enterDown;
+            bool gamepadA = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A);
+            bool advanceDown = API.IsKeyDown(KEY_ENTER) || API.IsKeyDown(KEY_E) || gamepadA;
+            bool advancePressed = advanceDown && !s_dialogueEnterWasDown;
+            s_dialogueEnterWasDown = advanceDown;
 
-            if (!enterPressed) return;
+            if (!advancePressed) return;
 
             API.PlaySound("sfx_ui_click", "Resources/Audio/uiClick.wav", false);
 
