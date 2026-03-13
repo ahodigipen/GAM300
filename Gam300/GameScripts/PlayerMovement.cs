@@ -99,7 +99,7 @@ namespace GameScripts
         private const float GOD_MODE_TEXT_DISPLAY = 2.0f;
 
         // ==== Freeze Ability Fields ====
-        private const int USE_FREEZE = API.KEY_E;
+        private const int USE_FREEZE = API.KEY_F;
         private bool _wasUseFreezeDown = false;
 
         [Boom.EditorExposed("Freeze Radius", "Range of the freeze effect")]

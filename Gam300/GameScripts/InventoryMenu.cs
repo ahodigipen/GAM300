@@ -52,26 +52,30 @@ namespace GameScripts
                     if (i < PlayerInventory.s_inventorySlots.Count)
                     {
                         string itemType = PlayerInventory.s_inventorySlots[i];
-                        
+
                         // Show slot
                         SetSpriteAlpha(_slotIcons[i], 1.0f);
                         SetTextAlpha(_slotTexts[i], 1.0f);
 
-                        // Set Texture and Text based on item
-                        if (itemType == "MainDoor")
+                        if (itemType == "Freeze")
                         {
-                            API.SetSpriteTexture(_slotIcons[i], MAINDOOR_TEX);
-                            SetText(_slotTexts[i], $"{PlayerInventory.GetKeyCount("MainDoor")}");
-                        }
-                        else if (itemType == "SmallDoor")
-                        {
-                            API.SetSpriteTexture(_slotIcons[i], SMALLDOOR_TEX);
-                            SetText(_slotTexts[i], $"{PlayerInventory.GetKeyCount("SmallDoor")}");
-                        }
-                        else if (itemType == "Freeze")
-                        {
+                            // Freeze stacks — show total charge count
                             API.SetSpriteTexture(_slotIcons[i], FREEZE_TEX);
                             SetText(_slotTexts[i], $"{PlayerInventory.GetFreezeChargeCount()}");
+                        }
+                        else
+                        {
+                            // itemType is a doorName — look up variant for icon and per-door count
+                            string variant = PlayerInventory.GetDoorKeyVariant(itemType);
+                            if (variant == "MainDoor")
+                            {
+                                API.SetSpriteTexture(_slotIcons[i], MAINDOOR_TEX);
+                            }
+                            else if (variant == "SmallDoor")
+                            {
+                                API.SetSpriteTexture(_slotIcons[i], SMALLDOOR_TEX);
+                            }
+                            SetText(_slotTexts[i], $"{PlayerInventory.GetDoorKeyCount(itemType)}");
                         }
                     }
                     else

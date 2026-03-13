@@ -19,11 +19,17 @@ namespace GameScripts
             options: new[] { "MainDoor", "SmallDoor" })]
         private string _keyVariant = "MainDoor";
 
+        // Door name — must match the MultiKeyDoor's 'Door Name' field for the door this key opens.
+        // Used as the inventory slot identifier so all keys for the same door stack in one slot.
+        [Boom.EditorExposed("Door Name", "Must match the target MultiKeyDoor's 'Door Name' field")]
+        private string _doorName = "";
+
         // Optional: sound to play on pickup
         [Boom.EditorExposed("Pickup Sound", "Sound played when the key is collected")]
         private string _pickupSound = "Resources/Audio/pickup.wav";
 
         private static readonly Dictionary<ulong, KeyPickup> s_instances = new Dictionary<ulong, KeyPickup>();
+
         private bool _collected = false;
         private bool _playerInRange = false;
 
@@ -68,7 +74,7 @@ namespace GameScripts
             }
 
             _collected = true;
-            PlayerInventory.AddKey(_keyType, _keyVariant);
+            PlayerInventory.AddKey(_keyType, _keyVariant, _doorName);
 
             // Show pickup tutorial (first-time or repeat) based on key variant
             TutorialManager.ItemType itemType = (_keyVariant == "SmallDoor")
