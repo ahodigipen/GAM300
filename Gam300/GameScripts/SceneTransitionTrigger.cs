@@ -21,6 +21,9 @@ namespace GameScripts
         [Boom.EditorExposed("One Time Use", "If true, trigger only works once")]
         private bool _oneTimeUse = false;
 
+        [Boom.EditorExposed("Play Boss Transition Dialogue", "If true, plays boss transition dialogue before loading scene")]
+        private bool _playBossTransitionDialogue = false;
+
         [Boom.EditorExposed("Interaction Prompt Name", "Name of the UI entity for interaction (e.g. 'A to interact')")]
         private string _promptName = "UI_A_Interact";
 
@@ -126,7 +129,24 @@ namespace GameScripts
             if (_promptEntity != 0) API.SetSpriteAlpha(_promptEntity, 0f);
 
             // Start transition (with delay if configured)
-            if (_transitionDelay > 0f)
+            if (_playBossTransitionDialogue)
+            {
+                API.Log($"[SceneTransitionTrigger] Playing Boss Transition Dialogue before transitioning to '{_sceneName}'.");
+                StoryDialogueManager.PlayBossTransitionSequence(() =>
+                {
+                    if (_transitionDelay > 0f)
+                    {
+                        _isTransitioning = true;
+                        _transitionTimer = _transitionDelay;
+                        API.Log($"[SceneTransitionTrigger] Transition to '{_sceneName}' in {_transitionDelay:F1}s then fade.");
+                    }
+                    else
+                    {
+                        StartFadeOut();
+                    }
+                });
+            }
+            else if (_transitionDelay > 0f)
             {
                 _isTransitioning = true;
                 _transitionTimer = _transitionDelay;

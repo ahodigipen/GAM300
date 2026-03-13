@@ -1,5 +1,32 @@
 Version: 1.0
 ENTITIES:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: BossCheckpoint
+      UID: 16587214553815957843
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-40.7700005, 27.9599991, -31]
+        Rotate: [0, -0, 0]
+        Scale: [6.08900023, 5, 8.68900013]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.CPTrigger
+      ParamsJSON: "{\n  \"_activeColor\": {\n    \"X\": 0.07800000160932541,\n    \"Y\": 0.8270000219345093,\n    \"Z\": 0.5799999833106995\n  },\n  \"_bobbingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_checkpointSpriteNames\": \"CPPopup\",\n  \"_cutsceneEntityName\": \"\",\n  \"_floatingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_forwardOffset\": 5.0,\n  \"_isBossCheckpoint\": true,\n  \"_lightNames\": \"ResPoint1_Light_1,ResPoint1_Light_2,ResPoint1_Light_3\"\n}"
   - InfoComponent:
       Parent: 15030438282683852635
       Name: BossCheckpoint_Dialogue5
@@ -255,7 +282,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.MultiKeyDoor
-      ParamsJSON: "{\n  \"_doorName\": \"NewDoorPrison\",\n  \"_lockEntityName\": \"lock_Prison\",\n  \"_requiredKeysString\": \"Key1_Prison\",\n  \"_slideDirection\": \"front\"\n}"
+      ParamsJSON: "{\n  \"_doorName\": \"NewDoorPrison\",\n  \"_ePromptName\": \"UI_E_OpenDoor\",\n  \"_lockEntityName\": \"lock_Prison\",\n  \"_requiredKeysString\": \"Key1_Prison\",\n  \"_slideDirection\": \"front\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 3.00161338, -0.0147908237]
@@ -2966,7 +2993,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.MultiKeyDoor
-      ParamsJSON: "{\n  \"_doorName\": \"NewDoor5\",\n  \"_lockEntityName\": \"lock_SR2_2\",\n  \"_requiredKeysString\": \"Key2_sr2\"\n}"
+      ParamsJSON: "{\n  \"_doorName\": \"NewDoor5\",\n  \"_ePromptName\": \"UI_E_OpenDoor\",\n  \"_lockEntityName\": \"lock_SR2_2\",\n  \"_requiredKeysString\": \"Key2_sr2\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0223471075, -0.250579834, -0.0840037838]
@@ -3328,7 +3355,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.MultiKeyDoor
-      ParamsJSON: "{\n  \"_doorName\": \"NewDoorsr1\",\n  \"_lockEntityName\": \"lock_SR1\",\n  \"_requiredKeysString\": \"Key1_sr1\",\n  \"_slideDirection\": \"front\"\n}"
+      ParamsJSON: "{\n  \"_doorName\": \"NewDoorsr1\",\n  \"_ePromptName\": \"UI_E_OpenDoor\",\n  \"_lockEntityName\": \"lock_SR1\",\n  \"_requiredKeysString\": \"Key1_sr1\",\n  \"_slideDirection\": \"front\"\n}"
   - InfoComponent:
       Parent: 9691864251179230668
       Name: PrisonGateBar3 (Copy) (Copy)
@@ -3507,7 +3534,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.MultiKeyDoor
-      ParamsJSON: "{\n  \"_doorName\": \"NewDoor4\",\n  \"_lockEntityName\": \"lock_SR2_1\",\n  \"_requiredKeysString\": \"Key2_sr1\"\n}"
+      ParamsJSON: "{\n  \"_doorName\": \"NewDoor4\",\n  \"_ePromptName\": \"UI_E_OpenDoor\",\n  \"_lockEntityName\": \"lock_SR2_1\",\n  \"_requiredKeysString\": \"Key2_sr1\"\n}"
   - InfoComponent:
       Parent: 0
       Name: ToriGate1 (Copy) (Copy)
@@ -8714,7 +8741,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.MultiKeyDoor
-      ParamsJSON: "{\n  \"_doorName\": \"NewDoor6\",\n  \"_isMainDoor\": true,\n  \"_lockEntityName\": \"lock_2\",\n  \"_requiredKeyType\": \"Key2_1\",\n  \"_requiredKeysString\": \"Key2_3,Key2_2,Key2_1\"\n}"
+      ParamsJSON: "{\n  \"_doorName\": \"NewDoor6\",\n  \"_ePromptName\": \"UI_E_OpenDoor\",\n  \"_isMainDoor\": true,\n  \"_lockEntityName\": \"lock_2\",\n  \"_requiredKeyType\": \"Key2_1\",\n  \"_requiredKeysString\": \"Key2_3,Key2_2,Key2_1\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0280764326, -0.00411249651, -0.00168499968]
@@ -13840,8 +13867,8 @@ ENTITIES:
       SortOrder: 393
     TransformComponent:
       Transform:
-        Translate: [-5.15397739, 21.4994583, 30.0128918]
-        Rotate: [-203.3125, 8209.6875, 180]
+        Translate: [-43.6904221, 29.2686405, -23.6388092]
+        Rotate: [-189.0625, 8471.1875, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -14950,7 +14977,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.MultiKeyDoor
-      ParamsJSON: "{\n  \"_doorName\": \"NewDoor2\",\n  \"_isMainDoor\": true,\n  \"_lockEntityName\": \"lock_1\",\n  \"_requiredKeysString\": \"Key1_1,Key1_2,Key1_3\",\n  \"_slideDirection\": \"right\"\n}"
+      ParamsJSON: "{\n  \"_doorName\": \"NewDoor2\",\n  \"_ePromptName\": \"UI_E_OpenDoor\",\n  \"_isMainDoor\": true,\n  \"_lockEntityName\": \"lock_1\",\n  \"_requiredKeysString\": \"Key1_1,Key1_2,Key1_3\",\n  \"_slideDirection\": \"right\"\n}"
   - InfoComponent:
       Parent: 0
       Name: Sentry Vision Cone 4
@@ -15761,7 +15788,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.SceneTransitionTrigger
-      ParamsJSON: "{\n  \"_oneTimeUse\": true,\n  \"_sceneName\": \"NewBossArena\"\n}"
+      ParamsJSON: "{\n  \"_oneTimeUse\": true,\n  \"_playBossTransitionDialogue\": true,\n  \"_sceneName\": \"NewBossArena\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
