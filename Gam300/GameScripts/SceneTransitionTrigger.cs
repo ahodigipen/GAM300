@@ -21,11 +21,10 @@ namespace GameScripts
         [Boom.EditorExposed("One Time Use", "If true, trigger only works once")]
         private bool _oneTimeUse = false;
 
+        [Boom.EditorExposed("Interaction Prompt Name", "Name of the UI entity for interaction (e.g. 'E to interact')")]
+        private string _promptName = "UI_E_OpenDoor";
         [Boom.EditorExposed("Play Boss Transition Dialogue", "If true, plays boss transition dialogue before loading scene")]
         private bool _playBossTransitionDialogue = false;
-
-        [Boom.EditorExposed("Interaction Prompt Name", "Name of the UI entity for interaction (e.g. 'A to interact')")]
-        private string _promptName = "UI_A_Interact";
 
         // State
         private static readonly Dictionary<ulong, SceneTransitionTrigger> s_instances = new Dictionary<ulong, SceneTransitionTrigger>();
