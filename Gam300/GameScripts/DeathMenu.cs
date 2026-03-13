@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Boom;
 
 namespace GameScripts
@@ -17,6 +17,8 @@ namespace GameScripts
         private ulong _restartButtonID;
         private ulong _mainMenuButtonID;
         private ulong _backgroundID;
+
+        private ButtonFX _buttonFX;
 
         private enum DeathMenuState
         {
@@ -49,6 +51,8 @@ namespace GameScripts
             _mainMenuButtonID = API.FindEntity("Death_ReturnButton");
             _backgroundID = API.FindEntity("Death_Background");
 
+            _buttonFX = new ButtonFX(_restartButtonID, _mainMenuButtonID);
+
             _selectedIndex = -1;
             ResetButtonState();
         }
@@ -68,6 +72,9 @@ namespace GameScripts
 
             if (!Entry.IsPlayerDead) return;
             if (Entry.s_RequestedDeathAction != Entry.DeathMenuAction.None) return;
+
+            // Always update hover effects
+            _buttonFX?.Update(dt);
 
             Update_ControllerNavigation();
 
@@ -105,12 +112,14 @@ namespace GameScripts
             {
                 if (_selectedIndex == -1) _selectedIndex = 1; // Highlight Main Menu if coming from nothing
                 else _selectedIndex = (_selectedIndex - 1 + 2) % 2;
+                _buttonFX?.SetControllerSelection(_selectedIndex);
                 UpdateVisuals();
             }
             if ((dpadDown && !_wasDpadDown) || (stickDown && !_wasStickDown))
             {
                 if (_selectedIndex == -1) _selectedIndex = 0; // Highlight Restart if coming from nothing
                 else _selectedIndex = (_selectedIndex + 1) % 2;
+                _buttonFX?.SetControllerSelection(_selectedIndex);
                 UpdateVisuals();
             }
 
@@ -163,6 +172,7 @@ namespace GameScripts
             _currentState = DeathMenuState.WaitingForMouseUp;
             _clickedButtonID = 0;
             _buttonDelayTimer = 0.0f;
+            _buttonFX?.Reset();
 
             UpdateVisuals();
         }
@@ -201,6 +211,7 @@ namespace GameScripts
             _currentState = DeathMenuState.ButtonDelay;
             _clickedButtonID = buttonID;
             _buttonDelayTimer = 0.0f;
+            ButtonFX.PlayClickSound();
 
             if (buttonID != 0)
                 API.SetSpriteColor(buttonID, new Vec4(0.5f, 0.5f, 0.5f, 1.0f));

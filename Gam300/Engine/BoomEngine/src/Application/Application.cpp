@@ -250,6 +250,11 @@ namespace Boom
 
         m_DebugLinesShader = std::make_unique<Boom::DebugLinesShader>("debug_lines.glsl");
 
+        // Initialize particle system GPU resources
+        if (m_Context->particleSystem) {
+            m_Context->particleSystem->Init();
+        }
+
         std::cout << "[RunContext] Debug lines shader created, enabling physics debug..." << std::endl;
         std::cout.flush();
 
@@ -351,9 +356,16 @@ namespace Boom
                 if (m_Context->videoSystem) {
                     m_Context->videoSystem->Update(m_Context->scene, m_Context->DeltaTime);
                 }
+
             }
 
             SoundEngine::Instance().Update();
+
+            // Particle System Update (only runs while playing, not while stopped or paused in editor)
+            if (m_Context->particleSystem && m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) {
+                glm::vec3 camPos = m_Context->renderer->GetCameraPosition();
+                m_Context->particleSystem->Update(static_cast<float>(m_Context->DeltaTime), m_Context->scene, camPos);
+            }
 
             // Update 3D audio listener to follow the third-person camera
             EnttView<Entity, ThirdPersonCameraComponent, TransformComponent>([this](auto /*entity*/, ThirdPersonCameraComponent& /*tpCam*/, TransformComponent& transform) {
@@ -683,12 +695,12 @@ namespace Boom
 
             m_Context->renderer->ShowFrame(showFrame);
 
-            // Always render 2D sprites and text after compositing: avoids volumetric fog and ensures sprites draw on top of text
+            // Always render 2D sprites and text after compositing: avoids volumetric fog and ensures text draws on top of sprites
             {
                 m_Context->renderer->BeginFullResOverlay(showFrame);
                 m_Context->renderer->SetSpriteToneMap(true);
-                RenderTextOverlay();   // Text first so sprites draw on top
                 RenderSpriteOverlay();
+                RenderTextOverlay();   // Text after sprites so text draws on top
                 m_Context->renderer->SetSpriteToneMap(false);
                 m_Context->renderer->EndFullResOverlay();
             }
@@ -940,6 +952,20 @@ namespace Boom
                     }
                 }
             }
+            // ParticleEmitterComponent picking — draw a small quad at world position so the
+            // entity can be selected in the editor even when it has no ModelComponent
+            else if (entity.Has<ParticleEmitterComponent>()) {
+                if (isPicking) {
+                    glm::mat4 worldMat = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+                    Transform3D pickTransform;
+                    pickTransform.translate = glm::vec3(worldMat[3]);
+                    pickTransform.rotate    = glm::vec3(0.0f);
+                    pickTransform.scale     = glm::vec3(0.5f); // fixed click-target size
+                    m_Context->renderer->SetPickUniform(entt::to_integral(entity.ID()));
+                    m_Context->renderer->DrawPick(pickTransform);
+                }
+                // Normal rendering is handled by the ParticleSystem pass after EndFrame()
+            }
             });
 
         // === INSTANCED RENDERING PASS ===
@@ -989,6 +1015,26 @@ namespace Boom
                 glDisable(GL_CULL_FACE);
             }
             glDepthMask(GL_TRUE);
+
+            // === PARTICLE RENDERING PASS ===
+            // Must not run during the picking pass — the pick FBO is GL_R32UI and cannot
+            // receive the float RGBA outputs of the particle shader (corrupts pick IDs)
+            if (m_Context->particleSystem && !isPicking) {
+                Camera3D* particleCam = nullptr;
+                Transform3D particleCamT{};
+                EnttView<Entity, CameraComponent>([&](auto entity, CameraComponent& comp) {
+                    if (!particleCam) {
+                        particleCamT = entity.template Get<TransformComponent>().transform;
+                        particleCam = &comp.camera;
+                    }
+                });
+                if (particleCam) {
+                    float aspect = m_Context->renderer->Aspect();
+                    glm::mat4 viewMat = particleCam->View(particleCamT);
+                    glm::mat4 projMat = particleCam->Projection(aspect);
+                    m_Context->particleSystem->Render(m_Context->scene, *m_Context->assets, viewMat, projMat);
+                }
+            }
         }
 
         //sort guiList based on z-axis from negative to positive(opengl z-axis towards camera)

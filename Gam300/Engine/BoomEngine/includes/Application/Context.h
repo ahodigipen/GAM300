@@ -4,6 +4,7 @@
 #include "AppWindow.h"
 #include "Graphics/Renderer.h"
 #include "Graphics/Video/VideoSystem.h"
+#include "Graphics/ParticleSystem.h"
 #include "GlobalConstants.h"
 #include "Auxiliaries/Assets.h"
 #include "ECS/ECS.hpp"
@@ -47,6 +48,7 @@ namespace Boom
 		std::unique_ptr<AssetRegistry> assets;
 		std::unique_ptr<ScriptingSystem> scriptingSystem;
 		std::unique_ptr<VideoSystem> videoSystem;
+		std::unique_ptr<ParticleSystem> particleSystem;
 		Boom::Profiler profiler;
 		double DeltaTime{};
 		EntityRegistry scene;
@@ -81,6 +83,7 @@ namespace Boom
 		, physics{ std::make_unique<PhysicsContext>() }
 		, scriptingSystem{ std::make_unique<ScriptingSystem>() }
 		, videoSystem{ std::make_unique<VideoSystem>() }
+		, particleSystem{ std::make_unique<ParticleSystem>() }
 		, scene{}
 	{
 		SoundEngine::Instance().Init();

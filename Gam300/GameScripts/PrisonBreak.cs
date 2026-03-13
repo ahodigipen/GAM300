@@ -125,13 +125,13 @@ namespace GameScripts
                 return;
             }
 
-            // ── E key one-shot press detection ───────────────────────────
-            bool eDown = API.IsKeyDown(API.KEY_E);
+            // ── Interaction detection (F key or Gamepad A) ───────────────────────────
+            bool interactDown = API.IsKeyDown(API.KEY_E) || (API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A));
 
-            if (_playerInZone && !_activated && eDown && !_wasEPressed)
+            if (_playerInZone && !_activated && interactDown && !_wasEPressed)
                 Activate();
 
-            _wasEPressed = eDown;
+            _wasEPressed = interactDown;
         }
 
         public void OnDestroy()

@@ -1,0 +1,27 @@
+DURATION 1500
+TRACK "Camera" 4
+KEY 0 0 0 0 0 "BossCutscene1"
+KEY 187 0 0 0 0 "BossCutscene2"
+KEY 364 0 0 0 0 "BossCutscene3"
+KEY 1027 0 0 0 0 "BossCutscene4"
+TRACK "Camera" 0
+KEY 0 0 0 0 0 "BossCutscene1"
+KEY 181 0 0 0 0 "BossCutscene1"
+KEY 187 0 0 0 0 "BossCutscene2"
+KEY 359 0 0 0 0 "BossCutscene2"
+KEY 364 0 0 0 0 "BossCutscene3"
+KEY 1020 0 0 112 0 "BossCutscene3"
+KEY 1027 0 0 112 0 "BossCutscene3"
+KEY 1500 0 0 112 0 "BossCutscene3"
+TRACK "Camera" 1
+KEY 0 0 180 0 0 "BossCutscene1"
+KEY 181 0 180 0 0 "BossCutscene1"
+KEY 186 0 180 0 0 "BossCutscene1"
+KEY 187 -45 180 0 0 "BossCutscene2"
+KEY 359 -45 180 0 0 "BossCutscene2"
+KEY 363 -45 180 0 0 "BossCutscene2"
+KEY 364 0 180 0 0 "BossCutscene3"
+KEY 1020 0 180 0 0 "BossCutscene3"
+KEY 1026 0 180 0 0 "BossCutscene3"
+KEY 1027 0 180 0 0 "BossCutscene3"
+KEY 1500 30 180 0 0 "BossCutscene3"

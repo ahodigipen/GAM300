@@ -1,13 +1,40 @@
 Version: 1.0
 ENTITIES:
-  - InfoComponent:
-      Parent: 15030438282683852635
-      Name: BossCheckpoint_Dialogue5
-      UID: 9136984647256212271
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: BossCheckpoint
+      UID: 16587214553815957843
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, -0.649999976, 20.0100002]
+        Translate: [-40.7700005, 27.9599991, -31]
+        Rotate: [0, -0, 0]
+        Scale: [6.08900023, 5, 8.68900013]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.CPTrigger
+      ParamsJSON: "{\n  \"_activeColor\": {\n    \"X\": 0.07800000160932541,\n    \"Y\": 0.8270000219345093,\n    \"Z\": 0.5799999833106995\n  },\n  \"_bobbingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_checkpointSpriteNames\": \"CPPopup\",\n  \"_cutsceneEntityName\": \"\",\n  \"_floatingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_forwardOffset\": 5.0,\n  \"_isBossCheckpoint\": true,\n  \"_lightNames\": \"ResPoint1_Light_1,ResPoint1_Light_2,ResPoint1_Light_3\"\n}"
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: BossCheckpoint_Dialogue5
+      UID: 3378817489696385535
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
         Scale: [0.699999988, 0.5, 1]
     SpriteComponent:
@@ -17,11 +44,11 @@ ENTITIES:
   - InfoComponent:
       Parent: 15030438282683852635
       Name: BossCheckpoint_Dialogue4
-      UID: 15458038247668333900
+      UID: 995389613728921571
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, -0.649999976, 20.0100002]
+        Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
         Scale: [0.699999988, 0.5, 1]
     SpriteComponent:
@@ -31,11 +58,11 @@ ENTITIES:
   - InfoComponent:
       Parent: 15030438282683852635
       Name: BossCheckpoint_Dialogue3
-      UID: 13320291116013040365
+      UID: 17264482336791070161
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, -0.649999976, 20.0100002]
+        Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
         Scale: [0.699999988, 0.5, 1]
     SpriteComponent:
@@ -45,11 +72,11 @@ ENTITIES:
   - InfoComponent:
       Parent: 15030438282683852635
       Name: BossCheckpoint_Dialogue2
-      UID: 13751728581172022717
+      UID: 1976221538753472763
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, -0.649999976, 20.0100002]
+        Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
         Scale: [0.699999988, 0.5, 1]
     SpriteComponent:
@@ -59,11 +86,11 @@ ENTITIES:
   - InfoComponent:
       Parent: 15030438282683852635
       Name: BossCheckpoint_Dialogue1
-      UID: 11539577855315149168
+      UID: 7792382045801257342
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, -0.649999976, 20.0100002]
+        Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
         Scale: [0.699999988, 0.5, 1]
     SpriteComponent:
@@ -72,36 +99,8 @@ ENTITIES:
       renderAs3D: false
   - InfoComponent:
       Parent: 15030438282683852635
-      Name: Tutorial_WhiteBackground
-      UID: 2711598763269282223
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 20]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    SpriteComponent:
-      textureID: 16173087357529396361
-      color: [1, 1, 1, 0]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 15030438282683852635
-      Name: RedMeter
-      UID: 1083799543936927466
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [0.400000006, 0.699999988, 0.300000012]
-    SpriteComponent:
-      textureID: 10093195128299075526
-      color: [1, 1, 1, 0]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 15030438282683852635
       Name: Checkpoint2_Dialogue5
-      UID: 5772282418325643099
+      UID: 16620019357335217779
       SortOrder: 0
     TransformComponent:
       Transform:
@@ -115,7 +114,7 @@ ENTITIES:
   - InfoComponent:
       Parent: 15030438282683852635
       Name: Checkpoint2_Dialogue4
-      UID: 3332939936511848244
+      UID: 6079832371999124834
       SortOrder: 0
     TransformComponent:
       Transform:
@@ -129,7 +128,7 @@ ENTITIES:
   - InfoComponent:
       Parent: 15030438282683852635
       Name: Checkpoint2_Dialogue3
-      UID: 7030447348962250137
+      UID: 13447470170093780593
       SortOrder: 0
     TransformComponent:
       Transform:
@@ -143,7 +142,7 @@ ENTITIES:
   - InfoComponent:
       Parent: 15030438282683852635
       Name: Checkpoint2_Dialogue2
-      UID: 1889388061670896758
+      UID: 10164404698933895361
       SortOrder: 0
     TransformComponent:
       Transform:
@@ -157,7 +156,7 @@ ENTITIES:
   - InfoComponent:
       Parent: 15030438282683852635
       Name: Checkpoint2_Dialogue1
-      UID: 12021668828443187616
+      UID: 8716734567665989216
       SortOrder: 0
     TransformComponent:
       Transform:
@@ -169,29 +168,43 @@ ENTITIES:
       color: [1, 1, 1, 0]
       renderAs3D: false
   - InfoComponent:
-      Parent: 0
-      Name: Level 2 CutScene
-      UID: 4701903750064170606
+      Parent: 15030438282683852635
+      Name: RedMeter
+      UID: 14317450742033962090
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [0.400000006, 0.699999988, 1]
+    SpriteComponent:
+      textureID: 10093195128299075526
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: Tutorial_WhiteBackground
+      UID: 5606421450282284520
       SortOrder: 0
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.CutsceneSequencer
-      ParamsJSON: "{\n  \"BlockInput\": true,\n  \"CutsceneFile\": \"LevelTransitionCutscene.seq\",\n  \"PlayOnTrigger\": false,\n  \"TriggerOnce\": false\n}"
+    SpriteComponent:
+      textureID: 16173087357529396361
+      color: [1, 1, 1, 0]
+      renderAs3D: false
   - InfoComponent:
       Parent: 0
-      Name: lock_SR2_2
-      UID: 3004616805361377583
+      Name: lock_Prison
+      UID: 2585784762318713082
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-73.566597, 30.4579277, -11.3886271]
-        Rotate: [0, -5.00895612e-06, 0]
-        Scale: [0.0583905056, 0.0583905168, 0.0583905056]
+        Translate: [-20.594574, 2.69842768, 16.9692497]
+        Rotate: [0, -89.980217, 0]
+        Scale: [0.0472962745, 0.0472963154, 0.0472962745]
     ModelComponent:
       ModelID: 12205784983460827261
       MaterialID: 582744548933188495
@@ -205,6 +218,134 @@ ENTITIES:
         Intensity: 4.76999998
         Range: 2.1400001
         BloomStrength: 1.55999994
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [6.38000011, 5.5, 3.99000001]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: DoorTriggerPrison
+      UID: 10371545848031286900
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-22.0082092, 4.89841652, 16.1932297]
+        Rotate: [-6.32521142e-06, -0.495328993, 4.84433667e-06]
+        Scale: [0.656015992, 1.56500006, 2.45500278]
+    SoundComponent:
+      Entries:
+        - name: _doorSoundPath
+          filePaths:
+            - Resources/Audio/unlock.wav
+          loop: false
+          volume: 0.661000013
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+        - name: _doorLockedSoundPath
+          filePaths:
+            - Resources/Audio/doorLocked.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 15
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.MultiKeyDoor
+      ParamsJSON: "{\n  \"_doorName\": \"NewDoorPrison\",\n  \"_ePromptName\": \"UI_E_OpenDoor\",\n  \"_lockEntityName\": \"lock_Prison\",\n  \"_requiredKeysString\": \"Key1_Prison\",\n  \"_slideDirection\": \"front\"\n}"
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 3.00161338, -0.0147908237]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [210.400238, 400.735352, 13.6377716]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 15733493288687535467
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: NewDoorPrison
+      UID: 13843215896669855288
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-20.312706, 0.479984999, 16.9968281]
+        Rotate: [0, 89.980217, 0]
+        Scale: [0.0164363161, 0.0149805266, 0.0156289618]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0164363161, 0.0149805266, 0.0156289618]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 1078495214741830672
+      MaterialID: 15114049110730279773
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: lock_SR2_2
+      UID: 3004616805361377583
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-73.566597, 29.7138977, -11.3241711]
+        Rotate: [0, -5.00895658e-06, 0]
+        Scale: [0.047296308, 0.0472963192, 0.047296308]
+    ModelComponent:
+      ModelID: 12205784983460827261
+      MaterialID: 582744548933188495
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 1, 1]
+        Intensity: 6.55999994
+        Range: 3.93000007
+        BloomStrength: 0.800000012
   - InfoComponent:
       Parent: 0
       Name: lock_2
@@ -213,8 +354,8 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-32.8684235, 27.4672642, -22.4215546]
-        Rotate: [0, -5.00895612e-06, 0]
-        Scale: [0.0703500211, 0.0703500211, 0.0703500211]
+        Rotate: [0, -5.00896112e-06, 0]
+        Scale: [0.0471345149, 0.0471345149, 0.0471345149]
     ModelComponent:
       ModelID: 12205784983460827261
       MaterialID: 582744548933188495
@@ -225,9 +366,9 @@ ENTITIES:
     PointLightComponent:
       Light:
         Radiance: [0.831372559, 0.686274529, 0.215686277]
-        Intensity: 4.76999998
-        Range: 2.1400001
-        BloomStrength: 1.55999994
+        Intensity: 6.21999979
+        Range: 3.5999999
+        BloomStrength: 0.730000019
   - InfoComponent:
       Parent: 0
       Name: lock_SR2_1
@@ -235,9 +376,9 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-32.4213409, 17.0487633, 68.843895]
-        Rotate: [180, -5.00895612e-06, 180]
-        Scale: [0.0583905056, 0.0583905168, 0.0583905056]
+        Translate: [-32.4213409, 17.0487633, 68.7345734]
+        Rotate: [-180, -5.00895885e-06, -180]
+        Scale: [0.046712406, 0.0467124134, 0.046712406]
     ModelComponent:
       ModelID: 12205784983460827261
       MaterialID: 582744548933188495
@@ -248,9 +389,9 @@ ENTITIES:
     PointLightComponent:
       Light:
         Radiance: [1, 1, 1]
-        Intensity: 4.76999998
-        Range: 2.1400001
-        BloomStrength: 1.55999994
+        Intensity: 5.03000021
+        Range: 3.96000004
+        BloomStrength: 0.639999986
   - InfoComponent:
       Parent: 0
       Name: lock_SR1
@@ -260,7 +401,7 @@ ENTITIES:
       Transform:
         Translate: [26.2086124, 16.1737347, 25.1235104]
         Rotate: [0, 89.980217, 0]
-        Scale: [0.0583905056, 0.0583905168, 0.0583905056]
+        Scale: [0.047296308, 0.0472963154, 0.047296308]
     ModelComponent:
       ModelID: 12205784983460827261
       MaterialID: 582744548933188495
@@ -282,8 +423,8 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [0, 20.2424412, 26.5974007]
-        Rotate: [0, 180, 0]
-        Scale: [0.0703500211, 0.0703500211, 0.0703500211]
+        Rotate: [-180, -5.00895476e-06, -180]
+        Scale: [0.0471345149, 0.0471345149, 0.0471345149]
     ModelComponent:
       ModelID: 12205784983460827261
       MaterialID: 582744548933188495
@@ -295,8 +436,8 @@ ENTITIES:
       Light:
         Radiance: [0.831372559, 0.686274529, 0.215686277]
         Intensity: 4.76999998
-        Range: 2.1400001
-        BloomStrength: 1.55999994
+        Range: 5.86999989
+        BloomStrength: 0.340000004
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -700,7 +841,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-26.7823486, 11.022254, 92.4819489]
-        Rotate: [180, 89.8321381, 180]
+        Rotate: [0, 89.8321381, 0]
         Scale: [0.62500006, 1.00000453, 1.00000429]
     ScriptComponent:
       Enabled: true
@@ -734,7 +875,7 @@ ENTITIES:
         Radiance: [1, 0.701960802, 0.423529416]
         Intensity: 19.6499996
         Range: 23.8299999
-        BloomStrength: 1
+        BloomStrength: 0.0799999982
   - InfoComponent:
       Parent: 0
       Name: Pagoda_Stone_Lamp (Copy)
@@ -787,15 +928,15 @@ ENTITIES:
       ModelSource: ""
       MaterialSource: ""
   - InfoComponent:
-      Parent: 1926680086160732726
+      Parent: 0
       Name: Sentry Vision Cone_SR180
       UID: 10323525089573234495
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [27.457325, 17.2255497, 0.404775023]
-        Rotate: [180, 507.807678, 180]
-        Scale: [0.0199985746, 0.0199999996, 0.0199985746]
+        Translate: [27.4631939, 15.4753199, 0.00664746761]
+        Rotate: [180, 57.8076706, 180]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.SpotlightFollower
@@ -1072,7 +1213,7 @@ ENTITIES:
       SortOrder: 79
     TransformComponent:
       Transform:
-        Translate: [-36.815979, 25.8250847, -2.28328943]
+        Translate: [-40.3973312, 25.7861938, -13.4129934]
         Rotate: [0, -0, 0]
         Scale: [0.0504000187, 0.0504000187, 0.0504000187]
     ModelComponent:
@@ -1087,7 +1228,7 @@ ENTITIES:
         Radiance: [1, 0.701960802, 0.423529416]
         Intensity: 11.3699999
         Range: 13.29
-        BloomStrength: 1
+        BloomStrength: 0.370000005
   - InfoComponent:
       Parent: 0
       Name: LightBall_1Level2_1
@@ -1840,9 +1981,9 @@ ENTITIES:
       SortOrder: 126
     TransformComponent:
       Transform:
-        Translate: [31.9647751, 10.2832079, -12.3154507]
-        Rotate: [180, -4.15341949, -180]
-        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+        Translate: [31.9647751, 10.2832079, -11.795722]
+        Rotate: [160.582367, 8.79789734, -146.985855]
+        Scale: [0.0200000163, 0.0199999958, 0.0200000163]
     ModelComponent:
       ModelID: 9601032699200672668
       MaterialID: 5133027133074393065
@@ -1901,8 +2042,8 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-21.6258335, 15.8400517, 46.9735489]
-        Rotate: [0, -0, 0]
-        Scale: [0.0359999985, 0.0359999985, 0.0359999985]
+        Rotate: [-12.8908939, -7.5371418, -29.8184643]
+        Scale: [0.0359999724, 0.0359999277, 0.0359999202]
     ModelComponent:
       ModelID: 9601032699200672668
       MaterialID: 5133027133074393065
@@ -1934,12 +2075,12 @@ ENTITIES:
       Enabled: true
       TypeName: GameScripts.KeyPickup
       ParamsJSON: "{\n  \"_keyType\": \"Key2_sr1\",\n  \"_keyVariant\": \"SmallDoor\"\n}"
-    SpotLightComponent:
+    PointLightComponent:
       Light:
         Radiance: [1, 1, 1]
-        Intensity: 5.88999987
-        FallOff: 4.59600019
-        CutOff: -1.98099995
+        Intensity: 6.92999983
+        Range: 6.98000002
+        BloomStrength: 0.0399999991
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0500000007, 0.0199999996, 0.0199999996]
@@ -1961,8 +2102,8 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-80.6619949, 36.9678307, -19.8941078]
-        Rotate: [-9.20905052e-07, 42.9434776, -1.5404886e-06]
-        Scale: [0.0359999947, 0.0359999985, 0.0359999947]
+        Rotate: [-19.1785183, 19.802002, -38.8740616]
+        Scale: [0.0360000692, 0.0360000022, 0.0360000059]
     ModelComponent:
       ModelID: 9601032699200672668
       MaterialID: 5133027133074393065
@@ -1994,12 +2135,12 @@ ENTITIES:
       Enabled: true
       TypeName: GameScripts.KeyPickup
       ParamsJSON: "{\n  \"_keyType\": \"Key2_sr2\",\n  \"_keyVariant\": \"SmallDoor\"\n}"
-    SpotLightComponent:
+    PointLightComponent:
       Light:
         Radiance: [1, 1, 1]
-        Intensity: 5.88999987
-        FallOff: 4.59600019
-        CutOff: -1.98099995
+        Intensity: 6.92999983
+        Range: 6.98000002
+        BloomStrength: 0.0399999991
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0500000007, 0.0199999996, 0.0199999996]
@@ -2150,9 +2291,9 @@ ENTITIES:
       SortOrder: 128
     TransformComponent:
       Transform:
-        Translate: [-41.8433762, 5.62958336, 18.1781445]
-        Rotate: [90.0279694, -5.00674878e-06, 179.972031]
-        Scale: [2.00002146, 2, 2]
+        Translate: [-22.7730942, 6.67045927, 2.76421976]
+        Rotate: [-89.9720764, -5.01842169e-06, -0.0279714558]
+        Scale: [2.00004792, 2, 2]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 9126702018428758169
@@ -2852,7 +2993,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.MultiKeyDoor
-      ParamsJSON: "{\n  \"_doorName\": \"NewDoor5\",\n  \"_lockEntityName\": \"lock_SR2_2\",\n  \"_requiredKeysString\": \"Key2_sr2\"\n}"
+      ParamsJSON: "{\n  \"_doorName\": \"NewDoor5\",\n  \"_ePromptName\": \"UI_E_OpenDoor\",\n  \"_lockEntityName\": \"lock_SR2_2\",\n  \"_requiredKeysString\": \"Key2_sr2\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0223471075, -0.250579834, -0.0840037838]
@@ -3214,7 +3355,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.MultiKeyDoor
-      ParamsJSON: "{\n  \"_doorName\": \"NewDoorsr1\",\n  \"_lockEntityName\": \"lock_SR1\",\n  \"_requiredKeysString\": \"Key1_sr1\",\n  \"_slideDirection\": \"front\"\n}"
+      ParamsJSON: "{\n  \"_doorName\": \"NewDoorsr1\",\n  \"_ePromptName\": \"UI_E_OpenDoor\",\n  \"_lockEntityName\": \"lock_SR1\",\n  \"_requiredKeysString\": \"Key1_sr1\",\n  \"_slideDirection\": \"front\"\n}"
   - InfoComponent:
       Parent: 9691864251179230668
       Name: PrisonGateBar3 (Copy) (Copy)
@@ -3393,7 +3534,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.MultiKeyDoor
-      ParamsJSON: "{\n  \"_doorName\": \"NewDoor4\",\n  \"_lockEntityName\": \"lock_SR2_1\",\n  \"_requiredKeysString\": \"Key2_sr1\"\n}"
+      ParamsJSON: "{\n  \"_doorName\": \"NewDoor4\",\n  \"_ePromptName\": \"UI_E_OpenDoor\",\n  \"_lockEntityName\": \"lock_SR2_1\",\n  \"_requiredKeysString\": \"Key2_sr1\"\n}"
   - InfoComponent:
       Parent: 0
       Name: ToriGate1 (Copy) (Copy)
@@ -5957,6 +6098,20 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
+      Name: Level 2 CutScene
+      UID: 17610577297292666975
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.CutsceneSequencer
+      ParamsJSON: "{\n  \"CutsceneFile\": \"LevelTransitionCutscene.seq\"\n}"
+  - InfoComponent:
+      Parent: 0
       Name: Level 2 Map (4 CutScene)
       UID: 1562115388596837385
       SortOrder: 269
@@ -6355,52 +6510,63 @@ ENTITIES:
       textureID: 2900915588722288564
       color: [1, 1, 1, 1]
       renderAs3D: false
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: true
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: SAND
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Sand_Floor_Level2
-      UID: 12445945734618633047
-      SortOrder: 428
+  - InfoComponent:
+      Parent: 15030438282683852635
+      Name: UI_Tutorial
+      UID: 10734415831348860119
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-5.53177166, 14.124135, 4.82432461]
-        Rotate: [0, -0, 0]
-        Scale: [60, 1, 40]
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: true
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: STONE
-        Type: BOX
-    InfoComponent:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [0.800000012, 0.5, 1]
+    SpriteComponent:
+      textureID: 17735993601354122583
+      color: [1, 1, 1, 1.63056921e-32]
+      renderAs3D: false
+  - InfoComponent:
       Parent: 0
-      Name: Stone_Stairs_Left
-      UID: 18307948141547307247
-      SortOrder: 513
+      Name: Patrol Vision Cone Prison
+      UID: 645747724488771901
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-11.2100706, 2.26809382, -18.1583977]
-        Rotate: [0, -0, 0]
-        Scale: [10, 23, 4]
+        Translate: [-53.5838356, 3.75007725, 15.4572039]
+        Rotate: [0, 89.980217, 0]
+        Scale: [0.624999762, 1.00000441, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PatrolSpotlightFollower
+      ParamsJSON: "{\n  \"positionOffsetY\": 1.9140000343322754,\n  \"targetName\": \"Patrol_Prison\"\n}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.975490212, 0, 0]
+        Intensity: 6.67000008
+        FallOff: -3.0999999
+        CutOff: 0.769999981
+  - InfoComponent:
+      Parent: 0
+      Name: Hanging_Lantern_SR_1 (Copy)
+      UID: 12773367989390655323
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [38.5955009, 9.59406185, 3.0470221]
+        Rotate: [-89.9650269, -89.9515457, -0.0349748358]
+        Scale: [2.5, 2.5, 2.49996257]
+    ModelComponent:
+      ModelID: 17862911105458314379
+      MaterialID: 9126702018428758169
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
       Name: AlertVideo
@@ -6678,15 +6844,15 @@ ENTITIES:
       ModelSource: ""
       MaterialSource: ""
   - InfoComponent:
-      Parent: 15156590934559075775
+      Parent: 0
       Name: Sentry Vision Cone 2
       UID: 9293667924588559209
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [9.27553558, 2.64499116, -12.913641]
-        Rotate: [0, 496.955078, 0]
-        Scale: [68.965065, 68.9655151, 68.965065]
+        Translate: [9.0882864, 0.589343488, -13.0481367]
+        Rotate: [0, 0, 0]
+        Scale: [0.99999994, 1, 0.99999994]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.SpotlightFollower
@@ -7762,7 +7928,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-32.5929832, 24.2603378, -8.11126804]
-        Rotate: [0, 159.18335, 0]
+        Rotate: [0, 0, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -7856,9 +8022,9 @@ ENTITIES:
       SortOrder: 439
     TransformComponent:
       Transform:
-        Translate: [-0.153001994, 25.7323341, 48.5304146]
+        Translate: [-0.153001994, 25.2259045, 48.3279991]
         Rotate: [0, -0, 0]
-        Scale: [0.627001047, 0.384105057, 4.25]
+        Scale: [0.627001047, 0.314136267, 4.25]
     ModelComponent:
       ModelID: 1441742420851203854
       MaterialID: 8475851512635632909
@@ -8531,9 +8697,9 @@ ENTITIES:
       SortOrder: 371
     TransformComponent:
       Transform:
-        Translate: [-42.9265518, 28.3803501, -19.1654472]
+        Translate: [-34.8385544, 27.3759441, -18.4248676]
         Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]
+        Scale: [1.65497804, 1, 1]
     SoundComponent:
       Entries:
         - name: _doorSoundPath
@@ -8575,7 +8741,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.MultiKeyDoor
-      ParamsJSON: "{\n  \"_doorName\": \"NewDoor6\",\n  \"_isMainDoor\": true,\n  \"_lockEntityName\": \"lock_2\",\n  \"_requiredKeyType\": \"Key2_1\",\n  \"_requiredKeysString\": \"Key2_3,Key2_2,Key2_1\"\n}"
+      ParamsJSON: "{\n  \"_doorName\": \"NewDoor6\",\n  \"_ePromptName\": \"UI_E_OpenDoor\",\n  \"_isMainDoor\": true,\n  \"_lockEntityName\": \"lock_2\",\n  \"_requiredKeyType\": \"Key2_1\",\n  \"_requiredKeysString\": \"Key2_3,Key2_2,Key2_1\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0280764326, -0.00411249651, -0.00168499968]
@@ -9102,7 +9268,7 @@ ENTITIES:
         Scale: [1.25292325, 1.25292897, 1.25292325]
     ModelComponent:
       ModelID: 12600730890549785123
-      MaterialID: 7355395803280547314
+      MaterialID: 11044385319620449257
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -9561,7 +9727,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.EnemyController
-      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Sentry_2\",\n  \"_pingPong\": true,\n  \"_rotation\": false,\n  \"_rotationAngle\": 180.0,\n  \"_visionDetectionRange\": 20.775999069213867\n}"
+      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Sentry_2\",\n  \"_pingPong\": true,\n  \"_rotation\": false,\n  \"_rotationAngle\": 180.0,\n  \"_visionDetectionRange\": 15.479999542236328\n}"
   - InfoComponent:
       Parent: 0
       Name: Sentry_1
@@ -9656,7 +9822,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.EnemyController
-      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_pingPong\": true,\n  \"_rotation\": true,\n  \"_rotationAngle\": 180.0,\n  \"_visionDetectionRange\": 20.841999053955078\n}"
+      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_pingPong\": true,\n  \"_rotation\": true,\n  \"_rotationAngle\": 180.0,\n  \"_visionDetectionRange\": 15.689000129699707\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -9704,9 +9870,9 @@ ENTITIES:
       SortOrder: 300
     TransformComponent:
       Transform:
-        Translate: [-36.8270607, 24.2751026, -2.29094076]
+        Translate: [-40.3566132, 24.2751026, -13.364872]
         Rotate: [-89.9999847, 0, 0]
-        Scale: [2, 1.99993348, 1.99993348]
+        Scale: [2, 1.99992037, 1.99992037]
     ModelComponent:
       ModelID: 17971063540041505471
       MaterialID: 16814172849789012347
@@ -9881,7 +10047,7 @@ ENTITIES:
       SortOrder: 326
     TransformComponent:
       Transform:
-        Translate: [-77.4634476, 30.0446091, -8.15021324]
+        Translate: [-76.9662628, 30.0446091, -8.15021324]
         Rotate: [-89.9997406, 48.0543976, 8.17467007e-05]
         Scale: [1.99999726, 1.99998212, 1.99998343]
     ModelComponent:
@@ -11088,15 +11254,15 @@ ENTITIES:
       SortOrder: 452
     TransformComponent:
       Transform:
-        Translate: [-10.0589294, 16.6774998, 50.0120239]
-        Rotate: [89.9650269, -89.9515457, 0.0349748358]
-        Scale: [4.27499962, 2.5, 1.84999847]
+        Translate: [-10.0589294, 16.6774998, 57.4314613]
+        Rotate: [89.9555817, -89.944046, 0.0423971936]
+        Scale: [4.27499962, 2.5, 1.84999669]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [4.27499962, 2.5, 1.84999847]
+        Previous Scale: [4.27499962, 2.5, 1.84999669]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -12313,15 +12479,15 @@ ENTITIES:
       SortOrder: 447
     TransformComponent:
       Transform:
-        Translate: [-9.43455887, 22.1983395, 47.9132614]
+        Translate: [-9.43455887, 21.8312092, 52.4412842]
         Rotate: [0, -89.980217, 0]
-        Scale: [0.799999833, 0.975000024, 0.0249999948]
+        Scale: [1.09251404, 0.974999964, 0.0249999929]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.799999833, 0.975000024, 0.0249999948]
+        Previous Scale: [1.09251404, 0.974999964, 0.0249999929]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -12460,9 +12626,9 @@ ENTITIES:
       SortOrder: 492
     TransformComponent:
       Transform:
-        Translate: [0.238012001, 31.3006668, 47.7282219]
+        Translate: [0.238012001, 30.6928329, 47.7282219]
         Rotate: [-89.9999847, 0, 0]
-        Scale: [1, 1.24998748, 0.747529685]
+        Scale: [1, 1.24998152, 0.747526705]
     ModelComponent:
       ModelID: 8039408713556627694
       MaterialID: 16051879611138255440
@@ -13543,15 +13709,15 @@ ENTITIES:
       SortOrder: 374
     TransformComponent:
       Transform:
-        Translate: [-10.2722893, 16.6774998, 44.2412872]
+        Translate: [-10.2722893, 16.6774998, 46.0290298]
         Rotate: [-89.9555817, -89.944046, -0.0423971936]
-        Scale: [4.27499962, 2.5, 1.84997582]
+        Scale: [4.27499962, 2.5, 1.84997475]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [4.27499962, 2.5, 1.84997582]
+        Previous Scale: [4.27499962, 2.5, 1.84997475]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -13570,9 +13736,9 @@ ENTITIES:
       SortOrder: 387
     TransformComponent:
       Transform:
-        Translate: [-10.1912403, 19.1632252, 53.8320808]
-        Rotate: [-89.9555817, -89.944046, -0.0423971936]
-        Scale: [2.5, 2.5, 2.49999118]
+        Translate: [-10.1912403, 19.1632252, 51.7002373]
+        Rotate: [-89.9650269, -89.9515457, -0.0349748358]
+        Scale: [2.5, 2.5, 2.49998879]
     ModelComponent:
       ModelID: 17862911105458314379
       MaterialID: 9126702018428758169
@@ -13701,14 +13867,14 @@ ENTITIES:
       SortOrder: 393
     TransformComponent:
       Transform:
-        Translate: [-4.66472197, 1.82940924, 0.0647518188]
-        Rotate: [-188, 4406.5, 180]
+        Translate: [-43.6904221, 29.2686405, -23.6388092]
+        Rotate: [-189.0625, 8471.1875, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.00100000005
         FarPlane: 935.47998
-        FOV: 97
+        FOV: 100
     ThirdPersonCameraComponent:
       Target UID: 2377197601835279376
       Offset: [0.00999999978, 4.1500001, 0]
@@ -14312,9 +14478,9 @@ ENTITIES:
       SortOrder: 433
     TransformComponent:
       Transform:
-        Translate: [-36.9092903, 37.1134758, -35.4818497]
-        Rotate: [90, 5.00895612e-06, -180]
-        Scale: [1.74521029, 1.31997108, 0.999985516]
+        Translate: [-36.4355164, 37.1134758, -35.4818497]
+        Rotate: [90, 5.00895703e-06, -180]
+        Scale: [1.81519151, 1.31994963, 0.999974787]
     ModelComponent:
       ModelID: 11325662916488734020
       MaterialID: 16051879611138255440
@@ -14728,15 +14894,15 @@ ENTITIES:
         FallOff: -3.0999999
         CutOff: 0.769999981
   - InfoComponent:
-      Parent: 13685181942599758823
+      Parent: 0
       Name: VisionConeFake 1
       UID: 9232137645831539091
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-7.15782738, 2.53051853, -13.2785921]
-        Rotate: [0, 227.187439, 0]
-        Scale: [136.157349, 68.9649124, 68.9648361]
+        Translate: [-6.96529102, 0.567210972, -13.3823786]
+        Rotate: [0, 0, 0]
+        Scale: [1.97424662, 0.999991238, 0.999972403]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.SpotlightFollower
@@ -14811,17 +14977,17 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.MultiKeyDoor
-      ParamsJSON: "{\n  \"_doorName\": \"NewDoor2\",\n  \"_isMainDoor\": true,\n  \"_lockEntityName\": \"lock_1\",\n  \"_requiredKeysString\": \"Key1_1,Key1_2,Key1_3\",\n  \"_slideDirection\": \"right\"\n}"
+      ParamsJSON: "{\n  \"_doorName\": \"NewDoor2\",\n  \"_ePromptName\": \"UI_E_OpenDoor\",\n  \"_isMainDoor\": true,\n  \"_lockEntityName\": \"lock_1\",\n  \"_requiredKeysString\": \"Key1_1,Key1_2,Key1_3\",\n  \"_slideDirection\": \"right\"\n}"
   - InfoComponent:
-      Parent: 14023949945871365441
+      Parent: 0
       Name: Sentry Vision Cone 4
       UID: 14440688285386943557
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-17.1420422, 15.3514919, 18.490139]
-        Rotate: [0, 339.18335, 0]
-        Scale: [0.0199985746, 0.0199999996, 0.0199985746]
+        Translate: [-17.3906021, 13.5740891, 18.7582455]
+        Rotate: [0, -20.8166504, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.SpotlightFollower
@@ -15077,80 +15243,165 @@ ENTITIES:
       Transform:
         Translate: [-0.504779816, 20.3323364, 36.178093]
         Rotate: [0, -0, 0]
-        Scale: [5, 5, 5]
+        Scale: [10.3088512, 5, 11.0389271]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.CPTrigger
       ParamsJSON: "{\n  \"_activeColor\": {\n    \"X\": 0.07800000160932541,\n    \"Y\": 0.210999995470047,\n    \"Z\": 0.14800000190734863\n  },\n  \"_bobAmount\": 5.0,\n  \"_bobSpeed\": 10.0,\n  \"_bobbingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_checkpointSpriteName\": \"CPHealthNoti\",\n  \"_checkpointSpriteNames\": \"CPPopup\",\n  \"_cutsceneEntityName\": \"Level 2 CutScene\",\n  \"_floatSpeed\": 20.0,\n  \"_floatingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_isCheckpoint2\": true,\n  \"_lightNames\": \"ResPoint2_Light_1,ResPoint2_Light_2,ResPoint2_Light_3\",\n  \"_spriteFadeSpeed\": 8.0,\n  \"_triggerIntroCutscene\": true\n}"
+    TextComponent:
+      text: ""
+      fontName: Roboto-Regular
+      color: [1, 1, 1, 0]
+      scale: 1
+      screenPosition: [655, 834]
+      renderAs3D: false
+      billboardMode: true
+  - InfoComponent:
+      Parent: 0
+      Name: Hanging_Lantern_SR_1 (Copy) (Copy)
+      UID: 13563216202172844667
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [38.5955009, 9.59406185, -7.75735474]
+        Rotate: [-89.9650269, -89.9515457, -0.0349748358]
+        Scale: [2.5, 2.5, 2.49995613]
+    ModelComponent:
+      ModelID: 17862911105458314379
+      MaterialID: 9126702018428758169
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [30, 82, 3]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: true
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: WOOD
+        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
-      Name: Tatami_Level1
-      UID: 3510211931949444765
-      SortOrder: 298
+      Name: FreezePowerUp_5
+      UID: 3671586191618090096
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.854861081, 2.49743152, -6.92689991]
+        Translate: [-24.6790676, 12.3425789, 74.0176468]
         Rotate: [0, -0, 0]
-        Scale: [40, 5, 16]
+        Scale: [0.0292000007, 0.0292000007, 0.0292000007]
+    ModelComponent:
+      ModelID: 5551161321672247114
+      MaterialID: 16305148809392937752
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.HoverMotion
+      ParamsJSON: "{}"
+    SpotLightComponent:
+      Light:
+        Radiance: [0.0539215803, 0.554786682, 1]
+        Intensity: 2.1400001
+        FallOff: 1.70599997
+        CutOff: -1.99100006
+  - InfoComponent:
+      Parent: 0
+      Name: Hanging_Lantern_SR_1
+      UID: 2690107277971491799
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [26.5217419, 9.59406185, -2.33186054]
+        Rotate: [264.799622, 90, 0]
+        Scale: [2.49998713, 2.49998999, 2.49995637]
+    ModelComponent:
+      ModelID: 17862911105458314379
+      MaterialID: 9126702018428758169
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
-        LocalPosition: [0, 0, 0]
+        LocalPosition: [-0.0500000007, -0.180000007, 0.0199999996]
         LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
+        LocalScale: [171.630005, 109.330002, 86.3799973]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
         IsTrigger: true
         ShowPhysicsDebug: false
         PhysicsMesh: 0
-        SurfaceType: WOOD
+        SurfaceType: DEFAULT
         Type: BOX
     InfoComponent:
       Parent: 0
-      Name: Mini_Tatami_Level1
-      UID: 4388766450973729723
-      SortOrder: 313
+      Name: Key1_Prison
+      UID: 9851144639049801508
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.0321748853, 2.71989751, -17.972702]
-        Rotate: [-9.38925648, 0, 0]
-        Scale: [9, 2, 4]
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: true
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: STONE
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Stone_Stairs_Right
-      UID: 12252970625562623435
-      SortOrder: 426
-    TransformComponent:
-      Transform:
-        Translate: [10.9185543, 5.7363534, -17.7784405]
-        Rotate: [0, -0, 0]
-        Scale: [10, 18, 4]
+        Translate: [-26.0408154, 3.78660536, 3.23149705]
+        Rotate: [-12.6523085, -18.6317711, -34.6258354]
+        Scale: [0.0200000163, 0.0199999996, 0.0200000145]
+    ModelComponent:
+      ModelID: 9601032699200672668
+      MaterialID: 5133027133074393065
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    SoundComponent:
+      Entries:
+        - name: _pickupSound
+          filePaths:
+            - Resources/Audio/pickup.wav
+          loop: false
+          volume: 1
+          priority: 131
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.KeyPickup
+      ParamsJSON: "{\n  \"_keyType\": \"Key1_Prison\",\n  \"_keyVariant\": \"SmallDoor\"\n}"
+    PointLightComponent:
+      Light:
+        Radiance: [1, 1, 1]
+        Intensity: 6.92999983
+        Range: 6.98000002
+        BloomStrength: 0.0399999991
   - InfoComponent:
       Parent: 0
       Name: FreezeVFXManager
@@ -15203,15 +15454,15 @@ ENTITIES:
       TypeName: GameScripts.CutsceneSequencer
       ParamsJSON: "{\n  \"BlockInput\": false,\n  \"CutsceneFile\": \"IntroCutscene.seq\",\n  \"PlayOnStart\": false\n}"
   - InfoComponent:
-      Parent: 7684206646313759860
+      Parent: 0
       Name: Sentry Vision Cone 5
       UID: 4830657238726851453
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-64.1180191, 26.2603378, -1.22266841]
-        Rotate: [0, 339.18335, 0]
-        Scale: [66.4224243, 48.3170776, 102.520729]
+        Translate: [-65.0477295, 24.6411133, -1.2403971]
+        Rotate: [0, 0, 0]
+        Scale: [0.963125348, 0.700597644, 1.48655081]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.SpotlightFollower
@@ -15223,15 +15474,15 @@ ENTITIES:
         FallOff: -3.0999999
         CutOff: 0.769999981
   - InfoComponent:
-      Parent: 7127256712868942196
+      Parent: 0
       Name: Sentry Vision Cone 6
       UID: 775872690826725368
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-32.5929832, 26.2603378, -8.11126804]
-        Rotate: [0, 339.18335, 0]
-        Scale: [66.4224243, 48.3170776, 102.520737]
+        Translate: [-32.1930313, 24.6411133, -7.8333807]
+        Rotate: [0, 0, 0]
+        Scale: [0.963125467, 0.700597644, 1.48655117]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.SpotlightFollower
@@ -15243,15 +15494,15 @@ ENTITIES:
         FallOff: -3.0999999
         CutOff: 0.769999981
   - InfoComponent:
-      Parent: 5648346527941532950
+      Parent: 0
       Name: Sentry Vision Cone 7
       UID: 14183844314391113747
       SortOrder: 1
     TransformComponent:
       Transform:
-        Translate: [-46.1160126, 26.2603378, -18.4139233]
-        Rotate: [0, 339.18335, 0]
-        Scale: [66.4224167, 48.3170547, 102.520752]
+        Translate: [-46.7846947, 24.6411133, -18.6809254]
+        Rotate: [0, -20.8166504, 0]
+        Scale: [0.963125288, 0.700597346, 1.4865514]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.SpotlightFollower
@@ -15558,7 +15809,7 @@ ENTITIES:
       SortOrder: 410
     TransformComponent:
       Transform:
-        Translate: [-0.118000001, 19.761776, 30.0676765]
+        Translate: [-0.118000001, 19.761776, 29.4497948]
         Rotate: [0, -0, 0]
         Scale: [0.0292000007, 0.0292000007, 0.0292000007]
     ModelComponent:
@@ -15857,8 +16108,8 @@ ENTITIES:
       SortOrder: 477
     TransformComponent:
       Transform:
-        Translate: [-35.6109619, 25.6482525, 16.3947372]
-        Rotate: [0, 89.980217, 0]
+        Translate: [-36.7869148, 25.6482525, -2.27937269]
+        Rotate: [0, 220.686996, 0]
         Scale: [0.0250000004, 0.0250000004, 0.0250000004]
     RigidBodyComponent:
       RigidBody:
@@ -16780,7 +17031,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-74.9759827, 31.6174335, 10.8172054]
-        Rotate: [0, -0, 0]
+        Rotate: [0, 0, 0]
         Scale: [0.0145000061, 0.0145000005, 0.0145000061]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -16868,15 +17119,15 @@ ENTITIES:
       TypeName: GameScripts.EnemyController
       ParamsJSON: "{\n  \"_entityName\": \"Sentry_level2_SR1\"\n}"
   - InfoComponent:
-      Parent: 15370837172034379813
+      Parent: 0
       Name: Sentry Vision Cone SR1
       UID: 2430118508094887219
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-2048.79346, 510.097778, -1954.66577]
-        Rotate: [0, 249.183472, 0]
-        Scale: [66.4224243, 48.3170776, 102.520729]
+        Translate: [-104.683502, 39.0138512, -17.5254593]
+        Rotate: [0, 0, 0]
+        Scale: [0.963125587, 0.700597644, 1.48655128]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.SpotlightFollower
@@ -17968,15 +18219,15 @@ ENTITIES:
       TypeName: GameScripts.EnemyController
       ParamsJSON: "{\n  \"_entityName\": \"Sentry_level2_SR2\",\n  \"_rotation\": false,\n  \"_rotationInterval\": 1.3799999952316284,\n  \"_rotationSpeed\": 360.0\n}"
   - InfoComponent:
-      Parent: 9234641270527356983
-      Name: Sentry Vision Cone SR2
+      Parent: 0
+      Name: Sentry Vision Cone_SR2
       UID: 7428583064563854466
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-75.7123413, 36.7509689, -15.3300419]
-        Rotate: [0, 236.590271, 0]
-        Scale: [66.4224243, 48.3170776, 102.520729]
+        Translate: [-75.7123413, 34.7509689, -15.3300419]
+        Rotate: [0, 0, 0]
+        Scale: [0.963109553, 0.700597644, 1.48652291]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.SpotlightFollower
@@ -18888,9 +19139,9 @@ ENTITIES:
       SortOrder: 64
     TransformComponent:
       Transform:
-        Translate: [-0.226999998, 3.08800006, 7.48899984]
+        Translate: [-0.226999998, 3.08800006, 7.51678181]
         Rotate: [0, -0, 0]
-        Scale: [5, 5, 5]
+        Scale: [16.8070908, 5, 11.0492229]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.CPTrigger
@@ -19550,9 +19801,9 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-53.6001625, 0.065913558, 10.1228762]
+        Translate: [-53.6001625, 2.49930048, 9.6756258]
         Rotate: [0, -0, 0]
-        Scale: [10.2049503, 4.18959999, 1.91295433]
+        Scale: [10.2049503, 4.18959999, 2.78415108]
     SoundComponent:
       Entries:
         - name: _audioClipPath
@@ -19598,7 +19849,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-27.5603218, 9.95318413, 91.7844315]
-        Rotate: [0, 89.980217, 0]
+        Rotate: [0, 0, 0]
         Scale: [0.0400001816, 0.0250000004, 0.0400001816]
     RigidBodyComponent:
       RigidBody:
@@ -19868,27 +20119,93 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"_entityName\": \"Patrol_Prison\",\n  \"_spotlightName\": \"Patrol Vision Cone Prison\",\n  \"_spotlightOffsetY\": 2.8259999752044678\n}"
-  - InfoComponent:
+      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Patrol_Prison\",\n  \"_spotlightName\": \"Patrol Vision Cone Prison\",\n  \"_spotlightOffsetY\": 2.8259999752044678\n}"
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0.104207233, -0.122833252, -0.00136672379]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [30, 10.0000019, 10.0000019]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 13244744886219103757
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
       Parent: 0
-      Name: Patrol Vision Cone Prison
-      UID: 645747724488771901
+      Name: PrisonTable
+      UID: 13458763515012880977
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-53.5838356, 3.75007725, 15.4572039]
-        Rotate: [0, 89.980217, 0]
-        Scale: [0.624999762, 1.00000441, 1]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"positionOffsetY\": 1.9140000343322754,\n  \"targetName\": \"Patrol_Prison\"\n}"
-    SpotLightComponent:
+        Translate: [-26.116684, 2.81730962, 2.26421928]
+        Rotate: [89.9999847, -0, 0]
+        Scale: [0.383698881, 0.179533139, 0.0292847957]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.383698881, 0.179533139, 0.0292847957]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 1441742420851203854
+      MaterialID: 8475851512635632909
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Lantern_Floor_3_Path (Copy) (Copy)
+      UID: 14368771604677140810
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-41.8433762, 5.62958336, 18.1781445]
+        Rotate: [90.0279694, -5.00674878e-06, 179.972031]
+        Scale: [2.00002146, 2, 2]
+    ModelComponent:
+      ModelID: 17862911105458314379
+      MaterialID: 9126702018428758169
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
       Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
+        BloomStrength: 1
+  - InfoComponent:
+      Parent: 0
+      Name: Lantern_Floor_3_Path (Copy) (Copy)
+      UID: 12142882005765288203
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-28.6475601, 6.87367678, 2.76421976]
+        Rotate: [-89.9720764, -5.01842169e-06, -0.0279714558]
+        Scale: [2.00004792, 2, 2]
+    ModelComponent:
+      ModelID: 17862911105458314379
+      MaterialID: 9126702018428758169
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.744809687, 0.421568632]
+        Intensity: 1.63
+        Range: 4
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0719999969, -0.232999995, 0.00999999978]
@@ -19904,71 +20221,37 @@ ENTITIES:
         Type: CYLINDER
     InfoComponent:
       Parent: 0
-      Name: CollisionSentry2
-      UID: 17978851473863326845
+      Name: Lion_Statue_Outside_Hut_2 (Copy) (Copy)
+      UID: 7334340366502079012
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [9.21818733, 1.86530852, -13.0175467]
+        Translate: [-35.6109619, 25.6482525, 16.3947372]
         Rotate: [0, 89.980217, 0]
-        Scale: [0.0297599956, 0.0250000004, 0.0297599956]
+        Scale: [0.0250000004, 0.0250000004, 0.0250000004]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0297599956, 0.0250000004, 0.0297599956]
+        Previous Scale: [0.0250000004, 0.0250000004, 0.0250000004]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
         Type: STATIC
     ModelComponent:
-      ModelID: 7633162898494281895
-      MaterialID: 0
+      ModelID: 6829728261434427183
+      MaterialID: 9170069941051798259
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [30, 82, 3]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: true
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: FreezePowerUp_5
-      UID: 3671586191618090096
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-24.6790676, 12.3425789, 74.0176468]
-        Rotate: [0, -0, 0]
-        Scale: [0.0292000007, 0.0292000007, 0.0292000007]
-    ModelComponent:
-      ModelID: 5551161321672247114
-      MaterialID: 16305148809392937752
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.HoverMotion
-      ParamsJSON: "{}"
-    SpotLightComponent:
+    PointLightComponent:
       Light:
-        Radiance: [0.0539215803, 0.554786682, 1]
-        Intensity: 2.1400001
-        FallOff: 1.70599997
-        CutOff: -1.99100006
+        Radiance: [0, 0.529411793, 1]
+        Intensity: 3.3599999
+        Range: 3.61999989
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -19984,15 +20267,35 @@ ENTITIES:
         Type: BOX
     InfoComponent:
       Parent: 0
-      Name: BossCheckpoint
-      UID: 13655531057377124656
+      Name: CrouchTriggerL2_2345
+      UID: 15944568659564742068
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-41.2799988, 27.1499996, -31.1000004]
-        Rotate: [0, -0, 0]
-        Scale: [5, 5, 6.5999999]
+        Translate: [-37.0162201, 26.9060001, -1.89529955]
+        Rotate: [0, 89.980217, 0]
+        Scale: [5.22399998, 6.73999977, 5.20225954]
+    SoundComponent:
+      Entries:
+        - name: _enterSound
+          filePaths:
+            - Resources/Audio/ambient_warning.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.CPTrigger
-      ParamsJSON: "{\n  \"_activeColor\": {\n    \"X\": 0.07800000160932541,\n    \"Y\": 0.8270000219345093,\n    \"Z\": 0.5799999833106995\n  },\n  \"_bobAmount\": 5.0,\n  \"_bobSpeed\": 10.0,\n  \"_bobbingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_checkpointSpriteNames\": \"CPPopup\",\n  \"_cutsceneEntityName\": \"\",\n  \"_floatSpeed\": 20.0,\n  \"_floatingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_forwardOffset\": -5.0,\n  \"_isBossCheckpoint\": true,\n  \"_lightNames\": \"ResPoint1_Light_1,ResPoint1_Light_2,ResPoint1_Light_3\"\n}"
+      TypeName: GameScripts.CrouchTriggerZone
+      ParamsJSON: "{}"

@@ -1,4 +1,4 @@
-﻿// Boom/API.cs - FIXED VERSION
+// Boom/API.cs - FIXED VERSION
 using Boom;
 using System;
 using System.Linq;
@@ -548,6 +548,39 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_DrawDebugLine(Vec3 start, Vec3 end, Vec3 color);
 
+        // ========= PARTICLE EMITTER INTERNAL CALLS =========
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Boom_API_HasParticleEmitter(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_PlayParticleEmitter(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_StopParticleEmitter(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Boom_API_IsParticleEmitterPlaying(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleEmissionRate(ulong handle, float rate);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static float Boom_API_GetParticleEmissionRate(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleStartColor(ulong handle, float r, float g, float b, float a);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleEndColor(ulong handle, float r, float g, float b, float a);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleGravity(ulong handle, float gravity);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleSpeed(ulong handle, float speedMin, float speedMax);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleSize(ulong handle, float startMin, float startMax, float endSize);
         // Inventory Menu
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_ShowInventoryMenu();
@@ -1528,6 +1561,41 @@ namespace Boom
 
         public static void DrawDebugLine(Vec3 start, Vec3 end, Vec3 color) => Native.Boom_API_DrawDebugLine(start, end, color);
 
+        // ========= PARTICLE EMITTER =========
+
+        /// <summary>Check if entity has a ParticleEmitterComponent</summary>
+        public static bool HasParticleEmitter(ulong entity) => Native.Boom_API_HasParticleEmitter(entity);
+
+        /// <summary>Start playing the particle emitter (resets timer)</summary>
+        public static void PlayParticleEmitter(ulong entity) => Native.Boom_API_PlayParticleEmitter(entity);
+
+        /// <summary>Stop the particle emitter</summary>
+        public static void StopParticleEmitter(ulong entity) => Native.Boom_API_StopParticleEmitter(entity);
+
+        /// <summary>Check if the particle emitter is currently playing</summary>
+        public static bool IsParticleEmitterPlaying(ulong entity) => Native.Boom_API_IsParticleEmitterPlaying(entity);
+
+        /// <summary>Set particles emitted per second</summary>
+        public static void SetParticleEmissionRate(ulong entity, float rate) => Native.Boom_API_SetParticleEmissionRate(entity, rate);
+
+        /// <summary>Get particles emitted per second</summary>
+        public static float GetParticleEmissionRate(ulong entity) => Native.Boom_API_GetParticleEmissionRate(entity);
+
+        /// <summary>Set the start color of particles (RGBA 0-1)</summary>
+        public static void SetParticleStartColor(ulong entity, float r, float g, float b, float a) => Native.Boom_API_SetParticleStartColor(entity, r, g, b, a);
+
+        /// <summary>Set the end color of particles (RGBA 0-1)</summary>
+        public static void SetParticleEndColor(ulong entity, float r, float g, float b, float a) => Native.Boom_API_SetParticleEndColor(entity, r, g, b, a);
+
+        /// <summary>Set gravity multiplier for particles (-9.81 = normal gravity)</summary>
+        public static void SetParticleGravity(ulong entity, float gravity) => Native.Boom_API_SetParticleGravity(entity, gravity);
+
+        /// <summary>Set min/max initial speed of particles</summary>
+        public static void SetParticleSpeed(ulong entity, float speedMin, float speedMax) => Native.Boom_API_SetParticleSpeed(entity, speedMin, speedMax);
+
+        /// <summary>Set particle size over lifetime (startMin, startMax, endSize)</summary>
+        public static void SetParticleSize(ulong entity, float startMin, float startMax, float endSize) => Native.Boom_API_SetParticleSize(entity, startMin, startMax, endSize);
+
 
         // ===== GLFW key codes =====
         public const int KEY_A = 65;
@@ -1563,6 +1631,7 @@ namespace Boom
         public const int KEY_F6 = 295;
         public const int KEY_F7 = 296;
         public const int KEY_F8 = 297;
+        public const int KEY_LEFT_BRACKET = 91;
         public const int KEY_RIGHT_BRACKET = 93;
 
         public const int MOUSE_LEFT = 0;

@@ -26,8 +26,8 @@ namespace GameScripts
 
         // State
         private static readonly Dictionary<ulong, SceneTransitionTrigger> s_instances = new Dictionary<ulong, SceneTransitionTrigger>();
-        private bool _hasTriggered = false;
-        private bool _isTransitioning = false;
+        private bool  _hasTriggered    = false;
+        private bool  _isTransitioning = false;   // delay countdown
         private float _transitionTimer = 0f;
 
         public void OnStart(string jsonParams)
@@ -56,16 +56,63 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
-            // Handle transition logic in Update instead of Callback
             if (_isTransitioning)
             {
                 _transitionTimer -= dt;
                 if (_transitionTimer <= 0f)
                 {
                     _isTransitioning = false;
-                    DoTransition();
+                    ExecuteTransition();
                 }
             }
+        }
+
+        private void TriggerTransition()
+        {
+            if (_hasTriggered) return;
+
+            // Check if scene name is valid
+            if (string.IsNullOrWhiteSpace(_sceneName))
+            {
+                API.Log("[SceneTransitionTrigger] ERROR: Scene name is empty!");
+                return;
+            }
+
+            _hasTriggered = true;
+
+            // Start transition (with dialogue if configured)
+            if (_playBossTransitionDialogue)
+            {
+                API.Log($"[SceneTransitionTrigger] Playing Boss Transition Dialogue before transitioning to '{_sceneName}'.");
+                StoryDialogueManager.PlayBossTransitionSequence(() =>
+                {
+                    StartTransitionCountdown();
+                });
+            }
+            else
+            {
+                StartTransitionCountdown();
+            }
+        }
+
+        private void StartTransitionCountdown()
+        {
+            if (_transitionDelay > 0f)
+            {
+                _isTransitioning = true;
+                _transitionTimer = _transitionDelay;
+                API.Log($"[SceneTransitionTrigger] Transition to '{_sceneName}' in {_transitionDelay:F1}s.");
+            }
+            else
+            {
+                ExecuteTransition();
+            }
+        }
+
+        private void ExecuteTransition()
+        {
+            API.Log($"[SceneTransitionTrigger] Initiating fade to scene: '{_sceneName}'");
+            SceneFader.FadeToScene(_sceneName, 0.25f);
         }
 
         public void OnDestroy()

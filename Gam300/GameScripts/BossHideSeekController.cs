@@ -73,7 +73,7 @@ namespace GameScripts
         private ulong _warningText = 0;
         private float _timer = 0f;
         private bool _isTurning = false;
-        private bool _isWatching = false; 
+        private bool _isWatching = false;
         private float _targetYRotation = 0f;
         private float _currentYRotation = 0f;
         private float _catchTimer = 0f;
@@ -176,7 +176,23 @@ namespace GameScripts
             if (!API.HasTransform(Entity)) return;
             if (_drawVisionDebug) DrawDebugVision();
             if (!_isActive) return;
-            if (Entry.IsPlayerDead) { if (_isCountingDown) StopCountdown(); return; }
+            if (Entry.IsPlayerDead)
+            {
+                if (_isCountingDown) StopCountdown();
+                // Stop all boss sounds when player dies
+                if (_wasTurning)
+                {
+                    API.StopSound(TURN_SOUND_NAME);
+                    _wasTurning = false;
+                }
+                if (_isWaitingToTurn)
+                {
+                    API.StopSound(WARNING_SOUND_NAME);
+                    _isWaitingToTurn = false;
+                    _warningTimer = 0f;
+                }
+                return;
+            }
 
             if (_activationTimer < _activationDelay) { _activationTimer += dt; return; }
 
@@ -278,15 +294,31 @@ namespace GameScripts
                 float yawRad = _currentYRotation * (float)Math.PI / 180.0f;
                 float fx = (float)Math.Sin(yawRad); float fz = (float)Math.Cos(yawRad);
                 if (_inverseForward) { fx = -fx; fz = -fz; }
-                float tx = dx / dist; float tz = dz / dist;
+
+                float tx = dx / dist;
+                float tz = dz / dist;
+
                 float dot = tx * fx + tz * fz;
                 float cosHalf = (float)Math.Cos((_detectionAngle * 0.5f) * Math.PI / 180.0);
                 if (log) Console.WriteLine($"[BossHideSeek] Watch: Dist:{dist:F1}, Dot:{dot:F2} (Target:{cosHalf:F2})");
                 if (dot > cosHalf)
                 {
-                    if (!_isCountingDown) { _isCountingDown = true; _catchTimer = _catchDelay; ShowWarningText(true); Console.WriteLine("[BossHideSeek] >>> SPOTTED! <<<"); }
-                    _catchTimer -= dt; UpdateWarningText(_catchTimer);
-                    if (_catchTimer <= 0f && !_hasDealtDamage) { _hasDealtDamage = true; ShowWarningText(false); Console.WriteLine("[BossHideSeek] !!! CAUGHT !!!"); PlayerManager.NotifyPlayerCaught(Entity); }
+                    if (!_isCountingDown)
+                    {
+                        _isCountingDown = true;
+                        _catchTimer = _catchDelay;
+                        ShowWarningText(true);
+                        Console.WriteLine("[BossHideSeek] >>> SPOTTED! <<<");
+                    }
+                    _catchTimer -= dt;
+                    UpdateWarningText(_catchTimer);
+                    if (_catchTimer <= 0f && !_hasDealtDamage)
+                    {
+                        _hasDealtDamage = true;
+                        ShowWarningText(false);
+                        Console.WriteLine("[BossHideSeek] !!! CAUGHT !!!");
+                        PlayerManager.NotifyPlayerCaught(Entity);
+                    }
                     return;
                 }
             }
