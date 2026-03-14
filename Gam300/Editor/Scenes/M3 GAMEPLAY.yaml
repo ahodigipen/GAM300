@@ -3038,7 +3038,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.575999975
+          volume: 0.52700001
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -3400,7 +3400,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.575999975
+          volume: 0.519999981
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -3579,7 +3579,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.575999975
+          volume: 0.52700001
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -8772,7 +8772,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.57099998
+          volume: 0.523000002
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -15008,7 +15008,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.578999996
+          volume: 0.518999994
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -19876,7 +19876,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/breakMetal.wav
           loop: false
-          volume: 0.69599998
+          volume: 0.488000005
           priority: 128
           pitch: 1
           stereoPan: 0
