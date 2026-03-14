@@ -17,9 +17,9 @@ ENTITIES:
       SortOrder: 7
     TransformComponent:
       Transform:
-        Translate: [0.569999993, 0.469999999, -5.96046448e-08]
+        Translate: [0.600000024, 0.469999999, -5.96046448e-08]
         Rotate: [0, -0, 0]
-        Scale: [0.310000002, 0.140000001, 0.0199999996]
+        Scale: [0.331, 0.145999998, 0.0199999996]
     SpriteComponent:
       textureID: 16541366282253303416
       color: [0.549019575, 0.26912722, 0.26912722, 1]
@@ -31,11 +31,11 @@ ENTITIES:
       SortOrder: 12
     TransformComponent:
       Transform:
-        Translate: [0.624999762, -10.2875004, 0]
+        Translate: [0.624999762, -10.7875004, 0]
         Rotate: [0, 0, 0]
         Scale: [0.25, 0.150000006, 1]
     SpriteComponent:
-      textureID: 6336388213168836440
+      textureID: 17800483581353822611
       color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
@@ -45,7 +45,7 @@ ENTITIES:
       SortOrder: 3
     TransformComponent:
       Transform:
-        Translate: [0.624999762, -10.7875004, 0]
+        Translate: [0.624999762, -11.7875004, 0]
         Rotate: [0, -0, 0]
         Scale: [0.300000012, 0.349999994, 0.899999976]
     SpriteComponent:
@@ -73,7 +73,7 @@ ENTITIES:
       SortOrder: 5
     TransformComponent:
       Transform:
-        Translate: [0.569999993, 0.720000029, 0.309999943]
+        Translate: [0, 0.25, 1]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
     CameraComponent:
@@ -124,9 +124,9 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.CreditsScroll
-      ParamsJSON: "{\n  \"endBuffer\": 300.0,\n  \"footerLogoNames\": \"DigipenLogo,Test_Logo\",\n  \"footerOffsets\": \"-3.2,-10.0;-3.2,-9.5\",\n  \"guiZ\": 0.0,\n  \"headerLogoNames\": \"Logo\",\n  \"headerOffsets\": \"-3.2,-1\",\n  \"lastEntityName\": \"\",\n  \"logoEntityNames\": \"DigipenLogo\",\n  \"logoOffsets\": \"-0.75,-1\",\n  \"logoSpeedMultiplier\": 0.0022499999031424522,\n  \"menuInitialOffset\": 0.0,\n  \"menuScrollSpeed\": 1.0,\n  \"menuStartY\": -1.7000000476837158,\n  \"menuTargetY\": 0.0,\n  \"scrollSpeed\": 200.0,\n  \"startPosition\": {\n    \"X\": 1700.0,\n    \"Y\": -350.0\n  },\n  \"useDefaultCredits\": false\n}"
+      ParamsJSON: "{\n  \"endBuffer\": 300.0,\n  \"footerLogoNames\": \"DigipenLogo,Test_Logo\",\n  \"footerOffsets\": \"-3.2,-11.0;-3.2,-10.0\",\n  \"guiZ\": 0.0,\n  \"headerLogoNames\": \"Logo\",\n  \"headerOffsets\": \"-3.2,-1\",\n  \"lastEntityName\": \"\",\n  \"logoEntityNames\": \"DigipenLogo\",\n  \"logoOffsets\": \"-0.75,-1\",\n  \"logoSpeedMultiplier\": 0.0022499999031424522,\n  \"menuInitialOffset\": 0.0,\n  \"menuScrollSpeed\": 1.0,\n  \"menuStartY\": -1.7000000476837158,\n  \"menuTargetY\": 0.0,\n  \"scrollSpeed\": 200.0,\n  \"startPosition\": {\n    \"X\": 1700.0,\n    \"Y\": -350.0\n  },\n  \"useDefaultCredits\": false\n}"
     TextComponent:
-      text: "\n\n\n\nProduced by\nTeam Obession\n\nTeam Members\nLeon Pablo Dominguez Mayor Gregorio\nProduct Manager\n\nTitus Kwong Wen Shuen\nProgrammer\n\nJericho Lorenz Villegas Quimson\nGame Programmer\n\nLewis Koa Yi Heng\nDebugging Champion\n\nAmos Ho Hin Wai\nEngine Champion\n\nTan Guan Yew, Wesley\nPhysics Champion\n\nDarius Maximus Chan Wei Jie \nGraphics Champion\n\nChristopher Lam Yit Shyong \nAudio Champion\n\nMuhammad Nur Aqif Bin Abdemanaf\nEngine Champion\n\nAdam Goh Zheng Shan \nTech Lead\n\nSarah Hung \nLevel Design/Mechanics\n\nAng Yu Shi Sebrena \nArt/Storytelling/UI\n\nChee Kar Yi\nSound/Systems\n\nThanks to our Professors\n\n\n* Created at DigiPen Institute of Technology\n* President: Claude Comair\n* © 2026 DigiPen Institute of Technology. All Rights Reserved\n\nTools & Libraries:\n       * FMOD\n       * NVIDIA PhysX\n       * OpenGL\n       * GLM\n       * EnTT\n       * Assimp\n       * ImGui"
+      text: "\n\n\n\nProduced by\nTeam Obession\n\nTeam Members\nLeon Pablo Dominguez Mayor Gregorio\nProduct Manager\n\nTitus Kwong Wen Shuen\nProgrammer\n\nJericho Lorenz Villegas Quimson\nGame Programmer\n\nLewis Koa Yi Heng\nDebugging Champion\n\nAmos Ho Hin Wai\nEngine Champion\n\nTan Guan Yew, Wesley\nPhysics Champion\n\nDarius Maximus Chan Wei Jie \nGraphics Champion\n\nChristopher Lam Yit Shyong \nAudio Champion\n\nMuhammad Nur Aqif Bin Abdemanaf\nEngine Champion\n\nAdam Goh Zheng Shan \nTech Lead\n\nSarah Hung \nLevel Design/Mechanics\n\nAng Yu Shi Sebrena \nArt/Storytelling/UI\n\nChee Kar Yi\nSound/Systems\n\nThanks to our Professors\nTomas Arce-Gil\nCrespy Patrice\nKwek Shie Sien Jonathan\nRudy Castan\nVuk Krakovic\n\n* Created at DigiPen Institute of Technology\n* President: Claude Comair\n* © 2026 DigiPen Institute of Technology. All Rights Reserved\n\nTools & Libraries:\n       FMOD *\n       NVIDIA PhysX *\n       OpenGL *\n       GLM *\n       EnTT *\n       Assimp *\n       ImGui *"
       fontName: Cormorant-Italic-VariableFont_wght
       color: [1, 1, 1, 1]
       scale: 1
@@ -190,12 +190,12 @@ ENTITIES:
       SortOrder: 1
     TransformComponent:
       Transform:
-        Translate: [0.580446482, -0.27700001, 0]
+        Translate: [0.60799998, -0.0680000037, -0.850000024]
         Rotate: [0, -0, 0]
-        Scale: [0.300000012, 0.119999997, 1]
+        Scale: [0.214000002, 0.0560000017, 0.600000024]
     SpriteComponent:
       textureID: 5138487839712909877
-      color: [1, 1, 1, 1]
+      color: [0.87843138, 0.686274529, 0.384313732, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 9308802260659797843
@@ -204,12 +204,12 @@ ENTITIES:
       SortOrder: 9
     TransformComponent:
       Transform:
-        Translate: [0.579999983, 0, -0.850000024]
+        Translate: [0.609000027, 0.0909999982, -0.850000024]
         Rotate: [0, -0, 0]
-        Scale: [0.300000012, 0.119999997, 1]
+        Scale: [0.214000002, 0.0560000017, 1]
     SpriteComponent:
       textureID: 9051997344452271848
-      color: [1, 1, 1, 1]
+      color: [1, 0.686274529, 0.384313732, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 9308802260659797843
@@ -218,12 +218,12 @@ ENTITIES:
       SortOrder: 10
     TransformComponent:
       Transform:
-        Translate: [0.579999983, -0.560000002, -0.729999959]
+        Translate: [0.60799998, -0.421999991, -0.729999959]
         Rotate: [0, -0, 0]
-        Scale: [0.300000012, 0.11999999, 1]
+        Scale: [0.214000002, 0.0560000017, 1]
     SpriteComponent:
       textureID: 5561377318240942818
-      color: [1, 1, 1, 1]
+      color: [1, 0.686274529, 0.384313732, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 0
@@ -242,10 +242,24 @@ ENTITIES:
       SortOrder: 6
     TransformComponent:
       Transform:
-        Translate: [0.589999974, -0.800000012, 0]
+        Translate: [0.60799998, -0.68599999, 0]
         Rotate: [0, -0, 0]
-        Scale: [0.150000006, 0.0500000007, 0.00999999978]
+        Scale: [0.0820000023, 0.0289999992, 0.00999999978]
     SpriteComponent:
       textureID: 5600707374096394357
       color: [1, 1, 1, 1]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 9308802260659797843
+      Name: SettingsButton
+      UID: 11522335738119102978
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.607912004, -0.245665133, -0.730000019]
+        Rotate: [0, -0, 0]
+        Scale: [0.214000002, 0.0560000017, 1]
+    SpriteComponent:
+      textureID: 16244244589917169999
+      color: [0.87843138, 0.686274529, 0.384313732, 1]
       renderAs3D: false
