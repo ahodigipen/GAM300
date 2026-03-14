@@ -327,7 +327,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.661000013
+          volume: 0.676999986
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -3038,11 +3038,11 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.66900003
+          volume: 0.575999975
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.800000012
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -3056,11 +3056,11 @@ ENTITIES:
           filePaths:
             - Resources/Audio/doorLocked.wav
           loop: false
-          volume: 1
+          volume: 0.66900003
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.800000012
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -3400,11 +3400,11 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.661000013
+          volume: 0.575999975
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.800000012
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -3418,11 +3418,11 @@ ENTITIES:
           filePaths:
             - Resources/Audio/doorLocked.wav
           loop: false
-          volume: 1
+          volume: 0.66900003
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.800000012
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -3579,11 +3579,11 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.648999989
+          volume: 0.575999975
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.800000012
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -3597,11 +3597,11 @@ ENTITIES:
           filePaths:
             - Resources/Audio/doorLocked.wav
           loop: false
-          volume: 1
+          volume: 0.667999983
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.800000012
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -8515,7 +8515,7 @@ ENTITIES:
         Scale: [0.0299999993, 0.0599999987, 0.0800000429]
     SpriteComponent:
       textureID: 9683671951523272381
-      color: [1, 1, 1, 0]
+      color: [1, 1, 1, 1]
       renderAs3D: false
   - ColliderComponent:
       Collider:
@@ -8772,11 +8772,11 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.665000021
+          volume: 0.57099998
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.800000012
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -8790,11 +8790,11 @@ ENTITIES:
           filePaths:
             - Resources/Audio/doorLocked.wav
           loop: false
-          volume: 1
+          volume: 0.66900003
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.800000012
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -13933,8 +13933,8 @@ ENTITIES:
       SortOrder: 393
     TransformComponent:
       Transform:
-        Translate: [-22.0895977, 46.038269, -2.11969757]
-        Rotate: [-202.4375, 10509.875, 180]
+        Translate: [-55.3203888, 4.35395861, 15.9368773]
+        Rotate: [-186.9375, 10662.5625, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -15008,11 +15008,11 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.644999981
+          volume: 0.578999996
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.800000012
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -15026,11 +15026,11 @@ ENTITIES:
           filePaths:
             - Resources/Audio/doorLocked.wav
           loop: false
-          volume: 1
+          volume: 0.66900003
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0.800000012
           mute: false
           playOnStart: false
           triggerKey: -1
@@ -15595,7 +15595,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/02.Night_Forest_Field_Stars_Loop.wav
           loop: true
-          volume: 0.144999996
+          volume: 0.160999998
           priority: 101
           pitch: 1
           stereoPan: 0
@@ -15625,8 +15625,8 @@ ENTITIES:
           filePaths:
             - Resources/Audio/20.Room-Tone_SFX_Ambience_Loop.wav
           loop: true
-          volume: 0.48300001
-          priority: 128
+          volume: 0.714999974
+          priority: 110
           pitch: 1
           stereoPan: 0
           spatialBlend: 0
@@ -19876,7 +19876,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/breakMetal.wav
           loop: false
-          volume: 1
+          volume: 0.69599998
           priority: 128
           pitch: 1
           stereoPan: 0
