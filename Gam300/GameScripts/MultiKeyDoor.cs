@@ -119,10 +119,47 @@ namespace GameScripts
         private bool _closing = false;
         private float _closeTimer = 0f;
 
-        private bool _kWasDown = false;
+        private bool _kWasDown  = false;
+        private bool _f5WasDown = false;
+
+        // ── Seal animation (MainDoor only) ───────────────────────────────────
+        [Boom.EditorExposed("Seal 1 Names", "Comma-separated entity names for seal group 1 (lifts first, e.g. SEAL1_1,SEAL1_2)")]
+        private string _seal1Name = "";
+
+        [Boom.EditorExposed("Seal 2 Names", "Comma-separated entity names for seal group 2 (lifts second, e.g. SEAL2_1,SEAL2_2)")]
+        private string _seal2Name = "";
+
+        [Boom.EditorExposed("Seal 3 Names", "Comma-separated entity names for seal group 3 (lifts third, e.g. SEAL3_1,SEAL3_2)")]
+        private string _seal3Name = "";
+
+        [Boom.EditorExposed("Seal 2 Start Delay", "Seconds after seal 1 starts that seal 2 begins lifting", 0f, 3f, true)]
+        private float _seal2Delay = 0.15f;
+
+        [Boom.EditorExposed("Seal 3 Start Delay", "Seconds after seal 1 starts that seal 3 begins lifting", 0f, 3f, true)]
+        private float _seal3Delay = 0.30f;
+
+        [Boom.EditorExposed("Seal Lift Duration", "Seconds each seal takes to fully lift and fade", 0.1f, 5f, true)]
+        private float _sealLiftDuration = 1.0f;
+
+        [Boom.EditorExposed("Seal Lift Height", "Units each seal rises before disappearing", 0f, 20f, true)]
+        private float _sealLiftHeight = 2.5f;
+
+        // Runtime seal state — each group holds multiple entities
+        private List<ulong> _sealGroupEntities0 = new List<ulong>();
+        private List<ulong> _sealGroupEntities1 = new List<ulong>();
+        private List<ulong> _sealGroupEntities2 = new List<ulong>();
+        private List<Vec3>  _sealGroupBasePos0  = new List<Vec3>();
+        private List<Vec3>  _sealGroupBasePos1  = new List<Vec3>();
+        private List<Vec3>  _sealGroupBasePos2  = new List<Vec3>();
+        private bool        _sealGroup0Done     = false;
+        private bool        _sealGroup1Done     = false;
+        private bool        _sealGroup2Done     = false;
+        private bool        _sealAnimActive     = false;
+        private float       _sealMasterTimer    = 0f;
 
         // Constants (GLFW)
-        private const int KEY_K = 75;          // GLFW_KEY_K
+        private const int KEY_K  = 75;          // GLFW_KEY_K
+        private const int KEY_F5 = 294;         // GLFW_KEY_F5 — cheat: force-open door
         private const int KEY_LEFT_SHIFT = 340;
 
         public void OnStart(string jsonParams)
@@ -252,6 +289,10 @@ namespace GameScripts
                     API.Log($"[MultiKeyDoor] Lock entity '{_lockEntityName}' found (id={_lockEntity}).");
             }
 
+            // Find seal entities (MainDoor only)
+            if (_isMainDoor)
+                FindSealEntities();
+
             API.RegisterTriggerEnterCallback(Entity, OnTriggerEnter);
             API.RegisterTriggerExitCallback(Entity, OnTriggerExit);
             API.Log("[MultiKeyDoor] Registered trigger callbacks.");
@@ -260,6 +301,8 @@ namespace GameScripts
         public void OnUpdate(float dt)
         {
             if (_doorEntity == 0) return;
+
+            if (_sealAnimActive) UpdateSealAnimation(dt);
 
             // Handle E Prompt Fading
             if (_ePromptEntity != 0 && _eFadeState != EPromptFadeState.None)
@@ -374,6 +417,9 @@ namespace GameScripts
 
                             _opening = true;
                             _closing = false;
+
+                            // Start seal lift animation
+                            if (_isMainDoor) StartSealAnimation();
 
                             // Vanish the lock entity
                             if (_lockEntity != 0)
@@ -494,6 +540,33 @@ namespace GameScripts
                 }
             }
             _kWasDown = kDown;
+
+            // F5 cheat — force-open this door instantly, no keys required
+            bool f5Down = API.IsKeyDown(KEY_F5);
+            if (f5Down && !_f5WasDown && _playerInRange && !_opening && !NearlyEqual(API.GetPosition(Entity), _targetPos))
+            {
+                API.Log($"[MultiKeyDoor] F5 CHEAT: Force-opening door '{_doorName}'.");
+
+                if (_lockEntity != 0)
+                {
+                    Vec3 lp = API.GetPosition(_lockEntity);
+                    API.SetPosition(_lockEntity, new Vec3(lp.X, -100f, lp.Z));
+                }
+
+                if (_ePromptEntity != 0)
+                {
+                    _eFadeState = EPromptFadeState.FadeOut;
+                    _eFadeTimer = (1f - _eCurrentAlpha) * E_FADE_DURATION;
+                }
+
+                if (_isMainDoor) StartSealAnimation();
+
+                _opening = true;
+                _closing = false;
+                API.PlaySound("sfx_door_slide_open_2d", _doorSoundPath, false);
+                API.SetSoundVolume("sfx_door_slide_open_2d", 1.0f);
+            }
+            _f5WasDown = f5Down;
         }
 
         public void OnDestroy()
@@ -699,6 +772,119 @@ namespace GameScripts
             }
         }
 
+        // ── Seal animation ────────────────────────────────────────────────────
+
+        private void FindSealEntities()
+        {
+            string[] nameFields = { _seal1Name, _seal2Name, _seal3Name };
+            var groups = new[] {
+                (_sealGroupEntities0, _sealGroupBasePos0),
+                (_sealGroupEntities1, _sealGroupBasePos1),
+                (_sealGroupEntities2, _sealGroupBasePos2),
+            };
+
+            for (int g = 0; g < 3; g++)
+            {
+                var (entities, positions) = groups[g];
+                entities.Clear();
+                positions.Clear();
+
+                if (string.IsNullOrWhiteSpace(nameFields[g])) continue;
+
+                string[] names = nameFields[g].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string raw in names)
+                {
+                    string name = raw.Trim();
+                    ulong id = API.FindEntity(name);
+                    if (id != 0 && API.HasTransform(id))
+                    {
+                        entities.Add(id);
+                        positions.Add(API.GetPosition(id));
+                        API.Log($"[MultiKeyDoor] Seal group {g + 1}: found '{name}' (id={id})");
+                    }
+                    else
+                    {
+                        API.Log($"[MultiKeyDoor] WARNING: Seal group {g + 1}: entity '{name}' not found.");
+                    }
+                }
+            }
+        }
+
+        private void StartSealAnimation()
+        {
+            _sealGroup0Done  = false;
+            _sealGroup1Done  = false;
+            _sealGroup2Done  = false;
+            _sealMasterTimer = 0f;
+
+            int total = _sealGroupEntities0.Count + _sealGroupEntities1.Count + _sealGroupEntities2.Count;
+            _sealAnimActive = total > 0;
+
+            if (total == 0)
+                API.Log("[MultiKeyDoor] WARNING: Seal animation triggered but no seal entities found. Check Seal 1/2/3 Names fields.");
+            else
+                API.Log($"[MultiKeyDoor] Seal animation started ({total} entities across 3 groups). Delays: 0s / {_seal2Delay}s / {_seal3Delay}s, lift={_sealLiftHeight}u over {_sealLiftDuration}s.");
+        }
+
+        private void UpdateSealAnimation(float dt)
+        {
+            _sealMasterTimer += dt;
+
+            float[] startDelays = { 0f, _seal2Delay, _seal3Delay };
+            var groups = new[] {
+                (_sealGroupEntities0, _sealGroupBasePos0),
+                (_sealGroupEntities1, _sealGroupBasePos1),
+                (_sealGroupEntities2, _sealGroupBasePos2),
+            };
+            bool[] groupDone = { _sealGroup0Done, _sealGroup1Done, _sealGroup2Done };
+
+            for (int g = 0; g < 3; g++)
+            {
+                if (groupDone[g]) continue;
+
+                var (entities, positions) = groups[g];
+                if (entities.Count == 0) { groupDone[g] = true; continue; }
+
+                // Not yet time for this group to start
+                if (_sealMasterTimer < startDelays[g]) continue;
+
+                float localT = _sealMasterTimer - startDelays[g];
+                float t01    = Math.Min(1f, localT / _sealLiftDuration);
+
+                for (int j = 0; j < entities.Count; j++)
+                {
+                    API.SetPosition(entities[j], new Vec3(
+                        positions[j].X,
+                        positions[j].Y + _sealLiftHeight * t01,
+                        positions[j].Z
+                    ));
+                    API.SetModelOpacity(entities[j], 1f - t01);
+                }
+
+                // Group complete — teleport all away and restore opacity
+                if (t01 >= 1f)
+                {
+                    for (int j = 0; j < entities.Count; j++)
+                    {
+                        API.SetPosition(entities[j], new Vec3(positions[j].X, -100f, positions[j].Z));
+                        API.SetModelOpacity(entities[j], 1f);
+                    }
+                    groupDone[g] = true;
+                    API.Log($"[MultiKeyDoor] Seal group {g + 1} done ({entities.Count} entities).");
+                }
+            }
+
+            _sealGroup0Done = groupDone[0];
+            _sealGroup1Done = groupDone[1];
+            _sealGroup2Done = groupDone[2];
+
+            if (_sealGroup0Done && _sealGroup1Done && _sealGroup2Done)
+            {
+                _sealAnimActive = false;
+                API.Log("[MultiKeyDoor] All seal groups finished.");
+            }
+        }
+
         private void ParseParams(string p)
         {
             if (string.IsNullOrWhiteSpace(p)) return;
@@ -768,6 +954,21 @@ namespace GameScripts
                     case "direction":
                         _slideDirection = val;
                         break;
+
+                    case "seal1name": case "seal1":
+                        _seal1Name = val; break;
+                    case "seal2name": case "seal2":
+                        _seal2Name = val; break;
+                    case "seal3name": case "seal3":
+                        _seal3Name = val; break;
+                    case "seal2delay":
+                        if (float.TryParse(val, out f)) _seal2Delay = Math.Max(0f, f); break;
+                    case "seal3delay":
+                        if (float.TryParse(val, out f)) _seal3Delay = Math.Max(0f, f); break;
+                    case "sealliftduration": case "seallifetime":
+                        if (float.TryParse(val, out f)) _sealLiftDuration = Math.Max(0.1f, f); break;
+                    case "sealliftHeight": case "sealheight":
+                        if (float.TryParse(val, out f)) _sealLiftHeight = Math.Max(0f, f); break;
                 }
             }
         }

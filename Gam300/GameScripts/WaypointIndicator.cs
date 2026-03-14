@@ -17,20 +17,20 @@ namespace GameScripts
 
         // ── Key definitions ──────────────────────────────────────────────────
         private static readonly string[] KEY_NAMES = {
-            "Key1_1", "Key1_2", "Key1_3", "Key1_sr1",   // Group 0  (indices 0-3)
-            "Key2_1", "Key2_2", "Key2_3", "Key2_sr1", "Key2_sr2" // Group 1  (indices 4-8)
+            "Key1_1", "Key1_2", "Key1_3", "Key1_sr1", "Key1_Prison",   // Group 0  (indices 0-4)
+            "Key2_1", "Key2_2", "Key2_3", "Key2_sr1", "Key2_sr2"       // Group 1  (indices 5-9)
         };
 
         private static readonly string[] KEY_VARIANTS = {
-            "MainDoor", "MainDoor", "MainDoor", "SmallDoor",   // Group 0
-            "MainDoor", "MainDoor", "MainDoor", "SmallDoor", "SmallDoor" // Group 1
+            "MainDoor", "MainDoor", "MainDoor", "SmallDoor", "SmallDoor",   // Group 0
+            "MainDoor", "MainDoor", "MainDoor", "SmallDoor", "SmallDoor"    // Group 1
         };
 
         // Group 0 = Key1_*, Group 1 = Key2_*
         // Indices correspond to KEY_NAMES above
         private static readonly int[][] KEY_GROUPS = {
-            new int[] { 0, 1, 2, 3 },       // Key1_1, Key1_2, Key1_3, Key1_sr1
-            new int[] { 4, 5, 6, 7, 8 }     // Key2_1, Key2_2, Key2_3, Key2_sr1, Key2_sr2
+            new int[] { 0, 1, 2, 3, 4 },    // Key1_1, Key1_2, Key1_3, Key1_sr1, Key1_Prison
+            new int[] { 5, 6, 7, 8, 9 }     // Key2_1, Key2_2, Key2_3, Key2_sr1, Key2_sr2
         };
 
         // ── Key tracking ─────────────────────────────────────────────────────

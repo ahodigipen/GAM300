@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="API.cs" />
     <Compile Include="AttackSquash.cs" />
+    <Compile Include="AudioTrigger.cs" />
     <Compile Include="BossActivationTrigger.cs" />
     <Compile Include="BossHideSeekController.cs" />
     <Compile Include="BossCutsceneMovement.cs" />
