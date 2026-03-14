@@ -858,11 +858,13 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
          obj_member<"scale", &TextComponent::scale>,
          obj_member<"screenPosition", &TextComponent::screenPosition>,
          obj_member<"renderAs3D", &TextComponent::renderAs3D>,
-         obj_member<"billboardMode", &TextComponent::billboardMode>
-         // Note: alignment enum requires custom serialization (not included for now)
-     )
- };
-
+         obj_member<"billboardMode", &TextComponent::billboardMode>,
+         obj_member<"alignment", &TextComponent::alignment,
+             member_enum_value<"Left", TextComponent::Alignment::Left>,
+             member_enum_value<"Center", TextComponent::Alignment::Center>,
+             member_enum_value<"Right", TextComponent::Alignment::Right>
+         >
+         ) };
 
 enum class MenuType { Pause = 0, Death = 1, Settings = 2, Main = 3, End = 4, PopUp = 5, Inventory = 6 };
 struct MenuComponent {

@@ -92,6 +92,9 @@ namespace Boom
         internal extern static bool Boom_API_IsGamepadConnected();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static ulong[] Boom_API_GetChildren(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Boom_API_HasTransform(ulong handle);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -436,6 +439,9 @@ namespace Boom
         internal extern static float Boom_API_GetTextScale(ulong handle);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static float Boom_API_GetTextHeight(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_SetTextScale(ulong handle, float scale);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -443,6 +449,12 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_SetTextPosition(ulong handle, ref Vec2 pos);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static int Boom_API_GetTextAlignment(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetTextAlignment(ulong handle, int alignment);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_CreateController(ulong handle, float radius, float height);
@@ -682,6 +694,11 @@ namespace Boom
 
         // ===== Entity queries =====
         public static ulong FindEntity(string name) => Native.Boom_API_FindEntity(name);
+
+        /// <summary>
+        /// Get all children of an entity.
+        /// </summary>
+        public static ulong[] GetChildren(ulong entity) => Native.Boom_API_GetChildren(entity) ?? new ulong[0];
 
         //AI Helpers
         public enum AIMode
@@ -1493,6 +1510,11 @@ namespace Boom
         public static float GetTextScale(ulong entity) => Native.Boom_API_GetTextScale(entity);
 
         /// <summary>
+        /// Get the total height of a multi-line text block in screen pixels
+        /// </summary>
+        public static float GetTextHeight(ulong entity) => Native.Boom_API_GetTextHeight(entity);
+
+        /// <summary>
         /// Set the scale/size multiplier of text
         /// </summary>
         public static void SetTextScale(ulong entity, float scale)
@@ -1515,6 +1537,26 @@ namespace Boom
         public static void SetTextPosition(ulong entity, Vec2 pos)
         {
             Native.Boom_API_SetTextPosition(entity, ref pos);
+        }
+
+        public enum TextAlignment
+        {
+            Left = 0,
+            Center = 1,
+            Right = 2
+        }
+
+        /// <summary>
+        /// Get the alignment of text
+        /// </summary>
+        public static TextAlignment GetTextAlignment(ulong entity) => (TextAlignment)Native.Boom_API_GetTextAlignment(entity);
+
+        /// <summary>
+        /// Set the alignment of text
+        /// </summary>
+        public static void SetTextAlignment(ulong entity, TextAlignment alignment)
+        {
+            Native.Boom_API_SetTextAlignment(entity, (int)alignment);
         }
 
         // Video

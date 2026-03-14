@@ -20,6 +20,9 @@ namespace Boom {
         bool Init();
         void LoadFont(const std::string& name, const std::string& filepath, int size);
         void RenderText(const std::string& fontName, const std::string& text, float x, float y, float scale, glm::vec3 color, float textAlpha = 1.0f);
+        void RenderTextAligned(const std::string& fontName, const std::string& text, float x, float y, float scale, glm::vec3 color, int alignment, float textAlpha = 1.0f);
+        float GetTextWidth(const std::string& fontName, const std::string& text, float scale);
+        float GetTextHeight(const std::string& fontName, const std::string& text, float scale);
         void Cleanup();
 
         std::vector<std::string> GetLoadedFontNames() const {

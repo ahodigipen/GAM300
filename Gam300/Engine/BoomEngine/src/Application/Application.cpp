@@ -1217,13 +1217,14 @@ namespace Boom
                 screenY = textComp.screenPosition.y;
             }
 
-            Boom::FontManager::GetInstance().RenderText(
+            Boom::FontManager::GetInstance().RenderTextAligned(
                 textComp.fontName,
                 textComp.text,
                 screenX,
                 screenY,
                 finalScale,
                 glm::vec3(textComp.color),
+                (int)textComp.alignment,
                 textComp.color.a
             );
         }

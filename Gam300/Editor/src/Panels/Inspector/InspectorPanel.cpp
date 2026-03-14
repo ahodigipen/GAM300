@@ -1014,7 +1014,15 @@ namespace EditorUI {
 
                 // Color picker
                 ImGui::Text("Color:");
-                ImGui::ColorEdit4("##color", &textComp.color[0]);
+                // Text alignment
+                ImGui::Text("Alignment:");
+                const char* alignments[] = { "Left", "Center", "Right" };
+                int currentAlignment = (int)textComp.alignment;
+                if (ImGui::Combo("##alignment", &currentAlignment, alignments, IM_ARRAYSIZE(alignments))) {
+                    textComp.alignment = (Boom::TextComponent::Alignment)currentAlignment;
+                }
+
+                ImGui::ColorEdit4("Color", &textComp.color.x);
 
                 // Scale slider
                 ImGui::Text("Scale:");

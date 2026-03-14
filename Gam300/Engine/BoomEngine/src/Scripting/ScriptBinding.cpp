@@ -17,6 +17,7 @@
 
 #include "Application/Application.h"
 #include "Audio/Audio.hpp"  // Add this include for sound engine
+#include "Graphics/Text/FontManager.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace Boom {
@@ -46,6 +47,20 @@ namespace Boom {
         mono_free(s);
         if (e == entt::null) return 0ull;
         return static_cast<uint64_t>(static_cast<uint32_t>(e));
+    }
+
+    static MonoArray* ICALL_API_GetChildren(uint64_t handle) {
+        if (!s_Ctx) return nullptr;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return nullptr;
+
+        auto children = Boom::GetChildren(s_Ctx->scene, e);
+        
+        MonoArray* result = mono_array_new(mono_domain_get(), mono_get_uint64_class(), children.size());
+        for (size_t i = 0; i < children.size(); i++) {
+            mono_array_set(result, uint64_t, i, static_cast<uint64_t>(static_cast<uint32_t>(children[i])));
+        }
+        return result;
     }
 
     // NEW: Check if entity has TransformComponent
@@ -1206,6 +1221,17 @@ namespace Boom {
         return s_Ctx->scene.get<TextComponent>(e).scale;
     }
 
+    static float ICALL_API_GetTextHeight(uint64_t handle)
+    {
+        if (!s_Ctx) return 0.0f;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            return 0.0f;
+        }
+        auto& textComp = s_Ctx->scene.get<TextComponent>(e);
+        return Boom::FontManager::GetInstance().GetTextHeight(textComp.fontName, textComp.text, textComp.scale);
+    }
+
     static void ICALL_API_SetTextScale(uint64_t handle, float scale)
     {
         if (!s_Ctx) return;
@@ -1237,6 +1263,27 @@ namespace Boom {
             return;
         }
         s_Ctx->scene.get<TextComponent>(e).screenPosition = *pos;
+    }
+
+    static int32_t ICALL_API_GetTextAlignment(uint64_t handle)
+    {
+        if (!s_Ctx) return 0;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            return 0;
+        }
+        return static_cast<int32_t>(s_Ctx->scene.get<TextComponent>(e).alignment);
+    }
+
+    static void ICALL_API_SetTextAlignment(uint64_t handle, int32_t alignment)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetTextAlignment: Entity doesn't have TextComponent");
+            return;
+        }
+        s_Ctx->scene.get<TextComponent>(e).alignment = static_cast<TextComponent::Alignment>(alignment);
     }
 
     // ========= SPOTLIGHT COMPONENT INTERNAL CALLS =========
@@ -2606,6 +2653,7 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_Set30FPSLimit", (const void*)ICALL_API_Set30FPSLimit);
         mono_add_internal_call("Boom.Native::Boom_API_Get30FPSLimit", (const void*)ICALL_API_Get30FPSLimit);
         mono_add_internal_call("Boom.Native::Boom_API_FindEntity", (const void*)ICALL_API_FindEntity);
+        mono_add_internal_call("Boom.Native::Boom_API_GetChildren", (const void*)ICALL_API_GetChildren);
         mono_add_internal_call("Boom.Native::Boom_API_GetPosition", (const void*)ICALL_API_GetPosition);
         mono_add_internal_call("Boom.Native::Boom_API_SetPosition", (const void*)ICALL_API_SetPosition);
         mono_add_internal_call("Boom.Native::Boom_API_GetRotation", (const void*)ICALL_API_GetRotation);
@@ -2778,9 +2826,12 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_GetTextColor", (const void*)ICALL_API_GetTextColor);
         mono_add_internal_call("Boom.Native::Boom_API_SetTextColor", (const void*)ICALL_API_SetTextColor);
         mono_add_internal_call("Boom.Native::Boom_API_GetTextScale", (const void*)ICALL_API_GetTextScale);
+        mono_add_internal_call("Boom.Native::Boom_API_GetTextHeight", (const void*)ICALL_API_GetTextHeight);
         mono_add_internal_call("Boom.Native::Boom_API_SetTextScale", (const void*)ICALL_API_SetTextScale);
         mono_add_internal_call("Boom.Native::Boom_API_GetTextPosition", (const void*)ICALL_API_GetTextPosition);
         mono_add_internal_call("Boom.Native::Boom_API_SetTextPosition", (const void*)ICALL_API_SetTextPosition);
+        mono_add_internal_call("Boom.Native::Boom_API_GetTextAlignment", (const void*)ICALL_API_GetTextAlignment);
+        mono_add_internal_call("Boom.Native::Boom_API_SetTextAlignment", (const void*)ICALL_API_SetTextAlignment);
 
         // SpotLight component internal calls
         mono_add_internal_call("Boom.Native::Boom_API_HasSpotLight", (const void*)ICALL_API_HasSpotLight);

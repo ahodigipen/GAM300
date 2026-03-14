@@ -2,13 +2,23 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
-      Name: Logo
-      UID: 10226526392347079434
-      SortOrder: 0
+      Name: Pretest
+      UID: 2899310853043884437
+      SortOrder: 1
     TransformComponent:
       Transform:
-        Translate: [-0.637499988, -1.7874999, 0]
+        Translate: [0, 0, 0]
         Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+  - InfoComponent:
+      Parent: 9308802260659797843
+      Name: Logo_Footer
+      UID: 10749984523442507471
+      SortOrder: 7
+    TransformComponent:
+      Transform:
+        Translate: [0.569999993, 0.469999999, -5.96046448e-08]
+        Rotate: [0, -0, 0]
         Scale: [0.310000002, 0.140000001, 0.0199999996]
     SpriteComponent:
       textureID: 16541366282253303416
@@ -16,66 +26,66 @@ ENTITIES:
       renderAs3D: false
   - InfoComponent:
       Parent: 0
-      Name: Home Screen GUI
-      UID: 3413859284316912550
-      SortOrder: 0
+      Name: Test_Logo
+      UID: 12046087019606252307
+      SortOrder: 12
     TransformComponent:
       Transform:
-        Translate: [0, 0, -1.21000004]
+        Translate: [0.624999762, -10.2875004, 0]
         Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
+        Scale: [0.25, 0.150000006, 1]
     SpriteComponent:
-      textureID: 13983692512001316939
-      color: [0.392156839, 0.353936225, 0.34217605, 1]
+      textureID: 6336388213168836440
+      color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 0
-      Name: Scene Settings
-      UID: 12
-      SortOrder: 0
-    SceneNavmeshComponent:
-      NavmeshFile: ""
-      AmbientStrength: 0.5
-      BloomEnabled: false
-      BloomIntensity: 1
-      BloomThreshold: 1
-      BloomIterations: 10
-      PointLightBloomMultiplier: 1
-      FogEnabled: false
-      FogColor: [0.5, 0.600000024, 0.699999988]
-      FogDensity: 0.00999999978
-      FogHeightFalloff: 0.5
-      FogHeight: 0
-      TonemapExposure: 1
-      TonemapGamma: 2.20000005
-      TonemapWarmTint: [1, 1, 1]
-  - InfoComponent:
-      Parent: 0
-      Name: CreditsScript
-      UID: 9866348990469574680
-      SortOrder: 0
+      Name: DigipenLogo
+      UID: 2018911823170933199
+      SortOrder: 3
     TransformComponent:
       Transform:
-        Translate: [0, 0, 0]
+        Translate: [0.624999762, -10.7875004, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.300000012, 0.349999994, 0.899999976]
+    SpriteComponent:
+      textureID: 2280421147345790035
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 0
+      Name: Directional Light
+      UID: 16395980114807373968
+      SortOrder: 13
+    TransformComponent:
+      Transform:
+        Translate: [0.178000003, -0.27700001, -0.333129376]
+        Rotate: [1.28699994, 0, 0]
+        Scale: [1.85000002, 1, 1]
+    DirectLightComponent:
+      Light:
+        Radiance: [1, 1, 0.899999976]
+        Intensity: 4.80000019
+  - InfoComponent:
+      Parent: 0
+      Name: Camera
+      UID: 9201024860084647067
+      SortOrder: 5
+    TransformComponent:
+      Transform:
+        Translate: [0.569999993, 0.720000029, 0.309999943]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.CreditsScroll
-      ParamsJSON: "{\n  \"endBuffer\": 0.5,\n  \"footerLogoNames\": \"DigipenLogo,Test_Logo\",\n  \"footerOffsets\": \"-0.750,-10.0;-0.750,-10.5\",\n  \"guiZ\": 0.0,\n  \"headerLogoNames\": \"Logo\",\n  \"headerOffsets\": \"-0.750,-1.0\",\n  \"lastEntityName\": \"Test_Logo\",\n  \"logoEntityNames\": \"DigipenLogo\",\n  \"logoOffsets\": \"-0.75,-1\",\n  \"logoSpeedMultiplier\": 0.0022499999031424522,\n  \"scrollSpeed\": 1000.0,\n  \"startPosition\": {\n    \"X\": 50.0,\n    \"Y\": -350.0\n  },\n  \"useDefaultCredits\": false\n}"
-    TextComponent:
-      text: "\n\n\n\nProduced by\nTeam Obession\n\nTeam Members\nLeon Pablo Dominguez Mayor Gregorio\nProduct Manager\n\nTitus Kwong Wen Shuen\nProgrammer\n\n\nJericho Lorenz Villegas Quimson\nGame Programmer\n\nLewis Koa Yi Heng\nDebugging Champion\n\nAmos Ho Hin Wai\nEngine Champion\n\nTan Guan Yew, Wesley\nPhysics Champion\n\nDarius Maximus Chan Wei Jie \nGraphics Champion\n\nChristopher Lam Yit Shyong \nAudio Champion\n\nMuhammad Nur Aqif Bin Abdemanaf\nEngine Champion\n\nAdam Goh Zheng Shan \nTech Lead\n\nSarah Hung \nLevel Design/Mechanics\n\nAng Yu Shi Sebrena \nArt/Storytelling/UI\n\nChee Kar Yi\nSound/Systems\n\nThanks to our Professors\n\n\n* Created at DigiPen Institute of Technology\n* President: Claude Comair\n* © 2026 DigiPen Institute of Technology. All Rights Reserved\n\nTools & Libraries:\n       * FMOD\n       * NVIDIA PhysX\n       * OpenGL\n       * GLM\n       * EnTT\n       * Assimp\n       * ImGui"
-      fontName: Cormorant-Italic-VariableFont_wght
-      color: [1, 1, 1, 1]
-      scale: 1
-      screenPosition: [50, -350]
-      renderAs3D: false
-      billboardMode: true
+    CameraComponent:
+      Camera:
+        NearPlane: 0.300000012
+        FarPlane: 1000
+        FOV: 91
   - InfoComponent:
       Parent: 0
       Name: BGM
       UID: 168446922372981440
-      SortOrder: 0
+      SortOrder: 2
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -103,58 +113,139 @@ ENTITIES:
           maxDistance: 50
   - InfoComponent:
       Parent: 0
-      Name: Camera
-      UID: 9201024860084647067
-      SortOrder: 0
+      Name: CreditsScript
+      UID: 9866348990469574680
+      SortOrder: 10
     TransformComponent:
       Transform:
-        Translate: [0, 0.25, -0.210000038]
+        Translate: [0, 0, 0]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
-    CameraComponent:
-      Camera:
-        NearPlane: 0.300000012
-        FarPlane: 1000
-        FOV: 91
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.CreditsScroll
+      ParamsJSON: "{\n  \"endBuffer\": 300.0,\n  \"footerLogoNames\": \"DigipenLogo,Test_Logo\",\n  \"footerOffsets\": \"-3.2,-10.0;-3.2,-9.5\",\n  \"guiZ\": 0.0,\n  \"headerLogoNames\": \"Logo\",\n  \"headerOffsets\": \"-3.2,-1\",\n  \"lastEntityName\": \"\",\n  \"logoEntityNames\": \"DigipenLogo\",\n  \"logoOffsets\": \"-0.75,-1\",\n  \"logoSpeedMultiplier\": 0.0022499999031424522,\n  \"menuInitialOffset\": 0.0,\n  \"menuScrollSpeed\": 1.0,\n  \"menuStartY\": -1.7000000476837158,\n  \"menuTargetY\": 0.0,\n  \"scrollSpeed\": 200.0,\n  \"startPosition\": {\n    \"X\": 1700.0,\n    \"Y\": -350.0\n  },\n  \"useDefaultCredits\": false\n}"
+    TextComponent:
+      text: "\n\n\n\nProduced by\nTeam Obession\n\nTeam Members\nLeon Pablo Dominguez Mayor Gregorio\nProduct Manager\n\nTitus Kwong Wen Shuen\nProgrammer\n\nJericho Lorenz Villegas Quimson\nGame Programmer\n\nLewis Koa Yi Heng\nDebugging Champion\n\nAmos Ho Hin Wai\nEngine Champion\n\nTan Guan Yew, Wesley\nPhysics Champion\n\nDarius Maximus Chan Wei Jie \nGraphics Champion\n\nChristopher Lam Yit Shyong \nAudio Champion\n\nMuhammad Nur Aqif Bin Abdemanaf\nEngine Champion\n\nAdam Goh Zheng Shan \nTech Lead\n\nSarah Hung \nLevel Design/Mechanics\n\nAng Yu Shi Sebrena \nArt/Storytelling/UI\n\nChee Kar Yi\nSound/Systems\n\nThanks to our Professors\n\n\n* Created at DigiPen Institute of Technology\n* President: Claude Comair\n* © 2026 DigiPen Institute of Technology. All Rights Reserved\n\nTools & Libraries:\n       * FMOD\n       * NVIDIA PhysX\n       * OpenGL\n       * GLM\n       * EnTT\n       * Assimp\n       * ImGui"
+      fontName: Cormorant-Italic-VariableFont_wght
+      color: [1, 1, 1, 1]
+      scale: 1
+      screenPosition: [1700, -350]
+      renderAs3D: false
+      billboardMode: true
+      alignment: Right
   - InfoComponent:
       Parent: 0
-      Name: Directional Light
-      UID: 16395980114807373968
+      Name: Scene Settings
+      UID: 12
       SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.178000003, -0.27700001, -0.333129376]
-        Rotate: [1.28699994, 0, 0]
-        Scale: [1.85000002, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [1, 1, 0.899999976]
-        Intensity: 4.80000019
+    SceneNavmeshComponent:
+      NavmeshFile: ""
+      AmbientStrength: 0.5
+      BloomEnabled: false
+      BloomIntensity: 1
+      BloomThreshold: 1
+      BloomIterations: 10
+      PointLightBloomMultiplier: 1
+      FogEnabled: false
+      FogColor: [0.5, 0.600000024, 0.699999988]
+      FogDensity: 0.00999999978
+      FogHeightFalloff: 0.5
+      FogHeight: 0
+      TonemapExposure: 1
+      TonemapGamma: 2.20000005
+      TonemapWarmTint: [1, 1, 1]
   - InfoComponent:
       Parent: 0
-      Name: DigipenLogo
-      UID: 2018911823170933199
-      SortOrder: 0
+      Name: Home Screen GUI
+      UID: 3413859284316912550
+      SortOrder: 4
     TransformComponent:
       Transform:
-        Translate: [-0.637499988, -10.7875004, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.300000012, 0.349999994, 0.899999976]
+        Translate: [0, 0, -1.21000004]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
     SpriteComponent:
-      textureID: 2280421147345790035
+      textureID: 13983692512001316939
+      color: [0.392156839, 0.353936225, 0.34217605, 1]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 0
+      Name: Logo
+      UID: 10226526392347079434
+      SortOrder: 11
+    TransformComponent:
+      Transform:
+        Translate: [0.624999762, -1.7874999, 0]
+        Rotate: [0, 0, 0]
+        Scale: [0.310000002, 0.140000001, 0.0199999996]
+    SpriteComponent:
+      textureID: 16541366282253303416
+      color: [0.549019575, 0.26912722, 0.26912722, 1]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 9308802260659797843
+      Name: HowToPlayButton
+      UID: 15527910618955340530
+      SortOrder: 1
+    TransformComponent:
+      Transform:
+        Translate: [0.580446482, -0.27700001, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.300000012, 0.119999997, 1]
+    SpriteComponent:
+      textureID: 5138487839712909877
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 9308802260659797843
+      Name: NewGameButton
+      UID: 12542027639629009498
+      SortOrder: 9
+    TransformComponent:
+      Transform:
+        Translate: [0.579999983, 0, -0.850000024]
+        Rotate: [0, -0, 0]
+        Scale: [0.300000012, 0.119999997, 1]
+    SpriteComponent:
+      textureID: 9051997344452271848
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 9308802260659797843
+      Name: QuitButton
+      UID: 16323354693460438905
+      SortOrder: 10
+    TransformComponent:
+      Transform:
+        Translate: [0.579999983, -0.560000002, -0.729999959]
+        Rotate: [0, -0, 0]
+        Scale: [0.300000012, 0.11999999, 1]
+    SpriteComponent:
+      textureID: 5561377318240942818
       color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 0
-      Name: Test_Logo
-      UID: 12046087019606252307
-      SortOrder: 0
+      Name: MainMenuLayout
+      UID: 9308802260659797843
+      SortOrder: 8
     TransformComponent:
       Transform:
-        Translate: [-0.637499988, -11.2875004, 0]
+        Translate: [0, -1.70000005, 0]
         Rotate: [0, 0, 0]
-        Scale: [0.25, 0.150000006, 1]
+        Scale: [1, 1, 1]
+  - InfoComponent:
+      Parent: 9308802260659797843
+      Name: TeamName
+      UID: 4281545971456339699
+      SortOrder: 6
+    TransformComponent:
+      Transform:
+        Translate: [0.589999974, -0.800000012, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.150000006, 0.0500000007, 0.00999999978]
     SpriteComponent:
-      textureID: 6336388213168836440
+      textureID: 5600707374096394357
       color: [1, 1, 1, 1]
       renderAs3D: false
