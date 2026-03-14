@@ -2,6 +2,86 @@ Version: 1.0
 ENTITIES:
   - ColliderComponent:
       Collider:
+        LocalPosition: [0.0319244377, -0.241377637, -0.257090837]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [30, 10.0000019, 10.0000019]
+        DynamicFriction: 0
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 13244744886219103757
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: Wall_Bridge_spacer_2
+      UID: 14623677135604852580
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-67.8677292, 45.1539536, 20.2576103]
+        Rotate: [89.9999847, -0, 0]
+        Scale: [0.100000001, 0.647709846, 1.59249735]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.100000001, 0.647709846, 1.59249735]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 1441742420851203854
+      MaterialID: 6104124486273075758
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0.0319244377, -0.241377637, -0.257090837]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [30, 10.0000019, 10.0000019]
+        DynamicFriction: 0
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 13244744886219103757
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: Wall_Bridge_spacer_1
+      UID: 4779601339546058064
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-67.8677292, 47.319664, -8.88226509]
+        Rotate: [89.9999847, -0, 0]
+        Scale: [0.100000001, 0.647724628, 1.21701825]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.100000001, 0.647724628, 1.21701825]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 1441742420851203854
+      MaterialID: 6104124486273075758
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
         LocalScale: [1, 1, 1]
@@ -6197,8 +6277,8 @@ ENTITIES:
       SortOrder: 177
     TransformComponent:
       Transform:
-        Translate: [-49.5819092, 35.2016907, 12.8575077]
-        Rotate: [0, 268.701477, 0]
+        Translate: [-49.0503006, 33.0803146, 14.2306576]
+        Rotate: [0, -0, 0]
         Scale: [0.999999166, 0.625000179, 0.999999166]
     ScriptComponent:
       Enabled: true
@@ -8435,7 +8515,7 @@ ENTITIES:
         Scale: [0.0299999993, 0.0599999987, 0.0800000429]
     SpriteComponent:
       textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
+      color: [1, 1, 1, 0]
       renderAs3D: false
   - ColliderComponent:
       Collider:
@@ -9472,7 +9552,7 @@ ENTITIES:
       NavmeshFile: Resources/NavData/solo_navmesh.bin
       AmbientStrength: 0.0270000007
       BloomEnabled: true
-      BloomIntensity: 0.39199999
+      BloomIntensity: 0.177000001
       BloomThreshold: 0.125
       BloomIterations: 20
       PointLightBloomMultiplier: 2.89700007
@@ -11401,14 +11481,14 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [17.7348328, 14.7475796, 10.2145061]
-        Rotate: [0, 89.980217, 0]
-        Scale: [0.0249999948, 0.0250000004, 0.0249999948]
+        Rotate: [-180, 0.215199292, -180]
+        Scale: [0.0249999482, 0.0250000004, 0.0249999482]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0249999948, 0.0250000004, 0.0249999948]
+        Previous Scale: [0.0249999482, 0.0250000004, 0.0249999482]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -11446,7 +11526,7 @@ ENTITIES:
       SortOrder: 449
     TransformComponent:
       Transform:
-        Translate: [-12.3677721, 14.7176704, 5.01217365]
+        Translate: [-12.3677721, 14.7176704, 4.90055895]
         Rotate: [0, 89.980217, 0]
         Scale: [0.0249999948, 0.0250000004, 0.0249999948]
     RigidBodyComponent:
@@ -13146,15 +13226,15 @@ ENTITIES:
       SortOrder: 403
     TransformComponent:
       Transform:
-        Translate: [-17.9229393, 14.701086, -1.22798765]
-        Rotate: [0, 89.980217, 0]
-        Scale: [0.0249999948, 0.0250000004, 0.0249999948]
+        Translate: [-13.8792629, 14.701086, -3.26761532]
+        Rotate: [0, -0, 0]
+        Scale: [0.0249999911, 0.0250000004, 0.0249999911]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0249999948, 0.0250000004, 0.0249999948]
+        Previous Scale: [0.0249999911, 0.0250000004, 0.0249999911]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -13853,8 +13933,8 @@ ENTITIES:
       SortOrder: 393
     TransformComponent:
       Transform:
-        Translate: [-43.6904221, 29.2686405, -23.6388092]
-        Rotate: [-189.0625, 8471.1875, 180]
+        Translate: [-22.0895977, 46.038269, -2.11969757]
+        Rotate: [-202.4375, 10509.875, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -14275,7 +14355,7 @@ ENTITIES:
       SortOrder: 419
     TransformComponent:
       Transform:
-        Translate: [-65.4902573, 37.9816856, 11.320364]
+        Translate: [-65.4948578, 36.40345, 16.04282]
         Rotate: [-89.9720306, 89.944046, 0.0279764533]
         Scale: [1.99999988, 1.99999976, 1.99999964]
     ModelComponent:
@@ -16234,9 +16314,9 @@ ENTITIES:
       SortOrder: 476
     TransformComponent:
       Transform:
-        Translate: [-17.9952888, 16.0370007, -1.23055482]
+        Translate: [-14.4104376, 16.0370007, -3.17961955]
         Rotate: [0, -0, 0]
-        Scale: [3.62400007, 4.80999994, 3.68204975]
+        Scale: [3.62400007, 4.80999994, 4.17070913]
     SoundComponent:
       Entries:
         - name: _enterSound
@@ -16726,15 +16806,15 @@ ENTITIES:
       SortOrder: 208
     TransformComponent:
       Transform:
-        Translate: [-67.8677292, 28.3091869, 5.25549507]
+        Translate: [-67.8677292, 28.3091869, 5.74891424]
         Rotate: [89.9999847, -0, 0]
-        Scale: [0.100000001, 2.45635486, 5.50884151]
+        Scale: [0.100000001, 2.44176722, 5.50876713]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.100000001, 2.45635486, 5.50884151]
+        Previous Scale: [0.100000001, 2.44176722, 5.50876713]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -18244,15 +18324,15 @@ ENTITIES:
       SortOrder: 105
     TransformComponent:
       Transform:
-        Translate: [-73.625, 36.2779121, -6.92331076]
+        Translate: [-72.3366241, 36.2779121, -6.9459486]
         Rotate: [0, -0, 0]
-        Scale: [0.305609584, 0.679625213, 0.0700263679]
+        Scale: [0.391057819, 0.679625213, 0.0700263679]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.305609584, 0.679625213, 0.0700263679]
+        Previous Scale: [0.391057819, 0.679625213, 0.0700263679]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -19794,7 +19874,7 @@ ENTITIES:
       Entries:
         - name: _audioClipPath
           filePaths:
-            - Resources/Audio/Sheathe.wav
+            - Resources/Audio/breakMetal.wav
           loop: false
           volume: 1
           priority: 128
@@ -19813,7 +19893,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PrisonBreak
-      ParamsJSON: "{\n  \"_audioClipPath\": \"Resources/Audio/Sheathe.wav\",\n  \"_nonRbObjectName\": \"FloorBar1\",\n  \"_rbObjectName\": \"PrisonBreak1\"\n}"
+      ParamsJSON: "{\n  \"_audioClipPath\": \"Resources/Audio/breakMetal.wav\",\n  \"_nonRbObjectName\": \"FloorBar1\",\n  \"_rbObjectName\": \"PrisonBreak1\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 2, 0]
@@ -20212,15 +20292,15 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-35.6109619, 25.6482525, 16.3947372]
-        Rotate: [0, 89.980217, 0]
-        Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+        Translate: [-35.9814644, 25.6482525, 16.3947372]
+        Rotate: [-180, -5.00895612e-06, -180]
+        Scale: [0.0249999966, 0.0250000004, 0.0249999966]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0250000004, 0.0250000004, 0.0250000004]
+        Previous Scale: [0.0249999966, 0.0250000004, 0.0249999966]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
