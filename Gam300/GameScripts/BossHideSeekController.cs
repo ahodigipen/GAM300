@@ -18,6 +18,9 @@ namespace GameScripts
         [Boom.EditorExposed("Resting Yaw", "Yaw angle when facing away")]
         private float _restingYaw = 180f;
 
+        [Boom.EditorExposed("Initial Yaw", "Yaw angle during cutscene (before activation)")]
+        private float _initialYaw = 180f;
+
         [Boom.EditorExposed("Inverse Forward", "Check this if the boss sees behind itself")]
         private bool _inverseForward = false;
 
@@ -83,6 +86,7 @@ namespace GameScripts
         private Vec3 _colorRed = new Vec3(1, 0, 0);
         private Vec3 _colorGreen = new Vec3(0, 1, 0);
         private float _debugLogTimer = 0f;
+        private bool _wasPausedLastFrame = false;
 
         // Turn sound
         private const string TURN_SOUND_NAME = "BossTurnLoop";
@@ -132,7 +136,20 @@ namespace GameScripts
             _greenIntensities = ParseFloatList(_greenIntensitiesCSV, _lightEntities.Count, 2.0f);
 
             _warningText = API.FindEntity(_warningTextEntityName);
-            ResetToRestingState();
+
+            // Set initial cinematic rotation
+            _currentYRotation = _initialYaw;
+            _targetYRotation = _initialYaw;
+            Vec3 rot = API.GetRotation(Entity);
+            rot.Y = _currentYRotation;
+            API.SetRotation(Entity, rot);
+
+            ResetToRestingState(false); // Initialize state without overriding rotation
+            
+            // Override for cinematic red start (boss is "watching" the player area)
+            _isWatching = true;
+            UpdateLights(_colorRed, _redIntensities);
+
             PlayerManager.RegisterEnemy(this);
         }
 
@@ -150,11 +167,14 @@ namespace GameScripts
             return list;
         }
 
-        private void ResetToRestingState()
+        private void ResetToRestingState(bool updateRotation = true)
         {
             _isWatching = false;
-            _currentYRotation = _restingYaw;
-            _targetYRotation = _restingYaw;
+            if (updateRotation)
+            {
+                _currentYRotation = _restingYaw;
+                _targetYRotation = _restingYaw;
+            }
             _timer = 0f;
             _activationTimer = 0f;
             _isTurning = false;
@@ -165,15 +185,45 @@ namespace GameScripts
             if (_wasTurning) { API.StopSound(TURN_SOUND_NAME); _wasTurning = false; }
             API.StopSound(WARNING_SOUND_NAME);
             StopCountdown();
-            Vec3 rot = API.GetRotation(Entity);
-            rot.Y = _currentYRotation;
-            API.SetRotation(Entity, rot);
+
+            if (updateRotation)
+            {
+                Vec3 rot = API.GetRotation(Entity);
+                rot.Y = _currentYRotation;
+                API.SetRotation(Entity, rot);
+            }
             UpdateLights(_colorGreen, _greenIntensities);
         }
 
         public void OnUpdate(float dt)
         {
             if (!API.HasTransform(Entity)) return;
+
+            // Handle pausing
+            if (Entry.IsGamePaused)
+            {
+                if (!_wasPausedLastFrame)
+                {
+                    // Stop sounds when entering pause
+                    if (_wasTurning) API.StopSound(TURN_SOUND_NAME);
+                    if (_isWaitingToTurn) API.StopSound(WARNING_SOUND_NAME);
+                    _wasPausedLastFrame = true;
+                }
+                return;
+            }
+            else if (_wasPausedLastFrame)
+            {
+                // Resume sounds when leaving pause
+                if (_wasTurning)
+                {
+                    API.PlaySound(TURN_SOUND_NAME, TURN_SOUND_PATH, true);
+                    API.SetSoundVolume(TURN_SOUND_NAME, _turnSoundVolume);
+                }
+                // Note: Warning sound is short and random, probably better to just let it be gone 
+                // or wait for the next cycle rather than trying to resume mid-clip.
+                _wasPausedLastFrame = false;
+            }
+
             if (_drawVisionDebug) DrawDebugVision();
             if (!_isActive) return;
             if (Entry.IsPlayerDead)
@@ -272,7 +322,13 @@ namespace GameScripts
                     boss._isActive = true;
                     boss._timer = 0f;
                     boss._activationTimer = 0f;
-                    boss.UpdateLights(boss._isWatching ? boss._colorRed : boss._colorGreen, boss._isWatching ? boss._redIntensities : boss._greenIntensities);
+                    
+                    // Trigger the cinematic "turn to back" immediately upon activation
+                    boss._isTurning = true;
+                    boss._targetYRotation = boss._restingYaw;
+                    boss._isWatching = false; // Turn green as we turn away
+                    
+                    boss.UpdateLights(boss._colorGreen, boss._greenIntensities);
                 }
             }
         }
@@ -326,7 +382,27 @@ namespace GameScripts
         }
 
         private void StopCountdown() { if (!_isCountingDown) return; _isCountingDown = false; _catchTimer = _catchDelay; ShowWarningText(false); if (_showDebugLogs) Console.WriteLine("[BossHideSeek] Lost Sight."); }
-        public void OnPlayerRespawned() { _isActive = false; ResetToRestingState(); }
+        
+        public void OnPlayerRespawned() 
+        { 
+            _isActive = false; 
+
+            // Reset rotation to initial cinematic state
+            _currentYRotation = _initialYaw;
+            _targetYRotation = _initialYaw;
+            if (API.HasTransform(Entity))
+            {
+                Vec3 rot = API.GetRotation(Entity);
+                rot.Y = _currentYRotation;
+                API.SetRotation(Entity, rot);
+            }
+
+            ResetToRestingState(false); 
+
+            // Reset to cinematic red start
+            _isWatching = true;
+            UpdateLights(_colorRed, _redIntensities);
+        }
 
         private void UpdateLights(Vec3 color, List<float> intensities)
         {

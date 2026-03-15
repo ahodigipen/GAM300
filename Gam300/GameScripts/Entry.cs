@@ -366,7 +366,7 @@ namespace GameScripts
                 return;
             }
 
-            if (_currentSceneName == GAMEPLAY_SCENE_NAME)
+            if (_currentSceneName == GAMEPLAY_SCENE_NAME || _currentSceneName == BOSS_ARENA_SCENE_NAME)
             {
                 // Handle Escape key or Start button to pause
                 if ((escape_KeyDown && !_escape_KeyWasDown) || (start_ButtonDown && !_start_ButtonWasDown))

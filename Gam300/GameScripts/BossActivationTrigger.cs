@@ -6,7 +6,7 @@ namespace GameScripts
     /// <summary>
     /// Attach to a trigger entity. When the player enters, it activates the specified BossHideSeekController.
     /// </summary>
-    public class BossActivationTrigger
+    public class BossActivationTrigger : IEnemyController
     {
         public ulong Entity;
 
@@ -27,6 +27,12 @@ namespace GameScripts
             }
 
             API.RegisterTriggerEnterCallback(Entity, OnTriggerEnter);
+            PlayerManager.RegisterEnemy(this);
+        }
+
+        public void OnPlayerRespawned()
+        {
+            _hasTriggered = false;
         }
 
         private void OnTriggerEnter(ulong triggerEntity, ulong otherEntity)
@@ -52,6 +58,7 @@ namespace GameScripts
         public void OnDestroy()
         {
             API.UnregisterTriggerCallbacks(Entity);
+            PlayerManager.UnregisterEnemy(this);
         }
     }
 }
