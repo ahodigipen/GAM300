@@ -314,7 +314,7 @@ namespace GameScripts
         public void UpdateCheckpoint(Vec3 newCheckpoint)
         {
             _spawnPoint = newCheckpoint;
-            API.PlaySoundAt("checkpoint_save", "Resources/Audio/playerPunch_1.wav", newCheckpoint, false);
+            API.PlaySoundAt("checkpoint_save", "Resources/Audio/checkpoint.wav", newCheckpoint, false);
             API.Set3DMinMaxDistance("checkpoint_save", 1.0f, 15.0f);
             API.SetSoundVolume("checkpoint_save", 0.8f);
         }
