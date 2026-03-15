@@ -797,7 +797,7 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
  entt::entity player = entt::null;     // cached after first successful lookup
  // Patrol
  std::vector<glm::vec3> patrolPoints;
- int patrolIndex = 0;
+ std::int32_t patrolIndex = 0;
 
 
  // BT root

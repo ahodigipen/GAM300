@@ -10,6 +10,7 @@
 #include "Shaders/Color.h"
 #include "Shaders/PickingShader.h"
 #include "Graphics/Instancing/InstanceManager.h"
+#include "Graphics/Utilities/Culling.h"
 #include "GlobalConstants.h"
 
 #include <memory>
@@ -319,7 +320,15 @@ namespace Boom {
             // Cache for volumetric fog depth reconstruction
             m_NearPlane = cam.nearPlane;
             m_FarPlane = cam.farPlane;
+
+            // Frustum Culling Update (DISABLED)
+            // glm::mat4 viewProj = cam.Frustum(transform, aspect);
+            // m_CurrentFrustum = extractFrustum(viewProj);
             m_InvViewProj = glm::inverse(cam.Frustum(transform, aspect));
+        }
+
+        BOOM_INLINE bool IsInsideFrustum(const glm::vec3& center, float radius) const {
+            return sphereInside(m_CurrentFrustum, center, radius);
         }
 
         BOOM_INLINE glm::vec3 GetCameraPosition() const { return m_CameraPosition; }
@@ -380,6 +389,14 @@ namespace Boom {
          * @brief Begin collecting instances for this frame.
          * Call at start of render phase, before adding any instances.
          */
+        BOOM_INLINE void ClearBatches() {
+            m_InstanceManager->BeginFrame();
+        }
+
+        BOOM_INLINE void UploadBatches() {
+            m_InstanceManager->UploadBatches();
+        }
+
         BOOM_INLINE void BeginInstanceCollection() {
             m_InstanceManager->BeginFrame();
         }
@@ -901,6 +918,7 @@ namespace Boom {
         // Fog depth reconstruction cache (updated each frame in SetCamera)
         float m_NearPlane{ 0.3f };
         float m_FarPlane{ 1000.f };
+        FrustumPlanes m_CurrentFrustum;
         glm::mat4 m_InvViewProj{ 1.0f };
     public:  // ---------------------- ImGui-exposed toggles ----------------
         bool isDrawDebugMode{};
