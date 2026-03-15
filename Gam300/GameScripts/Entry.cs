@@ -174,7 +174,7 @@ namespace GameScripts
             if (_currentSceneName == GAMEPLAY_SCENE_NAME && !StoryDialogueManager.IsSequenceActive())
             {
                 API.Log("[Entry] Cutscene Finished. Triggering Start Dialogue Sequence...");
-                StoryDialogueManager.PlayStartSequence();
+                StoryDialogueManager.PlayStartSequence(() => { IsInventoryOpen = true; API.ShowInventoryMenu(); });
             }
         }
 
@@ -197,7 +197,7 @@ namespace GameScripts
                 if (_startSequenceDelay <= 0.0f && !StoryDialogueManager.IsSequenceActive())
                 {
                     API.Log("[Entry] Delay finished. Triggering Start Dialogue Sequence...");
-                    StoryDialogueManager.PlayStartSequence();
+                    StoryDialogueManager.PlayStartSequence(() => { IsInventoryOpen = true; API.ShowInventoryMenu(); });
                 }
             }
 

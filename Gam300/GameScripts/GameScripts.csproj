@@ -56,6 +56,7 @@
     <Compile Include="CrouchTutorialManager.cs" />
     <Compile Include="CutsceneController.cs" />
     <Compile Include="PrisonBreak.cs" />
+    <Compile Include="SettingsMenu.cs" />
     <Compile Include="StoryDialogueManager.cs" />
     <Compile Include="CutsceneSequencer.cs" />
     <Compile Include="FallingObject.cs" />

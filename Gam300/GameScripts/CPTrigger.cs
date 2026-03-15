@@ -94,6 +94,9 @@ namespace GameScripts
         // Fired once when ALL sprites fully fade out (used to chain cutscene after UI)
         private Action _spriteOnCompleteAction = null;
 
+        // Short delay before starting cutscene (lets checkpoint sound finish)
+        private float _cutsceneDelay = 0f;
+
         // Static instance tracking
         private static readonly Dictionary<ulong, CPTrigger> s_instances = new Dictionary<ulong, CPTrigger>();
 
@@ -161,11 +164,24 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
+            // Cutscene delay countdown (fires action once timer expires)
+            if (_cutsceneDelay > 0f)
+            {
+                _cutsceneDelay -= dt;
+                if (_cutsceneDelay <= 0f)
+                {
+                    _cutsceneDelay = 0f;
+                    Action cb = _spriteOnCompleteAction;
+                    _spriteOnCompleteAction = null;
+                    cb?.Invoke();
+                }
+            }
+
             bool anySimVisible = UpdateSimultaneousLogos(dt);
             bool anySeqVisible = UpdateSequentialLogos(dt);
 
-            // Trigger completion ONLY when both systems are finished
-            if (!anySimVisible && !anySeqVisible && _spriteOnCompleteAction != null)
+            // Trigger completion ONLY when both systems are finished (non-cutscene path)
+            if (_cutsceneDelay <= 0f && !anySimVisible && !anySeqVisible && _spriteOnCompleteAction != null)
             {
                 Action cb = _spriteOnCompleteAction;
                 _spriteOnCompleteAction = null;
@@ -364,6 +380,7 @@ namespace GameScripts
 
                 if (_triggerIntroCutscene)
                 {
+                    // Start cutscene after a short delay to let the checkpoint sound play
                     _spriteOnCompleteAction = () =>
                     {
                         ulong cutsceneId = API.FindEntity(_cutsceneEntityName);
@@ -372,6 +389,7 @@ namespace GameScripts
                         else
                             CutsceneSequencer.PlayWithCallback(_cutsceneEntityName, playDialogue);
                     };
+                    _cutsceneDelay = 1.0f;
                 }
                 else
                 {

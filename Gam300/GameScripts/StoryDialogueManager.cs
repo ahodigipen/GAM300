@@ -82,12 +82,13 @@ namespace GameScripts
             s_bossCpD1 = 0; s_bossCpD2 = 0; s_bossCpD3 = 0; s_bossCpD4 = 0; s_bossCpD5 = 0; s_tutorialWhiteBackground = 0;
         }
 
-        public static void PlayStartSequence()
+        public static void PlayStartSequence(Action onComplete = null)
         {
             if (s_activeSequence != SequenceType.None) return;
             ResolveEntities();
             s_activeSequence = SequenceType.StartCutscene;
             s_dialogueIndex = 1;
+            s_onSequenceComplete = onComplete;
 
             s_enterWasDown = true;
             s_eWasDown = true;
@@ -95,6 +96,7 @@ namespace GameScripts
 
             FadeInEntity(s_startD1);
             API.SetGameLogicPaused(true);
+            API.SetCutsceneMode(true);
             API.Log("[StoryDialogueManager] Playing Start Sequence");
         }
 
@@ -111,6 +113,7 @@ namespace GameScripts
 
             FadeInEntity(s_cp1D1);
             API.SetGameLogicPaused(true);
+            API.SetCutsceneMode(true);
             API.Log("[StoryDialogueManager] Playing Checkpoint 1 Sequence");
         }
 
@@ -127,6 +130,7 @@ namespace GameScripts
 
             FadeInEntity(s_cp2D1);
             API.SetGameLogicPaused(true);
+            API.SetCutsceneMode(true);
             API.Log("[StoryDialogueManager] Playing Checkpoint 2 Sequence");
         }
 
@@ -143,6 +147,7 @@ namespace GameScripts
 
             FadeInEntity(s_bossCpD1);
             API.SetGameLogicPaused(true);
+            API.SetCutsceneMode(true);
             API.Log("[StoryDialogueManager] Playing Boss Checkpoint Sequence");
         }
 
@@ -160,6 +165,7 @@ namespace GameScripts
             SetAlpha(s_tutorialWhiteBackground, 1f);
             FadeInEntity(s_bossCpD4);
             API.SetGameLogicPaused(true);
+            API.SetCutsceneMode(true);
             API.Log("[StoryDialogueManager] Playing Boss Transition Sequence");
         }
 
@@ -297,6 +303,7 @@ namespace GameScripts
 
             FadeInEntity(s_guardD1);
             API.SetGameLogicPaused(true);
+            API.SetCutsceneMode(true);
             API.Log("[StoryDialogueManager] Playing Guard Sequence");
         }
 
@@ -416,6 +423,7 @@ namespace GameScripts
             s_activeSequence = SequenceType.None;
             s_justDismissed = true;
             API.SetGameLogicPaused(false);
+            API.SetCutsceneMode(false);
             API.Log("[StoryDialogueManager] Sequence closed");
 
             Action cb = s_onSequenceComplete;
