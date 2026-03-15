@@ -17,6 +17,7 @@
 
 #include "Application/Application.h"
 #include "Audio/Audio.hpp"  // Add this include for sound engine
+#include "Graphics/Text/FontManager.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace Boom {
@@ -46,6 +47,20 @@ namespace Boom {
         mono_free(s);
         if (e == entt::null) return 0ull;
         return static_cast<uint64_t>(static_cast<uint32_t>(e));
+    }
+
+    static MonoArray* ICALL_API_GetChildren(uint64_t handle) {
+        if (!s_Ctx) return nullptr;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return nullptr;
+
+        auto children = Boom::GetChildren(s_Ctx->scene, e);
+        
+        MonoArray* result = mono_array_new(mono_domain_get(), mono_get_uint64_class(), children.size());
+        for (size_t i = 0; i < children.size(); i++) {
+            mono_array_set(result, uint64_t, i, static_cast<uint64_t>(static_cast<uint32_t>(children[i])));
+        }
+        return result;
     }
 
     // NEW: Check if entity has TransformComponent
@@ -1206,6 +1221,17 @@ namespace Boom {
         return s_Ctx->scene.get<TextComponent>(e).scale;
     }
 
+    static float ICALL_API_GetTextHeight(uint64_t handle)
+    {
+        if (!s_Ctx) return 0.0f;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            return 0.0f;
+        }
+        auto& textComp = s_Ctx->scene.get<TextComponent>(e);
+        return Boom::FontManager::GetInstance().GetTextHeight(textComp.fontName, textComp.text, textComp.scale);
+    }
+
     static void ICALL_API_SetTextScale(uint64_t handle, float scale)
     {
         if (!s_Ctx) return;
@@ -1237,6 +1263,27 @@ namespace Boom {
             return;
         }
         s_Ctx->scene.get<TextComponent>(e).screenPosition = *pos;
+    }
+
+    static int32_t ICALL_API_GetTextAlignment(uint64_t handle)
+    {
+        if (!s_Ctx) return 0;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            return 0;
+        }
+        return static_cast<int32_t>(s_Ctx->scene.get<TextComponent>(e).alignment);
+    }
+
+    static void ICALL_API_SetTextAlignment(uint64_t handle, int32_t alignment)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<TextComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetTextAlignment: Entity doesn't have TextComponent");
+            return;
+        }
+        s_Ctx->scene.get<TextComponent>(e).alignment = static_cast<TextComponent::Alignment>(alignment);
     }
 
     // ========= SPOTLIGHT COMPONENT INTERNAL CALLS =========
@@ -1288,6 +1335,57 @@ namespace Boom {
             return;
         }
         s_Ctx->scene.get<SpotLightComponent>(e).light.intensity = intensity;
+    }
+
+    // ========= DIRECTLIGHT COMPONENT INTERNAL CALLS =========
+    static bool ICALL_API_HasDirectLight(uint64_t handle)
+    {
+        if (!s_Ctx) return false;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        return (e != entt::null && s_Ctx->scene.valid(e) && s_Ctx->scene.any_of<DirectLightComponent>(e));
+    }
+
+    static void ICALL_API_GetDirectLightColor(uint64_t handle, glm::vec3* outColor)
+    {
+        if (!outColor || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<DirectLightComponent>(e)) {
+            *outColor = glm::vec3(1.0f);
+            return;
+        }
+        *outColor = s_Ctx->scene.get<DirectLightComponent>(e).light.radiance;
+    }
+
+    static void ICALL_API_SetDirectLightColor(uint64_t handle, glm::vec3* color)
+    {
+        if (!color || !s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<DirectLightComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetDirectLightColor: Entity doesn't have DirectLightComponent");
+            return;
+        }
+        s_Ctx->scene.get<DirectLightComponent>(e).light.radiance = *color;
+    }
+
+    static float ICALL_API_GetDirectLightIntensity(uint64_t handle)
+    {
+        if (!s_Ctx) return 1.0f;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<DirectLightComponent>(e)) {
+            return 1.0f;
+        }
+        return s_Ctx->scene.get<DirectLightComponent>(e).light.intensity;
+    }
+
+    static void ICALL_API_SetDirectLightIntensity(uint64_t handle, float intensity)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e) || !s_Ctx->scene.any_of<DirectLightComponent>(e)) {
+            BOOM_WARN("[ScriptBinding] SetDirectLightIntensity: Entity doesn't have DirectLightComponent");
+            return;
+        }
+        s_Ctx->scene.get<DirectLightComponent>(e).light.intensity = intensity;
     }
 
     // ========= POINTLIGHT COMPONENT INTERNAL CALLS =========
@@ -2441,6 +2539,109 @@ namespace Boom {
         return false;
     }
 
+    // ─── Particle Emitter Script Bindings ─────────────────────────────
+
+    static bool ICALL_API_HasParticleEmitter(uint64_t handle)
+    {
+        if (!s_Ctx) return false;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        return (e != entt::null && s_Ctx->scene.valid(e) && s_Ctx->scene.any_of<ParticleEmitterComponent>(e));
+    }
+
+    static void ICALL_API_PlayParticleEmitter(uint64_t handle)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (!pe) return;
+        pe->isPlaying = true;
+        pe->emitterTimer = 0.0f;
+        pe->spawnAccum = 0.0f;
+    }
+
+    static void ICALL_API_StopParticleEmitter(uint64_t handle)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (!pe) return;
+        pe->isPlaying = false;
+    }
+
+    static bool ICALL_API_IsParticleEmitterPlaying(uint64_t handle)
+    {
+        if (!s_Ctx) return false;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return false;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        return pe && pe->isPlaying;
+    }
+
+    static void ICALL_API_SetParticleEmissionRate(uint64_t handle, float rate)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) pe->emissionRate = rate;
+    }
+
+    static float ICALL_API_GetParticleEmissionRate(uint64_t handle)
+    {
+        if (!s_Ctx) return 0.0f;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return 0.0f;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        return pe ? pe->emissionRate : 0.0f;
+    }
+
+    static void ICALL_API_SetParticleStartColor(uint64_t handle, float r, float g, float b, float a)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) pe->startColor = glm::vec4(r, g, b, a);
+    }
+
+    static void ICALL_API_SetParticleEndColor(uint64_t handle, float r, float g, float b, float a)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) pe->endColor = glm::vec4(r, g, b, a);
+    }
+
+    static void ICALL_API_SetParticleGravity(uint64_t handle, float gravity)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) pe->gravity = gravity;
+    }
+
+    static void ICALL_API_SetParticleSpeed(uint64_t handle, float speedMin, float speedMax)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) { pe->speedMin = speedMin; pe->speedMax = speedMax; }
+    }
+
+    static void ICALL_API_SetParticleSize(uint64_t handle, float startMin, float startMax, float endSize)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) { pe->startSizeMin = startMin; pe->startSizeMax = startMax; pe->endSize = endSize; }
+    }
+
     void RegisterScriptInternalCalls(AppContext* ctx)
     {
         s_Ctx = ctx;
@@ -2452,6 +2653,7 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_Set30FPSLimit", (const void*)ICALL_API_Set30FPSLimit);
         mono_add_internal_call("Boom.Native::Boom_API_Get30FPSLimit", (const void*)ICALL_API_Get30FPSLimit);
         mono_add_internal_call("Boom.Native::Boom_API_FindEntity", (const void*)ICALL_API_FindEntity);
+        mono_add_internal_call("Boom.Native::Boom_API_GetChildren", (const void*)ICALL_API_GetChildren);
         mono_add_internal_call("Boom.Native::Boom_API_GetPosition", (const void*)ICALL_API_GetPosition);
         mono_add_internal_call("Boom.Native::Boom_API_SetPosition", (const void*)ICALL_API_SetPosition);
         mono_add_internal_call("Boom.Native::Boom_API_GetRotation", (const void*)ICALL_API_GetRotation);
@@ -2617,20 +2819,6 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetSpriteAlpha", (const void*)ICALL_API_SetSpriteAlpha);
         mono_add_internal_call("Boom.Native::Boom_API_SetSpriteTexture", (const void*)ICALL_API_SetSpriteTexture);
 
-        // SpotLight component internal calls
-        mono_add_internal_call("Boom.Native::Boom_API_HasSpotLight", (const void*)ICALL_API_HasSpotLight);
-        mono_add_internal_call("Boom.Native::Boom_API_GetSpotLightColor", (const void*)ICALL_API_GetSpotLightColor);
-        mono_add_internal_call("Boom.Native::Boom_API_SetSpotLightColor", (const void*)ICALL_API_SetSpotLightColor);
-        mono_add_internal_call("Boom.Native::Boom_API_GetSpotLightIntensity", (const void*)ICALL_API_GetSpotLightIntensity);
-        mono_add_internal_call("Boom.Native::Boom_API_SetSpotLightIntensity", (const void*)ICALL_API_SetSpotLightIntensity);
-
-        // PointLight component internal calls
-        mono_add_internal_call("Boom.Native::Boom_API_HasPointLight", (const void*)ICALL_API_HasPointLight);
-        mono_add_internal_call("Boom.Native::Boom_API_GetPointLightColor", (const void*)ICALL_API_GetPointLightColor);
-        mono_add_internal_call("Boom.Native::Boom_API_SetPointLightColor", (const void*)ICALL_API_SetPointLightColor);
-        mono_add_internal_call("Boom.Native::Boom_API_GetPointLightIntensity", (const void*)ICALL_API_GetPointLightIntensity);
-        mono_add_internal_call("Boom.Native::Boom_API_SetPointLightIntensity", (const void*)ICALL_API_SetPointLightIntensity);
-
         // Text Component functions
         mono_add_internal_call("Boom.Native::Boom_API_HasText", (const void*)ICALL_API_HasText);
         mono_add_internal_call("Boom.Native::Boom_API_GetText", (const void*)ICALL_API_GetText);
@@ -2638,9 +2826,12 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_GetTextColor", (const void*)ICALL_API_GetTextColor);
         mono_add_internal_call("Boom.Native::Boom_API_SetTextColor", (const void*)ICALL_API_SetTextColor);
         mono_add_internal_call("Boom.Native::Boom_API_GetTextScale", (const void*)ICALL_API_GetTextScale);
+        mono_add_internal_call("Boom.Native::Boom_API_GetTextHeight", (const void*)ICALL_API_GetTextHeight);
         mono_add_internal_call("Boom.Native::Boom_API_SetTextScale", (const void*)ICALL_API_SetTextScale);
         mono_add_internal_call("Boom.Native::Boom_API_GetTextPosition", (const void*)ICALL_API_GetTextPosition);
         mono_add_internal_call("Boom.Native::Boom_API_SetTextPosition", (const void*)ICALL_API_SetTextPosition);
+        mono_add_internal_call("Boom.Native::Boom_API_GetTextAlignment", (const void*)ICALL_API_GetTextAlignment);
+        mono_add_internal_call("Boom.Native::Boom_API_SetTextAlignment", (const void*)ICALL_API_SetTextAlignment);
 
         // SpotLight component internal calls
         mono_add_internal_call("Boom.Native::Boom_API_HasSpotLight", (const void*)ICALL_API_HasSpotLight);
@@ -2655,6 +2846,13 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetPointLightColor", (const void*)ICALL_API_SetPointLightColor);
         mono_add_internal_call("Boom.Native::Boom_API_GetPointLightIntensity", (const void*)ICALL_API_GetPointLightIntensity);
         mono_add_internal_call("Boom.Native::Boom_API_SetPointLightIntensity", (const void*)ICALL_API_SetPointLightIntensity);
+
+        // DirectLight component internal calls
+        mono_add_internal_call("Boom.Native::Boom_API_HasDirectLight", (const void*)ICALL_API_HasDirectLight);
+        mono_add_internal_call("Boom.Native::Boom_API_GetDirectLightColor", (const void*)ICALL_API_GetDirectLightColor);
+        mono_add_internal_call("Boom.Native::Boom_API_SetDirectLightColor", (const void*)ICALL_API_SetDirectLightColor);
+        mono_add_internal_call("Boom.Native::Boom_API_GetDirectLightIntensity", (const void*)ICALL_API_GetDirectLightIntensity);
+        mono_add_internal_call("Boom.Native::Boom_API_SetDirectLightIntensity", (const void*)ICALL_API_SetDirectLightIntensity);
 
         // Video component internal calls
         mono_add_internal_call("Boom.Native::Boom_API_HasVideoComponent", (const void*)ICALL_API_HasVideoComponent);
@@ -2676,6 +2874,18 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetCutsceneMode", (const void*)ICALL_API_SetCutsceneMode);
         mono_add_internal_call("Boom.Native::Boom_API_DrawDebugLine", (const void*)ICALL_API_DrawDebugLine);
 
+        // Particle Emitter internal calls
+        mono_add_internal_call("Boom.Native::Boom_API_HasParticleEmitter", (const void*)ICALL_API_HasParticleEmitter);
+        mono_add_internal_call("Boom.Native::Boom_API_PlayParticleEmitter", (const void*)ICALL_API_PlayParticleEmitter);
+        mono_add_internal_call("Boom.Native::Boom_API_StopParticleEmitter", (const void*)ICALL_API_StopParticleEmitter);
+        mono_add_internal_call("Boom.Native::Boom_API_IsParticleEmitterPlaying", (const void*)ICALL_API_IsParticleEmitterPlaying);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleEmissionRate", (const void*)ICALL_API_SetParticleEmissionRate);
+        mono_add_internal_call("Boom.Native::Boom_API_GetParticleEmissionRate", (const void*)ICALL_API_GetParticleEmissionRate);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleStartColor", (const void*)ICALL_API_SetParticleStartColor);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleEndColor", (const void*)ICALL_API_SetParticleEndColor);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleGravity", (const void*)ICALL_API_SetParticleGravity);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleSpeed", (const void*)ICALL_API_SetParticleSpeed);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleSize", (const void*)ICALL_API_SetParticleSize);
         // Inventory Menu
         mono_add_internal_call("Boom.Native::Boom_API_ShowInventoryMenu", (const void*)ICALL_API_ShowInventoryMenu);
         mono_add_internal_call("Boom.Native::Boom_API_UnloadInventoryMenu", (const void*)ICALL_API_UnloadInventoryMenu);

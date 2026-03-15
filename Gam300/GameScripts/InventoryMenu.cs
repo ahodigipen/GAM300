@@ -32,10 +32,8 @@ namespace GameScripts
                 _slotTexts[i] = API.FindEntity($"Inventory_Slot{slotNum}_Text");
             }
 
-            // Only hide at startup when we are loaded from the gameplay scene.
-            // When opening InventoryMenu.yaml directly in the editor,
-            // Entry._currentSceneName is null so we skip this and preserve edit-time alpha.
-            if (Entry._currentSceneName == Entry.GAMEPLAY_SCENE_NAME)
+            // Only hide at startup when we are loaded from a gameplay scene.
+            if (Entry._currentSceneName == Entry.GAMEPLAY_SCENE_NAME || Entry._currentSceneName == Entry.BOSS_ARENA_SCENE_NAME)
             {
                 HideAll();
             }
@@ -43,8 +41,8 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
-            // Do nothing outside of the gameplay scene (e.g. when editing the scene file directly)
-            if (Entry._currentSceneName != Entry.GAMEPLAY_SCENE_NAME) return;
+            // Do nothing outside of a gameplay scene (e.g. when editing the scene file directly)
+            if (Entry._currentSceneName != Entry.GAMEPLAY_SCENE_NAME && Entry._currentSceneName != Entry.BOSS_ARENA_SCENE_NAME) return;
             if (Entry.IsInventoryOpen)
             {
                 SetSpriteAlpha(_bgEntity, 1.0f);
@@ -54,26 +52,30 @@ namespace GameScripts
                     if (i < PlayerInventory.s_inventorySlots.Count)
                     {
                         string itemType = PlayerInventory.s_inventorySlots[i];
-                        
+
                         // Show slot
                         SetSpriteAlpha(_slotIcons[i], 1.0f);
                         SetTextAlpha(_slotTexts[i], 1.0f);
 
-                        // Set Texture and Text based on item
-                        if (itemType == "MainDoor")
+                        if (itemType == "Freeze")
                         {
-                            API.SetSpriteTexture(_slotIcons[i], MAINDOOR_TEX);
-                            SetText(_slotTexts[i], $"{PlayerInventory.GetKeyCount("MainDoor")}");
-                        }
-                        else if (itemType == "SmallDoor")
-                        {
-                            API.SetSpriteTexture(_slotIcons[i], SMALLDOOR_TEX);
-                            SetText(_slotTexts[i], $"{PlayerInventory.GetKeyCount("SmallDoor")}");
-                        }
-                        else if (itemType == "Freeze")
-                        {
+                            // Freeze stacks — show total charge count
                             API.SetSpriteTexture(_slotIcons[i], FREEZE_TEX);
-                            SetText(_slotTexts[i], PlayerInventory.HasFreezePower() ? "1" : "0");
+                            SetText(_slotTexts[i], $"{PlayerInventory.GetFreezeChargeCount()}");
+                        }
+                        else
+                        {
+                            // itemType is a doorName — look up variant for icon and per-door count
+                            string variant = PlayerInventory.GetDoorKeyVariant(itemType);
+                            if (variant == "MainDoor")
+                            {
+                                API.SetSpriteTexture(_slotIcons[i], MAINDOOR_TEX);
+                            }
+                            else if (variant == "SmallDoor")
+                            {
+                                API.SetSpriteTexture(_slotIcons[i], SMALLDOOR_TEX);
+                            }
+                            SetText(_slotTexts[i], $"{PlayerInventory.GetDoorKeyCount(itemType)}");
                         }
                     }
                     else

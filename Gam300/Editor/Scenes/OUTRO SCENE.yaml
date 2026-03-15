@@ -10,6 +10,10 @@ ENTITIES:
         Translate: [0, 0, 0]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.OutroScene
+      ParamsJSON: "{\n  \"creditsSceneName\": \"Credits\"\n}"
     VideoComponent:
       VideoPath: M5_Outro.mpeg
       PlayOnStart: true

@@ -101,9 +101,11 @@ namespace GameScripts
                 }
                 else
                 {
-                    // For sentry enemies, use full rotation
-                    targetRot.Y += 180f;
-                    API.SetRotation(Entity, targetRot);
+                    // For sentry enemies, read/write only Y (same as patrol path) to avoid
+                    // quaternion conversion artifacts from GetRotation().Y
+                    float targetYaw = API.GetRotationY(targetHandle);
+                    float spotlightYaw = targetYaw + 180f;
+                    API.SetRotationY(Entity, spotlightYaw);
                 }
             }
         }

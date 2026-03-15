@@ -12,10 +12,10 @@ ENTITIES:
         Scale: [1, 1, 1]
     TextComponent:
       text: 0
-      fontName: Roboto-Regular
+      fontName: Cormorant-VariableFont_wght
       color: [1, 1, 1, 1]
-      scale: 0.5
-      screenPosition: [1592, 802]
+      scale: 0.600000024
+      screenPosition: [1590, 808]
       renderAs3D: false
       billboardMode: true
     MenuComponent:
@@ -32,10 +32,10 @@ ENTITIES:
         Scale: [1, 1, 1]
     TextComponent:
       text: 0
-      fontName: Roboto-Regular
+      fontName: Cormorant-VariableFont_wght
       color: [1, 1, 1, 1]
-      scale: 0.5
-      screenPosition: [1452, 802]
+      scale: 0.600000024
+      screenPosition: [1450, 808]
       renderAs3D: false
       billboardMode: true
     MenuComponent:
@@ -84,10 +84,10 @@ ENTITIES:
         Scale: [1, 1, 1]
     TextComponent:
       text: 0
-      fontName: Roboto-Regular
+      fontName: Cormorant-VariableFont_wght
       color: [1, 1, 1, 1]
-      scale: 0.5
-      screenPosition: [1523, 802]
+      scale: 0.600000024
+      screenPosition: [1518, 808]
       renderAs3D: false
       billboardMode: true
     MenuComponent:
@@ -201,10 +201,10 @@ ENTITIES:
         Scale: [1, 1, 1]
     TextComponent:
       text: 0
-      fontName: Roboto-Regular
+      fontName: Cormorant-VariableFont_wght
       color: [1, 1, 1, 1]
-      scale: 0.5
-      screenPosition: [1663, 802]
+      scale: 0.600000024
+      screenPosition: [1664, 808]
       renderAs3D: false
       billboardMode: true
     MenuComponent:
@@ -221,10 +221,10 @@ ENTITIES:
         Scale: [1, 1, 1]
     TextComponent:
       text: 0
-      fontName: Roboto-Regular
+      fontName: Cormorant-VariableFont_wght
       color: [1, 1, 1, 1]
-      scale: 0.5
-      screenPosition: [1734, 802]
+      scale: 0.600000024
+      screenPosition: [1733, 808]
       renderAs3D: false
       billboardMode: true
     MenuComponent:

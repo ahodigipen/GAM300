@@ -37,6 +37,7 @@
 #include "AI/AISystem.h"
 #include "Input/RayCast.h"
 #include "Graphics/Video/VideoPlayer.h"
+#include "Graphics/ParticleSystem.h"
 #include "GlobalConstants.h"
 
 namespace std {
@@ -249,6 +250,9 @@ namespace Boom
 			m_ShouldExit = false;
 
 			if (m_Context->scriptingSystem && m_Context->scriptingSystem->IsAlive()) {
+				// Reset global state for the session
+				m_Context->scriptingSystem->CallSessionStart();
+
 				// Call Entry.Start() first
 				m_Context->scriptingSystem->CallStart();
 
@@ -403,6 +407,10 @@ namespace Boom
 
 			// Stop audio
 			SoundEngine::Instance().StopAll();
+
+			// Clear all live GPU particle buffers so no particles linger in the editor
+			if (m_Context->particleSystem)
+				m_Context->particleSystem->Reset();
 
 			BOOM_INFO("[Application] Exited play mode");
 		}
@@ -857,15 +865,18 @@ namespace Boom
 			glm::vec3 camPos = m_Context->renderer->GetCameraPosition();
 
 			EnttView<Entity, PointLightComponent, TransformComponent>(
-				[&](auto, PointLightComponent& plc, TransformComponent& tc)
+				[&](auto entity, PointLightComponent& plc, TransformComponent&)
 				{
+					glm::mat4 worldMat = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+					glm::vec3 worldPos = glm::vec3(worldMat[3]);
+
 					GPUPointLight g{};
-					g.position_range = glm::vec4(tc.transform.translate, plc.light.range);
+					g.position_range = glm::vec4(worldPos, plc.light.range);
 					g.radiance_intensity = glm::vec4(plc.light.radiance, plc.light.intensity);
 					float finalBloomStrength = plc.light.bloomStrength * m_Context->renderer->pointLightBloomMultiplier;
 					g.bloomStrength_padding = glm::vec4(finalBloomStrength, 0.0f, 0.0f, 0.0f);
 
-					float d2 = glm::distance2(camPos, tc.transform.translate);
+					float d2 = glm::distance2(camPos, worldPos);
 					pointLightJobs.push_back({ g, d2 });
 				});
 
@@ -875,7 +886,7 @@ namespace Boom
 			});
 
 			// Only upload the closest N lights
-			const int maxPointLights = 32; 
+			const int maxPointLights = 32;
 			std::vector<GPUPointLight> gpuPoints;
 			int points = 0;
 			for (auto& job : pointLightJobs) {
@@ -892,16 +903,16 @@ namespace Boom
 			int directs = 0;
 
 			EnttView<Entity, DirectLightComponent, TransformComponent>(
-				[&](auto, DirectLightComponent& dlc, TransformComponent& tc)
+				[&](auto entity, DirectLightComponent& dlc, TransformComponent&)
 				{
 					if (directs >= MAX_DIR_LIGHTS) return;
 
-					GPUDirLight g{};
-					glm::vec3 eulerRadians = glm::radians(tc.transform.rotate);
-					glm::quat rotation = glm::quat(eulerRadians);
-					glm::vec3 lightDir = rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+					glm::mat4 worldMat = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+					// Derive direction from world matrix so the light follows parent rotation
+					glm::vec3 lightDir = glm::normalize(glm::vec3(worldMat * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f)));
 
-					g.dir_intensity = glm::vec4(glm::normalize(lightDir), dlc.light.intensity);
+					GPUDirLight g{};
+					g.dir_intensity = glm::vec4(lightDir, dlc.light.intensity);
 					g.radiance = glm::vec4(dlc.light.radiance, 0.0f);
 					gpuDirs.push_back(g);
 					++directs;
@@ -917,18 +928,19 @@ namespace Boom
 			std::vector<SpotLightJob> spotLightJobs;
 
 			EnttView<Entity, SpotLightComponent, TransformComponent>(
-				[&](auto, SpotLightComponent& slc, TransformComponent& tc)
+				[&](auto entity, SpotLightComponent& slc, TransformComponent&)
 				{
-					GPUSpotLight g{};
-					g.position_falloff = glm::vec4(tc.transform.translate, slc.light.fallOff);
-					glm::vec3 eulerRadians = glm::radians(tc.transform.rotate);
-					glm::quat rotation = glm::quat(eulerRadians);
-					glm::vec3 lightDir = rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+					glm::mat4 worldMat = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+					glm::vec3 worldPos = glm::vec3(worldMat[3]);
+					// Derive direction from world matrix so the light follows parent rotation
+					glm::vec3 lightDir = glm::normalize(glm::vec3(worldMat * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f)));
 
-					g.dir_cutoff = glm::vec4(glm::normalize(lightDir), slc.light.cutOff);
+					GPUSpotLight g{};
+					g.position_falloff = glm::vec4(worldPos, slc.light.fallOff);
+					g.dir_cutoff = glm::vec4(lightDir, slc.light.cutOff);
 					g.radiance_intensity = glm::vec4(slc.light.radiance, slc.light.intensity);
-					
-					float d2 = glm::distance2(camPos, tc.transform.translate);
+
+					float d2 = glm::distance2(camPos, worldPos);
 					spotLightJobs.push_back({ g, d2 });
 				});
 

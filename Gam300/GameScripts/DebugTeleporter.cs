@@ -12,8 +12,10 @@ namespace GameScripts
     {
         public ulong Entity;
 
+#pragma warning disable CS0414
         [Boom.EditorExposed("--- LEVEL NAVIGATION ---", "Visual separator", 0, 0, false)]
         private bool _header = false;
+#pragma warning restore CS0414
 
         [Boom.EditorExposed("GO: Level Start", "Shortcut: F1", 0, 0, false)]
         private bool _teleportToStart = false;
@@ -23,6 +25,9 @@ namespace GameScripts
 
         [Boom.EditorExposed("GO: Level 2 Area", "Shortcut: F3", 0, 0, false)]
         private bool _teleportToLevel2 = false;
+
+        [Boom.EditorExposed("GO: Custom Position", "Shortcut: F4", 0, 0, false)]
+        private bool _teleportToCustom = false;
 
         public void OnUpdate(float dt)
         {
@@ -52,6 +57,13 @@ namespace GameScripts
                 _teleportToLevel2 = false;
                 player.TeleportToLevel2();
                 API.Log("[DebugTeleporter] F3: Teleporting to Level 2");
+            }
+
+            if (_teleportToCustom || API.IsKeyDown(API.KEY_F4))
+            {
+                _teleportToCustom = false;
+                player.TeleportTo(new Vec3(-40.770f, 26.960f, -31.0f));
+                API.Log("[DebugTeleporter] F4: Teleporting to Custom Position (-40.77, 26.96, -31)");
             }
         }
     }

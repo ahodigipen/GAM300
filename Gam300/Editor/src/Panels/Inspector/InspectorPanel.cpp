@@ -1014,7 +1014,15 @@ namespace EditorUI {
 
                 // Color picker
                 ImGui::Text("Color:");
-                ImGui::ColorEdit4("##color", &textComp.color[0]);
+                // Text alignment
+                ImGui::Text("Alignment:");
+                const char* alignments[] = { "Left", "Center", "Right" };
+                int currentAlignment = (int)textComp.alignment;
+                if (ImGui::Combo("##alignment", &currentAlignment, alignments, IM_ARRAYSIZE(alignments))) {
+                    textComp.alignment = (Boom::TextComponent::Alignment)currentAlignment;
+                }
+
+                ImGui::ColorEdit4("Color", &textComp.color.x);
 
                 // Scale slider
                 ImGui::Text("Scale:");
@@ -2975,6 +2983,114 @@ namespace EditorUI {
                 [&]() { ctx->scene.remove<Boom::DeactivatedComponent>(m_App->SelectedEntity()); });
         }
 
+        // --- Particle Emitter Component UI ---
+        if (selected.Has<Boom::ParticleEmitterComponent>()) {
+            ImGui::PushID("ParticleEmitter");
+            auto& pe = selected.Get<Boom::ParticleEmitterComponent>();
+
+            bool peRemoved = false;
+            bool isOpen = ImGui::CollapsingHeader("Particle Emitter", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap);
+
+            // Settings gear
+            float lineH = ImGui::GetItemRectSize().y;
+            ImGui::SameLine(ImGui::GetContentRegionAvail().x - lineH);
+            if (ImGui::Button("...", ImVec2(lineH, lineH))) {
+                ImGui::OpenPopup("ParticleEmitterSettings");
+            }
+            if (ImGui::BeginPopup("ParticleEmitterSettings")) {
+                if (ImGui::MenuItem("Remove Component")) {
+                    peRemoved = true;
+                }
+                ImGui::EndPopup();
+            }
+
+            if (isOpen && !peRemoved) {
+                // --- Emission ---
+                if (ImGui::TreeNodeEx("Emission", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    ImGui::DragFloat("Emission Rate", &pe.emissionRate, 1.0f, 0.0f, 10000.0f);
+                    ImGui::DragInt("Max Particles", &pe.maxParticles, 1, 1, 100000);
+                    ImGui::DragFloat("Duration", &pe.duration, 0.1f, 0.0f, 300.0f);
+                    ImGui::Checkbox("Looping", &pe.looping);
+                    ImGui::Checkbox("Play On Start", &pe.playOnStart);
+                    ImGui::TreePop();
+                }
+
+                // --- Lifetime & Speed ---
+                if (ImGui::TreeNodeEx("Lifetime & Speed", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    ImGui::DragFloat("Lifetime Min", &pe.lifetimeMin, 0.01f, 0.01f, 60.0f);
+                    ImGui::DragFloat("Lifetime Max", &pe.lifetimeMax, 0.01f, 0.01f, 60.0f);
+                    ImGui::DragFloat("Speed Min", &pe.speedMin, 0.1f, 0.0f, 100.0f);
+                    ImGui::DragFloat("Speed Max", &pe.speedMax, 0.1f, 0.0f, 100.0f);
+                    ImGui::TreePop();
+                }
+
+                // --- Shape ---
+                if (ImGui::TreeNodeEx("Shape", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    const char* shapeNames[] = { "Point", "Sphere", "Cone", "Box" };
+                    ImGui::Combo("Shape Type", &pe.shapeType, shapeNames, IM_ARRAYSIZE(shapeNames));
+
+                    if (pe.shapeType == 1) { // Sphere
+                        ImGui::DragFloat("Shape Radius", &pe.shapeRadius, 0.1f, 0.0f, 100.0f);
+                    }
+                    else if (pe.shapeType == 2) { // Cone
+                        ImGui::DragFloat("Cone Angle", &pe.shapeAngle, 1.0f, 0.0f, 90.0f);
+                    }
+                    else if (pe.shapeType == 3) { // Box
+                        ImGui::DragFloat3("Box Size", &pe.shapeSize.x, 0.1f, 0.0f, 100.0f);
+                    }
+
+                    ImGui::DragFloat3("Direction", &pe.direction.x, 0.01f, -1.0f, 1.0f);
+                    ImGui::TreePop();
+                }
+
+                // --- Physics ---
+                if (ImGui::TreeNodeEx("Physics")) {
+                    ImGui::DragFloat("Gravity", &pe.gravity, 0.1f, -50.0f, 50.0f);
+                    ImGui::TreePop();
+                }
+
+                // --- Size Over Lifetime ---
+                if (ImGui::TreeNodeEx("Size Over Lifetime", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    ImGui::DragFloat("Start Size Min", &pe.startSizeMin, 0.01f, 0.001f, 50.0f);
+                    ImGui::DragFloat("Start Size Max", &pe.startSizeMax, 0.01f, 0.001f, 50.0f);
+                    ImGui::DragFloat("End Size", &pe.endSize, 0.01f, 0.0f, 50.0f);
+                    ImGui::TreePop();
+                }
+
+                // --- Color Over Lifetime ---
+                if (ImGui::TreeNodeEx("Color Over Lifetime", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    ImGui::ColorEdit4("Start Color", &pe.startColor.x);
+                    ImGui::ColorEdit4("End Color", &pe.endColor.x);
+                    ImGui::TreePop();
+                }
+
+                // --- Rendering ---
+                if (ImGui::TreeNodeEx("Rendering", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    ImGui::Checkbox("Billboard", &pe.billboard);
+                    ImGui::Checkbox("Additive Blend", &pe.additiveBlend);
+                    ImGui::TreePop();
+                }
+
+                // --- Runtime Controls ---
+                ImGui::Separator();
+                ImGui::Text("Runtime: %s", pe.isPlaying ? "Playing" : "Stopped");
+                if (ImGui::Button("Play")) {
+                    pe.isPlaying = true;
+                    pe.emitterTimer = 0.0f;
+                    pe.spawnAccum = 0.0f;
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Stop")) {
+                    pe.isPlaying = false;
+                }
+            }
+
+            if (peRemoved) {
+                ctx->scene.remove<Boom::ParticleEmitterComponent>(m_App->SelectedEntity());
+            }
+            ImGui::PopID();
+        }
+
         if (selected.Has<Boom::ScriptComponent>()) {
             ImGui::PushID("Script");
             auto& sc = selected.Get<Boom::ScriptComponent>();
@@ -3999,6 +4115,7 @@ namespace EditorUI {
                     UpdateComponent<Boom::DeactivatedComponent>(Boom::ComponentID::DEACTIVATED_TAG, selected);
                     UpdateComponent<Boom::VideoComponent>(Boom::ComponentID::VIDEO, selected);
                     UpdateComponent<Boom::CharacterControllerComponent>(Boom::ComponentID::CHARACTER_CONTROLLER, selected);
+                    UpdateComponent<Boom::ParticleEmitterComponent>(Boom::ComponentID::PARTICLE_EMITTER, selected);
                     ImGui::EndTable();
                 }
             }

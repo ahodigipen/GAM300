@@ -21,7 +21,7 @@
 #include "Panels/NavMeshPanel.h"
 #include "Panels/AnimatorGraphPanel.h"
 #include "Panels/ModelPreviewPanel.h"
-#include "Panels/AnimationTimelinePanel.h"
+#include "Panels/SequencerPanel.h"
 #include "BoomEngine.h"
 
 // Undo/Redo
@@ -161,10 +161,10 @@ namespace EditorUI {
         m_Viewport = std::make_unique<ViewportPanel>(this);
         m_Performance = std::make_unique<PerformancePanel>(this);
         m_Playback = std::make_unique<PlaybackControlsPanel>(this, m_App);
-		m_Navmesh = std::make_unique<NavmeshPanel>(this);
+        m_Navmesh = std::make_unique<NavmeshPanel>(this);
         m_AnimatorGraph = std::make_unique<AnimatorGraphPanel>(this);
         m_ModelPreview = std::make_unique<ModelPreviewPanel>(this);
-        m_AnimationTimeline = std::make_unique<AnimationTimelinePanel>(this);
+        m_Sequencer = std::make_unique<SequencerPanel>(this);
 
         // Initialize Undo/Redo system
         m_CommandHistory = std::make_unique<CommandHistory>(100); // Max 100 undo levels
@@ -210,24 +210,24 @@ namespace EditorUI {
 
         // --- Layout root dockspace ---
         CreateMainDockSpace();
-		
+
         // --- Panels (menu first, then windows) ---
         if (m_MenuBar)        m_MenuBar->Render();
         RenderSceneDialogs();
         if (m_ShowViewport && m_Viewport)      m_Viewport->Render();
         if (m_ShowHierarchy && m_Hierarchy)     m_Hierarchy->Render();
         if (m_ShowInspector && m_Inspector)     m_Inspector->Render();
-        if (m_ShowResources && m_Resources)     m_Resources->OnShow();   
+        if (m_ShowResources && m_Resources)     m_Resources->OnShow();
         if (m_ShowDirectory && m_Directory)     m_Directory->OnShow();
         if (m_ShowPrefabBrowser && m_PrefabBrowser) m_PrefabBrowser->Render();
         if (m_ShowConsole && m_Console)       m_Console->Render();
         if (m_ShowAudio && m_Audio)         m_Audio->Render();
         if (m_ShowPerformance && m_Performance)  m_Performance->Render();
         if (m_ShowPlaybackControls && m_Playback) m_Playback->OnShow();
-		if (m_ShowNavmesh && m_Navmesh)       m_Navmesh->Render();
+        if (m_ShowNavmesh && m_Navmesh)       m_Navmesh->Render();
         if (m_ShowAnimatorGraph && m_AnimatorGraph) m_AnimatorGraph->Render();
         if (m_ShowModelPreview && m_ModelPreview) m_ModelPreview->Render();
-        if (m_ShowAnimationTimeline && m_AnimationTimeline) m_AnimationTimeline->Render();
+        if (m_ShowSequencer && m_Sequencer) m_Sequencer->Render();
         // --- End frame / draw ---
         EndImguiFrame();
 
@@ -314,7 +314,8 @@ namespace EditorUI {
                 m_ShowSaveDialog = true;
                 m_SceneNameBuffer[0] = '\0'; // Clear for fresh name
                 BOOM_INFO("[Shortcut] Save scene as dialog (Ctrl+Shift+S)");
-            } else {
+            }
+            else {
                 // In play mode, Ctrl+Shift+S stops play mode (handled below)
                 m_App->Stop();
                 BOOM_INFO("[Shortcut] Stopped play mode (Ctrl+Shift+S)");
@@ -539,8 +540,8 @@ namespace EditorUI {
 #ifdef DEBUG
                         BOOM_ERROR("[Editor] SaveScene exception: {}", e.what());
 #endif // DEBUG
-						std::cerr << "SaveScene exception: " << e.what() << std::endl;
-                       
+                        std::cerr << "SaveScene exception: " << e.what() << std::endl;
+
                     }
                 }
             }
@@ -601,10 +602,10 @@ namespace EditorUI {
                         }
                     }
                     catch (const std::exception& e) {
-                    #ifdef DEBUG
+#ifdef DEBUG
                         BOOM_ERROR("[Editor] LoadScene exception: {}", e.what());
-                    #endif DEBUG
-						std::cerr << "LoadScene exception: " << e.what() << std::endl;
+#endif DEBUG
+                        std::cerr << "LoadScene exception: " << e.what() << std::endl;
                     }
                 }
                 else {
@@ -657,7 +658,8 @@ namespace EditorUI {
                     // Navigate up to solution root (handle both running from IDE and from exe)
                     if (solutionDir.filename() == "Debug" || solutionDir.filename() == "Release") {
                         solutionDir = solutionDir.parent_path().parent_path(); // x64/Debug -> Gam300
-                    } else if (solutionDir.filename() == "Editor") {
+                    }
+                    else if (solutionDir.filename() == "Editor") {
                         solutionDir = solutionDir.parent_path(); // Editor -> Gam300
                     }
 
@@ -710,7 +712,8 @@ namespace EditorUI {
                                         fs::copy_options::overwrite_existing);
                                     dllCount++;
                                     BOOM_INFO("[Export] Copied {}", entry.path().filename().string());
-                                } catch (const std::exception& e) {
+                                }
+                                catch (const std::exception& e) {
                                     BOOM_WARN("[Export] Failed to copy {}: {}",
                                         entry.path().filename().string(), e.what());
                                 }
@@ -812,4 +815,4 @@ namespace EditorUI {
         // unique_ptr members will clean up automatically.
     }
 
-} 
+}

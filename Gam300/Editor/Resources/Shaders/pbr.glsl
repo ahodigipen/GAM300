@@ -266,6 +266,14 @@ vec3 ComputePointLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, f
 vec3 ComputeDirLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, float metallic);
 vec3 ComputeSpotLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, float metallic);
 
+vec3 ClampSafe(vec3 v)
+{
+    v.x = (isnan(v.x) || isinf(v.x)) ? 0.0 : v.x;
+    v.y = (isnan(v.y) || isinf(v.y)) ? 0.0 : v.y;
+    v.z = (isnan(v.z) || isinf(v.z)) ? 0.0 : v.z;
+    return v;
+}
+
 vec3 ComputeMapOrMatV3(bool isMap, sampler2D map, vec3 mat, vec2 texUV) {
     vec3 res = mat;
     if (isMap) {
@@ -339,7 +347,7 @@ void main() {
     color += emissive;
 
     // Calculate bloom: use point light bloom contribution (with per-light bloom multiplier) + other lights + emissive
-    vec3 bloomColor = pointLightBloom * occlusion + (dirLight * (1.0 - shadow) + spotLight) * occlusion + emissive;
+    vec3 bloomColor = ClampSafe(pointLightBloom * occlusion + (dirLight * (1.0 - shadow) + spotLight) * occlusion + emissive);
     float brightness = dot(bloomColor, BLOOM_THRESHOLD);
     float soft = clamp((brightness - u_bloomThreshold) / max(u_bloomThreshold, 0.001), 0.0, 1.0);
     out_brightness = vec4(bloomColor * soft, 1.0);
@@ -352,7 +360,7 @@ void main() {
     float threshold = float(bayer64[col + 8 * row]) / 64.0;
     if (length(color - quanColor) <= threshold * ditherThreshold) color = quanColor;
 
-    out_fragment = vec4(color, opacity);
+    out_fragment = vec4(ClampSafe(color), opacity);
 }
 
 vec3 FresnelSchlick(float cosTheta, vec3 f0) {
@@ -374,7 +382,7 @@ float DistributionGGX(vec3 N, vec3 H, float roughness) {
     float nDotH = max(dot(N, H), 0.0);
     float nDotHSq = nDotH * nDotH;
     float denom = nDotHSq * (aSq - 1.0) + 1.0;
-    return aSq / (PI * denom * denom);
+    return aSq / max(PI * denom * denom, 0.0001);  // guard 0/0 NaN when roughness=0
 }
 vec3 ComputePointLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, float metallic, out vec3 bloomContribution) {
     vec3 result = vec3(0.0);

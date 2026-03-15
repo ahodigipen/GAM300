@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Boom;
 
 namespace GameScripts
@@ -9,19 +9,33 @@ namespace GameScripts
 
         private const string NEWGAME_TEX_NORMAL = "Resources/Textures/MenusUI/NewGameButton.png";
         private const string HOWTOPLAY_TEX_NORMAL = "Resources/Textures/MenusUI/HowToPlayButton.png";
+        private const string SETTINGS_TEX_NORMAL = "Resources/Textures/MenusUI/Settings.png";
         private const string QUIT_TEX_NORMAL = "Resources/Textures/MenusUI/ExitButton.png";
+
+        private const string NEWGAME_TEX_HOVER = "Resources/Textures/MenusUI/NewGameButton_hovered.png";
+        private const string HOWTOPLAY_TEX_HOVER = "Resources/Textures/MenusUI/HowToPlayButton_hovered.png";
+        private const string SETTINGS_TEX_HOVER = "Resources/Textures/MenusUI/Settings_hovered.png";
+        private const string QUIT_TEX_HOVER = "Resources/Textures/MenusUI/ExitButton_hovered.png";
 
         private const string NEWGAME_TEX_CLICKED = "Resources/Textures/MenusUI/NewGameButton_Clicked.png";
         private const string HOWTOPLAY_TEX_CLICKED = "Resources/Textures/MenusUI/HowToPlayButton_Clicked.png";
+        private const string SETTINGS_TEX_CLICKED = "Resources/Textures/MenusUI/Settings_Clicked.png";
         private const string QUIT_TEX_CLICKED = "Resources/Textures/MenusUI/ExitButton_Clicked.png";
 
         private ulong _newGameButtonID;
         private ulong _howToPlayButtonID;
+        private ulong _settingsButtonID;
         private ulong _quitButtonID;
+
+        private ulong _hoveredButtonID = 0;
+        private bool _wasMouseDown = false;
+
+        private ButtonFX _buttonFX;
 
         private enum MenuState
         {
             Idle,
+            Hover,
             ButtonDelay,
             FadingOut
         }
@@ -30,7 +44,7 @@ namespace GameScripts
         private ulong _clickedButtonID = 0;
 
         // Controller navigation
-        private int _selectedIndex = -1; // -1: Nothing Selected, 0: New Game, 1: How To Play, 2: Quit
+        private int _selectedIndex = -1; // -1: Nothing Selected, 0: New Game, 1: How To Play, 2: Settings, 3: Quit
         private bool _wasDpadUp = false;
         private bool _wasDpadDown = false;
         private bool _wasStickUp = false;
@@ -47,7 +61,10 @@ namespace GameScripts
             API.Log("MainMenu OnStart Running...");
             _newGameButtonID = API.FindEntity("NewGameButton");
             _howToPlayButtonID = API.FindEntity("HowToPlayButton");
+            _settingsButtonID = API.FindEntity("SettingsButton");
             _quitButtonID = API.FindEntity("QuitButton");
+
+            _buttonFX = new ButtonFX(_newGameButtonID, _howToPlayButtonID, _settingsButtonID, _quitButtonID);
 
             _currentState = MenuState.Idle;
             _clickedButtonID = 0;
@@ -61,9 +78,13 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
+            // Always update hover effects (indent + sound)
+            _buttonFX?.Update(dt);
+
             switch (_currentState)
             {
                 case MenuState.Idle:
+                case MenuState.Hover:
                     Update_Idle();
                     Update_ControllerNavigation();
                     UpdateFadeIn(dt);
@@ -97,6 +118,7 @@ namespace GameScripts
                     (stickUp && !_wasStickUp) || (stickDown && !_wasStickDown))
                 {
                     _selectedIndex = 0;
+                    _buttonFX?.SetControllerSelection(_selectedIndex);
                     UpdateVisuals();
 
                     // Update "was" flags to prevent double-input this frame
@@ -119,12 +141,14 @@ namespace GameScripts
 
             if ((dpadUp && !_wasDpadUp) || (stickUp && !_wasStickUp))
             {
-                _selectedIndex = (_selectedIndex - 1 + 3) % 3;
+                _selectedIndex = (_selectedIndex - 1 + 4) % 4;
+                _buttonFX?.SetControllerSelection(_selectedIndex);
                 UpdateVisuals();
             }
             if ((dpadDown && !_wasDpadDown) || (stickDown && !_wasStickDown))
             {
-                _selectedIndex = (_selectedIndex + 1) % 3;
+                _selectedIndex = (_selectedIndex + 1) % 4;
+                _buttonFX?.SetControllerSelection(_selectedIndex);
                 UpdateVisuals();
             }
 
@@ -133,7 +157,8 @@ namespace GameScripts
                 ulong buttonID = 0;
                 if (_selectedIndex == 0) buttonID = _newGameButtonID;
                 else if (_selectedIndex == 1) buttonID = _howToPlayButtonID;
-                else if (_selectedIndex == 2) buttonID = _quitButtonID;
+                else if (_selectedIndex == 2) buttonID = _settingsButtonID;
+                else if (_selectedIndex == 3) buttonID = _quitButtonID;
 
                 if (buttonID != 0) StartClickDelay(buttonID);
             }
@@ -150,44 +175,69 @@ namespace GameScripts
             // Reset all to normal
             API.SetSpriteTexture(_newGameButtonID, NEWGAME_TEX_NORMAL);
             API.SetSpriteTexture(_howToPlayButtonID, HOWTOPLAY_TEX_NORMAL);
+            API.SetSpriteTexture(_settingsButtonID, SETTINGS_TEX_NORMAL);
             API.SetSpriteTexture(_quitButtonID, QUIT_TEX_NORMAL);
 
-            if (_selectedIndex == -1)
-            {
-                return; // "continue" isn't valid here, so we use return to stop.
-            }
+            if (_selectedIndex == -1) return;
 
-            // Highlight selected (using clicked texture as highlight for now)
+            // Highlight controller-selected button
             if (_selectedIndex == 0) API.SetSpriteTexture(_newGameButtonID, NEWGAME_TEX_CLICKED);
             else if (_selectedIndex == 1) API.SetSpriteTexture(_howToPlayButtonID, HOWTOPLAY_TEX_CLICKED);
-            else if (_selectedIndex == 2) API.SetSpriteTexture(_quitButtonID, QUIT_TEX_CLICKED);
+            else if (_selectedIndex == 2) API.SetSpriteTexture(_settingsButtonID, SETTINGS_TEX_CLICKED);
+            else if (_selectedIndex == 3) API.SetSpriteTexture(_quitButtonID, QUIT_TEX_CLICKED);
         }
 
         private void Update_Idle()
         {
-            if (API.IsMouseDown(MOUSE_LEFT))
-            {
-                if (!API.GetMousePosInViewport(out Vec2 mousePos))
-                {
-                    return;
-                }
+            bool mouseDown = API.IsMouseDown(MOUSE_LEFT);
 
-                if (API.Check2DViewportClick(_newGameButtonID, mousePos.X, mousePos.Y))
+            if (!API.GetMousePosInViewport(out Vec2 mousePos))
+            {
+                if (_hoveredButtonID != 0)
                 {
-                    _selectedIndex = 0;
-                    StartClickDelay(_newGameButtonID);
+                    _hoveredButtonID = 0;
+                    _currentState = MenuState.Idle;
                 }
-                else if (API.Check2DViewportClick(_howToPlayButtonID, mousePos.X, mousePos.Y))
-                {
-                    _selectedIndex = 1;
-                    StartClickDelay(_howToPlayButtonID);
-                }
-                else if (API.Check2DViewportClick(_quitButtonID, mousePos.X, mousePos.Y))
-                {
-                    _selectedIndex = 2;
-                    StartClickDelay(_quitButtonID);
-                }
+                _wasMouseDown = mouseDown;
+                return;
             }
+
+            // Detect which button (if any) is under the cursor this frame
+            ulong hoveredNow = 0;
+            if (API.Check2DViewportClick(_newGameButtonID, mousePos.X, mousePos.Y))
+                hoveredNow = _newGameButtonID;
+            else if (API.Check2DViewportClick(_howToPlayButtonID, mousePos.X, mousePos.Y))
+                hoveredNow = _howToPlayButtonID;
+            else if (API.Check2DViewportClick(_settingsButtonID, mousePos.X, mousePos.Y))
+                hoveredNow = _settingsButtonID;
+            else if (API.Check2DViewportClick(_quitButtonID, mousePos.X, mousePos.Y))
+                hoveredNow = _quitButtonID;
+
+            // Update hover state and swap textures when hover changes
+            if (hoveredNow != _hoveredButtonID)
+            {
+                _hoveredButtonID = hoveredNow;
+                _currentState = hoveredNow != 0 ? MenuState.Hover : MenuState.Idle;
+
+                // Reset all to normal, then apply hover texture to the hovered button
+                API.SetSpriteTexture(_newGameButtonID, hoveredNow == _newGameButtonID ? NEWGAME_TEX_HOVER : NEWGAME_TEX_NORMAL);
+                API.SetSpriteTexture(_howToPlayButtonID, hoveredNow == _howToPlayButtonID ? HOWTOPLAY_TEX_HOVER : HOWTOPLAY_TEX_NORMAL);
+                API.SetSpriteTexture(_settingsButtonID, hoveredNow == _settingsButtonID ? SETTINGS_TEX_HOVER : SETTINGS_TEX_NORMAL);
+                API.SetSpriteTexture(_quitButtonID, hoveredNow == _quitButtonID ? QUIT_TEX_HOVER : QUIT_TEX_NORMAL);
+            }
+
+            // Fire click on fresh press over a button (edge-triggered to avoid repeat firing)
+            bool justPressed = mouseDown && !_wasMouseDown;
+            if (justPressed && hoveredNow != 0)
+            {
+                if (hoveredNow == _newGameButtonID) _selectedIndex = 0;
+                else if (hoveredNow == _howToPlayButtonID) _selectedIndex = 1;
+                else if (hoveredNow == _settingsButtonID) _selectedIndex = 2;
+                else if (hoveredNow == _quitButtonID) _selectedIndex = 3;
+                StartClickDelay(hoveredNow);
+            }
+
+            _wasMouseDown = mouseDown;
         }
 
         private void Update_ButtonDelay(float dt)
@@ -199,12 +249,15 @@ namespace GameScripts
         {
             _currentState = MenuState.ButtonDelay;
             _clickedButtonID = buttonID;
+            ButtonFX.PlayClickSound();
 
             // Set the texture
             if (buttonID == _newGameButtonID)
                 API.SetSpriteTexture(buttonID, NEWGAME_TEX_CLICKED);
             else if (buttonID == _howToPlayButtonID)
                 API.SetSpriteTexture(buttonID, HOWTOPLAY_TEX_CLICKED);
+            else if (buttonID == _settingsButtonID)
+                API.SetSpriteTexture(buttonID, SETTINGS_TEX_CLICKED);
             else if (buttonID == _quitButtonID)
                 API.SetSpriteTexture(buttonID, QUIT_TEX_CLICKED);
         }
@@ -214,6 +267,8 @@ namespace GameScripts
             if (_clickedButtonID == _newGameButtonID)
             {
                 API.Log(">> New Game Button Clicked! Fading to cutscene...");
+                PlayerMovement.ResetPersistedHealth();
+                PlayerInventory.Reset();
                 _currentState = MenuState.FadingOut;
                 _fadeTimer = 0f;
                 _sceneToLoad = Entry.CUTSCENE_SCENE_NAME;
@@ -223,6 +278,12 @@ namespace GameScripts
                 API.Log(">> How To Play Button Clicked! Loading HowToPlay...");
                 _currentState = MenuState.Idle;
                 API.LoadScene("HowToPlay");
+            }
+            else if (_clickedButtonID == _settingsButtonID)
+            {
+                API.Log(">> Settings Button Clicked! Loading Settings...");
+                _currentState = MenuState.Idle;
+                API.LoadScene("Settings");
             }
             else if (_clickedButtonID == _quitButtonID)
             {

@@ -1,4 +1,4 @@
-﻿// Boom/API.cs - FIXED VERSION
+// Boom/API.cs - FIXED VERSION
 using Boom;
 using System;
 using System.Linq;
@@ -90,6 +90,9 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Boom_API_IsGamepadConnected();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static ulong[] Boom_API_GetChildren(ulong handle);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Boom_API_HasTransform(ulong handle);
@@ -436,6 +439,9 @@ namespace Boom
         internal extern static float Boom_API_GetTextScale(ulong handle);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static float Boom_API_GetTextHeight(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_SetTextScale(ulong handle, float scale);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -443,6 +449,12 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_SetTextPosition(ulong handle, ref Vec2 pos);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static int Boom_API_GetTextAlignment(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetTextAlignment(ulong handle, int alignment);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_CreateController(ulong handle, float radius, float height);
@@ -488,6 +500,22 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_SetPointLightIntensity(ulong handle, float intensity);
 
+        // ========= DIRECTLIGHT COMPONENT INTERNAL CALLS =========
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Boom_API_HasDirectLight(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_GetDirectLightColor(ulong handle, out Vec3 color);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetDirectLightColor(ulong handle, ref Vec3 color);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static float Boom_API_GetDirectLightIntensity(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetDirectLightIntensity(ulong handle, float intensity);
+
         // ========= VIDEO COMPONENT INTERNAL CALLS =========
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Boom_API_HasVideoComponent(ulong handle);
@@ -532,6 +560,39 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_DrawDebugLine(Vec3 start, Vec3 end, Vec3 color);
 
+        // ========= PARTICLE EMITTER INTERNAL CALLS =========
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Boom_API_HasParticleEmitter(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_PlayParticleEmitter(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_StopParticleEmitter(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Boom_API_IsParticleEmitterPlaying(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleEmissionRate(ulong handle, float rate);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static float Boom_API_GetParticleEmissionRate(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleStartColor(ulong handle, float r, float g, float b, float a);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleEndColor(ulong handle, float r, float g, float b, float a);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleGravity(ulong handle, float gravity);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleSpeed(ulong handle, float speedMin, float speedMax);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleSize(ulong handle, float startMin, float startMax, float endSize);
         // Inventory Menu
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_ShowInventoryMenu();
@@ -633,6 +694,11 @@ namespace Boom
 
         // ===== Entity queries =====
         public static ulong FindEntity(string name) => Native.Boom_API_FindEntity(name);
+
+        /// <summary>
+        /// Get all children of an entity.
+        /// </summary>
+        public static ulong[] GetChildren(ulong entity) => Native.Boom_API_GetChildren(entity) ?? new ulong[0];
 
         //AI Helpers
         public enum AIMode
@@ -1344,6 +1410,27 @@ namespace Boom
             Native.Boom_API_SetPointLightIntensity(entity, intensity);
         }
 
+        // ========= DIRECTLIGHT COMPONENT METHODS =========
+        public static bool HasDirectLight(ulong entity) => Native.Boom_API_HasDirectLight(entity);
+
+        public static Vec3 GetDirectLightColor(ulong entity)
+        {
+            Native.Boom_API_GetDirectLightColor(entity, out Vec3 color);
+            return color;
+        }
+
+        public static void SetDirectLightColor(ulong entity, Vec3 color)
+        {
+            Native.Boom_API_SetDirectLightColor(entity, ref color);
+        }
+
+        public static float GetDirectLightIntensity(ulong entity) => Native.Boom_API_GetDirectLightIntensity(entity);
+
+        public static void SetDirectLightIntensity(ulong entity, float intensity)
+        {
+            Native.Boom_API_SetDirectLightIntensity(entity, intensity);
+        }
+
         // ========== VIDEO COMPONENT API ==========
 
         /// <summary>
@@ -1423,6 +1510,11 @@ namespace Boom
         public static float GetTextScale(ulong entity) => Native.Boom_API_GetTextScale(entity);
 
         /// <summary>
+        /// Get the total height of a multi-line text block in screen pixels
+        /// </summary>
+        public static float GetTextHeight(ulong entity) => Native.Boom_API_GetTextHeight(entity);
+
+        /// <summary>
         /// Set the scale/size multiplier of text
         /// </summary>
         public static void SetTextScale(ulong entity, float scale)
@@ -1445,6 +1537,26 @@ namespace Boom
         public static void SetTextPosition(ulong entity, Vec2 pos)
         {
             Native.Boom_API_SetTextPosition(entity, ref pos);
+        }
+
+        public enum TextAlignment
+        {
+            Left = 0,
+            Center = 1,
+            Right = 2
+        }
+
+        /// <summary>
+        /// Get the alignment of text
+        /// </summary>
+        public static TextAlignment GetTextAlignment(ulong entity) => (TextAlignment)Native.Boom_API_GetTextAlignment(entity);
+
+        /// <summary>
+        /// Set the alignment of text
+        /// </summary>
+        public static void SetTextAlignment(ulong entity, TextAlignment alignment)
+        {
+            Native.Boom_API_SetTextAlignment(entity, (int)alignment);
         }
 
         // Video
@@ -1491,6 +1603,41 @@ namespace Boom
 
         public static void DrawDebugLine(Vec3 start, Vec3 end, Vec3 color) => Native.Boom_API_DrawDebugLine(start, end, color);
 
+        // ========= PARTICLE EMITTER =========
+
+        /// <summary>Check if entity has a ParticleEmitterComponent</summary>
+        public static bool HasParticleEmitter(ulong entity) => Native.Boom_API_HasParticleEmitter(entity);
+
+        /// <summary>Start playing the particle emitter (resets timer)</summary>
+        public static void PlayParticleEmitter(ulong entity) => Native.Boom_API_PlayParticleEmitter(entity);
+
+        /// <summary>Stop the particle emitter</summary>
+        public static void StopParticleEmitter(ulong entity) => Native.Boom_API_StopParticleEmitter(entity);
+
+        /// <summary>Check if the particle emitter is currently playing</summary>
+        public static bool IsParticleEmitterPlaying(ulong entity) => Native.Boom_API_IsParticleEmitterPlaying(entity);
+
+        /// <summary>Set particles emitted per second</summary>
+        public static void SetParticleEmissionRate(ulong entity, float rate) => Native.Boom_API_SetParticleEmissionRate(entity, rate);
+
+        /// <summary>Get particles emitted per second</summary>
+        public static float GetParticleEmissionRate(ulong entity) => Native.Boom_API_GetParticleEmissionRate(entity);
+
+        /// <summary>Set the start color of particles (RGBA 0-1)</summary>
+        public static void SetParticleStartColor(ulong entity, float r, float g, float b, float a) => Native.Boom_API_SetParticleStartColor(entity, r, g, b, a);
+
+        /// <summary>Set the end color of particles (RGBA 0-1)</summary>
+        public static void SetParticleEndColor(ulong entity, float r, float g, float b, float a) => Native.Boom_API_SetParticleEndColor(entity, r, g, b, a);
+
+        /// <summary>Set gravity multiplier for particles (-9.81 = normal gravity)</summary>
+        public static void SetParticleGravity(ulong entity, float gravity) => Native.Boom_API_SetParticleGravity(entity, gravity);
+
+        /// <summary>Set min/max initial speed of particles</summary>
+        public static void SetParticleSpeed(ulong entity, float speedMin, float speedMax) => Native.Boom_API_SetParticleSpeed(entity, speedMin, speedMax);
+
+        /// <summary>Set particle size over lifetime (startMin, startMax, endSize)</summary>
+        public static void SetParticleSize(ulong entity, float startMin, float startMax, float endSize) => Native.Boom_API_SetParticleSize(entity, startMin, startMax, endSize);
+
 
         // ===== GLFW key codes =====
         public const int KEY_A = 65;
@@ -1526,6 +1673,7 @@ namespace Boom
         public const int KEY_F6 = 295;
         public const int KEY_F7 = 296;
         public const int KEY_F8 = 297;
+        public const int KEY_LEFT_BRACKET = 91;
         public const int KEY_RIGHT_BRACKET = 93;
 
         public const int MOUSE_LEFT = 0;

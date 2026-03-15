@@ -1,5 +1,5 @@
-﻿using Boom;
 using System;
+using Boom;
 
 namespace GameScripts
 {
@@ -23,11 +23,12 @@ namespace GameScripts
             public float updateInterval = 0.1f;
             public float alertDuration = 4f;
             public float verticalMaxDifference = 2.5f;
-            public string[] targetNames = { "Samurai", "Player" };
+            public string[] targetNames = { "Samurai", "Player", "SamuraiModel" };
             public bool requireLineOfSight = true;
             public bool debugLog = false;
             public bool debugReasons = false;
             public bool debugLOS = false;
+            public float eyeOffsetY = 1.5f;
         }
 
         public enum VisionState { Idle, Suspicious, Alert, Searching }
@@ -38,6 +39,22 @@ namespace GameScripts
         private float _lastUpdateTime;
         private float _alertTimer;
         private Vec3 _lastKnownTargetPosition;
+
+        // Optional override: when set, the vision cone uses this yaw instead of reading
+        // API.GetRotation(Entity).Y. Use this when the controller sets rotation via
+        // SetRotationY (which may not be reflected by GetRotation).
+        private bool _hasFacingOverride = false;
+        private float _facingOverrideYawDeg = 0f;
+
+        /// <summary>
+        /// Override the facing direction used for vision cone checks.
+        /// Call this every frame from controllers that use SetRotationY.
+        /// </summary>
+        public void SetFacingYaw(float yawDegrees)
+        {
+            _hasFacingOverride = true;
+            _facingOverrideYawDeg = yawDegrees;
+        }
 
         public void OnStart(string jsonParams)
         {
@@ -52,6 +69,14 @@ namespace GameScripts
             if (_lastUpdateTime < _settings.updateInterval) return;
             _lastUpdateTime = 0f;
             UpdateVisionState(dt);
+        }
+
+        public void Reset()
+        {
+            _currentTarget = 0;
+            _currentState = VisionState.Idle;
+            _alertTimer = 0f;
+            _lastUpdateTime = 0f;
         }
 
         private void UpdateVisionState(float dt)
@@ -108,7 +133,7 @@ namespace GameScripts
         {
             if (target == 0) return false;
 
-            // NEW: Skip player if in stealth crouch invisibility
+            // Skip player if in stealth crouch invisibility
             if (target == PlayerMovement.GetPlayerEntity() && PlayerMovement.IsPlayerInvisibleToEnemies())
                 return false;
 
@@ -137,7 +162,8 @@ namespace GameScripts
             float tx = dx / dist;
             float tz = dz / dist;
 
-            float yawRad = enemyRot.Y * (float)Math.PI / 180f;
+            float facingYawDeg = _hasFacingOverride ? _facingOverrideYawDeg : enemyRot.Y;
+            float yawRad = facingYawDeg * (float)Math.PI / 180f;
             float fx = (float)Math.Sin(yawRad);
             float fz = (float)Math.Cos(yawRad);
 
@@ -161,7 +187,7 @@ namespace GameScripts
 
             try
             {
-                Vec3 fromEye = new Vec3(from.X, from.Y + 1.5f, from.Z);
+                Vec3 fromEye = new Vec3(from.X, from.Y + _settings.eyeOffsetY, from.Z);
                 Vec3 toEye = new Vec3(to.X, to.Y + 1.5f, to.Z);
 
                 // First check: ignore self and target (most common case)
@@ -234,6 +260,8 @@ namespace GameScripts
         public void SetVerticalTolerance(float v) => _settings.verticalMaxDifference = v;
         public void SetAlertDuration(float d) => _settings.alertDuration = d;
         public void SetRequireLineOfSight(bool v) => _settings.requireLineOfSight = v;
+        public void SetEyeOffsetY(float y) => _settings.eyeOffsetY = y;
+        public void SetTargetNames(string[] names) => _settings.targetNames = names;
         public void EnableDebugReasons(bool v) => _settings.debugReasons = v;
         public void EnableDebugLOS(bool v) => _settings.debugLOS = v;
 

@@ -26,6 +26,7 @@ namespace Boom {
 
         bool LoadScriptsDll(const std::string& dllPath);
         bool CallStart();               // calls GameScripts.Entry:Start()
+        bool CallSessionStart();        // calls GameScripts.Entry:OnSessionStart()
         bool CallUpdate(float dt);      // calls GameScripts.Entry:Update(float)
 
         // ---- Runtime instance metadata for a single C# object ----

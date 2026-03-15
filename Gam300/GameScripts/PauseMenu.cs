@@ -23,6 +23,8 @@ namespace GameScripts
         private ulong _mainMenuButtonID;
         private ulong _quitButtonID;
 
+        private ButtonFX _buttonFX;
+
         private VolumeSlider _masterSlider;
         private VolumeSlider _bgmSlider;
         private VolumeSlider _sfxSlider;
@@ -68,6 +70,8 @@ namespace GameScripts
             _mainMenuButtonID = API.FindEntity("Pause_ReturnButton");
             _quitButtonID = API.FindEntity("Pause_QuitButton");
 
+            _buttonFX = new ButtonFX(_resumeButtonID, _restartButtonID, _mainMenuButtonID, _quitButtonID);
+
             _masterSlider = new VolumeSlider("Pause_Master_BG", "Pause_Master_Fill", "Pause_Master_Handle", "Master");
             _bgmSlider = new VolumeSlider("Pause_BGM_BG", "Pause_BGM_Fill", "Pause_BGM_Handle", "Music");
             _sfxSlider = new VolumeSlider("Pause_SFX_BG", "Pause_SFX_Fill", "Pause_SFX_Handle", "SFX");
@@ -92,6 +96,9 @@ namespace GameScripts
 
             if (!Entry.IsGamePaused) return;
             if (Entry.s_RequestedPauseAction != Entry.PauseMenuAction.None) return;
+
+            // Always update hover effects
+            _buttonFX?.Update(dt);
 
             bool isAnyDragging = false;
 
@@ -274,6 +281,7 @@ namespace GameScripts
             _currentState = PauseMenuState.WaitingForMouseUp;
             _clickedButtonID = 0;
             _buttonDelayTimer = 0.0f;
+            _buttonFX?.Reset();
 
             UpdateVisuals();
         }
@@ -339,6 +347,7 @@ namespace GameScripts
             _currentState = PauseMenuState.ButtonDelay;
             _clickedButtonID = buttonID;
             _buttonDelayTimer = 0.0f;
+            ButtonFX.PlayClickSound();
 
             if (buttonID == _resumeButtonID)
                 API.SetSpriteTexture(buttonID, RESUME_TEX_CLICKED);

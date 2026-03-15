@@ -2,6 +2,7 @@
 #include "Graphics/Text/FontManager.h"
 #include "GlobalConstants.h"
 #include <algorithm>
+#include <sstream>
 
 namespace Boom {
 
@@ -150,19 +151,19 @@ namespace Boom {
     }
 
     void FontManager::RenderText(const std::string& fontName, const std::string& text, float x, float y, float scale, glm::vec3 color, float textAlpha) {
+        // Legacy call - default to Left alignment (0)
+        RenderTextAligned(fontName, text, x, y, scale, color, 0, textAlpha);
+    }
+
+    void FontManager::RenderTextAligned(const std::string& fontName, const std::string& text, float x, float y, float scale, glm::vec3 color, int alignment, float textAlpha) {
         auto it = m_Fonts.find(fontName);
-        if (it == m_Fonts.end()) {
-            // BOOM_ERROR("Font '{}' not loaded.", fontName); 
-            // Commented out to avoid spamming if font is missing
-            return;
-        }
+        if (it == m_Fonts.end()) return;
         const Font& font = it->second;
 
         if(!m_TextShader) return;
         m_TextShader->Use();
 
         // set uniforms
-        // Note: Boom::Shader wrappers are convenient
         int32_t locColor = m_TextShader->GetUniformVar("textColor");
         m_TextShader->SetUniform(locColor, color);
         
@@ -170,7 +171,7 @@ namespace Boom {
         m_TextShader->SetUniform(locAlpha, textAlpha);
         
         int32_t locTex = m_TextShader->GetUniformVar("text");
-        m_TextShader->SetUniform(locTex, 0); // Unit 0
+        m_TextShader->SetUniform(locTex, 0);
 
         glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(CONSTANTS::WINDOW_WIDTH), 0.0f, static_cast<float>(CONSTANTS::WINDOW_HEIGHT));
         int32_t locProj = m_TextShader->GetUniformVar("projection");
@@ -186,68 +187,108 @@ namespace Boom {
         glDisable(GL_CULL_FACE);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glDisable(GL_SCISSOR_TEST); // Vital: ImGui leaves scissor enabled, which clips custom rendering!
+        glDisable(GL_SCISSOR_TEST);
 
         glActiveTexture(GL_TEXTURE0);
         glBindVertexArray(m_VAO);
 
-        float startX = x;
+        // Split text into lines for per-line alignment
+        std::vector<std::string> lines;
+        std::string currentLine;
+        std::stringstream ss(text);
+        while (std::getline(ss, currentLine, '\n')) {
+            lines.push_back(currentLine);
+        }
+        if (!text.empty() && text.back() == '\n') lines.push_back("");
 
-        for (const char& c : text) {
-            if (c == '\n') {
-                x = startX;
-                y -= font.fontHeight * scale;
-                continue;
+        float currentY = y;
+        for (const auto& line : lines) {
+            float lineX = x;
+            if (alignment != 0) { // Not Left
+                float lineWidth = 0.0f;
+                for (char c : line) {
+                    if (c >= 0 && c < 127) lineWidth += font.glyphs[c].advance.x * scale;
+                }
+                if (alignment == 1) // Center
+                    lineX -= lineWidth * 0.5f;
+                else if (alignment == 2) // Right
+                    lineX -= lineWidth;
             }
-            
-            // Check bound
-            if (c < 0 || c >= 127) continue;
 
-            const Glyph& glyph = font.glyphs[c];
+            float drawX = lineX;
+            for (const char& c : line) {
+                if (c < 0 || c >= 127) continue;
 
-            float xpos = x + glyph.offset.x * scale;
-            float ypos = y - (glyph.size.y - glyph.offset.y) * scale;
+                const Glyph& glyph = font.glyphs[c];
+                float xpos = drawX + glyph.offset.x * scale;
+                float ypos = currentY - (glyph.size.y - glyph.offset.y) * scale;
+                float w = glyph.size.x * scale;
+                float h = glyph.size.y * scale;
 
-            float w = glyph.size.x * scale;
-            float h = glyph.size.y * scale;
+                float vertices[6][4] = {
+                     { xpos,     ypos + h,   glyph.textureCoords.x,  glyph.textureCoords.z},
+                     { xpos,     ypos,       glyph.textureCoords.x,  glyph.textureCoords.w },
+                     { xpos + w, ypos,       glyph.textureCoords.y,  glyph.textureCoords.w },
+                     { xpos,     ypos + h,   glyph.textureCoords.x,  glyph.textureCoords.z },
+                     { xpos + w, ypos,       glyph.textureCoords.y,  glyph.textureCoords.w },
+                     { xpos + w, ypos + h,   glyph.textureCoords.y,  glyph.textureCoords.z }
+                };
 
-            // Updated VBO for each character
-            float vertices[6][4] = {
-                 { xpos,     ypos + h,   glyph.textureCoords.x,  glyph.textureCoords.z},
-                 { xpos,     ypos,       glyph.textureCoords.x,  glyph.textureCoords.w },
-                 { xpos + w, ypos,       glyph.textureCoords.y,  glyph.textureCoords.w },
+                glBindTexture(GL_TEXTURE_2D, font.textureID);
+                glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+                glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);   
+                glDrawArrays(GL_TRIANGLES, 0, 6);
 
-                 { xpos,     ypos + h,   glyph.textureCoords.x,  glyph.textureCoords.z },
-                 { xpos + w, ypos,       glyph.textureCoords.y,  glyph.textureCoords.w },
-                 { xpos + w, ypos + h,   glyph.textureCoords.y,  glyph.textureCoords.z }
-            };
-
-            glBindTexture(GL_TEXTURE_2D, font.textureID);
-            glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);   
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-
-            x += (glyph.advance.x) * scale;
+                drawX += glyph.advance.x * scale;
+            }
+            currentY -= font.fontHeight * scale;
         }
 
         // --- RESTORE STATES ---
         if (wasDepthTestEnabled) glEnable(GL_DEPTH_TEST);
-        else glDisable(GL_DEPTH_TEST);
-
         if (wasCullFaceEnabled) glEnable(GL_CULL_FACE);
-        else glDisable(GL_CULL_FACE);
-
         if (wasBlendEnabled) glEnable(GL_BLEND);
-        else glDisable(GL_BLEND);
-
         if (wasScissorTestEnabled) glEnable(GL_SCISSOR_TEST);
-        else glDisable(GL_SCISSOR_TEST);
 
         glBindVertexArray(0);
         glBindTexture(GL_TEXTURE_2D, 0);
         m_TextShader->UnUse();
+    }
+
+    float FontManager::GetTextWidth(const std::string& fontName, const std::string& text, float scale) {
+        auto it = m_Fonts.find(fontName);
+        if (it == m_Fonts.end()) return 0.0f;
+        const Font& font = it->second;
+
+        float width = 0.0f;
+        float currentLineWidth = 0.0f;
+
+        for (const char& c : text) {
+            if (c == '\n') {
+                width = std::max(width, currentLineWidth);
+                currentLineWidth = 0.0f;
+                continue;
+            }
+            if (c < 0 || c >= 127) continue;
+            currentLineWidth += font.glyphs[c].advance.x * scale;
+        }
+
+        return std::max(width, currentLineWidth);
+    }
+
+    float FontManager::GetTextHeight(const std::string& fontName, const std::string& text, float scale) {
+        auto it = m_Fonts.find(fontName);
+        if (it == m_Fonts.end()) return 0.0f;
+        const Font& font = it->second;
+
+        if (text.empty()) return 0.0f;
+
+        int lineCount = 1;
+        for (char c : text) {
+            if (c == '\n') lineCount++;
+        }
+
+        return lineCount * font.fontHeight * scale;
     }
 
     void FontManager::Cleanup() {

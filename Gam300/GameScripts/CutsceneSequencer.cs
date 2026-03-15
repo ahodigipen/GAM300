@@ -1,4 +1,4 @@
-﻿using Boom;
+using Boom;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,6 +23,41 @@ namespace GameScripts
             {
                 API.Log($"[Cutscene] Could not find cutscene script on '{entityName}'");
             }
+        }
+
+        // Play a named cutscene and fire a callback when it finishes or is skipped.
+        public static void PlayWithCallback(string entityName, Action onComplete)
+        {
+            ulong id = API.FindEntity(entityName);
+            if (id != 0 && InstancesById.ContainsKey(id))
+            {
+                var seq = InstancesById[id];
+                seq._onCompleteCallback = onComplete;
+                seq.Play();
+            }
+            else
+            {
+                API.Log($"[Cutscene] Could not find cutscene script on '{entityName}' — firing callback immediately.");
+                onComplete?.Invoke();
+            }
+        }
+
+        // Returns true if any sequencer started via PlayWithCallback is currently playing.
+        // Used by Entry to keep game paused during a callback-triggered cutscene.
+        public static bool IsCallbackCutsceenPlaying()
+        {
+            foreach (var kv in InstancesById)
+                if (kv.Value._isPlaying && kv.Value._onCompleteCallback != null) return true;
+            return false;
+        }
+
+        // Called from Entry.Update so callback-triggered cutscenes tick even while game logic is paused.
+        // Normal cutscenes (Level 2 etc.) tick via their own OnUpdate — this does NOT touch them.
+        public static void UpdateIfActive(float dt)
+        {
+            foreach (var kv in InstancesById)
+                if (kv.Value._isPlaying && kv.Value._onCompleteCallback != null)
+                    kv.Value.OnUpdate(dt);
         }
 
         // Properties (Exposed to Editor)
@@ -50,12 +85,20 @@ namespace GameScripts
         [Boom.EditorExposed("Start Delay", "Seconds to wait before starting", 0.0f, 60.0f, true)]
         public float StartDelay = 0.0f;
 
+        [Boom.EditorExposed("Play On Trigger", "Whether the cutscene plays when an entity enters the collider trigger")]
+        public bool PlayOnTrigger = false;
+
+        [Boom.EditorExposed("Trigger Once", "If true, the cutscene can only be triggered once")]
+        public bool TriggerOnce = true;
+
         private float _currentTime = 0f;
         private bool _isPlaying = false;
         private bool _pendingPlay = false;
         private float _delayTimer = 0f;
         private float _logTimer = 0f;
         private int _duration = 600;
+        private Action _onCompleteCallback = null;
+        private bool _hasTriggered = false;
 
         public class KeyFrame
         {
@@ -117,13 +160,22 @@ namespace GameScripts
 
             API.Log($"[CutsceneDebug] OnStart Called. Raw Params: '{jsonParams}'");
 
-            // Parse JSON Params - No longer needed, EditorExposed handles this.
-            // The manual JSON parsing block has been removed as EditorExposed fields now handle these properties.
-
             API.Log($"[Cutscene] Initializing... File: '{CutsceneFile}', BlockInput: {BlockInput}, Delay: {StartDelay}");
             LoadCutscene(CutsceneFile);
 
-            if (PlayOnStart)
+            if (PlayOnTrigger)
+            {
+                if (API.HasCollider(Entity))
+                {
+                    API.RegisterTriggerEnterCallback(Entity, OnTriggerEnterCallback);
+                    API.Log($"[CutsceneSequencer] Registered trigger callback on entity {Entity}.");
+                }
+                else
+                {
+                    API.Log($"[CutsceneSequencer] WARNING: Play On Trigger is enabled but entity {Entity} has no collider!");
+                }
+            }
+            else if (PlayOnStart)
             {
                 if (StartDelay > 0f)
                 {
@@ -136,6 +188,21 @@ namespace GameScripts
                     Play();
                 }
             }
+        }
+
+        private void OnTriggerEnterCallback(ulong triggerEntity, ulong otherEntity)
+        {
+            if (TriggerOnce && _hasTriggered) return;
+            if (_isPlaying) return;
+
+            // Only trigger for the player
+            ulong playerID = API.FindEntity("Player");
+            if (playerID == 0) playerID = PlayerMovement.GetPlayerEntity();
+            if (otherEntity != playerID) return;
+
+            API.Log($"[CutsceneSequencer] Trigger entered by player. Playing cutscene.");
+            _hasTriggered = true;
+            Play();
         }
 
         private void RegisterInstance()
@@ -166,6 +233,9 @@ namespace GameScripts
             // NEW: Disable Engine ThirdPersonCamera logic
             API.SetCutsceneMode(true);
 
+            // Trigger letterbox animation
+            UIManager.ShowLetterbox();
+
             // Recalculate duration in case tracks were added programmatically
             RecalculateDuration();
 
@@ -193,6 +263,7 @@ namespace GameScripts
             API.Log("[CutsceneSequencer] Skip triggered.");
             _currentTime = _duration;
             ApplyTracks(_duration); // Force final state
+            UIManager.HideLetterbox();
             Stop();
         }
 
@@ -203,10 +274,11 @@ namespace GameScripts
 
             PlayerMovement.CutsceneMode = false;
 
-            // NEW: Re-enable Engine ThirdPersonCamera logic
+            // Re-enable Engine ThirdPersonCamera logic
             API.SetCutsceneMode(false);
 
-            // Re-enable state machines for all affected entities
+            // Stop letterbox animation
+            UIManager.HideLetterbox();
 
             // Re-enable state machines for all affected entities
             foreach (var t in _tracks)
@@ -215,13 +287,16 @@ namespace GameScripts
                 {
                     if (API.HasAnimator(t.cachedEntityID))
                     {
-                        // Force reset to empty or Idle before re-enabling SM
-                        // otherwise the old clip might keep looping
                         API.AnimatorPlay(t.cachedEntityID, "");
                         API.AnimatorSetStateMachineEnabled(t.cachedEntityID, true);
                     }
                 }
             }
+
+            // Fire and clear completion callback
+            Action cb = _onCompleteCallback;
+            _onCompleteCallback = null;
+            cb?.Invoke();
         }
 
         public void OnUpdate(float dt)

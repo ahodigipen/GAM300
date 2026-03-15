@@ -204,14 +204,14 @@ void AnimationTimelinePanel::RenderViewport()
 
         // Draw text
         drawList->AddText(ImVec2(textPos.x, textPos.y),
-                         IM_COL32(200, 200, 200, 255),
-                         "No model loaded");
+            IM_COL32(200, 200, 200, 255),
+            "No model loaded");
         drawList->AddText(ImVec2(textPos.x, textPos.y + 25),
-                         IM_COL32(150, 150, 150, 255),
-                         "Click 'Load Model' to select a model");
+            IM_COL32(150, 150, 150, 255),
+            "Click 'Load Model' to select a model");
         drawList->AddText(ImVec2(textPos.x, textPos.y + 50),
-                         IM_COL32(150, 150, 150, 255),
-                         "OR select an entity with AnimatorComponent");
+            IM_COL32(150, 150, 150, 255),
+            "OR select an entity with AnimatorComponent");
     }
 
     // Handle camera controls AFTER image is rendered
@@ -477,21 +477,21 @@ void AnimationTimelinePanel::HandleBonePicking()
 
         std::function<void(const Boom::Joint&, const glm::vec3&)> buildBoneLinesFunc;
         buildBoneLinesFunc = [&](const Boom::Joint& joint, const glm::vec3& parentPos)
-        {
-            glm::mat4 worldTransform = GetBoneWorldTransform(joint.name);
-            glm::vec3 bonePos = glm::vec3(worldTransform[3]);
-
-            Boom::Animator::BoneLine boneLine;  // Correct type
-            boneLine.start = parentPos;
-            boneLine.end = bonePos;
-            boneLine.boneName = joint.name;
-            boneLines.push_back(boneLine);
-
-            for (const auto& child : joint.children)
             {
-                buildBoneLinesFunc(child, bonePos);
-            }
-        };
+                glm::mat4 worldTransform = GetBoneWorldTransform(joint.name);
+                glm::vec3 bonePos = glm::vec3(worldTransform[3]);
+
+                Boom::Animator::BoneLine boneLine;  // Correct type
+                boneLine.start = parentPos;
+                boneLine.end = bonePos;
+                boneLine.boneName = joint.name;
+                boneLines.push_back(boneLine);
+
+                for (const auto& child : joint.children)
+                {
+                    buildBoneLinesFunc(child, bonePos);
+                }
+            };
 
         glm::mat4 rootTransform = GetBoneWorldTransform(root.name);
         glm::vec3 rootPos = glm::vec3(rootTransform[3]);
@@ -610,97 +610,97 @@ glm::mat4 AnimationTimelinePanel::GetBoneWorldTransform(const std::string& boneN
     // Helper lambda to recursively find bone and compute world transform
     std::function<bool(const Boom::Joint&, const glm::mat4&, glm::mat4&)> findBone;
     findBone = [&](const Boom::Joint& joint, const glm::mat4& parentWorld, glm::mat4& outWorld) -> bool
-    {
-        // Compute local transform for this bone
-        glm::mat4 localTransform = glm::mat4(1.0f);
+        {
+            // Compute local transform for this bone
+            glm::mat4 localTransform = glm::mat4(1.0f);
 
-        // Check if we have manual override for this bone
-        auto it = m_ManualBonePoses.find(joint.name);
-        if (it != m_ManualBonePoses.end())
-        {
-            // Use manual pose
-            const BonePose& pose = it->second;
-            localTransform = glm::translate(glm::mat4(1.0f), pose.position);
-            localTransform *= glm::mat4_cast(pose.rotation);
-            localTransform = glm::scale(localTransform, pose.scale);
-        }
-        else
-        {
-            // Get transform from animation
-            if (m_SelectedClipIndex >= 0 && m_SelectedClipIndex < (int)m_Animator->GetClipCount())
+            // Check if we have manual override for this bone
+            auto it = m_ManualBonePoses.find(joint.name);
+            if (it != m_ManualBonePoses.end())
             {
-                const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
-                const auto* keys = clip->GetTrack(joint.name);
-
-                if (keys && keys->size() >= 2)
+                // Use manual pose
+                const BonePose& pose = it->second;
+                localTransform = glm::translate(glm::mat4(1.0f), pose.position);
+                localTransform *= glm::mat4_cast(pose.rotation);
+                localTransform = glm::scale(localTransform, pose.scale);
+            }
+            else
+            {
+                // Get transform from animation
+                if (m_SelectedClipIndex >= 0 && m_SelectedClipIndex < (int)m_Animator->GetClipCount())
                 {
-                    // Find previous and next keyframes manually (GetPreviousAndNextFrames is private)
-                    Boom::KeyFrame prev = (*keys)[0];
-                    Boom::KeyFrame next = (*keys)[keys->size() - 1];
+                    const auto* clip = m_Animator->GetClip(m_SelectedClipIndex);
+                    const auto* keys = clip->GetTrack(joint.name);
 
-                    for (size_t i = 0; i < keys->size() - 1; ++i)
+                    if (keys && keys->size() >= 2)
                     {
-                        if ((*keys)[i].timeStamp <= m_CurrentTime && (*keys)[i + 1].timeStamp >= m_CurrentTime)
+                        // Find previous and next keyframes manually (GetPreviousAndNextFrames is private)
+                        Boom::KeyFrame prev = (*keys)[0];
+                        Boom::KeyFrame next = (*keys)[keys->size() - 1];
+
+                        for (size_t i = 0; i < keys->size() - 1; ++i)
                         {
-                            prev = (*keys)[i];
-                            next = (*keys)[i + 1];
-                            break;
+                            if ((*keys)[i].timeStamp <= m_CurrentTime && (*keys)[i + 1].timeStamp >= m_CurrentTime)
+                            {
+                                prev = (*keys)[i];
+                                next = (*keys)[i + 1];
+                                break;
+                            }
                         }
-                    }
 
-                    float progression = 0.0f;
-                    float dt = next.timeStamp - prev.timeStamp;
-                    if (dt > 0.0f)
+                        float progression = 0.0f;
+                        float dt = next.timeStamp - prev.timeStamp;
+                        if (dt > 0.0f)
+                        {
+                            progression = (m_CurrentTime - prev.timeStamp) / dt;
+                        }
+
+                        // Interpolate between keyframes
+                        glm::vec3 pos = glm::mix(prev.position, next.position, progression);
+                        glm::quat rot = glm::slerp(prev.rotation, next.rotation, progression);
+                        glm::vec3 scl = glm::mix(prev.scale, next.scale, progression);
+
+                        localTransform = glm::translate(glm::mat4(1.0f), pos);
+                        localTransform *= glm::mat4_cast(rot);
+                        localTransform = glm::scale(localTransform, scl);
+                    }
+                    else if (keys && keys->size() == 1)
                     {
-                        progression = (m_CurrentTime - prev.timeStamp) / dt;
+                        // Single keyframe - use it as static pose
+                        const Boom::KeyFrame& key = (*keys)[0];
+                        localTransform = glm::translate(glm::mat4(1.0f), key.position);
+                        localTransform *= glm::mat4_cast(key.rotation);
+                        localTransform = glm::scale(localTransform, key.scale);
                     }
-
-                    // Interpolate between keyframes
-                    glm::vec3 pos = glm::mix(prev.position, next.position, progression);
-                    glm::quat rot = glm::slerp(prev.rotation, next.rotation, progression);
-                    glm::vec3 scl = glm::mix(prev.scale, next.scale, progression);
-
-                    localTransform = glm::translate(glm::mat4(1.0f), pos);
-                    localTransform *= glm::mat4_cast(rot);
-                    localTransform = glm::scale(localTransform, scl);
-                }
-                else if (keys && keys->size() == 1)
-                {
-                    // Single keyframe - use it as static pose
-                    const Boom::KeyFrame& key = (*keys)[0];
-                    localTransform = glm::translate(glm::mat4(1.0f), key.position);
-                    localTransform *= glm::mat4_cast(key.rotation);
-                    localTransform = glm::scale(localTransform, key.scale);
-                }
-                else if (joint.hasBindPose)
-                {
-                    // No keyframes - use bind pose (T-pose/rest pose)
-                    localTransform = glm::translate(glm::mat4(1.0f), joint.bindPosition);
-                    localTransform *= glm::mat4_cast(joint.bindRotation);
-                    localTransform = glm::scale(localTransform, joint.bindScale);
+                    else if (joint.hasBindPose)
+                    {
+                        // No keyframes - use bind pose (T-pose/rest pose)
+                        localTransform = glm::translate(glm::mat4(1.0f), joint.bindPosition);
+                        localTransform *= glm::mat4_cast(joint.bindRotation);
+                        localTransform = glm::scale(localTransform, joint.bindScale);
+                    }
                 }
             }
-        }
 
-        // Compute world transform
-        glm::mat4 worldTransform = parentWorld * localTransform;
+            // Compute world transform
+            glm::mat4 worldTransform = parentWorld * localTransform;
 
-        // Is this the bone we're looking for?
-        if (joint.name == boneName)
-        {
-            outWorld = worldTransform;
-            return true;
-        }
-
-        // Search children
-        for (const auto& child : joint.children)
-        {
-            if (findBone(child, worldTransform, outWorld))
+            // Is this the bone we're looking for?
+            if (joint.name == boneName)
+            {
+                outWorld = worldTransform;
                 return true;
-        }
+            }
 
-        return false;
-    };
+            // Search children
+            for (const auto& child : joint.children)
+            {
+                if (findBone(child, worldTransform, outWorld))
+                    return true;
+            }
+
+            return false;
+        };
 
     glm::mat4 result;
     const Boom::Joint& root = m_Animator->GetRoot();
@@ -721,22 +721,22 @@ std::string AnimationTimelinePanel::GetParentBoneName(const std::string& boneNam
     // Lambda to search for parent
     std::function<bool(const Boom::Joint&, std::string&)> findParent;
     findParent = [&](const Boom::Joint& joint, std::string& parentName) -> bool
-    {
-        // Check if any direct child matches our bone
-        for (const auto& child : joint.children)
         {
-            if (child.name == boneName)
+            // Check if any direct child matches our bone
+            for (const auto& child : joint.children)
             {
-                parentName = joint.name;
-                return true;
-            }
+                if (child.name == boneName)
+                {
+                    parentName = joint.name;
+                    return true;
+                }
 
-            // Recurse into children
-            if (findParent(child, parentName))
-                return true;
-        }
-        return false;
-    };
+                // Recurse into children
+                if (findParent(child, parentName))
+                    return true;
+            }
+            return false;
+        };
 
     std::string parent;
     if (findParent(root, parent))
@@ -800,7 +800,7 @@ Boom::KeyFrame AnimationTimelinePanel::CaptureCurrentBoneTransform(const std::st
     kf.scale = scale;
 
     BOOM_INFO("[Keyframe Capture] Captured animated pose for bone '{}' - pos:({:.2f}, {:.2f}, {:.2f})",
-              boneName.c_str(), translation.x, translation.y, translation.z);
+        boneName.c_str(), translation.x, translation.y, translation.z);
 
     return kf;
 }
@@ -835,102 +835,102 @@ void AnimationTimelinePanel::ApplyManualBonePosesToTransforms(std::vector<glm::m
 
     const Boom::Joint& root = m_Animator->GetRoot();
     const auto* clip = (m_SelectedClipIndex >= 0 && m_SelectedClipIndex < (int)m_Animator->GetClipCount())
-                       ? m_Animator->GetClip(m_SelectedClipIndex)
-                       : nullptr;
+        ? m_Animator->GetClip(m_SelectedClipIndex)
+        : nullptr;
 
     // Recursively rebuild all transforms using manual poses where applicable
     std::function<void(const Boom::Joint&, const glm::mat4&, bool)> rebuild;
     rebuild = [&](const Boom::Joint& joint, const glm::mat4& parentWorld, bool parentHadManualPose)
-    {
-        glm::mat4 localTransform = glm::mat4(1.0f);
-        bool hasManualPose = false;
+        {
+            glm::mat4 localTransform = glm::mat4(1.0f);
+            bool hasManualPose = false;
 
-        // Check if this bone has a manual pose override
-        auto it = m_ManualBonePoses.find(joint.name);
-        if (it != m_ManualBonePoses.end())
-        {
-            // Use manual local transform (from gizmo manipulation)
-            const BonePose& pose = it->second;
-            localTransform = glm::translate(glm::mat4(1.0f), pose.position);
-            localTransform *= glm::mat4_cast(pose.rotation);
-            localTransform = glm::scale(localTransform, pose.scale);
-            hasManualPose = true;
-        }
-        else
-        {
-            // Get transform from animation at current time
-            if (clip)
+            // Check if this bone has a manual pose override
+            auto it = m_ManualBonePoses.find(joint.name);
+            if (it != m_ManualBonePoses.end())
             {
-                const auto* keys = clip->GetTrack(joint.name);
-                if (keys && keys->size() >= 2)
+                // Use manual local transform (from gizmo manipulation)
+                const BonePose& pose = it->second;
+                localTransform = glm::translate(glm::mat4(1.0f), pose.position);
+                localTransform *= glm::mat4_cast(pose.rotation);
+                localTransform = glm::scale(localTransform, pose.scale);
+                hasManualPose = true;
+            }
+            else
+            {
+                // Get transform from animation at current time
+                if (clip)
                 {
-                    // Find keyframes for interpolation
-                    Boom::KeyFrame prev = (*keys)[0];
-                    Boom::KeyFrame next = (*keys)[keys->size() - 1];
-
-                    for (size_t i = 0; i < keys->size() - 1; ++i)
+                    const auto* keys = clip->GetTrack(joint.name);
+                    if (keys && keys->size() >= 2)
                     {
-                        if ((*keys)[i].timeStamp <= m_CurrentTime && (*keys)[i + 1].timeStamp >= m_CurrentTime)
+                        // Find keyframes for interpolation
+                        Boom::KeyFrame prev = (*keys)[0];
+                        Boom::KeyFrame next = (*keys)[keys->size() - 1];
+
+                        for (size_t i = 0; i < keys->size() - 1; ++i)
                         {
-                            prev = (*keys)[i];
-                            next = (*keys)[i + 1];
-                            break;
+                            if ((*keys)[i].timeStamp <= m_CurrentTime && (*keys)[i + 1].timeStamp >= m_CurrentTime)
+                            {
+                                prev = (*keys)[i];
+                                next = (*keys)[i + 1];
+                                break;
+                            }
                         }
-                    }
 
-                    float progression = 0.0f;
-                    float dt = next.timeStamp - prev.timeStamp;
-                    if (dt > 0.0f)
+                        float progression = 0.0f;
+                        float dt = next.timeStamp - prev.timeStamp;
+                        if (dt > 0.0f)
+                        {
+                            progression = (m_CurrentTime - prev.timeStamp) / dt;
+                        }
+
+                        // Interpolate
+                        glm::vec3 pos = glm::mix(prev.position, next.position, progression);
+                        glm::quat rot = glm::slerp(prev.rotation, next.rotation, progression);
+                        glm::vec3 scl = glm::mix(prev.scale, next.scale, progression);
+
+                        localTransform = glm::translate(glm::mat4(1.0f), pos);
+                        localTransform *= glm::mat4_cast(rot);
+                        localTransform = glm::scale(localTransform, scl);
+                    }
+                    else if (keys && keys->size() == 1)
                     {
-                        progression = (m_CurrentTime - prev.timeStamp) / dt;
+                        // Single keyframe - use it as static pose
+                        const Boom::KeyFrame& key = (*keys)[0];
+                        localTransform = glm::translate(glm::mat4(1.0f), key.position);
+                        localTransform *= glm::mat4_cast(key.rotation);
+                        localTransform = glm::scale(localTransform, key.scale);
                     }
-
-                    // Interpolate
-                    glm::vec3 pos = glm::mix(prev.position, next.position, progression);
-                    glm::quat rot = glm::slerp(prev.rotation, next.rotation, progression);
-                    glm::vec3 scl = glm::mix(prev.scale, next.scale, progression);
-
-                    localTransform = glm::translate(glm::mat4(1.0f), pos);
-                    localTransform *= glm::mat4_cast(rot);
-                    localTransform = glm::scale(localTransform, scl);
-                }
-                else if (keys && keys->size() == 1)
-                {
-                    // Single keyframe - use it as static pose
-                    const Boom::KeyFrame& key = (*keys)[0];
-                    localTransform = glm::translate(glm::mat4(1.0f), key.position);
-                    localTransform *= glm::mat4_cast(key.rotation);
-                    localTransform = glm::scale(localTransform, key.scale);
+                    else if (joint.hasBindPose)
+                    {
+                        // No keyframes - use bind pose (T-pose/rest pose)
+                        localTransform = glm::translate(glm::mat4(1.0f), joint.bindPosition);
+                        localTransform *= glm::mat4_cast(joint.bindRotation);
+                        localTransform = glm::scale(localTransform, joint.bindScale);
+                    }
                 }
                 else if (joint.hasBindPose)
                 {
-                    // No keyframes - use bind pose (T-pose/rest pose)
+                    // No clip selected - use bind pose
                     localTransform = glm::translate(glm::mat4(1.0f), joint.bindPosition);
                     localTransform *= glm::mat4_cast(joint.bindRotation);
                     localTransform = glm::scale(localTransform, joint.bindScale);
                 }
             }
-            else if (joint.hasBindPose)
+
+            // Compute world transform
+            glm::mat4 worldTransform = parentWorld * localTransform;
+
+            // Update skinning transform for GPU: skinning = world * offset
+            transforms[joint.index] = worldTransform * joint.offset;
+
+            // Recurse to children
+            for (const auto& child : joint.children)
             {
-                // No clip selected - use bind pose
-                localTransform = glm::translate(glm::mat4(1.0f), joint.bindPosition);
-                localTransform *= glm::mat4_cast(joint.bindRotation);
-                localTransform = glm::scale(localTransform, joint.bindScale);
+                rebuild(child, worldTransform, hasManualPose || parentHadManualPose);
             }
-        }
-
-        // Compute world transform
-        glm::mat4 worldTransform = parentWorld * localTransform;
-
-        // Update skinning transform for GPU: skinning = world * offset
-        transforms[joint.index] = worldTransform * joint.offset;
-
-        // Recurse to children
-        for (const auto& child : joint.children)
-        {
-            rebuild(child, worldTransform, hasManualPose || parentHadManualPose);
-        }
-    };
+        };
 
     rebuild(root, glm::mat4(1.0f), false);  // false = root has no parent with manual pose
 }
@@ -1222,11 +1222,29 @@ void AnimationTimelinePanel::RenderModel()
     modelTransform.rotate = finalRotate;
     modelTransform.scale = finalScale;
 
-    // Default material
+    // Use actual material if available, else fallback to default gray
     Boom::PbrMaterial material{};
-    material.albedo = glm::vec3(0.7f, 0.7f, 0.7f);
-    material.roughness = 0.5f;
-    material.metallic = 0.0f;
+    if (m_MaterialID != 0 && m_Ctx && m_Ctx->assets)
+    {
+        Boom::MaterialAsset* matAsset = m_Ctx->assets->TryGet<Boom::MaterialAsset>(m_MaterialID);
+        if (matAsset)
+        {
+            m_Ctx->assets->ResolveMaterialTextures(matAsset);
+            material = matAsset->data;
+        }
+        else
+        {
+            material.albedo = glm::vec3(0.7f, 0.7f, 0.7f);
+            material.roughness = 0.5f;
+            material.metallic = 0.0f;
+        }
+    }
+    else
+    {
+        material.albedo = glm::vec3(0.7f, 0.7f, 0.7f);
+        material.roughness = 0.5f;
+        material.metallic = 0.0f;
+    }
 
     // Draw model
     m_Ctx->renderer->Draw(m_Model, modelTransform, material);
@@ -1258,24 +1276,24 @@ void AnimationTimelinePanel::RenderSkeleton()
         // Lambda to recursively build bone lines with manual pose overrides
         std::function<void(const Boom::Joint&, const glm::vec3&)> buildBoneLinesFunc;
         buildBoneLinesFunc = [&](const Boom::Joint& joint, const glm::vec3& parentPos)
-        {
-            // Get bone's world position (respects manual overrides)
-            glm::mat4 worldTransform = GetBoneWorldTransform(joint.name);
-            glm::vec3 bonePos = glm::vec3(worldTransform[3]);
-
-            // Create line from parent to this bone
-            Boom::Animator::BoneLine boneLine;  // Correct type
-            boneLine.start = parentPos;
-            boneLine.end = bonePos;
-            boneLine.boneName = joint.name;
-            boneLines.push_back(boneLine);
-
-            // Recurse to children
-            for (const auto& child : joint.children)
             {
-                buildBoneLinesFunc(child, bonePos);
-            }
-        };
+                // Get bone's world position (respects manual overrides)
+                glm::mat4 worldTransform = GetBoneWorldTransform(joint.name);
+                glm::vec3 bonePos = glm::vec3(worldTransform[3]);
+
+                // Create line from parent to this bone
+                Boom::Animator::BoneLine boneLine;  // Correct type
+                boneLine.start = parentPos;
+                boneLine.end = bonePos;
+                boneLine.boneName = joint.name;
+                boneLines.push_back(boneLine);
+
+                // Recurse to children
+                for (const auto& child : joint.children)
+                {
+                    buildBoneLinesFunc(child, bonePos);
+                }
+            };
 
         // Start from root
         glm::mat4 rootTransform = GetBoneWorldTransform(root.name);
@@ -1434,7 +1452,7 @@ void AnimationTimelinePanel::LoadModel(const std::string& modelPath)
     m_StandaloneMode = true;
 
     BOOM_INFO("[AnimationTimeline] Model loaded successfully in standalone mode: {} (HasJoints: {})",
-              foundAsset->name, foundAsset->hasJoints);
+        foundAsset->name, foundAsset->hasJoints);
 
     // Get animator from skeletal model if it has skeleton (CLONE for independence)
     if (foundAsset->hasJoints && m_Model->HasJoint())

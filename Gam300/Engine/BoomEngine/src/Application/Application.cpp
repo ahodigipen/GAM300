@@ -169,6 +169,8 @@ namespace Boom
                 std::cout << "[RunContext] Calling GameScripts Entry:Start()..." << std::endl;
                 std::cout.flush();
 
+                m_Context->scriptingSystem->CallSessionStart();
+
                 if (!m_Context->scriptingSystem->CallStart()) {
                     BOOM_ERROR("[Scripting] GameScripts.Entry:Start() failed");
                 }
@@ -247,6 +249,11 @@ namespace Boom
         std::cout.flush();
 
         m_DebugLinesShader = std::make_unique<Boom::DebugLinesShader>("debug_lines.glsl");
+
+        // Initialize particle system GPU resources
+        if (m_Context->particleSystem) {
+            m_Context->particleSystem->Init();
+        }
 
         std::cout << "[RunContext] Debug lines shader created, enabling physics debug..." << std::endl;
         std::cout.flush();
@@ -349,9 +356,16 @@ namespace Boom
                 if (m_Context->videoSystem) {
                     m_Context->videoSystem->Update(m_Context->scene, m_Context->DeltaTime);
                 }
+
             }
 
             SoundEngine::Instance().Update();
+
+            // Particle System Update (only runs while playing, not while stopped or paused in editor)
+            if (m_Context->particleSystem && m_IsInPlayMode && m_AppState == ApplicationState::RUNNING) {
+                glm::vec3 camPos = m_Context->renderer->GetCameraPosition();
+                m_Context->particleSystem->Update(static_cast<float>(m_Context->DeltaTime), m_Context->scene, camPos);
+            }
 
             // Update 3D audio listener to follow the third-person camera
             EnttView<Entity, ThirdPersonCameraComponent, TransformComponent>([this](auto /*entity*/, ThirdPersonCameraComponent& /*tpCam*/, TransformComponent& transform) {
@@ -681,13 +695,13 @@ namespace Boom
 
             m_Context->renderer->ShowFrame(showFrame);
 
-            // Render 2D sprites and text at full resolution on top of the composited frame when in low poly mode
-            if (m_Context->renderer->showLowPoly) {
+            // Always render 2D sprites and text after compositing: avoids volumetric fog and ensures text draws on top of sprites
+            {
                 m_Context->renderer->BeginFullResOverlay(showFrame);
                 m_Context->renderer->SetSpriteToneMap(true);
                 RenderSpriteOverlay();
+                RenderTextOverlay();   // Text after sprites so text draws on top
                 m_Context->renderer->SetSpriteToneMap(false);
-                RenderTextOverlay();
                 m_Context->renderer->EndFullResOverlay();
             }
 
@@ -938,6 +952,20 @@ namespace Boom
                     }
                 }
             }
+            // ParticleEmitterComponent picking — draw a small quad at world position so the
+            // entity can be selected in the editor even when it has no ModelComponent
+            else if (entity.Has<ParticleEmitterComponent>()) {
+                if (isPicking) {
+                    glm::mat4 worldMat = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+                    Transform3D pickTransform;
+                    pickTransform.translate = glm::vec3(worldMat[3]);
+                    pickTransform.rotate    = glm::vec3(0.0f);
+                    pickTransform.scale     = glm::vec3(0.5f); // fixed click-target size
+                    m_Context->renderer->SetPickUniform(entt::to_integral(entity.ID()));
+                    m_Context->renderer->DrawPick(pickTransform);
+                }
+                // Normal rendering is handled by the ParticleSystem pass after EndFrame()
+            }
             });
 
         // === INSTANCED RENDERING PASS ===
@@ -987,6 +1015,26 @@ namespace Boom
                 glDisable(GL_CULL_FACE);
             }
             glDepthMask(GL_TRUE);
+
+            // === PARTICLE RENDERING PASS ===
+            // Must not run during the picking pass — the pick FBO is GL_R32UI and cannot
+            // receive the float RGBA outputs of the particle shader (corrupts pick IDs)
+            if (m_Context->particleSystem && !isPicking) {
+                Camera3D* particleCam = nullptr;
+                Transform3D particleCamT{};
+                EnttView<Entity, CameraComponent>([&](auto entity, CameraComponent& comp) {
+                    if (!particleCam) {
+                        particleCamT = entity.template Get<TransformComponent>().transform;
+                        particleCam = &comp.camera;
+                    }
+                });
+                if (particleCam) {
+                    float aspect = m_Context->renderer->Aspect();
+                    glm::mat4 viewMat = particleCam->View(particleCamT);
+                    glm::mat4 projMat = particleCam->Projection(aspect);
+                    m_Context->particleSystem->Render(m_Context->scene, *m_Context->assets, viewMat, projMat);
+                }
+            }
         }
 
         //sort guiList based on z-axis from negative to positive(opengl z-axis towards camera)
@@ -1006,12 +1054,7 @@ namespace Boom
                 m_Context->renderer->SetPickUniform(std::get<2>(gui)); //entity should be of type uint32_t
                 m_Context->renderer->DrawPick(std::get<1>(gui));
             }
-            else if (!m_Context->renderer->showLowPoly) {
-                // Skip 2D sprite rendering when low poly is active; sprites will be rendered at full resolution after compositing
-                TextureAsset* texture{ m_Context->assets->TryGet<TextureAsset>(std::get<0>(gui).textureID) };
-                if (texture)
-                    m_Context->renderer->DrawQuad(texture->data, std::get<1>(gui), std::get<0>(gui).color);
-            }
+            // 2D sprites are always rendered in the post-composite overlay pass to avoid volumetric fog
         }
 
         // Restore depth state so subsequent passes (debug lines, etc.) work correctly
@@ -1019,8 +1062,8 @@ namespace Boom
         glDepthFunc(GL_LESS);
 
         // --- RENDER ALL TEXT COMPONENTS ---
-        // Skip text when low poly is active; text will be rendered at full resolution after compositing
-        if (!isPicking && !m_Context->renderer->showLowPoly) {
+        // Text is always rendered in the post-composite overlay pass to avoid volumetric fog
+        if (false && !isPicking) {
             // Get active camera for 3D text projection
             Camera3D* textActiveCam = nullptr;
             Transform3D textCamTransform{};
@@ -1174,13 +1217,14 @@ namespace Boom
                 screenY = textComp.screenPosition.y;
             }
 
-            Boom::FontManager::GetInstance().RenderText(
+            Boom::FontManager::GetInstance().RenderTextAligned(
                 textComp.fontName,
                 textComp.text,
                 screenX,
                 screenY,
                 finalScale,
                 glm::vec3(textComp.color),
+                (int)textComp.alignment,
                 textComp.color.a
             );
         }

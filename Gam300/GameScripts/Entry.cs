@@ -8,6 +8,7 @@ namespace GameScripts
         // Scene flow: MainMenu -> Cutscene -> Gameplay
         public const string CUTSCENE_SCENE_NAME = "START CUTSCENE";
         public const string GAMEPLAY_SCENE_NAME = "M3 GAMEPLAY";
+        public const string BOSS_ARENA_SCENE_NAME = "NewBossArena";
         public const string LEVEL_SCENE_NAME = GAMEPLAY_SCENE_NAME; // Alias for compatibility
 
         public const string PAUSE_SCENE_NAME = "PauseMenu";
@@ -30,6 +31,8 @@ namespace GameScripts
 
         public static bool IsStartPopupActive = false;
         private static float _sceneInputDebounceTimer = 0.0f;
+        private static float _startSequenceDelay = -1f; // Delay timer for Start Sequence
+
         public static bool CanProcessInput => _sceneInputDebounceTimer <= 0.0f;
 
         public enum PauseMenuAction
@@ -71,6 +74,7 @@ namespace GameScripts
         private static bool _i_KeyWasDown = false;
         private static bool _start_ButtonWasDown = false;
         private static bool _rightBracket_KeyWasDown = false;
+        private static bool _leftBracket_KeyWasDown = false;
 
         public static PauseMenu s_ActivePauseMenuInstance = null;
         public static DeathMenu s_ActiveDeathMenuInstance = null;
@@ -91,6 +95,7 @@ namespace GameScripts
 
             IsStartPopupActive = false;
             _sceneInputDebounceTimer = 0.5f;
+            _startSequenceDelay = 0.2f; // No delay — start dialogue fades in immediately
 
             s_RequestedPauseAction = PauseMenuAction.None;
             s_RequestedDeathAction = DeathMenuAction.None;
@@ -112,13 +117,18 @@ namespace GameScripts
             // Clear stale static registries from previous play session
             SpotlightFollower.ClearRegistry();
             TutorialManager.Reset();
+            CrouchTutorialManager.Reset();
+            StoryDialogueManager.Reset();
 
             API.Log("[C#] Entry.Start() called for scene: " + _currentSceneName);
 
+            // Fade in from black at every scene start
+            SceneFader.StartFadeIn(0.6f);
+
             _activePopupName = LEVEL_1_UI;
 
-            // Only pre-load menus for gameplay scene, not for cutscene
-            if (_currentSceneName == GAMEPLAY_SCENE_NAME)
+            // Only pre-load menus for gameplay scenes, not for cutscenes
+            if (_currentSceneName == GAMEPLAY_SCENE_NAME || _currentSceneName == BOSS_ARENA_SCENE_NAME)
             {
                 API.Log("Pre-loading pause menu additively...");
                 API.LoadSceneAdditive(PAUSE_SCENE_NAME);
@@ -126,6 +136,13 @@ namespace GameScripts
                 API.LoadSceneAdditive(END_SCENE_NAME);
                 API.LoadSceneAdditive(INVENTORY_SCENE_NAME);
             }
+        }
+
+        public static void OnSessionStart()
+        {
+            API.Log("[C#] Entry.OnSessionStart() called. Resetting global state...");
+            PlayerMovement.ResetPersistedHealth();
+            PlayerInventory.Reset();
         }
 
         public static void TriggerModalPopup(string uiEntityName)
@@ -154,22 +171,34 @@ namespace GameScripts
 
         public static void OnCutsceneCompleted()
         {
-            if (_currentSceneName == GAMEPLAY_SCENE_NAME && !IsStartPopupActive)
+            if (_currentSceneName == GAMEPLAY_SCENE_NAME && !StoryDialogueManager.IsSequenceActive())
             {
-                API.Log("[Entry] Cutscene Finished. Loading Level 1 Pop-up...");
-                API.LoadSceneAdditive(POPUP_SCENE_NAME);
-                ulong camEntity = API.FindEntity("Pop Up Camera");
-                if (camEntity != 0) API.DestroyEntity(camEntity);
-                IsStartPopupActive = true;
-                API.SetGameLogicPaused(true);
+                API.Log("[Entry] Cutscene Finished. Triggering Start Dialogue Sequence...");
+                StoryDialogueManager.PlayStartSequence(() => { IsInventoryOpen = true; API.ShowInventoryMenu(); });
             }
         }
 
         public static void Update(float dt)
         {
+            // Always advance the screen fader first
+            SceneFader.Update(dt);
+
+            // Block all game logic while fading out to a new scene
+            if (SceneFader.IsFadingOut) return;
+
             if (_sceneInputDebounceTimer > 0.0f)
             {
                 _sceneInputDebounceTimer -= dt;
+            }
+
+            if (_currentSceneName == GAMEPLAY_SCENE_NAME && _startSequenceDelay > 0.0f)
+            {
+                _startSequenceDelay -= dt;
+                if (_startSequenceDelay <= 0.0f && !StoryDialogueManager.IsSequenceActive())
+                {
+                    API.Log("[Entry] Delay finished. Triggering Start Dialogue Sequence...");
+                    StoryDialogueManager.PlayStartSequence(() => { IsInventoryOpen = true; API.ShowInventoryMenu(); });
+                }
             }
 
             // Update tutorial manager (handles key/freeze tutorial input even when paused)
@@ -178,12 +207,21 @@ namespace GameScripts
             // Update tutorial popup trigger (handles Level 2 popup input even when paused)
             TutorialPopupTrigger.Update(dt);
 
+            // Update crouch dialogue input
+            CrouchTutorialManager.Update(dt);
+            
+            // Update global UI manager (handles letterbox, hearts, etc.)
+            UIManager.Update(dt);
+
             // Update door dialogue input
             MultiKeyDoor.UpdateDialogue(dt);
+            
+            // Update story dialogue sequences
+            StoryDialogueManager.Update(dt);
 
             // Update game logic pause state
             // If any popup/tutorial/dialogue is active, we force the game to stay paused
-            API.SetGameLogicPaused(IsGamePaused || IsStartPopupActive || TutorialManager.IsTutorialActive() || TutorialPopupTrigger.IsPopupActive() || MultiKeyDoor.IsDialogueActive());
+            API.SetGameLogicPaused(IsGamePaused || IsStartPopupActive || TutorialManager.IsTutorialActive() || TutorialPopupTrigger.IsPopupActive() || MultiKeyDoor.IsDialogueActive() || CrouchTutorialManager.IsTutorialActive() || StoryDialogueManager.IsSequenceActive());
             API.SetPlayerDead(IsPlayerDead);
             API.SetGameEnd(IsGameEnded);
 
@@ -268,6 +306,7 @@ namespace GameScripts
             bool p_KeyDown = API.IsKeyDown(API.KEY_P);
             bool escape_KeyDown = API.IsKeyDown(API.KEY_ESCAPE);
             bool i_KeyDown = API.IsKeyDown(API.KEY_I);
+            bool inventory_ButtonDown = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_BACK);
             bool ctrl_KeyDown = API.IsKeyDown(API.KEY_LEFT_CONTROL);
             bool start_ButtonDown = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_START);
             bool rightBracket_KeyDown = API.IsKeyDown(API.KEY_RIGHT_BRACKET);
@@ -275,12 +314,13 @@ namespace GameScripts
             // Handle Tutorial/Dialogue - Skip all input if any tutorial active OR just dismissed this frame
             if (TutorialManager.IsKeyTutorialActive() || TutorialManager.WasJustDismissed() ||
                 TutorialPopupTrigger.IsPopupActive() || TutorialPopupTrigger.WasJustDismissed() ||
-                MultiKeyDoor.IsDialogueActive())
+                MultiKeyDoor.IsDialogueActive() || CrouchTutorialManager.IsTutorialActive() || CrouchTutorialManager.WasJustDismissed() ||
+                StoryDialogueManager.IsSequenceActive() || StoryDialogueManager.WasJustDismissed())
             {
                 // Keep tracking key states to prevent bleed-through after tutorial dismissal
                 _escape_KeyWasDown = escape_KeyDown;
                 _p_KeyWasDown = p_KeyDown;
-                _i_KeyWasDown = i_KeyDown;
+                _i_KeyWasDown = i_KeyDown || inventory_ButtonDown;
                 _start_ButtonWasDown = start_ButtonDown;
                 _rightBracket_KeyWasDown = rightBracket_KeyDown;
                 return;
@@ -318,7 +358,7 @@ namespace GameScripts
                 // Keep tracking key state while popup is active to prevent bleed-through
                 _escape_KeyWasDown = escape_KeyDown;
                 _p_KeyWasDown = p_KeyDown;
-                _i_KeyWasDown = i_KeyDown;
+                _i_KeyWasDown = i_KeyDown || inventory_ButtonDown;
                 _start_ButtonWasDown = start_ButtonDown;
                 _rightBracket_KeyWasDown = rightBracket_KeyDown;
                 return;
@@ -354,41 +394,54 @@ namespace GameScripts
                 }
                 _p_KeyWasDown = p_KeyDown;
 
-                // Handle I key to open inventory
-                if (!IsInventoryOpen && i_KeyDown && !_i_KeyWasDown && !ctrl_KeyDown)
+                // Handle I key or Gamepad Back to open inventory
+                if (!IsInventoryOpen && (i_KeyDown || inventory_ButtonDown) && !_i_KeyWasDown && !ctrl_KeyDown)
                 {
                     API.Log("Opening inventory...");
                     IsInventoryOpen = true;
                     API.ShowInventoryMenu();
                     API.EnableFileWatcher(false);
 
-                    _i_KeyWasDown = i_KeyDown;
+                    _i_KeyWasDown = true;
                     return;
                 }
-                _i_KeyWasDown = i_KeyDown;
+                _i_KeyWasDown = i_KeyDown || inventory_ButtonDown;
 
                 // Handle ] key to transition to Outro Scene
                 if (rightBracket_KeyDown && !_rightBracket_KeyWasDown)
                 {
                     API.Log("[Entry] ']' pressed - transitioning to Outro Scene...");
                     _rightBracket_KeyWasDown = rightBracket_KeyDown;
-                    API.LoadScene(OUTRO_SCENE_NAME);
+                    SceneFader.FadeToScene(OUTRO_SCENE_NAME);
                     return;
                 }
                 _rightBracket_KeyWasDown = rightBracket_KeyDown;
+
+                // Handle [ key to transition to Boss Arena
+                bool leftBracket_KeyDown = API.IsKeyDown(API.KEY_LEFT_BRACKET);
+                if (leftBracket_KeyDown && !_leftBracket_KeyWasDown)
+                {
+                    API.Log("[Entry] '[' pressed - transitioning to Boss Arena...");
+                    _leftBracket_KeyWasDown = leftBracket_KeyDown;
+                    API.LoadScene(BOSS_ARENA_SCENE_NAME);
+                    return;
+                }
+                _leftBracket_KeyWasDown = leftBracket_KeyDown;
             }
         }
 
         private static void UpdateInventoryMenu(float dt)
         {
             bool i_KeyDown = API.IsKeyDown(API.KEY_I);
+            bool inventory_ButtonDown = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_BACK);
 
             // Block closing inventory if a tutorial or door dialogue is active
             if (TutorialManager.IsKeyTutorialActive() || TutorialManager.WasJustDismissed() ||
                 TutorialPopupTrigger.IsPopupActive() || TutorialPopupTrigger.WasJustDismissed() ||
-                MultiKeyDoor.IsDialogueActive())
+                MultiKeyDoor.IsDialogueActive() || CrouchTutorialManager.IsTutorialActive() || CrouchTutorialManager.WasJustDismissed() ||
+                StoryDialogueManager.IsSequenceActive() || StoryDialogueManager.WasJustDismissed())
             {
-                _i_KeyWasDown = i_KeyDown;
+                _i_KeyWasDown = i_KeyDown || inventory_ButtonDown;
                 // We don't return entirely, just bypass the close logic so the menu keeps rendering/updating
                 // But wait, the menu rendering is inside this function!
                 // Actually, the rest of this function processes the s_RequestedInventoryAction
@@ -396,13 +449,16 @@ namespace GameScripts
             }
             else
             {
-                // I key closes the inventory
-                if (i_KeyDown && !_i_KeyWasDown)
+                // I key or Gamepad Back closes the inventory
+                if ((i_KeyDown || inventory_ButtonDown) && !_i_KeyWasDown)
                 {
                     s_RequestedInventoryAction = InventoryMenuAction.Close;
-                    _i_KeyWasDown = i_KeyDown;
+                    _i_KeyWasDown = true;
                 }
-                _i_KeyWasDown = i_KeyDown;
+                else
+                {
+                    _i_KeyWasDown = i_KeyDown || inventory_ButtonDown;
+                }
             }
 
             switch (s_RequestedInventoryAction)
@@ -427,7 +483,7 @@ namespace GameScripts
                     API.SetGameEnd(false);
                     API.EnableFileWatcher(true);
                     s_RequestedEndAction = EndMenuAction.None;
-                    API.LoadScene(MAIN_MENU_SCENE_NAME);
+                    SceneFader.FadeToScene(MAIN_MENU_SCENE_NAME);
                     return;
 
                 case EndMenuAction.Restart:
@@ -435,9 +491,10 @@ namespace GameScripts
                     IsGameEnded = false;
                     API.SetGameEnd(false);
                     PlayerInventory.Reset();
+                    PlayerMovement.ResetPersistedHealth();
                     API.EnableFileWatcher(true);
                     s_RequestedEndAction = EndMenuAction.None;
-                    API.LoadScene(_currentSceneName);
+                    SceneFader.FadeToScene(_currentSceneName);
                     return;
             }
         }
@@ -452,16 +509,17 @@ namespace GameScripts
                     API.SetPlayerDead(false);
                     API.EnableFileWatcher(true);
                     s_RequestedDeathAction = DeathMenuAction.None;
-                    API.LoadScene(MAIN_MENU_SCENE_NAME);
+                    SceneFader.FadeToScene(MAIN_MENU_SCENE_NAME);
                     return;
                 case DeathMenuAction.Restart:
                     API.Log("DeathMenu: Restarting scene...");
                     IsPlayerDead = false;
                     PlayerInventory.Reset();
+                    PlayerMovement.ResetPersistedHealth();
                     API.SetPlayerDead(false);
                     API.EnableFileWatcher(true);
                     s_RequestedDeathAction = DeathMenuAction.None;
-                    API.LoadScene(_currentSceneName);
+                    SceneFader.FadeToScene(_currentSceneName);
                     return;
             }
         }
@@ -495,16 +553,17 @@ namespace GameScripts
                     IsGamePaused = false;
                     API.EnableFileWatcher(true);
                     s_RequestedPauseAction = PauseMenuAction.None;
-                    API.LoadScene(MAIN_MENU_SCENE_NAME);
+                    SceneFader.FadeToScene(MAIN_MENU_SCENE_NAME);
                     return;
 
                 case PauseMenuAction.Restart:
                     API.Log("Restarting scene (Button Click)...");
                     IsGamePaused = false;
                     PlayerInventory.Reset();
+                    PlayerMovement.ResetPersistedHealth();
                     API.EnableFileWatcher(true);
                     s_RequestedPauseAction = PauseMenuAction.None;
-                    API.LoadScene(_currentSceneName);
+                    SceneFader.FadeToScene(_currentSceneName);
                     return;
 
                 case PauseMenuAction.Quit:

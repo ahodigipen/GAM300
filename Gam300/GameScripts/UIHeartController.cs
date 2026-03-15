@@ -46,32 +46,35 @@ namespace GameScripts
             _heart2 = API.FindEntity(_heart2Name);
             _heart1 = API.FindEntity(_heart1Name);
 
-            // Initialize all hearts to fully visible (HP = 5)
-            InitializeHeart(_heart5, 0);
-            InitializeHeart(_heart4, 1);
-            InitializeHeart(_heart3, 2);
-            InitializeHeart(_heart2, 3);
-            InitializeHeart(_heart1, 4);
+            // Get actual current HP from HUD ratio
+            int startHP = GetCurrentHPFromRatio();
+            _lastHP = startHP;
 
-            // Set initial HP to max
-            _lastHP = MAX_HP;
-            UpdateHeartTargets(_lastHP);
+            // Initialize all hearts to correct starting alpha based on current HP
+            InitializeHeart(_heart5, 0, startHP >= 5);
+            InitializeHeart(_heart4, 1, startHP >= 4);
+            InitializeHeart(_heart3, 2, startHP >= 3);
+            InitializeHeart(_heart2, 3, startHP >= 2);
+            InitializeHeart(_heart1, 4, startHP >= 1);
 
-            API.Log("[UIHeartController] Initialized heart UI system with 5 hearts");
+            UpdateHeartTargets(startHP);
+
+            API.Log($"[UIHeartController] Initialized heart UI system with {startHP} active hearts");
         }
 
-        private void InitializeHeart(ulong heartEntity, int index)
+        private void InitializeHeart(ulong heartEntity, int index, bool visible)
         {
+            float alpha = visible ? 1.0f : 0.0f;
+            _currentAlpha[index] = alpha;
+            _targetAlpha[index] = alpha;
+
             if (heartEntity != 0 && API.HasSprite(heartEntity))
             {
-                // Start all hearts fully visible
-                _currentAlpha[index] = 1.0f;
-                _targetAlpha[index] = 1.0f;
-                API.SetSpriteAlpha(heartEntity, 1.0f);
+                API.SetSpriteAlpha(heartEntity, alpha);
             }
             else
             {
-                API.Log($"[UIHeartController] Failed to find heart sprite at index {index}");
+                API.Log($"[UIHeartController] Warning: Failed to find heart sprite at index {index} (ID: {heartEntity})");
             }
         }
 
