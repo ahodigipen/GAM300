@@ -55,9 +55,9 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.349999994, 0.0500000007, 1.10000002]
+        Translate: [-0.349999994, 0.0700000003, 1.10000002]
         Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.100000001, 1]
+        Scale: [0.200000003, 0.075000003, 1]
     SpriteComponent:
       textureID: 1815887354929855275
       color: [1, 1, 1, 1]
@@ -71,11 +71,27 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.349999994, -0.200000003, 1.10000002]
+        Translate: [-0.349999994, -0.0949999988, 1.10000002]
         Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.100000001, 1]
+        Scale: [0.200000003, 0.075000003, 1]
     SpriteComponent:
       textureID: 1920245529432086823
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_CreditsButton
+      UID: 6297404021137492667
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.349999994, -0.25999999, 1.10000002]
+        Rotate: [0, -0, 0]
+        Scale: [0.200000003, 0.075000003, 1]
+    SpriteComponent:
+      textureID: 3938594489715522154
       color: [1, 1, 1, 1]
       renderAs3D: false
     MenuComponent:
@@ -87,9 +103,9 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.349999994, -0.449999988, 1.10000002]
+        Translate: [-0.349999994, -0.419999987, 1.10000002]
         Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.100000001, 1]
+        Scale: [0.200000003, 0.075000003, 1]
     SpriteComponent:
       textureID: 13358858626374697893
       color: [1, 1, 1, 1]
@@ -103,9 +119,9 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.349999994, 0.300000012, 1.10000002]
+        Translate: [-0.349999994, 0.234999999, 1.10000002]
         Rotate: [0, -0, 0]
-        Scale: [0.200000003, 0.100000001, 0.00999999978]
+        Scale: [0.200000003, 0.075000003, 0.00999999978]
     SpriteComponent:
       textureID: 3642533689205009707
       color: [1, 1, 1, 1]
@@ -300,7 +316,7 @@ ENTITIES:
         Rotate: [0, 0, 0]
         Scale: [0.0199999996, 0.0399999991, 1]
     SpriteComponent:
-      textureID: 12879034172909871896
+      textureID: y
       color: [1, 1, 1, 1]
       renderAs3D: false
     MenuComponent:

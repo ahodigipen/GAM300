@@ -216,6 +216,8 @@ namespace GameScripts
         {
             if (isCreditsFinished) return;
             isCreditsFinished = true;
+
+            HideCredits();
             
             if (menuLayoutID != 0)
             {
@@ -227,6 +229,31 @@ namespace GameScripts
             {
                 API.SetCutsceneMode(false);
                 API.LoadScene(nextSceneName);
+            }
+        }
+
+        private void HideCredits()
+        {
+            // Hide the main text entity
+            if (API.HasText(Entity))
+            {
+                Vec4 color = API.GetTextColor(Entity);
+                color.W = 0.0f; // Alpha
+                API.SetTextColor(Entity, color);
+            }
+            
+            // Hide all logos
+            foreach (ulong id in logoIDs)
+            {
+                if (API.HasSprite(id))
+                    API.SetSpriteAlpha(id, 0.0f);
+                
+                if (API.HasText(id))
+                {
+                    Vec4 color = API.GetTextColor(id);
+                    color.W = 0.0f; // Alpha
+                    API.SetTextColor(id, color);
+                }
             }
         }
 

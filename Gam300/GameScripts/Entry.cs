@@ -17,6 +17,7 @@ namespace GameScripts
         public const string DEATH_SCENE_NAME = "DeathMenu";
         public const string END_SCENE_NAME = "EndMenu";
         public const string INVENTORY_SCENE_NAME = "InventoryMenu";
+        public const string CREDITS_SCENE_NAME = "Credits";
 
         public const string OUTRO_SCENE_NAME = "OUTRO SCENE";
         public const string POPUP_SCENE_NAME = "PopUpMenu";
@@ -41,6 +42,7 @@ namespace GameScripts
             Resume,
             Restart,
             MainMenu,
+            Credits,
             Quit
         }
 
@@ -564,6 +566,14 @@ namespace GameScripts
                     API.EnableFileWatcher(true);
                     s_RequestedPauseAction = PauseMenuAction.None;
                     SceneFader.FadeToScene(_currentSceneName);
+                    return;
+
+                case PauseMenuAction.Credits:
+                    API.Log("Returning to Credits (Button Click)...");
+                    IsGamePaused = false;
+                    API.EnableFileWatcher(true);
+                    s_RequestedPauseAction = PauseMenuAction.None;
+                    SceneFader.FadeToScene(CREDITS_SCENE_NAME);
                     return;
 
                 case PauseMenuAction.Quit:

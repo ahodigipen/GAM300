@@ -11,16 +11,19 @@ namespace GameScripts
         private const string RESUME_TEX_NORMAL = "Resources/Textures/MenusUI/ResumeButton.png";
         private const string RESTART_TEX_NORMAL = "Resources/Textures/MenusUI/RestartButton.png";
         private const string MAINMENU_TEX_NORMAL = "Resources/Textures/MenusUI/ReturnMenuButton.png";
+        private const string CREDITS_TEX_NORMAL = "Resources/Textures/MenusUI/CreditsButton.png";
         private const string QUIT_TEX_NORMAL = "Resources/Textures/MenusUI/QuitButton.png";
 
         private const string RESUME_TEX_CLICKED = "Resources/Textures/MenusUI/ResumeButton_Clicked.png";
         private const string RESTART_TEX_CLICKED = "Resources/Textures/MenusUI/RestartButton_Clicked.png";
         private const string MAINMENU_TEX_CLICKED = "Resources/Textures/MenusUI/ReturnMenuButton_Clicked.png";
+        private const string CREDITS_TEX_CLICKED = "Resources/Textures/MenusUI/CreditsButton_Clicked.png";
         private const string QUIT_TEX_CLICKED = "Resources/Textures/MenusUI/QuitButton_Clicked.png";
 
         private ulong _resumeButtonID;
         private ulong _restartButtonID;
         private ulong _mainMenuButtonID;
+        private ulong _creditsButtonID;
         private ulong _quitButtonID;
 
         private ButtonFX _buttonFX;
@@ -42,8 +45,9 @@ namespace GameScripts
         private bool _wasPausedLastFrame = false;
 
         // Controller navigation
-        // 0: Resume, 1: Restart, 2: Main Menu, 3: Quit, 4: Master, 5: BGM, 6: SFX, 7: Gamma
-        private int _selectedIndex = 0; 
+        // -1: None, 0: Resume, 1: Restart, 2: Main Menu, 3: Credits, 4: Quit, 5: Master, 6: BGM, 7: SFX, 8: Gamma
+        private int _selectedIndex = -1; 
+
         private bool _wasDpadUp = false;
         private bool _wasDpadDown = false;
         private bool _wasStickUp = false;
@@ -68,16 +72,17 @@ namespace GameScripts
             _resumeButtonID = API.FindEntity("Pause_ResumeButton");
             _restartButtonID = API.FindEntity("Pause_RestartButton");
             _mainMenuButtonID = API.FindEntity("Pause_ReturnButton");
+            _creditsButtonID = API.FindEntity("Pause_CreditsButton");
             _quitButtonID = API.FindEntity("Pause_QuitButton");
 
-            _buttonFX = new ButtonFX(_resumeButtonID, _restartButtonID, _mainMenuButtonID, _quitButtonID);
+            _buttonFX = new ButtonFX(_resumeButtonID, _restartButtonID, _mainMenuButtonID, _creditsButtonID, _quitButtonID);
 
             _masterSlider = new VolumeSlider("Pause_Master_BG", "Pause_Master_Fill", "Pause_Master_Handle", "Master");
             _bgmSlider = new VolumeSlider("Pause_BGM_BG", "Pause_BGM_Fill", "Pause_BGM_Handle", "Music");
             _sfxSlider = new VolumeSlider("Pause_SFX_BG", "Pause_SFX_Fill", "Pause_SFX_Handle", "SFX");
             _gammaSlider = new GammaSlider("Pause_Gamma_BG", "Pause_Gamma_Fill", "Pause_Gamma_Handle");
 
-            _selectedIndex = 0;
+            _selectedIndex = -1;
             ResetButtonState();
         }
 
@@ -183,20 +188,39 @@ namespace GameScripts
             bool stickDown = stickY > 0.5f;
             bool aPressed = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A);
 
+            if (_selectedIndex == -1)
+            {
+                if (dpadUp || dpadDown || stickUp || stickDown)
+                {
+                    _selectedIndex = 0;
+                    _buttonFX?.SetControllerSelection(_selectedIndex);
+                    UpdateVisuals();
+                }
+
+                _wasDpadUp = dpadUp;
+                _wasDpadDown = dpadDown;
+                _wasStickUp = stickUp;
+                _wasStickDown = stickDown;
+                _wasAButtonPressed = aPressed;
+                return;
+            }
+
             // Vertical Navigation
             if ((dpadUp && !_wasDpadUp) || (stickUp && !_wasStickUp))
             {
-                _selectedIndex = (_selectedIndex - 1 + 8) % 8;
+                _selectedIndex = (_selectedIndex - 1 + 9) % 9;
+                _buttonFX?.SetControllerSelection(_selectedIndex);
                 UpdateVisuals();
             }
             if ((dpadDown && !_wasDpadDown) || (stickDown && !_wasStickDown))
             {
-                _selectedIndex = (_selectedIndex + 1) % 8;
+                _selectedIndex = (_selectedIndex + 1) % 9;
+                _buttonFX?.SetControllerSelection(_selectedIndex);
                 UpdateVisuals();
             }
 
             // Horizontal Navigation (Slider Control)
-            if (_selectedIndex >= 4)
+            if (_selectedIndex >= 5)
             {
                 float stickX = API.GetGamepadAxis(API.GAMEPAD_AXIS_LEFT_X);
                 bool dpadLeft = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_DPAD_LEFT);
@@ -209,21 +233,21 @@ namespace GameScripts
 
                 if (Math.Abs(moveAmount) > 0.0001f)
                 {
-                    if (_selectedIndex == 4 && _masterSlider != null)
+                    if (_selectedIndex == 5 && _masterSlider != null)
                     {
                         _masterSlider.SetValue(API.GetGroupVolume("Master") + moveAmount);
                     }
-                    else if (_selectedIndex == 5 && _bgmSlider != null)
+                    else if (_selectedIndex == 6 && _bgmSlider != null)
                     {
                         _bgmSlider.SetValue(API.GetGroupVolume("Music") + moveAmount);
                     }
-                    else if (_selectedIndex == 6 && _sfxSlider != null)
+                    else if (_selectedIndex == 7 && _sfxSlider != null)
                     {
                         _sfxSlider.SetValue(API.GetGroupVolume("SFX") + moveAmount);
                     }
-                    else if (_selectedIndex == 7 && _gammaSlider != null)
+                    else if (_selectedIndex == 8 && _gammaSlider != null)
                     {
-                        _gammaSlider.SetNormDelta(moveAmount);
+                        _gammaSlider.SetValue(API.GetGamma() + (moveAmount * 3.5f)); // 3.5 is the range (4.0 - 0.5)
                     }
                 }
             }
@@ -234,7 +258,8 @@ namespace GameScripts
                 if (_selectedIndex == 0) buttonID = _resumeButtonID;
                 else if (_selectedIndex == 1) buttonID = _restartButtonID;
                 else if (_selectedIndex == 2) buttonID = _mainMenuButtonID;
-                else if (_selectedIndex == 3) buttonID = _quitButtonID;
+                else if (_selectedIndex == 3) buttonID = _creditsButtonID;
+                else if (_selectedIndex == 4) buttonID = _quitButtonID;
 
                 if (buttonID != 0) StartClickDelay(buttonID);
             }
@@ -250,21 +275,25 @@ namespace GameScripts
         {
             // Reset buttons to normal
             API.SetSpriteTexture(_resumeButtonID, RESUME_TEX_NORMAL);
-            API.SetSpriteTexture(_mainMenuButtonID, MAINMENU_TEX_NORMAL);
             API.SetSpriteTexture(_restartButtonID, RESTART_TEX_NORMAL);
+            API.SetSpriteTexture(_mainMenuButtonID, MAINMENU_TEX_NORMAL);
+            API.SetSpriteTexture(_creditsButtonID, CREDITS_TEX_NORMAL);
             API.SetSpriteTexture(_quitButtonID, QUIT_TEX_NORMAL);
 
             // Reset sliders visuals (using alpha for highlight for now)
-            SetSliderHighlight("Pause_Master_BG", _selectedIndex == 4);
-            SetSliderHighlight("Pause_BGM_BG", _selectedIndex == 5);
-            SetSliderHighlight("Pause_SFX_BG", _selectedIndex == 6);
-            SetSliderHighlight("Pause_Gamma_BG", _selectedIndex == 7);
+            SetSliderHighlight("Pause_Master_BG", _selectedIndex == 5);
+            SetSliderHighlight("Pause_BGM_BG", _selectedIndex == 6);
+            SetSliderHighlight("Pause_SFX_BG", _selectedIndex == 7);
+            SetSliderHighlight("Pause_Gamma_BG", _selectedIndex == 8);
+
+            if (_selectedIndex == -1) return;
 
             // Highlight selected button
             if (_selectedIndex == 0) API.SetSpriteTexture(_resumeButtonID, RESUME_TEX_CLICKED);
             else if (_selectedIndex == 1) API.SetSpriteTexture(_restartButtonID, RESTART_TEX_CLICKED);
             else if (_selectedIndex == 2) API.SetSpriteTexture(_mainMenuButtonID, MAINMENU_TEX_CLICKED);
-            else if (_selectedIndex == 3) API.SetSpriteTexture(_quitButtonID, QUIT_TEX_CLICKED);
+            else if (_selectedIndex == 3) API.SetSpriteTexture(_creditsButtonID, CREDITS_TEX_CLICKED);
+            else if (_selectedIndex == 4) API.SetSpriteTexture(_quitButtonID, QUIT_TEX_CLICKED);
         }
 
         private void SetSliderHighlight(string bgEntityName, bool highlight)
@@ -278,6 +307,7 @@ namespace GameScripts
 
         public void ResetButtonState()
         {
+            _selectedIndex = -1;
             _currentState = PauseMenuState.WaitingForMouseUp;
             _clickedButtonID = 0;
             _buttonDelayTimer = 0.0f;
@@ -314,15 +344,20 @@ namespace GameScripts
                     _selectedIndex = 2;
                     StartClickDelay(_mainMenuButtonID);
                 }
-                else if (API.Check2DViewportClick(_quitButtonID, mousePos.X, mousePos.Y))
+                else if (API.Check2DViewportClick(_creditsButtonID, mousePos.X, mousePos.Y))
                 {
                     _selectedIndex = 3;
+                    StartClickDelay(_creditsButtonID);
+                }
+                else if (API.Check2DViewportClick(_quitButtonID, mousePos.X, mousePos.Y))
+                {
+                    _selectedIndex = 4;
                     StartClickDelay(_quitButtonID);
                 }
-                else if (IsSliderClicked("Pause_Master_BG", mousePos)) _selectedIndex = 4;
-                else if (IsSliderClicked("Pause_BGM_BG", mousePos)) _selectedIndex = 5;
-                else if (IsSliderClicked("Pause_SFX_BG", mousePos)) _selectedIndex = 6;
-                else if (IsSliderClicked("Pause_Gamma_BG", mousePos)) _selectedIndex = 7;
+                else if (IsSliderClicked("Pause_Master_BG", mousePos)) _selectedIndex = 5;
+                else if (IsSliderClicked("Pause_BGM_BG", mousePos)) _selectedIndex = 6;
+                else if (IsSliderClicked("Pause_SFX_BG", mousePos)) _selectedIndex = 7;
+                else if (IsSliderClicked("Pause_Gamma_BG", mousePos)) _selectedIndex = 8;
             }
         }
 
@@ -351,10 +386,12 @@ namespace GameScripts
 
             if (buttonID == _resumeButtonID)
                 API.SetSpriteTexture(buttonID, RESUME_TEX_CLICKED);
-            else if (buttonID == _mainMenuButtonID)
-                API.SetSpriteTexture(buttonID, MAINMENU_TEX_CLICKED);
             else if (buttonID == _restartButtonID)
                 API.SetSpriteTexture(buttonID, RESTART_TEX_CLICKED);
+            else if (buttonID == _mainMenuButtonID)
+                API.SetSpriteTexture(buttonID, MAINMENU_TEX_CLICKED);
+            else if (buttonID == _creditsButtonID)
+                API.SetSpriteTexture(buttonID, CREDITS_TEX_CLICKED);
             else if (buttonID == _quitButtonID)
                 API.SetSpriteTexture(buttonID, QUIT_TEX_CLICKED);
         }
@@ -367,13 +404,17 @@ namespace GameScripts
             {
                 Entry.s_RequestedPauseAction = Entry.PauseMenuAction.Resume;
             }
+            else if (_clickedButtonID == _restartButtonID)
+            {
+                Entry.s_RequestedPauseAction = Entry.PauseMenuAction.Restart;
+            }
             else if (_clickedButtonID == _mainMenuButtonID)
             {
                 Entry.s_RequestedPauseAction = Entry.PauseMenuAction.MainMenu;
             }
-            else if (_clickedButtonID == _restartButtonID)
+            else if (_clickedButtonID == _creditsButtonID)
             {
-                Entry.s_RequestedPauseAction = Entry.PauseMenuAction.Restart;
+                Entry.s_RequestedPauseAction = Entry.PauseMenuAction.Credits;
             }
             else if (_clickedButtonID == _quitButtonID)
             {
