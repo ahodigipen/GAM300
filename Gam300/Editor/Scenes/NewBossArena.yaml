@@ -4007,6 +4007,29 @@ ENTITIES:
       SortOrder: 54
     TransformComponent:
       Transform:
-        Translate: [-0.209999993, 0.360000014, 0]
-        Rotate: [0, 0, 0]
-        Scale: [0.800000012, 0.600000024, 1]
+        Translate: [0, 9.99270344, -8.31653309]
+        Rotate: [0, -0, 0]
+        Scale: [5.34000015, 6.05000019, 4.25]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.CutsceneSequencer
+      ParamsJSON: "{\n  \"AllowSkip\": true,\n  \"BlockInput\": false,\n  \"CutsceneFile\": \"BossCutscene.seq\",\n  \"PlayOnStart\": true,\n  \"PlayOnTrigger\": false,\n  \"VisualDebug\": true\n}"
+  - InfoComponent:
+      Parent: 0
+      Name: UI_GodMode
+      UID: 9823746501837264951
+      SortOrder: 600
+    TransformComponent:
+      Transform:
+        Translate: [0, 11.6872597, 0]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    TextComponent:
+      text: ""
+      fontName: Cormorant-VariableFont_wght
+      color: [0, 0, 0, 0]
+      scale: 1
+      screenPosition: [100, 83]
+      renderAs3D: false
+      billboardMode: true
+      alignment: Left
