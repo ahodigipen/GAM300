@@ -133,7 +133,12 @@ namespace EditorUI {
                     auto camView = m_Ctx->scene.view<Boom::CameraComponent, Boom::TransformComponent>();
                     if (camView.begin() != camView.end())
                     {
-                        auto eid = *camView.begin();
+                        // Must take the LAST camera — the main renderer iterates
+                        // all CameraComponent entities and the last one wins.
+                        // Using the first camera caused a view/projection mismatch
+                        // that made gizmos drag entities to wrong positions.
+                        entt::entity eid = entt::null;
+                        for (auto e : camView) eid = e;
                         auto& camComp = camView.get<Boom::CameraComponent>(eid);
                         auto& trans = camView.get<Boom::TransformComponent>(eid);
 
@@ -146,8 +151,13 @@ namespace EditorUI {
                         m_CurrentViewportSize = glm::vec2(viewportSize.x, viewportSize.y);
                         m_CurrentCameraPosition = trans.transform.translate;
 
+                        // Hide gizmos while the game scene is playing — they should
+                        // only be visible in editor/stopped/paused states.
+                        auto* app = static_cast<Boom::Application*>(m_Ctx->app);
+                        bool isPlaying = app && app->GetState() == Boom::ApplicationState::RUNNING;
+
                         entt::entity selectedEntity = m_App->SelectedEntity();
-                        if (selectedEntity != entt::null && m_Ctx->scene.valid(selectedEntity))
+                        if (!isPlaying && selectedEntity != entt::null && m_Ctx->scene.valid(selectedEntity))
                         {
                             if (m_Ctx->scene.all_of<Boom::TransformComponent>(selectedEntity))
                             {

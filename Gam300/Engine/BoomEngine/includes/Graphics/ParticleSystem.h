@@ -118,8 +118,9 @@ namespace Boom {
         glUniform3fv(m_RenderLocs.uCamRight, 1, &camRight[0]);
         glUniform3fv(m_RenderLocs.uCamUp, 1, &camUp[0]);
 
-        // Save blend state so we don't leak into fog/lighting passes that follow
+        // Save GL state so we don't leak into subsequent passes
         GLboolean blendWasEnabled = glIsEnabled(GL_BLEND);
+        GLboolean cullWasEnabled  = glIsEnabled(GL_CULL_FACE);
 
         // GL state for particles
         glEnable(GL_BLEND);
@@ -161,7 +162,8 @@ namespace Boom {
 
         // Restore all GL state so lights, fog, and GUI passes are unaffected
         glDepthMask(GL_TRUE);
-        glEnable(GL_CULL_FACE);
+        if (cullWasEnabled) glEnable(GL_CULL_FACE);
+        else                glDisable(GL_CULL_FACE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         if (!blendWasEnabled) glDisable(GL_BLEND);
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);

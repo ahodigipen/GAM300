@@ -40,6 +40,7 @@ XPROPERTY_REG(MenuComponent)
 XPROPERTY_REG(DeactivatedComponent)
 XPROPERTY_REG(CharacterControllerComponent)
 XPROPERTY_REG(VideoComponent)
+XPROPERTY_REG(ParticleEmitterComponent)
 //===============ASSETS================= 
 XPROPERTY_REG(MaterialAsset)
 XPROPERTY_REG(TextureAsset)

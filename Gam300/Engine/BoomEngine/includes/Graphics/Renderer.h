@@ -312,6 +312,8 @@ namespace Boom {
             const float aspect =
                 (m_AspectOverride > 0.0f) ? m_AspectOverride
                 : frame->Ratio();
+            pbrShader->Use();  // Must be active before SetCamera — particle compute
+                               // leaves glUseProgram(0), so SetUniform would be a no-op
             pbrShader->SetCamera(cam, transform, aspect);
             skyBoxShader->SetCamera(cam, transform, aspect);
             color3DShader->SetCamera(cam, transform, aspect);
@@ -730,6 +732,17 @@ namespace Boom {
 
         BOOM_INLINE void StartPickFrame() {
             oPickFrame->Begin();
+
+            // Reset GL state that previous passes (GUI overlays, particles) may
+            // have left dirty.  Without this, glClear won't touch the depth
+            // buffer (depth-mask was FALSE) and every entity writes to the same
+            // depth plane, so the last-drawn entity wins at each pixel — causing
+            // the editor to select the wrong entity when picking quads overlap.
+            glDepthMask(GL_TRUE);
+            glEnable(GL_DEPTH_TEST);
+            glDepthFunc(GL_LESS);
+            glDisable(GL_BLEND);
+
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             GLuint zero = 0u;
             glClearBufferuiv(GL_COLOR, 0, &zero);

@@ -1022,11 +1022,13 @@ namespace Boom
             if (m_Context->particleSystem && !isPicking) {
                 Camera3D* particleCam = nullptr;
                 Transform3D particleCamT{};
+                // Must take the LAST camera — the main render loop calls SetCamera for
+                // every CameraComponent entity, so the last one wins.  Using the first
+                // camera caused a view/projection mismatch whenever multiple cameras
+                // existed, making particles (and everything behind them) look misaligned.
                 EnttView<Entity, CameraComponent>([&](auto entity, CameraComponent& comp) {
-                    if (!particleCam) {
-                        particleCamT = entity.template Get<TransformComponent>().transform;
-                        particleCam = &comp.camera;
-                    }
+                    particleCamT = entity.template Get<TransformComponent>().transform;
+                    particleCam = &comp.camera;
                 });
                 if (particleCam) {
                     float aspect = m_Context->renderer->Aspect();
