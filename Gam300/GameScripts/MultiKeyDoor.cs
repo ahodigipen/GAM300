@@ -98,7 +98,7 @@ namespace GameScripts
         private bool _interactWasDown = false;
         private bool _enterWasDown = false;
         private const int KEY_E = 69; 
-        private const int KEY_ENTER = 257;
+        private const int KEY_SPACE = 32;
 
         // Static tracking for active dialogue (drives pause from Entry.cs)
         private static MultiKeyDoor s_activeDialogueDoor = null;
@@ -334,7 +334,7 @@ namespace GameScripts
 
             // Handle Interaction logic
             bool interactDown = API.IsKeyDown(KEY_E) || (API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A));
-            bool enterDown = API.IsKeyDown(KEY_ENTER);
+            bool enterDown = API.IsKeyDown(KEY_SPACE);
 
             bool interactPressed = interactDown && !_interactWasDown;
             bool enterPressed = enterDown && !_enterWasDown;
@@ -738,7 +738,7 @@ namespace GameScripts
 
             // ── Input ─────────────────────────────────────────────────────────
             bool gamepadA = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A);
-            bool advanceDown = API.IsKeyDown(KEY_ENTER) || API.IsKeyDown(KEY_E) || gamepadA;
+            bool advanceDown = API.IsKeyDown(KEY_SPACE) || API.IsKeyDown(KEY_E) || gamepadA;
             bool advancePressed = advanceDown && !s_dialogueEnterWasDown;
             s_dialogueEnterWasDown = advanceDown;
 
