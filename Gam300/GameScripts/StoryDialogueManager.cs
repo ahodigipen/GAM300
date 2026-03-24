@@ -216,7 +216,7 @@ namespace GameScripts
 
             if (s_activeSequence == SequenceType.None || s_fadeMode != FadeMode.None) return;
 
-            bool enterDown = API.IsKeyDown(API.KEY_ENTER);
+            bool enterDown = API.IsKeyDown(API.KEY_SPACE);
             bool eDown = API.IsKeyDown(API.KEY_E);
             bool aButtonDown = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A);
 

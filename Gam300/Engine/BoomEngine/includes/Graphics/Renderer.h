@@ -124,6 +124,7 @@ namespace Boom {
             }
             glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+            pbrShader->Use();
             pbrShader->SetUniform(pbrShader->GetUniformVar("noPointLight"), count);
         }
 
@@ -137,6 +138,7 @@ namespace Boom {
             }
             glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+            pbrShader->Use();
             pbrShader->SetUniform(pbrShader->GetUniformVar("noDirLight"), count);
         }
 
@@ -150,6 +152,7 @@ namespace Boom {
             }
             glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+            pbrShader->Use();
             pbrShader->SetUniform(pbrShader->GetUniformVar("noSpotLight"), count);
         }
 
@@ -291,6 +294,7 @@ namespace Boom {
         }
         BOOM_INLINE void DrawSkybox(Skybox const& sky, Transform3D const& transform) {
             skyBoxShader->Draw(skyboxMesh, sky.cubeMap, transform);
+            pbrShader->Use();
             pbrShader->SetEnvMaps(0, 0, 0, shadowShader->GetDepthMap());
         }
 

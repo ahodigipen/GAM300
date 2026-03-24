@@ -885,12 +885,12 @@ namespace Boom
 				return a.distSq < b.distSq;
 			});
 
-			// Only upload the closest N lights
-			const int maxPointLights = 32;
+			// Upload all lights (sorted closest-first for shader efficiency)
 			std::vector<GPUPointLight> gpuPoints;
+			gpuPoints.reserve(pointLightJobs.size());
 			int points = 0;
 			for (auto& job : pointLightJobs) {
-				if (points >= maxPointLights || points >= MAX_POINT_LIGHTS) break;
+				if (points >= MAX_POINT_LIGHTS) break;
 				gpuPoints.push_back(job.gpuData);
 				points++;
 			}
@@ -948,11 +948,11 @@ namespace Boom
 				return a.distSq < b.distSq;
 			});
 
-			const int maxSpotLights = 32;
 			std::vector<GPUSpotLight> gpuSpots;
+			gpuSpots.reserve(spotLightJobs.size());
 			int spots = 0;
 			for (auto& job : spotLightJobs) {
-				if (spots >= maxSpotLights || spots >= MAX_SPOT_LIGHTS) break;
+				if (spots >= MAX_SPOT_LIGHTS) break;
 				gpuSpots.push_back(job.gpuData);
 				spots++;
 			}

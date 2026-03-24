@@ -244,8 +244,8 @@ namespace GameScripts
             // Block input while fading — only advance state after fades settle
             if (s_fadeMode != FadeMode.None) return;
 
-            // --- Input edge detection: ENTER key (GLFW 257) and gamepad A button ---
-            bool enterDown   = API.IsKeyDown(API.KEY_ENTER);
+            // --- Input edge detection: SPACE key and gamepad A button ---
+            bool enterDown   = API.IsKeyDown(API.KEY_SPACE);
             bool aButtonDown = API.IsGamepadConnected() && API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A);
 
             bool enterPressed   = enterDown   && !s_enterWasDown;
