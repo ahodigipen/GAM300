@@ -206,6 +206,10 @@ namespace Boom {
 			auto* self = GetUserData(win);
 			if (!self) return;
 
+			if (key == GLFW_KEY_F11 && action == GLFW_PRESS) {
+				self->SetFullscreen(!self->GetFullscreen());
+			}
+
 			//if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
 				//glfwSetWindowShouldClose(win, GLFW_TRUE);
 				//return;
@@ -228,6 +232,27 @@ namespace Boom {
 			return static_cast<AppWindow*>(glfwGetWindowUserPointer(window));
 		}
 	public:
+		BOOM_INLINE void SetFullscreen(bool fullscreen) {
+			if (isFullscreen == fullscreen) return;
+			
+			if (fullscreen) {
+			    // Save current windowed pos & size
+			    glfwGetWindowPos(windowPtr.get(), &windowedX, &windowedY);
+			    glfwGetWindowSize(windowPtr.get(), &windowedWidth, &windowedHeight);
+			    
+			    // Switch to fullscreen on primary monitor
+				glfwSetWindowMonitor(windowPtr.get(), monitorPtr, 0, 0, modePtr->width, modePtr->height, modePtr->refreshRate);
+			} else {
+			    // Switch back to windowed mode
+				glfwSetWindowMonitor(windowPtr.get(), nullptr, windowedX, windowedY, windowedWidth, windowedHeight, refreshRate);
+			}
+			isFullscreen = fullscreen;
+		}
+
+		BOOM_INLINE bool GetFullscreen() const {
+			return isFullscreen;
+		}
+
 		BOOM_INLINE void SetWindowTitle(std::string const& title) {
 			glfwSetWindowTitle(windowPtr.get(), title.c_str());
 		}
@@ -494,6 +519,11 @@ namespace Boom {
 		int32_t height{};
 		int32_t refreshRate;
 		bool isFullscreen;
+		
+		int32_t windowedX{100};
+		int32_t windowedY{100};
+		int32_t windowedWidth{1280};
+		int32_t windowedHeight{720};
 
 		//these are kept raw as they are lightweight and non-owning
 		GLFWmonitor* monitorPtr;
