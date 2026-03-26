@@ -954,29 +954,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 1.100000023841858\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_6 (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
@@ -999,29 +1000,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_6 (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
@@ -1044,29 +1046,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 1.100000023841858\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_6 (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
@@ -1089,29 +1092,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 0.699999988079071\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_6 (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
@@ -1134,29 +1138,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_6 (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
@@ -1179,29 +1184,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_6 (Copy) (Copy) (Copy) (Copy) (Copy)
@@ -1224,29 +1230,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_6 (Copy) (Copy) (Copy) (Copy) (Copy)
@@ -1269,29 +1276,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 0.699999988079071\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_6 (Copy) (Copy) (Copy) (Copy)
@@ -1314,29 +1322,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 0.699999988079071\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_6 (Copy) (Copy) (Copy)
@@ -1359,29 +1368,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_6 (Copy) (Copy)
@@ -1404,29 +1414,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_6 (Copy)
@@ -1449,29 +1460,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 0.8999999761581421\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_7
@@ -1494,29 +1506,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 0.800000011920929\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_6
@@ -1539,29 +1552,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 1.100000023841858\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_5
@@ -1584,29 +1598,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0719999969, -0.232999995, 0.00999999978]
@@ -4772,29 +4787,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 0.800000011920929\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_4
@@ -4817,29 +4833,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 0.6000000238418579\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLantern13
@@ -4862,29 +4879,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 0.699999988079071\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLantern12
@@ -4907,29 +4925,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 0.6000000238418579\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLantern11
@@ -4952,29 +4971,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 1.100000023841858\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLantern10
@@ -4997,29 +5017,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLantern9
@@ -5042,29 +5063,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLantern8
@@ -5087,29 +5109,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 0.8999999761581421\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLantern7
@@ -5132,29 +5155,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLantern6
@@ -5177,29 +5201,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLantern5
@@ -5222,29 +5247,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 1.2000000476837158\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLantern4
@@ -5267,29 +5293,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 0.800000011920929\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLantern3
@@ -5312,29 +5339,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 0.800000011920929\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLantern2
@@ -5357,29 +5385,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 0.8999999761581421\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0500000007, 0.0199999996, 0.0199999996]
@@ -13151,29 +13180,30 @@ ENTITIES:
       ModelSource: ""
       MaterialSource: ""
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 3
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 3
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -1.11000001
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - ColliderComponent:
       Collider:
         LocalPosition: [0.127000004, 1.97399998, -0.245000005]
@@ -18703,29 +18733,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 0.800000011920929\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0719999969, -0.232999995, 0.00999999978]
@@ -20532,29 +20563,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 0.699999988079071\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_2
@@ -20577,29 +20609,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 1.2000000476837158\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_3
@@ -20622,29 +20655,30 @@ ENTITIES:
       TypeName: GameScripts.HoverMotion
       ParamsJSON: "{\n  \"_hoverSpeed\": 0.8999999761581421\n}"
     ParticleEmitterComponent:
-      EmissionRate: 20
+      EmissionRate: 84
       MaxParticles: 500
       Looping: true
       Duration: 5
       PlayOnStart: true
-      LifetimeMin: 1
-      LifetimeMax: 2
-      SpeedMin: 1
-      SpeedMax: 3
-      ShapeType: 0
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
       ShapeRadius: 1
-      ShapeAngle: 25
+      ShapeAngle: 3
       ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
       Direction: [0, 1, 0]
-      Gravity: -9.81000042
-      StartSizeMin: 0.100000001
-      StartSizeMax: 0.300000012
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
       EndSize: 0
       StartColor: [1, 0.899999976, 0.300000012, 1]
-      EndColor: [1, 0.200000003, 0, 0]
-      TextureID: 0
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
       Billboard: true
-      AdditiveBlend: false
+      AdditiveBlend: true
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 1.57000005]

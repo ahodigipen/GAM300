@@ -1047,11 +1047,12 @@ struct MenuComponent {
         float speedMin        = 1.0f;
         float speedMax        = 3.0f;
 
-        // Spawn shape: 0 = point, 1 = sphere, 2 = cone, 3 = box
+        // Spawn shape: 0 = point, 1 = sphere, 2 = cone, 3 = box, 4 = spotlight volume
         int   shapeType       = 0;
         float shapeRadius     = 1.0f;    // sphere/cone radius
         float shapeAngle      = 25.0f;   // cone half-angle (degrees)
         glm::vec3 shapeSize   = glm::vec3(1.0f); // box half-extents
+        float shapeRange      = 10.0f;   // spotlight volume: how far the cone extends
 
         // Direction (for cone/directional emission; local space)
         glm::vec3 direction   = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -1097,6 +1098,7 @@ struct MenuComponent {
             obj_member<"ShapeRadius",   &ParticleEmitterComponent::shapeRadius>,
             obj_member<"ShapeAngle",    &ParticleEmitterComponent::shapeAngle>,
             obj_member<"ShapeSize",     &ParticleEmitterComponent::shapeSize>,
+            obj_member<"ShapeRange",    &ParticleEmitterComponent::shapeRange>,
             obj_member<"Direction",     &ParticleEmitterComponent::direction>,
             obj_member<"Gravity",       &ParticleEmitterComponent::gravity>,
             obj_member<"StartSizeMin",  &ParticleEmitterComponent::startSizeMin>,

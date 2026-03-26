@@ -47,17 +47,27 @@ void main() {
 in vec2 vUV;
 in vec4 vColor;
 
+uniform sampler2D uParticleTexture;
+uniform int       uUseTexture;      // 0 = procedural circle, 1 = sample texture
+
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out vec4 out_brightness;
 
 void main() {
-    // Procedural soft circle (no texture needed)
-    vec2 center = vUV - vec2(0.5);
-    float dist = length(center) * 2.0;
-    float alpha = 1.0 - smoothstep(0.6, 1.0, dist);
+    vec4 texColor;
+    if (uUseTexture != 0) {
+        // Sample the particle texture
+        texColor = texture(uParticleTexture, vUV);
+    } else {
+        // Procedural soft circle fallback (no texture)
+        vec2 center = vUV - vec2(0.5);
+        float dist = length(center) * 2.0;
+        float alpha = 1.0 - smoothstep(0.6, 1.0, dist);
+        texColor = vec4(1.0, 1.0, 1.0, alpha);
+    }
 
     // Apply particle color from compute shader (already interpolated)
-    FragColor = vec4(vColor.rgb, vColor.a * alpha);
+    FragColor = vec4(vColor.rgb * texColor.rgb, vColor.a * texColor.a);
 
     if (FragColor.a < 0.01) discard;
 

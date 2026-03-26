@@ -208,6 +208,7 @@ namespace Boom {
             m_ComputeLocs.uShapeRadius  = glGetUniformLocation(m_SimulateProgram, "uShapeRadius");
             m_ComputeLocs.uShapeAngle   = glGetUniformLocation(m_SimulateProgram, "uShapeAngle");
             m_ComputeLocs.uShapeSize    = glGetUniformLocation(m_SimulateProgram, "uShapeSize");
+            m_ComputeLocs.uShapeRange   = glGetUniformLocation(m_SimulateProgram, "uShapeRange");
             m_ComputeLocs.uDirection    = glGetUniformLocation(m_SimulateProgram, "uDirection");
             m_ComputeLocs.uStartSizeMin = glGetUniformLocation(m_SimulateProgram, "uStartSizeMin");
             m_ComputeLocs.uStartSizeMax = glGetUniformLocation(m_SimulateProgram, "uStartSizeMax");
@@ -218,10 +219,12 @@ namespace Boom {
         }
 
         if (m_RenderProgram) {
-            m_RenderLocs.uViewProj  = glGetUniformLocation(m_RenderProgram, "uViewProj");
-            m_RenderLocs.uCamRight  = glGetUniformLocation(m_RenderProgram, "uCamRight");
-            m_RenderLocs.uCamUp     = glGetUniformLocation(m_RenderProgram, "uCamUp");
-            m_RenderLocs.uBillboard = glGetUniformLocation(m_RenderProgram, "uBillboard");
+            m_RenderLocs.uViewProj        = glGetUniformLocation(m_RenderProgram, "uViewProj");
+            m_RenderLocs.uCamRight        = glGetUniformLocation(m_RenderProgram, "uCamRight");
+            m_RenderLocs.uCamUp           = glGetUniformLocation(m_RenderProgram, "uCamUp");
+            m_RenderLocs.uBillboard       = glGetUniformLocation(m_RenderProgram, "uBillboard");
+            m_RenderLocs.uParticleTexture = glGetUniformLocation(m_RenderProgram, "uParticleTexture");
+            m_RenderLocs.uUseTexture      = glGetUniformLocation(m_RenderProgram, "uUseTexture");
         }
     }
 
@@ -356,6 +359,7 @@ namespace Boom {
             glUniform1f(m_ComputeLocs.uShapeRadius, emitter.shapeRadius);
             glUniform1f(m_ComputeLocs.uShapeAngle, emitter.shapeAngle);
             glUniform3fv(m_ComputeLocs.uShapeSize, 1, &emitter.shapeSize[0]);
+            glUniform1f(m_ComputeLocs.uShapeRange, emitter.shapeRange);
             // Extract pure rotation from world matrix (remove scale from columns)
             // so local-space direction is correctly oriented in world space, including parent rotation
             glm::vec3 worldDir = glm::normalize(glm::mat3(

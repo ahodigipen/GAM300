@@ -85,13 +85,14 @@ namespace Boom {
             GLint uLifetimeMin = -1, uLifetimeMax = -1;
             GLint uSpeedMin = -1, uSpeedMax = -1;
             GLint uShapeType = -1, uShapeRadius = -1, uShapeAngle = -1;
-            GLint uShapeSize = -1, uDirection = -1;
+            GLint uShapeSize = -1, uShapeRange = -1, uDirection = -1;
             GLint uStartSizeMin = -1, uStartSizeMax = -1, uEndSize = -1;
             GLint uStartColor = -1, uEndColor = -1, uFrameSeed = -1;
         } m_ComputeLocs;
 
         struct RenderUniforms {
             GLint uViewProj = -1, uCamRight = -1, uCamUp = -1, uBillboard = -1;
+            GLint uParticleTexture = -1, uUseTexture = -1;
         } m_RenderLocs;
 
         void CacheUniformLocations();
@@ -100,7 +101,7 @@ namespace Boom {
     // ──── Render template implementation ────────────────────────────────
 
     template<typename AssetRegistryT>
-    void ParticleSystem::Render(EntityRegistry& registry, AssetRegistryT& /*assets*/,
+    void ParticleSystem::Render(EntityRegistry& registry, AssetRegistryT& assets,
                                 const glm::mat4& viewMatrix, const glm::mat4& projMatrix)
     {
         if (!m_Initialized) Init();
@@ -117,6 +118,9 @@ namespace Boom {
         glUniformMatrix4fv(m_RenderLocs.uViewProj, 1, GL_FALSE, &viewProj[0][0]);
         glUniform3fv(m_RenderLocs.uCamRight, 1, &camRight[0]);
         glUniform3fv(m_RenderLocs.uCamUp, 1, &camUp[0]);
+
+        // Bind particle texture to texture unit 0
+        glUniform1i(m_RenderLocs.uParticleTexture, 0);
 
         // Save GL state so we don't leak into subsequent passes
         GLboolean blendWasEnabled = glIsEnabled(GL_BLEND);
@@ -149,6 +153,18 @@ namespace Boom {
             // Set billboard flag
             glUniform1i(m_RenderLocs.uBillboard, emitter.billboard ? 1 : 0);
 
+            // Bind particle texture if one is assigned
+            bool hasTexture = false;
+            if (emitter.textureID != EMPTY_ASSET) {
+                auto* texAsset = assets.template TryGet<TextureAsset>(emitter.textureID);
+                if (texAsset && texAsset->data) {
+                    glActiveTexture(GL_TEXTURE0);
+                    glBindTexture(GL_TEXTURE_2D, static_cast<uint32_t>(*texAsset->data));
+                    hasTexture = true;
+                }
+            }
+            glUniform1i(m_RenderLocs.uUseTexture, hasTexture ? 1 : 0);
+
             // Bind this emitter's render SSBO to binding 0
             glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, gpu.renderSSBO);
 
@@ -159,6 +175,7 @@ namespace Boom {
 
         glBindVertexArray(0);
         glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
 
         // Restore all GL state so lights, fog, and GUI passes are unaffected
         glDepthMask(GL_TRUE);

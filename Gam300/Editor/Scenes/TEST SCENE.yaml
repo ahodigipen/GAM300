@@ -1,5 +1,45 @@
 Version: 1.0
 ENTITIES:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: LIGHT LAMP
+      UID: 10803330949243521766
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [3.05334473, -1.13841677, -4.13302946]
+        Rotate: [-89.9999542, 8.99999905, 0]
+        Scale: [0.99999994, 0.999997556, 0.999997556]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.99999994, 0.999997556, 0.999997556]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 17971063540041505471
+      MaterialID: 16814172849789012347
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
       Parent: 0
       Name: Spot Light
@@ -13,7 +53,7 @@ ENTITIES:
     SpotLightComponent:
       Light:
         Radiance: [0.699999988, 0.800000012, 1]
-        Intensity: 15
+        Intensity: 0.25999999
         FallOff: 1.05592418
         CutOff: 0.34906584
   - InfoComponent:
@@ -53,8 +93,8 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.443855196, 1.21253562, 2.94374704]
-        Rotate: [-19.375, 1.6875, 0]
+        Translate: [4.11494684, -0.325824857, -3.79376554]
+        Rotate: [-11.125, 81.375, 0]
         Scale: [1, 1, 1]
     CameraComponent:
       Camera:
@@ -113,3 +153,72 @@ ENTITIES:
       MaterialName: ""
       ModelSource: Resources/Models/Cube.fbx
       MaterialSource: Marble
+  - InfoComponent:
+      Parent: 0
+      Name: Light Ball
+      UID: 2131871857102365107
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [3.07601452, -0.345693439, -4.1310997]
+        Rotate: [0, -0, 0]
+        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+    ModelComponent:
+      ModelID: 11565258723769024311
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    SpotLightComponent:
+      Light:
+        Radiance: [0.902438998, 0.902438998, 0.300812989]
+        Intensity: 1.05999994
+        FallOff: -1.03400004
+        CutOff: -1
+    ParticleEmitterComponent:
+      EmissionRate: 84
+      MaxParticles: 500
+      Looping: true
+      Duration: 5
+      PlayOnStart: true
+      LifetimeMin: 0.790000021
+      LifetimeMax: 1.32000005
+      SpeedMin: 0.400000006
+      SpeedMax: 1.29999995
+      ShapeType: 4
+      ShapeRadius: 1
+      ShapeAngle: 3
+      ShapeSize: [1, 1, 1]
+      ShapeRange: 0.100000001
+      Direction: [0, 1, 0]
+      Gravity: 1.38999999
+      StartSizeMin: 0.0399999991
+      StartSizeMax: 0.0500000007
+      EndSize: 0
+      StartColor: [1, 0.899999976, 0.300000012, 1]
+      EndColor: [0.843137264, 0.250980407, 0.101960786, 1]
+      TextureID: 15432365972591589103
+      Billboard: true
+      AdditiveBlend: true
+  - InfoComponent:
+      Parent: 0
+      Name: Scene Settings
+      UID: 3145737
+      SortOrder: 0
+    SceneNavmeshComponent:
+      NavmeshFile: ""
+      AmbientStrength: 0
+      BloomEnabled: false
+      BloomIntensity: 1
+      BloomThreshold: 1
+      BloomIterations: 10
+      PointLightBloomMultiplier: 1
+      FogEnabled: false
+      FogColor: [0.5, 0.600000024, 0.699999988]
+      FogDensity: 0.00999999978
+      FogHeightFalloff: 0.5
+      FogHeight: 0
+      TonemapExposure: 1
+      TonemapGamma: 2.20000005
+      TonemapWarmTint: [1.08000004, 0.980000019, 0.819999993]

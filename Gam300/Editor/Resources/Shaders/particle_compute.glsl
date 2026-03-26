@@ -32,6 +32,7 @@ uniform int   uShapeType;
 uniform float uShapeRadius;
 uniform float uShapeAngle;
 uniform vec3  uShapeSize;
+uniform float uShapeRange;
 uniform vec3  uDirection;
 uniform float uStartSizeMin;
 uniform float uStartSizeMax;
@@ -100,6 +101,30 @@ vec3 randInBox(vec3 halfExtents) {
     );
 }
 
+// Returns a random position inside a cone volume (for spotlight dust).
+// dir = cone axis, halfAngleDeg = outer half-angle, range = cone length.
+// Uses cube-root distribution along the axis for uniform volume density.
+vec3 randInConeVolume(vec3 dir, float halfAngleDeg, float range) {
+    // Distance along cone axis (cube root for uniform volume distribution)
+    float d = range * pow(rand01(), 1.0 / 3.0);
+
+    // Radius of the cone cross-section at distance d
+    float coneRadius = d * tan(radians(halfAngleDeg));
+
+    // Random point within the circular cross-section (square-root for uniform disk)
+    float r   = coneRadius * sqrt(rand01());
+    float phi = rand01() * 6.2831853;
+
+    // Build a local coordinate frame around the cone direction
+    vec3 ax = normalize(dir);
+    vec3 up = vec3(0, 0, 1);
+    if (abs(dot(ax, up)) > 0.999) up = vec3(1, 0, 0);
+    vec3 right = normalize(cross(ax, up));
+    vec3 newUp = cross(right, ax);
+
+    return ax * d + right * (r * cos(phi)) + newUp * (r * sin(phi));
+}
+
 void main() {
     uint idx = gl_GlobalInvocationID.x;
     if (idx >= uint(uMaxParticles)) return;
@@ -131,23 +156,27 @@ void main() {
         size    = randRange(uStartSizeMin, uStartSizeMax);
 
         // Position based on shape
-        if (uShapeType == 1) {       // sphere
+        if (uShapeType == 1) {            // sphere
             pos = uEmitterPos + randInSphere(uShapeRadius);
-        } else if (uShapeType == 3) { // box
+        } else if (uShapeType == 3) {     // box
             pos = uEmitterPos + randInBox(uShapeSize);
-        } else {                      // point or cone
+        } else if (uShapeType == 4) {     // spotlight volume
+            pos = uEmitterPos + randInConeVolume(uDirection, uShapeAngle, uShapeRange);
+        } else {                          // point or cone
             pos = uEmitterPos;
         }
 
         // Velocity direction based on shape
         vec3 dir;
-        if (uShapeType == 1) {        // sphere: outward
+        if (uShapeType == 1) {            // sphere: outward
             vec3 offset = pos - uEmitterPos;
             float len = length(offset);
             dir = (len > 0.001) ? offset / len : randDirection();
-        } else if (uShapeType == 2) { // cone
+        } else if (uShapeType == 2) {     // cone
             dir = randInCone(uDirection, uShapeAngle);
-        } else {                       // point: slight spread
+        } else if (uShapeType == 4) {     // spotlight volume: slow random drift
+            dir = randDirection();
+        } else {                          // point: slight spread
             dir = randInCone(uDirection, 15.0);
         }
 
@@ -176,6 +205,18 @@ void main() {
 
             // Color over lifetime
             vec4 color = mix(uStartColor, uEndColor, t);
+
+            // Spotlight volume: fade alpha based on position within cone
+            if (uShapeType == 4) {
+                vec3 offset = pos - uEmitterPos;
+                vec3 ax = normalize(uDirection);
+                float along = dot(offset, ax);                     // distance along cone axis
+                vec3 perp = offset - ax * along;                   // perpendicular offset
+                float coneR = max(along, 0.0) * tan(radians(uShapeAngle)); // cone radius at this depth
+                float edgeFade = (coneR > 0.001) ? 1.0 - smoothstep(0.5, 1.0, length(perp) / coneR) : 1.0;
+                float depthFade = 1.0 - smoothstep(0.7, 1.0, along / uShapeRange); // fade near end
+                color.a *= edgeFade * depthFade;
+            }
 
             // Write to render output (compact)
             uint renderIdx = atomicAdd(uAliveCounter, 1u);

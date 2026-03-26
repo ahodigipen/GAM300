@@ -3026,7 +3026,7 @@ namespace EditorUI {
 
                 // --- Shape ---
                 if (ImGui::TreeNodeEx("Shape", ImGuiTreeNodeFlags_DefaultOpen)) {
-                    const char* shapeNames[] = { "Point", "Sphere", "Cone", "Box" };
+                    const char* shapeNames[] = { "Point", "Sphere", "Cone", "Box", "Spotlight Volume" };
                     ImGui::Combo("Shape Type", &pe.shapeType, shapeNames, IM_ARRAYSIZE(shapeNames));
 
                     if (pe.shapeType == 1) { // Sphere
@@ -3037,6 +3037,10 @@ namespace EditorUI {
                     }
                     else if (pe.shapeType == 3) { // Box
                         ImGui::DragFloat3("Box Size", &pe.shapeSize.x, 0.1f, 0.0f, 100.0f);
+                    }
+                    else if (pe.shapeType == 4) { // Spotlight Volume
+                        ImGui::DragFloat("Cone Angle", &pe.shapeAngle, 1.0f, 0.0f, 90.0f);
+                        ImGui::DragFloat("Range", &pe.shapeRange, 0.5f, 0.1f, 200.0f);
                     }
 
                     ImGui::DragFloat3("Direction", &pe.direction.x, 0.01f, -1.0f, 1.0f);
@@ -3066,6 +3070,13 @@ namespace EditorUI {
 
                 // --- Rendering ---
                 if (ImGui::TreeNodeEx("Rendering", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    // Particle texture picker (drag-drop from asset browser)
+                    ImGui::BeginTable("##particleTex", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersInnerV);
+                    ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableSetupColumn("Asset", ImGuiTableColumnFlags_WidthStretch);
+                    InputAssetWidget<CONSTANTS::DND_PAYLOAD_TEXTURE>("texture", pe.textureID);
+                    ImGui::EndTable();
+
                     ImGui::Checkbox("Billboard", &pe.billboard);
                     ImGui::Checkbox("Additive Blend", &pe.additiveBlend);
                     ImGui::TreePop();
@@ -4488,14 +4499,16 @@ namespace EditorUI {
         }
 
         // Asset Picker Popup Modal - rendered outside of PushID block for consistent ID
-        // Only the widget that owns the picker target should open/render the popup
-        if (m_AssetPickerOpen && m_AssetPickerTarget == &data) {
-            ImGui::OpenPopup("##AssetPickerPopup");
-        }
+        // Only the widget that owns the picker target should open/render the popup.
+        // Both OpenPopup AND BeginPopupModal are guarded so that other widget instances
+        // don't steal the modal (BeginPopupModal returns true for the first caller per frame).
+        if (m_AssetPickerTarget == &data) {
+            if (m_AssetPickerOpen) {
+                ImGui::OpenPopup("##AssetPickerPopup");
+            }
 
-        ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
-        if (ImGui::BeginPopupModal("##AssetPickerPopup", &m_AssetPickerOpen, ImGuiWindowFlags_NoScrollbar)) {
-            if (m_AssetPickerTarget == &data) {
+            ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
+            if (ImGui::BeginPopupModal("##AssetPickerPopup", &m_AssetPickerOpen, ImGuiWindowFlags_NoScrollbar)) {
                 ImGui::Text("Select %s", m_AssetPickerLabel.c_str());
                 ImGui::Separator();
 
@@ -4591,8 +4604,8 @@ namespace EditorUI {
                     m_AssetPickerOpen = false;
                     ImGui::CloseCurrentPopup();
                 }
+                ImGui::EndPopup();
             }
-            ImGui::EndPopup();
         }
     }
 
