@@ -962,8 +962,9 @@ namespace Boom
 
 		BOOM_INLINE void RenderShadowScene() {
 
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_FRONT);
+			glDisable(GL_CULL_FACE);
+			glEnable(GL_POLYGON_OFFSET_FILL);
+			glPolygonOffset(2.0f, 4.0f);
 			// Count directional lights first
 			int dirLightCount = 0;
 			EnttView<Entity, DirectLightComponent>([&dirLightCount](auto, auto&) { dirLightCount++; });
@@ -971,7 +972,7 @@ namespace Boom
 			// Early exit if no directional lights
 			if (dirLightCount == 0) {
 				m_Context->renderer->SetShadowsEnabled(false);
-				glDisable(GL_CULL_FACE);
+				glDisable(GL_POLYGON_OFFSET_FILL);
 				return;
 			}
 
@@ -1028,8 +1029,7 @@ namespace Boom
 					m_Context->renderer->EndShadowPass();
 				});
 
-			glCullFace(GL_BACK);
-			glDisable(GL_CULL_FACE);
+			glDisable(GL_POLYGON_OFFSET_FILL);
 
 			// Render spot light shadows
 			RenderSpotShadowScene();
@@ -1075,8 +1075,9 @@ namespace Boom
 				return a.distSq < b.distSq;
 			});
 
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_FRONT);
+			glDisable(GL_CULL_FACE);
+			glEnable(GL_POLYGON_OFFSET_FILL);
+			glPolygonOffset(2.0f, 4.0f);
 
 			int spotShadowIndex = 0;
 			for (auto& job : shadowJobs) {
@@ -1119,8 +1120,7 @@ namespace Boom
 				spotShadowIndex++;
 			}
 
-			glCullFace(GL_BACK);
-			glDisable(GL_CULL_FACE);
+			glDisable(GL_POLYGON_OFFSET_FILL);
 
 			m_Context->renderer->UploadSpotShadowData(spotShadowIndex);
 		}
