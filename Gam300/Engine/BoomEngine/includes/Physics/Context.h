@@ -930,17 +930,33 @@ namespace Boom {
             return result;
         }
 
-        BOOM_INLINE glm::vec3 ResolveThirdPersonCameraPosition(glm::vec3 const& playerEye, glm::vec3 const& idealCamPosition, float minDist = 0.5f) {
+        BOOM_INLINE glm::vec3 ResolveThirdPersonCameraPosition(glm::vec3 const& playerEye, glm::vec3 const& idealCamPosition, float minDist = 0.5f, entt::entity ignoreEntity = entt::null) {
             PxVec3 targetPos = ToPxVec3(playerEye);
             PxVec3 idealCamPos = ToPxVec3(idealCamPosition);
             
+            // 0. Setup Query Filter to ignore the player and triggers
+            struct CamQueryFilter : PxQueryFilterCallback {
+                entt::entity ignore;
+                CamQueryFilter(entt::entity e) : ignore(e) {}
+                PxQueryHitType::Enum preFilter(const PxFilterData&, const PxShape* shape, const PxRigidActor* actor, PxHitFlags&) override {
+                    if (shape->getFlags() & PxShapeFlag::eTRIGGER_SHAPE) return PxQueryHitType::eNONE;
+                    if (actor && actor->userData && *(entt::entity*)actor->userData == ignore) return PxQueryHitType::eNONE;
+                    return PxQueryHitType::eBLOCK;
+                }
+                PxQueryHitType::Enum postFilter(const PxFilterData&, const PxQueryHit&) override { return PxQueryHitType::eBLOCK; }
+            } filter(ignoreEntity);
+
+            PxQueryFilterData filterData;
+            filterData.flags = PxQueryFlag::eSTATIC | PxQueryFlag::eDYNAMIC | PxQueryFlag::ePREFILTER;
+
             // 1. START POINT SAFETY (Look-at point resolution)
             // If the target eye/pivot is inside or too close to a ceiling, push it down.
             // This prevents the camera from trying to orbit a point that is "illegal".
             PxRaycastBuffer eyeHit;
             PxVec3 up(0, 1, 0);
-            if (m_Scene->raycast(targetPos + PxVec3(0, -0.5f, 0), up, 1.0f, eyeHit)) {
-                float distToCeiling = eyeHit.block.distance - 0.5f;
+            // Modified: Cast up from targetPos directly to avoid floor collisions
+            if (m_Scene->raycast(targetPos, up, 0.5f, eyeHit, PxHitFlag::eDEFAULT, filterData, &filter)) {
+                float distToCeiling = eyeHit.block.distance;
                 if (distToCeiling < 0.4f) {
                     targetPos.y -= (0.4f - distToCeiling);
                 }
@@ -967,7 +983,7 @@ namespace Boom {
             for (auto& off : offsets) {
                 PxVec3 start = targetPos + (rightVec * off.x + upVec * off.y) * probeRadius;
                 PxRaycastBuffer hit;
-                if (m_Scene->raycast(start, dir, maxDist, hit)) {
+                if (m_Scene->raycast(start, dir, maxDist, hit, PxHitFlag::eDEFAULT, filterData, &filter)) {
                     if (hit.block.distance < closestHitDist) {
                         closestHitDist = hit.block.distance;
                         anyHit = true;
@@ -995,7 +1011,7 @@ namespace Boom {
                 for (auto& rDir : repulsionDirs) {
                     PxRaycastBuffer rHit;
                     // Cast a short ray to see if we're too close to a surface
-                    if (m_Scene->raycast(finalPos, rDir, personalSpace, rHit)) {
+                    if (m_Scene->raycast(finalPos, rDir, personalSpace, rHit, PxHitFlag::eDEFAULT, filterData, &filter)) {
                         float nudgeDist = personalSpace - rHit.block.distance + 0.05f;
                         finalPos -= rDir * nudgeDist;
                         adjusted = true;
