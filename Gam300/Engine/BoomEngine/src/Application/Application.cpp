@@ -348,6 +348,17 @@ namespace Boom
                     EnttView<Entity, RigidBodyComponent>([](auto, RigidBodyComponent& rb) { rb.RigidBody.isColliding = false; });
                     UpdateKinematicTransforms();
                     RunPhysicsSimulation();
+
+                    // Animation Logic (Update once per frame)
+                    EnttView<Entity, AnimatorComponent>([this, dt](auto entity, AnimatorComponent& an) {
+                        if (!an.animator) return;
+                        bool shouldAnimate = true;
+                        if (entity.Has<AIComponent>()) {
+                            if (!entity.Get<AIComponent>().active) shouldAnimate = false;
+                        }
+                        if (shouldAnimate) an.animator->Animate(dt);
+                    });
+
                     UpdateThirdPersonCameras();
                     SoundSystem::Update(m_Context->scene, static_cast<float>(m_Context->DeltaTime));
                 }
@@ -888,23 +899,8 @@ namespace Boom
                         currentJoints = an.animator->GetJoints();
                     }
                     else {
-                        bool shouldAnimate = (m_IsInPlayMode && m_AppState == ApplicationState::RUNNING);
-                        bool isMenuObj = entity.Has<Boom::MenuComponent>();
-                        if ((m_IsGameLogicPaused || m_IsPlayerDead || m_IsEnd) && !isMenuObj) {
-                            shouldAnimate = false;
-                        }
-
-                        if (entity.Has<AIComponent>()) {
-                            const auto& ai = entity.Get<AIComponent>();
-                            if (!ai.active) {
-                                shouldAnimate = false;
-                            }
-                        }
-
-                        float dt = shouldAnimate ? (float)m_Context->DeltaTime : 0.0f;
-                        auto& joints = an.animator->Animate(dt);
-                        currentJoints = joints;
-                        m_Context->renderer->SetJoints(joints);
+                        currentJoints = an.animator->GetJoints();
+                        m_Context->renderer->SetJoints(currentJoints);
                     }
                 }
                 else {
@@ -1522,7 +1518,7 @@ namespace Boom
                     glm::quatLookAt(glm::normalize(pivotPosition - desiredPosition), glm::vec3(0, 1, 0))
                 ));
 
-                tc.transform.translate = m_Context->physics->ResolveThirdPersonCameraPosition(pivotPosition, desiredPosition);
+                tc.transform.translate = m_Context->physics->ResolveThirdPersonCameraPosition(pivotPosition, desiredPosition, 0.5f, targetEnttID);
 
                 // Apply camera shake (set from scripts via TriggerCameraShake)
                 // shakePhase accumulates continuously so oscillation never freezes,

@@ -397,7 +397,8 @@ namespace EditorUI {
         // ===== Entity Shortcuts (Global - work when any entity is selected) =====
 
        // Ctrl+D: Duplicate selected entity (works globally, not just in Hierarchy)
-        if (ctrl && !shift && ImGui::IsKeyPressed(ImGuiKey_D, false))
+        // Disable in play mode to prevent accidental duplicates during gameplay (e.g., WASD + CTRL)
+        if (!m_App->IsPlaying() && ctrl && !shift && ImGui::IsKeyPressed(ImGuiKey_D, false))
         {
             entt::entity selected = SelectedEntity();
             auto& registry = m_Context->scene;
