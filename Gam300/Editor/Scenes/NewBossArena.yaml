@@ -4,7 +4,7 @@ ENTITIES:
       Parent: 0
       Name: UI_GodMode
       UID: 9823746501837264951
-      SortOrder: 600
+      SortOrder: 179
     TransformComponent:
       Transform:
         Translate: [0, 11.6872597, 0]
@@ -19,20 +19,6 @@ ENTITIES:
       renderAs3D: false
       billboardMode: true
       alignment: Left
-  - InfoComponent:
-      Parent: 0
-      Name: PlayerHealth
-      UID: 13788123475314750475
-      SortOrder: 54
-    TransformComponent:
-      Transform:
-        Translate: [0, 9.99270344, -8.31653309]
-        Rotate: [0, -0, 0]
-        Scale: [5.34000015, 6.05000019, 4.25]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.CutsceneSequencer
-      ParamsJSON: "{\n  \"AllowSkip\": true,\n  \"BlockInput\": false,\n  \"CutsceneFile\": \"BossCutscene.seq\",\n  \"PlayOnStart\": true,\n  \"PlayOnTrigger\": false,\n  \"VisualDebug\": true\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -50,7 +36,7 @@ ENTITIES:
       Parent: 0
       Name: MoveToOutro
       UID: 13125061118457097182
-      SortOrder: 48
+      SortOrder: 60
     TransformComponent:
       Transform:
         Translate: [0, 13.3929167, 114.822235]
@@ -71,7 +57,7 @@ ENTITIES:
       Parent: 0
       Name: LightBossSmallLeft3
       UID: 17696225168363064634
-      SortOrder: 69
+      SortOrder: 81
     TransformComponent:
       Transform:
         Translate: [2.22000003, 21, -4.02899981]
@@ -87,7 +73,7 @@ ENTITIES:
       Parent: 0
       Name: LightBossSmallLeft2
       UID: 12922170012192665446
-      SortOrder: 47
+      SortOrder: 59
     TransformComponent:
       Transform:
         Translate: [2.22000003, 21, -11.6888819]
@@ -103,7 +89,7 @@ ENTITIES:
       Parent: 0
       Name: BossCutscene3
       UID: 7653621180726242109
-      SortOrder: 27
+      SortOrder: 49
     TransformComponent:
       Transform:
         Translate: [0, 11.5278978, -12.5427389]
@@ -113,7 +99,7 @@ ENTITIES:
       Parent: 0
       Name: BossCutscene2
       UID: 16464075430080491909
-      SortOrder: 61
+      SortOrder: 75
     TransformComponent:
       Transform:
         Translate: [0.0925830603, 37.5218048, -31.3728504]
@@ -123,7 +109,7 @@ ENTITIES:
       Parent: 0
       Name: BossCutscene1
       UID: 8349692465342426631
-      SortOrder: 29
+      SortOrder: 51
     TransformComponent:
       Transform:
         Translate: [5.00344706, 15.3533096, -16.1901493]
@@ -133,7 +119,7 @@ ENTITIES:
       Parent: 0
       Name: LightBossSmallLeft
       UID: 13444648699230126937
-      SortOrder: 52
+      SortOrder: 61
     TransformComponent:
       Transform:
         Translate: [2.20000005, 21, -19.1289997]
@@ -149,7 +135,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Left_small_18
       UID: 793064806979287711
-      SortOrder: 2
+      SortOrder: 42
     TransformComponent:
       Transform:
         Translate: [9, 16.1367264, -2]
@@ -166,7 +152,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Left_small_17
       UID: 17576176897052940756
-      SortOrder: 68
+      SortOrder: 80
     TransformComponent:
       Transform:
         Translate: [9, 16.1367264, -4.5]
@@ -183,7 +169,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Left_small_16
       UID: 16715095551428501500
-      SortOrder: 64
+      SortOrder: 77
     TransformComponent:
       Transform:
         Translate: [9, 16.1367264, -7]
@@ -200,7 +186,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Left_small_15
       UID: 13799284713951747895
-      SortOrder: 55
+      SortOrder: 73
     TransformComponent:
       Transform:
         Translate: [9, 16.1367264, -9.5]
@@ -217,7 +203,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Left_small_14
       UID: 10650972555002157977
-      SortOrder: 39
+      SortOrder: 55
     TransformComponent:
       Transform:
         Translate: [9, 16.1367264, -12]
@@ -234,7 +220,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Left_small_13
       UID: 17167258007583917597
-      SortOrder: 66
+      SortOrder: 78
     TransformComponent:
       Transform:
         Translate: [9, 16.1367264, -14.5]
@@ -251,7 +237,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Left_small_12
       UID: 14272290242259432042
-      SortOrder: 56
+      SortOrder: 74
     TransformComponent:
       Transform:
         Translate: [9, 16.1367264, -17]
@@ -268,7 +254,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Left_small_11
       UID: 18130342074752088282
-      SortOrder: 70
+      SortOrder: 82
     TransformComponent:
       Transform:
         Translate: [9, 16.1367264, -19.5]
@@ -285,7 +271,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Left_small_10
       UID: 8369895959540193800
-      SortOrder: 30
+      SortOrder: 52
     TransformComponent:
       Transform:
         Translate: [9, 16.1367264, -22]
@@ -302,7 +288,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Left_small_9
       UID: 5438366593457959599
-      SortOrder: 17
+      SortOrder: 45
     TransformComponent:
       Transform:
         Translate: [6.5, 13.7777262, -22]
@@ -319,7 +305,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Left_small_8
       UID: 16630432654451762823
-      SortOrder: 62
+      SortOrder: 76
     TransformComponent:
       Transform:
         Translate: [6.5, 13.7777262, -19.5]
@@ -336,7 +322,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Left_small_7
       UID: 6538210502960319233
-      SortOrder: 22
+      SortOrder: 46
     TransformComponent:
       Transform:
         Translate: [6.5, 13.7777262, -17]
@@ -353,7 +339,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Left_small_6
       UID: 8773710960686722989
-      SortOrder: 32
+      SortOrder: 53
     TransformComponent:
       Transform:
         Translate: [6.5, 13.7777262, -14.5]
@@ -370,7 +356,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Left_small_5
       UID: 11327459194312952972
-      SortOrder: 41
+      SortOrder: 56
     TransformComponent:
       Transform:
         Translate: [6.5, 13.7777262, -12]
@@ -387,7 +373,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Left_small_4
       UID: 8144496714170646880
-      SortOrder: 28
+      SortOrder: 50
     TransformComponent:
       Transform:
         Translate: [6.5, 13.7777262, -9.5]
@@ -404,7 +390,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Left_small_3
       UID: 1750712666503850028
-      SortOrder: 3
+      SortOrder: 43
     TransformComponent:
       Transform:
         Translate: [6.5, 13.7777262, -7]
@@ -421,7 +407,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Left_small_2
       UID: 6588265327499686870
-      SortOrder: 24
+      SortOrder: 47
     TransformComponent:
       Transform:
         Translate: [6.5, 13.7777262, -4.5]
@@ -438,7 +424,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Left_small_1
       UID: 12394526697158746822
-      SortOrder: 44
+      SortOrder: 58
     TransformComponent:
       Transform:
         Translate: [6.5, 13.7777262, -2]
@@ -455,7 +441,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Right_small_16
       UID: 12052448669553319695
-      SortOrder: 123
+      SortOrder: 135
     TransformComponent:
       Transform:
         Translate: [-9.80000019, 16.1367264, -7]
@@ -472,7 +458,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Right_small_15
       UID: 4419881536993678065
-      SortOrder: 90
+      SortOrder: 102
     TransformComponent:
       Transform:
         Translate: [-9.80000019, 16.1367264, -9.5]
@@ -489,7 +475,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Right_small_14
       UID: 16589844598637502790
-      SortOrder: 160
+      SortOrder: 172
     TransformComponent:
       Transform:
         Translate: [-9.80000019, 16.1367264, -12]
@@ -506,7 +492,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Right_small_13
       UID: 11192862439101487044
-      SortOrder: 119
+      SortOrder: 131
     TransformComponent:
       Transform:
         Translate: [-9.80000019, 16.1367264, -14.5]
@@ -523,7 +509,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Right_small_12
       UID: 4774832130250149758
-      SortOrder: 94
+      SortOrder: 106
     TransformComponent:
       Transform:
         Translate: [-9.80000019, 16.1367264, -17]
@@ -540,7 +526,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Right_small_11
       UID: 16031108018694868590
-      SortOrder: 153
+      SortOrder: 165
     TransformComponent:
       Transform:
         Translate: [-9.80000019, 16.1367264, -19.5]
@@ -557,7 +543,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Right_small_10
       UID: 3176923546666761095
-      SortOrder: 84
+      SortOrder: 96
     TransformComponent:
       Transform:
         Translate: [-9.80000019, 16.1367264, -22]
@@ -574,7 +560,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Right_small_9
       UID: 13152477880452037341
-      SortOrder: 129
+      SortOrder: 141
     TransformComponent:
       Transform:
         Translate: [-7, 13.7777262, -22]
@@ -591,7 +577,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Right_small_8
       UID: 7271067160134495272
-      SortOrder: 104
+      SortOrder: 116
     TransformComponent:
       Transform:
         Translate: [-7, 13.7777262, -19.5]
@@ -608,7 +594,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Right_small_7
       UID: 4665405695363872789
-      SortOrder: 93
+      SortOrder: 105
     TransformComponent:
       Transform:
         Translate: [-7, 13.7777262, -17]
@@ -625,7 +611,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Right_small_6
       UID: 415337509441827117
-      SortOrder: 73
+      SortOrder: 85
     TransformComponent:
       Transform:
         Translate: [-7, 13.7777262, -14.5]
@@ -642,7 +628,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Right_small_5
       UID: 10372319831133992096
-      SortOrder: 116
+      SortOrder: 128
     TransformComponent:
       Transform:
         Translate: [-7, 13.7777262, -12]
@@ -659,7 +645,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Right_small_4
       UID: 1031953869390014865
-      SortOrder: 76
+      SortOrder: 88
     TransformComponent:
       Transform:
         Translate: [-7, 13.7777262, -9.5]
@@ -676,7 +662,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Right_small_3
       UID: 16383131871622079516
-      SortOrder: 159
+      SortOrder: 171
     TransformComponent:
       Transform:
         Translate: [-7, 13.7777262, -7]
@@ -693,7 +679,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Right_small_2
       UID: 16100918009667269303
-      SortOrder: 155
+      SortOrder: 167
     TransformComponent:
       Transform:
         Translate: [-7, 13.7777262, -4.5]
@@ -710,7 +696,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS__Right_small_1
       UID: 11299632248217405381
-      SortOrder: 154
+      SortOrder: 166
     TransformComponent:
       Transform:
         Translate: [-7, 13.7777262, -2]
@@ -727,7 +713,7 @@ ENTITIES:
       Parent: 0
       Name: Top_Top_Black_Wall
       UID: 554014580990687736
-      SortOrder: 74
+      SortOrder: 86
     TransformComponent:
       Transform:
         Translate: [0, 47.6010017, 52.175602]
@@ -744,7 +730,7 @@ ENTITIES:
       Parent: 0
       Name: LightBoss
       UID: 17041451949569625123
-      SortOrder: 161
+      SortOrder: 173
     TransformComponent:
       Transform:
         Translate: [-0.25, 35.8528557, 78.4339981]
@@ -760,7 +746,7 @@ ENTITIES:
       Parent: 0
       Name: LightShadows
       UID: 8894141124999058511
-      SortOrder: 108
+      SortOrder: 120
     TransformComponent:
       Transform:
         Translate: [0, 41.0760651, 117.638]
@@ -774,7 +760,7 @@ ENTITIES:
       Parent: 0
       Name: PlayerUI
       UID: 12030897679342282011
-      SortOrder: 121
+      SortOrder: 133
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -785,71 +771,71 @@ ENTITIES:
       TypeName: GameScripts.UIManager
       ParamsJSON: "{}"
   - InfoComponent:
-      Parent: 13788123475314750475
+      Parent: 0
       Name: Heart_Dead
       UID: 11527860442457317382
-      SortOrder: 124
+      SortOrder: 71
     TransformComponent:
       Transform:
-        Translate: [-0.579999983, 0.856999993, 0]
+        Translate: [-0.674000025, 0.874000013, 0]
         Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0799999982]
+        Scale: [0.0240000002, 0.0359999985, 0.0799999982]
     SpriteComponent:
       textureID: 947084306896258002
       color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
-      Parent: 13788123475314750475
+      Parent: 0
       Name: Heart_Dead
       UID: 1873590737519739616
-      SortOrder: 80
+      SortOrder: 69
     TransformComponent:
       Transform:
-        Translate: [-0.649999976, 0.856999993, 0]
+        Translate: [-0.730000019, 0.874000013, 0]
         Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0799999982]
+        Scale: [0.0240000002, 0.0359999985, 0.0799999982]
     SpriteComponent:
       textureID: 947084306896258002
       color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
-      Parent: 13788123475314750475
+      Parent: 0
       Name: Heart_Dead
       UID: 7476722325394003748
-      SortOrder: 106
+      SortOrder: 67
     TransformComponent:
       Transform:
-        Translate: [-0.720000029, 0.856999993, 0]
+        Translate: [-0.786000013, 0.874000013, 0]
         Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0799999982]
+        Scale: [0.0240000002, 0.0359999985, 0.0799999982]
     SpriteComponent:
       textureID: 947084306896258002
       color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
-      Parent: 13788123475314750475
+      Parent: 0
       Name: Heart_Dead
       UID: 18092647864905269017
-      SortOrder: 53
+      SortOrder: 65
     TransformComponent:
       Transform:
-        Translate: [-0.790000021, 0.856999993, 0]
+        Translate: [-0.842000008, 0.874000013, 0]
         Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0799999982]
+        Scale: [0.0240000002, 0.0359999985, 0.0799999982]
     SpriteComponent:
       textureID: 947084306896258002
       color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
-      Parent: 13788123475314750475
+      Parent: 0
       Name: Heart_Dead
       UID: 8476416355653194670
-      SortOrder: 111
+      SortOrder: 63
     TransformComponent:
       Transform:
-        Translate: [-0.860000014, 0.856999993, 0]
+        Translate: [-0.898000002, 0.874000013, 0]
         Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0799999982]
+        Scale: [0.0240000002, 0.0359999985, 0.0799999982]
     SpriteComponent:
       textureID: 947084306896258002
       color: [1, 1, 1, 1]
@@ -871,7 +857,7 @@ ENTITIES:
       Parent: 0
       Name: bridge wall collider right
       UID: 1408673440031407612
-      SortOrder: 77
+      SortOrder: 89
     TransformComponent:
       Transform:
         Translate: [-6.96400023, 10.8160763, 60]
@@ -894,7 +880,7 @@ ENTITIES:
       Parent: 0
       Name: bridge wall collider left
       UID: 15921281323266625279
-      SortOrder: 152
+      SortOrder: 164
     TransformComponent:
       Transform:
         Translate: [6.90616941, 10.8160763, 60]
@@ -917,7 +903,7 @@ ENTITIES:
       Parent: 0
       Name: Trigger box LionStatue_6
       UID: 8474265369139418335
-      SortOrder: 107
+      SortOrder: 119
     TransformComponent:
       Transform:
         Translate: [-0.5, 11.8000002, 108.699997]
@@ -964,7 +950,7 @@ ENTITIES:
       Parent: 0
       Name: Trigger box LionStatue_5
       UID: 15275799577852125953
-      SortOrder: 145
+      SortOrder: 157
     TransformComponent:
       Transform:
         Translate: [3.07999992, 11.8000002, 79.4899979]
@@ -1011,7 +997,7 @@ ENTITIES:
       Parent: 0
       Name: Trigger box LionStatue_4
       UID: 15559324407947326914
-      SortOrder: 149
+      SortOrder: 161
     TransformComponent:
       Transform:
         Translate: [-3.3900001, 11.8000002, 50.3300018]
@@ -1058,7 +1044,7 @@ ENTITIES:
       Parent: 0
       Name: Trigger box LionStatue_3
       UID: 5917133360828997491
-      SortOrder: 99
+      SortOrder: 111
     TransformComponent:
       Transform:
         Translate: [0.0680000037, 11.8000002, 19.2099991]
@@ -1105,7 +1091,7 @@ ENTITIES:
       Parent: 0
       Name: Trigger box LionStatue_2
       UID: 15456305191942473107
-      SortOrder: 146
+      SortOrder: 158
     TransformComponent:
       Transform:
         Translate: [-2.51999998, 11.8000002, 0]
@@ -1152,7 +1138,7 @@ ENTITIES:
       Parent: 0
       Name: Trigger box LionStatue_1
       UID: 13460854651567322344
-      SortOrder: 131
+      SortOrder: 143
     TransformComponent:
       Transform:
         Translate: [2.9000001, 11.8000002, 0]
@@ -1199,7 +1185,7 @@ ENTITIES:
       Parent: 0
       Name: spike 14
       UID: 2529334434494801333
-      SortOrder: 81
+      SortOrder: 93
     TransformComponent:
       Transform:
         Translate: [3.15300012, 10.1199999, 59.9700012]
@@ -1243,7 +1229,7 @@ ENTITIES:
       Parent: 0
       Name: spike 13
       UID: 18243306952441687674
-      SortOrder: 165
+      SortOrder: 177
     TransformComponent:
       Transform:
         Translate: [-3.51699996, 10.2799997, 57.9799995]
@@ -1287,7 +1273,7 @@ ENTITIES:
       Parent: 0
       Name: spike 12
       UID: 3993713392896881928
-      SortOrder: 88
+      SortOrder: 100
     TransformComponent:
       Transform:
         Translate: [0.143000007, 10.2799997, 54.6699982]
@@ -1331,7 +1317,7 @@ ENTITIES:
       Parent: 0
       Name: spike 11
       UID: 14363673409948238081
-      SortOrder: 138
+      SortOrder: 150
     TransformComponent:
       Transform:
         Translate: [-3.51699996, 10.2799997, 54.6699982]
@@ -1362,10 +1348,10 @@ ENTITIES:
       Parent: 0
       Name: Samurai
       UID: 15509033343906787136
-      SortOrder: 147
+      SortOrder: 159
     TransformComponent:
       Transform:
-        Translate: [0.121377714, 13.5515556, -21.7545128]
+        Translate: [0, 13.3230076, -21.7175274]
         Rotate: [0, 92.5098495, 0]
         Scale: [0.0160000008, 0.0160000008, 0.0160000008]
     CharacterControllerComponent:
@@ -1520,7 +1506,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 1.37580158e-09
+        Speed: 0
       BoolParams:
         IsMoving: false
         IsCrouching: false
@@ -1549,7 +1535,7 @@ ENTITIES:
       Parent: 0
       Name: Back_Black_Wall
       UID: 17057980568177196576
-      SortOrder: 162
+      SortOrder: 174
     TransformComponent:
       Transform:
         Translate: [-1.22000003, 11.7460003, -39.8161354]
@@ -1566,7 +1552,7 @@ ENTITIES:
       Parent: 0
       Name: Black_Wall_left
       UID: 12835183121659443920
-      SortOrder: 128
+      SortOrder: 140
     TransformComponent:
       Transform:
         Translate: [14.3607731, 11, 45.9358292]
@@ -1583,7 +1569,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Right_small_18
       UID: 16365751705590742760
-      SortOrder: 158
+      SortOrder: 170
     TransformComponent:
       Transform:
         Translate: [-9.80000019, 16.1367264, -2]
@@ -1600,7 +1586,7 @@ ENTITIES:
       Parent: 0
       Name: LightBossSmallRight2
       UID: 17317164598352543515
-      SortOrder: 67
+      SortOrder: 79
     TransformComponent:
       Transform:
         Translate: [-2.22000003, 21, -11.6888819]
@@ -1616,11 +1602,11 @@ ENTITIES:
       Parent: 0
       Name: BOSS
       UID: 10561426511897708155
-      SortOrder: 117
+      SortOrder: 129
     TransformComponent:
       Transform:
         Translate: [-0.419950008, 17, 123.305321]
-        Rotate: [180, 180, 180]
+        Rotate: [0, 180, 0]
         Scale: [2, 2, 2]
     ModelComponent:
       ModelID: 18265481119490193399
@@ -1656,7 +1642,7 @@ ENTITIES:
       Parent: 0
       Name: Stairs
       UID: 6895475612116251577
-      SortOrder: 102
+      SortOrder: 114
     TransformComponent:
       Transform:
         Translate: [1.34899998, 12.4460783, -26.0009995]
@@ -1704,7 +1690,7 @@ ENTITIES:
       Parent: 0
       Name: LightMain
       UID: 14757495953244097559
-      SortOrder: 141
+      SortOrder: 153
     TransformComponent:
       Transform:
         Translate: [0, 40.5350113, 117.638]
@@ -1720,7 +1706,7 @@ ENTITIES:
       Parent: 0
       Name: LightBossSmallRight
       UID: 5197780243100069252
-      SortOrder: 15
+      SortOrder: 44
     TransformComponent:
       Transform:
         Translate: [-2.22000003, 21, -19.1289997]
@@ -1749,7 +1735,7 @@ ENTITIES:
       Parent: 0
       Name: MapGeneration
       UID: 15778899060177861509
-      SortOrder: 151
+      SortOrder: 163
     TransformComponent:
       Transform:
         Translate: [37.452774, 18.8610001, -8.84073734]
@@ -1776,7 +1762,7 @@ ENTITIES:
       Parent: 0
       Name: Floor
       UID: 14270607591979394860
-      SortOrder: 137
+      SortOrder: 149
     TransformComponent:
       Transform:
         Translate: [0, 6.62599993, 60]
@@ -1803,7 +1789,7 @@ ENTITIES:
       Parent: 0
       Name: Wall FLoor
       UID: 18397485521370492888
-      SortOrder: 166
+      SortOrder: 178
     TransformComponent:
       Transform:
         Translate: [-1.16445255, -7.89818573, 36.5614777]
@@ -1820,7 +1806,7 @@ ENTITIES:
       Parent: 0
       Name: Skybox
       UID: 3009173759421305309
-      SortOrder: 82
+      SortOrder: 94
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -1832,11 +1818,11 @@ ENTITIES:
       Parent: 0
       Name: Camera
       UID: 9201024860084647067
-      SortOrder: 109
+      SortOrder: 121
     TransformComponent:
       Transform:
-        Translate: [2.15819669, 15.9808779, 98.8712921]
-        Rotate: [-12.3125, 192.5625, 0]
+        Translate: [-0.630015135, 28.8260517, -28.4878216]
+        Rotate: [-16.1875, -177.5, 0]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -1870,7 +1856,7 @@ ENTITIES:
       Parent: 0
       Name: MazeWall
       UID: 5184298894274328555
-      SortOrder: 97
+      SortOrder: 109
     TransformComponent:
       Transform:
         Translate: [-0.238336563, 8.5343647, -11.3500004]
@@ -1897,7 +1883,7 @@ ENTITIES:
       Parent: 0
       Name: left main wall
       UID: 8261118590240462762
-      SortOrder: 106
+      SortOrder: 118
     TransformComponent:
       Transform:
         Translate: [12.6459999, 18, -22.1669159]
@@ -1914,7 +1900,7 @@ ENTITIES:
       Parent: 0
       Name: Top_Black_Wall
       UID: 2009953532560172724
-      SortOrder: 80
+      SortOrder: 92
     TransformComponent:
       Transform:
         Translate: [-0.00999999978, 43.733532, -25.3239994]
@@ -1931,7 +1917,7 @@ ENTITIES:
       Parent: 0
       Name: LightBossSmallRight3
       UID: 12205719933557277121
-      SortOrder: 42
+      SortOrder: 57
     TransformComponent:
       Transform:
         Translate: [-2.22000003, 21, -4.02899981]
@@ -1947,7 +1933,7 @@ ENTITIES:
       Parent: 0
       Name: BOSS_Right_small_17
       UID: 12576173971889436467
-      SortOrder: 126
+      SortOrder: 138
     TransformComponent:
       Transform:
         Translate: [-9.80000019, 16.1367264, -4.5]
@@ -1964,7 +1950,7 @@ ENTITIES:
       Parent: 0
       Name: Black_wall_right
       UID: 12441380999567332474
-      SortOrder: 125
+      SortOrder: 137
     TransformComponent:
       Transform:
         Translate: [-16.3611298, 11, 46.6941605]
@@ -1994,7 +1980,7 @@ ENTITIES:
       Parent: 0
       Name: LionStatue_1
       UID: 16145929280111823194
-      SortOrder: 156
+      SortOrder: 168
     TransformComponent:
       Transform:
         Translate: [2.9230001, 11.8000002, 0.757000029]
@@ -2040,7 +2026,7 @@ ENTITIES:
       Parent: 0
       Name: LionStatue_2
       UID: 11636440363419377696
-      SortOrder: 120
+      SortOrder: 132
     TransformComponent:
       Transform:
         Translate: [-2.84413314, 11.8000002, 0.757000029]
@@ -2086,7 +2072,7 @@ ENTITIES:
       Parent: 0
       Name: rock 1
       UID: 14010238560162349006
-      SortOrder: 135
+      SortOrder: 147
     TransformComponent:
       Transform:
         Translate: [0.123197496, 15, 4.99707031]
@@ -2130,7 +2116,7 @@ ENTITIES:
       Parent: 0
       Name: rock 2
       UID: 4803239163718258098
-      SortOrder: 95
+      SortOrder: 107
     TransformComponent:
       Transform:
         Translate: [3.29633808, 15, 10]
@@ -2174,7 +2160,7 @@ ENTITIES:
       Parent: 0
       Name: rock 3
       UID: 15102736482816724312
-      SortOrder: 143
+      SortOrder: 155
     TransformComponent:
       Transform:
         Translate: [-0.155175328, 15, 15]
@@ -2218,7 +2204,7 @@ ENTITIES:
       Parent: 0
       Name: rock 4
       UID: 17215013142034194245
-      SortOrder: 163
+      SortOrder: 175
     TransformComponent:
       Transform:
         Translate: [-3.52764249, 15, 15]
@@ -2262,7 +2248,7 @@ ENTITIES:
       Parent: 0
       Name: LionStatue_3
       UID: 14377784318884022465
-      SortOrder: 139
+      SortOrder: 151
     TransformComponent:
       Transform:
         Translate: [0.0677887797, 11.8000002, 20]
@@ -2308,7 +2294,7 @@ ENTITIES:
       Parent: 0
       Name: spike 1
       UID: 13487211731470903325
-      SortOrder: 132
+      SortOrder: 144
     TransformComponent:
       Transform:
         Translate: [3.38499999, 10.2799997, 23.9899998]
@@ -2352,7 +2338,7 @@ ENTITIES:
       Parent: 0
       Name: spike 2
       UID: 9619501960596964317
-      SortOrder: 111
+      SortOrder: 123
     TransformComponent:
       Transform:
         Translate: [-3.06668544, 10.2799997, 23.9899998]
@@ -2396,7 +2382,7 @@ ENTITIES:
       Parent: 0
       Name: spike 3
       UID: 7552189228740501835
-      SortOrder: 105
+      SortOrder: 117
     TransformComponent:
       Transform:
         Translate: [-0.00699996948, 10.2799997, 29.4799995]
@@ -2440,7 +2426,7 @@ ENTITIES:
       Parent: 0
       Name: spike 4
       UID: 3101865811474128970
-      SortOrder: 83
+      SortOrder: 95
     TransformComponent:
       Transform:
         Translate: [3.31299996, 10.2306776, 31.7299995]
@@ -2484,7 +2470,7 @@ ENTITIES:
       Parent: 0
       Name: spike 5
       UID: 14575390075383558147
-      SortOrder: 140
+      SortOrder: 152
     TransformComponent:
       Transform:
         Translate: [-0.546999991, 10.2799997, 32.9199982]
@@ -2528,7 +2514,7 @@ ENTITIES:
       Parent: 0
       Name: spike 6
       UID: 9721455432148984591
-      SortOrder: 112
+      SortOrder: 124
     TransformComponent:
       Transform:
         Translate: [-3.24699998, 10.2799997, 39.0800018]
@@ -2572,7 +2558,7 @@ ENTITIES:
       Parent: 0
       Name: spike 7
       UID: 10229670183689294584
-      SortOrder: 115
+      SortOrder: 127
     TransformComponent:
       Transform:
         Translate: [0.133000016, 10.2799997, 40.8199997]
@@ -2616,7 +2602,7 @@ ENTITIES:
       Parent: 0
       Name: spike 8
       UID: 3443155060296031229
-      SortOrder: 86
+      SortOrder: 98
     TransformComponent:
       Transform:
         Translate: [-3.26699996, 10.25, 42.1800003]
@@ -2660,7 +2646,7 @@ ENTITIES:
       Parent: 0
       Name: spike 9
       UID: 192050280947955834
-      SortOrder: 72
+      SortOrder: 84
     TransformComponent:
       Transform:
         Translate: [-0.127000004, 10.2799997, 46.9799995]
@@ -2704,7 +2690,7 @@ ENTITIES:
       Parent: 0
       Name: spike 10
       UID: 12039869936777094734
-      SortOrder: 122
+      SortOrder: 134
     TransformComponent:
       Transform:
         Translate: [3.29299998, 10.2799997, 47]
@@ -2748,7 +2734,7 @@ ENTITIES:
       Parent: 0
       Name: LionStatue_4
       UID: 12059455461658320157
-      SortOrder: 124
+      SortOrder: 136
     TransformComponent:
       Transform:
         Translate: [-3.48040915, 11.8000002, 51]
@@ -2794,7 +2780,7 @@ ENTITIES:
       Parent: 0
       Name: rock 5
       UID: 6994388576141132647
-      SortOrder: 103
+      SortOrder: 115
     TransformComponent:
       Transform:
         Translate: [-0.155175328, 15, 51.3407516]
@@ -2838,7 +2824,7 @@ ENTITIES:
       Parent: 0
       Name: rock 6
       UID: 16190255381961766179
-      SortOrder: 157
+      SortOrder: 169
     TransformComponent:
       Transform:
         Translate: [-0.155175328, 15, 65]
@@ -2882,7 +2868,7 @@ ENTITIES:
       Parent: 0
       Name: rock 7
       UID: 4919908658999948592
-      SortOrder: 96
+      SortOrder: 108
     TransformComponent:
       Transform:
         Translate: [-0.155175328, 15, 68.3099976]
@@ -2926,7 +2912,7 @@ ENTITIES:
       Parent: 0
       Name: rock 8
       UID: 18142957127339204573
-      SortOrder: 164
+      SortOrder: 176
     TransformComponent:
       Transform:
         Translate: [-3.42499995, 15, 68.3099976]
@@ -2970,7 +2956,7 @@ ENTITIES:
       Parent: 0
       Name: rock 9
       UID: 10024394437943401150
-      SortOrder: 113
+      SortOrder: 125
     TransformComponent:
       Transform:
         Translate: [2.30673289, 15, 72.0815811]
@@ -3014,7 +3000,7 @@ ENTITIES:
       Parent: 0
       Name: rock 10
       UID: 9422343463103980360
-      SortOrder: 110
+      SortOrder: 122
     TransformComponent:
       Transform:
         Translate: [-3.875, 15, 76.7799988]
@@ -3058,7 +3044,7 @@ ENTITIES:
       Parent: 0
       Name: rock 11
       UID: 4565592126430457284
-      SortOrder: 92
+      SortOrder: 104
     TransformComponent:
       Transform:
         Translate: [-0.0250000004, 15, 78.3700027]
@@ -3102,7 +3088,7 @@ ENTITIES:
       Parent: 0
       Name: LionStatue_5
       UID: 1759009440757392163
-      SortOrder: 79
+      SortOrder: 91
     TransformComponent:
       Transform:
         Translate: [3.58999991, 11.8000002, 80]
@@ -3148,7 +3134,7 @@ ENTITIES:
       Parent: 0
       Name: spike 14
       UID: 5345672792944336913
-      SortOrder: 98
+      SortOrder: 110
     TransformComponent:
       Transform:
         Translate: [-3.08699989, 10.2799997, 80]
@@ -3192,7 +3178,7 @@ ENTITIES:
       Parent: 0
       Name: spike 15
       UID: 15545363060307225653
-      SortOrder: 148
+      SortOrder: 160
     TransformComponent:
       Transform:
         Translate: [3.28299999, 10.2799997, 85.1600037]
@@ -3236,7 +3222,7 @@ ENTITIES:
       Parent: 0
       Name: spike 16
       UID: 14109915350864052334
-      SortOrder: 136
+      SortOrder: 148
     TransformComponent:
       Transform:
         Translate: [-0.307000011, 10.2799997, 88.5199966]
@@ -3280,7 +3266,7 @@ ENTITIES:
       Parent: 0
       Name: rock 12
       UID: 13393220216444701386
-      SortOrder: 130
+      SortOrder: 142
     TransformComponent:
       Transform:
         Translate: [-0.0250000004, 15, 85.1600037]
@@ -3324,7 +3310,7 @@ ENTITIES:
       Parent: 0
       Name: rock 13
       UID: 15669520144306750805
-      SortOrder: 150
+      SortOrder: 162
     TransformComponent:
       Transform:
         Translate: [2.87585163, 15, 92.5599976]
@@ -3368,7 +3354,7 @@ ENTITIES:
       Parent: 0
       Name: rock 14
       UID: 943593039612327375
-      SortOrder: 75
+      SortOrder: 87
     TransformComponent:
       Transform:
         Translate: [-2.77393556, 15, 92.5599976]
@@ -3412,7 +3398,7 @@ ENTITIES:
       Parent: 0
       Name: rock 15
       UID: 6818606479066164049
-      SortOrder: 101
+      SortOrder: 113
     TransformComponent:
       Transform:
         Translate: [-2.85500002, 15, 97.2300034]
@@ -3456,7 +3442,7 @@ ENTITIES:
       Parent: 0
       Name: rock 16
       UID: 6571810694352720447
-      SortOrder: 100
+      SortOrder: 112
     TransformComponent:
       Transform:
         Translate: [0.375, 15, 96.1600037]
@@ -3487,7 +3473,7 @@ ENTITIES:
       Parent: 0
       Name: bgm
       UID: 10417744123136772025
-      SortOrder: 38
+      SortOrder: 54
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -3530,7 +3516,7 @@ ENTITIES:
       Parent: 0
       Name: spike 17
       UID: 12833212561544668459
-      SortOrder: 127
+      SortOrder: 139
     TransformComponent:
       Transform:
         Translate: [3.23300004, 10.2799997, 100.379997]
@@ -3574,7 +3560,7 @@ ENTITIES:
       Parent: 0
       Name: spike 18
       UID: 10919593602551694708
-      SortOrder: 118
+      SortOrder: 130
     TransformComponent:
       Transform:
         Translate: [3.23300004, 10.2799997, 104.019997]
@@ -3618,7 +3604,7 @@ ENTITIES:
       Parent: 0
       Name: spike 19
       UID: 4527799082696848692
-      SortOrder: 91
+      SortOrder: 103
     TransformComponent:
       Transform:
         Translate: [-0.287, 10.2799997, 104.019997]
@@ -3662,7 +3648,7 @@ ENTITIES:
       Parent: 0
       Name: LionStatue_6
       UID: 14903475872558207030
-      SortOrder: 142
+      SortOrder: 154
     TransformComponent:
       Transform:
         Translate: [-0.50999999, 11.8000002, 109.120003]
@@ -3692,71 +3678,71 @@ ENTITIES:
         Range: 3.61999989
         BloomStrength: 1
   - InfoComponent:
-      Parent: 13788123475314750475
+      Parent: 0
       Name: Heart_1
       UID: 15616386779732526889
-      SortOrder: 93
+      SortOrder: 62
     TransformComponent:
       Transform:
-        Translate: [-0.860000014, 0.856999993, 0]
+        Translate: [-0.898000002, 0.874000013, 0]
         Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0799999982]
+        Scale: [0.0240000002, 0.0359999985, 0.0799999982]
     SpriteComponent:
       textureID: 9683671951523272381
       color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
-      Parent: 13788123475314750475
+      Parent: 0
       Name: Heart_2
       UID: 15141600237030746592
-      SortOrder: 54
+      SortOrder: 64
     TransformComponent:
       Transform:
-        Translate: [-0.790000021, 0.856999993, 0]
+        Translate: [-0.842000008, 0.874000013, 0]
         Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0799999982]
+        Scale: [0.0240000002, 0.0359999985, 0.0799999982]
     SpriteComponent:
       textureID: 9683671951523272381
       color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
-      Parent: 13788123475314750475
+      Parent: 0
       Name: Heart_3
       UID: 7990280458861593247
-      SortOrder: 108
+      SortOrder: 66
     TransformComponent:
       Transform:
-        Translate: [-0.720000029, 0.856999993, 0]
+        Translate: [-0.786000013, 0.874000013, 0]
         Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0799999982]
+        Scale: [0.0240000002, 0.0359999985, 0.0799999982]
     SpriteComponent:
       textureID: 9683671951523272381
       color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
-      Parent: 13788123475314750475
+      Parent: 0
       Name: Heart_4
       UID: 12636296475842031521
-      SortOrder: 132
+      SortOrder: 68
     TransformComponent:
       Transform:
-        Translate: [-0.649999976, 0.856999993, 0]
+        Translate: [-0.730000019, 0.874000013, 0]
         Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0799999982]
+        Scale: [0.0240000002, 0.0359999985, 0.0799999982]
     SpriteComponent:
       textureID: 9683671951523272381
       color: [1, 1, 1, 1]
       renderAs3D: false
   - InfoComponent:
-      Parent: 13788123475314750475
+      Parent: 0
       Name: Heart_5
       UID: 14531722547117863261
-      SortOrder: 146
+      SortOrder: 70
     TransformComponent:
       Transform:
-        Translate: [-0.579999983, 0.856999993, 0]
+        Translate: [-0.674000025, 0.874000013, 0]
         Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0799999982]
+        Scale: [0.0240000002, 0.0359999985, 0.0799999982]
     SpriteComponent:
       textureID: 9683671951523272381
       color: [1, 1, 1, 1]
@@ -3778,7 +3764,7 @@ ENTITIES:
       Parent: 0
       Name: PlayerSpawn
       UID: 13742085224280917219
-      SortOrder: 133
+      SortOrder: 145
     TransformComponent:
       Transform:
         Translate: [0, 13.3230076, -21.7175274]
@@ -3792,7 +3778,7 @@ ENTITIES:
       Parent: 0
       Name: right main wall
       UID: 13836464900825464380
-      SortOrder: 134
+      SortOrder: 146
     TransformComponent:
       Transform:
         Translate: [-13.3995094, 18, -22]
@@ -3822,7 +3808,7 @@ ENTITIES:
       Parent: 0
       Name: Main_Wall_Left_Fill
       UID: 1676710222772089113
-      SortOrder: 78
+      SortOrder: 90
     TransformComponent:
       Transform:
         Translate: [8.05599976, 11.9738646, -22.1669159]
@@ -3852,7 +3838,7 @@ ENTITIES:
       Parent: 0
       Name: Main_Wall_Left_Fill_2
       UID: 3924406664193600481
-      SortOrder: 87
+      SortOrder: 99
     TransformComponent:
       Transform:
         Translate: [9.67099953, 14.9178638, -22.1669159]
@@ -3882,7 +3868,7 @@ ENTITIES:
       Parent: 0
       Name: Main_Wall_Right_Fill
       UID: 3234482310908122713
-      SortOrder: 85
+      SortOrder: 97
     TransformComponent:
       Transform:
         Translate: [-8.18999958, 11.9738646, -22.1669159]
@@ -3912,7 +3898,7 @@ ENTITIES:
       Parent: 0
       Name: Main_Wall_Right_Fill_2
       UID: 10157873360059342858
-      SortOrder: 114
+      SortOrder: 126
     TransformComponent:
       Transform:
         Translate: [-10.3649998, 14.9178638, -22.1669159]
@@ -3942,7 +3928,7 @@ ENTITIES:
       Parent: 0
       Name: start_collider
       UID: 15225252566924062669
-      SortOrder: 144
+      SortOrder: 156
     TransformComponent:
       Transform:
         Translate: [-0.180000007, 18.9239998, -26.2329998]
@@ -3965,7 +3951,7 @@ ENTITIES:
       Parent: 0
       Name: front_Black_Wall
       UID: 3995974847516589675
-      SortOrder: 89
+      SortOrder: 101
     TransformComponent:
       Transform:
         Translate: [-1.04900002, 11, 136.185089]
@@ -3995,7 +3981,7 @@ ENTITIES:
       Parent: 0
       Name: BossTrigger
       UID: 18170557694918562529
-      SortOrder: 71
+      SortOrder: 83
     TransformComponent:
       Transform:
         Translate: [-0.0500000007, 11.2340002, -5.5]
@@ -4009,7 +3995,7 @@ ENTITIES:
       Parent: 0
       Name: Cutscene for boss
       UID: 7261308031552102205
-      SortOrder: 26
+      SortOrder: 48
     TransformComponent:
       Transform:
         Translate: [0, 9.99270344, -8.31653309]
@@ -4023,7 +4009,7 @@ ENTITIES:
       Parent: 0
       Name: UI_Stance
       UID: 15005240768927206956
-      SortOrder: 0
+      SortOrder: 35
     TransformComponent:
       Transform:
         Translate: [0.899999976, -0.771000028, 0]
@@ -4037,7 +4023,7 @@ ENTITIES:
       Parent: 0
       Name: ToriGate
       UID: 4234174040328018575
-      SortOrder: 0
+      SortOrder: 9
     TransformComponent:
       Transform:
         Translate: [0.0977584124, 10.1504192, 111.659424]
@@ -4054,7 +4040,7 @@ ENTITIES:
       Parent: 0
       Name: video gate
       UID: 9479157243688346801
-      SortOrder: 0
+      SortOrder: 24
     TransformComponent:
       Transform:
         Translate: [0.411574125, 14.1149578, 111.392952]
