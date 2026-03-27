@@ -799,6 +799,10 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
  std::vector<glm::vec3> patrolPoints;
  std::int32_t patrolIndex = 0;
 
+ // Vision cone
+ float visionAngle = 60.0f;   // half-angle of cone in degrees (total FOV = visionAngle * 2)
+ bool showVisionCone = true;  // enable visual cone overlay
+ glm::vec3 facingDir = { 0.f, 0.f, 1.f }; // runtime-cached facing direction (not serialized)
 
  // BT root
  BTNodePtr root;
@@ -811,10 +815,38 @@ obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
  , obj_member<"IdleWait", &AIComponent::idleWait>
  , obj_member<"IdleTimer", &AIComponent::idleTimer>    // include if you want to see the live timer
  , obj_member<"PlayerName", &AIComponent::playerName>
-
  , obj_member<"PatrolIndex", &AIComponent::patrolIndex>
+ , obj_member<"VisionAngle", &AIComponent::visionAngle>
+ , obj_member<"ShowVisionCone", &AIComponent::showVisionCone>
  )
  };
+
+// Lightweight visual-only cone component.
+// Used by script-driven enemies (e.g. PatrolEnemyController) that don't have AIComponent.
+// The C# script keeps range, halfAngle, facingDir, and isAlert up to date via ICALLs.
+struct VisualConeComponent {
+    bool      enabled     = true;
+    float     range       = 12.0f;
+    float     halfAngle   = 60.0f;          // half-angle in degrees  (total FOV = halfAngle * 2)
+    glm::vec3 facingDir   = {0.f, 0.f, 1.f};
+    bool      isAlert     = false;          // false = patrol colour, true = alert colour
+    glm::vec3 patrolColor = {0.80f, 0.08f, 0.08f};  // dim red (patrol)
+    glm::vec3 alertColor  = {1.00f, 0.05f, 0.05f};  // bright red (alert)
+    float     fillAlpha   = 0.18f;   // keep subtle — GL_MAX prevents overlap brightening
+    float     edgeAlpha   = 0.55f;
+
+    XPROPERTY_DEF(
+        "VisualConeComponent", Boom::VisualConeComponent,
+        obj_member<"Enabled",     &Boom::VisualConeComponent::enabled>,
+        obj_member<"Range",       &Boom::VisualConeComponent::range>,
+        obj_member<"HalfAngle",   &Boom::VisualConeComponent::halfAngle>,
+        obj_member<"IsAlert",     &Boom::VisualConeComponent::isAlert>,
+        obj_member<"PatrolColor", &Boom::VisualConeComponent::patrolColor>,
+        obj_member<"AlertColor",  &Boom::VisualConeComponent::alertColor>,
+        obj_member<"FillAlpha",   &Boom::VisualConeComponent::fillAlpha>,
+        obj_member<"EdgeAlpha",   &Boom::VisualConeComponent::edgeAlpha>
+    )
+};
 
  struct SpriteComponent {
  AssetID textureID{ EMPTY_ASSET };

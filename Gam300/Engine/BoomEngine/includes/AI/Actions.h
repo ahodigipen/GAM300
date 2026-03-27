@@ -45,6 +45,28 @@ namespace Boom {
             glm::vec3 target = ptc.transform.translate;
             float d2 = glm::distance2(pos, target);
 
+            // Update facing direction for vision cone rendering
+            glm::vec3 facing = ai.facingDir;
+            if (reg.all_of<NavAgentComponent>(e))
+            {
+                auto& ag = reg.get<NavAgentComponent>(e);
+                glm::vec3 vel = ag.velocity;
+                vel.y = 0.f;
+                if (glm::length2(vel) > 0.01f)
+                    facing = glm::normalize(vel);
+                else if (glm::length2(ai.facingDir) < 0.5f)
+                {
+                    float yaw = glm::radians(tc.transform.rotate.y);
+                    facing = glm::normalize(glm::vec3(glm::sin(yaw), 0.f, glm::cos(yaw)));
+                }
+            }
+            else
+            {
+                float yaw = glm::radians(tc.transform.rotate.y);
+                facing = glm::normalize(glm::vec3(glm::sin(yaw), 0.f, glm::cos(yaw)));
+            }
+            ai.facingDir = facing;
+
             // Check if we are already chasing via NavAgent
             bool chasingNow = false;
             if (reg.all_of<NavAgentComponent>(e))
@@ -60,7 +82,26 @@ namespace Boom {
 
             if (d2 <= r2)
             {
-                // Still allowed to see/keep chasing
+                // If not already chasing, also check cone angle for initial detection
+                if (!chasingNow && ai.visionAngle < 180.0f)
+                {
+                    glm::vec3 toPlayer = target - pos;
+                    toPlayer.y = 0.f;
+                    const float toPlayerLen = glm::length(toPlayer);
+                    if (toPlayerLen > 0.001f)
+                    {
+                        const glm::vec3 toPlayerDir = toPlayer / toPlayerLen;
+                        glm::vec3 facingXZ = facing;
+                        facingXZ.y = 0.f;
+                        if (glm::length2(facingXZ) > 0.001f)
+                        {
+                            facingXZ = glm::normalize(facingXZ);
+                            const float cosHalf = glm::cos(glm::radians(ai.visionAngle));
+                            if (glm::dot(toPlayerDir, facingXZ) < cosHalf)
+                                return BTState::Failure; // outside vision cone
+                        }
+                    }
+                }
                 return BTState::Success;
             }
             else

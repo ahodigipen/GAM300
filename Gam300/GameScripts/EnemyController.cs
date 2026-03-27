@@ -135,6 +135,10 @@ namespace GameScripts
             _vision.SetVerticalTolerance(_visionVerticalTolerance);
             _vision.SetRequireLineOfSight(_visionRequireLineOfSight);
 
+            // Create VisualConeComponent so this enemy shows a vision cone.
+            API.SetVisualConeParams(Entity, _visionDetectionRange, _visionDetectionAngle * 0.5f);
+            API.SetVisualConeFacing(Entity, _initialYRotation);
+
             // NEW: Initialize proximity detection
             _proximityDetection = new ProximityDetectionComponent { Entity = Entity };
             _proximityDetection.OnProximityDetected += OnProximityDetected;
@@ -332,9 +336,7 @@ namespace GameScripts
                     while (_currentYRotation < 0f) _currentYRotation += 360f;
                 }
 
-                Vec3 rot = API.GetRotation(Entity);
-                rot.Y = _currentYRotation;
-                API.SetRotation(Entity, rot);
+                ApplyYaw(_currentYRotation);
             }
         }
 
@@ -369,13 +371,10 @@ namespace GameScripts
                 _targetYRotation = lookAtYaw;
                 _currentYRotation = lookAtYaw;
                 _isRotating = false;
-
-                Vec3 rot = API.GetRotation(Entity);
-                rot.Y = _currentYRotation;
-                API.SetRotation(Entity, rot);
-
-                //($"[EnemyController] Snapped to face player at {_currentYRotation:F1}°");
+                ApplyYaw(_currentYRotation);
             }
+
+            API.SetVisualConeAlert(Entity, true);
 
             // Play random alert sound (only once per detection)
             PlayRandomAlertSound(enemyPos);
@@ -392,7 +391,7 @@ namespace GameScripts
 
         private void OnPlayerLost(ulong target, Vec3 lastKnownPosition)
         {
-            //("[EnemyController] Lost sight of player, searching...");
+            API.SetVisualConeAlert(Entity, false);
 
             // Reset spotlight to original color
             var spotlight = SpotlightFollower.GetByTargetName(_entityName);
@@ -433,10 +432,7 @@ namespace GameScripts
                 float lookAtYaw = (float)(Math.Atan2(directionToPlayer.X, directionToPlayer.Z) * 180.0 / Math.PI);
                 _targetYRotation = lookAtYaw;
                 _currentYRotation = lookAtYaw;
-
-                Vec3 rot = API.GetRotation(Entity);
-                rot.Y = _currentYRotation;
-                API.SetRotation(Entity, rot);
+                ApplyYaw(_currentYRotation);
             }
         }
 
@@ -473,12 +469,7 @@ namespace GameScripts
                 _targetYRotation = lookAtYaw;
                 _currentYRotation = lookAtYaw;
                 _isRotating = false;
-
-                Vec3 rot = API.GetRotation(Entity);
-                rot.Y = _currentYRotation;
-                API.SetRotation(Entity, rot);
-
-                //($"[EnemyController] Turned to face player (proximity) at {_currentYRotation:F1}°");
+                ApplyYaw(_currentYRotation);
             }
 
             // Damage player (only once per detection)
@@ -489,6 +480,15 @@ namespace GameScripts
                 //($"[EnemyController] Dealing damage to player (proximity detection)!");
                 PlayerManager.NotifyPlayerCaught(Entity);
             }
+        }
+
+        // Apply a yaw rotation to the entity and keep the visual cone in sync.
+        private void ApplyYaw(float yaw)
+        {
+            Vec3 rot = API.GetRotation(Entity);
+            rot.Y = yaw;
+            API.SetRotation(Entity, rot);
+            API.SetVisualConeFacing(Entity, yaw);
         }
 
         // === PUBLIC CONFIGURATION ===
@@ -546,10 +546,8 @@ namespace GameScripts
             _rotationTimer = 0f;
             _pingPongForward = true;
 
-            Vec3 rot = API.GetRotation(Entity);
-            rot.Y = _initialYRotation;
-            API.SetRotation(Entity, rot);
-
+            ApplyYaw(_initialYRotation);
+            API.SetVisualConeAlert(Entity, false);
             //("[EnemyController] Player respawned - all detection states reset");
         }
 

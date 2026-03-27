@@ -607,6 +607,124 @@ namespace Boom
                 m_Nav->DrawDetourNavMesh_Query(*m_DebugLinesShader, dbgView, dbgProj, dbgCamPos, navDrawRadius);
             }
 
+            // AI Vision cone overlay
+            if (m_Context->ShowVisionCones && m_DebugLinesShader && m_Context->physics)
+            {
+                std::vector<Boom::LineVert> fillVerts;
+                std::vector<Boom::LineVert> edgeVerts;
+                fillVerts.reserve(512);
+                edgeVerts.reserve(256);
+
+                // --- shared cone utilities ---
+
+                // Clamp an arc point to static walls only (enemy capsule is dynamic → ignored).
+                auto ClampToWall = [&](const glm::vec3& rayOrigin, float angle, float maxRange) -> glm::vec3
+                {
+                    glm::vec3 dir(glm::sin(angle), 0.f, glm::cos(angle));
+                    auto hit = m_Context->physics->RaycastStaticOnly(rayOrigin, dir, maxRange);
+                    if (hit.hitFound && hit.distance < maxRange)
+                        return rayOrigin + dir * glm::max(0.05f, hit.distance - 0.05f);
+                    return rayOrigin + dir * maxRange;
+                };
+
+                // Snap an XZ point to the floor surface, but only snap UP (ramps) or
+                // within a small tolerance downward.  If the ground drops more than
+                // kMaxDrop below the entity's floor the point is clamped to entity floor —
+                // this stops the cone from draping down cliff faces.
+                auto SnapToGround = [&](const glm::vec3& pt, float entityGroundY) -> glm::vec3
+                {
+                    constexpr float kProbeUp  = 2.0f;
+                    constexpr float kProbeDown = 5.0f;
+                    constexpr float kMaxDrop  = 0.35f; // max downward deviation from entity floor
+                    glm::vec3 from(pt.x, entityGroundY + kProbeUp, pt.z);
+                    auto hit = m_Context->physics->RaycastStaticOnly(from, {0.f, -1.f, 0.f}, kProbeUp + kProbeDown);
+                    if (hit.hitFound)
+                    {
+                        float groundY = hit.position.y + 0.02f;
+                        // Cliff: ground dropped too far — clamp to entity floor level
+                        if (groundY < entityGroundY - kMaxDrop) groundY = entityGroundY + 0.02f;
+                        return glm::vec3(pt.x, groundY, pt.z);
+                    }
+                    // No ground found (over void) — stay at entity floor
+                    return glm::vec3(pt.x, entityGroundY + 0.02f, pt.z);
+                };
+
+                // Render one cone with a radial gradient: apex is full colour, arc edge is
+                // fully transparent.  This gives a soft projector-light look instead of a
+                // solid block, and naturally hides the flat base of the cone.
+                auto RenderCone = [&](const glm::vec3& entityPos,
+                                      const glm::vec3& facing,
+                                      float range, float halfAngleDeg,
+                                      const glm::vec4& fillColor,
+                                      const glm::vec4& edgeColor)
+                {
+                    // Ray origin at eye height so horizontal wall-casts don't hit the floor
+                    const glm::vec3 rayOrigin = { entityPos.x, entityPos.y + 1.5f, entityPos.z };
+
+                    // Ground-snap the apex and record entity floor Y for cliff clamping
+                    const glm::vec3 apex    = SnapToGround(entityPos, entityPos.y);
+                    const float entityFloor = apex.y;
+
+                    const float halfAngle = glm::radians(halfAngleDeg);
+                    const float baseAngle = glm::atan(facing.x, facing.z);
+                    constexpr int N       = 24;
+                    const float step      = (2.f * halfAngle) / N;
+
+                    // Wall-clamp then ground-snap each arc point (cliff-clamped)
+                    glm::vec3 arcPts[N + 1];
+                    for (int i = 0; i <= N; ++i)
+                    {
+                        float a      = baseAngle - halfAngle + i * step;
+                        glm::vec3 wp = ClampToWall(rayOrigin, a, range);
+                        arcPts[i]    = SnapToGround({ wp.x, entityFloor, wp.z }, entityFloor);
+                    }
+
+                    // GL_MAX takes max(src, dst) on raw channel values — blend factors are
+                    // ignored.  Pre-multiply alpha into RGB so the stored value is already
+                    // scaled: max(0.08*0.80, dark_bg) ≈ 0.064 instead of max(0.80, dark_bg) = 0.80.
+                    auto Premul = [](const glm::vec4& c) -> glm::vec4 {
+                        return { c.r * c.a, c.g * c.a, c.b * c.a, c.a };
+                    };
+                    const glm::vec4 apexVert = Premul(fillColor);
+                    const glm::vec4 edgeFade(0.f, 0.f, 0.f, 0.f); // alpha=0 → premul is (0,0,0,0)
+                    for (int i = 0; i < N; ++i)
+                    {
+                        fillVerts.push_back({ apex,          apexVert });
+                        fillVerts.push_back({ arcPts[i],     edgeFade });
+                        fillVerts.push_back({ arcPts[i + 1], edgeFade });
+                    }
+
+                    // Outline: only the two side edges from apex — no arc outline
+                    // (arc is already invisible due to alpha=0 gradient; outline there looks harsh)
+                    AppendLine(edgeVerts, apex, arcPts[0], edgeColor, glm::vec4(edgeColor.r, edgeColor.g, edgeColor.b, 0.f));
+                    AppendLine(edgeVerts, apex, arcPts[N], edgeColor, glm::vec4(edgeColor.r, edgeColor.g, edgeColor.b, 0.f));
+                };
+
+                // --- VisualConeComponent enemies (PatrolEnemyController, EnemyController, etc.) ---
+                EnttView<Entity, VisualConeComponent, TransformComponent>([&](auto /*entity*/, VisualConeComponent& vc, TransformComponent& tc)
+                {
+                    if (!vc.enabled) return;
+
+                    glm::vec3 facing = vc.facingDir;
+                    facing.y = 0.f;
+                    if (glm::length2(facing) < 0.001f) facing = { 0.f, 0.f, 1.f };
+                    facing = glm::normalize(facing);
+
+                    const glm::vec3& col = vc.isAlert ? vc.alertColor : vc.patrolColor;
+                    const glm::vec4 fillColor(col, vc.fillAlpha);
+                    const glm::vec4 edgeColor(col, vc.edgeAlpha);
+
+                    RenderCone(tc.transform.translate, facing,
+                               vc.range, vc.halfAngle,
+                               fillColor, edgeColor);
+                });
+
+                if (!fillVerts.empty())
+                    m_DebugLinesShader->DrawTriangles(dbgView, dbgProj, fillVerts, false, true /*useMaxBlend*/);
+                if (!edgeVerts.empty())
+                    m_DebugLinesShader->Draw(dbgView, dbgProj, edgeVerts, 1.5f);
+            }
+
             // Skeleton visualization
             if (m_Context->ShowSkeleton && m_DebugLinesShader)
             {

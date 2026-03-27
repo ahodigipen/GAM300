@@ -930,6 +930,48 @@ namespace Boom {
             return result;
         }
 
+        // Raycast against static geometry only (walls, floors, level mesh).
+        // Ignores all dynamic/kinematic actors (enemies, player, props) so rays cast
+        // from inside an entity's own capsule never produce a spurious self-hit.
+        BOOM_INLINE PhysXRayResult RaycastStaticOnly(const glm::vec3& origin, const glm::vec3& direction, float maxDist) {
+            PhysXRayResult result;
+            if (!m_Scene) return result;
+
+            class NoTriggerFilter : public PxQueryFilterCallback {
+            public:
+                PxQueryHitType::Enum preFilter(const PxFilterData&, const PxShape* shape,
+                    const PxRigidActor*, PxHitFlags&) override
+                {
+                    if (shape && (shape->getFlags() & PxShapeFlag::eTRIGGER_SHAPE))
+                        return PxQueryHitType::eNONE;
+                    return PxQueryHitType::eBLOCK;
+                }
+                PxQueryHitType::Enum postFilter(const PxFilterData&, const PxQueryHit&) override
+                {
+                    return PxQueryHitType::eBLOCK;
+                }
+            };
+
+            PxRaycastBuffer hit;
+            PxQueryFilterData filterData;
+            // eSTATIC: only hit static bodies (walls, level geometry).
+            // ePREFILTER: run preFilter to skip trigger shapes.
+            filterData.flags = PxQueryFlag::eSTATIC | PxQueryFlag::ePREFILTER;
+            NoTriggerFilter filter;
+
+            if (m_Scene->raycast(ToPxVec3(origin), ToPxVec3(glm::normalize(direction)),
+                maxDist, hit, PxHitFlag::eDEFAULT, filterData, &filter))
+            {
+                result.hitFound = true;
+                result.position  = ToGLMVec3(hit.block.position);
+                result.normal    = ToGLMVec3(hit.block.normal);
+                result.distance  = hit.block.distance;
+                if (hit.block.actor && hit.block.actor->userData)
+                    result.hitEntity = (entt::entity)(*static_cast<EntityID*>(hit.block.actor->userData));
+            }
+            return result;
+        }
+
         BOOM_INLINE glm::vec3 ResolveThirdPersonCameraPosition(glm::vec3 const& playerEye, glm::vec3 const& idealCamPosition, float minDist = 0.5f, entt::entity ignoreEntity = entt::null) {
             PxVec3 targetPos = ToPxVec3(playerEye);
             PxVec3 idealCamPos = ToPxVec3(idealCamPosition);

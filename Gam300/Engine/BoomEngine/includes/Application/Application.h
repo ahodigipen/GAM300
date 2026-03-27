@@ -1056,7 +1056,7 @@ namespace Boom
 			// 1. Identify and sort potential shadow casters
 			// IMPORTANT: Use world-space position/direction to match UploadLights() UBO ordering
 			EnttView<Entity, SpotLightComponent, TransformComponent>(
-				[this, &shadowJobs, maxShadowDistSq](auto entity, SpotLightComponent& light, TransformComponent& tc)
+				[this, &shadowJobs, maxShadowDistSq](auto entity, SpotLightComponent& light, TransformComponent& /*tc*/)
 				{
 					glm::mat4 worldMat = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
 					glm::vec3 worldPos = glm::vec3(worldMat[3]);
@@ -1128,7 +1128,6 @@ namespace Boom
 			m_Context->renderer->UploadSpotShadowData(spotShadowIndex);
 		}
 
-		void SnapEntity(Entity entity, const glm::vec3& direction, float maxDistance = 100.0f);
 		/**
 		* @brief Creates a new empty scene
 		* @param sceneName Optional name for the new scene
