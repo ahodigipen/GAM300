@@ -2214,6 +2214,79 @@ namespace Boom {
         }
     }
 
+    // Push the script's authoritative yaw into AIComponent.facingDir so the C++ vision cone
+    // renderer always matches the visual rotation, bypassing unreliable Euler decomposition.
+    static void ICALL_API_SetAIFacingYaw(uint64_t handle, float yawDegrees)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (!s_Ctx->scene.valid(e)) return;
+        if (!s_Ctx->scene.any_of<AIComponent>(e)) return;
+
+        float yawRad = glm::radians(yawDegrees);
+        auto& ai = s_Ctx->scene.get<AIComponent>(e);
+        ai.facingDir = glm::normalize(glm::vec3(glm::sin(yawRad), 0.f, glm::cos(yawRad)));
+    }
+
+    // --- VisualConeComponent helpers (for script-driven enemies without AIComponent) ---
+
+    // Create or update VisualConeComponent on the entity, setting range and half-angle.
+    static void ICALL_API_SetVisualConeParams(uint64_t handle, float range, float halfAngleDeg)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (!s_Ctx->scene.valid(e)) return;
+        auto& vc = s_Ctx->scene.get_or_emplace<Boom::VisualConeComponent>(e);
+        vc.range      = range;
+        vc.halfAngle  = halfAngleDeg;
+        vc.enabled    = true;
+    }
+
+    // Update the facing direction of the entity's VisualConeComponent.
+    static void ICALL_API_SetVisualConeFacing(uint64_t handle, float yawDegrees)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (!s_Ctx->scene.valid(e)) return;
+        if (!s_Ctx->scene.any_of<Boom::VisualConeComponent>(e)) return;
+        float yawRad = glm::radians(yawDegrees);
+        auto& vc = s_Ctx->scene.get<Boom::VisualConeComponent>(e);
+        vc.facingDir = glm::normalize(glm::vec3(glm::sin(yawRad), 0.f, glm::cos(yawRad)));
+    }
+
+    // Set the alert/patrol state of the VisualConeComponent (true = alert/red, false = patrol/yellow).
+    static void ICALL_API_SetVisualConeAlert(uint64_t handle, bool isAlert)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (!s_Ctx->scene.valid(e)) return;
+        if (!s_Ctx->scene.any_of<Boom::VisualConeComponent>(e)) return;
+        s_Ctx->scene.get<Boom::VisualConeComponent>(e).isAlert = isAlert;
+    }
+
+    // Sync VisionComponent parameters into AIComponent so the C++ visual cone uses the correct detection range.
+    // Only the range is synced; visionAngle is left as-is (configured per-enemy in the inspector)
+    // so the visible cone stays wide and readable from the game camera.
+    static void ICALL_API_SetAIVisionParams(uint64_t handle, float range, float /*halfAngleDeg*/)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (!s_Ctx->scene.valid(e)) return;
+        if (!s_Ctx->scene.any_of<AIComponent>(e)) return;
+
+        auto& ai = s_Ctx->scene.get<AIComponent>(e);
+        ai.detectRadius = range;
+        // visionAngle intentionally NOT overwritten — set per-enemy via AIComponent inspector
+    }
+
+    // No-op stub: DrawDebugVisionCone is handled by the C++ vision cone system automatically.
+    // Registered so scripts that call API.DrawDebugVisionCone don't crash.
+    static void ICALL_API_DrawDebugVisionCone(uint64_t /*handle*/, float /*range*/, float /*halfAngle*/,
+        float /*r*/, float /*g*/, float /*b*/, float /*a*/)
+    {
+        // Intentional no-op — vision cones are rendered in Application.cpp via AIComponent.showVisionCone
+    }
+
     // Add new overload that ignores two entities
     static bool ICALL_API_LinecastIgnoreBoth(glm::vec3* from, glm::vec3* to, uint64_t ignoreEntityHandle1, uint64_t ignoreEntityHandle2)
     {
@@ -2792,6 +2865,12 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_Linecast", (const void*)ICALL_API_Linecast);
 
         mono_add_internal_call("Boom.Native::Boom_API_SetRotationY", (const void*)ICALL_API_SetRotationY);
+        mono_add_internal_call("Boom.Native::Boom_API_SetAIFacingYaw",      (const void*)ICALL_API_SetAIFacingYaw);
+        mono_add_internal_call("Boom.Native::Boom_API_SetAIVisionParams",  (const void*)ICALL_API_SetAIVisionParams);
+        mono_add_internal_call("Boom.Native::Boom_API_SetVisualConeParams",(const void*)ICALL_API_SetVisualConeParams);
+        mono_add_internal_call("Boom.Native::Boom_API_SetVisualConeFacing",(const void*)ICALL_API_SetVisualConeFacing);
+        mono_add_internal_call("Boom.Native::Boom_API_SetVisualConeAlert", (const void*)ICALL_API_SetVisualConeAlert);
+        mono_add_internal_call("Boom.Native::Boom_API_DrawDebugVisionCone",(const void*)ICALL_API_DrawDebugVisionCone);
     
         mono_add_internal_call("Boom.Native::Boom_API_LinecastIgnoreBoth",(const void*)ICALL_API_LinecastIgnoreBoth);
 
