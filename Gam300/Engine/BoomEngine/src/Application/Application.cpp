@@ -937,6 +937,13 @@ namespace Boom
                     adjustedTint.g *= comp.brightness;
                     adjustedTint.b *= comp.brightness;
 
+                    // Disable depth writes so the video quad does not contaminate
+                    // the depth buffer.  The final pass reads depth for volumetric
+                    // fog — fluctuating video pixels (especially with
+                    // removeBlackBackground) would cause the fog, and therefore
+                    // scene lighting, to flicker every frame.
+                    glDepthMask(GL_FALSE);
+
                     if (comp.renderAs3D) {
                         // Render as 3D quad in world space
                         m_Context->renderer->DrawQuadRaw(textureId, worldTransform, adjustedTint);
@@ -950,6 +957,8 @@ namespace Boom
                         };
                         m_Context->renderer->DrawQuadRaw(textureId, transform2D, adjustedTint);
                     }
+
+                    glDepthMask(GL_TRUE);
                 }
             }
             // ParticleEmitterComponent picking — draw a small quad at world position so the
@@ -1306,7 +1315,9 @@ namespace Boom
                 glm::vec2(worldTransform.scale.x, worldTransform.scale.y)
             };
 
+            glDepthMask(GL_FALSE);
             m_Context->renderer->DrawQuadRaw(textureId, transform2D, adjustedTint);
+            glDepthMask(GL_TRUE);
         });
     }
 

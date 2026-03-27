@@ -7650,7 +7650,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.45656323
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -8340,7 +8340,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 3.45669222
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -8485,7 +8485,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 4.50669193
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -8628,7 +8628,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.4566915
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -8771,7 +8771,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.45667267
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -8917,7 +8917,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.45669222
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -9060,7 +9060,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0.000135591283
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -10110,7 +10110,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.47914433
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -10253,7 +10253,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 0.0128068049
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -10396,7 +10396,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.45572805
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -15058,8 +15058,8 @@ ENTITIES:
       SortOrder: 444
     TransformComponent:
       Transform:
-        Translate: [-54.9820976, 5.40011215, 4.62921143]
-        Rotate: [85.0000076, 85.0000076, 0]
+        Translate: [-5.30035114, 21.9115753, -0.339259028]
+        Rotate: [357.1875, -14, 0]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -15067,7 +15067,7 @@ ENTITIES:
         FarPlane: 935.47998
         FOV: 75
     ThirdPersonCameraComponent:
-      Target UID: 2377197601835279376
+      Target UID: 0
       Offset: [0.5, 3.79999995, 0]
       Current Distance: 5
       Min Distance: 2
@@ -15857,7 +15857,7 @@ ENTITIES:
       SortOrder: 338
     TransformComponent:
       Transform:
-        Translate: [-55.0413742, 1.5128777, 4.62490034]
+        Translate: [-55.0413742, 1.51287782, 4.62490034]
         Rotate: [0, -15, 0]
         Scale: [0.0164994802, 0.0164999999, 0.0164994802]
     CharacterControllerComponent:
@@ -16882,7 +16882,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.4566915
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -18190,7 +18190,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.4566915
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -21238,7 +21238,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.4566915
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -21385,7 +21385,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.45146871
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
