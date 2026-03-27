@@ -228,31 +228,28 @@ namespace Boom {
         }
 
         // === Spot Light Shadow Functions ===
-        BOOM_INLINE void BeginSpotShadowPass(int index, const glm::vec3& position, const glm::vec3& rotation, float cutOffAngle, float range)
+        BOOM_INLINE void BeginSpotShadowPass(int index, const glm::vec3& worldPos, const glm::vec3& worldDir, float cutOffAngle, float range)
         {
             if (index < 0 || index >= MAX_SPOT_SHADOW_LIGHTS) return;
 
-            // Convert Euler angles (degrees) to direction vector
-            glm::vec3 eulerRadians = glm::radians(rotation);
-            glm::quat rot = glm::quat(eulerRadians);
-            glm::vec3 lightDir = rot * glm::vec3(0.0f, 0.0f, -1.0f);
+            // worldDir is already the normalized world-space light direction (matches UploadLights)
 
             // Calculate up vector (must not be parallel to light direction)
             glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-            if (glm::abs(glm::dot(lightDir, up)) > 0.99f) {
+            if (glm::abs(glm::dot(worldDir, up)) > 0.99f) {
                 up = glm::vec3(1.0f, 0.0f, 0.0f);
             }
 
             // Perspective projection based on spot light cone angle
-            // Use outer cutoff angle for FOV, doubled because cutoff is half-angle
-            float fov = glm::radians(cutOffAngle * 2.0f);
-            fov = glm::clamp(fov, glm::radians(10.0f), glm::radians(170.0f)); // Clamp to reasonable range
+            // doubled because cutoff is half-angle, +5 degree margin to fully cover the cone edge
+            float fov = glm::radians(cutOffAngle * 2.0f + 5.0f);
+            fov = glm::clamp(fov, glm::radians(10.0f), glm::radians(170.0f));
 
-            float nearPlane = 0.5f;
+            float nearPlane = 0.1f;   // Tighter near plane for better depth precision
             float farPlane = range > 0.0f ? range : 50.0f;
 
             glm::mat4 proj = glm::perspective(fov, 1.0f, nearPlane, farPlane);
-            glm::mat4 view = glm::lookAt(position, position + lightDir, up);
+            glm::mat4 view = glm::lookAt(worldPos, worldPos + worldDir, up);
             glm::mat4 lightSpaceMtx = proj * view;
 
             // Begin shadow rendering for this spot light
