@@ -231,27 +231,40 @@ vec2 GetTextureUV() {
     return vertex.uv;
 }
 
-float ComputeSpotShadow(int lightIndex)
+float ComputeSpotShadow(int lightIndex, vec3 N, vec3 L)
 {
   if (lightIndex < 0 || lightIndex >= u_numSpotShadows) return 0.0;
 
-  vec4 fragPosSpotLight = u_spotLightSpaceMatrices[lightIndex] * vec4(vertex.position, 1.0);
+  float nDotL = max(dot(N, L), 0.0);
+
+  // World-space normal offset: push the shadow sample point along the surface normal.
+  // This prevents PCF from sampling across depth discontinuities at wall-floor junctions.
+  // Scale offset by distance from light (farther = larger texels = need more offset).
+  float distToLight = length(vertex.position - spotLights[lightIndex].position_falloff.xyz);
+  float normalOffsetScale = clamp(distToLight * 0.02, 0.01, 0.5);
+  vec3 offsetPos = vertex.position + N * normalOffsetScale * (1.0 - nDotL);
+
+  vec4 fragPosSpotLight = u_spotLightSpaceMatrices[lightIndex] * vec4(offsetPos, 1.0);
   vec3 uvs = (fragPosSpotLight.xyz / fragPosSpotLight.w) * 0.5 + 0.5;
 
   if(uvs.x < 0.0 || uvs.x > 1.0 || uvs.y < 0.0 || uvs.y > 1.0 || uvs.z < 0.0 || uvs.z > 1.0)
     return 0.0;
 
-  float bias = 0.005;
+  // Slope-based bias: larger bias for surfaces nearly parallel to light direction
+  float bias = max(0.003 * (1.0 - nDotL), 0.0005);
 
   float shadow = 0.0;
   vec2 texelSize = 1.0 / textureSize(u_spotDepthMaps[lightIndex], 0);
+
+  // Depth of current fragment in light space
+  float currentDepth = uvs.z;
 
   for(int x = -1; x <= 1; ++x)
   {
     for(int y = -1; y <= 1; ++y)
     {
       float pcfDepth = texture(u_spotDepthMaps[lightIndex], uvs.xy + vec2(x, y) * texelSize).r;
-      shadow += uvs.z - bias > pcfDepth ? 1.0 : 0.0;
+      shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
     }
   }
 
@@ -490,7 +503,7 @@ vec3 ComputeSpotLights(vec3 N, vec3 V, vec3 f0, vec3 albedo, float roughness, fl
 
         float shadow = 0.0;
         if (i < MAX_SPOT_SHADOW_LIGHTS && u_enableShadows) {
-            shadow = ComputeSpotShadow(i);
+            shadow = ComputeSpotShadow(i, N, L);
         }
 
         result += (diffuse + specular) *

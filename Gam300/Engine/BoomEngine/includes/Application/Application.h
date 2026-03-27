@@ -973,6 +973,7 @@ namespace Boom
 			if (dirLightCount == 0) {
 				m_Context->renderer->SetShadowsEnabled(false);
 				glDisable(GL_POLYGON_OFFSET_FILL);
+				glEnable(GL_CULL_FACE);
 				return;
 			}
 
@@ -1030,6 +1031,7 @@ namespace Boom
 				});
 
 			glDisable(GL_POLYGON_OFFSET_FILL);
+			glEnable(GL_CULL_FACE);
 
 			// Render spot light shadows
 			RenderSpotShadowScene();
@@ -1039,28 +1041,31 @@ namespace Boom
 			if (!toggleShadows) return;
 
 			// Distance threshold for spot light shadows (only render shadows for lights close to camera)
-			const float maxShadowDistSq = 50.0f * 50.0f; 
+			const float maxShadowDistSq = 50.0f * 50.0f;
 			const int maxActiveSpotShadows = 8; // Limit total active spot shadows for performance
 
 			struct ShadowJob {
 				Entity entity;
 				float distSq;
-				glm::vec3 pos;
-				glm::vec3 rot;
+				glm::vec3 worldPos;
+				glm::vec3 worldDir;
 				float cutOff;
 			};
 			std::vector<ShadowJob> shadowJobs;
 
 			// 1. Identify and sort potential shadow casters
+			// IMPORTANT: Use world-space position/direction to match UploadLights() UBO ordering
 			EnttView<Entity, SpotLightComponent, TransformComponent>(
 				[this, &shadowJobs, maxShadowDistSq](auto entity, SpotLightComponent& light, TransformComponent& tc)
 				{
-					glm::vec3 position = tc.transform.translate;
-					float d2 = glm::distance2(m_Context->renderer->GetCameraPosition(), position);
+					glm::mat4 worldMat = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+					glm::vec3 worldPos = glm::vec3(worldMat[3]);
+					glm::vec3 worldDir = glm::normalize(glm::vec3(worldMat * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f)));
+					float d2 = glm::distance2(m_Context->renderer->GetCameraPosition(), worldPos);
 					if (d2 < maxShadowDistSq) {
-						shadowJobs.push_back({ 
-							entity, d2, position, tc.transform.rotate, 
-							glm::degrees(glm::acos(light.light.cutOff)) 
+						shadowJobs.push_back({
+							entity, d2, worldPos, worldDir,
+							glm::degrees(glm::acos(light.light.cutOff))
 						});
 					}
 				});
@@ -1075,16 +1080,14 @@ namespace Boom
 				return a.distSq < b.distSq;
 			});
 
-			glDisable(GL_CULL_FACE);
-			glEnable(GL_POLYGON_OFFSET_FILL);
-			glPolygonOffset(2.0f, 4.0f);
+			glDisable(GL_CULL_FACE);  // Render all faces — safe for single-sided geometry (floors, thin walls)
 
 			int spotShadowIndex = 0;
 			for (auto& job : shadowJobs) {
 				if (spotShadowIndex >= maxActiveSpotShadows || spotShadowIndex >= MAX_SPOT_SHADOW_LIGHTS) break;
 
-				// Begin shadow pass for this spot light
-				m_Context->renderer->BeginSpotShadowPass(spotShadowIndex, job.pos, job.rot, job.cutOff, 50.0f);
+				// Begin shadow pass using world-space position and direction
+				m_Context->renderer->BeginSpotShadowPass(spotShadowIndex, job.worldPos, job.worldDir, job.cutOff, 50.0f);
 
 				// Use instancing for shadow pass - much faster than per-entity DrawShadow
 				m_Context->renderer->BeginInstanceCollection();
@@ -1120,7 +1123,7 @@ namespace Boom
 				spotShadowIndex++;
 			}
 
-			glDisable(GL_POLYGON_OFFSET_FILL);
+			glEnable(GL_CULL_FACE);  // Restore default
 
 			m_Context->renderer->UploadSpotShadowData(spotShadowIndex);
 		}
