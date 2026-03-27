@@ -231,6 +231,10 @@ namespace GameScripts
             _vision.SetVerticalTolerance(_visionVerticalTolerance);
             _vision.SetRequireLineOfSight(_visionRequireLineOfSight);
 
+            // Create the C++ VisualConeComponent so the cone renders even without AIComponent.
+            // halfAngle = full detection angle * 0.5 so the visual matches actual detection FOV.
+            API.SetVisualConeParams(Entity, _visionDetectionRange, _visionDetectionAngle * 0.5f);
+
             // NEW: Initialize proximity detection
             _proximityDetection = new ProximityDetectionComponent { Entity = Entity };
             _proximityDetection.OnProximityDetected += OnProximityDetected;
@@ -655,10 +659,9 @@ namespace GameScripts
         private void SetRotationAndSpotlight(float yaw)
         {
             API.SetRotationY(Entity, yaw);
-            // Keep VisionComponent in sync with the authoritative yaw so the cone
-            // always matches the visual rotation, not whatever GetRotation() returns.
             _vision?.SetFacingYaw(yaw);
-            // Spotlight rotation is handled by SpotlightFollower with isPatrolEnemy=true
+            API.SetAIFacingYaw(Entity, yaw);        // AIComponent cone (if entity also has AIComponent)
+            API.SetVisualConeFacing(Entity, yaw);   // VisualConeComponent cone
         }
 
         private float ComputeYawFromVelocity(float vx, float vz)
@@ -671,6 +674,7 @@ namespace GameScripts
         private void OnPlayerDetected(ulong target, Vec3 pos)
         {
             _isAlert = true;
+            API.SetVisualConeAlert(Entity, true);
 
             // Set spotlight to alert (red) color
             var spotlight = SpotlightFollower.GetByTargetName(_entityName);
@@ -702,7 +706,8 @@ namespace GameScripts
         {
             _isAlert = false;
             _hasDealtDamage = false;
-            _alertSoundPlayed = false; // Reset so alert can play again next detection
+            _alertSoundPlayed = false;
+            API.SetVisualConeAlert(Entity, false);
 
             // Reset spotlight to original color
             var spotlight = SpotlightFollower.GetByTargetName(_entityName);

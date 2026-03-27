@@ -56,6 +56,7 @@ namespace Boom
 		bool ShowNavCorridor = false;
 		bool ShowPhysicsDebug = true; // Toggle for physics debug lines
 		bool ShowMeshDebug = false; // Toggle for mesh edge debug drawing
+		bool ShowVisionCones = true; // Toggle for AI vision cone overlay
 
 		// Skeleton visualization settings
 		bool ShowSkeleton = false;

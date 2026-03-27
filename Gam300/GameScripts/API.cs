@@ -112,6 +112,21 @@ namespace Boom
             float range, float angle, float r, float g, float b, float a);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetAIFacingYaw(ulong entityHandle, float yawDegrees);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetAIVisionParams(ulong entityHandle, float range, float halfAngleDeg);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetVisualConeParams(ulong entityHandle, float range, float halfAngleDeg);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetVisualConeFacing(ulong entityHandle, float yawDegrees);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetVisualConeAlert(ulong entityHandle, bool isAlert);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static float Boom_API_GetThirdPersonCameraYaw();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -1288,6 +1303,43 @@ namespace Boom
             Native.Boom_API_SetRotationY(h, yawDegrees);
         }
 
+        /// <summary>
+        /// Push the script's authoritative yaw into the C++ AIComponent.facingDir so the
+        /// vision cone renderer always matches visual rotation, bypassing Euler decomposition.
+        /// Call this every frame alongside SetRotationY.
+        /// </summary>
+        public static void SetAIFacingYaw(ulong h, float yawDegrees)
+        {
+            Native.Boom_API_SetAIFacingYaw(h, yawDegrees);
+        }
+
+        /// <summary>
+        /// Sync the visual vision cone to match VisionComponent settings.
+        /// range = detection range in world units.
+        /// halfAngleDeg = HALF the FOV angle (pass detectionAngle * 0.5f).
+        /// </summary>
+        public static void SetAIVisionParams(ulong h, float range, float halfAngleDeg)
+        {
+            Native.Boom_API_SetAIVisionParams(h, range, halfAngleDeg);
+        }
+
+        /// Create/update a VisualConeComponent on the entity (for script-driven enemies without AIComponent).
+        public static void SetVisualConeParams(ulong h, float range, float halfAngleDeg)
+        {
+            Native.Boom_API_SetVisualConeParams(h, range, halfAngleDeg);
+        }
+
+        /// Update the facing direction of the entity's VisualConeComponent.
+        public static void SetVisualConeFacing(ulong h, float yawDegrees)
+        {
+            Native.Boom_API_SetVisualConeFacing(h, yawDegrees);
+        }
+
+        /// Set alert state on the entity's VisualConeComponent (true = alert/orange, false = patrol/yellow).
+        public static void SetVisualConeAlert(ulong h, bool isAlert)
+        {
+            Native.Boom_API_SetVisualConeAlert(h, isAlert);
+        }
 
         public static void EnableFileWatcher(bool enable)
         {

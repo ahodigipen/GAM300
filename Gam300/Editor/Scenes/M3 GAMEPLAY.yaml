@@ -1,419 +1,5 @@
 Version: 1.0
 ENTITIES:
-  - InfoComponent:
-      Parent: 0
-      Name: DebugTele
-      UID: 11858638219423824013
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.DebugTeleporter
-      ParamsJSON: "{}"
-  - InfoComponent:
-      Parent: 0
-      Name: Level1_Cutscene_Door
-      UID: 17997215674506473440
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.665336907, 23.2664413, 14.5090075]
-        Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]
-  - InfoComponent:
-      Parent: 7923053519804204270
-      Name: SEAL2_7_level2
-      UID: 15822711660976151384
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.873817265, -2.4106636, 0.0579795837]
-        Rotate: [180, -5.00895612e-06, 172.145004]
-        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-    ModelComponent:
-      ModelID: 13771417735960447344
-      MaterialID: 6054887109004695869
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 7923053519804204270
-      Name: SEAL2_5_level2
-      UID: 493950244444004828
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-5.69719648, 0.74005127, 0.0579795837]
-        Rotate: [180, -5.00895612e-06, 172.145004]
-        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-    ModelComponent:
-      ModelID: 13771417735960447344
-      MaterialID: 6054887109004695869
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 7923053519804204270
-      Name: SEAL3_1_level2
-      UID: 10836926273470986313
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.294666469, 1.53883553, 0.0635166168]
-        Rotate: [180, -5.00892611e-06, -175.832993]
-        Scale: [0.0200003497, 0.0199999977, 0.0199999996]
-    ModelComponent:
-      ModelID: 5300562332905006444
-      MaterialID: 13816183176200794107
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 7923053519804204270
-      Name: SEAL1_2_level2
-      UID: 4788057559981688980
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [4.13996315, -0.402721405, 0.0439109802]
-        Rotate: [-180, -5.00903025e-06, -173.401001]
-        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-    ModelComponent:
-      ModelID: 14742392640093446096
-      MaterialID: 957317307738812434
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 7923053519804204270
-      Name: SEAL3_5_level2
-      UID: 8682246566619359757
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-1.68515468, -0.828321457, 0.0635166168]
-        Rotate: [180, -5.00895521e-06, 157.774048]
-        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-    ModelComponent:
-      ModelID: 5300562332905006444
-      MaterialID: 13816183176200794107
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 7923053519804204270
-      Name: SEAL2_6_level2
-      UID: 6818911636582148046
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-1.82515478, 0.525577545, 0.0579795837]
-        Rotate: [180, -5.00895612e-06, 172.145004]
-        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-    ModelComponent:
-      ModelID: 13771417735960447344
-      MaterialID: 6054887109004695869
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 7923053519804204270
-      Name: SEAL3_6_level2
-      UID: 12456337088693094244
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-4.48301411, -0.186079025, 0.0635166168]
-        Rotate: [180, -5.00892702e-06, 173.798004]
-        Scale: [0.0200001802, 0.0199999996, 0.0199999996]
-    ModelComponent:
-      ModelID: 5300562332905006444
-      MaterialID: 13816183176200794107
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 7923053519804204270
-      Name: SEAL3_4_level2
-      UID: 9783543133627228472
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-6.77533388, 1.50883675, 0.0635166168]
-        Rotate: [180, -5.00892611e-06, -175.832993]
-        Scale: [0.020000346, 0.0199999977, 0.0199999996]
-    ModelComponent:
-      ModelID: 5300562332905006444
-      MaterialID: 13816183176200794107
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 7923053519804204270
-      Name: SEAL2_4_level2
-      UID: 2540618719814509905
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [6.19618273, -2.38066483, 0.0579795837]
-        Rotate: [180, -5.00895612e-06, 172.145004]
-        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-    ModelComponent:
-      ModelID: 13771417735960447344
-      MaterialID: 6054887109004695869
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 7923053519804204270
-      Name: SEAL1_5_level2
-      UID: 3948722888296850639
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [1.14502501, -1.68087387, 0.0439109802]
-        Rotate: [-180, -5.00899387e-06, -160.518997]
-        Scale: [0.0200001523, 0.0199999996, 0.0200003237]
-    ModelComponent:
-      ModelID: 14742392640093446096
-      MaterialID: 957317307738812434
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 7923053519804204270
-      Name: SEAL1_4_level2
-      UID: 5995597849419410954
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-5.9249754, -1.71087265, 0.0439109802]
-        Rotate: [-180, -5.00899478e-06, -160.518997]
-        Scale: [0.0200001486, 0.0199999996, 0.0200003125]
-    ModelComponent:
-      ModelID: 14742392640093446096
-      MaterialID: 957317307738812434
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 7923053519804204270
-      Name: SEAL3_3_level2
-      UID: 6731432774094374601
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [5.38484526, -0.798322678, 0.0635166168]
-        Rotate: [180, -5.00895521e-06, 157.774048]
-        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-    ModelComponent:
-      ModelID: 5300562332905006444
-      MaterialID: 13816183176200794107
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 7923053519804204270
-      Name: SEAL2_3_level2
-      UID: 8247985507833095058
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [5.24484539, 0.555576324, 0.0579795837]
-        Rotate: [180, -5.00895612e-06, 172.145004]
-        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-    ModelComponent:
-      ModelID: 13771417735960447344
-      MaterialID: 6054887109004695869
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 7923053519804204270
-      Name: SEAL1_3_level2
-      UID: 16818309994306707516
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [6.20784521, 1.10167885, 0.0439109802]
-        Rotate: [-180, -5.00902615e-06, 166.804001]
-        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-    ModelComponent:
-      ModelID: 14742392640093446096
-      MaterialID: 957317307738812434
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 7923053519804204270
-      Name: SEAL3_2_level2
-      UID: 2240002910248903993
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [2.5869863, -0.156080246, 0.0635166168]
-        Rotate: [180, -5.00892565e-06, 173.798004]
-        Scale: [0.0200001858, 0.0199999996, 0.0199999996]
-    ModelComponent:
-      ModelID: 5300562332905006444
-      MaterialID: 13816183176200794107
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 7923053519804204270
-      Name: SEAL2_2_level2
-      UID: 2333601381919441008
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [1.37280393, 0.770050049, 0.0579795837]
-        Rotate: [180, -5.00895612e-06, 172.145004]
-        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-    ModelComponent:
-      ModelID: 13771417735960447344
-      MaterialID: 6054887109004695869
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 7923053519804204270
-      Name: SEAL2_1_level2
-      UID: 17780129257658971624
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-4.41523504, -2.14428329, 0.0579795837]
-        Rotate: [-180, -5.00895612e-06, 172.145004]
-        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-    ModelComponent:
-      ModelID: 13771417735960447344
-      MaterialID: 6054887109004695869
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 7923053519804204270
-      Name: SEAL2_8_level2
-      UID: 5843627169115320245
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [2.65476537, -2.11428452, 0.0579795837]
-        Rotate: [-180, -5.00895612e-06, 172.145004]
-        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-    ModelComponent:
-      ModelID: 13771417735960447344
-      MaterialID: 6054887109004695869
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 7923053519804204270
-      Name: SEAL1_6_level2
-      UID: 10562060880354864105
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-2.93003702, -0.432720184, 0.0439109802]
-        Rotate: [-180, -5.00903025e-06, -173.401001]
-        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-    ModelComponent:
-      ModelID: 14742392640093446096
-      MaterialID: 957317307738812434
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 7923053519804204270
-      Name: SEAL1_1_level2
-      UID: 7473816545159094783
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.862154722, 1.07168007, 0.0439109802]
-        Rotate: [-180, -5.0090257e-06, 166.804001]
-        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-    ModelComponent:
-      ModelID: 14742392640093446096
-      MaterialID: 957317307738812434
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: SEALCOPYPASTE2
-      UID: 7923053519804204270
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-36.6864586, 27.5038548, -22.4386768]
-        Rotate: [-180, -5.00895612e-06, -180]
-        Scale: [1, 1, 1]
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0.0319244377, -0.241377637, -0.257090837]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [30, 10.0000019, 10.0000019]
-        DynamicFriction: 0
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        ShowPhysicsDebug: false
-        PhysicsMesh: 13244744886219103757
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Wall_Bridge_spacer_2
-      UID: 14623677135604852580
-      SortOrder: 77
-    TransformComponent:
-      Transform:
-        Translate: [-67.8677292, 45.1539536, 20.2576103]
-        Rotate: [89.9999847, -0, 0]
-        Scale: [0.100000001, 0.647709846, 1.59249735]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.100000001, 0.647709846, 1.59249735]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 1441742420851203854
-      MaterialID: 6104124486273075758
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0319244377, -0.241377637, -0.257090837]
@@ -1622,66 +1208,118 @@ ENTITIES:
       TextureID: 15432365972591589103
       Billboard: true
       AdditiveBlend: true
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0.0719999969, -0.232999995, 0.00999999978]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [80, 94.3529739, 80]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        ShowPhysicsDebug: false
-        PhysicsMesh: 4356505632757386652
-        SurfaceType: DEFAULT
-        Type: CYLINDER
-    InfoComponent:
+  - InfoComponent:
       Parent: 0
-      Name: CollisionSentry
-      UID: 14520166911231059797
-      SortOrder: 76
+      Name: Sentry_1
+      UID: 11902586246754059388
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-7.0365057, 1.86530852, -13.0985279]
-        Rotate: [0, 89.980217, 0]
-        Scale: [0.0297599956, 0.0250000004, 0.0297599956]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0297599956, 0.0250000004, 0.0297599956]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
+        Translate: [-8.06918335, 0.550991118, -12.913641]
+        Rotate: [0, 270, 0]
+        Scale: [0.0145000936, 0.0145000005, 0.0145000936]
     ModelComponent:
-      ModelID: 7633162898494281895
-      MaterialID: 0
+      ModelID: 12373711864448078618
+      MaterialID: 1781146247448718189
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Patrol Vision Cone SR2_1
-      UID: 14306753669110489946
-      SortOrder: 72
-    TransformComponent:
-      Transform:
-        Translate: [-13.8728666, 11.668478, 88.7715607]
-        Rotate: [0, 181.664978, 0]
-        Scale: [0.62500006, 1.00000453, 1.00000429]
+    SoundComponent:
+      Entries:
+        - name: _turnSoundPath1
+          filePaths:
+            - Resources/Audio/StatueTurn_01.wav
+          loop: false
+          volume: 0.51700002
+          priority: 112
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 14.8999996
+        - name: _turnSoundPath2
+          filePaths:
+            - Resources/Audio/StatueTurn_02.wav
+          loop: false
+          volume: 0.513999999
+          priority: 111
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 17.7000008
+        - name: _turnSoundPath3
+          filePaths:
+            - Resources/Audio/StatueTurn_03.wav
+          loop: false
+          volume: 0.537999988
+          priority: 113
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 18.3999996
+        - name: _alertSoundPath
+          filePaths:
+            - Resources/Audio/VO_Statue_003.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 0.5
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 50
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.PatrolMultiDirectionSpotlight
-      ParamsJSON: "{\n  \"targetName\": \"Level2_PatrolEnemy_SR_MovingEnemy\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+      TypeName: GameScripts.EnemyController
+      ParamsJSON: "{\n  \"_pingPong\": true,\n  \"_rotationAngle\": 180.0\n}"
+  - InfoComponent:
+      Parent: 7923053519804204270
+      Name: SEAL1_6_level2
+      UID: 10562060880354864105
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-2.93003702, -0.432720184, 0.0439109802]
+        Rotate: [-180, -5.00903025e-06, -173.401001]
+        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+    ModelComponent:
+      ModelID: 14742392640093446096
+      MaterialID: 957317307738812434
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
       Parent: 0
       Name: LightBall_1 (Copy) (Copy) (Copy) (Copy)
@@ -1757,25 +1395,22 @@ ENTITIES:
       ModelSource: ""
       MaterialSource: ""
   - InfoComponent:
-      Parent: 0
-      Name: Sentry Vision Cone_SR180
-      UID: 10323525089573234495
-      SortOrder: 55
+      Parent: 7923053519804204270
+      Name: SEAL1_1_level2
+      UID: 7473816545159094783
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [27.457325, 17.2255497, 0.404775023]
-        Rotate: [0, 185.42543, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.SpotlightFollower
-      ParamsJSON: "{\n  \"targetName\": \"Sentry_SR1_180\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [1, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Translate: [-0.862154722, 1.07168007, 0.0439109802]
+        Rotate: [-180, -5.0090257e-06, 166.804001]
+        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+    ModelComponent:
+      ModelID: 14742392640093446096
+      MaterialID: 957317307738812434
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
       Parent: 0
       Name: Sentry_SR1_180
@@ -1783,9 +1418,9 @@ ENTITIES:
       SortOrder: 97
     TransformComponent:
       Transform:
-        Translate: [27.457325, 15.2255497, 0.404775023]
-        Rotate: [0, 5.42542315, 0]
-        Scale: [0.0144998673, 0.0145000014, 0.0144998431]
+        Translate: [28.0240536, 15.4747601, 0.404775023]
+        Rotate: [0, 90, 0]
+        Scale: [0.0144998673, 0.0145000014, 0.0144998422]
     ModelComponent:
       ModelID: 12373711864448078618
       MaterialID: 1781146247448718189
@@ -5610,25 +5245,22 @@ ENTITIES:
       ModelSource: ""
       MaterialSource: ""
   - InfoComponent:
-      Parent: 0
-      Name: Patrol Vision Cone HR1
-      UID: 11561172986647562951
-      SortOrder: 262
+      Parent: 7923053519804204270
+      Name: SEAL1_5_level2
+      UID: 3948722888296850639
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [36.8592491, 25.2390041, -7.08886433]
-        Rotate: [0, 179.999878, 0]
-        Scale: [0.999980092, 0.625, 0.999996901]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"positionOffsetY\": 8.09000015258789,\n  \"rotationOffsetY\": 0.0,\n  \"targetName\": \"Patrol Enemy SR1\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Translate: [1.14502501, -1.68087387, 0.0439109802]
+        Rotate: [-180, -5.00899387e-06, -160.518997]
+        Scale: [0.0200001523, 0.0199999996, 0.0200003237]
+    ModelComponent:
+      ModelID: 14742392640093446096
+      MaterialID: 957317307738812434
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -7351,165 +6983,141 @@ ENTITIES:
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
   - InfoComponent:
-      Parent: 0
-      Name: Patrol Vision Cone 10
-      UID: 7479274772312597537
-      SortOrder: 244
+      Parent: 7923053519804204270
+      Name: SEAL1_4_level2
+      UID: 5995597849419410954
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-7.07150507, 17.4710217, 18.0792179]
-        Rotate: [-0.0199341383, 89.999939, -8.14222162e-11]
-        Scale: [0.999999464, 0.999999881, 0.999999285]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"positionOffsetY\": 4.050000190734863,\n  \"targetName\": \"Patrol enemy 3\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Translate: [-5.9249754, -1.71087265, 0.0439109802]
+        Rotate: [-180, -5.00899478e-06, -160.518997]
+        Scale: [0.0200001486, 0.0199999996, 0.0200003125]
+    ModelComponent:
+      ModelID: 14742392640093446096
+      MaterialID: 957317307738812434
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
-      Parent: 0
-      Name: Patrol Vision Cone 6 (lvl 2)
-      UID: 4378450492672010194
-      SortOrder: 232
+      Parent: 7923053519804204270
+      Name: SEAL2_3_level2
+      UID: 8247985507833095058
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-61.9275208, 35.2016907, 13.0581942]
-        Rotate: [0, 0.258636475, 0]
-        Scale: [0.999999166, 0.625000179, 0.999999166]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolMultiDirectionSpotlight
-      ParamsJSON: "{\n  \"positionOffsetY\": 4.14900016784668,\n  \"targetName\": \"Level2_PatrolEnemy_6\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Translate: [5.24484539, 0.555576324, 0.0579795837]
+        Rotate: [180, -5.00895612e-06, 172.145004]
+        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+    ModelComponent:
+      ModelID: 13771417735960447344
+      MaterialID: 6054887109004695869
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
-      Parent: 0
-      Name: Patrol Vision Cone 67
-      UID: 15829944425654132245
-      SortOrder: 289
+      Parent: 7923053519804204270
+      Name: SEAL2_6_level2
+      UID: 6818911636582148046
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [20.6923141, 17.5700226, -2.226439]
-        Rotate: [0, 183.659119, 0]
-        Scale: [0.999980092, 0.625, 0.999996901]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"positionOffsetY\": 4.14900016784668,\n  \"targetName\": \"Patrol enemy 6\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Translate: [-1.82515478, 0.525577545, 0.0579795837]
+        Rotate: [180, -5.00895612e-06, 172.145004]
+        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+    ModelComponent:
+      ModelID: 13771417735960447344
+      MaterialID: 6054887109004695869
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
-      Parent: 0
-      Name: Patrol Vision Cone 7
-      UID: 17207126084649200590
-      SortOrder: 296
+      Parent: 7923053519804204270
+      Name: SEAL3_6_level2
+      UID: 12456337088693094244
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-17.7370396, 17.1915474, 31.8400154]
-        Rotate: [0, 270.000092, 0]
-        Scale: [0.95835644, 0.689458668, 0.998410165]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"positionOffsetY\": 4.065999984741211,\n  \"targetName\": \"Level2_PatrolEnemy_1\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Translate: [-4.48301411, -0.186079025, 0.0635166168]
+        Rotate: [180, -5.00892702e-06, 173.798004]
+        Scale: [0.0200001802, 0.0199999996, 0.0199999996]
+    ModelComponent:
+      ModelID: 5300562332905006444
+      MaterialID: 13816183176200794107
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
-      Parent: 0
-      Name: PatrolVisionCone45
-      UID: 16553261442957951333
-      SortOrder: 292
+      Parent: 7923053519804204270
+      Name: SEAL3_5_level2
+      UID: 8682246566619359757
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-30.8884754, 28.2398987, 8.19178867]
-        Rotate: [0, 6.10351562e-05, 0]
-        Scale: [1, 0.62500006, 0.999999762]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"positionOffsetY\": 4.065999984741211,\n  \"targetName\": \"Level2_PatrolEnemy_4\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Translate: [-1.68515468, -0.828321457, 0.0635166168]
+        Rotate: [180, -5.00895521e-06, 157.774048]
+        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+    ModelComponent:
+      ModelID: 5300562332905006444
+      MaterialID: 13816183176200794107
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
-      Parent: 0
-      Name: Patrol Vision Cone 3 (lvl 2)
-      UID: 13004693949065280400
-      SortOrder: 274
+      Parent: 7923053519804204270
+      Name: SEAL3_4_level2
+      UID: 9783543133627228472
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-19.6251221, 17.605547, 62.5680923]
-        Rotate: [0, 262.206696, 0]
-        Scale: [0.62500006, 1.00000453, 1.00000429]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolMultiDirectionSpotlight
-      ParamsJSON: "{\n  \"positionOffsetY\": 4.480000019073486,\n  \"targetName\": \"Level2_PatrolEnemy_3\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Translate: [-6.77533388, 1.50883675, 0.0635166168]
+        Rotate: [180, -5.00892611e-06, -175.832993]
+        Scale: [0.020000346, 0.0199999977, 0.0199999996]
+    ModelComponent:
+      ModelID: 5300562332905006444
+      MaterialID: 13816183176200794107
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
-      Parent: 0
-      Name: Patrol Vision Cone 2(lvl 2)
-      UID: 5626738050018619883
-      SortOrder: 239
+      Parent: 7923053519804204270
+      Name: SEAL3_3_level2
+      UID: 6731432774094374601
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-13.3622093, 17.1915474, 40.1787148]
-        Rotate: [0, 6.10351562e-05, 0]
-        Scale: [0.999999702, 0.625, 0.999999702]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"positionOffsetY\": 4.065999984741211,\n  \"targetName\": \"Level2_PatrolEnemy_2\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Translate: [5.38484526, -0.798322678, 0.0635166168]
+        Rotate: [180, -5.00895521e-06, 157.774048]
+        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+    ModelComponent:
+      ModelID: 5300562332905006444
+      MaterialID: 13816183176200794107
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
-      Parent: 0
-      Name: Patrol Vision Cone 2(lvl 2)
-      UID: 579238474671125089
-      SortOrder: 212
+      Parent: 7923053519804204270
+      Name: SEAL2_2_level2
+      UID: 2333601381919441008
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-50.6980133, 28.2398987, -11.5130386]
-        Rotate: [0, 89.999939, 0]
-        Scale: [1.9999454, 1.25, 1.9999454]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"positionOffsetY\": 4.065999984741211,\n  \"targetName\": \"Level2_PatrolEnemy_5\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [1, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Translate: [1.37280393, 0.770050049, 0.0579795837]
+        Rotate: [180, -5.00895612e-06, 172.145004]
+        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+    ModelComponent:
+      ModelID: 13771417735960447344
+      MaterialID: 6054887109004695869
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
       Parent: 0
       Name: ResPoint1_Light_2
@@ -7692,24 +7300,18 @@ ENTITIES:
       renderAs3D: false
   - InfoComponent:
       Parent: 0
-      Name: Patrol Vision Cone Prison
-      UID: 645747724488771901
-      SortOrder: 3
+      Name: DebugTele
+      UID: 11858638219423824013
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-28.6702881, 2.5166657, 12.9723768]
-        Rotate: [0, 341.804291, 0]
-        Scale: [0.624999762, 1.00000441, 1]
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"positionOffsetY\": 1.9140000343322754,\n  \"targetName\": \"Patrol_Prison\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+      TypeName: GameScripts.DebugTeleporter
+      ParamsJSON: "{}"
   - InfoComponent:
       Parent: 0
       Name: Hanging_Lantern_SR_1 (Copy)
@@ -8011,24 +7613,14 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Sentry Vision Cone 2
-      UID: 9293667924588559209
-      SortOrder: 46
+      Name: SEALCOPYPASTE2
+      UID: 7923053519804204270
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [9.27553558, 2.64499116, -12.913641]
-        Rotate: [0, 185.42543, 0]
-        Scale: [0.99999994, 1, 0.99999994]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.SpotlightFollower
-      ParamsJSON: "{\n  \"positionOffsetY\": 2.0940001010894775,\n  \"targetName\": \"Sentry_2\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [1, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Translate: [-36.6864586, 27.5038548, -22.4386768]
+        Rotate: [-180, -5.00895612e-06, -180]
+        Scale: [1, 1, 1]
   - ColliderComponent:
       Collider:
         LocalPosition: [0.078122288, -0.144594222, -0.00326804467]
@@ -10807,7 +10399,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [9.27553558, 0.550991118, -12.913641]
-        Rotate: [0, 5.42542315, 0]
+        Rotate: [0, 90, 0]
         Scale: [0.0145000946, 0.0145000005, 0.0145000946]
     ModelComponent:
       ModelID: 12373711864448078618
@@ -10894,101 +10486,46 @@ ENTITIES:
       Enabled: true
       TypeName: GameScripts.EnemyController
       ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Sentry_2\",\n  \"_pingPong\": true,\n  \"_rotation\": false,\n  \"_rotationAngle\": 180.0,\n  \"_visionDetectionRange\": 15.479999542236328\n}"
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0.0319244377, -0.241377637, -0.257090837]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [30, 10.0000019, 10.0000019]
+        DynamicFriction: 0
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 13244744886219103757
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
       Parent: 0
-      Name: Sentry_1
-      UID: 13685181942599758823
-      SortOrder: 505
+      Name: Wall_Bridge_spacer_2
+      UID: 14623677135604852580
+      SortOrder: 77
     TransformComponent:
       Transform:
-        Translate: [-7.15782738, 0.530518472, -13.2785921]
-        Rotate: [0, 354.574524, 0]
-        Scale: [0.0144997425, 0.0145000005, 0.0144997425]
+        Translate: [-67.8677292, 45.1539536, 20.2576103]
+        Rotate: [89.9999847, -0, 0]
+        Scale: [0.100000001, 0.647709846, 1.59249735]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.100000001, 0.647709846, 1.59249735]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
-      ModelID: 12373711864448078618
-      MaterialID: 1781146247448718189
+      ModelID: 1441742420851203854
+      MaterialID: 6104124486273075758
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-    SoundComponent:
-      Entries:
-        - name: _turnSoundPath1
-          filePaths:
-            - Resources/Audio/StatueTurn_01.wav
-          loop: false
-          volume: 0.541999996
-          priority: 116
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 17.7000008
-        - name: _turnSoundPath2
-          filePaths:
-            - Resources/Audio/StatueTurn_02.wav
-          loop: false
-          volume: 0.51700002
-          priority: 110
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 19.1000004
-        - name: _turnSoundPath3
-          filePaths:
-            - Resources/Audio/StatueTurn_03.wav
-          loop: false
-          volume: 0.518000007
-          priority: 115
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 17.7000008
-        - name: _alertSoundPath
-          filePaths:
-            - Resources/Audio/VO_Statue_003.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 0.5
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.EnemyController
-      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_pingPong\": true,\n  \"_rotation\": true,\n  \"_rotationAngle\": 180.0,\n  \"_visionDetectionRange\": 15.689000129699707\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -15058,8 +14595,8 @@ ENTITIES:
       SortOrder: 444
     TransformComponent:
       Transform:
-        Translate: [12.1773033, 30.7418995, 14.4784441]
-        Rotate: [-226.8125, 96.625, 180]
+        Translate: [-1.96876073, 8.85249138, -19.5325699]
+        Rotate: [-222.4375, 719.0625, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -16065,45 +15602,39 @@ ENTITIES:
       ModelSource: ""
       MaterialSource: ""
   - InfoComponent:
-      Parent: 0
-      Name: Patrol Vision Cone 2
-      UID: 12748229014291956908
-      SortOrder: 271
+      Parent: 7923053519804204270
+      Name: SEAL2_4_level2
+      UID: 2540618719814509905
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [19.3075161, 17.6360207, -10.1728048]
-        Rotate: [-0.0296053514, 270, 1.17258114e-09]
-        Scale: [0.999962628, 0.99999994, 0.999974549]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"positionOffsetY\": 4.215000152587891,\n  \"targetName\": \"Patrol enemy 2\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Translate: [6.19618273, -2.38066483, 0.0579795837]
+        Rotate: [180, -5.00895612e-06, 172.145004]
+        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+    ModelComponent:
+      ModelID: 13771417735960447344
+      MaterialID: 6054887109004695869
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
-      Parent: 0
-      Name: VisionConeFake 1
-      UID: 9232137645831539091
-      SortOrder: 45
+      Parent: 7923053519804204270
+      Name: SEAL1_2_level2
+      UID: 4788057559981688980
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-7.15782738, 2.53051853, -13.2785921]
-        Rotate: [0, 536.292725, 0]
-        Scale: [1.97424662, 0.999991238, 0.999972403]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.SpotlightFollower
-      ParamsJSON: "{}"
-    SpotLightComponent:
-      Light:
-        Radiance: [1, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.10599995
-        CutOff: 0.769999981
+        Translate: [4.13996315, -0.402721405, 0.0439109802]
+        Rotate: [-180, -5.00903025e-06, -173.401001]
+        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+    ModelComponent:
+      ModelID: 14742392640093446096
+      MaterialID: 957317307738812434
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -16170,25 +15701,22 @@ ENTITIES:
       TypeName: GameScripts.MultiKeyDoor
       ParamsJSON: "{\n  \"_doorName\": \"NewDoor2\",\n  \"_ePromptName\": \"UI_E_OpenDoor\",\n  \"_isMainDoor\": true,\n  \"_lockEntityName\": \"lock_1\",\n  \"_requiredKeysString\": \"Key1_1,Key1_2,Key1_3\",\n  \"_seal1Name\": \"SEAL1_1_level1,SEAL1_2_level1,SEAL1_3_level1,SEAL1_4_level1,SEAL1_5_level1,SEAL1_6_level1\",\n  \"_seal2Name\": \"SEAL2_1_level1,SEAL2_2_level1,SEAL2_3_level1,SEAL2_4_level1,SEAL2_5_level1,SEAL2_6_level1,SEAL2_7_level1,SEAL2_8_level1\",\n  \"_seal3Name\": \"SEAL3_1_level1,SEAL3_2_level1,SEAL3_3_level1,SEAL3_4_level1,SEAL3_5_level1,SEAL3_6_level1\",\n  \"_slideDirection\": \"right\"\n}"
   - InfoComponent:
-      Parent: 0
-      Name: Sentry Vision Cone 4
-      UID: 14440688285386943557
-      SortOrder: 74
+      Parent: 7923053519804204270
+      Name: SEAL2_8_level2
+      UID: 5843627169115320245
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-17.1420422, 15.3514919, 18.490139]
-        Rotate: [0, 270, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.SpotlightFollower
-      ParamsJSON: "{\n  \"targetName\": \"Sentry_4\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [1, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Translate: [2.65476537, -2.11428452, 0.0579795837]
+        Rotate: [-180, -5.00895612e-06, 172.145004]
+        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+    ModelComponent:
+      ModelID: 13771417735960447344
+      MaterialID: 6054887109004695869
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
       Parent: 0
       Name: Wall_Texture_Floor_3_Hut
@@ -16646,65 +16174,49 @@ ENTITIES:
       TypeName: GameScripts.CutsceneSequencer
       ParamsJSON: "{\n  \"BlockInput\": false,\n  \"CutsceneFile\": \"IntroCutscene.seq\",\n  \"PlayOnStart\": false\n}"
   - InfoComponent:
-      Parent: 0
-      Name: Sentry Vision Cone 5
-      UID: 4830657238726851453
-      SortOrder: 26
+      Parent: 7923053519804204270
+      Name: SEAL2_5_level2
+      UID: 493950244444004828
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-64.1180191, 26.2603378, -1.22266841]
-        Rotate: [0, 270, 0]
-        Scale: [0.963125348, 0.700597644, 1.48655081]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.SpotlightFollower
-      ParamsJSON: "{\n  \"targetName\": \"Sentry_level2_2\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [1, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Translate: [-5.69719648, 0.74005127, 0.0579795837]
+        Rotate: [180, -5.00895612e-06, 172.145004]
+        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+    ModelComponent:
+      ModelID: 13771417735960447344
+      MaterialID: 6054887109004695869
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Sentry Vision Cone 6
-      UID: 775872690826725368
-      SortOrder: 4
+      Name: Level1_Cutscene_Door
+      UID: 17997215674506473440
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-32.5929832, 26.2603378, -8.11126804]
-        Rotate: [0, 270, 0]
-        Scale: [0.963125467, 0.700597644, 1.48655117]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.SpotlightFollower
-      ParamsJSON: "{\n  \"targetName\": \"Sentry_level2_1\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [1, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Translate: [-0.665336907, 23.2664413, 14.5090075]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
   - InfoComponent:
-      Parent: 0
-      Name: Sentry Vision Cone 7
-      UID: 14183844314391113747
-      SortOrder: 91
+      Parent: 7923053519804204270
+      Name: SEAL2_1_level2
+      UID: 17780129257658971624
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-46.1160126, 26.2603378, -18.4139233]
-        Rotate: [0, 450, 0]
-        Scale: [0.963125288, 0.700597346, 1.4865514]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.SpotlightFollower
-      ParamsJSON: "{\n  \"targetName\": \"Sentry_level2_3\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [1, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Translate: [-4.41523504, -2.14428329, 0.0579795837]
+        Rotate: [-180, -5.00895612e-06, 172.145004]
+        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+    ModelComponent:
+      ModelID: 13771417735960447344
+      MaterialID: 6054887109004695869
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
       Parent: 0
       Name: Ambience SFX
@@ -17674,45 +17186,39 @@ ENTITIES:
       billboardMode: true
       alignment: Left
   - InfoComponent:
-      Parent: 0
-      Name: Patrol Vision Cone 12
-      UID: 3785755798607696763
-      SortOrder: 224
+      Parent: 7923053519804204270
+      Name: SEAL3_2_level2
+      UID: 2240002910248903993
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-2.51742291, 17.5700226, 7.53667545]
-        Rotate: [0, 270, 0]
-        Scale: [0.624999762, 1.00000441, 1.00000429]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"positionOffsetY\": 4.14900016784668,\n  \"targetName\": \"Patrol enemy 12\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Translate: [2.5869863, -0.156080246, 0.0635166168]
+        Rotate: [180, -5.00892565e-06, 173.798004]
+        Scale: [0.0200001858, 0.0199999996, 0.0199999996]
+    ModelComponent:
+      ModelID: 5300562332905006444
+      MaterialID: 13816183176200794107
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
-      Parent: 0
-      Name: Patrol Vision Cone 1
-      UID: 4196030628338108250
-      SortOrder: 228
+      Parent: 7923053519804204270
+      Name: SEAL1_3_level2
+      UID: 16818309994306707516
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-22.3117981, 17.5700226, 1.60570049]
-        Rotate: [0, 330.435242, 0]
-        Scale: [0.999999762, 0.62500006, 0.999999762]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolSpotlightFollower
-      ParamsJSON: "{\n  \"positionOffsetY\": 4.14900016784668,\n  \"targetName\": \"Patrol enemy 1\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [0.975490212, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Translate: [6.20784521, 1.10167885, 0.0439109802]
+        Rotate: [-180, -5.00902615e-06, 166.804001]
+        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+    ModelComponent:
+      ModelID: 14742392640093446096
+      MaterialID: 957317307738812434
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - ColliderComponent:
       Collider:
         LocalPosition: [0.560027719, -0.000982666039, -0.197365269]
@@ -18312,25 +17818,22 @@ ENTITIES:
       TypeName: GameScripts.EnemyController
       ParamsJSON: "{\n  \"_entityName\": \"Sentry_level2_SR1\"\n}"
   - InfoComponent:
-      Parent: 0
-      Name: Sentry Vision Cone SR1
-      UID: 2430118508094887219
-      SortOrder: 12
+      Parent: 7923053519804204270
+      Name: SEAL2_7_level2
+      UID: 15822711660976151384
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-74.9759827, 33.6174316, 10.8172054]
-        Rotate: [0, 270, 0]
-        Scale: [0.963125587, 0.700597644, 1.48655128]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.SpotlightFollower
-      ParamsJSON: "{\n  \"targetName\": \"Sentry_level2_SR1\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [1, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Translate: [-0.873817265, -2.4106636, 0.0579795837]
+        Rotate: [180, -5.00895612e-06, 172.145004]
+        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
+    ModelComponent:
+      ModelID: 13771417735960447344
+      MaterialID: 6054887109004695869
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -19437,25 +18940,22 @@ ENTITIES:
       TypeName: GameScripts.EnemyController
       ParamsJSON: "{\n  \"_entityName\": \"Sentry_level2_SR2\",\n  \"_rotation\": false,\n  \"_rotationInterval\": 1.3799999952316284,\n  \"_rotationSpeed\": 360.0\n}"
   - InfoComponent:
-      Parent: 0
-      Name: Sentry Vision Cone_SR2
-      UID: 7428583064563854466
-      SortOrder: 39
+      Parent: 7923053519804204270
+      Name: SEAL3_1_level2
+      UID: 10836926273470986313
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-75.7123413, 36.7509689, -15.3300419]
-        Rotate: [0, 450, 0]
-        Scale: [0.963109553, 0.700597644, 1.48652291]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.SpotlightFollower
-      ParamsJSON: "{\n  \"targetName\": \"Sentry_level2_SR2\"\n}"
-    SpotLightComponent:
-      Light:
-        Radiance: [1, 0, 0]
-        Intensity: 6.67000008
-        FallOff: -3.0999999
-        CutOff: 0.769999981
+        Translate: [0.294666469, 1.53883553, 0.0635166168]
+        Rotate: [180, -5.00892611e-06, -175.832993]
+        Scale: [0.0200003497, 0.0199999977, 0.0199999996]
+    ModelComponent:
+      ModelID: 5300562332905006444
+      MaterialID: 13816183176200794107
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - ColliderComponent:
       Collider:
         LocalPosition: [0.117112346, -0.17562063, -0.00326804421]
