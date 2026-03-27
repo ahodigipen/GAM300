@@ -685,17 +685,37 @@ namespace EditorUI {
                 }
 
                 // Draw the dropdown menu
+                static char targetSearchBuf[128] = {};
                 if (ImGui::BeginCombo("##TargetEntity", currentTargetName))
                 {
-                    // Add a "None" option
-                    if (ImGui::Selectable("None", tpc.targetUID == 0)) {
-                        tpc.targetUID = 0;
+                    // Auto-focus the search box when the combo first opens
+                    if (ImGui::IsWindowAppearing())
+                    {
+                        ImGui::SetKeyboardFocusHere();
+                        targetSearchBuf[0] = '\0';
+                    }
+                    ImGui::InputText("##TargetSearch", targetSearchBuf, IM_ARRAYSIZE(targetSearchBuf));
+
+                    // Add a "None" option (only show if filter is empty or matches)
+                    if (targetSearchBuf[0] == '\0') {
+                        if (ImGui::Selectable("None", tpc.targetUID == 0)) {
+                            tpc.targetUID = 0;
+                        }
                     }
 
                     // Loop through all entities with an InfoComponent to populate the list
                     auto infoView = ctx->scene.view<Boom::InfoComponent>();
                     for (auto e : infoView) {
                         const auto& info = infoView.get<Boom::InfoComponent>(e);
+                        // Filter by search text (case-insensitive substring match)
+                        if (targetSearchBuf[0] != '\0') {
+                            std::string nameLower = info.name;
+                            std::string filterLower = targetSearchBuf;
+                            std::transform(nameLower.begin(), nameLower.end(), nameLower.begin(), ::tolower);
+                            std::transform(filterLower.begin(), filterLower.end(), filterLower.begin(), ::tolower);
+                            if (nameLower.find(filterLower) == std::string::npos)
+                                continue;
+                        }
                         const bool isSelected = (tpc.targetUID == info.uid);
                         if (ImGui::Selectable(info.name.c_str(), isSelected)) {
                             tpc.targetUID = info.uid; // Set the UID when selected
