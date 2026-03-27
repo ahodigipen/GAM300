@@ -832,8 +832,8 @@ struct VisualConeComponent {
     bool      isAlert     = false;          // false = patrol colour, true = alert colour
     glm::vec3 patrolColor = {0.80f, 0.08f, 0.08f};  // dim red (patrol)
     glm::vec3 alertColor  = {1.00f, 0.05f, 0.05f};  // bright red (alert)
-    float     fillAlpha   = 0.08f;   // keep subtle — GL_MAX prevents overlap brightening
-    float     edgeAlpha   = 0.36f;
+    float     fillAlpha   = 0.18f;   // keep subtle — GL_MAX prevents overlap brightening
+    float     edgeAlpha   = 0.55f;
 
     XPROPERTY_DEF(
         "VisualConeComponent", Boom::VisualConeComponent,
