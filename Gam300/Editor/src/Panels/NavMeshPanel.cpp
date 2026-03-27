@@ -298,8 +298,9 @@ namespace EditorUI {
         }
         else {
             ImGui::Checkbox("Draw Navmesh (edges + centroids)", &m_Ctx->ShowNavDebug);
-            ImGui::SameLine();
-            // add more toggles if needed
+            ImGui::Checkbox("Show AI Vision Cones", &m_Ctx->ShowVisionCones);
+            if (ImGui::IsItemHovered())
+                ImGui::SetTooltip("Show enemy vision cones (yellow = patrolling, red = chasing).\nPer-enemy cone can be toggled via the AI Component inspector.");
         }
 
         ImGui::End();
