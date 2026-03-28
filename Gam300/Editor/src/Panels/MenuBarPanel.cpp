@@ -157,6 +157,22 @@ namespace EditorUI {
             ImGui::EndMenu();
         }
 
+        // --------------------------- Edit ----------------------------------------
+        if (ImGui::BeginMenu("Edit"))
+        {
+            auto* history = m_Owner ? m_Owner->GetCommandHistory() : nullptr;
+
+            if (ImGui::MenuItem("Undo", "Ctrl+Z", false, history && history->CanUndo())) {
+                if (history) history->Undo();
+            }
+
+            if (ImGui::MenuItem("Redo", "Ctrl+Y", false, history && history->CanRedo())) {
+                if (history) history->Redo();
+            }
+
+            ImGui::EndMenu();
+        }
+
         // --------------------------- View ----------------------------------------
         if (ImGui::BeginMenu("View")) {
             if (m.showInspector)        ImGui::MenuItem("Inspector", nullptr, m.showInspector);
