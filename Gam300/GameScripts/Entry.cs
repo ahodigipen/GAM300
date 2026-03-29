@@ -223,26 +223,21 @@ namespace GameScripts
                 _startSequenceDelay -= dt;
                 if (_startSequenceDelay <= 0.0f && !StoryDialogueManager.IsSequenceActive())
                 {
-                    // Skip start dialogue for Level 2
-                    if (_currentSceneName == LEVEL2_SCENE_NAME)
-                    {
-                        API.Log("[Entry] Skipping Start Dialogue Sequence for Level 2.");
-                        _startSequenceDelay = -1f;
-                    }
-                    else
+                    if (_currentSceneName == GAMEPLAY_SCENE_NAME)
                     {
                         API.Log("[Entry] Delay finished. Triggering Start Dialogue Sequence...");
                         StoryDialogueManager.PlayStartSequence(() => { IsInventoryOpen = true; API.ShowInventoryMenu(); });
                     }
-                }
-            }
-            else if (_currentSceneName == TUTORIAL_ZONE_SCENE_NAME && _startSequenceDelay > 0.0f)
-            {
-                _startSequenceDelay -= dt;
-                if (_startSequenceDelay <= 0.0f && !StoryDialogueManager.IsSequenceActive())
-                {
-                    API.Log("[Entry] Delay finished. Triggering Tutorial Zone Dialogue Sequence...");
-                    StoryDialogueManager.PlayTutorialZoneSequence();
+                    else if (_currentSceneName == TUTORIAL_ZONE_SCENE_NAME)
+                    {
+                        API.Log("[Entry] Delay finished. Triggering Tutorial Zone Dialogue Sequence...");
+                        StoryDialogueManager.PlayTutorialZoneSequence();
+                    }
+                    else
+                    {
+                        // All other gameplay scenes have no start dialogue
+                        _startSequenceDelay = -1f;
+                    }
                 }
             }
 

@@ -8,6 +8,33 @@ ENTITIES:
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: Level1Teleport
+      UID: 17389396566492664091
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [30.6163158, 39.5567818, 7.10442352]
+        Rotate: [0, -0, 0]
+        Scale: [5.08983374, 9.7791996, 1.04259193]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.SceneTransitionTrigger
+      ParamsJSON: "{\n  \"_sceneName\": \"Level1\"\n}"
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
         IsTrigger: false
         ShowPhysicsDebug: false
         PhysicsMesh: 0
@@ -115,7 +142,7 @@ ENTITIES:
         Scale: [0.0299999993, 0.0599999987, 1]
     SpriteComponent:
       textureID: 0
-      color: [1, 1, 1, 1]
+      color: [1, 1, 1, 0]
       renderAs3D: false
     MenuComponent:
       MenuType: 6
@@ -133,7 +160,7 @@ ENTITIES:
         Scale: [0.0299999993, 0.0599999987, 1]
     SpriteComponent:
       textureID: 0
-      color: [1, 1, 1, 1]
+      color: [1, 1, 1, 0]
       renderAs3D: false
     MenuComponent:
       MenuType: 6
@@ -151,7 +178,7 @@ ENTITIES:
         Scale: [0.0299999993, 0.0599999987, 1]
     SpriteComponent:
       textureID: 0
-      color: [1, 1, 1, 1]
+      color: [1, 1, 1, 0]
       renderAs3D: false
     MenuComponent:
       MenuType: 6
@@ -169,7 +196,7 @@ ENTITIES:
         Scale: [0.0299999993, 0.0599999987, 1]
     SpriteComponent:
       textureID: 0
-      color: [1, 1, 1, 1]
+      color: [1, 1, 1, 0]
       renderAs3D: false
     MenuComponent:
       MenuType: 6
@@ -187,7 +214,7 @@ ENTITIES:
         Scale: [0.0299999993, 0.0599999987, 1]
     SpriteComponent:
       textureID: 0
-      color: [1, 1, 1, 1]
+      color: [1, 1, 1, 0]
       renderAs3D: false
     MenuComponent:
       MenuType: 6
@@ -251,7 +278,7 @@ ENTITIES:
         Scale: [0.200000003, 0.0900000036, 1]
     SpriteComponent:
       textureID: 6430292677676923924
-      color: [0.435294122, 0.435294122, 0.435294122, 1]
+      color: [0.435294122, 0.435294122, 0.435294122, 0]
       renderAs3D: false
     MenuComponent:
       MenuType: 6
@@ -454,9 +481,9 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.554800034, 0.170000002, 1.11000001]
+        Translate: [0.255258977, 0.170000002, 1.11000001]
         Rotate: [0, 0, 0]
-        Scale: [0.0183012802, 0.0199999996, 1]
+        Scale: [0.00553613901, 0.0199999996, 1]
     SpriteComponent:
       textureID: 10258411235812800368
       color: [1, 1, 1, 1]
@@ -526,7 +553,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.82980001, 0.170000002, 1.12]
+        Translate: [0.285498023, 0.170000002, 1.12]
         Rotate: [0, 0, 0]
         Scale: [0.0199999996, 0.0399999991, 1]
     SpriteComponent:
@@ -2769,8 +2796,8 @@ ENTITIES:
       SortOrder: 444
     TransformComponent:
       Transform:
-        Translate: [-36.4466286, 31.5770988, 11.1497746]
-        Rotate: [-202.9375, 665.5, 180]
+        Translate: [22.318573, 46.320034, 18.1343365]
+        Rotate: [-207.375, 542.625, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
