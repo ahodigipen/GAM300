@@ -2,27 +2,35 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
-      Name: cutscene video
-      UID: 18197252962146793072
+      Name: Point Light
+      UID: 5315588240363654174
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, 0, 0]
+        Translate: [0, 0.5, 0]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.CutsceneController
-      ParamsJSON: "{\n  \"fadeDuration\": 1.0\n}"
-    VideoComponent:
-      VideoPath: M4_Cutscene_Intro_V1.mpeg
-      PlayOnStart: true
-      Loop: false
-      Volume: 1
-      PlaybackSpeed: 1
-      RenderAs3D: false
-      RemoveBlackBackground: false
-      TintColor: [0.900552511, 0.894779921, 0.751289666, 1]
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.899999976, 0.699999988]
+        Intensity: 10
+        Range: 0
+        BloomStrength: 1
+  - InfoComponent:
+      Parent: 0
+      Name: Camera
+      UID: 9201024860084647067
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.443855196, 1.21253562, 2.94374704]
+        Rotate: [-19.375, 1.6875, 0]
+        Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        NearPlane: 0.300000012
+        FarPlane: 1000
+        FOV: 91
   - InfoComponent:
       Parent: 0
       Name: Spot Light
@@ -41,31 +49,24 @@ ENTITIES:
         CutOff: 0.34906584
   - InfoComponent:
       Parent: 0
-      Name: Camera
-      UID: 9201024860084647067
+      Name: cutscene video
+      UID: 18197252962146793072
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.443855196, 1.21253562, 2.94374704]
-        Rotate: [-19.375, 1.6875, 0]
-        Scale: [1, 1, 1]
-    CameraComponent:
-      Camera:
-        NearPlane: 0.300000012
-        FarPlane: 1000
-        FOV: 91
-  - InfoComponent:
-      Parent: 0
-      Name: Point Light
-      UID: 5315588240363654174
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, 0.5, 0]
+        Translate: [0, 0, 0]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
-    PointLightComponent:
-      Light:
-        Radiance: [1, 0.899999976, 0.699999988]
-        Intensity: 10
-        Range: 0
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.CutsceneController
+      ParamsJSON: "{\n  \"fadeDuration\": 1.0,\n  \"nextSceneName\": \"Level1\"\n}"
+    VideoComponent:
+      VideoPath: M4_Cutscene_Intro_V1.mpeg
+      PlayOnStart: true
+      Loop: false
+      Volume: 1
+      PlaybackSpeed: 1
+      RenderAs3D: false
+      RemoveBlackBackground: false
+      TintColor: [0.900552511, 0.894779921, 0.751289666, 1]
