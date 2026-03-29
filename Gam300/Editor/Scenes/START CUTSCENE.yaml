@@ -60,7 +60,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.CutsceneController
-      ParamsJSON: "{\n  \"fadeDuration\": 1.0,\n  \"nextSceneName\": \"Level1\"\n}"
+      ParamsJSON: "{\n  \"fadeDuration\": 1.0,\n  \"nextSceneName\": \"TutorialZone\"\n}"
     VideoComponent:
       VideoPath: M4_Cutscene_Intro_V1.mpeg
       PlayOnStart: true

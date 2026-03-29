@@ -11,6 +11,7 @@ namespace GameScripts
         public const string LEVEL1_SCENE_NAME = "Level1";
         public const string LEVEL2_SCENE_NAME = "Level2";
         public const string BOSS_ARENA_SCENE_NAME = "NewBossArena";
+        public const string TUTORIAL_ZONE_SCENE_NAME = "TutorialZone";
         public const string LEVEL_SCENE_NAME = GAMEPLAY_SCENE_NAME; // Alias for compatibility
 
         public static bool IsGameplayScene(string sceneName)
@@ -19,6 +20,7 @@ namespace GameScripts
                    sceneName == LEVEL1_SCENE_NAME || 
                    sceneName == LEVEL2_SCENE_NAME ||
                    sceneName == BOSS_ARENA_SCENE_NAME ||
+                   sceneName == TUTORIAL_ZONE_SCENE_NAME ||
                    sceneName == "M6 EDITING"; // Added M6 EDITING as it's a common dev scene
         }
 
@@ -132,6 +134,7 @@ namespace GameScripts
             TutorialManager.Reset();
             CrouchTutorialManager.Reset();
             StoryDialogueManager.Reset();
+            PlayerMovement.ResetTutorialDeathCount();
 
             if (_currentSceneName == LEVEL2_SCENE_NAME)
             {
@@ -156,7 +159,9 @@ namespace GameScripts
                 API.LoadSceneAdditive(PAUSE_SCENE_NAME);
                 API.LoadSceneAdditive(DEATH_SCENE_NAME);
                 API.LoadSceneAdditive(END_SCENE_NAME);
-                API.LoadSceneAdditive(INVENTORY_SCENE_NAME);
+                // Tutorial zone has no inventory system
+                if (_currentSceneName != TUTORIAL_ZONE_SCENE_NAME)
+                    API.LoadSceneAdditive(INVENTORY_SCENE_NAME);
             }
         }
 
@@ -218,16 +223,20 @@ namespace GameScripts
                 _startSequenceDelay -= dt;
                 if (_startSequenceDelay <= 0.0f && !StoryDialogueManager.IsSequenceActive())
                 {
-                    // Skip start dialogue for Level 2
-                    if (_currentSceneName == LEVEL2_SCENE_NAME)
-                    {
-                        API.Log("[Entry] Skipping Start Dialogue Sequence for Level 2.");
-                        _startSequenceDelay = -1f;
-                    }
-                    else
+                    if (_currentSceneName == GAMEPLAY_SCENE_NAME)
                     {
                         API.Log("[Entry] Delay finished. Triggering Start Dialogue Sequence...");
                         StoryDialogueManager.PlayStartSequence(() => { IsInventoryOpen = true; API.ShowInventoryMenu(); });
+                    }
+                    else if (_currentSceneName == TUTORIAL_ZONE_SCENE_NAME)
+                    {
+                        API.Log("[Entry] Delay finished. Triggering Tutorial Zone Dialogue Sequence...");
+                        StoryDialogueManager.PlayTutorialZoneSequence();
+                    }
+                    else
+                    {
+                        // All other gameplay scenes have no start dialogue
+                        _startSequenceDelay = -1f;
                     }
                 }
             }
@@ -425,8 +434,8 @@ namespace GameScripts
                 }
                 _p_KeyWasDown = p_KeyDown;
 
-                // Handle I key or Gamepad Back to open inventory
-                if (!IsInventoryOpen && (i_KeyDown || inventory_ButtonDown) && !_i_KeyWasDown && !ctrl_KeyDown)
+                // Handle I key or Gamepad Back to open inventory (not available in Tutorial Zone)
+                if (_currentSceneName != TUTORIAL_ZONE_SCENE_NAME && !IsInventoryOpen && (i_KeyDown || inventory_ButtonDown) && !_i_KeyWasDown && !ctrl_KeyDown)
                 {
                     API.Log("Opening inventory...");
                     IsInventoryOpen = true;

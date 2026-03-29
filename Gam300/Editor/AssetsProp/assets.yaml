@@ -30,8 +30,8 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 1
-        metallic: 0
+        roughness: 0.289999992
+        metallic: 0.230000004
         occlusion: 0.5
         opacity: 1
         useWorldSpaceUV: true
@@ -52,8 +52,8 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 1
-        metallic: 0
+        roughness: 0.389999986
+        metallic: 0.170000002
         occlusion: 0.660000026
         opacity: 1
         useWorldSpaceUV: false
@@ -111,28 +111,6 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
-    UID: 295392599374634747
-    Name: Cushion Texture
-    Source: Cushion Texture
-    Properties:
-      Data:
-        emissive: [0, 0, 0]
-        albedo: [1, 1, 1]
-        roughness: 0.810000002
-        metallic: 0
-        occlusion: 0.800000012
-        opacity: 1
-        useWorldSpaceUV: false
-        textureScale: 1
-      AlbedoMapID: 2408227857109572219
-      NormalMapID: 5635053925849247296
-      RoughnessMapID: 6305281938924181745
-      MetallicMapID: 9033368879326419558
-      OcclusionMapID: 14205466992706534584
-      EmissiveMapID: 0
-      OpacityMapID: 0
-      DoubleSided: false
-  - Type: MATERIAL
     UID: 5492247716426239787
     Name: spikes
     Source: spikes
@@ -162,8 +140,8 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
+        roughness: 0.660000026
+        metallic: 0.180000007
         occlusion: 1
         opacity: 1
         useWorldSpaceUV: false
@@ -173,6 +151,28 @@ ASSETS:
       RoughnessMapID: 0
       MetallicMapID: 0
       OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
+    UID: 295392599374634747
+    Name: Cushion Texture
+    Source: Cushion Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.810000002
+        metallic: 0
+        occlusion: 0.800000012
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 2408227857109572219
+      NormalMapID: 5635053925849247296
+      RoughnessMapID: 6305281938924181745
+      MetallicMapID: 9033368879326419558
+      OcclusionMapID: 14205466992706534584
       EmissiveMapID: 0
       OpacityMapID: 0
       DoubleSided: false
@@ -206,7 +206,7 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0
+        roughness: 0.280000001
         metallic: 0
         occlusion: 0.529999971
         opacity: 1
@@ -214,7 +214,7 @@ ASSETS:
         textureScale: 1
       AlbedoMapID: 8781181629247619230
       NormalMapID: 15056488335627110656
-      RoughnessMapID: 17384339938560687904
+      RoughnessMapID: 0
       MetallicMapID: 0
       OcclusionMapID: 0
       EmissiveMapID: 183969138529929306
@@ -316,8 +316,8 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 1
-        metallic: 0
+        roughness: 0.360000014
+        metallic: 0.209999993
         occlusion: 0.819999993
         opacity: 1
         useWorldSpaceUV: true
@@ -375,6 +375,28 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
+    UID: 5951671470822882399
+    Name: BrickBlue
+    Source: BrickBlue
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0
+        metallic: 0.389999986
+        occlusion: 0.430000007
+        opacity: 1
+        useWorldSpaceUV: true
+        textureScale: 11.1999998
+      AlbedoMapID: 3243208601200922329
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
     UID: 8235375233612734933
     Name: Wall Texture 1
     Source: Wall Texture 1
@@ -404,15 +426,15 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
+        roughness: 0.270000011
+        metallic: 0.800000012
         occlusion: 1
         opacity: 1
         useWorldSpaceUV: false
         textureScale: 1
       AlbedoMapID: 8538867989910609552
       NormalMapID: 11205160342225508013
-      RoughnessMapID: 3390174833904116482
+      RoughnessMapID: 0
       MetallicMapID: 0
       OcclusionMapID: 3390174833904116482
       EmissiveMapID: 0
@@ -470,8 +492,8 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0
-        metallic: 0
+        roughness: 0.270000011
+        metallic: 0.469999999
         occlusion: 0.589999974
         opacity: 1
         useWorldSpaceUV: true
@@ -514,8 +536,8 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 1
-        metallic: 0
+        roughness: 0.239999995
+        metallic: 0.189999998
         occlusion: 0.75999999
         opacity: 1
         useWorldSpaceUV: true
@@ -558,9 +580,9 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.330000013
-        metallic: 0
-        occlusion: 0.829999983
+        roughness: 0.389999986
+        metallic: 0.99000001
+        occlusion: 0.99000001
         opacity: 1
         useWorldSpaceUV: false
         textureScale: 1
@@ -646,7 +668,7 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.330000013
+        roughness: 0
         metallic: 0
         occlusion: 0.959999979
         opacity: 1
@@ -690,8 +712,8 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 1
-        metallic: 0
+        roughness: 0.239999995
+        metallic: 0.129999995
         occlusion: 0.689999998
         opacity: 1
         useWorldSpaceUV: false
@@ -734,15 +756,15 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
+        roughness: 0.289999992
+        metallic: 0.100000001
         occlusion: 1
         opacity: 1
         useWorldSpaceUV: false
         textureScale: 1
       AlbedoMapID: 11747185493236518571
       NormalMapID: 5134270148386981872
-      RoughnessMapID: 2904894310952634977
+      RoughnessMapID: 0
       MetallicMapID: 0
       OcclusionMapID: 2904894310952634977
       EmissiveMapID: 0
@@ -756,8 +778,8 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0
-        metallic: 0
+        roughness: 0.300000012
+        metallic: 0.180000007
         occlusion: 0.579999983
         opacity: 1
         useWorldSpaceUV: false
@@ -932,8 +954,8 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0
+        roughness: 0.959999979
+        metallic: 0.180000007
         occlusion: 1
         opacity: 1
         useWorldSpaceUV: false
@@ -1042,16 +1064,16 @@ ASSETS:
       Data:
         emissive: [0, 0, 0]
         albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
+        roughness: 0.180000007
+        metallic: 0.159999996
         occlusion: 1
         opacity: 1
         useWorldSpaceUV: false
         textureScale: 1
       AlbedoMapID: 7744213029619591337
       NormalMapID: 9939195436459860698
-      RoughnessMapID: 16020172605613763140
-      MetallicMapID: 13151331475481834137
+      RoughnessMapID: 0
+      MetallicMapID: 0
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 17522809466322833643
@@ -1096,6 +1118,28 @@ ASSETS:
       NormalMapID: 13437075076958739875
       RoughnessMapID: 15308332345778085024
       MetallicMapID: 15308332345778085024
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
+    UID: 17410427631072788864
+    Name: WallBlue
+    Source: WallBlue
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 0
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
@@ -1272,6 +1316,28 @@ ASSETS:
       NormalMapID: 14927164010699504465
       RoughnessMapID: 14093797971716659478
       MetallicMapID: 13028523092030113547
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
+    UID: 10885500370853117754
+    Name: NewBrickWallTexture
+    Source: NewBrickWallTexture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: true
+        textureScale: 10.6999998
+      AlbedoMapID: 13798099764045349811
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
@@ -1811,10 +1877,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 10369561793827315479
     Name: M4_Player_T-Pose_SamuraiTexture_Roughness
@@ -1852,6 +1918,17 @@ ASSETS:
     UID: 11795212342725236264
     Name: lantern_colour_2_MaskMap
     Source: Resources/Models/Props/lantern mat/lantern_colour_2_MaskMap.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 10538983169784880395
+    Name: GAM300_Glow_VFX
+    Source: Resources/Textures/Particles/GAM300_Glow_VFX.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -1899,10 +1976,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 1815887354929855275
     Name: RestartButton
@@ -2091,6 +2168,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 13558803334005117411
+    Name: CreditsButton
+    Source: Resources/Textures/MenusUI/CreditsButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 13175597232551743125
     Name: Scissors_Ninja_Body_BaseColor
     Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Body_BaseColor.png
@@ -2267,9 +2355,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 13151331475481834137
-    Name: lambert1_Metallic
-    Source: Resources/Models/Props/sliding door_emissivemap model n texture/lambert1_Metallic.png
+    UID: 10509866360653012002
+    Name: ResumeButton
+    Source: Resources/Textures/MenusUI/ResumeButton.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2278,9 +2366,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 10509866360653012002
-    Name: ResumeButton
-    Source: Resources/Textures/MenusUI/ResumeButton.png
+    UID: 13151331475481834137
+    Name: lambert1_Metallic
+    Source: Resources/Models/Props/sliding door_emissivemap model n texture/lambert1_Metallic.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3296,10 +3384,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 5513232593970361308
     Name: BIG_Gravestone_low_Gravestone_BaseColor
@@ -3326,6 +3414,17 @@ ASSETS:
     UID: 8031341649730841089
     Name: BIG_Gravestone_low_Gravestone_Height
     Source: Resources/Models/Props/Ressurection_Gravestone/Gravestone Textures/BIG_Gravestone_low_Gravestone_Height.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 14441259037290768677
+    Name: CreditsButton_Clicked
+    Source: Resources/Textures/MenusUI/CreditsButton_Clicked.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3428,10 +3527,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 2267161384008087956
     Name: material
@@ -3450,10 +3549,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 3411322882042035776
     Name: model
@@ -3538,10 +3637,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 5600707374096394357
     Name: MainMenuTeamName
@@ -3747,10 +3846,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 18005541902257493201
     Name: ResumeButton
@@ -4049,6 +4148,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 13403809090269167984
+    Name: GAM300_Fire2_VFX
+    Source: Resources/Textures/Particles/GAM300_Fire2_VFX.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 14479753821827653348
     Name: M4_Sentry_untextured_Sentry_Emissive
     Source: Resources/Textures/M4_SentryTextures/M4_Sentry_untextured_Sentry_Emissive.png
@@ -4154,10 +4264,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 5314099190308633113
     Name: lambert1_Normal_OpenGL
@@ -4803,10 +4913,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 5423514755823872091
     Name: E_BreakOut
@@ -4866,6 +4976,17 @@ ASSETS:
     UID: 12896261092017281121
     Name: CanCrouch
     Source: Resources/Textures/PlayerUI/CanCrouch.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 17800483581353822611
+    Name: Digipen_White
+    Source: Resources/Textures/Digipen_White.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -4957,10 +5078,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 9449392762567328883
     Name: Checkpoint2_Dialogue2
@@ -5012,10 +5133,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 16173087357529396361
     Name: WhiteBackground
@@ -5034,10 +5155,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 15434698247506062268
     Name: HowToPlayButton_hovered
@@ -5045,10 +5166,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 4058753456947966378
     Name: MOCKUP
@@ -5056,10 +5177,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 14305131928055518753
     Name: NewGameButton_hovered
@@ -5067,10 +5188,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 5288680424427336576
     Name: Settings
@@ -5078,10 +5199,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 4240144465369106310
     Name: Settings_clicked
@@ -5089,10 +5210,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 5154268333434805684
     Name: Settings_hovered
@@ -5100,10 +5221,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 15694143737583275088
     Name: 1
@@ -5111,10 +5232,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 7543398372704619549
     Name: seal1_openPBR_shader1_Height
@@ -5122,10 +5243,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 17996739249464159479
     Name: seal1_openPBR_shader1_Metallic
@@ -5133,10 +5254,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 12627277174605091669
     Name: seal1_openPBR_shader1_Normal
@@ -5144,10 +5265,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 13477968607316689021
     Name: seal2_openPBR_shader1_Height
@@ -5155,10 +5276,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 1351167455333548341
     Name: seal2_openPBR_shader1_Normal
@@ -5166,10 +5287,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 9000765398586202273
     Name: seal3_openPBR_shader1_Height
@@ -5177,10 +5298,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 13028523092030113547
     Name: seal3_openPBR_shader1_Metallic
@@ -5188,10 +5309,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 14093797971716659478
     Name: seal3_openPBR_shader1_Roughness
@@ -5199,10 +5320,54 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 10276305241760085177
+    Name: SettingsScroll
+    Source: Resources/Textures/MenusUI/SettingsScroll.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 3072644248698149161
+    Name: GAM300_Fire1_VFX
+    Source: Resources/Textures/Particles/GAM300_Fire1_VFX.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 15432365972591589103
+    Name: GAM300_Fire3_VFX
+    Source: Resources/Textures/Particles/GAM300_Fire3_VFX.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 3938594489715522154
+    Name: CreditsButton
+    Source: Resources/Textures/MenusUI/CreditsButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: SKYBOX
     UID: 4245843529762785392
     Name: NightSkyHDRI003_8K_HDR
@@ -5237,6 +5402,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 0.673284113
       HasJoints: false
   - Type: MODEL
     UID: 9625104056789884581
@@ -5248,6 +5414,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 180.889664
       HasJoints: true
   - Type: MODEL
     UID: 11591269389451211434
@@ -5259,6 +5426,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 72.1676941
       HasJoints: false
   - Type: MODEL
     UID: 3620272457406166050
@@ -5270,6 +5438,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 1.58915102
       HasJoints: false
   - Type: MODEL
     UID: 7633162898494281895
@@ -5281,6 +5450,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 0.866025388
       HasJoints: false
   - Type: MODEL
     UID: 10510038847207197447
@@ -5292,6 +5462,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 180.889664
       HasJoints: true
   - Type: MODEL
     UID: 7109362629999376114
@@ -5303,6 +5474,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 120.012825
       HasJoints: true
   - Type: MODEL
     UID: 10189896120624959109
@@ -5314,6 +5486,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 259.550964
       HasJoints: true
   - Type: MODEL
     UID: 12560727673762081371
@@ -5325,6 +5498,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 259.550964
       HasJoints: true
   - Type: MODEL
     UID: 11565258723769024311
@@ -5336,6 +5510,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 0.499977767
       HasJoints: false
   - Type: MODEL
     UID: 12369161784125194221
@@ -5347,6 +5522,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 180.889664
       HasJoints: true
   - Type: MODEL
     UID: 11325662916488734020
@@ -5358,6 +5534,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 11.6893158
       HasJoints: false
   - Type: MODEL
     UID: 17047777006874206768
@@ -5369,6 +5546,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 89.7177734
       HasJoints: false
   - Type: MODEL
     UID: 17971063540041505471
@@ -5380,6 +5558,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 1.20062304
       HasJoints: false
   - Type: MODEL
     UID: 11271718863933913868
@@ -5391,6 +5570,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 180.889664
       HasJoints: true
   - Type: MODEL
     UID: 6829728261434427183
@@ -5402,6 +5582,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 72.1676941
       HasJoints: false
   - Type: MODEL
     UID: 5190089082055736376
@@ -5413,6 +5594,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 175.093552
       HasJoints: true
   - Type: MODEL
     UID: 3009930431532923443
@@ -5424,6 +5606,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 178.147247
       HasJoints: true
   - Type: MODEL
     UID: 3091820953851232485
@@ -5435,6 +5618,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 178.979126
       HasJoints: false
   - Type: MODEL
     UID: 18133093328104875207
@@ -5446,6 +5630,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 10.4703836
       HasJoints: false
   - Type: MODEL
     UID: 11479122689655157238
@@ -5457,6 +5642,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 1855402618433266069
@@ -5468,6 +5654,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 1036.28503
       HasJoints: false
   - Type: MODEL
     UID: 4447526863727165212
@@ -5479,6 +5666,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 733.269043
       HasJoints: false
   - Type: MODEL
     UID: 4878958897926110889
@@ -5490,6 +5678,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: false
   - Type: MODEL
     UID: 8468216516841351967
@@ -5501,6 +5690,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 89.7177734
       HasJoints: false
   - Type: MODEL
     UID: 12951326161066567349
@@ -5512,6 +5702,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 151.419006
       HasJoints: true
   - Type: MODEL
     UID: 7915604575903446522
@@ -5523,6 +5714,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 89.7712021
       HasJoints: false
   - Type: MODEL
     UID: 4832917157114843538
@@ -5534,6 +5726,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 176.883484
       HasJoints: false
   - Type: MODEL
     UID: 5790576149006634497
@@ -5545,6 +5738,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 93.5021133
       HasJoints: false
   - Type: MODEL
     UID: 17773246069672836568
@@ -5556,6 +5750,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 9.17493153
       HasJoints: false
   - Type: MODEL
     UID: 3566111065211576240
@@ -5567,6 +5762,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 733.269043
       HasJoints: false
   - Type: MODEL
     UID: 12464550849573268093
@@ -5578,6 +5774,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 4766645401414519908
@@ -5589,6 +5786,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 151.419006
       HasJoints: true
   - Type: MODEL
     UID: 17830202432646622049
@@ -5600,6 +5798,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 6.29485655
       HasJoints: false
   - Type: MODEL
     UID: 18413156755282979635
@@ -5611,6 +5810,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 27.2694874
       HasJoints: false
   - Type: MODEL
     UID: 3957557556641863430
@@ -5622,6 +5822,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 182.506226
       HasJoints: false
   - Type: MODEL
     UID: 11204530572159760302
@@ -5633,6 +5834,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 151.419006
       HasJoints: true
   - Type: MODEL
     UID: 6686588003040734580
@@ -5644,6 +5846,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 297.046906
       HasJoints: false
   - Type: MODEL
     UID: 11958527882006464411
@@ -5655,6 +5858,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 120.012825
       HasJoints: true
   - Type: MODEL
     UID: 5963078964798272625
@@ -5666,6 +5870,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 3.60351539
       HasJoints: false
   - Type: MODEL
     UID: 4722549275472783507
@@ -5677,6 +5882,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 187.408493
       HasJoints: false
   - Type: MODEL
     UID: 14319818634218203947
@@ -5688,6 +5894,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 182.506226
       HasJoints: false
   - Type: MODEL
     UID: 9412907450810001300
@@ -5699,6 +5906,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 259.550964
       HasJoints: true
   - Type: MODEL
     UID: 5156670162497623977
@@ -5710,6 +5918,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 6.82122993
       HasJoints: false
   - Type: MODEL
     UID: 17591824555368859551
@@ -5721,6 +5930,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 177.588043
       HasJoints: false
   - Type: MODEL
     UID: 12206031679676868600
@@ -5732,6 +5942,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 7.03513479
       HasJoints: false
   - Type: MODEL
     UID: 8039408713556627694
@@ -5743,6 +5954,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 24.405405
       HasJoints: false
   - Type: MODEL
     UID: 12488520825890969207
@@ -5754,6 +5966,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 10.4916277
       HasJoints: false
   - Type: MODEL
     UID: 15991448755648030033
@@ -5765,6 +5978,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 232.811295
       HasJoints: false
   - Type: MODEL
     UID: 5949002986996511334
@@ -5776,6 +5990,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 707.106812
       HasJoints: false
   - Type: MODEL
     UID: 11704932561101383624
@@ -5787,6 +6002,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 231.822754
       HasJoints: false
   - Type: MODEL
     UID: 618926925563278836
@@ -5798,6 +6014,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 0.71107316
       HasJoints: false
   - Type: MODEL
     UID: 5838446488854438722
@@ -5809,6 +6026,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 1.88378239
       HasJoints: false
   - Type: MODEL
     UID: 14419591904238952119
@@ -5820,6 +6038,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 10.7835112
       HasJoints: false
   - Type: MODEL
     UID: 4826384296126717694
@@ -5831,6 +6050,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 1.85580909
       HasJoints: false
   - Type: MODEL
     UID: 3890036720565027074
@@ -5842,6 +6062,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 76676.25
       HasJoints: false
   - Type: MODEL
     UID: 8821844016016290378
@@ -5853,6 +6074,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 168.89328
       HasJoints: false
   - Type: MODEL
     UID: 1441742420851203854
@@ -5864,6 +6086,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 16.9156857
       HasJoints: false
   - Type: MODEL
     UID: 17405944140807304052
@@ -5875,6 +6098,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 120.012825
       HasJoints: true
   - Type: MODEL
     UID: 9132954734934811553
@@ -5886,6 +6110,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 151.419006
       HasJoints: true
   - Type: MODEL
     UID: 560542088211616288
@@ -5897,6 +6122,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 151.419006
       HasJoints: true
   - Type: MODEL
     UID: 4678657617744890191
@@ -5908,6 +6134,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 151.419006
       HasJoints: true
   - Type: MODEL
     UID: 13771417735960447344
@@ -5919,6 +6146,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 59.1561737
       HasJoints: false
   - Type: MODEL
     UID: 500508657196660592
@@ -5930,6 +6158,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 9260176050107668565
@@ -5941,6 +6170,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 259.550964
       HasJoints: false
   - Type: MODEL
     UID: 4864486435085006234
@@ -5952,6 +6182,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 4710766639830257905
@@ -5963,6 +6194,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 259.550964
       HasJoints: true
   - Type: MODEL
     UID: 8889198571139867812
@@ -5974,6 +6206,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 93.5021133
       HasJoints: false
   - Type: MODEL
     UID: 14581026577437520233
@@ -5985,6 +6218,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 8224693472174704198
@@ -5996,6 +6230,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 17037819585619048672
@@ -6007,6 +6242,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 2425390187941178450
@@ -6018,6 +6254,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 600481613562228247
@@ -6029,6 +6266,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 9.21756744
       HasJoints: false
   - Type: MODEL
     UID: 17271057970080671101
@@ -6040,6 +6278,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 8568892093123981898
@@ -6051,6 +6290,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 10661742191467522989
@@ -6062,6 +6302,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 9472503155396993014
@@ -6073,6 +6314,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 9.88034058
       HasJoints: false
   - Type: MODEL
     UID: 18235586360693495649
@@ -6084,6 +6326,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 7796158376131028701
@@ -6095,6 +6338,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 4.29537153
       HasJoints: false
   - Type: MODEL
     UID: 5551161321672247114
@@ -6106,6 +6350,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 90.3885422
       HasJoints: false
   - Type: MODEL
     UID: 8256798345896697363
@@ -6117,6 +6362,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 9823568683429185027
@@ -6128,6 +6374,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 187.408493
       HasJoints: false
   - Type: MODEL
     UID: 8417812735906594734
@@ -6139,6 +6386,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 151.419006
       HasJoints: true
   - Type: MODEL
     UID: 6158523069679221176
@@ -6150,6 +6398,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 6.37072086
       HasJoints: false
   - Type: MODEL
     UID: 17511859142013007442
@@ -6161,6 +6410,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 1.22190201
       HasJoints: false
   - Type: MODEL
     UID: 17689874658229760207
@@ -6172,6 +6422,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 32.4730644
       HasJoints: false
   - Type: MODEL
     UID: 17534273664186647434
@@ -6183,6 +6434,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 17.9024563
       HasJoints: false
   - Type: MODEL
     UID: 14680191799278990915
@@ -6194,6 +6446,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 21.1590023
       HasJoints: false
   - Type: MODEL
     UID: 10044660999367352520
@@ -6205,6 +6458,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 8.45616055
       HasJoints: false
   - Type: MODEL
     UID: 5300562332905006444
@@ -6216,6 +6470,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 37.5165215
       HasJoints: false
   - Type: MODEL
     UID: 5693942620096192191
@@ -6227,6 +6482,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 7.54436588
       HasJoints: false
   - Type: MODEL
     UID: 15766282597083030722
@@ -6238,6 +6494,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 30.4047508
       HasJoints: false
   - Type: MODEL
     UID: 9629871175762625899
@@ -6249,6 +6506,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 9.18484497
       HasJoints: false
   - Type: MODEL
     UID: 12907306951145530752
@@ -6260,6 +6518,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 8.3316021
       HasJoints: false
   - Type: MODEL
     UID: 7481725949084297238
@@ -6271,6 +6530,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 4.29537153
       HasJoints: false
   - Type: MODEL
     UID: 8725206585673966442
@@ -6282,6 +6542,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 16.2524662
       HasJoints: false
   - Type: MODEL
     UID: 1146382376439045905
@@ -6293,6 +6554,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 36.6752625
       HasJoints: false
   - Type: MODEL
     UID: 17073269421140634080
@@ -6304,6 +6566,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 27.1429863
       HasJoints: false
   - Type: MODEL
     UID: 3804716946776640042
@@ -6315,6 +6578,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 23.54813
       HasJoints: false
   - Type: MODEL
     UID: 7908732753073902064
@@ -6326,6 +6590,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 192.025024
       HasJoints: false
   - Type: MODEL
     UID: 4951778228521458548
@@ -6337,6 +6602,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 259.550964
       HasJoints: true
   - Type: MODEL
     UID: 17415887327955155372
@@ -6348,6 +6614,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 3958826761766449710
@@ -6359,6 +6626,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 187.408493
       HasJoints: false
   - Type: MODEL
     UID: 15598249040401841997
@@ -6370,6 +6638,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 151.419006
       HasJoints: true
   - Type: MODEL
     UID: 180048974928296078
@@ -6381,6 +6650,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 151.419006
       HasJoints: true
   - Type: MODEL
     UID: 5900113901450064439
@@ -6392,6 +6662,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 0
       HasJoints: false
   - Type: MODEL
     UID: 12600730890549785123
@@ -6403,6 +6674,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 1414.21362
       HasJoints: false
   - Type: MODEL
     UID: 13779674563758479505
@@ -6414,6 +6686,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 0.505594015
       HasJoints: false
   - Type: MODEL
     UID: 10375281322457629410
@@ -6425,6 +6698,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 151.419006
       HasJoints: true
   - Type: MODEL
     UID: 17103110655317518176
@@ -6436,6 +6710,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 259.550964
       HasJoints: true
   - Type: MODEL
     UID: 2097877395305611020
@@ -6447,6 +6722,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 13412897965077684229
@@ -6458,6 +6734,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 131.718964
       HasJoints: false
   - Type: MODEL
     UID: 16321407537260162659
@@ -6469,6 +6746,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 50.5538139
       HasJoints: false
   - Type: MODEL
     UID: 6538485677828955443
@@ -6480,6 +6758,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 480.845093
       HasJoints: false
   - Type: MODEL
     UID: 12373711864448078618
@@ -6491,6 +6770,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 249.930023
       HasJoints: false
   - Type: MODEL
     UID: 17129197088641895711
@@ -6502,6 +6782,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 13196777273589981794
@@ -6513,6 +6794,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 2056.73584
       HasJoints: false
   - Type: MODEL
     UID: 9363644534041975679
@@ -6524,6 +6806,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 1275.0824
       HasJoints: false
   - Type: MODEL
     UID: 12439106707269888329
@@ -6535,6 +6818,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 259.550964
       HasJoints: true
   - Type: MODEL
     UID: 9816191447161794531
@@ -6546,6 +6830,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 246.408325
       HasJoints: false
   - Type: MODEL
     UID: 8656759194949246369
@@ -6557,6 +6842,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 2483.39062
       HasJoints: false
   - Type: MODEL
     UID: 2720699287626206402
@@ -6568,6 +6854,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 3971.7478
       HasJoints: false
   - Type: MODEL
     UID: 431395556161791294
@@ -6579,6 +6866,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 3971.7478
       HasJoints: false
   - Type: MODEL
     UID: 9742913552836380910
@@ -6590,6 +6878,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 1803.34753
       HasJoints: false
   - Type: MODEL
     UID: 18169897810236241555
@@ -6601,6 +6890,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 259.550964
       HasJoints: true
   - Type: MODEL
     UID: 13705360445797681108
@@ -6612,6 +6902,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 187.408493
       HasJoints: false
   - Type: MODEL
     UID: 13010140046277060028
@@ -6623,6 +6914,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 176.883484
       HasJoints: true
   - Type: MODEL
     UID: 3697782079868135487
@@ -6634,6 +6926,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 13853980779029380669
@@ -6645,6 +6938,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 176.883484
       HasJoints: true
   - Type: MODEL
     UID: 9601032699200672668
@@ -6656,6 +6950,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 45.0038338
       HasJoints: false
   - Type: MODEL
     UID: 13442844895534072968
@@ -6667,6 +6962,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 6332843113162171378
@@ -6678,6 +6974,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 7919999277354811296
@@ -6689,6 +6986,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 16015507097722083518
@@ -6700,6 +6998,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 2428587265747764265
@@ -6711,6 +7010,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 7975222309026748562
@@ -6722,6 +7022,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 191.868683
       HasJoints: true
   - Type: MODEL
     UID: 15810646150834709757
@@ -6733,6 +7034,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 259.550964
       HasJoints: true
   - Type: MODEL
     UID: 8015541680665511847
@@ -6744,6 +7046,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 259.550964
       HasJoints: true
   - Type: MODEL
     UID: 7682510577550268292
@@ -6755,6 +7058,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 151.419006
       HasJoints: true
   - Type: MODEL
     UID: 269501779430984548
@@ -6766,6 +7070,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 1274.57458
       HasJoints: false
   - Type: MODEL
     UID: 11252990921725634979
@@ -6777,6 +7082,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 1273.95154
       HasJoints: false
   - Type: MODEL
     UID: 2254633852044513483
@@ -6788,6 +7094,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 700.683105
       HasJoints: false
   - Type: MODEL
     UID: 679201389981188464
@@ -6799,6 +7106,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 515.266113
       HasJoints: false
   - Type: MODEL
     UID: 8801620600601861973
@@ -6810,6 +7118,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 287.328339
       HasJoints: false
   - Type: MODEL
     UID: 2284009292012450060
@@ -6821,6 +7130,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 442.059814
       HasJoints: false
   - Type: MODEL
     UID: 6755252122157173405
@@ -6832,6 +7142,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 43.2853775
       HasJoints: false
   - Type: MODEL
     UID: 10066815242654953108
@@ -6843,6 +7154,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 35.5400009
       HasJoints: false
   - Type: MODEL
     UID: 6337755192484462533
@@ -6854,6 +7166,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 611.670105
       HasJoints: false
   - Type: MODEL
     UID: 14124836796428390504
@@ -6865,6 +7178,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 611.670105
       HasJoints: false
   - Type: MODEL
     UID: 1078495214741830672
@@ -6876,6 +7190,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 414.355316
       HasJoints: false
   - Type: MODEL
     UID: 2699849502320124829
@@ -6887,6 +7202,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 188.351944
       HasJoints: false
   - Type: MODEL
     UID: 5470241165737121307
@@ -6898,6 +7214,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 202.077789
       HasJoints: false
   - Type: MODEL
     UID: 18265481119490193399
@@ -6909,6 +7226,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 10.498394
       HasJoints: false
   - Type: MODEL
     UID: 3978830521270443559
@@ -6920,6 +7238,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 1110.95239
       HasJoints: false
   - Type: MODEL
     UID: 12205784983460827261
@@ -6931,17 +7250,7 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
-      HasJoints: false
-  - Type: MODEL
-    UID: 2915209680014061313
-    Name: LEVEL2Walking
-    Source: Resources/Models/Enemy/Patrol2Textures/LEVEL2Walking.fbx
-    Properties:
-      Model Transform:
-        transform:
-          Translate: [0, 0, 0]
-          Rotate: [0, 0, 0]
-          Scale: [1, 1, 1]
+        boundingRadius: 25.0403481
       HasJoints: false
   - Type: MODEL
     UID: 14742392640093446096
@@ -6953,6 +7262,19 @@ ASSETS:
           Translate: [0, 0, 0]
           Rotate: [0, 0, 0]
           Scale: [1, 1, 1]
+        boundingRadius: 59.4733696
+      HasJoints: false
+  - Type: MODEL
+    UID: 2915209680014061313
+    Name: LEVEL2Walking
+    Source: Resources/Models/Enemy/Patrol2Textures/LEVEL2Walking.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+        boundingRadius: 0
       HasJoints: false
   - Type: AUDIO
     UID: 12267195745784827679
@@ -7518,6 +7840,18 @@ ASSETS:
     UID: 7582510470133396314
     Name: breakMetal
     Source: Resources/Audio/breakMetal.wav
+  - Type: AUDIO
+    UID: 17044576861635132966
+    Name: checkpoint
+    Source: Resources/Audio/checkpoint.wav
+  - Type: AUDIO
+    UID: 7644232538236489220
+    Name: phasing
+    Source: Resources/Audio/phasing.wav
+  - Type: AUDIO
+    UID: 1998849306797642344
+    Name: woodKey
+    Source: Resources/Audio/woodKey.wav
   - Type: ANIMATION
     UID: 4483381614930560572
     Name: mixamo.com
