@@ -8,9 +8,21 @@ namespace GameScripts
         // Scene flow: MainMenu -> Cutscene -> Gameplay
         public const string CUTSCENE_SCENE_NAME = "START CUTSCENE";
         public const string GAMEPLAY_SCENE_NAME = "M3 GAMEPLAY";
+        public const string LEVEL1_SCENE_NAME = "Level1";
+        public const string LEVEL2_SCENE_NAME = "Level2";
         public const string BOSS_ARENA_SCENE_NAME = "NewBossArena";
         public const string TUTORIAL_ZONE_SCENE_NAME = "TutorialZone";
         public const string LEVEL_SCENE_NAME = GAMEPLAY_SCENE_NAME; // Alias for compatibility
+
+        public static bool IsGameplayScene(string sceneName)
+        {
+            return sceneName == GAMEPLAY_SCENE_NAME || 
+                   sceneName == LEVEL1_SCENE_NAME || 
+                   sceneName == LEVEL2_SCENE_NAME ||
+                   sceneName == BOSS_ARENA_SCENE_NAME ||
+                   sceneName == TUTORIAL_ZONE_SCENE_NAME ||
+                   sceneName == "M6 EDITING"; // Added M6 EDITING as it's a common dev scene
+        }
 
         public const string PAUSE_SCENE_NAME = "PauseMenu";
         public const string MAIN_MENU_SCENE_NAME = "MainMenu";
@@ -124,6 +136,15 @@ namespace GameScripts
             StoryDialogueManager.Reset();
             PlayerMovement.ResetTutorialDeathCount();
 
+            if (_currentSceneName == LEVEL2_SCENE_NAME)
+            {
+                API.Log("[Entry] Level 2 detected. Initializing tutorials as completed to skip first-time dialogues.");
+                CrouchTutorialManager.SetHasCompletedTutorial(true);
+                PlayerInventory.SetLargeTokenPickupCount(1);
+                PlayerInventory.SetSmallTokenPickupCount(1);
+                //PlayerInventory.SetTalismanPickupCount(1);
+            }
+
             API.Log("[C#] Entry.Start() called for scene: " + _currentSceneName);
 
             // Fade in from black at every scene start
@@ -132,7 +153,7 @@ namespace GameScripts
             _activePopupName = LEVEL_1_UI;
 
             // Only pre-load menus for gameplay scenes, not for cutscenes
-            if (_currentSceneName == GAMEPLAY_SCENE_NAME || _currentSceneName == BOSS_ARENA_SCENE_NAME || _currentSceneName == TUTORIAL_ZONE_SCENE_NAME)
+            if (IsGameplayScene(_currentSceneName))
             {
                 API.Log("Pre-loading pause menu additively...");
                 API.LoadSceneAdditive(PAUSE_SCENE_NAME);
@@ -177,7 +198,7 @@ namespace GameScripts
 
         public static void OnCutsceneCompleted()
         {
-            if (_currentSceneName == GAMEPLAY_SCENE_NAME && !StoryDialogueManager.IsSequenceActive())
+            if (IsGameplayScene(_currentSceneName) && !StoryDialogueManager.IsSequenceActive())
             {
                 API.Log("[Entry] Cutscene Finished. Triggering Start Dialogue Sequence...");
                 StoryDialogueManager.PlayStartSequence(() => { IsInventoryOpen = true; API.ShowInventoryMenu(); });
@@ -197,13 +218,22 @@ namespace GameScripts
                 _sceneInputDebounceTimer -= dt;
             }
 
-            if (_currentSceneName == GAMEPLAY_SCENE_NAME && _startSequenceDelay > 0.0f)
+            if (IsGameplayScene(_currentSceneName) && _startSequenceDelay > 0.0f)
             {
                 _startSequenceDelay -= dt;
                 if (_startSequenceDelay <= 0.0f && !StoryDialogueManager.IsSequenceActive())
                 {
-                    API.Log("[Entry] Delay finished. Triggering Start Dialogue Sequence...");
-                    StoryDialogueManager.PlayStartSequence(() => { IsInventoryOpen = true; API.ShowInventoryMenu(); });
+                    // Skip start dialogue for Level 2
+                    if (_currentSceneName == LEVEL2_SCENE_NAME)
+                    {
+                        API.Log("[Entry] Skipping Start Dialogue Sequence for Level 2.");
+                        _startSequenceDelay = -1f;
+                    }
+                    else
+                    {
+                        API.Log("[Entry] Delay finished. Triggering Start Dialogue Sequence...");
+                        StoryDialogueManager.PlayStartSequence(() => { IsInventoryOpen = true; API.ShowInventoryMenu(); });
+                    }
                 }
             }
             else if (_currentSceneName == TUTORIAL_ZONE_SCENE_NAME && _startSequenceDelay > 0.0f)
@@ -379,7 +409,7 @@ namespace GameScripts
                 return;
             }
 
-            if (_currentSceneName == GAMEPLAY_SCENE_NAME || _currentSceneName == BOSS_ARENA_SCENE_NAME || _currentSceneName == TUTORIAL_ZONE_SCENE_NAME)
+            if (IsGameplayScene(_currentSceneName))
             {
                 // Handle Escape key or Start button to pause
                 if ((escape_KeyDown && !_escape_KeyWasDown) || (start_ButtonDown && !_start_ButtonWasDown))

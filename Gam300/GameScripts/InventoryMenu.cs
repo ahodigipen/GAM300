@@ -33,7 +33,7 @@ namespace GameScripts
             }
 
             // Only hide at startup when we are loaded from a gameplay scene.
-            if (Entry._currentSceneName == Entry.GAMEPLAY_SCENE_NAME || Entry._currentSceneName == Entry.BOSS_ARENA_SCENE_NAME || Entry._currentSceneName == Entry.TUTORIAL_ZONE_SCENE_NAME)
+            if (Entry.IsGameplayScene(Entry._currentSceneName))
             {
                 HideAll();
             }
@@ -42,7 +42,7 @@ namespace GameScripts
         public void OnUpdate(float dt)
         {
             // Do nothing outside of a gameplay scene (e.g. when editing the scene file directly)
-            if (Entry._currentSceneName != Entry.GAMEPLAY_SCENE_NAME && Entry._currentSceneName != Entry.BOSS_ARENA_SCENE_NAME) return;
+            if (!Entry.IsGameplayScene(Entry._currentSceneName)) return;
             if (Entry.IsInventoryOpen)
             {
                 SetSpriteAlpha(_bgEntity, 1.0f);

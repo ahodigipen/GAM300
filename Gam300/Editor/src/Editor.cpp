@@ -240,17 +240,14 @@ namespace EditorUI {
         if (!m_App) return;
 
         ImGuiIO& io = ImGui::GetIO();
-        bool ctrl = io.KeyCtrl;
-        bool shift = io.KeyShift;
-        bool alt = io.KeyAlt;
-
+        
         // ===== Undo/Redo Shortcuts =====
+        
         // Skip global undo/redo when Animation Timeline is focused (it has its own undo/redo system)
         bool animTimelineFocused = false;
         ImGuiContext* ctx = ImGui::GetCurrentContext();
         if (ctx && ctx->NavWindow)
         {
-            // Check if the focused window is the Animation Timeline or any of its children
             const char* focusedWindowName = ctx->NavWindow->Name;
             if (focusedWindowName && strstr(focusedWindowName, "Animation Timeline") != nullptr)
             {
@@ -258,26 +255,32 @@ namespace EditorUI {
             }
         }
 
-        // Ctrl+Z: Undo (skip if Animation Timeline has focus)
-        if (ctrl && !shift && ImGui::IsKeyPressed(ImGuiKey_Z, false) && !animTimelineFocused)
+        if (!animTimelineFocused)
         {
-            if (m_CommandHistory && m_CommandHistory->CanUndo()) {
-                m_CommandHistory->Undo();
-                BOOM_INFO("[Shortcut] Undo (Ctrl+Z)");
+            // Ctrl+Z: Undo
+            if (ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_Z))
+            {
+                if (m_CommandHistory && m_CommandHistory->CanUndo()) {
+                    m_CommandHistory->Undo();
+                    BOOM_INFO("[Shortcut] Undo (Ctrl+Z)");
+                }
             }
-        }
 
-        // Ctrl+Y or Ctrl+Shift+Z: Redo (skip if Animation Timeline has focus)
-        if (((ctrl && !shift && ImGui::IsKeyPressed(ImGuiKey_Y, false)) ||
-            (ctrl && shift && ImGui::IsKeyPressed(ImGuiKey_Z, false))) && !animTimelineFocused)
-        {
-            if (m_CommandHistory && m_CommandHistory->CanRedo()) {
-                m_CommandHistory->Redo();
-                BOOM_INFO("[Shortcut] Redo (Ctrl+Y)");
+            // Ctrl+Y or Ctrl+Shift+Z: Redo
+            if (ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_Y) || 
+                ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiMod_Shift | ImGuiKey_Z))
+            {
+                if (m_CommandHistory && m_CommandHistory->CanRedo()) {
+                    m_CommandHistory->Redo();
+                    BOOM_INFO("[Shortcut] Redo (Ctrl+Y/Ctrl+Shift+Z)");
+                }
             }
         }
 
         // ===== File Menu Shortcuts =====
+        bool ctrl = io.KeyCtrl;
+        bool shift = io.KeyShift;
+        bool alt = io.KeyAlt;
 
         // Ctrl+N: New Scene
         if (ctrl && !shift && ImGui::IsKeyPressed(ImGuiKey_N, false))
