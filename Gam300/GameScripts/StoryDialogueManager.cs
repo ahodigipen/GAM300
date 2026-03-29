@@ -5,7 +5,7 @@ namespace GameScripts
 {
     public static class StoryDialogueManager
     {
-        public enum SequenceType { None, StartCutscene, Checkpoint1, Checkpoint2, BossCheckpoint, BossTransition }
+        public enum SequenceType { None, StartCutscene, Checkpoint1, Checkpoint2, BossCheckpoint, BossTransition, TutorialZone, TutorialZoneDeath }
         
         private static SequenceType s_activeSequence = SequenceType.None;
         private static int s_dialogueIndex = 0;
@@ -41,6 +41,18 @@ namespace GameScripts
         private static ulong s_bossCpD4 = 0;
         private static ulong s_bossCpD5 = 0;
         private static ulong s_tutorialWhiteBackground = 0;
+
+        // Tutorial Zone UI
+        private static ulong s_tzD1 = 0;
+        private static ulong s_tzD2 = 0;
+        private static ulong s_tzD3 = 0;
+
+        // Tutorial Zone Death UI (shown after repeated catches)
+        private static ulong s_tzDeathA1 = 0; // 3rd catch, panel 1
+        private static ulong s_tzDeathA2 = 0; // 3rd catch, panel 2
+        private static ulong s_tzDeathB1 = 0; // 6th catch, panel 1
+        private static ulong s_tzDeathB2 = 0; // 6th catch, panel 2
+        private static int s_tzDeathThreshold = 0;
 
         private static bool s_entitiesResolved = false;
 
@@ -80,6 +92,9 @@ namespace GameScripts
             s_cp1D1 = 0; s_cp1D2 = 0;
             s_cp2D1 = 0; s_cp2D2 = 0; s_cp2D3 = 0; s_cp2D4 = 0; s_cp2D5 = 0; s_redMeter = 0; s_tutorialBlackBackground = 0;
             s_bossCpD1 = 0; s_bossCpD2 = 0; s_bossCpD3 = 0; s_bossCpD4 = 0; s_bossCpD5 = 0; s_tutorialWhiteBackground = 0;
+            s_tzD1 = 0; s_tzD2 = 0; s_tzD3 = 0;
+            s_tzDeathA1 = 0; s_tzDeathA2 = 0; s_tzDeathB1 = 0; s_tzDeathB2 = 0;
+            s_tzDeathThreshold = 0;
         }
 
         public static void PlayStartSequence(Action onComplete = null)
@@ -167,6 +182,44 @@ namespace GameScripts
             API.SetGameLogicPaused(true);
             API.SetCutsceneMode(true);
             API.Log("[StoryDialogueManager] Playing Boss Transition Sequence");
+        }
+
+        public static void PlayTutorialZoneSequence(Action onComplete = null)
+        {
+            if (s_activeSequence != SequenceType.None) return;
+            ResolveEntities();
+            s_activeSequence = SequenceType.TutorialZone;
+            s_dialogueIndex = 1;
+            s_onSequenceComplete = onComplete;
+
+            s_enterWasDown = true;
+            s_eWasDown = true;
+            s_aButtonWasDown = true;
+
+            FadeInEntity(s_tzD1);
+            API.SetGameLogicPaused(true);
+            API.SetCutsceneMode(true);
+            API.Log("[StoryDialogueManager] Playing Tutorial Zone Sequence");
+        }
+
+        public static void PlayTutorialZoneDeathSequence(int deathCount, Action onComplete = null)
+        {
+            if (s_activeSequence != SequenceType.None) return;
+            ResolveEntities();
+            s_tzDeathThreshold = deathCount;
+            s_activeSequence = SequenceType.TutorialZoneDeath;
+            s_dialogueIndex = 1;
+            s_onSequenceComplete = onComplete;
+
+            s_enterWasDown = true;
+            s_eWasDown = true;
+            s_aButtonWasDown = true;
+
+            ulong first = (deathCount == 3) ? s_tzDeathA1 : s_tzDeathB1;
+            FadeInEntity(first);
+            API.SetGameLogicPaused(true);
+            API.SetCutsceneMode(true);
+            API.Log($"[StoryDialogueManager] Playing Tutorial Zone Death Sequence (count={deathCount})");
         }
 
         public static bool IsSequenceActive()
@@ -266,6 +319,22 @@ namespace GameScripts
                 {
                     API.PlaySound("sfx_ui_click", "Resources/Audio/uiClick.wav", false);
                     AdvanceBossTransitionSequence();
+                }
+            }
+            else if (s_activeSequence == SequenceType.TutorialZone)
+            {
+                if (enterPressed || aButtonPressed)
+                {
+                    API.PlaySound("sfx_ui_click", "Resources/Audio/uiClick.wav", false);
+                    AdvanceTutorialZoneSequence();
+                }
+            }
+            else if (s_activeSequence == SequenceType.TutorialZoneDeath)
+            {
+                if (enterPressed || aButtonPressed)
+                {
+                    API.PlaySound("sfx_ui_click", "Resources/Audio/uiClick.wav", false);
+                    AdvanceTutorialZoneDeathSequence();
                 }
             }
         }
@@ -418,6 +487,52 @@ namespace GameScripts
             });
         }
 
+        private static void AdvanceTutorialZoneSequence()
+        {
+            ulong currentEntity = 0;
+            switch (s_dialogueIndex)
+            {
+                case 1: currentEntity = s_tzD1; break;
+                case 2: currentEntity = s_tzD2; break;
+                case 3: currentEntity = s_tzD3; break;
+            }
+
+            FadeOutEntity(currentEntity, () =>
+            {
+                s_dialogueIndex++;
+                if (s_dialogueIndex > 3)
+                {
+                    CloseSequence();
+                }
+                else
+                {
+                    ulong nextEntity = 0;
+                    switch (s_dialogueIndex)
+                    {
+                        case 2: nextEntity = s_tzD2; break;
+                        case 3: nextEntity = s_tzD3; break;
+                    }
+                    FadeInEntity(nextEntity);
+                }
+            });
+        }
+
+        private static void AdvanceTutorialZoneDeathSequence()
+        {
+            ulong panel1 = (s_tzDeathThreshold == 3) ? s_tzDeathA1 : s_tzDeathB1;
+            ulong panel2 = (s_tzDeathThreshold == 3) ? s_tzDeathA2 : s_tzDeathB2;
+            ulong current = (s_dialogueIndex == 1) ? panel1 : panel2;
+
+            FadeOutEntity(current, () =>
+            {
+                s_dialogueIndex++;
+                if (s_dialogueIndex > 2)
+                    CloseSequence();
+                else
+                    FadeInEntity(panel2);
+            });
+        }
+
         private static void CloseSequence()
         {
             s_activeSequence = SequenceType.None;
@@ -509,6 +624,15 @@ namespace GameScripts
             s_bossCpD5 = FindEntity("BossCheckpoint_Dialogue5");
             s_tutorialWhiteBackground = FindEntity("Tutorial_WhiteBackground");
 
+            s_tzD1 = FindEntity("TutorialZone_Dialogue1");
+            s_tzD2 = FindEntity("TutorialZone_Dialogue2");
+            s_tzD3 = FindEntity("TutorialZone_Dialogue3");
+
+            s_tzDeathA1 = FindEntity("TutorialZone_Death3_Dialogue1");
+            s_tzDeathA2 = FindEntity("TutorialZone_Death3_Dialogue2");
+            s_tzDeathB1 = FindEntity("TutorialZone_Death6_Dialogue1");
+            s_tzDeathB2 = FindEntity("TutorialZone_Death6_Dialogue2");
+
             // Hide all initially
             SetAlpha(s_startD1, 0f); SetAlpha(s_startD2, 0f); SetAlpha(s_startD3, 0f);
             SetAlpha(s_startD4, 0f); SetAlpha(s_startD5, 0f); SetAlpha(s_startD6, 0f);
@@ -519,6 +643,9 @@ namespace GameScripts
             SetAlpha(s_tutorialBlackBackground, 0f);
             SetAlpha(s_bossCpD1, 0f); SetAlpha(s_bossCpD2, 0f); SetAlpha(s_bossCpD3, 0f);
             SetAlpha(s_bossCpD4, 0f); SetAlpha(s_bossCpD5, 0f); SetAlpha(s_tutorialWhiteBackground, 0f);
+            SetAlpha(s_tzD1, 0f); SetAlpha(s_tzD2, 0f); SetAlpha(s_tzD3, 0f);
+            SetAlpha(s_tzDeathA1, 0f); SetAlpha(s_tzDeathA2, 0f);
+            SetAlpha(s_tzDeathB1, 0f); SetAlpha(s_tzDeathB2, 0f);
 
             s_entitiesResolved = true;
         }

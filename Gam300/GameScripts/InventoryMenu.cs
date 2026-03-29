@@ -33,7 +33,7 @@ namespace GameScripts
             }
 
             // Only hide at startup when we are loaded from a gameplay scene.
-            if (Entry._currentSceneName == Entry.GAMEPLAY_SCENE_NAME || Entry._currentSceneName == Entry.BOSS_ARENA_SCENE_NAME)
+            if (Entry._currentSceneName == Entry.GAMEPLAY_SCENE_NAME || Entry._currentSceneName == Entry.BOSS_ARENA_SCENE_NAME || Entry._currentSceneName == Entry.TUTORIAL_ZONE_SCENE_NAME)
             {
                 HideAll();
             }

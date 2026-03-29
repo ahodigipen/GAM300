@@ -9,6 +9,7 @@ namespace GameScripts
         public const string CUTSCENE_SCENE_NAME = "START CUTSCENE";
         public const string GAMEPLAY_SCENE_NAME = "M3 GAMEPLAY";
         public const string BOSS_ARENA_SCENE_NAME = "NewBossArena";
+        public const string TUTORIAL_ZONE_SCENE_NAME = "TutorialZone";
         public const string LEVEL_SCENE_NAME = GAMEPLAY_SCENE_NAME; // Alias for compatibility
 
         public const string PAUSE_SCENE_NAME = "PauseMenu";
@@ -121,6 +122,7 @@ namespace GameScripts
             TutorialManager.Reset();
             CrouchTutorialManager.Reset();
             StoryDialogueManager.Reset();
+            PlayerMovement.ResetTutorialDeathCount();
 
             API.Log("[C#] Entry.Start() called for scene: " + _currentSceneName);
 
@@ -130,13 +132,15 @@ namespace GameScripts
             _activePopupName = LEVEL_1_UI;
 
             // Only pre-load menus for gameplay scenes, not for cutscenes
-            if (_currentSceneName == GAMEPLAY_SCENE_NAME || _currentSceneName == BOSS_ARENA_SCENE_NAME)
+            if (_currentSceneName == GAMEPLAY_SCENE_NAME || _currentSceneName == BOSS_ARENA_SCENE_NAME || _currentSceneName == TUTORIAL_ZONE_SCENE_NAME)
             {
                 API.Log("Pre-loading pause menu additively...");
                 API.LoadSceneAdditive(PAUSE_SCENE_NAME);
                 API.LoadSceneAdditive(DEATH_SCENE_NAME);
                 API.LoadSceneAdditive(END_SCENE_NAME);
-                API.LoadSceneAdditive(INVENTORY_SCENE_NAME);
+                // Tutorial zone has no inventory system
+                if (_currentSceneName != TUTORIAL_ZONE_SCENE_NAME)
+                    API.LoadSceneAdditive(INVENTORY_SCENE_NAME);
             }
         }
 
@@ -200,6 +204,15 @@ namespace GameScripts
                 {
                     API.Log("[Entry] Delay finished. Triggering Start Dialogue Sequence...");
                     StoryDialogueManager.PlayStartSequence(() => { IsInventoryOpen = true; API.ShowInventoryMenu(); });
+                }
+            }
+            else if (_currentSceneName == TUTORIAL_ZONE_SCENE_NAME && _startSequenceDelay > 0.0f)
+            {
+                _startSequenceDelay -= dt;
+                if (_startSequenceDelay <= 0.0f && !StoryDialogueManager.IsSequenceActive())
+                {
+                    API.Log("[Entry] Delay finished. Triggering Tutorial Zone Dialogue Sequence...");
+                    StoryDialogueManager.PlayTutorialZoneSequence();
                 }
             }
 
@@ -366,7 +379,7 @@ namespace GameScripts
                 return;
             }
 
-            if (_currentSceneName == GAMEPLAY_SCENE_NAME || _currentSceneName == BOSS_ARENA_SCENE_NAME)
+            if (_currentSceneName == GAMEPLAY_SCENE_NAME || _currentSceneName == BOSS_ARENA_SCENE_NAME || _currentSceneName == TUTORIAL_ZONE_SCENE_NAME)
             {
                 // Handle Escape key or Start button to pause
                 if ((escape_KeyDown && !_escape_KeyWasDown) || (start_ButtonDown && !_start_ButtonWasDown))
@@ -396,8 +409,8 @@ namespace GameScripts
                 }
                 _p_KeyWasDown = p_KeyDown;
 
-                // Handle I key or Gamepad Back to open inventory
-                if (!IsInventoryOpen && (i_KeyDown || inventory_ButtonDown) && !_i_KeyWasDown && !ctrl_KeyDown)
+                // Handle I key or Gamepad Back to open inventory (not available in Tutorial Zone)
+                if (_currentSceneName != TUTORIAL_ZONE_SCENE_NAME && !IsInventoryOpen && (i_KeyDown || inventory_ButtonDown) && !_i_KeyWasDown && !ctrl_KeyDown)
                 {
                     API.Log("Opening inventory...");
                     IsInventoryOpen = true;
