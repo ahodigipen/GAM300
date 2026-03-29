@@ -2,23 +2,6 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 3352920676548593171
-      Name: PrisonGateBar12 (Copy)
-      UID: 8177493998309868047
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [151.69165, -342.557281, 6.10351562e-05]
-        Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]
-    ModelComponent:
-      ModelID: 14124836796428390504
-      MaterialID: 1773827607540986892
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 3352920676548593171
       Name: PrisonGateBar8 (Copy)
       UID: 11907702498069276207
       SortOrder: 0
@@ -3268,8 +3251,8 @@ ENTITIES:
       SortOrder: 444
     TransformComponent:
       Transform:
-        Translate: [-54.8163109, 5.88633776, 1.96417022]
-        Rotate: [-204, 1441.625, 180]
+        Translate: [-53.1358643, 4.44768858, 17.133812]
+        Rotate: [-200.75, 1259.3125, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -13001,151 +12984,23 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 1.98000002, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [100, 200, 100]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: CAPSULE
-    InfoComponent:
-      Parent: 0
-      Name: Patrol_Prison
-      UID: 4059464066059591119
-      SortOrder: 22
+  - InfoComponent:
+      Parent: 3352920676548593171
+      Name: PrisonGateBar12 (Copy)
+      UID: 8177493998309868047
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-28.6611767, 0.602665424, 12.9273491]
-        Rotate: [180, 18.195715, 180]
-        Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0199999996, 0.0199999996, 0.0199999996]
-        FreezeRotationX: true
-        FreezeRotationY: true
-        FreezeRotationZ: true
-        Type: DYNAMIC
+        Translate: [151.69165, -342.557281, 6.10351562e-05]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
     ModelComponent:
-      ModelID: 12439106707269888329
-      MaterialID: 14920165367361296626
+      ModelID: 14124836796428390504
+      MaterialID: 1773827607540986892
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-    SoundComponent:
-      Entries:
-        - name: _footstepSoundPath
-          filePaths:
-            - Resources/Audio/footstep_stone_1.wav
-          loop: false
-          volume: 0.541999996
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 21.2000008
-        - name: _alertSoundPath
-          filePaths:
-            - Resources/Audio/VO_Patrol_Alert_020.wav
-          loop: false
-          volume: 0.842999995
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 0.5
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 50
-        - name: _gruntSoundPath
-          filePaths:
-            - Resources/Audio/VO_Patrol_001.wav
-          loop: false
-          volume: 0.619000018
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.50999999
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 17.7000008
-    AnimatorComponent:
-      Clips:
-        - name: mixamo.com
-          filePath: ""
-        - name: ROCK_WALKING
-          filePath: Resources/Animations/ROCK_WALKING.anim
-      States:
-        - name: State 0
-          clipIndex: 1
-          speed: 0.330000013
-          loop: false
-          transitions:
-            - targetStateIndex: 0
-              conditionType: 0
-              parameterName: IsWalking
-              floatValue: 0
-              boolValue: false
-              transitionDuration: 0.469999999
-              hasExitTime: false
-              exitTime: 0.899999976
-      FloatParams:
-        Speed: 0
-      BoolParams:
-        ApplyRootMotion: false
-      CurrentStateIndex: 0
-    NavAgentComponent:
-      Target: [-27.3352375, 0.420966178, 6.37439346]
-      Speed: 2.5
-      ArriveRadius: 0.150000006
-      Active: true
-      RepathCooldown: 0.25
-      RetargetDistance: 0.5
-      FollowName: ""
-    AIComponent:
-      Mode: 0
-      PlayerName: ""
-      DetectRadius: 8
-      LoseRadius: 12
-      IdleWait: 2.04999995
-      PatrolPoints:
-        - [-27.3352375, 0.420966178, 6.37439346]
-        - [-27.3352375, 0.420966178, 14.356431]
-        - [-50.1760483, 0.420966178, 14.356431]
-        - [-28.451807, 0.420966178, 14.356431]
-      PatrolIndex: 0
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.PatrolEnemyController
-      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Patrol_Prison\",\n  \"_spotlightName\": \"Patrol Vision Cone Prison\",\n  \"_spotlightOffsetY\": 2.8259999752044678\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0.104207233, -0.122833252, -0.00136672379]
