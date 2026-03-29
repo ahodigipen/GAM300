@@ -24,17 +24,29 @@ namespace GameScripts
         private float _killRadius = 2.0f;
 
         [Boom.EditorExposed("Min Y (Safety Floor)", "Absolute lowest Y the rock can reach", -50f, 50f)]
-        private float _minY = 9.0f; 
+        private float _minY = 9.0f;
 
         [Boom.EditorExposed("Floor Detect Offset", "How far below center to check for floor", 0.1f, 10f)]
         private float _floorDetectOffset = 1.0f;
 
+        [Boom.EditorExposed("Fall Sound Volume", "Volume of the falling sound (0.0 - 1.0)")]
+        private float _fallSoundVolume = 1.0f;
+
         private bool _isFalling = false;
         private bool _hasHitGround = false;
-        
+
         private Vec3 _initialPosition;
         private Vec3 _initialRotation;
         private float _currentY;
+
+        // Fall sound
+        private static readonly string[] FALL_SOUND_PATHS = new string[]
+        {
+            "Resources/Audio/platformFall_1.wav",
+            "Resources/Audio/platformFall_2.wav",
+            "Resources/Audio/platformFall_3.wav"
+        };
+        private static Random _fallRandom = new Random();
 
         public void OnStart(string json)
         {
@@ -72,6 +84,13 @@ namespace GameScripts
                     if (horizontalDist < _triggerRadius && pPos.Y < _initialPosition.Y)
                     {
                         _isFalling = true;
+
+                        // Play random fall sound
+                        string randomFallSound = FALL_SOUND_PATHS[_fallRandom.Next(FALL_SOUND_PATHS.Length)];
+                        string soundName = "RockFall_" + Entity + "_" + DateTime.Now.Ticks;
+                        API.PlaySound(soundName, randomFallSound, false);
+                        API.SetSoundVolume(soundName, _fallSoundVolume);
+
                         API.Log($"[FallingObject] Bulletproof Fall Started for {Entity}");
                     }
                 }
