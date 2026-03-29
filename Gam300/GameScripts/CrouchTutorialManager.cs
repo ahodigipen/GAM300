@@ -43,6 +43,7 @@ namespace GameScripts
         private static bool s_aButtonWasDown = false;
 
         public static bool HasCompletedTutorial() => s_hasCompletedTutorial;
+        public static void SetHasCompletedTutorial(bool completed) => s_hasCompletedTutorial = completed;
         public static bool IsTutorialActive() => s_state != TutorialState.None;
         public static bool WasJustDismissed() => s_justDismissed;
 

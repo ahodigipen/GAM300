@@ -3963,35 +3963,6 @@ namespace EditorUI {
                 Boom::Entity selectedEntity{ &m_App->GetEntityRegistry(), m_App->SelectedEntity() };
                 info.name = selectedEntity.Get<Boom::InfoComponent>().name;
                 info.id = selectedEntity.Get<Boom::InfoComponent>().uid;
-                ImGui::Text("Are you sure you want to delete:\n%s?", info.name.c_str());
-                ImGui::Separator();
-                if (ImGui::Button("Yes", ImVec2(120, 0)) || ImGui::IsKeyPressed(ImGuiKey_Enter, false)) {
-                    if (m_App->SelectedEntity() != entt::null) {
-
-                        // === BEGIN PHYSICS CLEANUP ===
-
-                        // Use ForceRemoveActor instead of RemoveRigidBody
-                        m_App->GetPhysicsContext().ForceRemoveActor(static_cast<uint32_t>(m_App->SelectedEntity()));
-                        // =======================
-
-                        // === END PHYSICS CLEANUP ===
-
-                        m_App->GetEntityRegistry().destroy(m_App->SelectedEntity());
-                        m_App->ResetAllSelected();
-                    }
-                    else if (m_App->SelectedAsset().id != 0u) {
-                        m_App->DeleteAsset(info.id, info.type);
-                        m_App->ResetAllSelected();
-                    }
-                    showDeletePopup = false;
-                    ImGui::CloseCurrentPopup();
-                }
-                ImGui::SameLine();
-                if (ImGui::Button("No", ImVec2(120, 0)) || ImGui::IsKeyPressed(ImGuiKey_Escape)) {
-                    showDeletePopup = false;
-                    ImGui::CloseCurrentPopup();
-                }
-                
             }
             else if (m_App->SelectedAsset().id != 0u)
             {
@@ -4006,12 +3977,10 @@ namespace EditorUI {
             {
                 if (m_App->SelectedEntity() != entt::null)
                 {
-                    // === PHYSICS CLEANUP ===
-                    Boom::Entity entity{ &m_App->GetEntityRegistry(), m_App->SelectedEntity() };
-                    if (auto* physicsCtx = &m_App->GetPhysicsContext())
-                    {
-                        physicsCtx->RemoveRigidBody(entity);
-                    }
+                    // === BEGIN PHYSICS CLEANUP ===
+                    // Use ForceRemoveActor instead of RemoveRigidBody as it's more comprehensive
+                    m_App->GetPhysicsContext().ForceRemoveActor(static_cast<uint32_t>(m_App->SelectedEntity()));
+                    // === END PHYSICS CLEANUP ===
 
                     m_App->GetEntityRegistry().destroy(m_App->SelectedEntity());
                     m_App->ResetAllSelected();
@@ -4022,6 +3991,7 @@ namespace EditorUI {
                     m_App->ResetAllSelected();
                 }
 
+                showDeletePopup = false;
                 ImGui::CloseCurrentPopup();
             }
 
@@ -4030,6 +4000,7 @@ namespace EditorUI {
             // No / Escape
             if (ImGui::Button("No", ImVec2(120, 0)) || ImGui::IsKeyPressed(ImGuiKey_Escape))
             {
+                showDeletePopup = false;
                 ImGui::CloseCurrentPopup();
             }
 
