@@ -99,6 +99,7 @@
     <Compile Include="UIStanceController.cs" />
     <Compile Include="UITutorialController.cs" />
     <Compile Include="TutorialPopupTrigger.cs" />
+    <Compile Include="TutorialDialogueTrigger.cs" />
     <Compile Include="TextTest.cs" />
     <Compile Include="UIEndController.cs" />
     <Compile Include="UIHoldController.cs" />
