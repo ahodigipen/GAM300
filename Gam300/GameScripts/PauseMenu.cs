@@ -247,7 +247,7 @@ namespace GameScripts
                     }
                     else if (_selectedIndex == 8 && _gammaSlider != null)
                     {
-                        _gammaSlider.SetValue(API.GetGamma() + (moveAmount * 3.5f)); // 3.5 is the range (4.0 - 0.5)
+                        _gammaSlider.SetNormDelta(moveAmount);
                     }
                 }
             }
