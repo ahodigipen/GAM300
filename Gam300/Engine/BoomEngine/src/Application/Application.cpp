@@ -623,81 +623,126 @@ namespace Boom
                     glm::vec3 dir(glm::sin(angle), 0.f, glm::cos(angle));
                     auto hit = m_Context->physics->RaycastStaticOnly(rayOrigin, dir, maxRange);
                     if (hit.hitFound && hit.distance < maxRange)
-                        return rayOrigin + dir * glm::max(0.05f, hit.distance - 0.05f);
+                    {
+                        // Ignore floor hits as "walls" if they are relatively flat (slopes up to ~45 deg)
+                        if (hit.normal.y > 0.7f) return rayOrigin + dir * maxRange;
+
+                        // Pull back very slightly from the wall to keep XZ points stable at corners
+                        return rayOrigin + dir * glm::max(0.01f, hit.distance - 0.02f);
+                    }
                     return rayOrigin + dir * maxRange;
                 };
 
-                // Snap an XZ point to the floor surface, but only snap UP (ramps) or
-                // within a small tolerance downward.  If the ground drops more than
-                // kMaxDrop below the entity's floor the point is clamped to entity floor —
-                // this stops the cone from draping down cliff faces.
-                auto SnapToGround = [&](const glm::vec3& pt, float entityGroundY) -> glm::vec3
-                {
-                    constexpr float kProbeUp  = 2.0f;
-                    constexpr float kProbeDown = 5.0f;
-                    constexpr float kMaxDrop  = 0.35f; // max downward deviation from entity floor
-                    glm::vec3 from(pt.x, entityGroundY + kProbeUp, pt.z);
-                    auto hit = m_Context->physics->RaycastStaticOnly(from, {0.f, -1.f, 0.f}, kProbeUp + kProbeDown);
-                    if (hit.hitFound)
-                    {
-                        float groundY = hit.position.y + 0.02f;
-                        // Cliff: ground dropped too far — clamp to entity floor level
-                        if (groundY < entityGroundY - kMaxDrop) groundY = entityGroundY + 0.02f;
-                        return glm::vec3(pt.x, groundY, pt.z);
-                    }
-                    // No ground found (over void) — stay at entity floor
-                    return glm::vec3(pt.x, entityGroundY + 0.02f, pt.z);
-                };
-
                 // Render one cone with a radial gradient: apex is full colour, arc edge is
-                // fully transparent.  This gives a soft projector-light look instead of a
-                // solid block, and naturally hides the flat base of the cone.
+                // fully transparent.  Radial subdivisions (rings) allow the cone to
+                // "bend" over slopes instead of being a single flat sheet.
                 auto RenderCone = [&](const glm::vec3& entityPos,
                                       const glm::vec3& facing,
                                       float range, float halfAngleDeg,
                                       const glm::vec4& fillColor,
                                       const glm::vec4& edgeColor)
                 {
-                    // Ray origin at eye height so horizontal wall-casts don't hit the floor
-                    const glm::vec3 rayOrigin = { entityPos.x, entityPos.y + 1.5f, entityPos.z };
+                    // Snap an XZ point to the floor surface.
+                    auto SnapToGround = [&](const glm::vec3& pt, float referenceY) -> glm::vec3
+                    {
+                        // Localized probe: only snap to surfaces near the expected Y.
+                        // This prevents jumping to the top of walls (bouncing) or bottom of deep pits (holes).
+                        constexpr float kProbeUp   = 1.2f; 
+                        constexpr float kProbeDown = 2.5f;
+                        constexpr float kMaxStepUp = 0.6f;
+                        constexpr float kMaxStepDown = 0.8f;
 
-                    // Ground-snap the apex and record entity floor Y for cliff clamping
+                        glm::vec3 from(pt.x, referenceY + kProbeUp, pt.z);
+                        auto hit = m_Context->physics->RaycastStaticOnly(from, { 0.f, -1.f, 0.f }, kProbeUp + kProbeDown);
+                        if (hit.hitFound)
+                        {
+                            float dy = hit.position.y - referenceY;
+                            if (dy < kMaxStepUp && dy > -kMaxStepDown)
+                                return glm::vec3(pt.x, hit.position.y + 0.06f, pt.z);
+                        }
+                        // Fallback: stay at the reference height (effectively 'floats' over holes/voids)
+                        return glm::vec3(pt.x, referenceY + 0.06f, pt.z);
+                    };
+
+                    const glm::vec3 rayOrigin = { entityPos.x, entityPos.y + 1.2f, entityPos.z };
                     const glm::vec3 apex    = SnapToGround(entityPos, entityPos.y);
                     const float entityFloor = apex.y;
 
                     const float halfAngle = glm::radians(halfAngleDeg);
                     const float baseAngle = glm::atan(facing.x, facing.z);
-                    constexpr int N       = 24;
-                    const float step      = (2.f * halfAngle) / N;
+                    
+                    constexpr int N_ANGULAR = 50; // Angular steps
+                    constexpr int N_RADIAL  = 5;  // Radial rings (more rings = better terrain following)
+                    const float stepAng = (2.f * halfAngle) / N_ANGULAR;
+                    const float stepRad = range / N_RADIAL;
 
-                    // Wall-clamp then ground-snap each arc point (cliff-clamped)
-                    glm::vec3 arcPts[N + 1];
-                    for (int i = 0; i <= N; ++i)
+                    // Pre-calculate all snapped points
+                    glm::vec3 rings[N_RADIAL][N_ANGULAR + 1];
+                    for (int i = 0; i <= N_ANGULAR; ++i)
                     {
-                        float a      = baseAngle - halfAngle + i * step;
-                        glm::vec3 wp = ClampToWall(rayOrigin, a, range);
-                        arcPts[i]    = SnapToGround({ wp.x, entityFloor, wp.z }, entityFloor);
+                        float a = baseAngle - halfAngle + i * stepAng;
+                        for (int r = 0; r < N_RADIAL; ++r)
+                        {
+                            float currentRange = stepRad * (r + 1);
+                            glm::vec3 wp = ClampToWall(rayOrigin, a, currentRange);
+                            // Chain the snapping: each ring uses the previous ring's Y as a reference
+                            float refY = (r == 0) ? entityFloor : rings[r - 1][i].y;
+                            rings[r][i] = SnapToGround({ wp.x, refY, wp.z }, refY);
+                        }
                     }
 
-                    // GL_MAX takes max(src, dst) on raw channel values — blend factors are
-                    // ignored.  Pre-multiply alpha into RGB so the stored value is already
-                    // scaled: max(0.08*0.80, dark_bg) ≈ 0.064 instead of max(0.80, dark_bg) = 0.80.
                     auto Premul = [](const glm::vec4& c) -> glm::vec4 {
                         return { c.r * c.a, c.g * c.a, c.b * c.a, c.a };
                     };
-                    const glm::vec4 apexVert = Premul(fillColor);
-                    const glm::vec4 edgeFade(0.f, 0.f, 0.f, 0.f); // alpha=0 → premul is (0,0,0,0)
-                    for (int i = 0; i < N; ++i)
+
+                    const glm::vec4 apexColor = Premul(fillColor);
+                    const glm::vec4 edgeFade(0.f, 0.f, 0.f, 0.f);
+
+                    for (int i = 0; i < N_ANGULAR; ++i)
                     {
-                        fillVerts.push_back({ apex,          apexVert });
-                        fillVerts.push_back({ arcPts[i],     edgeFade });
-                        fillVerts.push_back({ arcPts[i + 1], edgeFade });
+                        // 1. Inner Triangle (Apex to Midpoint Ring)
+                        float t0 = 1.0f - 1.0f / (N_RADIAL + 1);
+                        glm::vec4 c0 = Premul(fillColor * t0);
+                        fillVerts.push_back({ apex,          apexColor });
+                        fillVerts.push_back({ rings[0][i],     c0 });
+                        fillVerts.push_back({ rings[0][i + 1], c0 });
+
+                        // 2. Outer Quads (Ring to Ring)
+                        for (int r = 0; r < N_RADIAL - 1; ++r)
+                        {
+                            float t_curr = 1.0f - (float)(r + 1) / (N_RADIAL);
+                            float t_next = 1.0f - (float)(r + 2) / (N_RADIAL);
+                            glm::vec4 c_curr = Premul(fillColor * t_curr);
+                            glm::vec4 c_next = (r == N_RADIAL - 2) ? edgeFade : Premul(fillColor * t_next);
+
+                            // Triangle 1
+                            fillVerts.push_back({ rings[r][i],         c_curr });
+                            fillVerts.push_back({ rings[r + 1][i],     c_next });
+                            fillVerts.push_back({ rings[r + 1][i + 1], c_next });
+                            // Triangle 2
+                            fillVerts.push_back({ rings[r][i],         c_curr });
+                            fillVerts.push_back({ rings[r + 1][i + 1], c_next });
+                            fillVerts.push_back({ rings[r][i + 1],     c_curr });
+                        }
                     }
 
-                    // Outline: only the two side edges from apex — no arc outline
-                    // (arc is already invisible due to alpha=0 gradient; outline there looks harsh)
-                    AppendLine(edgeVerts, apex, arcPts[0], edgeColor, glm::vec4(edgeColor.r, edgeColor.g, edgeColor.b, 0.f));
-                    AppendLine(edgeVerts, apex, arcPts[N], edgeColor, glm::vec4(edgeColor.r, edgeColor.g, edgeColor.b, 0.f));
+                    // Outline: side edges follow the terrain subdivisions
+                    glm::vec4 edgeColorTransparent = { edgeColor.r, edgeColor.g, edgeColor.b, 0.0f };
+                    
+                    // Left and Right edges
+                    for (int side : {0, N_ANGULAR})
+                    {
+                        glm::vec3 lastPt = apex;
+                        glm::vec4 lastCol = edgeColor;
+                        for (int r = 0; r < N_RADIAL; ++r)
+                        {
+                            float t = 1.0f - (float)(r + 1) / N_RADIAL;
+                            glm::vec4 nextCol = (r == N_RADIAL - 1) ? edgeColorTransparent : edgeColor * t;
+                            AppendLine(edgeVerts, lastPt, rings[r][side], lastCol, nextCol);
+                            lastPt = rings[r][side];
+                            lastCol = nextCol;
+                        }
+                    }
                 };
 
                 // --- VisualConeComponent enemies (PatrolEnemyController, EnemyController, etc.) ---
@@ -720,7 +765,7 @@ namespace Boom
                 });
 
                 if (!fillVerts.empty())
-                    m_DebugLinesShader->DrawTriangles(dbgView, dbgProj, fillVerts, false, true /*useMaxBlend*/);
+                    m_DebugLinesShader->DrawTriangles(dbgView, dbgProj, fillVerts, false, true /*useMaxBlend*/, true /*disableDepthWrite*/);
                 if (!edgeVerts.empty())
                     m_DebugLinesShader->Draw(dbgView, dbgProj, edgeVerts, 1.5f);
             }

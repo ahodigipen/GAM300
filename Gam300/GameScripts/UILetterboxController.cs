@@ -59,17 +59,17 @@ namespace GameScripts
             float targetBottomY = active ? (BottomHiddenY + SqueezeAmount) : BottomHiddenY;
 
             // Handle independent updates for robustness
-            if (_topBar != 0)
+            if (_topBar != 0 && API.HasTransform(_topBar))
             {
                 if (_currentTopY < -9000f) _currentTopY = TopHiddenY;
                 _currentTopY = Lerp(_currentTopY, targetTopY, SlideSpeed * animDt);
-                
+
                 Vec3 p = API.GetPosition(_topBar);
                 p.Y = _currentTopY;
                 API.SetPosition(_topBar, p);
             }
 
-            if (_bottomBar != 0)
+            if (_bottomBar != 0 && API.HasTransform(_bottomBar))
             {
                 if (_currentBottomY < -9000f) _currentBottomY = BottomHiddenY;
                 _currentBottomY = Lerp(_currentBottomY, targetBottomY, SlideSpeed * animDt);

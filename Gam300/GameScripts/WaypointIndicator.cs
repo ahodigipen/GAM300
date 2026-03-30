@@ -117,7 +117,8 @@ namespace GameScripts
             }
             else
             {
-                API.Log("[WaypointIndicator] WARNING: DetectionRing entity not found!");
+                _ringEntity = 0;
+                API.Log("[WaypointIndicator] WARNING: DetectionRing entity not found or has no transform!");
             }
 
             _keyIconEntity = API.FindEntity("WaypointKeyIcon");
@@ -138,7 +139,7 @@ namespace GameScripts
             if (_ringEntity == 0) return;
 
             ulong playerEntity = PlayerMovement.GetPlayerEntity();
-            if (playerEntity == 0) return;
+            if (playerEntity == 0 || !API.HasTransform(playerEntity)) return;
 
             CheckCollectedKeys();
             AdvanceGroupIfComplete();
@@ -293,6 +294,7 @@ namespace GameScripts
             {
                 if (_keyCollected[i]) continue;
                 if (_keyEntities[i] == 0) { _keyCollected[i] = true; continue; }
+                if (!API.HasTransform(_keyEntities[i])) continue;
                 if (API.GetPosition(_keyEntities[i]).Y < -50f)
                 {
                     _keyCollected[i] = true;
@@ -307,7 +309,7 @@ namespace GameScripts
         private void FindNearestTarget()
         {
             ulong playerEntity = PlayerMovement.GetPlayerEntity();
-            if (playerEntity == 0) { _currentTargetIndex = -1; return; }
+            if (playerEntity == 0 || !API.HasTransform(playerEntity)) { _currentTargetIndex = -1; return; }
 
             if (_currentGroup >= KEY_GROUPS.Length) { _currentTargetIndex = -1; return; }
 
