@@ -1135,7 +1135,7 @@ ENTITIES:
         SurfaceType: DEFAULT
         Type: CONVEX_MESH
     InfoComponent:
-      Parent: 828997536667566037
+      Parent: 0
       Name: Cushion_4_Second_Floor (Copy) (Copy)
       UID: 7125336463643279555
       SortOrder: 0
