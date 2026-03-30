@@ -103,7 +103,8 @@ namespace Boom {
         BOOM_INLINE void DrawTriangles(const glm::mat4& view, const glm::mat4& proj,
             const std::vector<LineVert>& verts,
             bool disableDepthTest = false,
-            bool useMaxBlend = false)
+            bool useMaxBlend = false,
+            bool disableDepthWrite = false)
         {
             if (verts.empty()) return;
 
@@ -126,9 +127,14 @@ namespace Boom {
             GLboolean wasDepthTestEnabled = glIsEnabled(GL_DEPTH_TEST);
             GLboolean wasCullFaceEnabled  = glIsEnabled(GL_CULL_FACE);
             GLboolean wasBlendEnabled     = glIsEnabled(GL_BLEND);
+            GLboolean wasDepthWriteEnabled;
+            glGetBooleanv(GL_DEPTH_WRITEMASK, &wasDepthWriteEnabled);
 
             if (disableDepthTest) glDisable(GL_DEPTH_TEST);
             else                  glEnable(GL_DEPTH_TEST);
+
+            if (disableDepthWrite) glDepthMask(GL_FALSE);
+            else                   glDepthMask(GL_TRUE);
 
             glDisable(GL_CULL_FACE);
             glEnable(GL_BLEND);
@@ -152,8 +158,11 @@ namespace Boom {
             if (wasDepthTestEnabled) glEnable(GL_DEPTH_TEST);
             else                     glDisable(GL_DEPTH_TEST);
 
-            if (wasCullFaceEnabled)  glEnable(GL_CULL_FACE);
-            else                     glDisable(GL_CULL_FACE);
+            if (wasDepthWriteEnabled) glDepthMask(GL_TRUE);
+            else                      glDepthMask(GL_FALSE);
+
+            if (wasCullFaceEnabled) glEnable(GL_CULL_FACE);
+            else                    glDisable(GL_CULL_FACE);
 
             if (!wasBlendEnabled) glDisable(GL_BLEND);
 
