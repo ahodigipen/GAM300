@@ -358,42 +358,60 @@ namespace GameScripts
                 player.RestoreHealth(2);
                 _activated = true;
 
-                // Start visual sequences
-                _simTimer = (_simultaneousIDs.Count > 0) ? _spriteDisplayDuration : 0f;
+                // Keep sprites hidden until after dialogue — showPopup will start them
+                _simTimer = 0f;
                 _simAlpha = 0f;
                 _simActiveTime = 0f;
 
-                _currentSpriteIndex = (_sequentialIDs.Count > 0) ? 0 : -1;
-                _seqTimer = (_sequentialIDs.Count > 0) ? _spriteDisplayDuration : 0f;
+                _currentSpriteIndex = -1;
+                _seqTimer = 0f;
                 _seqAlpha = 0f;
                 _seqActiveTime = 0f;
 
                 foreach (ulong id in _originalSpritePositions.Keys) API.SetSpriteAlpha(id, 0f);
 
-                // Prepare dialogue/cutscene callback
+                // Show popup (sprites + text) after dialogue completes
+                Action showPopup = () =>
+                {
+                    if (_simultaneousIDs.Count > 0)
+                    {
+                        _simTimer = _spriteDisplayDuration;
+                        _simAlpha = 0f;
+                        _simActiveTime = 0f;
+                    }
+                    if (_sequentialIDs.Count > 0)
+                    {
+                        _currentSpriteIndex = 0;
+                        _seqTimer = _spriteDisplayDuration;
+                        _seqAlpha = 0f;
+                        _seqActiveTime = 0f;
+                    }
+                    if (API.HasText(Entity))
+                    {
+                        Vec4 color = API.GetTextColor(Entity);
+                        color.W = 1.0f;
+                        API.SetTextColor(Entity, color);
+                    }
+                };
+
                 Action playDialogue = () =>
                 {
-                    if (_isBossCheckpoint) StoryDialogueManager.PlayBossCheckpointSequence();
-                    else if (_isCheckpoint2) StoryDialogueManager.PlayCheckpoint2Sequence();
-                    else StoryDialogueManager.PlayCheckpoint1Sequence();
+                    if (_isBossCheckpoint) StoryDialogueManager.PlayBossCheckpointSequence(showPopup);
+                    else if (_isCheckpoint2) StoryDialogueManager.PlayCheckpoint2Sequence(showPopup);
+                    else StoryDialogueManager.PlayCheckpoint1Sequence(showPopup);
                 };
 
                 if (_triggerIntroCutscene)
                 {
-                    // Start cutscene after a short delay to let the checkpoint sound play
-                    _spriteOnCompleteAction = () =>
-                    {
-                        ulong cutsceneId = API.FindEntity(_cutsceneEntityName);
-                        if (cutsceneId != 0 && LevelTransitionCutscene.InstancesById.ContainsKey(cutsceneId))
-                            LevelTransitionCutscene.PlayWithCallback(_cutsceneEntityName, playDialogue);
-                        else
-                            CutsceneSequencer.PlayWithCallback(_cutsceneEntityName, playDialogue);
-                    };
-                    _cutsceneDelay = 1.0f;
+                    ulong cutsceneId = API.FindEntity(_cutsceneEntityName);
+                    if (cutsceneId != 0 && LevelTransitionCutscene.InstancesById.ContainsKey(cutsceneId))
+                        LevelTransitionCutscene.PlayWithCallback(_cutsceneEntityName, playDialogue);
+                    else
+                        CutsceneSequencer.PlayWithCallback(_cutsceneEntityName, playDialogue);
                 }
                 else
                 {
-                    _spriteOnCompleteAction = playDialogue;
+                    playDialogue();
                 }
 
                 // Turn on lights
@@ -438,12 +456,6 @@ namespace GameScripts
             if (!inst._activated)
             {
                 inst.ActivateCheckpoint();
-                if (API.HasText(inst.Entity))
-                {
-                    Vec4 color = API.GetTextColor(inst.Entity);
-                    color.W = 1.0f;
-                    API.SetTextColor(inst.Entity, color);
-                }
             }
         }
 
