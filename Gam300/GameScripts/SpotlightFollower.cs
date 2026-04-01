@@ -73,7 +73,7 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
-            if (targetHandle == 0 || Entity == 0)
+            if (targetHandle == 0 || Entity == 0 || !API.HasTransform(targetHandle))
                 return;
 
             // Get target's position and rotation

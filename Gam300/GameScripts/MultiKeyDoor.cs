@@ -422,7 +422,7 @@ namespace GameScripts
                             if (_isMainDoor) StartSealAnimation();
 
                             // Vanish the lock entity
-                            if (_lockEntity != 0)
+                            if (_lockEntity != 0 && API.HasTransform(_lockEntity))
                             {
                                 Vec3 lp = API.GetPosition(_lockEntity);
                                 API.SetPosition(_lockEntity, new Vec3(lp.X, -100f, lp.Z));
@@ -547,7 +547,7 @@ namespace GameScripts
             {
                 API.Log($"[MultiKeyDoor] F5 CHEAT: Force-opening door '{_doorName}'.");
 
-                if (_lockEntity != 0)
+                if (_lockEntity != 0 && API.HasTransform(_lockEntity))
                 {
                     Vec3 lp = API.GetPosition(_lockEntity);
                     API.SetPosition(_lockEntity, new Vec3(lp.X, -100f, lp.Z));

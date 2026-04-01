@@ -734,6 +734,7 @@ float     currentYaw = 0.0f;
 float     currentPitch = 20.0f;
 float     mouseSensitivity = 1.0f;
 float     scrollSensitivity = 1.0f;
+float     startLockDuration = 0.0f;   // Seconds to ignore mouse/gamepad input after scene load
 
 // Runtime-only camera effects (not serialized)
 float     shakeIntensity = 0.0f;   // Max positional shake offset in world units
@@ -755,7 +756,8 @@ obj_member<"Max Distance", &ThirdPersonCameraComponent::maxDistance>,
 obj_member<"Current Yaw", &ThirdPersonCameraComponent::currentYaw>,
 obj_member<"Current Pitch", &ThirdPersonCameraComponent::currentPitch>,
 obj_member<"Mouse Sensitivity", &ThirdPersonCameraComponent::mouseSensitivity>,
-obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>
+obj_member<"Scroll Sensitivity", &ThirdPersonCameraComponent::scrollSensitivity>,
+obj_member<"Start Lock Duration", &ThirdPersonCameraComponent::startLockDuration>
 )
  };
  struct NavAgentComponent {

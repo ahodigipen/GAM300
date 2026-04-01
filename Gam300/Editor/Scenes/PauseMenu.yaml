@@ -123,7 +123,7 @@ ENTITIES:
         Rotate: [0, -0, 0]
         Scale: [0.200000003, 0.075000003, 0.00999999978]
     SpriteComponent:
-      textureID: 3642533689205009707
+      textureID: 18005541902257493201
       color: [1, 1, 1, 1]
       renderAs3D: false
     MenuComponent:
@@ -316,7 +316,7 @@ ENTITIES:
         Rotate: [0, 0, 0]
         Scale: [0.0199999996, 0.0399999991, 1]
     SpriteComponent:
-      textureID: y
+      textureID: 12879034172909871896
       color: [1, 1, 1, 1]
       renderAs3D: false
     MenuComponent:

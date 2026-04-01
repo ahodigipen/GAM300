@@ -96,7 +96,7 @@ namespace GameScripts
         [Boom.EditorExposed("Turn Sound Volume", "Volume of the turning sound (0.0 - 1.0)")]
         private float _turnSoundVolume = 1.0f;
 
-        // Warning sound (plays when turning towards player)
+        // Warning sound (plays when turning away from player - boss turning to rest)
         private const string WARNING_SOUND_NAME = "BossWarning";
         private static readonly string[] WARNING_SOUND_PATHS = new string[]
         {
@@ -110,15 +110,36 @@ namespace GameScripts
         };
         private static Random _warningRandom = new Random();
 
+        // Warning line sound (plays 3s before boss turns towards player)
+        private const string WARNING_LINE_SOUND_NAME = "BossWarningLine";
+        private static readonly string[] WARNING_LINE_SOUND_PATHS = new string[]
+        {
+            "Resources/Audio/BossWarning_Line1.wav",
+            "Resources/Audio/BossWarning_Line2.wav",
+            "Resources/Audio/BossWarning_Line3.wav",
+            "Resources/Audio/BossWarning_Line4.wav",
+            "Resources/Audio/BossWarning_Line5.wav"
+        };
+
+        [Boom.EditorExposed("Warning Line Volume", "Volume of warning line when boss turns to player (0.0 - 1.0)")]
+        private float _warningLineVolume = 1.0f;
+
         [Boom.EditorExposed("Warning Sound Volume", "Volume of the warning sound (0.0 - 1.0)")]
         private float _warningSoundVolume = 1.0f;
 
-        [Boom.EditorExposed("Warning Delay", "Seconds to wait after warning before turning")]
+        [Boom.EditorExposed("Warning Delay", "Seconds to wait after warning before turning towards player")]
         private float _warningDelay = 3.0f;
+
+        [Boom.EditorExposed("Warning Line After Turn Delay", "Seconds after turning towards player to play warning line")]
+        private float _warningLineAfterTurnDelay = 1.0f;
 
         private bool _isWaitingToTurn = false;
         private float _warningTimer = 0f;
         private bool _pendingWatchState = false;
+
+        // Warning line after turn state
+        private bool _isWaitingForWarningLine = false;
+        private float _warningLineTimer = 0f;
 
         public void OnStart(string jsonParams)
         {
@@ -180,10 +201,13 @@ namespace GameScripts
             _isTurning = false;
             _isWaitingToTurn = false;
             _warningTimer = 0f;
+            _isWaitingForWarningLine = false;
+            _warningLineTimer = 0f;
             _hasDealtDamage = false;
             _catchTimer = _catchDelay;
             if (_wasTurning) { API.StopSound(TURN_SOUND_NAME); _wasTurning = false; }
             API.StopSound(WARNING_SOUND_NAME);
+            API.StopSound(WARNING_LINE_SOUND_NAME);
             StopCountdown();
 
             if (updateRotation)
@@ -206,7 +230,11 @@ namespace GameScripts
                 {
                     // Stop sounds when entering pause
                     if (_wasTurning) API.StopSound(TURN_SOUND_NAME);
-                    if (_isWaitingToTurn) API.StopSound(WARNING_SOUND_NAME);
+                    if (_isWaitingToTurn)
+                    {
+                        API.StopSound(WARNING_SOUND_NAME);
+                        API.StopSound(WARNING_LINE_SOUND_NAME);
+                    }
                     _wasPausedLastFrame = true;
                 }
                 return;
@@ -238,6 +266,7 @@ namespace GameScripts
                 if (_isWaitingToTurn)
                 {
                     API.StopSound(WARNING_SOUND_NAME);
+                    API.StopSound(WARNING_LINE_SOUND_NAME);
                     _isWaitingToTurn = false;
                     _warningTimer = 0f;
                 }
@@ -257,8 +286,25 @@ namespace GameScripts
                     _isWatching = _pendingWatchState;
                     _targetYRotation = _isWatching ? _watchingYaw : _restingYaw;
                     UpdateLights(_isWatching ? _colorRed : _colorGreen, _isWatching ? _redIntensities : _greenIntensities);
+                    if (!_isWatching) StopCountdown();
                 }
                 return;
+            }
+
+            // Handle warning line sound after turn towards player completes
+            if (_isWaitingForWarningLine)
+            {
+                _warningLineTimer += dt;
+                if (_warningLineTimer >= _warningLineAfterTurnDelay)
+                {
+                    _isWaitingForWarningLine = false;
+                    _warningLineTimer = 0f;
+                    // Play warning line sound
+                    string randomWarningLine = WARNING_LINE_SOUND_PATHS[_warningRandom.Next(WARNING_LINE_SOUND_PATHS.Length)];
+                    string uniqueName = WARNING_LINE_SOUND_NAME + "_" + DateTime.Now.Ticks;
+                    API.PlaySound(uniqueName, randomWarningLine, false);
+                    API.SetSoundVolume(uniqueName, _warningLineVolume);
+                }
             }
 
             if (!_isTurning)
@@ -271,6 +317,7 @@ namespace GameScripts
 
                     if (_pendingWatchState)
                     {
+                        // Play warning sound (boss is about to turn towards player)
                         string randomWarning = WARNING_SOUND_PATHS[_warningRandom.Next(WARNING_SOUND_PATHS.Length)];
                         API.PlaySound(WARNING_SOUND_NAME, randomWarning, false);
                         API.SetSoundVolume(WARNING_SOUND_NAME, _warningSoundVolume);
@@ -279,6 +326,7 @@ namespace GameScripts
                     }
                     else
                     {
+                        // Turn away immediately (no warning delay)
                         _isTurning = true;
                         _isWatching = false;
                         _targetYRotation = _restingYaw;
@@ -296,7 +344,19 @@ namespace GameScripts
                 while (angleDiff > 180f) angleDiff -= 360f;
                 while (angleDiff < -180f) angleDiff += 360f;
                 float step = _rotationSpeed * dt;
-                if (Math.Abs(angleDiff) <= step) { _currentYRotation = _targetYRotation; _isTurning = false; API.StopSound(TURN_SOUND_NAME); _wasTurning = false; }
+                if (Math.Abs(angleDiff) <= step)
+                {
+                    _currentYRotation = _targetYRotation;
+                    _isTurning = false;
+                    API.StopSound(TURN_SOUND_NAME);
+                    _wasTurning = false;
+                    // Start warning line timer when boss finishes turning towards player
+                    if (_isWatching)
+                    {
+                        _isWaitingForWarningLine = true;
+                        _warningLineTimer = 0f;
+                    }
+                }
                 else { _currentYRotation += Math.Sign(angleDiff) * step; }
                 Vec3 rot = API.GetRotation(Entity); rot.Y = _currentYRotation; API.SetRotation(Entity, rot);
             }
@@ -420,6 +480,6 @@ namespace GameScripts
         private void ShowWarningText(bool show) { if (_warningText == 0 || !API.HasText(_warningText)) return; var c = API.GetTextColor(_warningText); c.W = show ? 1f : 0f; API.SetTextColor(_warningText, c); }
         private void UpdateWarningText(float remaining) { if (_warningText == 0 || !API.HasText(_warningText)) return; int s = (int)System.Math.Ceiling(System.Math.Max(0.0f, remaining)); API.SetText(_warningText, "Spotted! HIDE in " + s + "s!"); }
         private Vec3 ParseVec3(string csv, Vec3 def) { try { string[] p = csv.Split(','); return new Vec3(float.Parse(p[0]), float.Parse(p[1]), float.Parse(p[2])); } catch { return def; } }
-        public void OnDestroy() { if (_wasTurning) { API.StopSound(TURN_SOUND_NAME); _wasTurning = false; } API.StopSound(WARNING_SOUND_NAME); if (s_instances.ContainsKey(Entity)) s_instances.Remove(Entity); PlayerManager.UnregisterEnemy(this); }
+        public void OnDestroy() { if (_wasTurning) { API.StopSound(TURN_SOUND_NAME); _wasTurning = false; } API.StopSound(WARNING_SOUND_NAME); API.StopSound(WARNING_LINE_SOUND_NAME); if (s_instances.ContainsKey(Entity)) s_instances.Remove(Entity); PlayerManager.UnregisterEnemy(this); }
     }
 }

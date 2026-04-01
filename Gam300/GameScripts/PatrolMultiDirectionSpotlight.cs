@@ -73,7 +73,7 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
-            if (targetHandle == 0 || Entity == 0 || dt <= 0f)
+            if (targetHandle == 0 || Entity == 0 || dt <= 0f || !API.HasTransform(targetHandle))
                 return;
 
             // --- Position: follow target with Y offset ---

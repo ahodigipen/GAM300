@@ -467,7 +467,7 @@ namespace GameScripts
             }
 
             // Update Alert Video (Shared)
-            if (_sharedVideoEntity != 0)
+            if (_sharedVideoEntity != 0 && API.HasTransform(_sharedVideoEntity))
             {
                 // Visibility Update
                 bool isInProximity = (_proximityDetection != null && _proximityDetection.IsPlayerInProximity());

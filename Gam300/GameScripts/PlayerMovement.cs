@@ -43,6 +43,9 @@ namespace GameScripts
         private static int s_persistedHealth = 5;
         public static void ResetPersistedHealth() { s_persistedHealth = 5; }
 
+        public static int s_tutorialDeathCount = 0;
+        public static void ResetTutorialDeathCount() { s_tutorialDeathCount = 0; }
+
         private int _health = 5;
         private int _maxHealth = 5;
         private Vec3 _spawnPoint;
@@ -54,6 +57,7 @@ namespace GameScripts
         private enum FadeState { None, FadingOut, BlackHold, FadingIn }
         private FadeState _fadeState = FadeState.None;
         private float _fadeTimer = 0f;
+        private Action _onRespawnComplete = null;
         private float _fadeOutDuration = 0.5f;
         private float _blackHoldDuration = 0.15f;
         private float _fadeInDuration = 0.75f;
@@ -252,6 +256,18 @@ namespace GameScripts
                 return;
             }
 
+            // Tutorial Zone has no HP — just respawn without any health loss
+            if (API.GetCurrentSceneName() == Entry.TUTORIAL_ZONE_SCENE_NAME)
+            {
+                s_tutorialDeathCount++;
+                int countSnapshot = s_tutorialDeathCount;
+                if (countSnapshot == 3 || countSnapshot == 6)
+                    StartRespawn(() => StoryDialogueManager.PlayTutorialZoneDeathSequence(countSnapshot));
+                else
+                    StartRespawn();
+                return;
+            }
+
             _health--;
             s_persistedHealth = _health;
             HUD.SetHealth(_health, _maxHealth);
@@ -267,13 +283,14 @@ namespace GameScripts
                 StartRespawn();
         }
 
-        private void StartRespawn()
+        private void StartRespawn(Action onComplete = null)
         {
             _isRespawning = true;
             _verticalVelocity = 0f;
             // REMOVED: Don't overwrite _spawnPoint here - it should keep the checkpoint value
             // _spawnPoint = new Vec3(0.914043128f, 1.5f, 13.9171219f);
             API.MoveController(Entity, new Vec3(0, 0, 0), 0.001f, 0.016f);
+            _onRespawnComplete = onComplete;
             _fadeState = FadeState.FadingOut;
             _fadeTimer = 0f;
             API.SetScreenFadeAlpha(0f);
@@ -449,6 +466,9 @@ namespace GameScripts
                     {
                         _fadeState = FadeState.None;
                         API.SetScreenFadeAlpha(0f);
+                        Action cb = _onRespawnComplete;
+                        _onRespawnComplete = null;
+                        cb?.Invoke();
                     }
                     break;
             }

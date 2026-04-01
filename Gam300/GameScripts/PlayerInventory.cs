@@ -200,8 +200,11 @@ namespace GameScripts
 
         // --- Tutorial Pickup Count Getters ---
         public static int GetLargeTokenPickupCount() => s_largeTokenPickupCount;
+        public static void SetLargeTokenPickupCount(int count) => s_largeTokenPickupCount = count;
         public static int GetSmallTokenPickupCount() => s_smallTokenPickupCount;
+        public static void SetSmallTokenPickupCount(int count) => s_smallTokenPickupCount = count;
         public static int GetTalismanPickupCount() => s_talismanPickupCount;
+        public static void SetTalismanPickupCount(int count) => s_talismanPickupCount = count;
 
         // Returns a snapshot of currently held key identifiers.
         public static string[] GetKeyTypes()

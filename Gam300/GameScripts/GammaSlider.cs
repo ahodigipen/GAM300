@@ -33,7 +33,7 @@ namespace GameScripts
         private float _lastMouseX;
 
         // --- Configuration ---
-        private const float DRAG_SENSITIVITY = 0.002f;
+        private const float DRAG_SENSITIVITY = 0.004f;
         private const float MIN_ENGINE_SCALE = 0.0001f;
 
         // Stacking order (Z-axis)
