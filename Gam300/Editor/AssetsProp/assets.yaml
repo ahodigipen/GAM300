@@ -111,28 +111,6 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
-    UID: 295392599374634747
-    Name: Cushion Texture
-    Source: Cushion Texture
-    Properties:
-      Data:
-        emissive: [0, 0, 0]
-        albedo: [1, 1, 1]
-        roughness: 0.810000002
-        metallic: 0
-        occlusion: 0.800000012
-        opacity: 1
-        useWorldSpaceUV: false
-        textureScale: 1
-      AlbedoMapID: 2408227857109572219
-      NormalMapID: 5635053925849247296
-      RoughnessMapID: 6305281938924181745
-      MetallicMapID: 9033368879326419558
-      OcclusionMapID: 14205466992706534584
-      EmissiveMapID: 0
-      OpacityMapID: 0
-      DoubleSided: false
-  - Type: MATERIAL
     UID: 5492247716426239787
     Name: spikes
     Source: spikes
@@ -173,6 +151,28 @@ ASSETS:
       RoughnessMapID: 0
       MetallicMapID: 0
       OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
+    UID: 295392599374634747
+    Name: Cushion Texture
+    Source: Cushion Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.810000002
+        metallic: 0
+        occlusion: 0.800000012
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 2408227857109572219
+      NormalMapID: 5635053925849247296
+      RoughnessMapID: 6305281938924181745
+      MetallicMapID: 9033368879326419558
+      OcclusionMapID: 14205466992706534584
       EmissiveMapID: 0
       OpacityMapID: 0
       DoubleSided: false
@@ -725,7 +725,7 @@ ASSETS:
       OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
-      DoubleSided: false
+      DoubleSided: true
   - Type: MATERIAL
     UID: 7666986193932932989
     Name: ToriGateTexture
@@ -786,6 +786,28 @@ ASSETS:
         textureScale: 1
       AlbedoMapID: 8189347454469401464
       NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
+    UID: 17905291636785580641
+    Name: PuppetTex
+    Source: PuppetTex
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.25999999
+        metallic: 0.0799999982
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 15502797213157524823
+      NormalMapID: 11676939338960653588
       RoughnessMapID: 0
       MetallicMapID: 0
       OcclusionMapID: 0
@@ -1805,6 +1827,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 15502797213157524823
+    Name: hanging_openPBR_shader4_baseColor
+    Source: Resources/Models/Props/Hanging/hanging_openPBR_shader4_baseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 4669697712673348506
     Name: Scissors_Ninja_Body_Normal
     Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Body_Normal.png
@@ -1863,6 +1896,17 @@ ASSETS:
     UID: 1920245529432086823
     Name: ReturnMenuButton
     Source: Resources/Textures/MenusUI/ReturnMenuButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 11104223602588888186
+    Name: hanging_openPBR_shader1_occlusionRoughnessMetallic
+    Source: Resources/Models/Props/Hanging/hanging_openPBR_shader1_occlusionRoughnessMetallic.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2256,6 +2300,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 7369839075286962482
+    Name: inside the cell 1
+    Source: Resources/Textures/PlayerUI/inside the cell 1.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 903363356353558548
     Name: openPBR_shader1_occlusionRoughnessMetallicrock 2
     Source: Resources/Models/Props/rocks 2/openPBR_shader1_occlusionRoughnessMetallicrock 2.png
@@ -2333,20 +2388,9 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 12527843001639722738
-    Name: Checkpoint2_Dialogue5
-    Source: Resources/Textures/PlayerUI/Checkpoint2_Dialogue5.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.949999988
-        alphaThreshold: 127
-        mipLevel: 0
-        isGamma: false
-  - Type: TEXTURE
-    UID: 14205466992706534584
-    Name: Pillow_openPBR_shader1_Height
-    Source: Resources/Textures/Props Textures/Pillow_openPBR_shader1_Height.png
+    UID: 9887804499288679027
+    Name: FirstTime_Dialogue1_Talisman
+    Source: Resources/Textures/PlayerUI/FirstTime_Dialogue1_Talisman.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2366,9 +2410,20 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 9887804499288679027
-    Name: FirstTime_Dialogue1_Talisman
-    Source: Resources/Textures/PlayerUI/FirstTime_Dialogue1_Talisman.png
+    UID: 14205466992706534584
+    Name: Pillow_openPBR_shader1_Height
+    Source: Resources/Textures/Props Textures/Pillow_openPBR_shader1_Height.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 12527843001639722738
+    Name: Checkpoint2_Dialogue5
+    Source: Resources/Textures/PlayerUI/Checkpoint2_Dialogue5.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2479,6 +2534,17 @@ ASSETS:
     UID: 11246060146662733147
     Name: Scissors_Ninja_Body_Roughness
     Source: Resources/Models/Enemy/Patrol/Scissors_Ninja_Body_Roughness.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 18336894104877184549
+    Name: hanging_openPBR_shader1_normal
+    Source: Resources/Models/Props/Hanging/hanging_openPBR_shader1_normal.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -2809,6 +2875,17 @@ ASSETS:
     UID: 13377175521995129463
     Name: lantern_openPBR_shader1_Emissive
     Source: Resources/Models/Props/lantern mat/lantern_openPBR_shader1_Emissive.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 13744292941660532044
+    Name: inside the cell 3
+    Source: Resources/Textures/PlayerUI/inside the cell 3.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -3565,6 +3642,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 16503743671831896499
+    Name: inside the cell 6
+    Source: Resources/Textures/PlayerUI/inside the cell 6.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 3411322882042035776
     Name: model
     Source: Resources/Textures/Icons/model.png
@@ -3645,6 +3733,17 @@ ASSETS:
     UID: 11766718581238552621
     Name: HowToPlayScroll
     Source: Resources/Textures/MenusUI/HowToPlayScroll.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 14290802853173655046
+    Name: inside the cell 5
+    Source: Resources/Textures/PlayerUI/inside the cell 5.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -4038,6 +4137,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 13161325346638212954
+    Name: exit 4
+    Source: Resources/Textures/PlayerUI/exit 4.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 9051997344452271848
     Name: NewGameButton
     Source: Resources/Textures/MenusUI/NewGameButton.png
@@ -4104,9 +4214,31 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 12170215265351181388
+    Name: inside the cell hanging puppet img
+    Source: Resources/Textures/PlayerUI/inside the cell hanging puppet img.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 11191307682945705816
     Name: openPBR_shader1_baseColor
     Source: Resources/Models/Props/Key/openPBR_shader1_baseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 11676939338960653588
+    Name: hanging_openPBR_shader4_normal
+    Source: Resources/Models/Props/Hanging/hanging_openPBR_shader4_normal.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -4159,6 +4291,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 7116103611924805177
+    Name: inside the cell 4
+    Source: Resources/Textures/PlayerUI/inside the cell 4.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 13403809090269167984
     Name: GAM300_Fire2_VFX
     Source: Resources/Textures/Particles/GAM300_Fire2_VFX.png
@@ -4184,6 +4327,17 @@ ASSETS:
     UID: 14479753821827653348
     Name: M4_Sentry_untextured_Sentry_Emissive
     Source: Resources/Textures/M4_SentryTextures/M4_Sentry_untextured_Sentry_Emissive.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 17629547944653500448
+    Name: inside the cell 7
+    Source: Resources/Textures/PlayerUI/inside the cell 7.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -4228,6 +4382,17 @@ ASSETS:
     UID: 16967078309633339673
     Name: M4_Sentry_untextured_Sentry_Roughness
     Source: Resources/Textures/M4_SentryTextures/M4_Sentry_untextured_Sentry_Roughness.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 16307754273199987211
+    Name: hanging_openPBR_shader4_occlusionRoughnessMetallic
+    Source: Resources/Models/Props/Hanging/hanging_openPBR_shader4_occlusionRoughnessMetallic.png
     Properties:
       Data:
         CompileAsCompressed: true
@@ -4335,6 +4500,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 16941480273148992840
+    Name: exit 2
+    Source: Resources/Textures/PlayerUI/exit 2.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 15308332345778085024
     Name: lambert1_occlusionRoughnessMetallic
     Source: Resources/Models/Props/door token texture n models/lambert1_occlusionRoughnessMetallic.png
@@ -4396,10 +4572,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 16492442963714569383
     Name: Bar_openPBR_shader1_baseColor
@@ -4533,17 +4709,6 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 14069412178746416812
-    Name: walking sentinal bars image
-    Source: Resources/Textures/PlayerUI/walking sentinal bars image.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
     UID: 6863343813191663289
     Name: M5_Daruma_Boss_low_Daruma_Emissive
     Source: Resources/Textures/Boss Level Textures/M5_Daruma_Boss_low_Daruma_Emissive.png
@@ -4654,16 +4819,27 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 15790176270808879105
+    Name: exit 1
+    Source: Resources/Textures/PlayerUI/exit 1.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
     UID: 10403370946747284962
     Name: rotating sentinal 2
     Source: Resources/Textures/PlayerUI/rotating sentinal 2.png
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 9252903905373106182
     Name: rocks_baseColorrocks 1
@@ -4726,10 +4902,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 13760466255290870570
     Name: AfterFirstTime_SmallToken
@@ -5303,27 +5479,16 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
-    UID: 3107477114333184366
-    Name: walking sentinal bars mockup
-    Source: Resources/Textures/PlayerUI/walking sentinal bars mockup.png
-    Properties:
-      Data:
-        CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
-  - Type: TEXTURE
     UID: 15874944138679404527
     Name: rotating sentinal 1
     Source: Resources/Textures/PlayerUI/rotating sentinal 1.png
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 7543398372704619549
     Name: seal1_openPBR_shader1_Height
@@ -5386,10 +5551,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 9000765398586202273
     Name: seal3_openPBR_shader1_Height
@@ -5474,10 +5639,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 18192701309026806502
     Name: walking sentinal 3
@@ -5485,10 +5650,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 10908618211964155359
     Name: walking sentinal 4
@@ -5496,10 +5661,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 18083317453213005228
     Name: walking sentinal 5
@@ -5507,10 +5672,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 637952270492269015
     Name: WoodopenPBR_shader1_baseColor
@@ -5518,10 +5683,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 17465888057860663956
     Name: WoodopenPBR_shader1_normal
@@ -5529,10 +5694,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 10205514719456292747
     Name: WoodopenPBR_shader1_occlusionRoughnessMetallic
@@ -5540,10 +5705,54 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 3879166641941139899
+    Name: exit 3
+    Source: Resources/Textures/PlayerUI/exit 3.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 6761555051347469567
+    Name: inside the cell 2
+    Source: Resources/Textures/PlayerUI/inside the cell 2.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 4462151829149510365
+    Name: inside the cell 8
+    Source: Resources/Textures/PlayerUI/inside the cell 8.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
+  - Type: TEXTURE
+    UID: 5887620219214533416
+    Name: hanging_openPBR_shader1_baseColor
+    Source: Resources/Models/Props/Hanging/hanging_openPBR_shader1_baseColor.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: SKYBOX
     UID: 4245843529762785392
     Name: NightSkyHDRI003_8K_HDR
@@ -7093,6 +7302,18 @@ ASSETS:
         boundingRadius: 187.408493
       HasJoints: false
   - Type: MODEL
+    UID: 12185583551159906295
+    Name: strung up player
+    Source: Resources/Models/Props/Hanging/strung up player.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+        boundingRadius: 0
+      HasJoints: false
+  - Type: MODEL
     UID: 13853980779029380669
     Name: Zombie Walk
     Source: Resources/Models/Enemy/Patrol2Textures/Zombie Walk.fbx
@@ -7441,9 +7662,9 @@ ASSETS:
         boundingRadius: 59.4733696
       HasJoints: false
   - Type: MODEL
-    UID: 2915209680014061313
-    Name: LEVEL2Walking
-    Source: Resources/Models/Enemy/Patrol2Textures/LEVEL2Walking.fbx
+    UID: 10530537100426425185
+    Name: Woodbar
+    Source: Resources/Models/Props/wooden bar/Woodbar.fbx
     Properties:
       Model Transform:
         transform:
@@ -7453,9 +7674,9 @@ ASSETS:
         boundingRadius: 0
       HasJoints: false
   - Type: MODEL
-    UID: 10530537100426425185
-    Name: Woodbar
-    Source: Resources/Models/Props/wooden bar/Woodbar.fbx
+    UID: 2915209680014061313
+    Name: LEVEL2Walking
+    Source: Resources/Models/Enemy/Patrol2Textures/LEVEL2Walking.fbx
     Properties:
       Model Transform:
         transform:
@@ -7580,6 +7801,10 @@ ASSETS:
     UID: 15703267302175957142
     Name: enemyAtk_1
     Source: Resources/Audio/enemyAtk_1.wav
+  - Type: AUDIO
+    UID: 7185541354450779563
+    Name: BossWarning_Line3
+    Source: Resources/Audio/BossWarning_Line3.wav
   - Type: AUDIO
     UID: 1557409197895366975
     Name: enemyAtk_2
@@ -8044,6 +8269,38 @@ ASSETS:
     UID: 1998849306797642344
     Name: woodKey
     Source: Resources/Audio/woodKey.wav
+  - Type: AUDIO
+    UID: 10155995018455135669
+    Name: BossWarning_Line1
+    Source: Resources/Audio/BossWarning_Line1.wav
+  - Type: AUDIO
+    UID: 15013744059296496568
+    Name: BossWarning_Line2
+    Source: Resources/Audio/BossWarning_Line2.wav
+  - Type: AUDIO
+    UID: 5192573056801032974
+    Name: BossWarning_Line4
+    Source: Resources/Audio/BossWarning_Line4.wav
+  - Type: AUDIO
+    UID: 16680747829748576433
+    Name: BossWarning_Line5
+    Source: Resources/Audio/BossWarning_Line5.wav
+  - Type: AUDIO
+    UID: 6044710626587970898
+    Name: platformFall_1
+    Source: Resources/Audio/platformFall_1.wav
+  - Type: AUDIO
+    UID: 1824117599267099067
+    Name: platformFall_2
+    Source: Resources/Audio/platformFall_2.wav
+  - Type: AUDIO
+    UID: 3327579858454491272
+    Name: platformFall_3
+    Source: Resources/Audio/platformFall_3.wav
+  - Type: AUDIO
+    UID: 5306370064232780520
+    Name: tutorialSuspense2
+    Source: Resources/Audio/tutorialSuspense2.wav
   - Type: ANIMATION
     UID: 4483381614930560572
     Name: mixamo.com

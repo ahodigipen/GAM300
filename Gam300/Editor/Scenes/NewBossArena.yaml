@@ -2234,13 +2234,14 @@ ENTITIES:
     ThirdPersonCameraComponent:
       Target UID: 15509033343906787136
       Offset: [0.00999999978, 4.55000019, -1.00999999]
-      Current Distance: 5
+      Current Distance: 4
       Min Distance: 1
       Max Distance: 5
-      Current Yaw: -6753.49023
+      Current Yaw: -6843.49023
       Current Pitch: 17
       Mouse Sensitivity: 1
       Scroll Sensitivity: 1
+      Start Lock Duration: 0.3
   - InfoComponent:
       Parent: 0
       Name: Skybox

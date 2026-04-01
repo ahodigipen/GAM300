@@ -391,7 +391,7 @@ namespace GameScripts
             FadeOutEntity(currentEntity, () =>
             {
                 s_dialogueIndex++;
-                if (s_dialogueIndex == 7) // Cutscene part 1 is done
+                if (s_dialogueIndex == 4) // Cutscene part 1 is done (3 dialogue panels)
                 {
                     CloseSequence();
                 }

@@ -1534,10 +1534,20 @@ namespace Boom
                 Transform3D& targetTransform = target.Get<TransformComponent>().transform;
                 glm::vec3 targetPosition = targetTransform.translate;
 
-                //camera movement (combine mouse and gamepad)
+                // Tick down the startup input lock
+                if (cam.startLockDuration > 0.0f)
+                {
+                    cam.startLockDuration -= static_cast<float>(m_Context->DeltaTime);
+                    if (cam.startLockDuration < 0.0f) cam.startLockDuration = 0.0f;
+                }
+
+                //camera movement (combine mouse and gamepad) — suppressed during startup lock
+                if (cam.startLockDuration <= 0.0f)
+                {
                 cam.currentYaw -= (mouseDelta.x + gamepadCamDelta.x) * cam.mouseSensitivity;
                 cam.currentPitch += (mouseDelta.y + gamepadCamDelta.y) * cam.mouseSensitivity;
                 cam.currentPitch = glm::clamp(cam.currentPitch, -85.f, 85.f);
+                }
 
                 // zoom (combine scroll and gamepad dpad)
                 float dt = static_cast<float>(m_Context->DeltaTime);

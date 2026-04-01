@@ -1,90 +1,59 @@
 Version: 1.0
 ENTITIES:
   - InfoComponent:
-      Parent: 0
-      Name: DialoguePatrol_2
-      UID: 1823008304981619175
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, -0.612413406, 0.00999999978]
-        Rotate: [0, -0, 0]
-        Scale: [0.699999988, 0.283438295, 1]
-    SpriteComponent:
-      textureID: 17444352656805967769
-      color: [1, 1, 1, 0]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 0
-      Name: DialoguePatrol_1
-      UID: 10623926803504637937
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, -0.612413406, 0.00999999978]
-        Rotate: [0, -0, 0]
-        Scale: [0.699999988, 0.283438295, 1]
-    SpriteComponent:
-      textureID: 3329585556583812608
-      color: [1, 1, 1, 0]
-      renderAs3D: false
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [3.24000001, 5.98000002, 4.88999987]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: true
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: DialogueBoxPatrol1
-      UID: 4737122247215625144
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-5.11628675, 28.9620152, 44.5945435]
-        Rotate: [0, -0, 0]
-        Scale: [1.16082108, 1, 0.840235174]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.TutorialDialogueTrigger
-      ParamsJSON: "{\n  \"_dialogueNames\": \"DialoguePatrol_1,DialoguePatrol_2\"\n}"
-  - InfoComponent:
-      Parent: 0
-      Name: Direction
-      UID: 6728554080084584550
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [9.45815754, 34.4550438, 41.0533142]
-        Rotate: [134.441025, -17.2439919, 180]
-        Scale: [0.999775171, 0.999990642, 0.999972343]
-    SpotLightComponent:
-      Light:
-        Radiance: [1, 1, 1]
-        Intensity: 12.25
-        FallOff: 1.56599998
-        CutOff: 0.828999996
-  - InfoComponent:
-      Parent: 0
-      Name: Dialogue1
-      UID: 11192760480654594864
-      SortOrder: 0
+      Parent: 18142273225304105880
+      Name: DialogueExit1
+      UID: 17999037339828691340
+      SortOrder: 4
     TransformComponent:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, -0, 0]
         Scale: [0.699999988, 0.5, 1]
     SpriteComponent:
-      textureID: 5842055664270639317
+      textureID: 15790176270808879105
       color: [1, 1, 1, 0]
       renderAs3D: false
+  - InfoComponent:
+      Parent: 0
+      Name: DialogueCell
+      UID: 2254730700873546749
+      SortOrder: 1
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+  - InfoComponent:
+      Parent: 0
+      Name: DialogueExit
+      UID: 18142273225304105880
+      SortOrder: 3
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+  - InfoComponent:
+      Parent: 0
+      Name: DialogueSentry
+      UID: 14597596177956104017
+      SortOrder: 2
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+  - InfoComponent:
+      Parent: 0
+      Name: DialoguePatrol
+      UID: 8420205164133478996
+      SortOrder: 87
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -100,142 +69,496 @@ ENTITIES:
         Type: BOX
     InfoComponent:
       Parent: 0
-      Name: DialogueBox1
-      UID: 8661692850804157191
-      SortOrder: 0
+      Name: DialogueBoxExit
+      UID: 7871029963616826854
+      SortOrder: 83
     TransformComponent:
       Transform:
-        Translate: [11.4931717, 26.2289066, 48.351326]
+        Translate: [30.4529381, 39.4806595, 14.1004667]
         Rotate: [0, -0, 0]
         Scale: [1, 1, 0.340012074]
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.TutorialDialogueTrigger
-      ParamsJSON: "{\n  \"_dialogueNames\": \"Dialogue1\",\n  \"_oneShot\": true\n}"
+      ParamsJSON: "{\n  \"_dialogueNames\": \"DialogueExit1\"\n}"
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy)
-      UID: 18101572677118124544
-      SortOrder: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
+      UID: 4957433095678516290
+      SortOrder: 51
     TransformComponent:
       Transform:
-        Translate: [8.05756187, 26.5532932, 49.5249443]
+        Translate: [8.8975935, 32.8417664, 60.2747574]
+        Rotate: [180, -5.00896067e-06, 180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Light3
+      UID: 7843759036873323337
+      SortOrder: 82
+    TransformComponent:
+      Transform:
+        Translate: [21.517931, 30.0876751, 55.8853455]
         Rotate: [0, -0, 0]
-        Scale: [0.0173033196, 0.0157864708, 0.0195759386]
-    ModelComponent:
-      ModelID: 10530537100426425185
-      MaterialID: 365007133719936359
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+        Scale: [0.930000007, 0.930000007, 0.930000007]
+    PointLightComponent:
+      Light:
+        Radiance: [0.975609779, 0.422319323, 0.103113249]
+        Intensity: 0
+        Range: 66.4800034
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy)
-      UID: 2482221135688351606
-      SortOrder: 0
+      Name: Light2
+      UID: 17866928223747287011
+      SortOrder: 169
     TransformComponent:
       Transform:
-        Translate: [14.059679, 26.5532932, 49.5249443]
+        Translate: [11.0787554, 30.0876751, 55.9076118]
         Rotate: [0, -0, 0]
-        Scale: [0.0173033196, 0.0157864708, 0.0195759386]
-    ModelComponent:
-      ModelID: 10530537100426425185
-      MaterialID: 365007133719936359
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+        Scale: [0.930000007, 0.930000007, 0.930000007]
+    PointLightComponent:
+      Light:
+        Radiance: [0.975609779, 0.422319323, 0.103113249]
+        Intensity: 0
+        Range: 66.4800034
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy)
-      UID: 12320286217177770759
-      SortOrder: 0
+      Name: Light1
+      UID: 18280384215714157564
+      SortOrder: 173
     TransformComponent:
       Transform:
-        Translate: [15.4597836, 26.5532932, 49.5249443]
+        Translate: [2.37225795, 30.0876751, 55.3236847]
         Rotate: [0, -0, 0]
-        Scale: [0.0173033196, 0.0157864708, 0.0195759386]
-    ModelComponent:
-      ModelID: 10530537100426425185
-      MaterialID: 365007133719936359
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+        Scale: [0.930000007, 0.930000007, 0.930000007]
+    PointLightComponent:
+      Light:
+        Radiance: [0.975609779, 0.422319323, 0.103113249]
+        Intensity: 0
+        Range: 66.4800034
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy)
-      UID: 13944223633981874099
-      SortOrder: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy)
+      UID: 15476995501384227882
+      SortOrder: 146
     TransformComponent:
       Transform:
-        Translate: [13.5910254, 26.5532932, 47.2732277]
-        Rotate: [0, -0, 0]
-        Scale: [0.0173033196, 0.0157864708, 0.0195759386]
+        Translate: [29.9342651, 32.8265152, 65.753746]
+        Rotate: [-180, -5.00896067e-06, -180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
     ModelComponent:
-      ModelID: 10530537100426425185
-      MaterialID: 365007133719936359
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
-      UID: 2444982802525083105
-      SortOrder: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy)
+      UID: 8463075566378660565
+      SortOrder: 88
     TransformComponent:
       Transform:
-        Translate: [7.00189447, 26.5532932, 48.0503464]
-        Rotate: [0, 89.980217, 0]
-        Scale: [0.0173033178, 0.0157864708, 0.0195759367]
+        Translate: [12.8678904, 31.3858376, 65.753746]
+        Rotate: [-180, -5.00896067e-06, -180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
     ModelComponent:
-      ModelID: 10530537100426425185
-      MaterialID: 365007133719936359
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
-      UID: 15514506981136467121
-      SortOrder: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy)
+      UID: 4243716701876164726
+      SortOrder: 45
     TransformComponent:
       Transform:
-        Translate: [16.5592861, 26.5532932, 48.0536537]
-        Rotate: [0, 89.980217, 0]
-        Scale: [0.0173033178, 0.0157864708, 0.0195759367]
+        Translate: [12.8678904, 31.5947857, 58.9890175]
+        Rotate: [-180, -5.00896067e-06, -180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
     ModelComponent:
-      ModelID: 10530537100426425185
-      MaterialID: 365007133719936359
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
-      UID: 5276456363725969465
-      SortOrder: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
+      UID: 5631004710555244578
+      SortOrder: 61
     TransformComponent:
       Transform:
-        Translate: [7.00151634, 26.5532932, 49.1425514]
-        Rotate: [0, 89.980217, 0]
-        Scale: [0.0173033178, 0.0157864708, 0.0195759367]
+        Translate: [-2.61184955, 31.3135319, 62.1722908]
+        Rotate: [180, -5.00896067e-06, 180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
     ModelComponent:
-      ModelID: 10530537100426425185
-      MaterialID: 365007133719936359
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
+      Name: Hangingpuppet (Copy) (Copy)
+      UID: 18326548187117216354
+      SortOrder: 174
+    TransformComponent:
+      Transform:
+        Translate: [21.2561531, 31.3854294, 65.753746]
+        Rotate: [-180, -5.00896067e-06, -180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy) (Copy)
+      UID: 84181486464404170
+      SortOrder: 6
+    TransformComponent:
+      Transform:
+        Translate: [10.7180767, 31.0404892, 60.2747574]
+        Rotate: [-180, -5.00896067e-06, -180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy)
+      UID: 2548408581963677650
+      SortOrder: 29
+    TransformComponent:
+      Transform:
+        Translate: [19.813118, 32.518219, 62.3354568]
+        Rotate: [180, -5.00896067e-06, 180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy)
+      UID: 14500201810814199501
+      SortOrder: 142
+    TransformComponent:
+      Transform:
+        Translate: [7.23534107, 31.6903381, 60.2747574]
+        Rotate: [180, -5.00896067e-06, 180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy)
+      UID: 4194387854669420062
+      SortOrder: 44
+    TransformComponent:
+      Transform:
+        Translate: [18.588316, 31.8619556, 56.0139656]
+        Rotate: [180, -5.00896067e-06, 180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
+      UID: 2532091769174299429
+      SortOrder: 28
+    TransformComponent:
+      Transform:
+        Translate: [-1.39929771, 31.3135319, 64.4367905]
+        Rotate: [-180, -5.00896067e-06, -180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy)
+      UID: 13721784468360713820
+      SortOrder: 136
+    TransformComponent:
+      Transform:
+        Translate: [21.8722992, 31.3135319, 54.2766457]
+        Rotate: [-180, -5.00896067e-06, -180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy)
+      UID: 7399284024285305354
+      SortOrder: 79
+    TransformComponent:
+      Transform:
+        Translate: [13.7934561, 32.3547478, 54.2766457]
+        Rotate: [180, -5.00896067e-06, 180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy) (Copy)
+      UID: 12407220116680575098
+      SortOrder: 125
+    TransformComponent:
+      Transform:
+        Translate: [-5.30027342, 32.0402184, 59.1044273]
+        Rotate: [180, -5.00896067e-06, 180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy)
+      UID: 14248889204237438075
+      SortOrder: 139
+    TransformComponent:
+      Transform:
+        Translate: [2.62484026, 32.9572029, 62.1722908]
+        Rotate: [-180, -5.00896067e-06, -180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy)
+      UID: 2346015820226694370
+      SortOrder: 21
+    TransformComponent:
+      Transform:
+        Translate: [15.2720585, 33.008976, 60.5967064]
+        Rotate: [-180, -5.00896067e-06, -180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy)
+      UID: 239361557360986509
+      SortOrder: 8
+    TransformComponent:
+      Transform:
+        Translate: [6.48037052, 31.1519585, 58.0931168]
+        Rotate: [-180, -5.00896067e-06, -180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy)
+      UID: 12849519699364890234
+      SortOrder: 131
+    TransformComponent:
+      Transform:
+        Translate: [-2.61184955, 31.3135319, 51.0577927]
+        Rotate: [180, -5.00896067e-06, 180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy)
+      UID: 15861181564092862082
+      SortOrder: 152
+    TransformComponent:
+      Transform:
+        Translate: [-7.65903664, 32.9572029, 64.6028976]
+        Rotate: [180, -5.00896067e-06, 180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy)
+      UID: 5406457377256465822
+      SortOrder: 58
+    TransformComponent:
+      Transform:
+        Translate: [28.0288467, 32.2629204, 58.9628372]
+        Rotate: [180, -5.00896067e-06, 180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy)
+      UID: 15751485026157007463
+      SortOrder: 151
+    TransformComponent:
+      Transform:
+        Translate: [-7.81677389, 31.3135319, 54.3095093]
+        Rotate: [180, -5.00896067e-06, 180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy)
+      UID: 9975210028180038194
+      SortOrder: 104
+    TransformComponent:
+      Transform:
+        Translate: [4.22778606, 31.3135319, 56.4090004]
+        Rotate: [-180, -5.00896067e-06, -180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy)
+      UID: 1722928062417122550
+      SortOrder: 17
+    TransformComponent:
+      Transform:
+        Translate: [11.3167057, 32.5485802, 53.3085518]
+        Rotate: [180, -5.00896067e-06, 180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy)
+      UID: 17837407190332222906
+      SortOrder: 168
+    TransformComponent:
+      Transform:
+        Translate: [26.7900314, 31.3135319, 51.3373375]
+        Rotate: [-180, -5.00896067e-06, -180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy)
+      UID: 6908959301418806970
+      SortOrder: 76
+    TransformComponent:
+      Transform:
+        Translate: [16.2873993, 32.3325233, 56.7659149]
+        Rotate: [-180, -5.00896067e-06, -180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: BAR2
       UID: 822585915069413334
-      SortOrder: 0
+      SortOrder: 12
     TransformComponent:
       Transform:
         Translate: [16.9800491, 26.5532932, 46.971981]
@@ -250,9 +573,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
+      Name: BAR32
       UID: 8858451463541309332
-      SortOrder: 0
+      SortOrder: 93
     TransformComponent:
       Transform:
         Translate: [-9.35958481, 26.5532932, 46.971981]
@@ -267,9 +590,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
+      Name: BAR12
       UID: 3787189818271538356
-      SortOrder: 0
+      SortOrder: 38
     TransformComponent:
       Transform:
         Translate: [-8.10658169, 26.5532932, 46.971981]
@@ -284,9 +607,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy)
+      Name: BAR23
       UID: 6561937438058198510
-      SortOrder: 0
+      SortOrder: 71
     TransformComponent:
       Transform:
         Translate: [-10.6126013, 26.5532932, 46.971981]
@@ -301,9 +624,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy)
+      Name: BAR33
       UID: 9253516238950429306
-      SortOrder: 0
+      SortOrder: 95
     TransformComponent:
       Transform:
         Translate: [-5.59811735, 26.5532932, 46.971981]
@@ -318,9 +641,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy)
+      Name: BAR26
       UID: 6997770004835735252
-      SortOrder: 0
+      SortOrder: 77
     TransformComponent:
       Transform:
         Translate: [-4.40710163, 26.5532932, 46.971981]
@@ -335,9 +658,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy)
+      Name: BAR42
       UID: 14474168515043467067
-      SortOrder: 0
+      SortOrder: 141
     TransformComponent:
       Transform:
         Translate: [-3.05615234, 26.5532932, 46.971981]
@@ -352,9 +675,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy)
+      Name: BAR48
       UID: 15651768721045471342
-      SortOrder: 0
+      SortOrder: 149
     TransformComponent:
       Transform:
         Translate: [-1.69415975, 26.5532932, 46.971981]
@@ -369,9 +692,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy)
+      Name: BAR15
       UID: 4955943468978193726
-      SortOrder: 0
+      SortOrder: 50
     TransformComponent:
       Transform:
         Translate: [-0.361887455, 26.5532932, 46.971981]
@@ -386,9 +709,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy)
+      Name: BAR13
       UID: 3907356087565687124
-      SortOrder: 0
+      SortOrder: 39
     TransformComponent:
       Transform:
         Translate: [0.969701171, 26.5532932, 46.971981]
@@ -403,9 +726,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy)
+      Name: BAR17
       UID: 4995848819515034254
-      SortOrder: 0
+      SortOrder: 53
     TransformComponent:
       Transform:
         Translate: [2.4093442, 26.5532932, 46.971981]
@@ -420,9 +743,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy)
+      Name: BAR41
       UID: 12728666360952017735
-      SortOrder: 0
+      SortOrder: 129
     TransformComponent:
       Transform:
         Translate: [3.91156149, 26.5532932, 46.971981]
@@ -437,9 +760,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy)
+      Name: BAR14
       UID: 4562080000333161978
-      SortOrder: 0
+      SortOrder: 46
     TransformComponent:
       Transform:
         Translate: [5.38720655, 26.5532932, 46.971981]
@@ -454,9 +777,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy)
+      Name: BAR28
       UID: 8065354876896567114
-      SortOrder: 0
+      SortOrder: 86
     TransformComponent:
       Transform:
         Translate: [6.78740692, 26.5532932, 46.971981]
@@ -471,9 +794,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy) (Copy)
+      Name: BAR49
       UID: 16062004296372564149
-      SortOrder: 0
+      SortOrder: 156
     TransformComponent:
       Transform:
         Translate: [16.5588322, 26.5532932, 49.2990265]
@@ -488,9 +811,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy)
+      Name: BAR24
       UID: 6564111552975869281
-      SortOrder: 0
+      SortOrder: 72
     TransformComponent:
       Transform:
         Translate: [30.7528133, 26.5532932, 46.971981]
@@ -505,9 +828,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy)
+      Name: BAR50
       UID: 17178302179736200876
-      SortOrder: 0
+      SortOrder: 164
     TransformComponent:
       Transform:
         Translate: [29.2696686, 26.5532932, 46.971981]
@@ -522,9 +845,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy)
+      Name: BAR34
       UID: 9263257650753108112
-      SortOrder: 0
+      SortOrder: 96
     TransformComponent:
       Transform:
         Translate: [27.63484, 26.5532932, 46.971981]
@@ -539,9 +862,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy)
+      Name: BAR4
       UID: 1444910270370330112
-      SortOrder: 0
+      SortOrder: 15
     TransformComponent:
       Transform:
         Translate: [26.1633701, 26.5532932, 46.971981]
@@ -556,9 +879,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy)
+      Name: BAR47
       UID: 15565846564233114679
-      SortOrder: 0
+      SortOrder: 148
     TransformComponent:
       Transform:
         Translate: [24.5228996, 26.5532932, 46.971981]
@@ -573,9 +896,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy)
+      Name: 44
       UID: 15098960438243549533
-      SortOrder: 0
+      SortOrder: 143
     TransformComponent:
       Transform:
         Translate: [22.9232235, 26.5532932, 46.971981]
@@ -590,9 +913,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy)
+      Name: BAR39
       UID: 10992025216427615481
-      SortOrder: 0
+      SortOrder: 113
     TransformComponent:
       Transform:
         Translate: [21.4221725, 26.5532932, 46.971981]
@@ -607,9 +930,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy)
+      Name: BAR37
       UID: 10760515033976288101
-      SortOrder: 0
+      SortOrder: 110
     TransformComponent:
       Transform:
         Translate: [19.9392338, 26.5532932, 46.971981]
@@ -624,9 +947,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy)
+      Name: BAR35
       UID: 10065397072730542565
-      SortOrder: 0
+      SortOrder: 107
     TransformComponent:
       Transform:
         Translate: [18.4435959, 26.5532932, 46.971981]
@@ -641,9 +964,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy)
+      Name: BAR22
       UID: 6549638011871287789
-      SortOrder: 0
+      SortOrder: 70
     TransformComponent:
       Transform:
         Translate: [-6.88955784, 26.5532932, 46.971981]
@@ -658,9 +981,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy)
+      Name: BAR38
       UID: 11957682305668633837
-      SortOrder: 0
+      SortOrder: 119
     TransformComponent:
       Transform:
         Translate: [9.24262428, 26.5532932, 49.5249443]
@@ -694,7 +1017,7 @@ ENTITIES:
       Parent: 0
       Name: BarSmallify (Copy) (Copy)
       UID: 10879600096471751075
-      SortOrder: 0
+      SortOrder: 111
     TransformComponent:
       Transform:
         Translate: [11.9322863, 27.5855522, 47.1373024]
@@ -704,7 +1027,7 @@ ENTITIES:
       Parent: 0
       Name: BarSmallify (Copy)
       UID: 18354236305036628670
-      SortOrder: 0
+      SortOrder: 175
     TransformComponent:
       Transform:
         Translate: [16.6826077, 27.6133213, 48.5664902]
@@ -714,7 +1037,7 @@ ENTITIES:
       Parent: 0
       Name: BarSmallify
       UID: 2452628580730671080
-      SortOrder: 0
+      SortOrder: 26
     TransformComponent:
       Transform:
         Translate: [7.1208415, 27.6133213, 48.507782]
@@ -722,9 +1045,9 @@ ENTITIES:
         Scale: [1, 1, 0.376252294]
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy)
+      Name: BAR1
       UID: 62356339154884912
-      SortOrder: 0
+      SortOrder: 5
     TransformComponent:
       Transform:
         Translate: [9.70156002, 26.5532932, 47.2732277]
@@ -741,7 +1064,7 @@ ENTITIES:
       Parent: 0
       Name: Inventory_BG
       UID: 1920285388016120200
-      SortOrder: 0
+      SortOrder: 20
     TransformComponent:
       Transform:
         Translate: [0.75, 0.850000024, 2]
@@ -759,7 +1082,7 @@ ENTITIES:
       Parent: 0
       Name: Inventory_Script
       UID: 9991983927043961746
-      SortOrder: 0
+      SortOrder: 105
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -777,7 +1100,7 @@ ENTITIES:
       Parent: 0
       Name: Inventory_Slot1_Text
       UID: 13182539916817199809
-      SortOrder: 0
+      SortOrder: 132
     TransformComponent:
       Transform:
         Translate: [0, 0, 2.0999999]
@@ -800,7 +1123,7 @@ ENTITIES:
       Parent: 0
       Name: Inventory_Slot3_Text
       UID: 12358960695862455396
-      SortOrder: 0
+      SortOrder: 124
     TransformComponent:
       Transform:
         Translate: [0, 0, 2.0999999]
@@ -823,7 +1146,7 @@ ENTITIES:
       Parent: 0
       Name: End_ReturnButton
       UID: 15731111703162505266
-      SortOrder: 0
+      SortOrder: 150
     TransformComponent:
       Transform:
         Translate: [0, -0.300000012, 1.10000002]
@@ -841,7 +1164,7 @@ ENTITIES:
       Parent: 0
       Name: End Menu Script
       UID: 9314872925983614062
-      SortOrder: 0
+      SortOrder: 97
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -859,7 +1182,7 @@ ENTITIES:
       Parent: 0
       Name: End_Background
       UID: 3080625518488956998
-      SortOrder: 0
+      SortOrder: 35
     TransformComponent:
       Transform:
         Translate: [0, 0, 1]
@@ -877,7 +1200,7 @@ ENTITIES:
       Parent: 0
       Name: Death_ReturnButton
       UID: 15993560601461334781
-      SortOrder: 0
+      SortOrder: 155
     TransformComponent:
       Transform:
         Translate: [0, -0.600000024, 0]
@@ -895,7 +1218,7 @@ ENTITIES:
       Parent: 0
       Name: Death_RestartButton
       UID: 3023727914892643418
-      SortOrder: 0
+      SortOrder: 32
     TransformComponent:
       Transform:
         Translate: [0, -0.400000006, 0]
@@ -913,7 +1236,7 @@ ENTITIES:
       Parent: 0
       Name: Death Menu Script
       UID: 12489556233822804325
-      SortOrder: 0
+      SortOrder: 126
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -931,7 +1254,7 @@ ENTITIES:
       Parent: 0
       Name: Death_Background
       UID: 6565047407581518351
-      SortOrder: 0
+      SortOrder: 73
     TransformComponent:
       Transform:
         Translate: [0, 0.200000003, 0]
@@ -949,12 +1272,12 @@ ENTITIES:
       Parent: 0
       Name: Pause_Gamma_Fill
       UID: 9799309324066039914
-      SortOrder: 0
+      SortOrder: 102
     TransformComponent:
       Transform:
-        Translate: [0.280000001, 0.170000002, 1.11000001]
+        Translate: [0.279100001, 0.170000002, 1.11000001]
         Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.0199999996, 1]
+        Scale: [0.0332750529, 0.0199999996, 1]
     SpriteComponent:
       textureID: 10258411235812800368
       color: [1, 1, 1, 1]
@@ -967,7 +1290,7 @@ ENTITIES:
       Parent: 0
       Name: Pause_Gamma_BG
       UID: 15964893654232326128
-      SortOrder: 0
+      SortOrder: 154
     TransformComponent:
       Transform:
         Translate: [0.280000001, 0.170000002, 1.10000002]
@@ -985,7 +1308,7 @@ ENTITIES:
       Parent: 0
       Name: Pause_SFX_Fill
       UID: 1900361381046245117
-      SortOrder: 0
+      SortOrder: 19
     TransformComponent:
       Transform:
         Translate: [0.280000001, -0.379999995, 1.11000001]
@@ -1003,7 +1326,7 @@ ENTITIES:
       Parent: 0
       Name: Pause_SFX_BG
       UID: 4852565405374371737
-      SortOrder: 0
+      SortOrder: 49
     TransformComponent:
       Transform:
         Translate: [0.280000001, -0.379999995, 1.10000002]
@@ -1021,10 +1344,10 @@ ENTITIES:
       Parent: 0
       Name: Pause_Gamma_Handle
       UID: 8554026230313328365
-      SortOrder: 0
+      SortOrder: 91
     TransformComponent:
       Transform:
-        Translate: [0.479999989, 0.170000002, 1.12]
+        Translate: [0.280200005, 0.170000002, 1.12]
         Rotate: [0, 0, 0]
         Scale: [0.0199999996, 0.0399999991, 1]
     SpriteComponent:
@@ -1039,7 +1362,7 @@ ENTITIES:
       Parent: 0
       Name: Pause_BGM_BG
       UID: 4971574730537095685
-      SortOrder: 0
+      SortOrder: 52
     TransformComponent:
       Transform:
         Translate: [0.280000001, -0.239999995, 1.10000002]
@@ -1057,7 +1380,7 @@ ENTITIES:
       Parent: 0
       Name: Pause_BGM_Handle
       UID: 16675060374144871009
-      SortOrder: 0
+      SortOrder: 160
     TransformComponent:
       Transform:
         Translate: [0.479999989, -0.239999995, 1.12]
@@ -1075,7 +1398,7 @@ ENTITIES:
       Parent: 0
       Name: Pause_BGM_Fill
       UID: 5852252158042436991
-      SortOrder: 0
+      SortOrder: 64
     TransformComponent:
       Transform:
         Translate: [0.280000001, -0.239999995, 1.11000001]
@@ -1093,7 +1416,7 @@ ENTITIES:
       Parent: 0
       Name: Pause_Master_Handle
       UID: 5003664612044735175
-      SortOrder: 0
+      SortOrder: 54
     TransformComponent:
       Transform:
         Translate: [0.479999989, -0.109999999, 1.12]
@@ -1111,7 +1434,7 @@ ENTITIES:
       Parent: 0
       Name: Pause_Master_Fill
       UID: 3931286615731204042
-      SortOrder: 0
+      SortOrder: 40
     TransformComponent:
       Transform:
         Translate: [0.280000001, -0.109999999, 1.11000001]
@@ -1129,7 +1452,7 @@ ENTITIES:
       Parent: 0
       Name: Pause_SFX_Handle
       UID: 13342355313482080434
-      SortOrder: 0
+      SortOrder: 134
     TransformComponent:
       Transform:
         Translate: [0.479999989, -0.379999995, 1.12]
@@ -1147,7 +1470,7 @@ ENTITIES:
       Parent: 0
       Name: Pause_ResumeButton
       UID: 6722159140985515173
-      SortOrder: 0
+      SortOrder: 74
     TransformComponent:
       Transform:
         Translate: [-0.349999994, 0.234999999, 1.10000002]
@@ -1165,7 +1488,7 @@ ENTITIES:
       Parent: 0
       Name: Pause_QuitButton
       UID: 8948746535193059584
-      SortOrder: 0
+      SortOrder: 94
     TransformComponent:
       Transform:
         Translate: [-0.349999994, -0.419999987, 1.10000002]
@@ -1183,7 +1506,7 @@ ENTITIES:
       Parent: 0
       Name: Pause_CreditsButton
       UID: 6297404021137492667
-      SortOrder: 0
+      SortOrder: 67
     TransformComponent:
       Transform:
         Translate: [-0.349999994, -0.25999999, 1.10000002]
@@ -1201,7 +1524,7 @@ ENTITIES:
       Parent: 0
       Name: Pause_ReturnButton
       UID: 5566590049786588666
-      SortOrder: 0
+      SortOrder: 59
     TransformComponent:
       Transform:
         Translate: [-0.349999994, -0.0949999988, 1.10000002]
@@ -1219,7 +1542,7 @@ ENTITIES:
       Parent: 0
       Name: Pause_RestartButton
       UID: 5904394800213603709
-      SortOrder: 0
+      SortOrder: 65
     TransformComponent:
       Transform:
         Translate: [-0.349999994, 0.0700000003, 1.10000002]
@@ -1237,7 +1560,7 @@ ENTITIES:
       Parent: 0
       Name: Pause_Scroll
       UID: 10224819476113975430
-      SortOrder: 0
+      SortOrder: 108
     TransformComponent:
       Transform:
         Translate: [0, 0, 1]
@@ -1255,7 +1578,7 @@ ENTITIES:
       Parent: 0
       Name: Pause Menu Script
       UID: 12608398802596728943
-      SortOrder: 0
+      SortOrder: 128
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -1273,7 +1596,7 @@ ENTITIES:
       Parent: 0
       Name: Pause_Master_BG
       UID: 4671019080698985014
-      SortOrder: 0
+      SortOrder: 47
     TransformComponent:
       Transform:
         Translate: [0.280000001, -0.109999999, 1.10000002]
@@ -1417,7 +1740,7 @@ ENTITIES:
       Parent: 0
       Name: TZ_DialogueCanvas
       UID: 7241083956104285001
-      SortOrder: 500
+      SortOrder: 180
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -1440,7 +1763,7 @@ ENTITIES:
       Parent: 0
       Name: Ground2 (Copy)
       UID: 11463191427295521204
-      SortOrder: 0
+      SortOrder: 116
     TransformComponent:
       Transform:
         Translate: [10.38027, 25.7036343, 61.9642334]
@@ -1464,129 +1787,143 @@ ENTITIES:
       ModelSource: ""
       MaterialSource: ""
   - InfoComponent:
-      Parent: 0
-      Name: Hanging Puppet (Copy) (Copy)
-      UID: 6353654322564924877
-      SortOrder: 0
+      Parent: 8420205164133478996
+      Name: DialoguePatrol_2
+      UID: 1823008304981619175
+      SortOrder: 84
     TransformComponent:
       Transform:
-        Translate: [-2.80935192, 29.9067268, 61.5952873]
-        Rotate: [0, 4.47325039, 0]
-        Scale: [0.0187000372, 0.0186999999, 0.0187000372]
+        Translate: [0, -0.612413406, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.283438295, 1]
+    SpriteComponent:
+      textureID: 17444352656805967769
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 0
+      Name: BAR46
+      UID: 15514506981136467121
+      SortOrder: 147
+    TransformComponent:
+      Transform:
+        Translate: [16.5592861, 26.5532932, 48.0536537]
+        Rotate: [0, 89.980217, 0]
+        Scale: [0.0173033178, 0.0157864708, 0.0195759367]
     ModelComponent:
-      ModelID: 9823568683429185027
-      MaterialID: 0
+      ModelID: 10530537100426425185
+      MaterialID: 365007133719936359
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [3.24000001, 5.98000002, 4.88999987]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: DialogueBoxPatrol1
+      UID: 4737122247215625144
+      SortOrder: 48
+    TransformComponent:
+      Transform:
+        Translate: [-5.11628675, 28.9620152, 44.5945435]
+        Rotate: [0, -0, 0]
+        Scale: [1.16082108, 1, 0.840235174]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.TutorialDialogueTrigger
+      ParamsJSON: "{\n  \"_dialogueNames\": \"DialoguePatrol_1,DialoguePatrol_2\"\n}"
+  - InfoComponent:
+      Parent: 0
+      Name: BAR9
+      UID: 2482221135688351606
+      SortOrder: 27
+    TransformComponent:
+      Transform:
+        Translate: [14.059679, 26.5532932, 49.5249443]
+        Rotate: [0, -0, 0]
+        Scale: [0.0173033196, 0.0157864708, 0.0195759386]
+    ModelComponent:
+      ModelID: 10530537100426425185
+      MaterialID: 365007133719936359
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Hanging Puppet (Copy) (Copy)
-      UID: 5242586091883129096
-      SortOrder: 0
+      Name: BAR43
+      UID: 13944223633981874099
+      SortOrder: 137
     TransformComponent:
       Transform:
-        Translate: [7.28854179, 30.7281208, 54.5759506]
-        Rotate: [0, -11.9385481, 0]
-        Scale: [0.0153340502, 0.0153339999, 0.0153340502]
+        Translate: [13.5910254, 26.5532932, 47.2732277]
+        Rotate: [0, -0, 0]
+        Scale: [0.0173033196, 0.0157864708, 0.0195759386]
     ModelComponent:
-      ModelID: 9823568683429185027
-      MaterialID: 0
+      ModelID: 10530537100426425185
+      MaterialID: 365007133719936359
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [3.24000001, 5.98000002, 4.88999987]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
       Parent: 0
-      Name: Hanging Puppet (Copy) (Copy)
-      UID: 18237495709773181559
-      SortOrder: 0
+      Name: DialogueBoxCell
+      UID: 8661692850804157191
+      SortOrder: 92
     TransformComponent:
       Transform:
-        Translate: [1.93964601, 31.683672, 57.1499329]
-        Rotate: [0, 10.6308136, 0]
-        Scale: [0.0153340315, 0.0153339999, 0.0153340315]
-    ModelComponent:
-      ModelID: 9823568683429185027
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+        Translate: [13.5925035, 26.2289066, 48.351326]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 0.340012074]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.TutorialDialogueTrigger
+      ParamsJSON: "{\n  \"_dialogueNames\": \"DialogueCell1,DialogueCellImage,DialogueCell2,DialogueCell3,DialogueCell4,DialogueCell5,DialogueCell6,DialogueCell7,DialogueCell8\",\n  \"_oneShot\": true\n}"
   - InfoComponent:
-      Parent: 0
-      Name: Hanging Puppet (Copy)
-      UID: 10989474139645605268
-      SortOrder: 0
+      Parent: 2254730700873546749
+      Name: DialogueCell1
+      UID: 11192760480654594864
+      SortOrder: 1
     TransformComponent:
       Transform:
-        Translate: [13.4453716, 32.93713, 57.1817131]
-        Rotate: [0, 10.630806, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
-    ModelComponent:
-      ModelID: 9823568683429185027
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 5842055664270639317
+      color: [1, 1, 1, 0]
+      renderAs3D: false
   - InfoComponent:
       Parent: 0
-      Name: Hanging Puppet (Copy) (Copy)
-      UID: 2880982958077164009
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [28.9068813, 31.5084381, 54.4464645]
-        Rotate: [0, 10.630806, 0]
-        Scale: [0.0160820335, 0.016082, 0.0160820335]
-    ModelComponent:
-      ModelID: 9823568683429185027
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hanging Puppet (Copy) (Copy)
-      UID: 1317126792551781194
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [21.5598316, 32.9415741, 65.9419022]
-        Rotate: [0, 10.6308193, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
-    ModelComponent:
-      ModelID: 9823568683429185027
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hanging Puppet (Copy) (Copy)
-      UID: 15307927013370020698
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [26.8644543, 30.811491, 62.0102119]
-        Rotate: [0, 10.6308079, 0]
-        Scale: [0.0132999979, 0.0132999988, 0.0132999979]
-    ModelComponent:
-      ModelID: 9823568683429185027
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hanging_Lantern_1 (Copy) (Copy)
+      Name: Hanging_Lantern_8
       UID: 7568306692925466812
-      SortOrder: 0
+      SortOrder: 80
     TransformComponent:
       Transform:
         Translate: [-1.4852252, 26.5224075, 23.0306759]
@@ -1607,9 +1944,9 @@ ENTITIES:
         BloomStrength: 1
   - InfoComponent:
       Parent: 0
-      Name: Hanging_Lantern_1 (Copy)
+      Name: Hanging_Lantern_10
       UID: 3054215015134574418
-      SortOrder: 0
+      SortOrder: 34
     TransformComponent:
       Transform:
         Translate: [4.91062784, 26.5224075, 15.1257591]
@@ -1630,9 +1967,9 @@ ENTITIES:
         BloomStrength: 1
   - InfoComponent:
       Parent: 0
-      Name: Hanging_Lantern_1 (Copy)
+      Name: Hanging_Lantern_9
       UID: 5075621681687569203
-      SortOrder: 0
+      SortOrder: 55
     TransformComponent:
       Transform:
         Translate: [-8.63897705, 37.5885353, 45.6183968]
@@ -1653,9 +1990,9 @@ ENTITIES:
         BloomStrength: 1
   - InfoComponent:
       Parent: 0
-      Name: Hanging_Lantern_1 (Copy) (Copy)
+      Name: Hanging_Lantern_4
       UID: 16467574479502940548
-      SortOrder: 0
+      SortOrder: 159
     TransformComponent:
       Transform:
         Translate: [21.8841724, 37.5885353, 45.6183968]
@@ -1676,9 +2013,9 @@ ENTITIES:
         BloomStrength: 1
   - InfoComponent:
       Parent: 0
-      Name: Hanging_Lantern_1 (Copy) (Copy)
+      Name: Hanging_Lantern_3
       UID: 17309012333189328563
-      SortOrder: 0
+      SortOrder: 165
     TransformComponent:
       Transform:
         Translate: [15.9498463, 37.5885353, 45.6183968]
@@ -1699,9 +2036,9 @@ ENTITIES:
         BloomStrength: 1
   - InfoComponent:
       Parent: 0
-      Name: Hanging_Lantern_1 (Copy) (Copy)
+      Name: Hanging_Lantern_5
       UID: 15389179769513370751
-      SortOrder: 0
+      SortOrder: 144
     TransformComponent:
       Transform:
         Translate: [11.2500181, 37.5885353, 45.6183968]
@@ -1722,9 +2059,9 @@ ENTITIES:
         BloomStrength: 1
   - InfoComponent:
       Parent: 0
-      Name: Hanging_Lantern_1 (Copy) (Copy)
+      Name: Hanging_Lantern_2
       UID: 18170908629947532790
-      SortOrder: 0
+      SortOrder: 172
     TransformComponent:
       Transform:
         Translate: [6.13010883, 37.5885353, 45.6183968]
@@ -1745,9 +2082,9 @@ ENTITIES:
         BloomStrength: 1
   - InfoComponent:
       Parent: 0
-      Name: Hanging_Lantern_1 (Copy)
+      Name: Hanging_Lantern_6
       UID: 14282234861283286193
-      SortOrder: 0
+      SortOrder: 140
     TransformComponent:
       Transform:
         Translate: [-2.27663231, 37.5885353, 45.6183968]
@@ -1768,9 +2105,9 @@ ENTITIES:
         BloomStrength: 1
   - InfoComponent:
       Parent: 0
-      Name: Hanging_Lantern_1 (Copy)
+      Name: Hanging_Lantern_7
       UID: 13657424790243302725
-      SortOrder: 0
+      SortOrder: 135
     TransformComponent:
       Transform:
         Translate: [29.1840401, 37.5885353, 45.6183968]
@@ -1806,7 +2143,7 @@ ENTITIES:
       Parent: 0
       Name: Hiddenwall
       UID: 12284806784610028523
-      SortOrder: 0
+      SortOrder: 122
     TransformComponent:
       Transform:
         Translate: [11.7605038, 30.7671318, 47.4419937]
@@ -1846,7 +2183,7 @@ ENTITIES:
       Parent: 0
       Name: Wall1 (Copy) (Copy) (Copy)
       UID: 9504800653550939352
-      SortOrder: 0
+      SortOrder: 99
     TransformComponent:
       Transform:
         Translate: [-7.15778542, 25.0616055, 18.2012424]
@@ -1886,7 +2223,7 @@ ENTITIES:
       Parent: 0
       Name: Wall1 (Copy) (Copy) (Copy)
       UID: 7781005288374638080
-      SortOrder: 0
+      SortOrder: 81
     TransformComponent:
       Transform:
         Translate: [-38.2439842, 36.6709099, 11.8482075]
@@ -1926,7 +2263,7 @@ ENTITIES:
       Parent: 0
       Name: Wall1 (Copy) (Copy) (Copy) (Copy)
       UID: 209013909401845955
-      SortOrder: 0
+      SortOrder: 7
     TransformComponent:
       Transform:
         Translate: [-29.7144032, 36.6709099, 26.3539639]
@@ -1966,7 +2303,7 @@ ENTITIES:
       Parent: 0
       Name: Ground1 (Copy)
       UID: 11527766581985271126
-      SortOrder: 0
+      SortOrder: 117
     TransformComponent:
       Transform:
         Translate: [11.2451792, 44.4634476, 66.3431244]
@@ -2004,9 +2341,9 @@ ENTITIES:
         Type: BOX
     InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy)
+      Name: BAR21
       UID: 6450362732828753608
-      SortOrder: 0
+      SortOrder: 68
     TransformComponent:
       Transform:
         Translate: [16.3955173, 27.3405609, 49.5987282]
@@ -2031,9 +2368,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy)
+      Name: BAR29
       UID: 8477916212077426419
-      SortOrder: 0
+      SortOrder: 89
     TransformComponent:
       Transform:
         Translate: [7.2670722, 27.3561153, 47.0406342]
@@ -2048,9 +2385,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy) (Copy)
+      Name: BAR51
       UID: 17497928574816309487
-      SortOrder: 0
+      SortOrder: 167
     TransformComponent:
       Transform:
         Translate: [32.8334808, 27.3654747, 47.0406342]
@@ -2064,35 +2401,32 @@ ENTITIES:
       ModelSource: ""
       MaterialSource: ""
   - InfoComponent:
-      Parent: 0
-      Name: Hanging Puppet (Copy)
-      UID: 8639870292467837045
+      Parent: 8420205164133478996
+      Name: DialoguePatrol_1
+      UID: 10623926803504637937
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [4.43281984, 31.8639431, 61.5952873]
-        Rotate: [0, 4.47325039, 0]
-        Scale: [0.0187000372, 0.0186999999, 0.0187000372]
-    ModelComponent:
-      ModelID: 9823568683429185027
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+        Translate: [0, -0.612413406, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.283438295, 1]
+    SpriteComponent:
+      textureID: 3329585556583812608
+      color: [1, 1, 1, 0]
+      renderAs3D: false
   - InfoComponent:
       Parent: 0
-      Name: Hanging Puppet (Copy)
-      UID: 11878244767379560700
-      SortOrder: 0
+      Name: BAR18
+      UID: 5276456363725969465
+      SortOrder: 56
     TransformComponent:
       Transform:
-        Translate: [-6.98492336, 32.4189682, 62.6267509]
-        Rotate: [0, 10.6308107, 0]
-        Scale: [0.0117276656, 0.0155070638, 0.0187000372]
+        Translate: [7.00151634, 26.5532932, 49.1425514]
+        Rotate: [0, 89.980217, 0]
+        Scale: [0.0173033178, 0.0157864708, 0.0195759367]
     ModelComponent:
-      ModelID: 9823568683429185027
-      MaterialID: 0
+      ModelID: 10530537100426425185
+      MaterialID: 365007133719936359
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2101,7 +2435,7 @@ ENTITIES:
       Parent: 0
       Name: Inventory_Slot2_Icon
       UID: 4147139391751340254
-      SortOrder: 0
+      SortOrder: 43
     TransformComponent:
       Transform:
         Translate: [0.675999999, 0.860000014, 2.0999999]
@@ -2119,7 +2453,7 @@ ENTITIES:
       Parent: 0
       Name: Inventory_Slot4_Icon
       UID: 13298599901300585657
-      SortOrder: 0
+      SortOrder: 133
     TransformComponent:
       Transform:
         Translate: [0.83099997, 0.860000014, 2.0999999]
@@ -2137,7 +2471,7 @@ ENTITIES:
       Parent: 0
       Name: Inventory_Slot5_Icon
       UID: 10983682895800366250
-      SortOrder: 0
+      SortOrder: 112
     TransformComponent:
       Transform:
         Translate: [0.907999992, 0.860000014, 2.0999999]
@@ -2155,7 +2489,7 @@ ENTITIES:
       Parent: 0
       Name: Inventory_Slot4_Text
       UID: 371793761870256784
-      SortOrder: 0
+      SortOrder: 9
     TransformComponent:
       Transform:
         Translate: [0, 0, 2.0999999]
@@ -2191,7 +2525,7 @@ ENTITIES:
       Parent: 0
       Name: Wall1 (Copy) (Copy) (Copy) (Copy)
       UID: 11063536729276465437
-      SortOrder: 0
+      SortOrder: 114
     TransformComponent:
       Transform:
         Translate: [-15.3502035, 36.6709099, 53.1247559]
@@ -2231,7 +2565,7 @@ ENTITIES:
       Parent: 0
       Name: Wall1 (Copy) (Copy) (Copy) (Copy) (Copy)
       UID: 2580097750905172161
-      SortOrder: 0
+      SortOrder: 30
     TransformComponent:
       Transform:
         Translate: [-15.3502035, 39.4949265, 12.2952404]
@@ -2271,7 +2605,7 @@ ENTITIES:
       Parent: 0
       Name: Level1Teleport
       UID: 17389396566492664091
-      SortOrder: 0
+      SortOrder: 166
     TransformComponent:
       Transform:
         Translate: [30.6163158, 39.5567818, 7.10442352]
@@ -2283,9 +2617,9 @@ ENTITIES:
       ParamsJSON: "{\n  \"_sceneName\": \"Level1\"\n}"
   - InfoComponent:
       Parent: 0
-      Name: New Entity
+      Name: BAR56
       UID: 11170774321801641200
-      SortOrder: 0
+      SortOrder: 115
     TransformComponent:
       Transform:
         Translate: [6.39582157, 30.7196503, 6.76630878]
@@ -2300,17 +2634,17 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (1)
-      UID: 2708351555397411708
-      SortOrder: 0
+      Name: Hangingpuppet
+      UID: 10261497535745152937
+      SortOrder: 109
     TransformComponent:
       Transform:
-        Translate: [-22.0593433, 24.3199844, 12.3326187]
-        Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]
+        Translate: [23.1179905, 31.4652023, 59.6040192]
+        Rotate: [180, -5.00896067e-06, 180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
     ModelComponent:
-      ModelID: 0
-      MaterialID: 0
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2319,7 +2653,7 @@ ENTITIES:
       Parent: 0
       Name: Inventory_Slot5_Text
       UID: 5361210359208858907
-      SortOrder: 0
+      SortOrder: 57
     TransformComponent:
       Transform:
         Translate: [0, 0, 2.0999999]
@@ -2355,7 +2689,7 @@ ENTITIES:
       Parent: 0
       Name: Ground3
       UID: 17062244048124515077
-      SortOrder: 0
+      SortOrder: 163
     TransformComponent:
       Transform:
         Translate: [30.5120106, 41.4347305, 5.94767952]
@@ -2401,7 +2735,7 @@ ENTITIES:
       Parent: 0
       Name: Patrol enemy 3
       UID: 16217385032863444442
-      SortOrder: 543
+      SortOrder: 181
     TransformComponent:
       Transform:
         Translate: [3.59553361, 26.5737019, 44.6679649]
@@ -2531,7 +2865,7 @@ ENTITIES:
       Parent: 0
       Name: Sentry_1
       UID: 11902586246754059388
-      SortOrder: 0
+      SortOrder: 118
     TransformComponent:
       Transform:
         Translate: [-1.849962, 22.1969891, 15.7128153]
@@ -2626,7 +2960,7 @@ ENTITIES:
       Parent: 0
       Name: Samurai
       UID: 2377197601835279376
-      SortOrder: 338
+      SortOrder: 178
     TransformComponent:
       Transform:
         Translate: [-31.2873707, 25.8922958, 15.8961716]
@@ -2800,7 +3134,7 @@ ENTITIES:
       Parent: 0
       Name: PlayerSpawn
       UID: 17719882336863887464
-      SortOrder: 134
+      SortOrder: 177
     TransformComponent:
       Transform:
         Translate: [-31.2873707, 25.8922958, 15.8961716]
@@ -2827,7 +3161,7 @@ ENTITIES:
       Parent: 0
       Name: StairLong
       UID: 1384087148227980126
-      SortOrder: 0
+      SortOrder: 14
     TransformComponent:
       Transform:
         Translate: [32.0392609, 28.4685287, 24.0813007]
@@ -2867,7 +3201,7 @@ ENTITIES:
       Parent: 0
       Name: Ground3 (Copy)
       UID: 2446337656137561336
-      SortOrder: 0
+      SortOrder: 25
     TransformComponent:
       Transform:
         Translate: [34.8829651, 27.9002399, 3.59751797]
@@ -2924,7 +3258,7 @@ ENTITIES:
       Parent: 0
       Name: StairShort
       UID: 10000000000000000002
-      SortOrder: 0
+      SortOrder: 106
     TransformComponent:
       Transform:
         Translate: [-10.2593451, 23.4741707, 29.5122776]
@@ -2951,7 +3285,7 @@ ENTITIES:
       Parent: 0
       Name: Skybox
       UID: 3009173759421305309
-      SortOrder: 0
+      SortOrder: 31
     TransformComponent:
       Transform:
         Translate: [0, 0, 0]
@@ -2976,7 +3310,7 @@ ENTITIES:
       Parent: 0
       Name: Ground1
       UID: 15963287906389267606
-      SortOrder: 0
+      SortOrder: 153
     TransformComponent:
       Transform:
         Translate: [-29.8758354, 41.1056023, 12.8645897]
@@ -3037,7 +3371,7 @@ ENTITIES:
       Parent: 0
       Name: Ground2
       UID: 5578430234036464776
-      SortOrder: 0
+      SortOrder: 60
     TransformComponent:
       Transform:
         Translate: [10.38027, 25.7036343, 61.9642334]
@@ -3064,11 +3398,11 @@ ENTITIES:
       Parent: 0
       Name: Camera
       UID: 9201024860084647067
-      SortOrder: 444
+      SortOrder: 179
     TransformComponent:
       Transform:
-        Translate: [-29.226181, 28.4277687, 12.4641733]
-        Rotate: [-201.125, 5302.0625, 180]
+        Translate: [-24.5276527, 29.7382679, 16.4523125]
+        Rotate: [-196, 5844.1875, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -3078,13 +3412,14 @@ ENTITIES:
     ThirdPersonCameraComponent:
       Target UID: 2377197601835279376
       Offset: [0.5, 3.79999995, 0]
-      Current Distance: 5
+      Current Distance: 4
       Min Distance: 2
       Max Distance: 5
-      Current Yaw: 1345
-      Current Pitch: -85
+      Current Yaw: 1525
+      Current Pitch: 10
       Mouse Sensitivity: 1
       Scroll Sensitivity: 1
+      Start Lock Duration: 0.3
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -3102,7 +3437,7 @@ ENTITIES:
       Parent: 0
       Name: Wall1
       UID: 9581328146882712230
-      SortOrder: 0
+      SortOrder: 101
     TransformComponent:
       Transform:
         Translate: [23.3539963, 38.4755859, 5.86487198]
@@ -3127,21 +3462,20 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Hanging Puppet (Copy)
-      UID: 7253429625216760122
-      SortOrder: 0
+      Name: Direction
+      UID: 6728554080084584550
+      SortOrder: 75
     TransformComponent:
       Transform:
-        Translate: [7.54484177, 31.5084381, 63.3621674]
-        Rotate: [0, -1.72888625, 0]
-        Scale: [0.0160820317, 0.016082, 0.0160820317]
-    ModelComponent:
-      ModelID: 9823568683429185027
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+        Translate: [9.45815754, 34.4550438, 41.0533142]
+        Rotate: [134.441025, -17.2439919, 180]
+        Scale: [0.999775171, 0.999990642, 0.999972343]
+    SpotLightComponent:
+      Light:
+        Radiance: [1, 1, 1]
+        Intensity: 12.25
+        FallOff: 1.56599998
+        CutOff: 0.828999996
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -3159,7 +3493,7 @@ ENTITIES:
       Parent: 0
       Name: Wall1 (Copy)
       UID: 5951411736417437532
-      SortOrder: 0
+      SortOrder: 66
     TransformComponent:
       Transform:
         Translate: [19.8021393, 15.3313904, 3.26734114]
@@ -3199,7 +3533,7 @@ ENTITIES:
       Parent: 0
       Name: Wall1 (Copy)
       UID: 12817848726916474247
-      SortOrder: 0
+      SortOrder: 130
     TransformComponent:
       Transform:
         Translate: [22.4271355, 38.7322159, 68.5964127]
@@ -3239,7 +3573,7 @@ ENTITIES:
       Parent: 0
       Name: Backwall1
       UID: 561103304547046071
-      SortOrder: 0
+      SortOrder: 10
     TransformComponent:
       Transform:
         Translate: [28.2849636, 31.964613, 10.495286]
@@ -3279,7 +3613,7 @@ ENTITIES:
       Parent: 0
       Name: Ground1 (Copy)
       UID: 4041358442151322843
-      SortOrder: 0
+      SortOrder: 41
     TransformComponent:
       Transform:
         Translate: [22.2682762, 21.2819176, 4.54816771]
@@ -3304,34 +3638,34 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Hanging Puppet
-      UID: 10378324339654824096
-      SortOrder: 0
+      Name: BAR40
+      UID: 12320286217177770759
+      SortOrder: 123
     TransformComponent:
       Transform:
-        Translate: [17.3494015, 32.5596924, 55.3770256]
-        Rotate: [0, 10.630806, 0]
-        Scale: [0.0119999992, 0.0120000001, 0.0119999992]
+        Translate: [15.4597836, 26.5532932, 49.5249443]
+        Rotate: [0, -0, 0]
+        Scale: [0.0173033196, 0.0157864708, 0.0195759386]
     ModelComponent:
-      ModelID: 9823568683429185027
-      MaterialID: 0
+      ModelID: 10530537100426425185
+      MaterialID: 365007133719936359
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Hanging Puppet (Copy)
-      UID: 8464311470176391574
-      SortOrder: 0
+      Name: BAR8
+      UID: 2444982802525083105
+      SortOrder: 24
     TransformComponent:
       Transform:
-        Translate: [14.4359312, 29.5958138, 54.5759506]
-        Rotate: [0, 10.6308136, 0]
-        Scale: [0.0153340315, 0.0153339999, 0.0153340315]
+        Translate: [7.00189447, 26.5532932, 48.0503464]
+        Rotate: [0, 89.980217, 0]
+        Scale: [0.0173033178, 0.0157864708, 0.0195759367]
     ModelComponent:
-      ModelID: 9823568683429185027
-      MaterialID: 0
+      ModelID: 10530537100426425185
+      MaterialID: 365007133719936359
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3353,7 +3687,7 @@ ENTITIES:
       Parent: 0
       Name: Wall2 (Copy)
       UID: 12076899222417719211
-      SortOrder: 0
+      SortOrder: 121
     TransformComponent:
       Transform:
         Translate: [10.7612286, 34.4137421, 33.2637825]
@@ -3378,17 +3712,17 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Hanging Puppet (Copy)
-      UID: 10991107234305192588
-      SortOrder: 0
+      Name: BAR52
+      UID: 18101572677118124544
+      SortOrder: 171
     TransformComponent:
       Transform:
-        Translate: [-4.90077019, 33.9562149, 65.9419022]
-        Rotate: [0, 10.6308193, 0]
-        Scale: [0.00999999978, 0.00999999978, 0.00999999978]
+        Translate: [8.05756187, 26.5532932, 49.5249443]
+        Rotate: [0, -0, 0]
+        Scale: [0.0173033196, 0.0157864708, 0.0195759386]
     ModelComponent:
-      ModelID: 9823568683429185027
-      MaterialID: 0
+      ModelID: 10530537100426425185
+      MaterialID: 365007133719936359
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3410,7 +3744,7 @@ ENTITIES:
       Parent: 0
       Name: Wall1 (Copy) (Copy)
       UID: 6463107382151822143
-      SortOrder: 0
+      SortOrder: 69
     TransformComponent:
       Transform:
         Translate: [-20.0029011, 36.6709099, 5.84981966]
@@ -3437,7 +3771,7 @@ ENTITIES:
       Parent: 0
       Name: Inventory_Slot2_Text
       UID: 16253247769133231383
-      SortOrder: 0
+      SortOrder: 158
     TransformComponent:
       Transform:
         Translate: [0, 0, 2.0999999]
@@ -3458,9 +3792,9 @@ ENTITIES:
       {}
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy)
+      Name: BAR10
       UID: 3033608694597105273
-      SortOrder: 0
+      SortOrder: 33
     TransformComponent:
       Transform:
         Translate: [6.39582157, 30.7196503, 15.3635178]
@@ -3475,9 +3809,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy)
+      Name: BAR31
       UID: 8540887425328314420
-      SortOrder: 0
+      SortOrder: 90
     TransformComponent:
       Transform:
         Translate: [6.39582157, 30.7196503, 9.63183212]
@@ -3492,9 +3826,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy)
+      Name: BAR11
       UID: 3550191009654457787
-      SortOrder: 0
+      SortOrder: 37
     TransformComponent:
       Transform:
         Translate: [6.39582157, 30.7196503, 11.106575]
@@ -3509,9 +3843,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy)
+      Name: BAR6
       UID: 1870524005321948473
-      SortOrder: 0
+      SortOrder: 18
     TransformComponent:
       Transform:
         Translate: [6.39582157, 30.7196503, 12.5239391]
@@ -3526,9 +3860,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy)
+      Name: BAR30
       UID: 8028341460964055815
-      SortOrder: 0
+      SortOrder: 85
     TransformComponent:
       Transform:
         Translate: [6.39582157, 30.7196503, 13.9733963]
@@ -3543,9 +3877,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy)
+      Name: BAR55
       UID: 16231143982565413656
-      SortOrder: 0
+      SortOrder: 157
     TransformComponent:
       Transform:
         Translate: [6.35746145, 47.9295235, 5.29565048]
@@ -3562,7 +3896,7 @@ ENTITIES:
       Parent: 0
       Name: Spotlight
       UID: 11964297900077333817
-      SortOrder: 0
+      SortOrder: 120
     TransformComponent:
       Transform:
         Translate: [32.6004181, 43.5625229, 7.07940912]
@@ -3578,7 +3912,7 @@ ENTITIES:
       Parent: 0
       Name: Inventory_Slot3_Icon
       UID: 16724695954102488179
-      SortOrder: 0
+      SortOrder: 161
     TransformComponent:
       Transform:
         Translate: [0.755999982, 0.860000014, 2.0999999]
@@ -3596,7 +3930,7 @@ ENTITIES:
       Parent: 0
       Name: Inventory_Slot1_Icon
       UID: 2360031116440682998
-      SortOrder: 0
+      SortOrder: 22
     TransformComponent:
       Transform:
         Translate: [0.59799999, 0.860000014, 2.0999999]
@@ -3612,9 +3946,9 @@ ENTITIES:
       {}
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy)
+      Name: BAR7
       UID: 2408079816594309868
-      SortOrder: 0
+      SortOrder: 23
     TransformComponent:
       Transform:
         Translate: [6.39582157, 30.7196503, 20.564106]
@@ -3629,9 +3963,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy)
+      Name: BAR20
       UID: 5818105574213853845
-      SortOrder: 0
+      SortOrder: 63
     TransformComponent:
       Transform:
         Translate: [6.39582157, 30.7196503, 22.2656651]
@@ -3646,9 +3980,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy)
+      Name: BAR54
       UID: 14097182137814287087
-      SortOrder: 0
+      SortOrder: 138
     TransformComponent:
       Transform:
         Translate: [6.39582157, 30.7196503, 8.12485218]
@@ -3663,9 +3997,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy) (Copy)
+      Name: BAR27
       UID: 7336033645976092967
-      SortOrder: 0
+      SortOrder: 78
     TransformComponent:
       Transform:
         Translate: [32.1653786, 26.5532932, 46.971981]
@@ -3697,9 +4031,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy)
+      Name: BAR3
       UID: 869948420891261376
-      SortOrder: 0
+      SortOrder: 13
     TransformComponent:
       Transform:
         Translate: [6.35746145, 31.3513565, 5.29565048]
@@ -3714,9 +4048,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy)
+      Name: BAR5
       UID: 1708976976700490792
-      SortOrder: 0
+      SortOrder: 16
     TransformComponent:
       Transform:
         Translate: [6.39582157, 30.7196503, 24.0676346]
@@ -3731,9 +4065,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy)
+      Name: BAR53
       UID: 12515997245919601248
-      SortOrder: 0
+      SortOrder: 127
     TransformComponent:
       Transform:
         Translate: [11.6958342, 26.5532932, 47.2732277]
@@ -3748,9 +4082,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy)
+      Name: BAR19
       UID: 5729411724889932078
-      SortOrder: 0
+      SortOrder: 62
     TransformComponent:
       Transform:
         Translate: [6.39582157, 30.7196503, 18.6285172]
@@ -3765,9 +4099,9 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: New Entity (Copy) (Copy)
+      Name: BAR36
       UID: 9339929386944432380
-      SortOrder: 0
+      SortOrder: 98
     TransformComponent:
       Transform:
         Translate: [6.39582157, 30.7196503, 16.8839989]
@@ -3784,7 +4118,7 @@ ENTITIES:
       Parent: 0
       Name: StaircaseHandle
       UID: 770232246594019764
-      SortOrder: 0
+      SortOrder: 11
     TransformComponent:
       Transform:
         Translate: [28.3988266, 30.3865089, 21.8385353]
@@ -3814,7 +4148,7 @@ ENTITIES:
       Parent: 0
       Name: Backwall1 (Copy)
       UID: 3221582362867639562
-      SortOrder: 0
+      SortOrder: 36
     TransformComponent:
       Transform:
         Translate: [33.252533, 40.1253281, 43.5707741]
@@ -3841,7 +4175,7 @@ ENTITIES:
       Parent: 0
       Name: Hanging_Lantern_1
       UID: 12773367989390655323
-      SortOrder: 64
+      SortOrder: 176
     TransformComponent:
       Transform:
         Translate: [-1.6944499, 26.5219994, 8.56561089]
@@ -3877,7 +4211,7 @@ ENTITIES:
       Parent: 0
       Name: Ground1 (Copy)
       UID: 15431716647849978405
-      SortOrder: 0
+      SortOrder: 145
     TransformComponent:
       Transform:
         Translate: [4.75624371, 48.9330864, 3.27187252]
@@ -3917,7 +4251,7 @@ ENTITIES:
       Parent: 0
       Name: Ground1 (Copy)
       UID: 4117830965760471706
-      SortOrder: 0
+      SortOrder: 42
     TransformComponent:
       Transform:
         Translate: [11.2451792, 44.8953705, 44.4533958]
@@ -3957,7 +4291,7 @@ ENTITIES:
       Parent: 0
       Name: Hiddenwall2
       UID: 18081033494354046772
-      SortOrder: 0
+      SortOrder: 170
     TransformComponent:
       Transform:
         Translate: [-1.89117467, 30.7671318, 47.4372787]
@@ -3997,7 +4331,7 @@ ENTITIES:
       Parent: 0
       Name: Hiddenwall3
       UID: 8004597702685157281
-      SortOrder: 0
+      SortOrder: 84
     TransformComponent:
       Transform:
         Translate: [25.1413994, 30.7671318, 47.4465446]
@@ -4037,7 +4371,7 @@ ENTITIES:
       Parent: 0
       Name: Wall1 (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
       UID: 9520736769497900168
-      SortOrder: 0
+      SortOrder: 100
     TransformComponent:
       Transform:
         Translate: [-15.3502035, 36.6709099, 5.17867661]
@@ -4077,7 +4411,7 @@ ENTITIES:
       Parent: 0
       Name: DialogueBoxSentry
       UID: 9934639834583286382
-      SortOrder: 0
+      SortOrder: 103
     TransformComponent:
       Transform:
         Translate: [-16.1502743, 24.5914364, 15.9496365]
@@ -4088,10 +4422,10 @@ ENTITIES:
       TypeName: GameScripts.TutorialDialogueTrigger
       ParamsJSON: "{\n  \"_dialogueNames\": \"DialogueSentry_1,DialogueSentry_2,DialogueSentry_3\"\n}"
   - InfoComponent:
-      Parent: 0
+      Parent: 14597596177956104017
       Name: DialogueSentry_1
       UID: 14788967133428468346
-      SortOrder: 0
+      SortOrder: 144
     TransformComponent:
       Transform:
         Translate: [0, -0.612413406, 0.00999999978]
@@ -4102,10 +4436,10 @@ ENTITIES:
       color: [1, 1, 1, 0]
       renderAs3D: false
   - InfoComponent:
-      Parent: 0
+      Parent: 14597596177956104017
       Name: DialogueSentry_2
       UID: 2175360468536632617
-      SortOrder: 0
+      SortOrder: 17
     TransformComponent:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
@@ -4116,10 +4450,10 @@ ENTITIES:
       color: [1, 1, 1, 0]
       renderAs3D: false
   - InfoComponent:
-      Parent: 0
+      Parent: 14597596177956104017
       Name: DialogueSentry_3
       UID: 15651757036242998268
-      SortOrder: 0
+      SortOrder: 151
     TransformComponent:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
@@ -4146,7 +4480,7 @@ ENTITIES:
       Parent: 0
       Name: DialogueBoxPatrol2
       UID: 17004717179754091713
-      SortOrder: 0
+      SortOrder: 162
     TransformComponent:
       Transform:
         Translate: [3.22702312, 28.9620152, 44.6211624]
@@ -4157,10 +4491,10 @@ ENTITIES:
       TypeName: GameScripts.TutorialDialogueTrigger
       ParamsJSON: "{\n  \"_dialogueNames\": \"DialoguePatrol_3,DialoguePatrol_4,DialoguePatrol_5\"\n}"
   - InfoComponent:
-      Parent: 0
+      Parent: 8420205164133478996
       Name: DialoguePatrol_3
       UID: 18321299931894252998
-      SortOrder: 0
+      SortOrder: 177
     TransformComponent:
       Transform:
         Translate: [0, -0.632000029, 0.00999999978]
@@ -4171,10 +4505,10 @@ ENTITIES:
       color: [1, 1, 1, 0]
       renderAs3D: false
   - InfoComponent:
-      Parent: 0
+      Parent: 8420205164133478996
       Name: DialoguePatrol_4
       UID: 11514075996643877393
-      SortOrder: 0
+      SortOrder: 116
     TransformComponent:
       Transform:
         Translate: [0, -0.612413406, 0.00999999978]
@@ -4185,10 +4519,10 @@ ENTITIES:
       color: [1, 1, 1, 0]
       renderAs3D: false
   - InfoComponent:
-      Parent: 0
+      Parent: 8420205164133478996
       Name: DialoguePatrol_5
       UID: 14265116836506830245
-      SortOrder: 0
+      SortOrder: 140
     TransformComponent:
       Transform:
         Translate: [0, -0.612413406, 0.00999999978]
@@ -4198,3 +4532,179 @@ ENTITIES:
       textureID: 18083317453213005228
       color: [1, 1, 1, 0]
       renderAs3D: false
+  - InfoComponent:
+      Parent: 2254730700873546749
+      Name: DialogueCell2
+      UID: 17299045204093883308
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 6761555051347469567
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 2254730700873546749
+      Name: DialogueCell3
+      UID: 447652590304884444
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 13744292941660532044
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 2254730700873546749
+      Name: DialogueCell4
+      UID: 14073956941879696023
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 7116103611924805177
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 2254730700873546749
+      Name: DialogueCell5
+      UID: 11670483368837185108
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 14290802853173655046
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 2254730700873546749
+      Name: DialogueCell6
+      UID: 17733686371669677908
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 16503743671831896499
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 2254730700873546749
+      Name: DialogueCell7
+      UID: 10563468617302216777
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 17629547944653500448
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 2254730700873546749
+      Name: DialogueCell8
+      UID: 7518490065919462741
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 4462151829149510365
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 2254730700873546749
+      Name: DialogueCellImage
+      UID: 14034601326453679474
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0.219999999, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.920000017, 1]
+    SpriteComponent:
+      textureID: 12170215265351181388
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: AudioPlay
+      UID: 8271260963692846415
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [12.0738258, 27.3725433, 48.5994987]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    SoundComponent:
+      Entries:
+        - name: _soundPath
+          filePaths:
+            - Resources/Audio/tutorialSuspense2.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 15
+        - name: _exitSoundPath
+          filePath: ""
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 15
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.AudioTrigger
+      ParamsJSON: "{\n  \"_soundPath\": \"Resources/Audio/tutorialSuspense2.wav\"\n}"

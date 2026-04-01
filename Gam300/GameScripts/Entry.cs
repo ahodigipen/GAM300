@@ -223,7 +223,7 @@ namespace GameScripts
                 _startSequenceDelay -= dt;
                 if (_startSequenceDelay <= 0.0f && !StoryDialogueManager.IsSequenceActive())
                 {
-                    if (_currentSceneName == GAMEPLAY_SCENE_NAME)
+                    if (_currentSceneName == GAMEPLAY_SCENE_NAME || _currentSceneName == LEVEL1_SCENE_NAME)
                     {
                         API.Log("[Entry] Delay finished. Triggering Start Dialogue Sequence...");
                         StoryDialogueManager.PlayStartSequence(() => { IsInventoryOpen = true; API.ShowInventoryMenu(); });
