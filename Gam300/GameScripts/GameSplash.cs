@@ -3,7 +3,7 @@ using System;
 
 namespace GameScripts
 {
-    public class DigiPenSplash
+    public class GameSplash
     {
         public ulong Entity;
 
@@ -14,28 +14,22 @@ namespace GameScripts
         public float fadeDuration = 0.5f;
 
         [EditorExposed(displayName: "Next Scene")]
-        public string nextSceneName = Entry.GAME_SPLASH_SCENE_NAME;
+        public string nextSceneName = Entry.MAIN_MENU_SCENE_NAME;
 
         [EditorExposed(displayName: "Logo Entity Name")]
-        public string logoName = "DigiPenLogo";
-
-        [EditorExposed(displayName: "Copyright Entity Name")]
-        public string copyrightName = "CopyrightNotice";
+        public string logoName = "GameLogo";
 
         private float timer = 0.0f;
         private bool isFinished = false;
         private ulong logoID;
-        private ulong copyrightID;
 
         public void OnStart(string jsonParams)
         {
-            API.Log("[DigiPenSplash] OnStart called.");
+            API.Log("[GameSplash] OnStart called.");
             logoID = API.FindEntity(logoName);
-            copyrightID = API.FindEntity(copyrightName);
             
-            // Start with logo and text transparent
+            // Start with logo transparent
             if (logoID != 0) API.SetSpriteColor(logoID, new Vec4(1, 1, 1, 0));
-            if (copyrightID != 0) API.SetTextColor(copyrightID, new Vec4(1, 1, 1, 0));
 
             API.SetCutsceneMode(true);
         }
@@ -46,7 +40,7 @@ namespace GameScripts
 
             timer += dt;
 
-            // Handle Logo and Text Alpha Fading
+            // Handle Logo Alpha Fading
             float alpha = 0f;
             if (timer < fadeDuration)
             {
@@ -71,7 +65,6 @@ namespace GameScripts
             alpha = Math.Max(0, Math.Min(1, alpha));
 
             if (logoID != 0) API.SetSpriteColor(logoID, new Vec4(1, 1, 1, alpha));
-            if (copyrightID != 0) API.SetTextColor(copyrightID, new Vec4(1, 1, 1, alpha));
 
             // Auto-transition after displayDuration
             if (timer >= displayDuration)
@@ -80,7 +73,7 @@ namespace GameScripts
                 return;
             }
 
-            // Allow skipping (will trigger FinishSplash which uses SceneFader for global screen fade)
+            // Allow skipping after minimum display duration
             if (timer >= fadeDuration)
             {
                 if (API.IsKeyDown(API.KEY_SPACE) || API.IsKeyDown(API.KEY_ENTER))
@@ -94,14 +87,9 @@ namespace GameScripts
         {
             if (isFinished) return;
             isFinished = true;
-            API.Log("[DigiPenSplash] Transitioning to " + nextSceneName);
+            API.Log("[GameSplash] Transitioning to " + nextSceneName);
             API.SetCutsceneMode(false);
             SceneFader.FadeToScene(nextSceneName);
-        }
-
-        public void OnDestroy()
-        {
-            API.SetCutsceneMode(false);
         }
     }
 }

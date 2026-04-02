@@ -74,6 +74,7 @@
     <Compile Include="CreditsScroll.cs" />
     <Compile Include="OutroScene.cs" />
     <Compile Include="DigiPenSplash.cs" />
+    <Compile Include="GameSplash.cs" />
     <Compile Include="DeathMenu.cs" />
     <Compile Include="EndMenu.cs" />
     <Compile Include="EndZoneTrigger.cs" />

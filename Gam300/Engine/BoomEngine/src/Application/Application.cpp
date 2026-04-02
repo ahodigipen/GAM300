@@ -29,7 +29,7 @@ namespace Boom
         // AppWindow::ClearLoadingVideo();
 
         //LoadScene("M3 GAMEPLAY");
-        LoadScene("MainMenu");
+        LoadScene("DigiPenSplash");
         
 
         std::cout << "[RunContext] Scene loaded successfully" << std::endl;

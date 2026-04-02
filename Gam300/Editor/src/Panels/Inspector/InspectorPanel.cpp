@@ -982,7 +982,7 @@ namespace EditorUI {
                 auto& textComp = selected.Get<Boom::TextComponent>();
 
                 // Text content input (multi-line)
-                char textBuffer[1024];
+                char textBuffer[16384];
                 strncpy_s(textBuffer, textComp.text.c_str(), sizeof(textBuffer) - 1);
                 textBuffer[sizeof(textBuffer) - 1] = '\0';
 
@@ -3699,7 +3699,7 @@ namespace EditorUI {
                 // ----- Raw Params (JSON) - Collapsible for Advanced Users -----
                 ImGui::Spacing();
                 if (ImGui::TreeNode("Advanced: Raw Params (JSON)")) {
-                    static char paramsBuf[2048];
+                    static char paramsBuf[8192];
                     static entt::entity lastJsonEntity = entt::null;
 
                     if (currentEntity != lastJsonEntity) {

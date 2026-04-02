@@ -2,143 +2,39 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
-      Name: Team Name
-      UID: 4281545971456339699
+      Name: SettingsButton
+      UID: 11522335738119102978
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.608250082, -0.68601042, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0823467821, 0.0289314743, 0.00999999978]
-    SpriteComponent:
-      textureID: 5600707374096394357
-      color: [0.447154462, 0.447154462, 0.447154462, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 0
-      Name: Logo
-      UID: 10226526392347079434
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.600058973, 0.469999999, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.330845296, 0.146376148, 0.0199999996]
-    SpriteComponent:
-      textureID: 16541366282253303416
-      color: [0.549019575, 0.26912722, 0.26912722, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 0
-      Name: Script
-      UID: 9866348990469574680
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.MainMenu
-      ParamsJSON: "{}"
-  - InfoComponent:
-      Parent: 0
-      Name: Directional Light
-      UID: 16395980114807373968
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.178000003, -0.27700001, -0.333129376]
-        Rotate: [1.28699994, 0, 0]
-        Scale: [1.85000002, 1, 1]
-    DirectLightComponent:
-      Light:
-        Radiance: [1, 1, 0.899999976]
-        Intensity: 4.80000019
-  - InfoComponent:
-      Parent: 0
-      Name: Camera
-      UID: 9201024860084647067
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.569999993, 0.720000029, 0.310000002]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    CameraComponent:
-      Camera:
-        NearPlane: 0.300000012
-        FarPlane: 1000
-        FOV: 89
-  - InfoComponent:
-      Parent: 0
-      Name: Skybox
-      UID: 3009173759421305309
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    SkyboxComponent:
-      SkyboxID: 10427935764841817814
-  - InfoComponent:
-      Parent: 0
-      Name: QuitButton
-      UID: 16323354693460438905
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.610058844, -0.421831191, -0.730000019]
+        Translate: [0.607912004, -0.245665133, -0.730000019]
         Rotate: [0, -0, 0]
         Scale: [0.214000002, 0.0560000017, 1]
     SpriteComponent:
-      textureID: 5561377318240942818
-      color: [0.878048778, 0.685828626, 0.385484815, 1]
+      textureID: 16244244589917169999
+      color: [0.87843138, 0.686274529, 0.384313732, 0]
       renderAs3D: false
   - InfoComponent:
       Parent: 0
-      Name: NewGameButton
-      UID: 12542027639629009498
+      Name: Scene Settings
+      UID: 12
       SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.608985484, 0.091537118, -0.850000024]
-        Rotate: [0, -0, 0]
-        Scale: [0.2144088, 0.0560174845, 0.324000001]
-    SpriteComponent:
-      textureID: 9051997344452271848
-      color: [0.87843138, 0.686274529, 0.384313732, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 0
-      Name: Home Screen GUI
-      UID: 3413859284316912550
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, -1.21000004]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    SpriteComponent:
-      textureID: 13983692512001316939
-      color: [0.392156839, 0.353936225, 0.34217605, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 0
-      Name: HowToPlayButton
-      UID: 15527910618955340530
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.607912004, -0.0679423511, -0.850000024]
-        Rotate: [0, -0, 0]
-        Scale: [0.214000002, 0.0560000017, 0.600000024]
-    SpriteComponent:
-      textureID: 5138487839712909877
-      color: [0.87843138, 0.686274529, 0.384313732, 1]
-      renderAs3D: false
+    SceneNavmeshComponent:
+      NavmeshFile: ""
+      AmbientStrength: 0.5
+      BloomEnabled: false
+      BloomIntensity: 1
+      BloomThreshold: 1
+      BloomIterations: 10
+      PointLightBloomMultiplier: 1
+      FogEnabled: false
+      FogColor: [0.5, 0.600000024, 0.699999988]
+      FogDensity: 0.00999999978
+      FogHeightFalloff: 0.5
+      FogHeight: 0
+      TonemapExposure: 1
+      TonemapGamma: 2.20000005
+      TonemapWarmTint: [1, 1, 1]
   - InfoComponent:
       Parent: 0
       Name: New Entity
@@ -171,36 +67,142 @@ ENTITIES:
           maxDistance: 50
   - InfoComponent:
       Parent: 0
-      Name: Scene Settings
-      UID: 12
-      SortOrder: 0
-    SceneNavmeshComponent:
-      NavmeshFile: ""
-      AmbientStrength: 0.5
-      BloomEnabled: false
-      BloomIntensity: 1
-      BloomThreshold: 1
-      BloomIterations: 10
-      PointLightBloomMultiplier: 1
-      FogEnabled: false
-      FogColor: [0.5, 0.600000024, 0.699999988]
-      FogDensity: 0.00999999978
-      FogHeightFalloff: 0.5
-      FogHeight: 0
-      TonemapExposure: 1
-      TonemapGamma: 2.20000005
-      TonemapWarmTint: [1, 1, 1]
-  - InfoComponent:
-      Parent: 0
-      Name: SettingsButton
-      UID: 11522335738119102978
+      Name: HowToPlayButton
+      UID: 15527910618955340530
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.607912004, -0.245665133, -0.730000019]
+        Translate: [0.607912004, -0.0679423511, -0.850000024]
+        Rotate: [0, -0, 0]
+        Scale: [0.214000002, 0.0560000017, 0.600000024]
+    SpriteComponent:
+      textureID: 5138487839712909877
+      color: [0.87843138, 0.686274529, 0.384313732, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 0
+      Name: Home Screen GUI
+      UID: 3413859284316912550
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, -1.21000004]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    SpriteComponent:
+      textureID: 13983692512001316939
+      color: [0.392156839, 0.353936225, 0.34217605, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 0
+      Name: NewGameButton
+      UID: 12542027639629009498
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.608985484, 0.091537118, -0.850000024]
+        Rotate: [0, -0, 0]
+        Scale: [0.2144088, 0.0560174845, 0.324000001]
+    SpriteComponent:
+      textureID: 9051997344452271848
+      color: [0.87843138, 0.686274529, 0.384313732, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 0
+      Name: QuitButton
+      UID: 16323354693460438905
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.610058844, -0.421831191, -0.730000019]
         Rotate: [0, -0, 0]
         Scale: [0.214000002, 0.0560000017, 1]
     SpriteComponent:
-      textureID: 16244244589917169999
-      color: [0.87843138, 0.686274529, 0.384313732, 1]
+      textureID: 5561377318240942818
+      color: [0.878048778, 0.685828626, 0.385484815, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 0
+      Name: Skybox
+      UID: 3009173759421305309
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, -1.25]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    SpriteComponent:
+      textureID: 8992878750136671847
+      color: [0, 0, 0, 1]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 0
+      Name: Camera
+      UID: 9201024860084647067
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.569999993, 0.720000029, 0.310000002]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        NearPlane: 0.300000012
+        FarPlane: 1000
+        FOV: 89
+  - InfoComponent:
+      Parent: 0
+      Name: Directional Light
+      UID: 16395980114807373968
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.178000003, -0.27700001, -0.333129376]
+        Rotate: [1.28699994, 0, 0]
+        Scale: [1.85000002, 1, 1]
+    DirectLightComponent:
+      Light:
+        Radiance: [1, 1, 0.899999976]
+        Intensity: 4.80000019
+  - InfoComponent:
+      Parent: 0
+      Name: Script
+      UID: 9866348990469574680
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.MainMenu
+      ParamsJSON: "{}"
+  - InfoComponent:
+      Parent: 0
+      Name: Logo
+      UID: 10226526392347079434
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.600058973, 0.469999999, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.330845296, 0.146376148, 0.0199999996]
+    SpriteComponent:
+      textureID: 16541366282253303416
+      color: [0.549019575, 0.26912722, 0.26912722, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 0
+      Name: Team Name
+      UID: 4281545971456339699
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.608250082, -0.68601042, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.0823467821, 0.0289314743, 0.00999999978]
+    SpriteComponent:
+      textureID: 5600707374096394357
+      color: [0.447154462, 0.447154462, 0.447154462, 0]
       renderAs3D: false
