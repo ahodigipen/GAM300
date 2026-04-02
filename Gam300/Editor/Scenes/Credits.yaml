@@ -31,7 +31,7 @@ ENTITIES:
       SortOrder: 12
     TransformComponent:
       Transform:
-        Translate: [0.624999762, -10.7875004, 0]
+        Translate: [0.624999762, -11.8875008, 0]
         Rotate: [0, 0, 0]
         Scale: [0.25, 0.150000006, 1]
     SpriteComponent:
@@ -45,7 +45,7 @@ ENTITIES:
       SortOrder: 3
     TransformComponent:
       Transform:
-        Translate: [0.624999762, -11.7875004, 0]
+        Translate: [0.624999762, -13.7875004, 0]
         Rotate: [0, -0, 0]
         Scale: [0.300000012, 0.349999994, 0.899999976]
     SpriteComponent:
@@ -124,9 +124,9 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.CreditsScroll
-      ParamsJSON: "{\n  \"endBuffer\": 300.0,\n  \"footerLogoNames\": \"DigipenLogo,Test_Logo\",\n  \"footerOffsets\": \"-3.2,-11.0;-3.2,-10.0\",\n  \"guiZ\": 0.0,\n  \"headerLogoNames\": \"Logo\",\n  \"headerOffsets\": \"-3.2,-1\",\n  \"lastEntityName\": \"\",\n  \"logoEntityNames\": \"DigipenLogo\",\n  \"logoOffsets\": \"-0.75,-1\",\n  \"logoSpeedMultiplier\": 0.0022499999031424522,\n  \"menuInitialOffset\": 0.0,\n  \"menuScrollSpeed\": 1.0,\n  \"menuStartY\": -1.7000000476837158,\n  \"menuTargetY\": 0.0,\n  \"scrollSpeed\": 200.0,\n  \"startPosition\": {\n    \"X\": 1700.0,\n    \"Y\": -350.0\n  },\n  \"useDefaultCredits\": false\n}"
+      ParamsJSON: "{\n  \"endBuffer\": 375.0,\n  \"footerLogoNames\": \"DigipenLogo,Test_Logo\",\n  \"footerOffsets\": \"-3.2,-13.0;-3.2,-11.1\",\n  \"guiZ\": 0.0,\n  \"headerLogoNames\": \"Logo\",\n  \"headerOffsets\": \"-3.2,-1\",\n  \"lastEntityName\": \"\",\n  \"logoEntityNames\": \"DigipenLogo\",\n  \"logoOffsets\": \"-0.75,-1\",\n  \"logoSpeedMultiplier\": 0.0022499999031424522,\n  \"menuInitialOffset\": 0.0,\n  \"menuScrollSpeed\": 1.0,\n  \"menuStartY\": -1.7000000476837158,\n  \"menuTargetY\": 0.0,\n  \"scrollSpeed\": 200.0,\n  \"startPosition\": {\n    \"X\": 1700.0,\n    \"Y\": -350.0\n  },\n  \"useDefaultCredits\": false\n}"
     TextComponent:
-      text: "\n\n\n\nProduced by\nTeam Obession\n\nTeam Members\nLeon Pablo Dominguez Mayor Gregorio\nProduct Manager\n\nTitus Kwong Wen Shuen\nProgrammer\n\nJericho Lorenz Villegas Quimson\nGame Programmer\n\nLewis Koa Yi Heng\nDebugging Champion\n\nAmos Ho Hin Wai\nEngine Champion\n\nTan Guan Yew, Wesley\nPhysics Champion\n\nDarius Maximus Chan Wei Jie \nGraphics Champion\n\nChristopher Lam Yit Shyong \nAudio Champion\n\nMuhammad Nur Aqif Bin Abdemanaf\nEngine Champion\n\nAdam Goh Zheng Shan \nTech Lead\n\nSarah Hung \nLevel Design/Mechanics\n\nAng Yu Shi Sebrena \nArt/Storytelling/UI\n\nChee Kar Yi\nSound/Systems\n\nThanks to our Professors\nTomas Arce-Gil\nCrespy Patrice\nKwek Shie Sien Jonathan\nRudy Castan\nVuk Krakovic\n\n* Created at DigiPen Institute of Technology\n* President: Claude Comair\n* © 2026 DigiPen Institute of Technology. All Rights Reserved\n\nTools & Libraries:\n       FMOD *\n       NVIDIA PhysX *\n       OpenGL *\n       GLM *\n       EnTT *\n       Assimp *\n       ImGui *"
+      text: "\n\n\n\nProduced by\nTeam Obession\n\nTeam Members\nProduct Manager\nLeon Pablo Dominguez Mayor Gregorio\n\nProgrammer\nTitus Kwong Wen Shuen\n\nGame Programmer\nJericho Lorenz Villegas Quimson\n\nDebugging Champion\nLewis Koa Yi Heng\n\nEngine Champion\nAmos Ho Hin Wai\n\nPhysics Champion\nTan Guan Yew, Wesley\n\nGraphics Champion\nDarius Maximus Chan Wei Jie \n\nAudio Champion\nChristopher Lam Yit Shyong \n\nEngine Champion\nMuhammad Nur Aqif Bin Abdemanaf\n\nTech Lead\nAdam Goh Zheng Shan \n\nLevel Design/Mechanics\nSarah Hung \n\nArt/Storytelling/UI\nAng Yu Shi Sebrena \n\nSound/Systems\nChee Kar Yi\n\nFaculty and Advisors\n\nProgramming\nTomas Arce-Gil\nCrespy Patrice\nRudy Castan\n\nDesign and Production/Art\nKwek Shie Sien Jonathan\nKeng Jin Poh\n\nAudio\nGavin Parker\nVuk Krakovic\n\n* Created at DigiPen Institute of Technology\n* President: Claude Comair\n* © 2026 DigiPen Institute of Technology. All Rights Reserved\n\nTools & Libraries:\n       NVIDIA PhysX *\n       OpenGL *\n       GLM *\n       EnTT *\n       Assimp *\n       ImGui *\nFMOD Sound System © FireLight Technologies Pty Ltd (1998 - 2026)\n"
       fontName: Cormorant-Italic-VariableFont_wght
       color: [1, 1, 1, 1]
       scale: 1

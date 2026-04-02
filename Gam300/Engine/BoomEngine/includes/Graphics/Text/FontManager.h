@@ -43,7 +43,7 @@ namespace Boom {
 
         struct Font {
             GLuint textureID{};         // OpenGL texture ID for the font atlas
-            Glyph glyphs[127];        // Array of glyphs for the font
+            std::unordered_map<uint32_t, Glyph> glyphs; // Map of glyphs for the font
             int fontHeight{};           // Font height (for vertical spacing)
         };
 

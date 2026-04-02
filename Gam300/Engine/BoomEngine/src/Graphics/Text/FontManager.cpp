@@ -3,8 +3,35 @@
 #include "GlobalConstants.h"
 #include <algorithm>
 #include <sstream>
+#include <vector>
 
 namespace Boom {
+
+    // Simple UTF-8 decoder helper
+    static uint32_t DecodeNextUTF8(const std::string& text, size_t& i) {
+        uint8_t c = (uint8_t)text[i];
+        if (c < 0x80) {
+            i += 1;
+            return c;
+        } else if ((c & 0xE0) == 0xC0) {
+            if (i + 1 >= text.size()) { i += 1; return 0; }
+            uint32_t res = ((c & 0x1F) << 6) | ((uint8_t)text[i + 1] & 0x3F);
+            i += 2;
+            return res;
+        } else if ((c & 0xF0) == 0xE0) {
+            if (i + 2 >= text.size()) { i += 1; return 0; }
+            uint32_t res = ((c & 0x0F) << 12) | (((uint8_t)text[i + 1] & 0x3F) << 6) | ((uint8_t)text[i + 2] & 0x3F);
+            i += 3;
+            return res;
+        } else if ((c & 0xF8) == 0xF0) {
+            if (i + 3 >= text.size()) { i += 1; return 0; }
+            uint32_t res = ((c & 0x07) << 18) | (((uint8_t)text[i + 1] & 0x3F) << 12) | (((uint8_t)text[i + 2] & 0x3F) << 6) | ((uint8_t)text[i + 3] & 0x3F);
+            i += 4;
+            return res;
+        }
+        i += 1;
+        return 0;
+    }
 
     FontManager& FontManager::GetInstance() {
         static FontManager instance;
@@ -78,24 +105,32 @@ namespace Boom {
         int padding = 2;
         int row = 0;
         int col = padding;
-        const int textureWidth = 512;
-        // Using vector for buffer to avoid stack overflow with large arrays if needed, though 512*512 is 262KB which is fine
-        std::vector<unsigned char> textureBuffer(textureWidth * textureWidth, 0);
 
         Font font;
         font.fontHeight = 0;
 
-        // ASCII 32 to 126
-        for (FT_ULong glyphIdx = 32; glyphIdx < 127; ++glyphIdx) {
+        // Load characters from 32 to 255 (Basic Latin and Latin-1 Supplement)
+        // This includes © (169)
+        const int textureWidth = 1024; // Increased size for more glyphs
+        std::vector<unsigned char> textureBuffer(textureWidth * textureWidth, 0);
+
+        for (FT_ULong glyphIdx = 32; glyphIdx < 256; ++glyphIdx) {
             FT_UInt glyphIndex = FT_Get_Char_Index(m_Face, glyphIdx);
+            if (glyphIndex == 0 && glyphIdx > 127) continue; // Skip if character not in font
+
             if (FT_Load_Glyph(m_Face, glyphIndex, FT_LOAD_DEFAULT)) continue;
             if (FT_Render_Glyph(m_Face->glyph, FT_RENDER_MODE_NORMAL)) continue;
 
             if (col + m_Face->glyph->bitmap.width + padding >= textureWidth) {
                 col = padding;
-                row += size; // Rough approximation of row height
+                row += size + padding; // Added padding to row height
             }
             
+            if (row + size + padding >= textureWidth) {
+                BOOM_ERROR("Font atlas full for font: {}", name);
+                break;
+            }
+
             // Calculate max font height dynamically
             int currentHeight = (int)((m_Face->size->metrics.ascender - m_Face->size->metrics.descender) >> 6);
             font.fontHeight = std::max(currentHeight, font.fontHeight);
@@ -133,7 +168,7 @@ namespace Boom {
         }
 
         glGenTextures(1, &font.textureID);
-        glActiveTexture(GL_TEXTURE1); // Use unit 1 for upload creates no conflict
+        glActiveTexture(GL_TEXTURE1); 
         glBindTexture(GL_TEXTURE_2D, font.textureID);
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, textureWidth, textureWidth, 0, GL_RED, GL_UNSIGNED_BYTE, textureBuffer.data());
@@ -206,8 +241,13 @@ namespace Boom {
             float lineX = x;
             if (alignment != 0) { // Not Left
                 float lineWidth = 0.0f;
-                for (char c : line) {
-                    if (c >= 0 && c < 127) lineWidth += font.glyphs[c].advance.x * scale;
+                size_t i = 0;
+                while (i < line.size()) {
+                    uint32_t codepoint = DecodeNextUTF8(line, i);
+                    auto gIt = font.glyphs.find(codepoint);
+                    if (gIt != font.glyphs.end()) {
+                        lineWidth += gIt->second.advance.x * scale;
+                    }
                 }
                 if (alignment == 1) // Center
                     lineX -= lineWidth * 0.5f;
@@ -216,10 +256,13 @@ namespace Boom {
             }
 
             float drawX = lineX;
-            for (const char& c : line) {
-                if (c < 0 || c >= 127) continue;
+            size_t i = 0;
+            while (i < line.size()) {
+                uint32_t codepoint = DecodeNextUTF8(line, i);
+                auto gIt = font.glyphs.find(codepoint);
+                if (gIt == font.glyphs.end()) continue;
 
-                const Glyph& glyph = font.glyphs[c];
+                const Glyph& glyph = gIt->second;
                 float xpos = drawX + glyph.offset.x * scale;
                 float ypos = currentY - (glyph.size.y - glyph.offset.y) * scale;
                 float w = glyph.size.x * scale;
@@ -263,14 +306,19 @@ namespace Boom {
         float width = 0.0f;
         float currentLineWidth = 0.0f;
 
-        for (const char& c : text) {
-            if (c == '\n') {
+        size_t i = 0;
+        while (i < text.size()) {
+            if (text[i] == '\n') {
                 width = std::max(width, currentLineWidth);
                 currentLineWidth = 0.0f;
+                i++;
                 continue;
             }
-            if (c < 0 || c >= 127) continue;
-            currentLineWidth += font.glyphs[c].advance.x * scale;
+            uint32_t codepoint = DecodeNextUTF8(text, i);
+            auto gIt = font.glyphs.find(codepoint);
+            if (gIt != font.glyphs.end()) {
+                currentLineWidth += gIt->second.advance.x * scale;
+            }
         }
 
         return std::max(width, currentLineWidth);
