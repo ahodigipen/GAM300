@@ -57,6 +57,7 @@
     <Compile Include="CutsceneController.cs" />
     <Compile Include="LightIntensityTrigger.cs" />
     <Compile Include="PrisonBreak.cs" />
+    <Compile Include="PrisonerVoiceline.cs" />
     <Compile Include="SettingsMenu.cs" />
     <Compile Include="StoryDialogueManager.cs" />
     <Compile Include="CutsceneSequencer.cs" />
