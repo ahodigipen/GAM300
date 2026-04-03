@@ -1,0 +1,167 @@
+Version: 1.0
+ENTITIES:
+  - InfoComponent:
+      Parent: 0
+      Name: GammaAdjust_Script
+      UID: 9876543210987654321
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.GammaAdjustMenu
+      ParamsJSON: "{}"
+  - InfoComponent:
+      Parent: 0
+      Name: GammaAdjust_Icon_Dark
+      UID: 9876543210987654307
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.300000012, 0.200000003, 1]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.200000003, 1]
+    SpriteComponent:
+      textureID: 6526446604008139444
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 0
+      Name: GammaAdjust_Icon_Bright
+      UID: 9876543210987654306
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.300000012, 0.200000003, 1]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.200000003, 1]
+    SpriteComponent:
+      textureID: 17298273243005333276
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 0
+      Name: GammaAdjust_Camera
+      UID: 9876543210987654314
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.307780445, 0.381749511, 2.05295849]
+        Rotate: [-19.375, 1.6875, 0]
+        Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        NearPlane: 0.300000012
+        FarPlane: 1000
+        FOV: 86
+  - InfoComponent:
+      Parent: 0
+      Name: GammaAdjust_Title
+      UID: 9876543210987654304
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    TextComponent:
+      text: GAMMA CORRECTION
+      fontName: Roboto-Regular
+      color: [1, 1, 1, 1]
+      scale: 1.29999995
+      screenPosition: [500, 750]
+      renderAs3D: false
+      billboardMode: true
+      alignment: Center
+  - InfoComponent:
+      Parent: 0
+      Name: GammaAdjust_Instruction
+      UID: 9876543210987654303
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    TextComponent:
+      text: Adjust the slider until the left image is barely visible
+      fontName: Roboto-Regular
+      color: [0.800000012, 0.800000012, 0.800000012, 1]
+      scale: 0.75
+      screenPosition: [600, 700]
+      renderAs3D: false
+      billboardMode: true
+      alignment: Center
+  - InfoComponent:
+      Parent: 0
+      Name: GammaAdjust_Gamma_BG
+      UID: 9876543210987654318
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.150000006, 1.10000002]
+        Rotate: [0, 0, 0]
+        Scale: [0.504999995, 0.0299999993, 1]
+    SpriteComponent:
+      textureID: 8950115335940363103
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 0
+      Name: GammaAdjust_Gamma_Fill
+      UID: 9876543210987654317
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.00879999995, -0.150000006, 1.11000001]
+        Rotate: [0, 0, 0]
+        Scale: [0.4912, 0.0199999996, 1]
+    SpriteComponent:
+      textureID: 10258411235812800368
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 0
+      Name: GammaAdjust_Gamma_Handle
+      UID: 9876543210987654316
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.48239997, -0.150000006, 1.12]
+        Rotate: [0, 0, 0]
+        Scale: [0.0199999996, 0.0700000003, 1]
+    SpriteComponent:
+      textureID: 3752540044536367869
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 0
+      Name: GammaAdjust_ConfirmButton
+      UID: 9876543210987654315
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.74000001, -0.75999999, 1.10000002]
+        Rotate: [0, 0, 0]
+        Scale: [0.150000006, 0.075000003, 1]
+    SpriteComponent:
+      textureID: 12748528357476869788
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 0
+      Name: GammaAdjust_Background
+      UID: 9876543210987654320
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, -1.21000004]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    SpriteComponent:
+      textureID: 8992878750136671847
+      color: [0, 0, 0, 1]
+      renderAs3D: false

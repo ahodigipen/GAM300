@@ -10,15 +10,19 @@ namespace GameScripts
         // --- Texture Constants ---
         private const string MAINMENU_TEX_NORMAL  = "Resources/Textures/MenusUI/ReturnMenuButton.png";
         private const string MAINMENU_TEX_CLICKED = "Resources/Textures/MenusUI/ReturnMenuButton_Clicked.png";
+        private const string GAMMA_BTN_TEX_NORMAL  = "Resources/Textures/MenusUI/GammaButton.png";
+        private const string GAMMA_BTN_TEX_CLICKED = "Resources/Textures/MenusUI/GammaButton_Clicked.png";
 
         private ulong _mainMenuButtonID;
+        private ulong _gammaButtonID;
 
         private ButtonFX _buttonFX;
 
         private VolumeSlider _masterSlider;
         private VolumeSlider _bgmSlider;
         private VolumeSlider _sfxSlider;
-        private GammaSlider  _gammaSlider;
+
+        private bool _fadingToGamma = false;
 
         private enum SettingsState
         {
@@ -59,13 +63,13 @@ namespace GameScripts
             SettingsManager.LoadSettings();
 
             _mainMenuButtonID = API.FindEntity("Settings_ReturnButton");
+            _gammaButtonID    = API.FindEntity("Settings_GammaButton");
 
             _buttonFX = new ButtonFX(_mainMenuButtonID);
 
             _masterSlider = new VolumeSlider("Settings_Master_BG", "Settings_Master_Fill", "Settings_Master_Handle", "Master");
             _bgmSlider    = new VolumeSlider("Settings_BGM_BG",    "Settings_BGM_Fill",    "Settings_BGM_Handle",    "Music");
             _sfxSlider    = new VolumeSlider("Settings_SFX_BG",    "Settings_SFX_Fill",    "Settings_SFX_Handle",    "SFX");
-            _gammaSlider  = new GammaSlider ("Settings_Gamma_BG",  "Settings_Gamma_Fill",  "Settings_Gamma_Handle");
 
             _selectedIndex = 0;
             _currentState  = SettingsState.WaitingForMouseUp;
@@ -117,11 +121,6 @@ namespace GameScripts
                 _sfxSlider.Update();
                 isAnyDragging = true;
             }
-            else if (_gammaSlider != null && _gammaSlider.IsDragging)
-            {
-                _gammaSlider.Update();
-                isAnyDragging = true;
-            }
             else
             {
                 if (_masterSlider != null)
@@ -138,11 +137,6 @@ namespace GameScripts
                 {
                     _sfxSlider.Update();
                     if (_sfxSlider.IsDragging) isAnyDragging = true;
-                }
-                if (!isAnyDragging && _gammaSlider != null)
-                {
-                    _gammaSlider.Update();
-                    if (_gammaSlider.IsDragging) isAnyDragging = true;
                 }
             }
 
@@ -190,8 +184,8 @@ namespace GameScripts
                 UpdateVisuals();
             }
 
-            // Horizontal navigation for sliders
-            if (_selectedIndex >= 1)
+            // Horizontal navigation for sliders (indices 1–3 only)
+            if (_selectedIndex >= 1 && _selectedIndex <= 3)
             {
                 float stickX  = API.GetGamepadAxis(API.GAMEPAD_AXIS_LEFT_X);
                 bool dpadLeft  = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_DPAD_LEFT);
@@ -210,13 +204,14 @@ namespace GameScripts
                         _bgmSlider.SetValue(API.GetGroupVolume("Music") + moveAmount);
                     else if (_selectedIndex == 3 && _sfxSlider != null)
                         _sfxSlider.SetValue(API.GetGroupVolume("SFX") + moveAmount);
-                    else if (_selectedIndex == 4 && _gammaSlider != null)
-                        _gammaSlider.SetNormDelta(moveAmount);
                 }
             }
 
-            if (aPressed && !_wasAButtonPressed && _selectedIndex == 0)
-                StartClickDelay(_mainMenuButtonID);
+            if (aPressed && !_wasAButtonPressed)
+            {
+                if (_selectedIndex == 0) StartClickDelay(_mainMenuButtonID);
+                else if (_selectedIndex == 4) StartClickDelay(_gammaButtonID);
+            }
 
             _wasDpadUp         = dpadUp;
             _wasDpadDown       = dpadDown;
@@ -228,11 +223,11 @@ namespace GameScripts
         private void UpdateVisuals()
         {
             API.SetSpriteTexture(_mainMenuButtonID, _selectedIndex == 0 ? MAINMENU_TEX_CLICKED : MAINMENU_TEX_NORMAL);
+            API.SetSpriteTexture(_gammaButtonID,    _selectedIndex == 4 ? GAMMA_BTN_TEX_CLICKED : GAMMA_BTN_TEX_NORMAL);
 
             SetSliderHighlight("Settings_Master_BG", _selectedIndex == 1);
             SetSliderHighlight("Settings_BGM_BG",    _selectedIndex == 2);
             SetSliderHighlight("Settings_SFX_BG",    _selectedIndex == 3);
-            SetSliderHighlight("Settings_Gamma_BG",  _selectedIndex == 4);
         }
 
         private void SetSliderHighlight(string bgEntityName, bool highlight)
@@ -252,10 +247,14 @@ namespace GameScripts
                 _selectedIndex = 0;
                 StartClickDelay(_mainMenuButtonID);
             }
+            else if (API.Check2DViewportClick(_gammaButtonID, mousePos.X, mousePos.Y))
+            {
+                _selectedIndex = 4;
+                StartClickDelay(_gammaButtonID);
+            }
             else if (IsSliderClicked("Settings_Master_BG", mousePos)) _selectedIndex = 1;
             else if (IsSliderClicked("Settings_BGM_BG",    mousePos)) _selectedIndex = 2;
             else if (IsSliderClicked("Settings_SFX_BG",    mousePos)) _selectedIndex = 3;
-            else if (IsSliderClicked("Settings_Gamma_BG",  mousePos)) _selectedIndex = 4;
         }
 
         private bool IsSliderClicked(string bgEntityName, Vec2 mousePos)
@@ -280,6 +279,8 @@ namespace GameScripts
 
             if (buttonID == _mainMenuButtonID)
                 API.SetSpriteTexture(buttonID, MAINMENU_TEX_CLICKED);
+            else if (buttonID == _gammaButtonID)
+                API.SetSpriteTexture(buttonID, GAMMA_BTN_TEX_CLICKED);
         }
 
         private void ExecuteClickAction()
@@ -287,8 +288,16 @@ namespace GameScripts
             if (_clickedButtonID == _mainMenuButtonID)
             {
                 API.Log(">> Settings: Return to Main Menu");
-                _currentState = SettingsState.FadingOut;
-                _fadeTimer    = 0f;
+                _fadingToGamma = false;
+                _currentState  = SettingsState.FadingOut;
+                _fadeTimer     = 0f;
+            }
+            else if (_clickedButtonID == _gammaButtonID)
+            {
+                API.Log(">> Settings: Open Gamma Adjust");
+                _fadingToGamma = true;
+                _currentState  = SettingsState.FadingOut;
+                _fadeTimer     = 0f;
             }
             else
             {
@@ -307,7 +316,7 @@ namespace GameScripts
             if (_fadeTimer >= FADE_DURATION)
             {
                 API.SetScreenFadeAlpha(1f);
-                API.LoadScene("MainMenu");
+                API.LoadScene(_fadingToGamma ? "GammaAdjust" : "MainMenu");
             }
         }
 

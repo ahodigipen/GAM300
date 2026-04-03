@@ -55,6 +55,7 @@
     <Compile Include="CrouchTriggerArea.cs" />
     <Compile Include="CrouchTutorialManager.cs" />
     <Compile Include="CutsceneController.cs" />
+    <Compile Include="GammaAdjustMenu.cs" />
     <Compile Include="LightIntensityTrigger.cs" />
     <Compile Include="PrisonBreak.cs" />
     <Compile Include="SettingsMenu.cs" />
