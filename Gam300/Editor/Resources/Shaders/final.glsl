@@ -36,6 +36,11 @@ uniform float u_fogHeight;
 uniform mat4 u_invViewProj;
 uniform vec3 u_cameraPos;
 
+// Vignette
+uniform bool u_enableVignette;
+uniform float u_vignetteIntensity;
+uniform float u_vignetteRadius;
+
 // Narkowicz 2015 ACES approximation — same curve used by Unity URP's ACES mode
 vec3 ACESFilm(vec3 x) {
     const float a = 2.51;
@@ -72,7 +77,13 @@ void main()
   result = ACESFilm(result);
   result = pow(result, vec3(1.0 / u_gamma));
 
-  // Apply fade to black
+  if (u_enableVignette) {
+      vec2 center = uvs - 0.5;
+      float dist = length(center);
+      float vignette = smoothstep(u_vignetteRadius, u_vignetteRadius - 0.45, dist);
+      result *= mix(1.0, vignette, u_vignetteIntensity);
+  }
+
   result = mix(result, vec3(0.0), u_fadeAlpha);
 
   out_fragment = vec4(result, 1.0);

@@ -873,6 +873,7 @@ namespace Boom
             {
                 m_Context->renderer->BeginFullResOverlay(showFrame);
                 m_Context->renderer->SetSpriteToneMap(true);
+                m_Context->renderer->SetSpriteGamma(m_Context->renderer->tonemapGamma);
                 RenderSpriteOverlay();
                 RenderTextOverlay();   // Text after sprites so text draws on top
                 m_Context->renderer->SetSpriteToneMap(false);
@@ -915,6 +916,13 @@ namespace Boom
         };
         std::vector<ImmediateDrawData> immediateDraws;
 
+        struct DeferredSprite3D {
+            Texture tex;
+            Transform3D transform;
+            glm::vec4 color;
+        };
+        std::vector<DeferredSprite3D> sprite3DList;
+
         glm::vec3 cameraPos = m_Context->renderer->GetCameraPosition();
 
         // Begin instance collection for this frame (only for rendering, not picking)
@@ -923,7 +931,7 @@ namespace Boom
         }
 
         //pbr ecs (always render)
-        EnttView<Entity, TransformComponent>([this, &guiList, &isPicking, &transparentObjects, &immediateDraws, &cameraPos](auto entity, TransformComponent&) {
+        EnttView<Entity, TransformComponent>([this, &guiList, &isPicking, &transparentObjects, &immediateDraws, &cameraPos, &sprite3DList](auto entity, TransformComponent&) {
             if (entity.Has<DeactivatedComponent>()) return;
 
             if (entity.Has<ModelComponent>()) {
@@ -1040,18 +1048,18 @@ namespace Boom
                 if (comp.textureID == EMPTY_ASSET) return;
 
                 if (comp.renderAs3D) {
-                    // 3D world space rendering - uses world transform for parent attachment
                     TextureAsset& texture{ m_Context->assets->Get<TextureAsset>(comp.textureID) };
                     glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
                     Transform3D worldTransform;
                     DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
 
                     if (isPicking) {
-                        m_Context->renderer->SetPickUniform(entt::to_integral(entity.ID())); //entity should be of type uint32_t
+                        m_Context->renderer->SetPickUniform(entt::to_integral(entity.ID()));
                         m_Context->renderer->DrawPick(worldTransform);
                     }
-                    else
-                        m_Context->renderer->DrawQuad(texture.data, worldTransform, comp.color);
+                    else {
+                        sprite3DList.push_back({ texture.data, worldTransform, comp.color });
+                    }
                 }
                 else {
                     // Calculate world transform for GUI sprites (respects parent hierarchy)
@@ -1178,10 +1186,16 @@ namespace Boom
                 }
             }
 
-            // Restore state
+            // === 3D SPRITE PASS (renderAs3D) ===
+            // Rendered after opaque/transparent models so depth test works correctly.
+            // Depth write is already disabled so translucent pixels don't occlude geometry behind.
             if (m_Context->renderer->enableTransparentBackfaceCulling) {
                 glDisable(GL_CULL_FACE);
             }
+            for (auto& sprite : sprite3DList) {
+                m_Context->renderer->DrawQuad(sprite.tex, sprite.transform, sprite.color);
+            }
+
             glDepthMask(GL_TRUE);
 
             // === PARTICLE RENDERING PASS ===

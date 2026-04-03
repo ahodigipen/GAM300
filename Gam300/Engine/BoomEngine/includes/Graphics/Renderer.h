@@ -782,6 +782,7 @@ namespace Boom {
                 activeTint = glm::mix(tonemapWarmTint, redTint, a);
             }
             finalShader->SetToneMapping(tonemapExposure, tonemapGamma, activeTint);
+            finalShader->SetVignette(enabledVignette, vignetteIntensity, vignetteRadius);
             uint32_t depthTex = showLowPoly ? lowPolyFrame->GetDepthTexture() : frame->GetDepthTexture();
             finalShader->SetFog(enabledFog, fogColor, fogDensity, fogHeightFalloff, fogHeight,
                                 m_InvViewProj, m_CameraPosition, depthTex);
@@ -811,6 +812,10 @@ namespace Boom {
 
         BOOM_INLINE void SetSpriteToneMap(bool enable) {
             colorShader->SetToneMap(enable);
+        }
+
+        BOOM_INLINE void SetSpriteGamma(float gamma) {
+            colorShader->SetGamma(gamma);
         }
 
     public: // ---------------------- Utilities / helpers -------------------
@@ -961,6 +966,11 @@ namespace Boom {
         float fogDensity{ 0.01f };
         float fogHeightFalloff{ 0.5f };
         float fogHeight{ 0.0f };
+
+        // Vignette
+        bool enabledVignette{};
+        float vignetteIntensity{ 0.5f };
+        float vignetteRadius{ 0.75f };
 
     public: // ---------------------- Material Preview ----------------------
         // Call this to reset the material preview (e.g., after scene change)

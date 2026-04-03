@@ -23,6 +23,9 @@ namespace Boom {
 			, gammaLoc{ GetUniformVar("u_gamma") }
 			, exposureLoc{ GetUniformVar("u_exposure") }
 			, warmTintLoc{ GetUniformVar("u_warmTint") }
+			, vignetteEnabledLoc{ GetUniformVar("u_enableVignette") }
+			, vignetteIntensityLoc{ GetUniformVar("u_vignetteIntensity") }
+			, vignetteRadiusLoc{ GetUniformVar("u_vignetteRadius") }
 			, quad{ CreateQuad2D() }
 			, color{ col }
 		{
@@ -58,6 +61,13 @@ namespace Boom {
 		m_Exposure = exposure;
 		m_Gamma    = gamma;
 		m_WarmTint = warmTint;
+	}
+
+		BOOM_INLINE void SetVignette(bool enabled, float intensity, float radius)
+	{
+		m_VignetteEnabled = enabled;
+		m_VignetteIntensity = intensity;
+		m_VignetteRadius = radius;
 	}
 
 	// Call before Render() to configure volumetric fog for the next draw.
@@ -108,7 +118,12 @@ namespace Boom {
 				SetUniform(depthMapLoc, 2);
 			}
 
-			//set color map
+			SetUniform(vignetteEnabledLoc, m_VignetteEnabled);
+			if (m_VignetteEnabled) {
+				SetUniform(vignetteIntensityLoc, m_VignetteIntensity);
+				SetUniform(vignetteRadiusLoc, m_VignetteRadius);
+			}
+
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, vmap);
 
@@ -177,6 +192,9 @@ namespace Boom {
 		int32_t fogHeightLoc;
 		int32_t fogInvViewProjLoc;
 		int32_t fogCameraPosLoc;
+		int32_t vignetteEnabledLoc;
+		int32_t vignetteIntensityLoc;
+		int32_t vignetteRadiusLoc;
 
 		Quad2D quad;
 		int32_t bloom = 0u;
@@ -198,6 +216,11 @@ namespace Boom {
 		float     m_Exposure{ 1.0f };
 		float     m_Gamma{ 2.2f };
 		glm::vec3 m_WarmTint{ 1.08f, 0.98f, 0.82f };
+
+		// Vignette state (written by SetVignette, consumed by Render)
+		bool  m_VignetteEnabled{ false };
+		float m_VignetteIntensity{ 0.5f };
+		float m_VignetteRadius{ 0.75f };
 
 		uint32_t m_Final = 0u;
 		uint32_t m_FBO = 0u;
