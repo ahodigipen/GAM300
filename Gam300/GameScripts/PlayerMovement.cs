@@ -63,7 +63,7 @@ namespace GameScripts
         private float _fadeInDuration = 0.75f;
 
         [Boom.EditorExposed("Death Anim Clip", "Exact name of the death animation clip to play (leave empty to skip).")]
-        private string _deathAnimClipName = "";
+        private string _deathAnimClipName = "m6_death_animation.fbx";
 
         [Boom.EditorExposed("Death Anim Duration", "Seconds to wait for the death animation before fading/respawning.")]
         private float _deathAnimDuration = 1.5f;
@@ -71,15 +71,6 @@ namespace GameScripts
         private bool _isPlayingDeathAnim = false;
         private float _deathAnimTimer = 0f;
         private Action _deathAnimCallback = null;
-
-        [Boom.EditorExposed("Start Anim Clip", "Clip to play on game start before control is given to the player (leave empty to skip).")]
-        private string _startAnimClipName = "";
-
-        [Boom.EditorExposed("Start Anim Duration", "Seconds to play the start animation before handing control to the player.")]
-        private float _startAnimDuration = 3.0f;
-
-        private bool _isPlayingStartAnim = false;
-        private float _startAnimTimer = 0f;
 
         private FootstepComponent _footstepComponent;
 
@@ -260,16 +251,6 @@ namespace GameScripts
                 API.SetTextColor(_godModeTextEntity, new Vec4(0, 0, 0, 0));
             }
 
-            if (_hasAnimator && !string.IsNullOrEmpty(_startAnimClipName))
-            {
-                _isPlayingStartAnim = true;
-                _isRespawning = true;
-                _startAnimTimer = 0f;
-                API.AnimatorSetStateMachineEnabled(Entity, false);
-                API.AnimatorPlay(Entity, _startAnimClipName);
-                API.Log($"[PlayerMovement] Playing start animation \"{_startAnimClipName}\" for {_startAnimDuration}s.");
-            }
-
             DebugCrouch($"OnStart complete. Player Entity: {Entity}");
             DebugLogCrouchState("OnStart");
         }
@@ -343,20 +324,6 @@ namespace GameScripts
                 Action cb = _deathAnimCallback;
                 _deathAnimCallback = null;
                 cb?.Invoke();
-            }
-        }
-
-        private void UpdateStartAnim(float dt)
-        {
-            if (!_isPlayingStartAnim) return;
-            _startAnimTimer += dt;
-            if (_startAnimTimer >= _startAnimDuration)
-            {
-                _isPlayingStartAnim = false;
-                _isRespawning = false;
-                if (_hasAnimator)
-                    API.AnimatorSetStateMachineEnabled(Entity, true);
-                API.Log("[PlayerMovement] Start animation finished — handing control to player.");
             }
         }
 
@@ -565,7 +532,6 @@ namespace GameScripts
                 return;
             }
 
-            UpdateStartAnim(dt);
             UpdateDeathAnim(dt);
             UpdateFade(dt);
             if (!API.HasTransform(Entity) || !API.HasScript(Entity)) return;
