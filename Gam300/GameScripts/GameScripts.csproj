@@ -58,6 +58,7 @@
     <Compile Include="LightIntensityTrigger.cs" />
     <Compile Include="PrisonBreak.cs" />
     <Compile Include="SettingsMenu.cs" />
+    <Compile Include="SimpleAnimator.cs" />
     <Compile Include="StoryDialogueManager.cs" />
     <Compile Include="CutsceneSequencer.cs" />
     <Compile Include="FallingObject.cs" />

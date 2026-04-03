@@ -410,6 +410,18 @@ namespace Boom {
         auto* anim = GetAnimator((entt::entity)(uint32_t)h); if (!anim) return;
         anim->SetStateMachineEnabled(enabled);
     }
+    static int32_t ICALL_API_AnimatorGetClipCount(uint64_t h) {
+        auto* anim = GetAnimator((entt::entity)(uint32_t)h); if (!anim) return 0;
+        return static_cast<int32_t>(anim->GetClipCount());
+    }
+    static MonoString* ICALL_API_AnimatorGetClipName(uint64_t h, int32_t index) {
+        auto* anim = GetAnimator((entt::entity)(uint32_t)h);
+        if (!anim || index < 0 || (size_t)index >= anim->GetClipCount())
+            return mono_string_new(mono_domain_get(), "");
+        const auto* clip = anim->GetClip((size_t)index);
+        if (!clip) return mono_string_new(mono_domain_get(), "");
+        return mono_string_new(mono_domain_get(), clip->name.c_str());
+    }
 
 
     static void ICALL_API_LoadScene(MonoString* sceneName) {
@@ -2807,6 +2819,8 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_AnimatorSetTrigger", (const void*)ICALL_API_AnimatorSetTrigger);
         mono_add_internal_call("Boom.Native::Boom_API_AnimatorPlay", (const void*)ICALL_API_AnimatorPlay);
         mono_add_internal_call("Boom.Native::Boom_API_AnimatorSetStateMachineEnabled", (const void*)ICALL_API_AnimatorSetStateMachineEnabled);
+        mono_add_internal_call("Boom.Native::Boom_API_AnimatorGetClipCount", (const void*)ICALL_API_AnimatorGetClipCount);
+        mono_add_internal_call("Boom.Native::Boom_API_AnimatorGetClipName",  (const void*)ICALL_API_AnimatorGetClipName);
         mono_add_internal_call("Boom.Native::Boom_API_GetThirdPersonCameraYaw", (const void*)ICALL_API_GetThirdPersonCameraYaw);
         mono_add_internal_call("Boom.Native::Boom_API_TriggerCameraShake",      (const void*)ICALL_API_TriggerCameraShake);
         mono_add_internal_call("Boom.Native::Boom_API_SetCameraFOV",            (const void*)ICALL_API_SetCameraFOV);

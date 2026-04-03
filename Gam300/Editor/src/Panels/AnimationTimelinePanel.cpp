@@ -148,21 +148,6 @@ void AnimationTimelinePanel::Render()
         m_DeferredTracks.clear();
     }
 
-    // Process deferred Sequence Tracks
-    if (!m_DeferredTracks.empty())
-    {
-        for (const auto& dt : m_DeferredTracks)
-        {
-            SequenceTrack newTrack;
-            newTrack.entityName = dt.entityName;
-            newTrack.type = dt.type;
-            const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot", "Look At Target", "Event Trigger", "Opacity" };
-            newTrack.label = dt.entityName + " : " + (dt.type >= 0 && dt.type < 7 ? typeNames[dt.type] : "Unknown");
-            m_SequenceTracks.push_back(newTrack);
-        }
-        m_DeferredTracks.clear();
-    }
-
     // Update playback time (independent from game scene)
     if (m_Animator && m_SelectedClipIndex >= 0)
     {
@@ -1277,6 +1262,110 @@ void AnimationTimelinePanel::RenderControlBar()
     ImGui::PopStyleColor(3); // Pop View Options colors
 
     // ========== SECTION 4: ANIMATION CLIP ==========
+    // If the entity's AnimatorComponent has NO clips yet, show an Import helper
+    if (m_Animator && m_Animator->GetClipCount() == 0 && m_SourceEntityID != entt::null && !m_StandaloneMode)
+    {
+        ImGui::PushStyleColor(ImGuiCol_Header,        ImVec4(0.7f, 0.3f, 0.1f, 0.9f));
+        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.75f, 0.35f, 0.15f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_HeaderActive,  ImVec4(0.8f, 0.4f, 0.2f, 1.0f));
+
+        if (ImGui::CollapsingHeader("Animation Clip  [!] No clips - click Import", ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            ImGui::Indent(10.0f);
+            ImGui::TextColored(ImVec4(1.f, 0.6f, 0.2f, 1.f),
+                "This entity's AnimatorComponent has no clips.");
+            ImGui::TextWrapped(
+                "Click 'Import Clips from Model' to copy all animation clips "
+                "from the FBX/skeletal model asset into this entity's AnimatorComponent.");
+            ImGui::Spacing();
+
+            if (ImGui::Button("Import Clips from Model", ImVec2(220, 0)))
+            {
+                // Walk: entity -> ModelComponent -> ModelAsset -> SkeletalModel -> Animator -> clips
+                // Copy every clip into the entity's AnimatorComponent, then re-clone the timeline.
+                auto& scene = m_App->GetContext()->scene;
+                if (scene.valid(m_SourceEntityID) && scene.all_of<Boom::ModelComponent>(m_SourceEntityID))
+                {
+                    auto& modelComp = scene.get<Boom::ModelComponent>(m_SourceEntityID);
+                    if (modelComp.modelID != 0 && m_Ctx && m_Ctx->assets)
+                    {
+                        auto* modelAsset = m_Ctx->assets->TryGet<Boom::ModelAsset>(modelComp.modelID);
+                        if (modelAsset && modelAsset->data)
+                        {
+                            auto skeletalModel = std::dynamic_pointer_cast<Boom::SkeletalModel>(modelAsset->data);
+                            if (skeletalModel)
+                            {
+                                auto sourceAnimator = skeletalModel->GetAnimator();
+                                if (sourceAnimator && sourceAnimator->GetClipCount() > 0)
+                                {
+                                    // Get the entity's AnimatorComponent
+                                    Boom::Entity ent(&scene, m_SourceEntityID);
+                                    auto& animComp = ent.Get<Boom::AnimatorComponent>();
+
+                                    // Copy every clip from the model's animator into the entity's
+                                    for (size_t i = 0; i < sourceAnimator->GetClipCount(); ++i)
+                                    {
+                                        const auto* srcClip = sourceAnimator->GetClip(i);
+                                        if (!srcClip) continue;
+                                        auto newClip = std::make_shared<Boom::AnimationClip>(*srcClip); // deep copy
+                                        animComp.animator->AddClip(newClip);
+                                        BOOM_INFO("[AnimTimeline] Imported clip '{}' into entity AnimatorComponent", srcClip->name);
+                                    }
+
+                                    // Re-clone so the timeline reflects the newly imported clips
+                                    m_SourceAnimator = animComp.animator;
+                                    m_Animator = animComp.animator->Clone();
+                                    m_Animator->GetStates().clear();
+
+                                    if (m_Animator->GetClipCount() > 0)
+                                    {
+                                        m_SelectedClipIndex = 0;
+                                        m_Animator->PlayClip(0);
+                                        m_CurrentTime = 0.0f;
+                                        m_IsPlaying = false;
+                                        m_Animator->SetTime(0.0f);
+                                        m_Animator->UpdateJointsFromCurrentTime();
+                                        BOOM_INFO("[AnimTimeline] Import complete - {} clip(s) now available",
+                                            m_Animator->GetClipCount());
+                                    }
+                                }
+                                else
+                                {
+                                    BOOM_WARN("[AnimTimeline] Skeletal model has no clips to import. "
+                                        "The FBX may not contain animation data.");
+                                }
+                            }
+                            else
+                            {
+                                BOOM_WARN("[AnimTimeline] Model is not a SkeletalModel - cannot import clips.");
+                            }
+                        }
+                        else
+                        {
+                            BOOM_WARN("[AnimTimeline] Model asset not found in registry.");
+                        }
+                    }
+                    else
+                    {
+                        BOOM_WARN("[AnimTimeline] Entity has no ModelComponent or invalid modelID.");
+                    }
+                }
+            }
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::SetTooltip(
+                    "Reads all animation clips baked into this entity's model FBX\n"
+                    "and copies them into the AnimatorComponent.\n"
+                    "The clips will then appear in the Cutscene Sequencer Animation Slot.");
+            }
+
+            ImGui::SameLine();
+            ImGui::TextDisabled("(entity must have a skeletal ModelComponent)");
+            ImGui::Unindent(10.0f);
+        }
+        ImGui::PopStyleColor(3);
+    }
+
     if (m_Animator && m_Animator->GetClipCount() > 0)
     {
         // Orange tint for animation clip section
@@ -2256,7 +2345,7 @@ void AnimationTimelinePanel::LoadSequence(const std::string& path)
     std::string line, token;
     SequenceTrack* currentTrack = nullptr;
 
-    const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot", "Look At Target", "Event Trigger" };
+    const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot", "Look At Target", "Event Trigger", "Opacity" };
 
     while (std::getline(in, line))
     {
@@ -2283,7 +2372,7 @@ void AnimationTimelinePanel::LoadSequence(const std::string& path)
                 SequenceTrack newTrack;
                 newTrack.entityName = entityName;
                 newTrack.type = type;
-                newTrack.label = entityName + " : " + (type >= 0 && type < 6 ? typeNames[type] : "Unknown");
+                newTrack.label = entityName + " : " + (type >= 0 && type < 7 ? typeNames[type] : "Unknown");
 
                 m_SequenceTracks.push_back(newTrack);
                 currentTrack = &m_SequenceTracks.back();
@@ -2447,6 +2536,14 @@ void AnimationTimelinePanel::ApplySequenceFrame(int frame)
                 else if (track.type == 2) // Scale
                 {
                     tc.transform.scale = { valX, valY, valZ };
+                }
+                else if (track.type == 6) // Opacity
+                {
+                    if (reg.all_of<Boom::ModelComponent>(e))
+                    {
+                        auto& mc = reg.get<Boom::ModelComponent>(e);
+                        mc.opacityOverride = valX;
+                    }
                 }
                 else if (track.type == 4 || track.type == 5)
                 {
