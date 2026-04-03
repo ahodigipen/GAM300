@@ -1,10 +1,727 @@
 Version: 1.0
 ENTITIES:
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy)
+      UID: 6160447234654639242
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [8.61371231, 31.1519585, 53.0787468]
+        Rotate: [180, 23.2118778, 180]
+        Scale: [0.0144000109, 0.0144000007, 0.0144000109]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy)
+      UID: 11390230641626210825
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [11.3167057, 32.5485802, 53.3085518]
+        Rotate: [180, -5.00896067e-06, 180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy)
+      UID: 10261209841793228696
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [4.22778606, 31.3135319, 56.4090004]
+        Rotate: [180, -22.8527832, 180]
+        Scale: [0.0144000072, 0.0144000007, 0.0144000072]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy)
+      UID: 8797567616001050281
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [27.1481018, 32.3687859, 55.4806023]
+        Rotate: [-180, -15.7779741, -180]
+        Scale: [0.014399997, 0.0144000007, 0.014399997]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy)
+      UID: 7028157636142922916
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [26.7900314, 31.3135319, 51.3373375]
+        Rotate: [-180, -5.00896067e-06, -180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy)
+      UID: 12383817878097054442
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [16.4565659, 32.3547478, 52.6098213]
+        Rotate: [180, -20.5342979, 180]
+        Scale: [0.0143999979, 0.0144000007, 0.0143999979]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy)
+      UID: 18406271325951044306
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [3.7375288, 32.5485802, 50.0557747]
+        Rotate: [180, 9.62499809, 180]
+        Scale: [0.0144000147, 0.0144000007, 0.0144000147]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy)
+      UID: 11374759875401795808
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [10.8838778, 32.5485802, 50.0557747]
+        Rotate: [-180, -17.5711269, -180]
+        Scale: [0.0144000091, 0.0144000007, 0.0144000091]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy)
+      UID: 6301960718251743542
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [12.5822229, 31.592453, 51.776104]
+        Rotate: [-180, 6.73577309, -180]
+        Scale: [0.0143999467, 0.0144000007, 0.0143999467]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy)
+      UID: 5286387017506573343
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [20.9755764, 31.3135319, 50.2497749]
+        Rotate: [180, -22.854372, 180]
+        Scale: [0.0143999942, 0.0144000007, 0.0143999942]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy)
+      UID: 8931017691959976121
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [21.2561531, 31.3854294, 65.753746]
+        Rotate: [180, -16.6752338, 180]
+        Scale: [0.014399996, 0.0144000007, 0.014399996]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy) (Copy)
+      UID: 7252682818671528629
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [7.23534107, 31.6903381, 60.2747574]
+        Rotate: [180, -5.00896067e-06, 180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy)
+      UID: 492910043460991756
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-7.65903664, 32.9572029, 64.6028976]
+        Rotate: [180, -5.00896067e-06, 180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy)
+      UID: 3213179117766663808
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [6.48037052, 31.1519585, 58.0931168]
+        Rotate: [-180, -5.00896067e-06, -180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy)
+      UID: 749840373700416559
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [13.7934561, 32.3547478, 54.2766457]
+        Rotate: [-180, -20.5342979, -180]
+        Scale: [0.0143999979, 0.0144000007, 0.0143999979]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy)
+      UID: 3184018424874880317
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [30.4282837, 32.3687859, 49.9803009]
+        Rotate: [180, -5.00896067e-06, 180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy)
+      UID: 2045326270130574
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [2.55531311, 32.7761154, 54.9019547]
+        Rotate: [-180, -11.3317451, -180]
+        Scale: [0.0143999867, 0.0144000007, 0.0143999867]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy) (Copy)
+      UID: 12298018177232631709
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-2.61184955, 31.3135319, 51.0577927]
+        Rotate: [180, -5.00896067e-06, 180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
+      UID: 18323278728531628855
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-5.30027342, 32.0402184, 59.1044273]
+        Rotate: [180, -5.00896067e-06, 180]
+        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+    ModelComponent:
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - ColliderComponent:
       Collider:
-        LocalPosition: [-0.569999993, 0, 0]
+        LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [11.0900002, 1.08000004, 4.19999981]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: AudioPlay
+      UID: 8271260963692846415
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [7.82185936, 27.3725433, 48.5994987]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    SoundComponent:
+      Entries:
+        - name: _soundPath
+          filePaths:
+            - Resources/Audio/tutorialSuspense2.wav
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 15
+        - name: _exitSoundPath
+          filePath: ""
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 15
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.AudioTrigger
+      ParamsJSON: "{\n  \"_soundPath\": \"Resources/Audio/tutorialSuspense2.wav\"\n}"
+  - InfoComponent:
+      Parent: 2254730700873546749
+      Name: DialogueCellImage
+      UID: 14034601326453679474
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0.219999999, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.920000017, 1]
+    SpriteComponent:
+      textureID: 12170215265351181388
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 2254730700873546749
+      Name: DialogueCell8
+      UID: 7518490065919462741
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 4462151829149510365
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 2254730700873546749
+      Name: DialogueCell7
+      UID: 10563468617302216777
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 17629547944653500448
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 2254730700873546749
+      Name: DialogueCell6
+      UID: 17733686371669677908
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 16503743671831896499
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 2254730700873546749
+      Name: DialogueCell5
+      UID: 11670483368837185108
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 14290802853173655046
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 2254730700873546749
+      Name: DialogueCell4
+      UID: 14073956941879696023
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 7116103611924805177
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 2254730700873546749
+      Name: DialogueCell3
+      UID: 447652590304884444
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 13744292941660532044
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 2254730700873546749
+      Name: DialogueCell2
+      UID: 17299045204093883308
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 6761555051347469567
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 8420205164133478996
+      Name: DialoguePatrol_5
+      UID: 14265116836506830245
+      SortOrder: 140
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.612413406, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.283438295, 1]
+    SpriteComponent:
+      textureID: 18083317453213005228
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 8420205164133478996
+      Name: DialoguePatrol_4
+      UID: 11514075996643877393
+      SortOrder: 116
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.612413406, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.283438295, 1]
+    SpriteComponent:
+      textureID: 10908618211964155359
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 8420205164133478996
+      Name: DialoguePatrol_3
+      UID: 18321299931894252998
+      SortOrder: 177
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.632000029, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.453000009, 1]
+    SpriteComponent:
+      textureID: 18192701309026806502
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [3.24000001, 5.98000002, 4.88999987]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: DialogueBoxPatrol2
+      UID: 17004717179754091713
+      SortOrder: 162
+    TransformComponent:
+      Transform:
+        Translate: [3.22702312, 28.9620152, 44.6211624]
+        Rotate: [0, -0, 0]
+        Scale: [1.16082108, 1, 0.840235174]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.TutorialDialogueTrigger
+      ParamsJSON: "{\n  \"_dialogueNames\": \"DialoguePatrol_3,DialoguePatrol_4,DialoguePatrol_5\"\n}"
+  - InfoComponent:
+      Parent: 14597596177956104017
+      Name: DialogueSentry_3
+      UID: 15651757036242998268
+      SortOrder: 151
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 15573598931929815861
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 14597596177956104017
+      Name: DialogueSentry_2
+      UID: 2175360468536632617
+      SortOrder: 17
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.282999992, 1]
+    SpriteComponent:
+      textureID: 10403370946747284962
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 14597596177956104017
+      Name: DialogueSentry_1
+      UID: 14788967133428468346
+      SortOrder: 144
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.612413406, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.283438295, 1]
+    SpriteComponent:
+      textureID: 15874944138679404527
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [3.24000001, 5.98000002, 4.88999987]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: DialogueBoxSentry
+      UID: 9934639834583286382
+      SortOrder: 103
+    TransformComponent:
+      Transform:
+        Translate: [-16.1502743, 24.5914364, 15.9496365]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.TutorialDialogueTrigger
+      ParamsJSON: "{\n  \"_dialogueNames\": \"DialogueSentry_1,DialogueSentry_2,DialogueSentry_3\"\n}"
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: Wall1 (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
+      UID: 9520736769497900168
+      SortOrder: 100
+    TransformComponent:
+      Transform:
+        Translate: [-15.3502035, 36.6709099, 5.17867661]
+        Rotate: [0, -0, 0]
+        Scale: [9.28999996, 31.4120445, 18.3273735]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [9.28999996, 31.4120445, 18.3273735]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 5951671470822882399
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0.519999981, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [3.19000006, 0.980000019, 4.13999987]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
+      Parent: 0
+      Name: Hiddenwall3
+      UID: 8004597702685157281
+      SortOrder: 84
+    TransformComponent:
+      Transform:
+        Translate: [25.1413994, 30.7671318, 47.4465446]
+        Rotate: [0, 89.980217, 0]
+        Scale: [0.243305743, 12.9381752, 4.37132978]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.243305743, 12.9381752, 4.37132978]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
+    ModelComponent:
+      ModelID: 0
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0.519999981, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [3.19000006, 1.08000004, 4.19999981]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -286,22 +1003,15 @@ ENTITIES:
       ModelSource: ""
       MaterialSource: ""
   - InfoComponent:
-      Parent: 2452628580730671080
-      Name: bar bottom
-      UID: 12906515800239070886
-      SortOrder: 0
+      Parent: 0
+      Name: DialogueCell
+      UID: 2254730700873546749
+      SortOrder: 1
     TransformComponent:
       Transform:
-        Translate: [-0.0942149162, -0.238491058, -3.84722137]
-        Rotate: [90, 1.36603785e-05, 89.9999466]
-        Scale: [0.0399636254, 0.00999999978, 0.0399999991]
-    ModelComponent:
-      ModelID: 10530537100426425185
-      MaterialID: 365007133719936359
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
   - InfoComponent:
       Parent: 0
       Name: BAR27
@@ -419,7 +1129,7 @@ ENTITIES:
     SpotLightComponent:
       Light:
         Radiance: [1, 1, 1]
-        Intensity: 14.1400003
+        Intensity: 8.52000046
         FallOff: 1.16600001
         CutOff: 0.619000018
   - InfoComponent:
@@ -589,17 +1299,17 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: BAR52
-      UID: 18101572677118124544
-      SortOrder: 171
+      Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
+      UID: 4957433095678516290
+      SortOrder: 51
     TransformComponent:
       Transform:
-        Translate: [8.05756187, 26.5532932, 49.5249443]
-        Rotate: [0, -0, 0]
-        Scale: [0.0173033196, 0.0157864708, 0.0195759386]
+        Translate: [8.8975935, 32.8417664, 60.2747574]
+        Rotate: [-180, 48.6584167, -180]
+        Scale: [0.0144000333, 0.0144000007, 0.0144000333]
     ModelComponent:
-      ModelID: 10530537100426425185
-      MaterialID: 365007133719936359
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -646,34 +1356,33 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: BAR8
-      UID: 2444982802525083105
-      SortOrder: 24
+      Name: Light2
+      UID: 17866928223747287011
+      SortOrder: 169
     TransformComponent:
       Transform:
-        Translate: [7.00189447, 26.5532932, 48.0503464]
-        Rotate: [0, 89.980217, 0]
-        Scale: [0.0173033178, 0.0157864708, 0.0195759367]
-    ModelComponent:
-      ModelID: 10530537100426425185
-      MaterialID: 365007133719936359
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+        Translate: [11.0787554, 30.0876751, 55.9076118]
+        Rotate: [0, -0, 0]
+        Scale: [0.930000007, 0.930000007, 0.930000007]
+    PointLightComponent:
+      Light:
+        Radiance: [0.975609779, 0.422319323, 0.103113249]
+        Intensity: 0
+        Range: 66.4800034
+        BloomStrength: 1
   - InfoComponent:
       Parent: 0
-      Name: BAR40
-      UID: 12320286217177770759
-      SortOrder: 123
+      Name: Hangingpuppet (Copy) (Copy) (Copy)
+      UID: 15476995501384227882
+      SortOrder: 146
     TransformComponent:
       Transform:
-        Translate: [15.4597836, 26.5532932, 49.5249443]
-        Rotate: [0, -0, 0]
-        Scale: [0.0173033196, 0.0157864708, 0.0195759386]
+        Translate: [29.9342651, 32.8265152, 65.753746]
+        Rotate: [180, 15.7140608, 180]
+        Scale: [0.0143999942, 0.0144000007, 0.0143999942]
     ModelComponent:
-      ModelID: 10530537100426425185
-      MaterialID: 365007133719936359
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -845,15 +1554,15 @@ ENTITIES:
       SortOrder: 75
     TransformComponent:
       Transform:
-        Translate: [9.45815754, 34.4550438, 41.0533142]
-        Rotate: [134.441025, -17.2439919, 180]
+        Translate: [6.45802164, 33.8080368, 43.0030823]
+        Rotate: [134.441025, -17.2439919, -180]
         Scale: [0.999775171, 0.999990642, 0.999972343]
     SpotLightComponent:
       Light:
         Radiance: [1, 1, 1]
-        Intensity: 12.25
-        FallOff: 1.56599998
-        CutOff: 0.828999996
+        Intensity: 0
+        FallOff: 1.10599995
+        CutOff: 0.93900001
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -901,8 +1610,8 @@ ENTITIES:
       SortOrder: 179
     TransformComponent:
       Transform:
-        Translate: [-0.476319522, -0.135637328, 1.02264869]
-        Rotate: [-196, 5844.1875, 180]
+        Translate: [-4.98191977, 29.0284767, 11.996707]
+        Rotate: [-220.375, 7165.0625, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -1074,22 +1783,15 @@ ENTITIES:
       ModelSource: Resources/Models/Cube.fbx
       MaterialSource: Marble
   - InfoComponent:
-      Parent: 18354236305036628670
-      Name: bar bottom (Copy)
-      UID: 17794895751835443486
-      SortOrder: 0
+      Parent: 0
+      Name: DialogueSentry
+      UID: 14597596177956104017
+      SortOrder: 2
     TransformComponent:
       Transform:
-        Translate: [-0.0942153931, -0.26723671, -3.84722137]
-        Rotate: [90, 1.36603785e-05, 89.9999466]
-        Scale: [0.0399636254, 0.00999999978, 0.0399999991]
-    ModelComponent:
-      ModelID: 10530537100426425185
-      MaterialID: 365007133719936359
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1358,7 +2060,20 @@ ENTITIES:
       Enabled: true
       TypeName: GameScripts.PlayerMovement
       ParamsJSON: "{\n  \"_levelStartPos\": {\n    \"X\": -55.20199966430664,\n    \"Y\": 1.7999999523162842,\n    \"Z\": 5.014999866485596\n  },\n  \"_teleportToStartTrigger\": false\n}"
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [-0.107912615, 2.16796827, 0.0257285051]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [192.678619, 245.22728, 140.861038]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: Sentry_1
       UID: 11902586246754059388
@@ -1368,6 +2083,16 @@ ENTITIES:
         Translate: [-1.849962, 22.1969891, 15.7128153]
         Rotate: [0, -89.980217, 0]
         Scale: [0.0176814087, 0.0176813006, 0.0176814087]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0176814087, 0.0176813006, 0.0176814087]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 12373711864448078618
       MaterialID: 1781146247448718189
@@ -1885,21 +2610,20 @@ ENTITIES:
       {}
   - InfoComponent:
       Parent: 0
-      Name: BAR18
-      UID: 5276456363725969465
-      SortOrder: 56
+      Name: Light3
+      UID: 7843759036873323337
+      SortOrder: 82
     TransformComponent:
       Transform:
-        Translate: [7.00151634, 26.5532932, 49.1425514]
-        Rotate: [0, 89.980217, 0]
-        Scale: [0.0173033178, 0.0157864708, 0.0195759367]
-    ModelComponent:
-      ModelID: 10530537100426425185
-      MaterialID: 365007133719936359
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+        Translate: [21.517931, 30.0876751, 55.8853455]
+        Rotate: [0, -0, 0]
+        Scale: [0.930000007, 0.930000007, 0.930000007]
+    PointLightComponent:
+      Light:
+        Radiance: [0.975609779, 0.422319323, 0.103113249]
+        Intensity: 0
+        Range: 66.4800034
+        BloomStrength: 1
   - InfoComponent:
       Parent: 8420205164133478996
       Name: DialoguePatrol_1
@@ -1916,14 +2640,14 @@ ENTITIES:
       renderAs3D: false
   - InfoComponent:
       Parent: 0
-      Name: BAR51
+      Name: BARTOP
       UID: 17497928574816309487
       SortOrder: 167
     TransformComponent:
       Transform:
-        Translate: [32.8334808, 27.3654747, 47.0406342]
+        Translate: [33.5005188, 36.8344727, 47.0406342]
         Rotate: [0, -0, 90]
-        Scale: [0.0399629474, 0.0240815282, 0.0399999991]
+        Scale: [0.0399559252, 0.0656697303, 0.0399999991]
     ModelComponent:
       ModelID: 10530537100426425185
       MaterialID: 365007133719936359
@@ -1948,46 +2672,20 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 4.63620901, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [39.4257011, 679.768982, 11.5720634]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: WOOD
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: BAR21
-      UID: 6450362732828753608
-      SortOrder: 68
+  - InfoComponent:
+      Parent: 18142273225304105880
+      Name: DialogueExit1
+      UID: 17999037339828691340
+      SortOrder: 4
     TransformComponent:
       Transform:
-        Translate: [16.3955173, 27.3405609, 49.5987282]
-        Rotate: [1.95413286e-11, -3.3510616e-05, 90.0000763]
-        Scale: [0.0399578884, 0.0136405425, 0.039999973]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0399578884, 0.0136405425, 0.039999973]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 10530537100426425185
-      MaterialID: 365007133719936359
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+        Translate: [0, -0.649999976, 0.00999999978]
+        Rotate: [0, -0, 0]
+        Scale: [0.699999988, 0.5, 1]
+    SpriteComponent:
+      textureID: 15790176270808879105
+      color: [1, 1, 1, 0]
+      renderAs3D: false
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -2152,7 +2850,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0.230000004, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [2.76999998, 1.04999995, 1.04999995]
+        LocalScale: [3.74000001, 1.04999995, 1.04999995]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -2429,7 +3127,7 @@ ENTITIES:
       SortOrder: 92
     TransformComponent:
       Transform:
-        Translate: [13.5925035, 26.2289066, 48.351326]
+        Translate: [8.12389183, 26.2289066, 49.4404373]
         Rotate: [0, -0, 0]
         Scale: [1, 1, 0.340012074]
     ScriptComponent:
@@ -2455,21 +3153,20 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: BAR9
-      UID: 2482221135688351606
-      SortOrder: 27
+      Name: Light1
+      UID: 18280384215714157564
+      SortOrder: 173
     TransformComponent:
       Transform:
-        Translate: [14.059679, 26.5532932, 49.5249443]
+        Translate: [2.37225795, 30.0876751, 55.3236847]
         Rotate: [0, -0, 0]
-        Scale: [0.0173033196, 0.0157864708, 0.0195759386]
-    ModelComponent:
-      ModelID: 10530537100426425185
-      MaterialID: 365007133719936359
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+        Scale: [0.930000007, 0.930000007, 0.930000007]
+    PointLightComponent:
+      Light:
+        Radiance: [0.975609779, 0.422319323, 0.103113249]
+        Intensity: 0
+        Range: 66.4800034
+        BloomStrength: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -2499,17 +3196,17 @@ ENTITIES:
       ParamsJSON: "{\n  \"_dialogueNames\": \"DialoguePatrol_1,DialoguePatrol_2\"\n}"
   - InfoComponent:
       Parent: 0
-      Name: BAR46
-      UID: 15514506981136467121
-      SortOrder: 147
+      Name: Hangingpuppet (Copy) (Copy) (Copy)
+      UID: 4243716701876164726
+      SortOrder: 45
     TransformComponent:
       Transform:
-        Translate: [16.5592861, 26.5532932, 48.0536537]
-        Rotate: [0, 89.980217, 0]
-        Scale: [0.0173033178, 0.0157864708, 0.0195759367]
+        Translate: [12.8678904, 31.5947857, 58.9890175]
+        Rotate: [180, -18.1604614, 180]
+        Scale: [0.0144000212, 0.0144000007, 0.0144000212]
     ModelComponent:
-      ModelID: 10530537100426425185
-      MaterialID: 365007133719936359
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -2705,399 +3402,347 @@ ENTITIES:
       color: [1, 1, 1, 0]
       renderAs3D: false
   - InfoComponent:
-      Parent: 2254730700873546749
-      Name: DialogueCell7
-      UID: 10563468617302216777
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, -0.649999976, 0.00999999978]
-        Rotate: [0, -0, 0]
-        Scale: [0.699999988, 0.5, 1]
-    SpriteComponent:
-      textureID: 17629547944653500448
-      color: [1, 1, 1, 0]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 14597596177956104017
-      Name: DialogueSentry_2
-      UID: 2175360468536632617
-      SortOrder: 17
-    TransformComponent:
-      Transform:
-        Translate: [0, -0.649999976, 0.00999999978]
-        Rotate: [0, -0, 0]
-        Scale: [0.699999988, 0.282999992, 1]
-    SpriteComponent:
-      textureID: 10403370946747284962
-      color: [1, 1, 1, 0]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 14597596177956104017
-      Name: DialogueSentry_3
-      UID: 15651757036242998268
-      SortOrder: 151
-    TransformComponent:
-      Transform:
-        Translate: [0, -0.649999976, 0.00999999978]
-        Rotate: [0, -0, 0]
-        Scale: [0.699999988, 0.5, 1]
-    SpriteComponent:
-      textureID: 15573598931929815861
-      color: [1, 1, 1, 0]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 8420205164133478996
-      Name: DialoguePatrol_3
-      UID: 18321299931894252998
-      SortOrder: 177
-    TransformComponent:
-      Transform:
-        Translate: [0, -0.632000029, 0.00999999978]
-        Rotate: [0, -0, 0]
-        Scale: [0.699999988, 0.453000009, 1]
-    SpriteComponent:
-      textureID: 18192701309026806502
-      color: [1, 1, 1, 0]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 2254730700873546749
-      Name: DialogueCell3
-      UID: 447652590304884444
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, -0.649999976, 0.00999999978]
-        Rotate: [0, -0, 0]
-        Scale: [0.699999988, 0.5, 1]
-    SpriteComponent:
-      textureID: 13744292941660532044
-      color: [1, 1, 1, 0]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 2254730700873546749
-      Name: DialogueCell2
-      UID: 17299045204093883308
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, -0.649999976, 0.00999999978]
-        Rotate: [0, -0, 0]
-        Scale: [0.699999988, 0.5, 1]
-    SpriteComponent:
-      textureID: 6761555051347469567
-      color: [1, 1, 1, 0]
-      renderAs3D: false
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [3.24000001, 5.98000002, 4.88999987]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: true
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
       Parent: 0
-      Name: DialogueBoxSentry
-      UID: 9934639834583286382
-      SortOrder: 103
+      Name: Pause_Master_BG
+      UID: 4671019080698985014
+      SortOrder: 47
     TransformComponent:
       Transform:
-        Translate: [-16.1502743, 24.5914364, 15.9496365]
-        Rotate: [0, -0, 0]
+        Translate: [0.280000001, -0.109999999, 1.10000002]
+        Rotate: [0, 0, 0]
+        Scale: [0.204999998, 0.0299999993, 1]
+    SpriteComponent:
+      textureID: 15235968341662935537
+      color: [1, 1, 1, 0.600000024]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause Menu Script
+      UID: 12608398802596728943
+      SortOrder: 128
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.TutorialDialogueTrigger
-      ParamsJSON: "{\n  \"_dialogueNames\": \"DialogueSentry_1,DialogueSentry_2,DialogueSentry_3\"\n}"
+      TypeName: GameScripts.PauseMenu
+      ParamsJSON: "{}"
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
   - InfoComponent:
-      Parent: 8420205164133478996
-      Name: DialoguePatrol_5
-      UID: 14265116836506830245
-      SortOrder: 140
-    TransformComponent:
-      Transform:
-        Translate: [0, -0.612413406, 0.00999999978]
-        Rotate: [0, -0, 0]
-        Scale: [0.699999988, 0.283438295, 1]
-    SpriteComponent:
-      textureID: 18083317453213005228
-      color: [1, 1, 1, 0]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 14597596177956104017
-      Name: DialogueSentry_1
-      UID: 14788967133428468346
-      SortOrder: 144
-    TransformComponent:
-      Transform:
-        Translate: [0, -0.612413406, 0.00999999978]
-        Rotate: [0, -0, 0]
-        Scale: [0.699999988, 0.283438295, 1]
-    SpriteComponent:
-      textureID: 15874944138679404527
-      color: [1, 1, 1, 0]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 2254730700873546749
-      Name: DialogueCellImage
-      UID: 14034601326453679474
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, 0.219999999, 0.00999999978]
-        Rotate: [0, -0, 0]
-        Scale: [0.699999988, 0.920000017, 1]
-    SpriteComponent:
-      textureID: 12170215265351181388
-      color: [1, 1, 1, 0]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 2254730700873546749
-      Name: DialogueCell5
-      UID: 11670483368837185108
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, -0.649999976, 0.00999999978]
-        Rotate: [0, -0, 0]
-        Scale: [0.699999988, 0.5, 1]
-    SpriteComponent:
-      textureID: 14290802853173655046
-      color: [1, 1, 1, 0]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 2254730700873546749
-      Name: DialogueCell4
-      UID: 14073956941879696023
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, -0.649999976, 0.00999999978]
-        Rotate: [0, -0, 0]
-        Scale: [0.699999988, 0.5, 1]
-    SpriteComponent:
-      textureID: 7116103611924805177
-      color: [1, 1, 1, 0]
-      renderAs3D: false
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [-0.600000024, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [12.0600004, 0.980000019, 4.13999987]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
       Parent: 0
-      Name: Hiddenwall3
-      UID: 8004597702685157281
-      SortOrder: 84
+      Name: Pause_Scroll
+      UID: 10224819476113975430
+      SortOrder: 108
     TransformComponent:
       Transform:
-        Translate: [25.1413994, 30.7671318, 47.4465446]
-        Rotate: [0, 89.980217, 0]
-        Scale: [0.243305743, 12.9381752, 4.37132978]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.243305743, 12.9381752, 4.37132978]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 0
-      MaterialID: 0
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 2254730700873546749
-      Name: DialogueCell6
-      UID: 17733686371669677908
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, -0.649999976, 0.00999999978]
-        Rotate: [0, -0, 0]
-        Scale: [0.699999988, 0.5, 1]
+        Translate: [0, 0, 1]
+        Rotate: [0, 0, 0]
+        Scale: [1.20000005, 1, 0.100000001]
     SpriteComponent:
-      textureID: 16503743671831896499
-      color: [1, 1, 1, 0]
+      textureID: 13415878511549165281
+      color: [0.431372523, 0.425401956, 0.363706261, 1]
       renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
   - InfoComponent:
-      Parent: 8420205164133478996
-      Name: DialoguePatrol_4
-      UID: 11514075996643877393
-      SortOrder: 116
+      Parent: 0
+      Name: Pause_RestartButton
+      UID: 5904394800213603709
+      SortOrder: 65
     TransformComponent:
       Transform:
-        Translate: [0, -0.612413406, 0.00999999978]
-        Rotate: [0, -0, 0]
-        Scale: [0.699999988, 0.283438295, 1]
+        Translate: [-0.349999994, 0.0700000003, 1.10000002]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.075000003, 1]
     SpriteComponent:
-      textureID: 10908618211964155359
-      color: [1, 1, 1, 0]
+      textureID: 1815887354929855275
+      color: [1, 1, 1, 1]
       renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
   - InfoComponent:
-      Parent: 2254730700873546749
-      Name: DialogueCell8
-      UID: 7518490065919462741
-      SortOrder: 0
+      Parent: 0
+      Name: Pause_ReturnButton
+      UID: 5566590049786588666
+      SortOrder: 59
     TransformComponent:
       Transform:
-        Translate: [0, -0.649999976, 0.00999999978]
-        Rotate: [0, -0, 0]
-        Scale: [0.699999988, 0.5, 1]
+        Translate: [-0.349999994, -0.0949999988, 1.10000002]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.075000003, 1]
     SpriteComponent:
-      textureID: 4462151829149510365
-      color: [1, 1, 1, 0]
+      textureID: 1920245529432086823
+      color: [1, 1, 1, 1]
       renderAs3D: false
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: true
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
       Parent: 0
-      Name: AudioPlay
-      UID: 8271260963692846415
-      SortOrder: 0
+      Name: Pause_CreditsButton
+      UID: 6297404021137492667
+      SortOrder: 67
     TransformComponent:
       Transform:
-        Translate: [12.0738258, 27.3725433, 48.5994987]
+        Translate: [-0.349999994, -0.25999999, 1.10000002]
         Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]
-    SoundComponent:
-      Entries:
-        - name: _soundPath
-          filePaths:
-            - Resources/Audio/tutorialSuspense2.wav
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 15
-        - name: _exitSoundPath
-          filePath: ""
-          loop: false
-          volume: 1
-          priority: 128
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 1
-          mute: false
-          playOnStart: false
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 15
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.AudioTrigger
-      ParamsJSON: "{\n  \"_soundPath\": \"Resources/Audio/tutorialSuspense2.wav\"\n}"
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
+        Scale: [0.200000003, 0.075000003, 1]
+    SpriteComponent:
+      textureID: 3938594489715522154
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
       Parent: 0
-      Name: Wall1 (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
-      UID: 9520736769497900168
-      SortOrder: 100
+      Name: Pause_QuitButton
+      UID: 8948746535193059584
+      SortOrder: 94
     TransformComponent:
       Transform:
-        Translate: [-15.3502035, 36.6709099, 5.17867661]
-        Rotate: [0, -0, 0]
-        Scale: [9.28999996, 31.4120445, 18.3273735]
-    RigidBodyComponent:
-      RigidBody:
-        Density: 1
-        Mass: 1
-        InitialVelocity: [0, 0, 0]
-        Previous Scale: [9.28999996, 31.4120445, 18.3273735]
-        FreezeRotationX: false
-        FreezeRotationY: false
-        FreezeRotationZ: false
-        Type: STATIC
-    ModelComponent:
-      ModelID: 7633162898494281895
-      MaterialID: 5951671470822882399
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [3.24000001, 5.98000002, 4.88999987]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: true
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
+        Translate: [-0.349999994, -0.419999987, 1.10000002]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.075000003, 1]
+    SpriteComponent:
+      textureID: 13358858626374697893
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
       Parent: 0
-      Name: DialogueBoxPatrol2
-      UID: 17004717179754091713
-      SortOrder: 162
+      Name: Pause_ResumeButton
+      UID: 6722159140985515173
+      SortOrder: 74
     TransformComponent:
       Transform:
-        Translate: [3.22702312, 28.9620152, 44.6211624]
+        Translate: [-0.349999994, 0.234999999, 1.10000002]
         Rotate: [0, -0, 0]
-        Scale: [1.16082108, 1, 0.840235174]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.TutorialDialogueTrigger
-      ParamsJSON: "{\n  \"_dialogueNames\": \"DialoguePatrol_3,DialoguePatrol_4,DialoguePatrol_5\"\n}"
+        Scale: [0.200000003, 0.075000003, 0.00999999978]
+    SpriteComponent:
+      textureID: 18005541902257493201
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_SFX_Handle
+      UID: 13342355313482080434
+      SortOrder: 134
+    TransformComponent:
+      Transform:
+        Translate: [0.479999989, -0.379999995, 1.12]
+        Rotate: [0, 0, 0]
+        Scale: [0.0199999996, 0.0399999991, 1]
+    SpriteComponent:
+      textureID: 12879034172909871896
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_Master_Fill
+      UID: 3931286615731204042
+      SortOrder: 40
+    TransformComponent:
+      Transform:
+        Translate: [0.280000001, -0.109999999, 1.11000001]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.0199999996, 1]
+    SpriteComponent:
+      textureID: 10258411235812800368
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_Master_Handle
+      UID: 5003664612044735175
+      SortOrder: 54
+    TransformComponent:
+      Transform:
+        Translate: [0.479999989, -0.109999999, 1.12]
+        Rotate: [0, 0, 0]
+        Scale: [0.0199999996, 0.0399999991, 1]
+    SpriteComponent:
+      textureID: 12879034172909871896
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_BGM_Fill
+      UID: 5852252158042436991
+      SortOrder: 64
+    TransformComponent:
+      Transform:
+        Translate: [0.280000001, -0.239999995, 1.11000001]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.0199999996, 1]
+    SpriteComponent:
+      textureID: 10258411235812800368
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_BGM_Handle
+      UID: 16675060374144871009
+      SortOrder: 160
+    TransformComponent:
+      Transform:
+        Translate: [0.479999989, -0.239999995, 1.12]
+        Rotate: [0, 0, 0]
+        Scale: [0.0199999996, 0.0399999991, 1]
+    SpriteComponent:
+      textureID: 12879034172909871896
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_BGM_BG
+      UID: 4971574730537095685
+      SortOrder: 52
+    TransformComponent:
+      Transform:
+        Translate: [0.280000001, -0.239999995, 1.10000002]
+        Rotate: [0, 0, 0]
+        Scale: [0.204999998, 0.0299999993, 1]
+    SpriteComponent:
+      textureID: 15235968341662935537
+      color: [1, 1, 1, 0.600000024]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_Gamma_Handle
+      UID: 8554026230313328365
+      SortOrder: 91
+    TransformComponent:
+      Transform:
+        Translate: [0.334994525, 0.170000002, 1.12]
+        Rotate: [0, 0, 0]
+        Scale: [0.0199999996, 0.0399999991, 1]
+    SpriteComponent:
+      textureID: 12879034172909871896
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_SFX_BG
+      UID: 4852565405374371737
+      SortOrder: 49
+    TransformComponent:
+      Transform:
+        Translate: [0.280000001, -0.379999995, 1.10000002]
+        Rotate: [0, 0, 0]
+        Scale: [0.204999998, 0.0299999993, 1]
+    SpriteComponent:
+      textureID: 15235968341662935537
+      color: [1, 1, 1, 0.600000024]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_SFX_Fill
+      UID: 1900361381046245117
+      SortOrder: 19
+    TransformComponent:
+      Transform:
+        Translate: [0.280000001, -0.379999995, 1.11000001]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.0199999996, 1]
+    SpriteComponent:
+      textureID: 10258411235812800368
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_Gamma_BG
+      UID: 15964893654232326128
+      SortOrder: 154
+    TransformComponent:
+      Transform:
+        Translate: [0.280000001, 0.170000002, 1.10000002]
+        Rotate: [0, 0, 0]
+        Scale: [0.204999998, 0.0299999993, 1]
+    SpriteComponent:
+      textureID: 15235968341662935537
+      color: [1, 1, 1, 0.600000024]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_Gamma_Fill
+      UID: 9799309324066039914
+      SortOrder: 102
+    TransformComponent:
+      Transform:
+        Translate: [0.0325247645, 0.170000002, 1.11000001]
+        Rotate: [0, 0, 0]
+        Scale: [9.99999975e-05, 0.0199999996, 1]
+    SpriteComponent:
+      textureID: 10258411235812800368
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
   - InfoComponent:
       Parent: 0
       Name: Death_Background
@@ -3325,24 +3970,24 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: BarSmallify
-      UID: 2452628580730671080
-      SortOrder: 26
+      Name: DialogueExit
+      UID: 18142273225304105880
+      SortOrder: 3
     TransformComponent:
       Transform:
-        Translate: [7.1208415, 27.6133213, 48.507782]
-        Rotate: [0, -0, 0]
-        Scale: [1, 1, 0.376252294]
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
   - InfoComponent:
       Parent: 0
-      Name: BarSmallify (Copy)
-      UID: 18354236305036628670
-      SortOrder: 175
+      Name: DialoguePatrol
+      UID: 8420205164133478996
+      SortOrder: 87
     TransformComponent:
       Transform:
-        Translate: [16.6826077, 27.6133213, 48.5664902]
-        Rotate: [0, -0, 0]
-        Scale: [1, 1, 0.41714251]
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
   - InfoComponent:
       Parent: 0
       Name: BarSmallify (Copy) (Copy)
@@ -3370,23 +4015,33 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [3.24000001, 5.98000002, 4.88999987]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
       Parent: 0
-      Name: BAR38
-      UID: 11957682305668633837
-      SortOrder: 119
+      Name: DialogueBoxExit
+      UID: 7871029963616826854
+      SortOrder: 83
     TransformComponent:
       Transform:
-        Translate: [9.24262428, 26.5532932, 49.5249443]
+        Translate: [30.4529381, 39.4806595, 14.1004667]
         Rotate: [0, -0, 0]
-        Scale: [0.0173033196, 0.0157864708, 0.0195759386]
-    ModelComponent:
-      ModelID: 10530537100426425185
-      MaterialID: 365007133719936359
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+        Scale: [1, 1, 0.340012074]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.TutorialDialogueTrigger
+      ParamsJSON: "{\n  \"_dialogueNames\": \"DialogueExit1\"\n}"
   - InfoComponent:
       Parent: 0
       Name: BAR22
@@ -3411,7 +4066,7 @@ ENTITIES:
       SortOrder: 107
     TransformComponent:
       Transform:
-        Translate: [18.4435959, 26.5532932, 46.971981]
+        Translate: [18.3336639, 26.5532932, 46.971981]
         Rotate: [0, -0, 0]
         Scale: [0.0173033196, 0.0157864708, 0.0195759386]
     ModelComponent:
@@ -3559,17 +4214,17 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: BAR49
-      UID: 16062004296372564149
-      SortOrder: 156
+      Name: Hangingpuppet (Copy) (Copy) (Copy)
+      UID: 8463075566378660565
+      SortOrder: 88
     TransformComponent:
       Transform:
-        Translate: [16.5588322, 26.5532932, 49.2990265]
-        Rotate: [0, 89.980217, 0]
-        Scale: [0.0173033178, 0.0157864708, 0.0195759367]
+        Translate: [12.8678904, 31.3858376, 65.753746]
+        Rotate: [180, 15.7631426, 180]
+        Scale: [0.0144000081, 0.0144000007, 0.0144000081]
     ModelComponent:
-      ModelID: 10530537100426425185
-      MaterialID: 365007133719936359
+      ModelID: 12185583551159906295
+      MaterialID: 17905291636785580641
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -3802,7 +4457,7 @@ ENTITIES:
       SortOrder: 12
     TransformComponent:
       Transform:
-        Translate: [16.9800491, 26.5532932, 46.971981]
+        Translate: [16.816061, 26.5532932, 46.971981]
         Rotate: [0, -0, 0]
         Scale: [0.0173033196, 0.0157864708, 0.0195759386]
     ModelComponent:
@@ -3836,9 +4491,9 @@ ENTITIES:
       SortOrder: 168
     TransformComponent:
       Transform:
-        Translate: [26.7900314, 31.3135319, 51.3373375]
-        Rotate: [-180, -5.00896067e-06, -180]
-        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+        Translate: [23.5374718, 31.6766071, 51.9202576]
+        Rotate: [-180, 13.4649868, -180]
+        Scale: [0.0144001897, 0.0144000007, 0.0144001897]
     ModelComponent:
       ModelID: 12185583551159906295
       MaterialID: 17905291636785580641
@@ -3853,9 +4508,9 @@ ENTITIES:
       SortOrder: 17
     TransformComponent:
       Transform:
-        Translate: [11.3167057, 32.5485802, 53.3085518]
-        Rotate: [180, -5.00896067e-06, 180]
-        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+        Translate: [-2.51612091, 31.7830448, 48.5800934]
+        Rotate: [-180, 19.1425514, -180]
+        Scale: [0.0144000212, 0.0144000007, 0.0144000212]
     ModelComponent:
       ModelID: 12185583551159906295
       MaterialID: 17905291636785580641
@@ -3870,9 +4525,9 @@ ENTITIES:
       SortOrder: 104
     TransformComponent:
       Transform:
-        Translate: [4.22778606, 31.3135319, 56.4090004]
-        Rotate: [-180, -5.00896067e-06, -180]
-        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+        Translate: [5.26230145, 31.3135319, 52.4924698]
+        Rotate: [180, 11.293767, 180]
+        Scale: [0.0144000789, 0.0144000007, 0.0144000789]
     ModelComponent:
       ModelID: 12185583551159906295
       MaterialID: 17905291636785580641
@@ -3905,8 +4560,8 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [28.0288467, 32.2629204, 58.9628372]
-        Rotate: [180, -5.00896067e-06, 180]
-        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+        Rotate: [180, -9.25442791, 180]
+        Scale: [0.0144000584, 0.0144000007, 0.0144000584]
     ModelComponent:
       ModelID: 12185583551159906295
       MaterialID: 17905291636785580641
@@ -3921,9 +4576,9 @@ ENTITIES:
       SortOrder: 152
     TransformComponent:
       Transform:
-        Translate: [-7.65903664, 32.9572029, 64.6028976]
-        Rotate: [180, -5.00896067e-06, 180]
-        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+        Translate: [-4.86736298, 32.9572029, 59.8027878]
+        Rotate: [-180, 47.1223412, -180]
+        Scale: [0.0143999923, 0.0144000007, 0.0143999923]
     ModelComponent:
       ModelID: 12185583551159906295
       MaterialID: 17905291636785580641
@@ -3938,8 +4593,8 @@ ENTITIES:
       SortOrder: 131
     TransformComponent:
       Transform:
-        Translate: [-2.61184955, 31.3135319, 51.0577927]
-        Rotate: [180, -5.00896067e-06, 180]
+        Translate: [1.44417226, 31.3135319, 52.8061066]
+        Rotate: [-180, -5.00896067e-06, -180]
         Scale: [0.0144000007, 0.0144000007, 0.0144000007]
     ModelComponent:
       ModelID: 12185583551159906295
@@ -3955,9 +4610,9 @@ ENTITIES:
       SortOrder: 8
     TransformComponent:
       Transform:
-        Translate: [6.48037052, 31.1519585, 58.0931168]
-        Rotate: [-180, -5.00896067e-06, -180]
-        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+        Translate: [7.62493229, 31.4861298, 49.8940163]
+        Rotate: [180, 22.2846355, 180]
+        Scale: [0.0144000053, 0.0144000007, 0.0144000053]
     ModelComponent:
       ModelID: 12185583551159906295
       MaterialID: 17905291636785580641
@@ -4006,9 +4661,9 @@ ENTITIES:
       SortOrder: 125
     TransformComponent:
       Transform:
-        Translate: [-5.30027342, 32.0402184, 59.1044273]
-        Rotate: [180, -5.00896067e-06, 180]
-        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+        Translate: [-5.30027342, 32.0402184, 55.6360741]
+        Rotate: [180, 7.0874238, 180]
+        Scale: [0.0143999541, 0.0144000007, 0.0143999541]
     ModelComponent:
       ModelID: 12185583551159906295
       MaterialID: 17905291636785580641
@@ -4023,9 +4678,9 @@ ENTITIES:
       SortOrder: 79
     TransformComponent:
       Transform:
-        Translate: [13.7934561, 32.3547478, 54.2766457]
-        Rotate: [180, -5.00896067e-06, 180]
-        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+        Translate: [18.5616398, 32.3547478, 50.446846]
+        Rotate: [180, -1.18250859, 180]
+        Scale: [0.0144000407, 0.0144000007, 0.0144000407]
     ModelComponent:
       ModelID: 12185583551159906295
       MaterialID: 17905291636785580641
@@ -4041,8 +4696,8 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [21.8722992, 31.3135319, 54.2766457]
-        Rotate: [-180, -5.00896067e-06, -180]
-        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+        Rotate: [-180, 19.8549137, -180]
+        Scale: [0.0143999932, 0.0144000007, 0.0143999932]
     ModelComponent:
       ModelID: 12185583551159906295
       MaterialID: 17905291636785580641
@@ -4058,8 +4713,8 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-1.39929771, 31.3135319, 64.4367905]
-        Rotate: [-180, -5.00896067e-06, -180]
-        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+        Rotate: [-180, -21.4642658, -180]
+        Scale: [0.0144000528, 0.0144000007, 0.0144000528]
     ModelComponent:
       ModelID: 12185583551159906295
       MaterialID: 17905291636785580641
@@ -4091,7 +4746,7 @@ ENTITIES:
       SortOrder: 142
     TransformComponent:
       Transform:
-        Translate: [7.23534107, 31.6903381, 60.2747574]
+        Translate: [5.72785664, 31.6903381, 62.3570175]
         Rotate: [180, -5.00896067e-06, 180]
         Scale: [0.0144000007, 0.0144000007, 0.0144000007]
     ModelComponent:
@@ -4142,9 +4797,9 @@ ENTITIES:
       SortOrder: 174
     TransformComponent:
       Transform:
-        Translate: [21.2561531, 31.3854294, 65.753746]
-        Rotate: [-180, -5.00896067e-06, -180]
-        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+        Translate: [24.6641464, 31.3854294, 65.2196274]
+        Rotate: [-180, 10.1344681, -180]
+        Scale: [0.0143996598, 0.0144000007, 0.0143996598]
     ModelComponent:
       ModelID: 12185583551159906295
       MaterialID: 17905291636785580641
@@ -4160,8 +4815,8 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-2.61184955, 31.3135319, 62.1722908]
-        Rotate: [180, -5.00896067e-06, 180]
-        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+        Rotate: [-180, 12.3001566, -180]
+        Scale: [0.0143999998, 0.0144000007, 0.0143999998]
     ModelComponent:
       ModelID: 12185583551159906295
       MaterialID: 17905291636785580641
@@ -4171,116 +4826,17 @@ ENTITIES:
       MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Hangingpuppet (Copy) (Copy) (Copy)
-      UID: 4243716701876164726
-      SortOrder: 45
+      Name: BAR51 (Copy)
+      UID: 16323778119731581929
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [12.8678904, 31.5947857, 58.9890175]
-        Rotate: [-180, -5.00896067e-06, -180]
-        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
+        Translate: [32.8334808, 27.3654747, 47.0406342]
+        Rotate: [0, -0, 90]
+        Scale: [0.0399629474, 0.0240815282, 0.0399999991]
     ModelComponent:
-      ModelID: 12185583551159906295
-      MaterialID: 17905291636785580641
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hangingpuppet (Copy) (Copy) (Copy)
-      UID: 8463075566378660565
-      SortOrder: 88
-    TransformComponent:
-      Transform:
-        Translate: [12.8678904, 31.3858376, 65.753746]
-        Rotate: [-180, -5.00896067e-06, -180]
-        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
-    ModelComponent:
-      ModelID: 12185583551159906295
-      MaterialID: 17905291636785580641
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Hangingpuppet (Copy) (Copy) (Copy)
-      UID: 15476995501384227882
-      SortOrder: 146
-    TransformComponent:
-      Transform:
-        Translate: [29.9342651, 32.8265152, 65.753746]
-        Rotate: [-180, -5.00896067e-06, -180]
-        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
-    ModelComponent:
-      ModelID: 12185583551159906295
-      MaterialID: 17905291636785580641
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: Light1
-      UID: 18280384215714157564
-      SortOrder: 173
-    TransformComponent:
-      Transform:
-        Translate: [2.37225795, 30.0876751, 55.3236847]
-        Rotate: [0, -0, 0]
-        Scale: [0.930000007, 0.930000007, 0.930000007]
-    PointLightComponent:
-      Light:
-        Radiance: [0.975609779, 0.422319323, 0.103113249]
-        Intensity: 0
-        Range: 66.4800034
-        BloomStrength: 1
-  - InfoComponent:
-      Parent: 0
-      Name: Light2
-      UID: 17866928223747287011
-      SortOrder: 169
-    TransformComponent:
-      Transform:
-        Translate: [11.0787554, 30.0876751, 55.9076118]
-        Rotate: [0, -0, 0]
-        Scale: [0.930000007, 0.930000007, 0.930000007]
-    PointLightComponent:
-      Light:
-        Radiance: [0.975609779, 0.422319323, 0.103113249]
-        Intensity: 0
-        Range: 66.4800034
-        BloomStrength: 1
-  - InfoComponent:
-      Parent: 0
-      Name: Light3
-      UID: 7843759036873323337
-      SortOrder: 82
-    TransformComponent:
-      Transform:
-        Translate: [21.517931, 30.0876751, 55.8853455]
-        Rotate: [0, -0, 0]
-        Scale: [0.930000007, 0.930000007, 0.930000007]
-    PointLightComponent:
-      Light:
-        Radiance: [0.975609779, 0.422319323, 0.103113249]
-        Intensity: 0
-        Range: 66.4800034
-        BloomStrength: 1
-  - InfoComponent:
-      Parent: 0
-      Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
-      UID: 4957433095678516290
-      SortOrder: 51
-    TransformComponent:
-      Transform:
-        Translate: [8.8975935, 32.8417664, 60.2747574]
-        Rotate: [180, -5.00896067e-06, 180]
-        Scale: [0.0144000007, 0.0144000007, 0.0144000007]
-    ModelComponent:
-      ModelID: 12185583551159906295
-      MaterialID: 17905291636785580641
+      ModelID: 10530537100426425185
+      MaterialID: 365007133719936359
       ModelName: ""
       MaterialName: ""
       ModelSource: ""
@@ -4289,7 +4845,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, 0]
         LocalRotation: [0, 0, 0]
-        LocalScale: [3.24000001, 5.98000002, 4.88999987]
+        LocalScale: [1, 1, 1]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -4300,69 +4856,42 @@ ENTITIES:
         Type: BOX
     InfoComponent:
       Parent: 0
-      Name: DialogueBoxExit
-      UID: 7871029963616826854
-      SortOrder: 83
+      Name: LightTriggerbox1
+      UID: 16283621867221739221
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [30.4529381, 39.4806595, 14.1004667]
+        Translate: [1.29547155, 27.469326, 44.5062256]
         Rotate: [0, -0, 0]
-        Scale: [1, 1, 0.340012074]
+        Scale: [1, 14.79, 4.8920002]
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.TutorialDialogueTrigger
-      ParamsJSON: "{\n  \"_dialogueNames\": \"DialogueExit1\"\n}"
-  - InfoComponent:
+      TypeName: GameScripts.LightIntensityTrigger
+      ParamsJSON: "{\n  \"_lightNames\": \"Direction\",\n  \"_oneShot\": true,\n  \"_targetIntensity\": 15.899999618530273\n}"
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
       Parent: 0
-      Name: DialoguePatrol
-      UID: 8420205164133478996
-      SortOrder: 87
+      Name: LightTriggerbox2
+      UID: 3312059443576637214
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-  - InfoComponent:
-      Parent: 0
-      Name: DialogueSentry
-      UID: 14597596177956104017
-      SortOrder: 2
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-  - InfoComponent:
-      Parent: 0
-      Name: DialogueExit
-      UID: 18142273225304105880
-      SortOrder: 3
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-  - InfoComponent:
-      Parent: 0
-      Name: DialogueCell
-      UID: 2254730700873546749
-      SortOrder: 1
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-  - InfoComponent:
-      Parent: 18142273225304105880
-      Name: DialogueExit1
-      UID: 17999037339828691340
-      SortOrder: 4
-    TransformComponent:
-      Transform:
-        Translate: [0, -0.649999976, 0.00999999978]
+        Translate: [8.3834362, 26.9149685, 47.8816414]
         Rotate: [0, -0, 0]
-        Scale: [0.699999988, 0.5, 1]
-    SpriteComponent:
-      textureID: 15790176270808879105
-      color: [1, 1, 1, 0]
-      renderAs3D: false
+        Scale: [3.18932199, 4.39054728, 0.99999994]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.LightIntensityTrigger
+      ParamsJSON: "{\n  \"_lightNames\": \"Light1,Light2,Light3\",\n  \"_oneShot\": true,\n  \"_targetIntensity\": 12.600000381469727\n}"

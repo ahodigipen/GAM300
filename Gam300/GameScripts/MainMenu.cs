@@ -26,6 +26,9 @@ namespace GameScripts
         private ulong _howToPlayButtonID;
         private ulong _settingsButtonID;
         private ulong _quitButtonID;
+        private ulong _logoID;
+        private ulong _teamNameID;
+        private ulong _homeScreenGuiID;
 
         private ulong _hoveredButtonID = 0;
         private bool _wasMouseDown = false;
@@ -56,6 +59,9 @@ namespace GameScripts
         private float _fadeDuration = 1.0f;
         private string _sceneToLoad = "";
 
+        [EditorExposed(displayName: "Fade Trigger Scene", tooltip: "The scene that must precede this one to trigger a fade-in.")]
+        public string fadeTriggerScene = Entry.GAME_SPLASH_SCENE_NAME;
+
         public void OnStart(string jsonParams)
         {
             API.Log("MainMenu OnStart Running...");
@@ -63,6 +69,9 @@ namespace GameScripts
             _howToPlayButtonID = API.FindEntity("HowToPlayButton");
             _settingsButtonID = API.FindEntity("SettingsButton");
             _quitButtonID = API.FindEntity("QuitButton");
+            _logoID = API.FindEntity("Logo");
+            _teamNameID = API.FindEntity("Team Name");
+            _homeScreenGuiID = API.FindEntity("Home Screen GUI");
 
             _buttonFX = new ButtonFX(_newGameButtonID, _howToPlayButtonID, _settingsButtonID, _quitButtonID);
 
@@ -70,9 +79,44 @@ namespace GameScripts
             _clickedButtonID = 0;
             _selectedIndex = -1;
 
-            // Fade in from black when menu loads
-            API.SetScreenFadeAlpha(1f);
-            StartFadeIn();
+            // Note: In our engine, script OnStart runs BEFORE Entry.Start updates currentSceneName.
+            // This means Entry._currentSceneName still holds the name of the scene we just LEFT.
+            string sceneWeCameFrom = Entry._currentSceneName;
+            API.Log($"[MainMenu] Transitioning from: '{sceneWeCameFrom}', expected trigger: '{fadeTriggerScene}'");
+
+            if (sceneWeCameFrom == fadeTriggerScene)
+            {
+                API.Log("[MainMenu] Triggering coordinated fade-in sequence.");
+                // Initialize all menu elements to invisible for sprite-level fade
+                API.SetSpriteAlpha(_newGameButtonID, 0f);
+                API.SetSpriteAlpha(_howToPlayButtonID, 0f);
+                API.SetSpriteAlpha(_settingsButtonID, 0f);
+                API.SetSpriteAlpha(_quitButtonID, 0f);
+                if (_logoID != 0) API.SetSpriteAlpha(_logoID, 0f);
+                if (_teamNameID != 0) API.SetSpriteAlpha(_teamNameID, 0f);
+                if (_homeScreenGuiID != 0) API.SetSpriteAlpha(_homeScreenGuiID, 0f);
+
+                // Fade in from black when menu loads
+                API.SetScreenFadeAlpha(1f);
+                _fadeDuration = 1.5f; 
+                StartFadeIn();
+            }
+            else
+            {
+                API.Log("[MainMenu] Skipping fade-in (not coming from trigger scene).");
+                // Otherwise, ensure they are fully visible
+                API.SetSpriteAlpha(_newGameButtonID, 1f);
+                API.SetSpriteAlpha(_howToPlayButtonID, 1f);
+                API.SetSpriteAlpha(_settingsButtonID, 1f);
+                API.SetSpriteAlpha(_quitButtonID, 1f);
+                if (_logoID != 0) API.SetSpriteAlpha(_logoID, 1f);
+                if (_teamNameID != 0) API.SetSpriteAlpha(_teamNameID, 1f);
+                if (_homeScreenGuiID != 0) API.SetSpriteAlpha(_homeScreenGuiID, 1f);
+                
+                _isFadingIn = false;
+                API.SetScreenFadeAlpha(0f);
+            }
+
             UpdateVisuals();
         }
 
@@ -311,13 +355,34 @@ namespace GameScripts
             if (!_isFadingIn) return;
 
             _fadeTimer += dt;
-            float alpha = 1f - Clamp01(_fadeTimer / _fadeDuration);
+            float progress = Clamp01(_fadeTimer / _fadeDuration);
+            float alpha = 1f - progress;
+            
+            // Screen overlay fades out (from 1 to 0)
             API.SetScreenFadeAlpha(alpha);
+
+            // Sprite elements fade in (from 0 to 1)
+            API.SetSpriteAlpha(_newGameButtonID, progress);
+            API.SetSpriteAlpha(_howToPlayButtonID, progress);
+            API.SetSpriteAlpha(_settingsButtonID, progress);
+            API.SetSpriteAlpha(_quitButtonID, progress);
+            if (_logoID != 0) API.SetSpriteAlpha(_logoID, progress);
+            if (_teamNameID != 0) API.SetSpriteAlpha(_teamNameID, progress);
+            if (_homeScreenGuiID != 0) API.SetSpriteAlpha(_homeScreenGuiID, progress);
 
             if (_fadeTimer >= _fadeDuration)
             {
                 API.SetScreenFadeAlpha(0f);
                 _isFadingIn = false;
+
+                // Ensure final state is fully opaque
+                API.SetSpriteAlpha(_newGameButtonID, 1f);
+                API.SetSpriteAlpha(_howToPlayButtonID, 1f);
+                API.SetSpriteAlpha(_settingsButtonID, 1f);
+                API.SetSpriteAlpha(_quitButtonID, 1f);
+                if (_logoID != 0) API.SetSpriteAlpha(_logoID, 1f);
+                if (_teamNameID != 0) API.SetSpriteAlpha(_teamNameID, 1f);
+                if (_homeScreenGuiID != 0) API.SetSpriteAlpha(_homeScreenGuiID, 1f);
             }
         }
 

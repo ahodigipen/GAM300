@@ -933,6 +933,11 @@ struct MenuComponent {
         float tonemapGamma = 2.2f;
         glm::vec3 tonemapWarmTint = glm::vec3(1.08f, 0.98f, 0.82f);
 
+        // Vignette settings
+        bool vignetteEnabled = false;
+        float vignetteIntensity = 0.5f;
+        float vignetteRadius = 0.75f;
+
         XPROPERTY_DEF("SceneNavmeshComponent", SceneNavmeshComponent,
             obj_member<"NavmeshFile", &SceneNavmeshComponent::navmeshFile>,
             obj_member<"AmbientStrength", &SceneNavmeshComponent::ambientStrength>,
@@ -948,7 +953,10 @@ struct MenuComponent {
             obj_member<"FogHeight", &SceneNavmeshComponent::fogHeight>,
             obj_member<"TonemapExposure", &SceneNavmeshComponent::tonemapExposure>,
             obj_member<"TonemapGamma", &SceneNavmeshComponent::tonemapGamma>,
-            obj_member<"TonemapWarmTint", &SceneNavmeshComponent::tonemapWarmTint>)
+            obj_member<"TonemapWarmTint", &SceneNavmeshComponent::tonemapWarmTint>,
+            obj_member<"VignetteEnabled", &SceneNavmeshComponent::vignetteEnabled>,
+            obj_member<"VignetteIntensity", &SceneNavmeshComponent::vignetteIntensity>,
+            obj_member<"VignetteRadius", &SceneNavmeshComponent::vignetteRadius>)
     };
 
     struct DeactivatedComponent {

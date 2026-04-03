@@ -933,15 +933,17 @@ namespace Boom {
         // Raycast against static geometry only (walls, floors, level mesh).
         // Ignores all dynamic/kinematic actors (enemies, player, props) so rays cast
         // from inside an entity's own capsule never produce a spurious self-hit.
-        BOOM_INLINE PhysXRayResult RaycastStaticOnly(const glm::vec3& origin, const glm::vec3& direction, float maxDist) {
+        BOOM_INLINE PhysXRayResult RaycastStaticOnly(const glm::vec3& origin, const glm::vec3& direction, float maxDist, physx::PxRigidActor* ignoreActor = nullptr) {
             PhysXRayResult result;
             if (!m_Scene) return result;
 
             class NoTriggerFilter : public PxQueryFilterCallback {
             public:
+                physx::PxRigidActor* ignore = nullptr;
                 PxQueryHitType::Enum preFilter(const PxFilterData&, const PxShape* shape,
-                    const PxRigidActor*, PxHitFlags&) override
+                    const PxRigidActor* actor, PxHitFlags&) override
                 {
+                    if (actor == ignore) return PxQueryHitType::eNONE;
                     if (shape && (shape->getFlags() & PxShapeFlag::eTRIGGER_SHAPE))
                         return PxQueryHitType::eNONE;
                     return PxQueryHitType::eBLOCK;
@@ -955,9 +957,10 @@ namespace Boom {
             PxRaycastBuffer hit;
             PxQueryFilterData filterData;
             // eSTATIC: only hit static bodies (walls, level geometry).
-            // ePREFILTER: run preFilter to skip trigger shapes.
+            // ePREFILTER: run preFilter to skip trigger shapes and optional self-actor.
             filterData.flags = PxQueryFlag::eSTATIC | PxQueryFlag::ePREFILTER;
             NoTriggerFilter filter;
+            filter.ignore = ignoreActor;
 
             if (m_Scene->raycast(ToPxVec3(origin), ToPxVec3(glm::normalize(direction)),
                 maxDist, hit, PxHitFlag::eDEFAULT, filterData, &filter))

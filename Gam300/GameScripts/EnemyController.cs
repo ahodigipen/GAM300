@@ -97,6 +97,7 @@ namespace GameScripts
 
         // Detection tracking (prevent multiple damage per detection)
         private bool _hasDealtDamage = false;
+        private bool _coneInitialized = false;
 
         // NEW: Auto-reset timer for damage flag
         private float _damageResetTimer = 0f;
@@ -135,10 +136,6 @@ namespace GameScripts
             _vision.SetVerticalTolerance(_visionVerticalTolerance);
             _vision.SetRequireLineOfSight(_visionRequireLineOfSight);
 
-            // Create VisualConeComponent so this enemy shows a vision cone.
-            API.SetVisualConeParams(Entity, _visionDetectionRange, _visionDetectionAngle * 0.5f);
-            API.SetVisualConeFacing(Entity, _initialYRotation);
-
             // NEW: Initialize proximity detection
             _proximityDetection = new ProximityDetectionComponent { Entity = Entity };
             _proximityDetection.OnProximityDetected += OnProximityDetected;
@@ -154,6 +151,9 @@ namespace GameScripts
             _initialYRotation = API.GetRotation(Entity).Y;
             _currentYRotation = _initialYRotation;
             _targetYRotation = _initialYRotation;
+
+            // NOTE: Visual cone is initialized in the first OnUpdate frame, after physics has
+            // finished initializing, otherwise the rigidbody invalidates the cone render state.
 
             // NEW: Register with PlayerManager
             PlayerManager.RegisterEnemy(this);
@@ -171,6 +171,15 @@ namespace GameScripts
         public void OnUpdate(float dt)
         {
             if (!API.HasTransform(Entity)) return;
+
+            // Defer visual cone setup to first update so physics/collider has finished initializing
+            if (!_coneInitialized)
+            {
+                _coneInitialized = true;
+                API.SetVisualConeParams(Entity, _visionDetectionRange, _visionDetectionAngle * 0.5f);
+                API.SetAIFacingYaw(Entity, _initialYRotation);
+                API.SetVisualConeFacing(Entity, _initialYRotation);
+            }
 
             // --- FREEZE CHECK ---
             if (FreezeManager.IsFrozen(API.GetPosition(Entity)))
@@ -485,9 +494,8 @@ namespace GameScripts
         // Apply a yaw rotation to the entity and keep the visual cone in sync.
         private void ApplyYaw(float yaw)
         {
-            Vec3 rot = API.GetRotation(Entity);
-            rot.Y = yaw;
-            API.SetRotation(Entity, rot);
+            API.SetRotationY(Entity, yaw);
+            API.SetAIFacingYaw(Entity, yaw);
             API.SetVisualConeFacing(Entity, yaw);
         }
 

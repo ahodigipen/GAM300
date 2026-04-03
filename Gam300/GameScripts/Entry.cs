@@ -25,6 +25,8 @@ namespace GameScripts
         }
 
         public const string PAUSE_SCENE_NAME = "PauseMenu";
+        public const string DIGIPEN_SPLASH_SCENE_NAME = "DigiPenSplash";
+        public const string GAME_SPLASH_SCENE_NAME = "GameSplash";
         public const string MAIN_MENU_SCENE_NAME = "MainMenu";
         public const string HOW_TO_PLAY_SCENE_NAME = "HowToPlay";
         public const string DEATH_SCENE_NAME = "DeathMenu";
@@ -38,6 +40,7 @@ namespace GameScripts
         public static string _activePopupName = "";
 
         public static string _currentSceneName;
+        public static string _previousSceneName = "";
         public static bool IsGamePaused = false;
         public static bool IsPlayerDead = false;
         public static bool IsGameEnded = false;
@@ -117,7 +120,13 @@ namespace GameScripts
             s_RequestedEndAction = EndMenuAction.None;
             s_RequestedInventoryAction = InventoryMenuAction.None;
 
-            _currentSceneName = API.GetCurrentSceneName();
+            string nextSceneName = API.GetCurrentSceneName();
+            if (nextSceneName != _currentSceneName)
+            {
+                _previousSceneName = _currentSceneName;
+                _currentSceneName = nextSceneName;
+            }
+            
             API.EnableFileWatcher(true);
             API.SetGameLogicPaused(false);
             API.SetGameEnd(false);
@@ -148,7 +157,9 @@ namespace GameScripts
             API.Log("[C#] Entry.Start() called for scene: " + _currentSceneName);
 
             // Fade in from black at every scene start
-            SceneFader.StartFadeIn(0.6f);
+            // EXCEPT for MainMenu (handles it locally) and Credits (per user request)
+            if (_currentSceneName != MAIN_MENU_SCENE_NAME && _currentSceneName != CREDITS_SCENE_NAME)
+                SceneFader.StartFadeIn(0.6f);
 
             _activePopupName = LEVEL_1_UI;
 

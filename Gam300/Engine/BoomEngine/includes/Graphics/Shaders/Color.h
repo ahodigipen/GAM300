@@ -13,6 +13,7 @@ namespace Boom {
             , texLoc{ GetUniformVar("texMap") }
             , matLoc{ GetUniformVar("mat") }
             , toneMapLoc{ GetUniformVar("u_applyToneMap") }
+            , gammaLoc{ GetUniformVar("u_gamma") }
             , quad{ CreateQuad2D() }
         {
         }
@@ -22,6 +23,9 @@ namespace Boom {
         BOOM_INLINE void SetToneMap(bool enable) {
             applyToneMap = enable;
         }
+        BOOM_INLINE void SetGamma(float g) {
+            gamma = g;
+        }
         BOOM_INLINE void Show(uint32_t texid, Transform2D const& t) {
             Use();
             glActiveTexture(GL_TEXTURE0);
@@ -30,6 +34,7 @@ namespace Boom {
             SetUniform(colLoc, color);
             SetUniform(matLoc, t.Matrix());
             SetUniform(toneMapLoc, applyToneMap);
+            SetUniform(gammaLoc, gamma);
             quad->Draw(GL_TRIANGLE_STRIP);
             UnUse();
         }
@@ -40,7 +45,9 @@ namespace Boom {
         int32_t texLoc;
         int32_t matLoc;
         int32_t toneMapLoc;
+        int32_t gammaLoc;
         bool applyToneMap{ false };
+        float gamma{ 2.2f };
         Quad2D quad;
     };
 

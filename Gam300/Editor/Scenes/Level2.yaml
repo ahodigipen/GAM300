@@ -5428,7 +5428,20 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [-0.0884959698, 1.7778976, 0.021099193]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [192.678619, 245.22728, 140.861038]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: Sentry_level2_3
       UID: 5648346527941532950
@@ -5438,6 +5451,16 @@ ENTITIES:
         Translate: [-46.1160126, 24.2603378, -18.4139233]
         Rotate: [0, 270, 0]
         Scale: [0.0145000042, 0.0145000005, 0.0145000042]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0145000042, 0.0145000005, 0.0145000042]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 12373711864448078618
       MaterialID: 1781146247448718189
@@ -6106,7 +6129,20 @@ ENTITIES:
       Light:
         Radiance: [0.0439999998, 0.023356393, 0.0441176295]
         Intensity: 9.5
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [-0.0884959623, 1.7778976, 0.0210991912]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [192.678619, 245.22728, 140.861038]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: Sentry_level2_2
       UID: 7684206646313759860
@@ -6116,6 +6152,16 @@ ENTITIES:
         Translate: [-64.1180191, 24.2603378, -1.22266841]
         Rotate: [0, 90, 0]
         Scale: [0.0145000033, 0.0145000005, 0.0145000033]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0145000033, 0.0145000005, 0.0145000033]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 12373711864448078618
       MaterialID: 1781146247448718189
@@ -10224,8 +10270,8 @@ ENTITIES:
       SortOrder: 444
     TransformComponent:
       Transform:
-        Translate: [4.98298264, 22.3061275, 31.1185665]
-        Rotate: [-184.0625, 2241.6875, 180]
+        Translate: [-84.1957245, 45.0368767, 19.738121]
+        Rotate: [-223.625, 2427.8125, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -13054,7 +13100,20 @@ ENTITIES:
       TextureID: 15432365972591589103
       Billboard: true
       AdditiveBlend: true
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [-0.0884959772, 1.7778976, 0.0210991949]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [192.678619, 245.22728, 140.861038]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: Sentry_level2_SR1
       UID: 15370837172034379813
@@ -13064,6 +13123,16 @@ ENTITIES:
         Translate: [-74.9759827, 31.6174335, 10.8172054]
         Rotate: [0, 90, 0]
         Scale: [0.0145000061, 0.0145000005, 0.0145000061]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0145000061, 0.0145000005, 0.0145000061]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 12373711864448078618
       MaterialID: 1781146247448718189
@@ -14144,7 +14213,20 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [-0.0884959623, 1.7778976, 0.0210991912]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [192.678619, 245.22728, 140.861038]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: Sentry_level2_SR2
       UID: 9234641270527356983
@@ -14154,6 +14236,16 @@ ENTITIES:
         Translate: [-75.7123413, 34.7509689, -15.3300419]
         Rotate: [0, 270, 0]
         Scale: [0.0145000033, 0.0145000005, 0.0145000033]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [0.0145000033, 0.0145000005, 0.0145000033]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 12373711864448078618
       MaterialID: 1781146247448718189

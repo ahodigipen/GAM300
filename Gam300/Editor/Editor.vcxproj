@@ -157,6 +157,7 @@
       <AdditionalIncludeDirectories>
         $(EditorIncludeRoots);
         $(EngineIncludeRoots);
+        D:\dependencies\glew\include;
         %(AdditionalIncludeDirectories)
     </AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -187,6 +188,7 @@ if exist "$(glew_BIN_DIRS)" xcopy /y /i "$(glew_BIN_DIRS)\*.dll" "$(TargetDir)"<
       <AdditionalIncludeDirectories>
         $(EditorIncludeRoots);
         $(EngineIncludeRoots);
+        D:\dependencies\glew\include;
         %(AdditionalIncludeDirectories)
       </AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
