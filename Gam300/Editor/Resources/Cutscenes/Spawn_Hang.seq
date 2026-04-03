@@ -1,7 +1,0 @@
-DURATION 600
-TRACK "Hanging_Spawn" 6
-KEY 0 1 0 0 0
-KEY 120 1 0 0 0
-KEY 122 0 0 0 0
-TRACK "Hanging_Spawn" 5
-KEY 120 0 0 0 0 "GameScripts.CutsceneSequencer.WaitForInteract"
