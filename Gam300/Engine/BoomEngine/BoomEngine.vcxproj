@@ -53,6 +53,10 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ConanProps">
+    <Import Project="..\..\conanbuild\Debug\conandeps.props" Condition="Exists('..\..\conanbuild\Debug\conandeps.props') AND '$(Configuration)'=='Debug'" />
+    <Import Project="..\..\conanbuild\Release\conandeps.props" Condition="Exists('..\..\conanbuild\Release\conandeps.props') AND '$(Configuration)'=='Release'" />
+  </ImportGroup>
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
