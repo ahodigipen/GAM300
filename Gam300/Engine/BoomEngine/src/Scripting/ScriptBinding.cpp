@@ -2715,6 +2715,62 @@ namespace Boom {
         if (pe) { pe->startSizeMin = startMin; pe->startSizeMax = startMax; pe->endSize = endSize; }
     }
 
+    // ─── Add / configure particle emitter at runtime ──────────────────────
+
+    static void ICALL_API_AddParticleEmitter(uint64_t handle)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        if (s_Ctx->scene.any_of<ParticleEmitterComponent>(e)) return; // already has one
+        s_Ctx->scene.emplace<ParticleEmitterComponent>(e);
+    }
+
+    static void ICALL_API_SetParticleShapeType(uint64_t handle, int shapeType)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) pe->shapeType = shapeType;
+    }
+
+    static void ICALL_API_SetParticleShapeAngle(uint64_t handle, float angle)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) pe->shapeAngle = angle;
+    }
+
+    static void ICALL_API_SetParticleShapeRange(uint64_t handle, float range)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) pe->shapeRange = range;
+    }
+
+    static void ICALL_API_SetParticleDirection(uint64_t handle, float x, float y, float z)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) pe->direction = glm::vec3(x, y, z);
+    }
+
+    static void ICALL_API_SetParticleLifetime(uint64_t handle, float lifetimeMin, float lifetimeMax)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) { pe->lifetimeMin = lifetimeMin; pe->lifetimeMax = lifetimeMax; }
+    }
+
     void RegisterScriptInternalCalls(AppContext* ctx)
     {
         s_Ctx = ctx;
@@ -2965,6 +3021,12 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetParticleGravity", (const void*)ICALL_API_SetParticleGravity);
         mono_add_internal_call("Boom.Native::Boom_API_SetParticleSpeed", (const void*)ICALL_API_SetParticleSpeed);
         mono_add_internal_call("Boom.Native::Boom_API_SetParticleSize", (const void*)ICALL_API_SetParticleSize);
+        mono_add_internal_call("Boom.Native::Boom_API_AddParticleEmitter", (const void*)ICALL_API_AddParticleEmitter);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleShapeType", (const void*)ICALL_API_SetParticleShapeType);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleShapeAngle", (const void*)ICALL_API_SetParticleShapeAngle);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleShapeRange", (const void*)ICALL_API_SetParticleShapeRange);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleDirection", (const void*)ICALL_API_SetParticleDirection);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleLifetime", (const void*)ICALL_API_SetParticleLifetime);
         // Inventory Menu
         mono_add_internal_call("Boom.Native::Boom_API_ShowInventoryMenu", (const void*)ICALL_API_ShowInventoryMenu);
         mono_add_internal_call("Boom.Native::Boom_API_UnloadInventoryMenu", (const void*)ICALL_API_UnloadInventoryMenu);

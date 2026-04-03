@@ -100,7 +100,6 @@
     <ClInclude Include="includes\Scripting\ScriptingSystem.h" />
     <ClCompile Include="includes\Scripting\FileWatcher.h" />
     <ClInclude Include="includes\AI\BehaviourTree.h" />
-    <ClInclude Include="includes\AI\AIComponent.h" />
     <ClInclude Include="includes\AI\Actions.h" />
     <ClInclude Include="includes\AI\BehaviourTreeActions.h" />
     <ClInclude Include="includes\AI\AISystem.h" />

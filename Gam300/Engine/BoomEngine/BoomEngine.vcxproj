@@ -143,6 +143,7 @@
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>
 				$(CompressonatorInc);
 				$(FMODCoreInc);$(FMODStudioInc);%(AdditionalIncludeDirectories)
@@ -173,6 +174,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)src\Vendors\xproperty;%(AdditionalIncludeDirectories);$(ProjectDir)Vendors;$(ProjectDir)Vendors\Recast\Include;$(ProjectDir)Vendors\DetourCrowd\Include;$(ProjectDir)Vendors\DetourTileCache\Include;$(ProjectDir)Vendors\Detour\Include;$(ProjectDir)Vendors\DebugUtils\Include;D:\dependencies\glew\include;D:\dependencies\glfw\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4273</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
     </ClCompile>
     <Link>
@@ -187,7 +189,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\..\Downloads\pl_mpeg-master\pl_mpeg-master\pl_mpeg.h" />
     <ClInclude Include="includes\AI\Actions.h" />
-    <ClInclude Include="includes\AI\AIComponent.h" />
     <ClInclude Include="includes\AI\AISystem.h" />
     <ClInclude Include="includes\AI\BehaviourTree.h" />
     <ClInclude Include="includes\AI\BehaviourTreeActions.h" />

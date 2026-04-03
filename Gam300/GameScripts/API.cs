@@ -608,6 +608,25 @@ namespace Boom
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_SetParticleSize(ulong handle, float startMin, float startMax, float endSize);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_AddParticleEmitter(ulong handle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleShapeType(ulong handle, int shapeType);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleShapeAngle(ulong handle, float angle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleShapeRange(ulong handle, float range);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleDirection(ulong handle, float x, float y, float z);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleLifetime(ulong handle, float lifetimeMin, float lifetimeMax);
+
         // Inventory Menu
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_ShowInventoryMenu();
@@ -1690,6 +1709,23 @@ namespace Boom
         /// <summary>Set particle size over lifetime (startMin, startMax, endSize)</summary>
         public static void SetParticleSize(ulong entity, float startMin, float startMax, float endSize) => Native.Boom_API_SetParticleSize(entity, startMin, startMax, endSize);
 
+        /// <summary>Add a ParticleEmitterComponent to an entity at runtime (no-op if it already has one)</summary>
+        public static void AddParticleEmitter(ulong entity) => Native.Boom_API_AddParticleEmitter(entity);
+
+        /// <summary>Set spawn shape: 0=point, 1=sphere, 2=cone, 3=box, 4=spotlight volume</summary>
+        public static void SetParticleShapeType(ulong entity, int shapeType) => Native.Boom_API_SetParticleShapeType(entity, shapeType);
+
+        /// <summary>Set cone/spotlight half-angle in degrees</summary>
+        public static void SetParticleShapeAngle(ulong entity, float angle) => Native.Boom_API_SetParticleShapeAngle(entity, angle);
+
+        /// <summary>Set spotlight volume range (how far the cone extends)</summary>
+        public static void SetParticleShapeRange(ulong entity, float range) => Native.Boom_API_SetParticleShapeRange(entity, range);
+
+        /// <summary>Set particle emission direction (local space)</summary>
+        public static void SetParticleDirection(ulong entity, float x, float y, float z) => Native.Boom_API_SetParticleDirection(entity, x, y, z);
+
+        /// <summary>Set particle lifetime range in seconds</summary>
+        public static void SetParticleLifetime(ulong entity, float lifetimeMin, float lifetimeMax) => Native.Boom_API_SetParticleLifetime(entity, lifetimeMin, lifetimeMax);
 
         // ===== GLFW key codes =====
         public const int KEY_A = 65;

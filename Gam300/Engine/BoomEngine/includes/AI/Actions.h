@@ -2,7 +2,6 @@
 #pragma once
 #include "NavAgent.h"
 #include "BehaviourTree.h"
-#include "AIComponent.h"
 #include "ECS/ECS.hpp"
 #include "glm/glm.hpp"
 
