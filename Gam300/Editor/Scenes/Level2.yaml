@@ -40,6 +40,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 9009254338774693292
       Name: PrisonGateBar10 (Copy) (Copy) (Copy)
@@ -57,6 +58,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.104207233, -0.122833252, -0.00136672379]
@@ -97,6 +99,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.420231491, -0.122833252, -0.015167349]
@@ -137,6 +140,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -219,6 +223,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: ToriGate1 (Copy)
@@ -236,6 +241,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -276,6 +282,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0547826961, -0.0615502931, -0.0294710565]
@@ -316,6 +323,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -468,6 +476,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 1, 1]
@@ -514,6 +523,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.104207233, -0.122833252, -0.00136672379]
@@ -554,6 +564,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.104207233, -0.122833252, -0.00136672379]
@@ -594,6 +605,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.25714764, -0.122833252, -0.0151673481]
@@ -634,6 +646,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.00821180269, -0.135116577, -0.218176499]
@@ -674,6 +687,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Top_Ceiling (Copy)
@@ -691,6 +705,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -731,6 +746,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.47849682, -0.122833252, -0.0151673462]
@@ -771,6 +787,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_6 (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
@@ -788,6 +805,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -834,6 +852,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -880,6 +899,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -926,6 +946,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -972,6 +993,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -1018,6 +1040,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -1064,6 +1087,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -1110,6 +1134,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -1156,6 +1181,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -1225,6 +1251,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 15030438282683852635
       Name: Checkpoint2_Dialogue5
@@ -1256,6 +1283,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 15030438282683852635
       Name: Checkpoint2_Dialogue4
@@ -1287,6 +1315,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: RockContainer
@@ -1314,6 +1343,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 1, 1]
@@ -1337,6 +1367,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -1406,6 +1437,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1446,6 +1478,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7923053519804204270
       Name: SEAL1_5_level2
@@ -1463,6 +1496,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1503,6 +1537,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1543,6 +1578,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1583,6 +1619,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1623,6 +1660,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1663,6 +1701,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0963188708, -0.204293177, -0.00326804467]
@@ -1703,6 +1742,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1743,6 +1783,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.208436638, -0.17562063, -0.00326804421]
@@ -1783,6 +1824,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.117112346, -0.17562063, -0.00326804421]
@@ -1823,6 +1865,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0319244377, -0.126023039, -0.257086307]
@@ -1863,6 +1906,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1903,6 +1947,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1943,6 +1988,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.434843957, -0.108093262, -0.29974094]
@@ -1983,6 +2029,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.211084783, -0.0982666016, -0.00395799475]
@@ -2023,6 +2070,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -2110,6 +2158,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -2150,6 +2199,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -2190,6 +2240,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Ambient_Light_7
@@ -2207,6 +2258,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0.627450943, 0.769896269, 1]
@@ -2230,6 +2282,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0.892156839, 0.871319294, 0.655997634]
@@ -2253,6 +2306,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0.627450943, 0.769896269, 1]
@@ -2276,6 +2330,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0.627450943, 0.769896269, 1]
@@ -2299,6 +2354,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0.627450943, 0.769896269, 1]
@@ -2322,6 +2378,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0.627450943, 0.769896269, 1]
@@ -2345,6 +2402,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.991061151, 0.69607842]
@@ -2368,6 +2426,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0.627450943, 0.769896269, 1]
@@ -2391,6 +2450,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0.627450943, 0.769896269, 1]
@@ -2414,6 +2474,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0.305882365, 0.827450991, 0.580392182]
@@ -2437,6 +2498,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0.305882365, 0.827450991, 0.580392182]
@@ -2474,6 +2536,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -2497,6 +2560,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -2520,6 +2584,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -2556,6 +2621,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -2606,6 +2672,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -2693,6 +2760,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0, 0.529411793, 1]
@@ -2730,6 +2798,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0.305882365, 0.827450991, 0.580392182]
@@ -2767,6 +2836,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0.828431368, 0.219290674, 0.219290674]
@@ -2790,6 +2860,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0.828431368, 0.219290674, 0.219290674]
@@ -2813,6 +2884,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0.828431368, 0.219290674, 0.219290674]
@@ -2836,6 +2908,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -2876,6 +2949,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Floating_Platform (Copy) (Copy) (Copy)
@@ -2893,6 +2967,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.114103064, -0.130690619, -0.0359349474]
@@ -2933,6 +3008,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.211084783, -0.0982666016, -0.00395799475]
@@ -2973,6 +3049,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -3013,6 +3090,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0719999969, -1.35000002, 0.00999999978]
@@ -3053,6 +3131,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0, 0.529411793, 1]
@@ -3099,6 +3178,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Level 2 CutScene
@@ -3190,6 +3270,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7923053519804204270
       Name: SEAL2_3_level2
@@ -3207,6 +3288,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7923053519804204270
       Name: SEAL2_6_level2
@@ -3224,6 +3306,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7923053519804204270
       Name: SEAL3_6_level2
@@ -3241,6 +3324,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7923053519804204270
       Name: SEAL3_5_level2
@@ -3258,6 +3342,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7923053519804204270
       Name: SEAL3_4_level2
@@ -3275,6 +3360,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7923053519804204270
       Name: SEAL3_3_level2
@@ -3292,6 +3378,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7923053519804204270
       Name: SEAL2_2_level2
@@ -3309,6 +3396,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: ResPoint1_Light_2
@@ -3326,6 +3414,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0.304570347, 0.828431368, 0.581908524]
@@ -3372,6 +3461,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _footstepSoundPath
@@ -3519,6 +3609,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -3565,6 +3656,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -3628,6 +3720,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0495676957, -0.00871701445, -0.0153258527]
@@ -3668,6 +3761,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: level2_Railing_5
@@ -3685,6 +3779,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.340073824, -0.00637259521, -0.00326804421]
@@ -3725,6 +3820,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0715830997, -0.00625988701, -0.00326804467]
@@ -3765,6 +3861,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.117112346, -0.17562063, -0.00326804421]
@@ -3805,6 +3902,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: SEALCOPYPASTE2
@@ -3855,6 +3953,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.12653479, -0.144594222, -0.00326804421]
@@ -3895,6 +3994,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.101423487, -0.144594222, -0.00326804467]
@@ -3935,6 +4035,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.280232668, -0.00637259521, -0.00326804421]
@@ -3975,6 +4076,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Interior_Decor_RIght_Of_Hut2
@@ -3992,6 +4094,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Interior_Decor_RIght_Of_Hut3
@@ -4009,6 +4112,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 1.89999998, 0]
@@ -4049,6 +4153,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _footstepSoundPath
@@ -4194,6 +4299,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _footstepSoundPath
@@ -4337,6 +4443,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _footstepSoundPath
@@ -4480,6 +4587,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _footstepSoundPath
@@ -4626,6 +4734,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _footstepSoundPath
@@ -4769,6 +4878,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _footstepSoundPath
@@ -4889,6 +4999,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _turnSoundPath1
@@ -5007,6 +5118,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -5047,6 +5159,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -5087,6 +5200,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Gameplay BGM
@@ -5204,6 +5318,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 15030438282683852635
       Name: BossCheckpoint_Dialogue4
@@ -5258,6 +5373,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 15030438282683852635
       Name: BossCheckpoint_Dialogue2
@@ -5376,6 +5492,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [-0.0884959698, 1.7778976, 0.021099193]
@@ -5416,6 +5533,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _turnSoundPath1
@@ -5511,6 +5629,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -5557,6 +5676,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [3.17000008, 0, 0]
@@ -5662,6 +5782,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: SpareBOX
@@ -5679,6 +5800,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: lock_SR2_2
@@ -5696,6 +5818,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 1, 1]
@@ -5742,6 +5865,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _footstepSoundPath
@@ -5927,6 +6051,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -5967,6 +6092,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -6007,6 +6133,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Directional Light 2
@@ -6061,6 +6188,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _turnSoundPath1
@@ -6195,6 +6323,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Sentry_4
@@ -6212,6 +6341,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _turnSoundPath1
@@ -6393,6 +6523,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -6433,6 +6564,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Pagoda_Stone_Lamp
@@ -6450,6 +6582,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Pagoda_Stone_Lamp
@@ -6467,6 +6600,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Pagoda_Stone_Lamp
@@ -6484,6 +6618,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Pagoda_Stone_Lamp
@@ -6501,6 +6636,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Pagoda_Stone_Lamp
@@ -6518,6 +6654,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_6 (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
@@ -6535,6 +6672,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -6581,6 +6719,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -6627,6 +6766,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -6650,6 +6790,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -6673,6 +6814,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -6696,6 +6838,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -6719,6 +6862,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -6742,6 +6886,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -6765,6 +6910,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -6788,6 +6934,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -6811,6 +6958,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -6834,6 +6982,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -6857,6 +7006,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -6903,6 +7053,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -6943,6 +7094,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3
@@ -6960,6 +7112,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -6983,6 +7136,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -7006,6 +7160,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -7029,6 +7184,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -7052,6 +7208,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -7098,6 +7255,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -7144,6 +7302,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0, 0.529411793, 1]
@@ -7167,6 +7326,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Floor_4_Level_2_Pillars
@@ -7184,6 +7344,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Floor_4_Level_2_Pillars
@@ -7201,6 +7362,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Floor_4_Level_2_Pillars
@@ -7218,6 +7380,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Floor_4_Level_2_Pillars
@@ -7235,6 +7398,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Roof_Prism
@@ -7252,6 +7416,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Floating_Platform (Copy) (Copy)
@@ -7269,6 +7434,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Base_Pillar_Floor_4
@@ -7286,6 +7452,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Base_Floor_4
@@ -7303,6 +7470,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Base_Pillar_Floor_4
@@ -7320,6 +7488,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Base_Pillar_Floor_4
@@ -7337,6 +7506,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Base_Floor_4
@@ -7354,6 +7524,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Base_Floor_4
@@ -7371,6 +7542,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Base_Pillar_Floor_4
@@ -7388,6 +7560,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Base_Pillar_Floor_4
@@ -7405,6 +7578,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Base_Floor_4
@@ -7422,6 +7596,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Base_Floor_4
@@ -7439,6 +7614,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.191546634, -0.097283937, -0.120872103]
@@ -7479,6 +7655,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0223471075, -0.250579834, -0.0840037838]
@@ -7519,6 +7696,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.1638529, -0.0305355936, -0.124707326]
@@ -7559,6 +7737,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Wall_Left_Roof2
@@ -7576,6 +7755,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -7616,6 +7796,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.260800272, -0.288783312, -0.012833911]
@@ -7656,6 +7837,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0319244377, -0.0480275825, -0.257078916]
@@ -7696,6 +7878,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -7736,6 +7919,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.147078037, -0.0982666016, -0.0103551773]
@@ -7776,6 +7960,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -7816,6 +8001,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.387381732, -0.0275393594, -0.176739201]
@@ -7856,6 +8042,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -7896,6 +8083,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.175584421, -0.129071712, -0.00816703402]
@@ -7936,6 +8124,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 9009254338774693292
       Name: PrisonGateBar4 (Copy) (Copy) (Copy)
@@ -7953,6 +8142,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 9009254338774693292
       Name: PrisonGateBar8 (Copy) (Copy) (Copy)
@@ -7970,6 +8160,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0719999969, -1.35000002, 0.00999999978]
@@ -8010,6 +8201,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0, 0.529411793, 1]
@@ -8047,6 +8239,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_6 (Copy) (Copy) (Copy) (Copy)
@@ -8064,6 +8257,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -8133,6 +8327,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Pagoda_Stone_Lamp (Copy)
@@ -8150,6 +8345,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -8190,6 +8386,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7923053519804204270
       Name: SEAL1_6_level2
@@ -8207,6 +8404,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 9009254338774693292
       Name: PrisonGateBar6 (Copy) (Copy) (Copy)
@@ -8224,6 +8422,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 9009254338774693292
       Name: PrisonGateBar3 (Copy) (Copy) (Copy)
@@ -8241,6 +8440,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0319244377, -0.241377637, -0.257090837]
@@ -8281,6 +8481,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 15030438282683852635
       Name: BossCheckpoint_Dialogue3
@@ -8378,6 +8579,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0159622189, -0.138244823, -0.0665029958]
@@ -8418,6 +8620,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_5
@@ -8435,6 +8638,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -8481,6 +8685,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ParticleEmitterComponent:
       EmissionRate: 84
       MaxParticles: 500
@@ -8546,6 +8751,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 15030438282683852635
       Name: BossCheckpoint_Dialogue5
@@ -8577,6 +8783,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hanging_Lantern_Outside_Hut_1
@@ -8594,6 +8801,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -8640,6 +8848,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -8680,6 +8889,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -8720,6 +8930,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -8760,6 +8971,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -8800,6 +9012,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hanging_Lantern_Exit_Of_Hut
@@ -8817,6 +9030,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -8863,6 +9077,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hanging_Lantern_Front_Of_Hut
@@ -8880,6 +9095,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -8903,6 +9119,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.255395442, -0.0958099365, -0.00116671901]
@@ -8943,6 +9160,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0239433274, -0.0933532715, -0.010500472]
@@ -8983,6 +9201,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.462904364, -0.113006592, -0.010500473]
@@ -9023,6 +9242,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.462904364, -0.228469849, -0.010500473]
@@ -9063,6 +9283,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hut_Roof
@@ -9080,6 +9301,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -9120,6 +9342,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.336021096, -0.253547609, -0.010500473]
@@ -9160,6 +9383,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: LightBall_1Level2_2
@@ -9177,6 +9401,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.701960802, 0.423529416]
@@ -9200,6 +9425,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: LightBall_1Level2_3
@@ -9217,6 +9443,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.701960802, 0.423529416]
@@ -9253,6 +9480,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _pickupSound
@@ -9323,6 +9551,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_6 (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
@@ -9340,6 +9569,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -9386,6 +9616,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.745098054, 0.423529416]
@@ -9432,6 +9663,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 15030438282683852635
       Name: RedMeter
@@ -9486,6 +9718,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: LightBall_1Level2_1
@@ -9503,6 +9736,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.701960802, 0.423529416]
@@ -9539,6 +9773,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _pickupSound
@@ -9609,6 +9844,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 9009254338774693292
       Name: PrisonGateBar7 (Copy) (Copy) (Copy)
@@ -9626,6 +9862,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Turn_Point_Right
@@ -9643,6 +9880,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Turn_Point_Left
@@ -9660,6 +9898,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, -0.0799999982, 0]
@@ -9700,6 +9939,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 9009254338774693292
       Name: PrisonGateBar12 (Copy) (Copy) (Copy)
@@ -9717,6 +9957,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 9009254338774693292
       Name: PrisonGateBar5 (Copy) (Copy) (Copy)
@@ -9734,6 +9975,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: LightBall_1 (Copy) (Copy) (Copy) (Copy)
@@ -9751,6 +9993,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.701960802, 0.423529416]
@@ -9774,6 +10017,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0646484792, -0.0102770729, -0.0293164719]
@@ -9814,6 +10058,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_7
@@ -9831,6 +10076,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -9900,6 +10146,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0638488755, -0.530495584, -0.0632575303]
@@ -9940,6 +10187,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Wall_Divider_Floor_1
@@ -9957,6 +10205,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hanging_Lantern_Outside_Hut_2
@@ -9974,6 +10223,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -10020,6 +10270,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -10060,6 +10311,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Floor
@@ -10077,6 +10329,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.745000005, 0.469999999]
@@ -10100,6 +10353,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -10179,6 +10433,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Skybox
@@ -10257,6 +10512,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -10297,6 +10553,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Fruit_Tree_Outside_Hut33 (Copy)
@@ -10314,6 +10571,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0500000007, 0.0199999996, 0.0199999996]
@@ -10344,6 +10602,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _pickupSound
@@ -10391,6 +10650,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hanging_Lantern_Outside_Hut_4
@@ -10408,6 +10668,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -10431,6 +10692,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hanging_Lantern_Outside_Hut_3
@@ -10448,6 +10710,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -10484,6 +10747,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _pickupSound
@@ -10554,6 +10818,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Right_Roof
@@ -10571,6 +10836,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Lantern_Floor_3
@@ -10588,6 +10854,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -10611,6 +10878,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -10634,6 +10902,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -10680,6 +10949,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.183763623, -0.204293177, -0.00326804467]
@@ -10720,6 +10990,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0223471075, -0.250579834, -0.0840037838]
@@ -10760,6 +11031,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Floor_With_Roof
@@ -10777,6 +11049,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.114103064, -0.133644536, -0.0359349474]
@@ -10817,6 +11090,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Back_wall_Floor_4
@@ -10834,6 +11108,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.516253412, -0.452026367, -0.00835225731]
@@ -10874,6 +11149,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Wall_To_Level_4
@@ -10891,6 +11167,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -10931,6 +11208,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Wall_To_Level_4
@@ -10948,6 +11226,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Samurai
@@ -10982,6 +11261,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     AnimatorComponent:
       Clips:
         - name: mixamo.com
@@ -11000,6 +11280,8 @@ ENTITIES:
           filePath: Resources//Models/Player/animations/Stand To Roll (1).fbx
         - name: Crouching Idle
           filePath: Resources/Models/Player/animations/Crouching Idle.fbx
+        - name: Death
+          filePath: Resources/Models/Player/animations/m6_death_animation.fbx
       States:
         - name: Walk
           clipIndex: 2
@@ -11121,7 +11403,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PlayerMovement
-      ParamsJSON: "{\n  \"_levelStartPos\": {\n    \"X\": -55.20199966430664,\n    \"Y\": 1.7999999523162842,\n    \"Z\": 5.014999866485596\n  },\n  \"_teleportToStartTrigger\": false\n}"
+      ParamsJSON: "{\n  \"_deathAnimClipName\": \"Death\",\n  \"_levelStartPos\": {\n    \"X\": -55.20199966430664,\n    \"Y\": 1.7999999523162842,\n    \"Z\": 5.014999866485596\n  },\n  \"_teleportToStartTrigger\": false\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -11162,6 +11444,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7923053519804204270
       Name: SEAL2_4_level2
@@ -11179,6 +11462,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7923053519804204270
       Name: SEAL1_2_level2
@@ -11196,6 +11480,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -11278,6 +11563,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Wall_Texture_Floor_3_Hut
@@ -11295,6 +11581,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -11373,6 +11660,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -11442,6 +11730,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: lock_2
@@ -11459,6 +11748,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0.831372559, 0.686274529, 0.215686277]
@@ -11581,6 +11871,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -11631,6 +11922,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -11728,6 +12020,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Level1_Cutscene_Door
@@ -11755,6 +12048,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Ambience SFX
@@ -11832,6 +12126,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -11901,6 +12196,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0, 0.529411793, 1]
@@ -11964,6 +12260,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -11991,6 +12288,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: level2_Railing_5 (Copy)
@@ -12008,6 +12306,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Level2_roof
@@ -12025,6 +12324,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Level2_roof (Copy)
@@ -12042,6 +12342,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Level2_roof (Copy) (Copy)
@@ -12059,6 +12360,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Level2_roof (Copy)
@@ -12076,6 +12378,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Level2_roof (Copy)
@@ -12093,6 +12396,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: ResPoint2_Light_2
@@ -12110,6 +12414,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0.305882365, 0.827450991, 0.580392182]
@@ -12133,6 +12438,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0.305882365, 0.827450991, 0.580392182]
@@ -12273,6 +12579,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0, 0.529411793, 1]
@@ -12554,6 +12861,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0, 0.529411793, 1]
@@ -12624,6 +12932,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7923053519804204270
       Name: SEAL1_3_level2
@@ -12641,6 +12950,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.560027719, -0.000982666039, -0.197365269]
@@ -12681,6 +12991,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -12721,6 +13032,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -12761,6 +13073,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.556922972, -0.24707447, -0.0105004711]
@@ -12801,6 +13114,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0319244377, -0.463853389, -0.257084459]
@@ -12841,6 +13155,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0319244377, -0.241377637, -0.257090837]
@@ -12881,6 +13196,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.33574158, -0.247074306, -0.00432723621]
@@ -12921,6 +13237,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 9691864251179230668
       Name: PrisonGateBar8 (Copy) (Copy)
@@ -12943,6 +13260,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 0
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_6 (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
@@ -12960,6 +13278,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -13029,6 +13348,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _turnSoundPath1
@@ -13124,6 +13444,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -13164,6 +13485,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0836729854, -0.0779499412, -0.00326804421]
@@ -13204,6 +13526,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0399413034, -0.0982666016, -0.00395799475]
@@ -13244,6 +13567,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0399413034, -0.0982666016, -0.00395799475]
@@ -13284,6 +13608,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 4.58664656, -0.0516800247]
@@ -13324,6 +13649,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [-2.61728072, -0.449921995, -0.606422842]
@@ -13364,6 +13690,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0500000007, 0.0199999996, 0.0199999996]
@@ -13394,6 +13721,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _pickupSound
@@ -13464,6 +13792,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -13504,6 +13833,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 15030438282683852635
       Name: Checkpoint2_Dialogue3
@@ -13558,6 +13888,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0, 0.529411793, 1]
@@ -13628,6 +13959,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Cushion_Prison (Copy)
@@ -13645,6 +13977,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Cushion_Prison (Copy)
@@ -13662,6 +13995,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Cushion_Prison (Copy)
@@ -13679,6 +14013,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.140000001, -0.519999981, 0]
@@ -13729,6 +14064,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 3352920676548593171
       Name: PrisonGateBar2 (Copy)
@@ -13746,6 +14082,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 3352920676548593171
       Name: PrisonGateBar3 (Copy)
@@ -13763,6 +14100,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 3352920676548593171
       Name: PrisonGateBar5 (Copy)
@@ -13780,6 +14118,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 3352920676548593171
       Name: PrisonGateBar10 (Copy)
@@ -13797,6 +14136,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 3352920676548593171
       Name: PrisonGateBar8 (Copy)
@@ -13814,6 +14154,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 3352920676548593171
       Name: PrisonGateBar12 (Copy)
@@ -13831,6 +14172,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 3352920676548593171
       Name: PrisonGateBar9 (Copy)
@@ -13848,6 +14190,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 3352920676548593171
       Name: PrisonGateBar4 (Copy)
@@ -13865,6 +14208,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 3352920676548593171
       Name: PrisonGateBar7 (Copy)
@@ -13882,6 +14226,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 3352920676548593171
       Name: PrisonGateBar6 (Copy)
@@ -13899,6 +14244,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 3352920676548593171
       Name: PrisonGateBar11 (Copy)
@@ -13916,6 +14262,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.140000001, -0.519999981, 0]
@@ -13966,6 +14313,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 9691864251179230668
       Name: PrisonGateBar5 (Copy) (Copy)
@@ -13983,6 +14331,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 9691864251179230668
       Name: PrisonGateBar2 (Copy) (Copy)
@@ -14000,6 +14349,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 9691864251179230668
       Name: PrisonGateBar (Copy) (Copy)
@@ -14017,6 +14367,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 9691864251179230668
       Name: PrisonGateBar12 (Copy) (Copy)
@@ -14034,6 +14385,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 9691864251179230668
       Name: PrisonGateBar7 (Copy) (Copy)
@@ -14051,6 +14403,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 9691864251179230668
       Name: PrisonGateBar9 (Copy) (Copy)
@@ -14068,6 +14421,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 9691864251179230668
       Name: PrisonGateBar4 (Copy) (Copy)
@@ -14085,6 +14439,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 9691864251179230668
       Name: PrisonGateBar8 (Copy) (Copy)
@@ -14102,6 +14457,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [-0.0884959623, 1.7778976, 0.0210991912]
@@ -14142,6 +14498,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _turnSoundPath1
@@ -14237,6 +14594,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.117112346, -0.17562063, -0.00326804421]
@@ -14277,6 +14635,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.117112346, -0.17562063, -0.00326804421]
@@ -14317,6 +14676,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.117112346, -0.17562063, -0.00326804421]
@@ -14357,6 +14717,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.117112346, -0.17562063, -0.00326804421]
@@ -14397,6 +14758,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.117112346, -0.17562063, -0.00326804421]
@@ -14437,6 +14799,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.117112346, -0.17562063, -0.00326804421]
@@ -14477,6 +14840,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.117112346, -0.17562063, -0.00326804421]
@@ -14517,6 +14881,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.117112346, -0.17562063, -0.00326804421]
@@ -14557,6 +14922,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.117112346, -0.17562063, -0.00326804421]
@@ -14597,6 +14963,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.117112346, -0.17562063, -0.00326804421]
@@ -14637,6 +15004,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -14677,6 +15045,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -14717,6 +15086,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -14757,6 +15127,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -14797,6 +15168,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -14837,6 +15209,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: FloorBar1
@@ -14854,6 +15227,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 1266398189443803938
       Name: FloorBar4
@@ -14871,6 +15245,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 1266398189443803938
       Name: FloorBar3
@@ -14888,6 +15263,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 1266398189443803938
       Name: FloorBar2
@@ -14905,6 +15281,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 1266398189443803938
       Name: FloorBar5
@@ -14922,6 +15299,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 15030438282683852635
       Name: Tutorial_BlackBackground
@@ -15204,6 +15582,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Fruit_Tree_Outside_Hut33 (Copy) (Copy)
@@ -15221,6 +15600,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.12653479, -0.144594222, -0.00326804421]
@@ -15261,6 +15641,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -15301,6 +15682,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLantern13
@@ -15318,6 +15700,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -15339,6 +15722,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -15385,6 +15769,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -15431,6 +15816,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -15491,6 +15877,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.701960802, 0.423529416]
@@ -15761,6 +16148,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 11769814229704063424
       Name: PrisonBreak2
@@ -15778,6 +16166,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 11769814229704063424
       Name: PrisonBreak3
@@ -15795,6 +16184,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 11769814229704063424
       Name: PrisonBreak4
@@ -15812,6 +16202,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 11769814229704063424
       Name: PrisonBreak5
@@ -15829,6 +16220,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -15916,6 +16308,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _footstepSoundPath
@@ -16077,6 +16470,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_6 (Copy) (Copy) (Copy) (Copy) (Copy)
@@ -16094,6 +16488,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -16140,6 +16535,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.HoverMotion
@@ -16209,6 +16605,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0, 0.529411793, 1]
@@ -16302,6 +16699,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0319244377, -0.241377637, -0.257090837]
@@ -16342,6 +16740,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7923053519804204270
       Name: SEAL1_1_level2
@@ -16359,6 +16758,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7274614006067905703
       Name: PrisonGateBar11
@@ -16376,6 +16776,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 9691864251179230668
       Name: PrisonGateBar11 (Copy) (Copy)
@@ -16393,6 +16794,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 9691864251179230668
       Name: PrisonGateBar6 (Copy) (Copy)
@@ -16410,6 +16812,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7274614006067905703
       Name: PrisonGateBar10
@@ -16427,6 +16830,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: DeadSamurai
@@ -16444,6 +16848,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: LightBall_1 (Copy) (Copy) (Copy)
@@ -16461,6 +16866,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.701960802, 0.423529416]
@@ -16484,6 +16890,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7274614006067905703
       Name: PrisonGateBar2
@@ -16501,6 +16908,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7274614006067905703
       Name: PrisonGateBar8
@@ -16518,6 +16926,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -16647,6 +17056,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7274614006067905703
       Name: PrisonGateBar9
@@ -16664,6 +17074,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7274614006067905703
       Name: PrisonGateBar
@@ -16681,6 +17092,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0223471075, -0.250579834, -0.0840037838]
@@ -16721,6 +17133,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7274614006067905703
       Name: PrisonGateBar6
@@ -16738,6 +17151,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7274614006067905703
       Name: PrisonGateBar7
@@ -16755,6 +17169,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7274614006067905703
       Name: PrisonGateBar5
@@ -16772,6 +17187,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 7274614006067905703
       Name: PrisonGateBar3
@@ -16789,6 +17205,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: DeadSamurai2
@@ -16806,6 +17223,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -16888,6 +17306,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0.305882365, 0.827450991, 0.580392182]
@@ -16911,6 +17330,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0.305882365, 0.827450991, 0.580392182]
@@ -16934,6 +17354,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [0.305882365, 0.827450991, 0.580392182]

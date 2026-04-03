@@ -15439,6 +15439,8 @@ ENTITIES:
           filePath: Resources//Models/Player/animations/Stand To Roll (1).fbx
         - name: Crouching Idle
           filePath: Resources/Models/Player/animations/Crouching Idle.fbx
+        - name: Death
+          filePath: Resources/Models/Player/animations/m6_death_animation.fbx
       States:
         - name: Walk
           clipIndex: 2

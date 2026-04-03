@@ -62,6 +62,16 @@ namespace GameScripts
         private float _blackHoldDuration = 0.15f;
         private float _fadeInDuration = 0.75f;
 
+        [Boom.EditorExposed("Death Anim Clip", "Exact name of the death animation clip to play (leave empty to skip).")]
+        private string _deathAnimClipName = "m6_death_animation.fbx";
+
+        [Boom.EditorExposed("Death Anim Duration", "Seconds to wait for the death animation before fading/respawning.")]
+        private float _deathAnimDuration = 1.5f;
+
+        private bool _isPlayingDeathAnim = false;
+        private float _deathAnimTimer = 0f;
+        private Action _deathAnimCallback = null;
+
         private FootstepComponent _footstepComponent;
 
         private static ulong s_playerEntity = 0;
@@ -262,9 +272,9 @@ namespace GameScripts
                 s_tutorialDeathCount++;
                 int countSnapshot = s_tutorialDeathCount;
                 if (countSnapshot == 3 || countSnapshot == 6)
-                    StartRespawn(() => StoryDialogueManager.PlayTutorialZoneDeathSequence(countSnapshot));
+                    StartDeathAnimation(() => StartRespawn(() => StoryDialogueManager.PlayTutorialZoneDeathSequence(countSnapshot)));
                 else
-                    StartRespawn();
+                    StartDeathAnimation(() => StartRespawn());
                 return;
             }
 
@@ -278,9 +288,43 @@ namespace GameScripts
             API.SetSoundVolume("player_damage", 1.0f);
 
             if (_health <= 0)
-                Entry.TriggerPlayerDeath();
+                StartDeathAnimation(() => Entry.TriggerPlayerDeath());
             else
-                StartRespawn();
+                StartDeathAnimation(() => StartRespawn());
+        }
+
+        private void StartDeathAnimation(Action onComplete)
+        {
+            _isRespawning = true; // freeze input/movement immediately
+            _verticalVelocity = 0f;
+            API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
+            _deathAnimCallback = onComplete;
+            _deathAnimTimer = 0f;
+            _isPlayingDeathAnim = true;
+
+            if (_hasAnimator && !string.IsNullOrEmpty(_deathAnimClipName))
+            {
+                API.AnimatorSetStateMachineEnabled(Entity, false);
+                API.AnimatorPlay(Entity, _deathAnimClipName);
+                API.Log($"[PlayerMovement] Playing death animation \"{_deathAnimClipName}\" for {_deathAnimDuration}s.");
+            }
+            else
+            {
+                API.Log("[PlayerMovement] No death animation clip set — skipping straight to callback.");
+            }
+        }
+
+        private void UpdateDeathAnim(float dt)
+        {
+            if (!_isPlayingDeathAnim) return;
+            _deathAnimTimer += dt;
+            if (_deathAnimTimer >= _deathAnimDuration)
+            {
+                _isPlayingDeathAnim = false;
+                Action cb = _deathAnimCallback;
+                _deathAnimCallback = null;
+                cb?.Invoke();
+            }
         }
 
         private void StartRespawn(Action onComplete = null)
@@ -309,12 +353,15 @@ namespace GameScripts
         {
             _verticalVelocity = 0f;
 
-            // Apply manual offset to the teleport position since API.TeleportController 
+            // Apply manual offset to the teleport position since API.TeleportController
             // ignores the localOffset in CharacterControllerComponent
             Vec3 teleportPos = new Vec3(_spawnPoint.X, _spawnPoint.Y + _controllerOffsetY, _spawnPoint.Z);
             API.TeleportController(Entity, teleportPos);
-            
+
             API.SetPosition(Entity, _spawnPoint);
+
+            if (_hasAnimator)
+                API.AnimatorSetStateMachineEnabled(Entity, true);
 
             _isInvulnerable = true;
             _invulnerabilityTimer = 0f;
@@ -485,6 +532,7 @@ namespace GameScripts
                 return;
             }
 
+            UpdateDeathAnim(dt);
             UpdateFade(dt);
             if (!API.HasTransform(Entity) || !API.HasScript(Entity)) return;
 
