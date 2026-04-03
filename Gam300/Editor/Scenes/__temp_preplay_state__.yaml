@@ -2771,7 +2771,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PlayerMovement
-      ParamsJSON: "{\n  \"_controllerOffsetY\": 2.4000000953674316,\n  \"_deathAnimClipName\": \"Death\",\n  \"_level2Pos\": {\n    \"X\": 0.0,\n    \"Y\": 10.0,\n    \"Z\": 0.0\n  },\n  \"_levelStartPos\": {\n    \"X\": 0.0,\n    \"Y\": 10.300000190734863,\n    \"Z\": -13.0\n  }\n}"
+      ParamsJSON: "{\n  \"_controllerOffsetY\": 2.4000000953674316,\n  \"_deathAnimClipName\": \"Death\",\n  \"_deathAnimDuration\": 3.5,\n  \"_level2Pos\": {\n    \"X\": 0.0,\n    \"Y\": 10.0,\n    \"Z\": 0.0\n  },\n  \"_levelStartPos\": {\n    \"X\": 0.0,\n    \"Y\": 10.300000190734863,\n    \"Z\": -13.0\n  }\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0.670000017, 0]
