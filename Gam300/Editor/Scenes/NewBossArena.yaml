@@ -2650,6 +2650,8 @@ ENTITIES:
           filePath: Resources/Models/Player/animations/Crouching Idle.fbx
         - name: Death
           filePath: Resources/Models/Player/animations/m6_death_animation.fbx
+        - name: StrungUp
+          filePath: Resources/Models/Player/animations/player strung up anim.fbx
       States:
         - name: Walk
           clipIndex: 2
