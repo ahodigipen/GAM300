@@ -70,6 +70,10 @@ namespace GameScripts
         // Action to run when current fade-out finishes
         private static System.Action s_pendingAfterFadeOut = null;
 
+        // ── HUD/inventory save state ─────────────────────────────────────────
+        private static bool s_wasInventoryOpen = false;
+        private static bool s_wasGodModeOn     = false;
+
         // ── Frame-level flags ───────────────────────────────────────────────
         private static bool s_justDismissed = false;
 
@@ -126,6 +130,13 @@ namespace GameScripts
                 API.Log($"[TutorialManager] Repeat pickup #{pickupCount} for {item}. Showing repeat sprite.");
             }
 
+            // Hide HUD and inventory for the duration of the tutorial
+            s_wasInventoryOpen = Entry.IsInventoryOpen;
+            s_wasGodModeOn     = PlayerMovement.IsGodModeActive;
+            UIManager.HideHUD();
+            if (s_wasInventoryOpen)
+                Entry.IsInventoryOpen = false;
+
             API.SetGameLogicPaused(true);
         }
 
@@ -153,10 +164,12 @@ namespace GameScripts
             // Kill any in-progress fade
             if (s_fadingEntity != 0) SetEntityAlpha(s_fadingEntity, 0f);
 
-            s_state          = TutorialState.None;
-            s_justDismissed  = false;
-            s_enterWasDown   = false;
-            s_aButtonWasDown = false;
+            s_state            = TutorialState.None;
+            s_justDismissed    = false;
+            s_enterWasDown     = false;
+            s_aButtonWasDown   = false;
+            s_wasInventoryOpen = false;
+            s_wasGodModeOn     = false;
             s_entitiesResolved = false;
             s_fadeMode       = FadeMode.None;
             s_fadeTimer      = 0f;
@@ -327,6 +340,13 @@ namespace GameScripts
 
                 s_state = TutorialState.None;
                 s_justDismissed = true;
+                UIManager.ShowHUD();
+                if (s_wasInventoryOpen)
+                    Entry.IsInventoryOpen = true;
+                if (s_wasGodModeOn)
+                    PlayerMovement.ForceShowGodModeText();
+                s_wasInventoryOpen = false;
+                s_wasGodModeOn     = false;
                 API.SetGameLogicPaused(false);
                 API.Log($"[TutorialManager] Tutorial closed for {capturedItem}. Game resumed.");
             });

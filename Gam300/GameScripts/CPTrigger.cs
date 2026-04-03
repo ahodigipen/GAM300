@@ -68,8 +68,18 @@ namespace GameScripts
         [Boom.EditorExposed("Bob Amount", "Amount of horizontal bobbing movement")]
         private float _bobAmount = 20.0f;
 
+        [Boom.EditorExposed("VO Audio Clip 1", "Path to first VO audio file (e.g. Resources/Audio/VO_checkpoint1_1.wav)")]
+        private string _voAudioClip1 = "";
+
+        [Boom.EditorExposed("VO Audio Clip 2", "Path to second VO audio file (e.g. Resources/Audio/VO_checkpoint1_2.wav)")]
+        private string _voAudioClip2 = "";
+
+        private static readonly System.Random s_rng = new System.Random();
+
         // Track if checkpoint was already activated
         private bool _activated = false;
+        private bool _wasInventoryOpen = false;
+        private bool _wasGodModeOn = false;
         
         private bool _playerInZone = false;
 
@@ -373,6 +383,27 @@ namespace GameScripts
                 // Show popup (sprites + text) after dialogue completes
                 Action showPopup = () =>
                 {
+                    // Restore HUD and (if applicable) inventory when popup appears
+                    UIManager.ShowHUD();
+
+                    // Play random VO
+                    bool hasClip1 = !string.IsNullOrEmpty(_voAudioClip1);
+                    bool hasClip2 = !string.IsNullOrEmpty(_voAudioClip2);
+                    if (hasClip1 || hasClip2)
+                    {
+                        string clip = (hasClip1 && hasClip2)
+                            ? (s_rng.Next(2) == 0 ? _voAudioClip1 : _voAudioClip2)
+                            : (hasClip1 ? _voAudioClip1 : _voAudioClip2);
+                        API.PlaySound($"VO_CP_{Entity}", clip, false);
+                    }
+
+                    if (_wasInventoryOpen)
+                        Entry.IsInventoryOpen = true;
+                    if (_wasGodModeOn)
+                        PlayerMovement.ForceShowGodModeText();
+                    _wasInventoryOpen = false;
+                    _wasGodModeOn = false;
+
                     if (_simultaneousIDs.Count > 0)
                     {
                         _simTimer = _spriteDisplayDuration;
@@ -400,6 +431,13 @@ namespace GameScripts
                     else if (_isCheckpoint2) StoryDialogueManager.PlayCheckpoint2Sequence(showPopup);
                     else StoryDialogueManager.PlayCheckpoint1Sequence(showPopup);
                 };
+
+                // Always save and hide HUD/inventory for any checkpoint with dialogue
+                _wasInventoryOpen = Entry.IsInventoryOpen;
+                _wasGodModeOn = PlayerMovement.IsGodModeActive;
+                UIManager.HideHUD();
+                if (_wasInventoryOpen)
+                    Entry.IsInventoryOpen = false;
 
                 if (_triggerIntroCutscene)
                 {

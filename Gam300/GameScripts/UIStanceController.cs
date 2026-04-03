@@ -25,25 +25,47 @@ namespace GameScripts
 
         public void OnStart(string jsonParams)
         {
+            // Optimistic first try (may fail if loaded additively)
             _stanceSpriteEntity = API.FindEntity(_stanceSpriteName);
 
             if (_stanceSpriteEntity != 0 && API.HasSprite(_stanceSpriteEntity))
             {
-                // Default to run texture 
-                _currentTexture = string.Empty; // force initial set
-                API.SetSpriteTexture(_stanceSpriteEntity, RUN_TEXTURE);
-                _currentTexture = RUN_TEXTURE;
-                API.SetSpriteAlpha(_stanceSpriteEntity, 1.0f);
+                InitializeSprite();
             }
 
-            // Run an initial update to ensure visuals are correct
-            UpdateVisuals(0.0f);
             API.Log("[UIStance] Initialized stance UI controller.");
+        }
+
+        public void ForceHide()
+        {
+            if (_stanceSpriteEntity != 0 && API.HasSprite(_stanceSpriteEntity))
+                API.SetSpriteAlpha(_stanceSpriteEntity, 0f);
         }
 
         public void OnUpdate(float dt)
         {
-            if (_stanceSpriteEntity == 0 || !API.HasSprite(_stanceSpriteEntity))
+            if (UIManager.IsHUDHidden) return;
+
+            // --- NEW FIX: Lazy Initialization ---
+            // If the entity wasn't found in OnStart, keep looking for it
+            if (_stanceSpriteEntity == 0)
+            {
+                _stanceSpriteEntity = API.FindEntity(_stanceSpriteName);
+
+                // The moment we find it, run the initial setup
+                if (_stanceSpriteEntity != 0 && API.HasSprite(_stanceSpriteEntity))
+                {
+                    API.Log("[UIStance] Lazily found and initialized UI_Stance.");
+                    InitializeSprite();
+                }
+                else
+                {
+                    return; // Still not found, exit and try again next frame
+                }
+            }
+
+            // Double-check it still has the sprite component before proceeding
+            if (!API.HasSprite(_stanceSpriteEntity))
             {
                 return;
             }
@@ -51,13 +73,20 @@ namespace GameScripts
             UpdateVisuals(dt);
         }
 
+        // Helper method to set up the default visual state once the entity is found
+        private void InitializeSprite()
+        {
+            // Default to run texture 
+            _currentTexture = string.Empty; // force initial set
+            API.SetSpriteTexture(_stanceSpriteEntity, RUN_TEXTURE);
+            _currentTexture = RUN_TEXTURE;
+            API.SetSpriteAlpha(_stanceSpriteEntity, 1.0f);
+        }
+
         private void UpdateVisuals(float dt)
         {
             // --- CROUCH / RUN UI (single sprite) ---
             bool canCrouch = PlayerMovement.IsInCrouchZone();
-
-            if (_stanceSpriteEntity == 0 || !API.HasSprite(_stanceSpriteEntity))
-                return;
 
             // Determine desired texture and alpha behavior
             string desiredTexture = canCrouch ? CROUCH_TEXTURE : RUN_TEXTURE;

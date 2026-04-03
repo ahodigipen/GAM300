@@ -3477,20 +3477,6 @@ ENTITIES:
       ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Patrol enemy 6\",\n  \"_spotlightName\": \"Patrol Vision Cone 67\",\n  \"_spotlightOffsetY\": 3.815999984741211\n}"
   - InfoComponent:
       Parent: 0
-      Name: UI_Stance
-      UID: 10500341996070685860
-      SortOrder: 458
-    TransformComponent:
-      Transform:
-        Translate: [0.899999976, -0.770739496, 0]
-        Rotate: [0, 0, 0]
-        Scale: [0.0599999987, 0.100000001, 0.5]
-    SpriteComponent:
-      textureID: 2900915588722288564
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 0
       Name: DebugTele
       UID: 11858638219423824013
       SortOrder: 0
@@ -5131,16 +5117,6 @@ ENTITIES:
           animTrigger: ""
           minDistance: 1
           maxDistance: 50
-  - InfoComponent:
-      Parent: 0
-      Name: PlayerHP
-      UID: 18428452598414175165
-      SortOrder: 565
-    TransformComponent:
-      Transform:
-        Translate: [-0.209999993, 0.360000014, 0]
-        Rotate: [0, 0, 0]
-        Scale: [0.800000012, 0.600000024, 1]
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -5360,34 +5336,6 @@ ENTITIES:
       renderAs3D: false
     DeactivatedComponent:
       {}
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_Dead
-      UID: 7305709452366689602
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.720000029, 0.857142925, -0.150000006]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 947084306896258002
-      color: [0.196078435, 0.196078435, 0.196078435, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_5
-      UID: 5351145407601607575
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.579999983, 0.857142925, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0417529009, -0.00411249651, -0.00168500049]
@@ -5569,34 +5517,6 @@ ENTITIES:
         Intensity: 1.63
         Range: 4
         BloomStrength: 1
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_3
-      UID: 8738239648003058153
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.720000029, 0.857142925, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_1
-      UID: 16075859986944912680
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.860000014, 0.856999993, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
   - ColliderComponent:
       Collider:
         LocalPosition: [0.694491565, -0.244500503, -0.0111204237]
@@ -5759,34 +5679,6 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_Dead
-      UID: 6115143401978660500
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.579999983, 0.857142925, -0.170000002]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 947084306896258002
-      color: [0.196078435, 0.196078435, 0.196078435, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_2
-      UID: 2471808296830425899
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.790000021, 0.857142925, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
   - InfoComponent:
       Parent: 0
       Name: lock_SR2_2
@@ -6421,10 +6313,46 @@ ENTITIES:
         Translate: [-40.7700005, 27.9599991, -31]
         Rotate: [0, -0, 0]
         Scale: [6.08900023, 5, 8.68900013]
+    SoundComponent:
+      Entries:
+        - name: _voAudioClip1
+          filePath: ""
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 15
+        - name: _voAudioClip2
+          filePath: ""
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 15
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.CPTrigger
-      ParamsJSON: "{\n  \"_activeColor\": {\n    \"X\": 0.07800000160932541,\n    \"Y\": 0.8270000219345093,\n    \"Z\": 0.5799999833106995\n  },\n  \"_bobAmount\": 2.5,\n  \"_bobSpeed\": 5.0,\n  \"_bobbingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_checkpointSpriteNames\": \"CPPopup\",\n  \"_cutsceneEntityName\": \"\",\n  \"_floatSpeed\": 10.0,\n  \"_floatingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_forwardOffset\": 5.0,\n  \"_isBossCheckpoint\": true,\n  \"_lightNames\": \"ResPoint3_Light_1,ResPoint3_Light_2,ResPoint3_Light_3\",\n  \"_sequentialSpriteNames\": \"CPHealthNoti,CPHealthNoti1\"\n}"
+      ParamsJSON: "{\n  \"_activeColor\": {\n    \"X\": 0.07800000160932541,\n    \"Y\": 0.8270000219345093,\n    \"Z\": 0.5799999833106995\n  },\n  \"_bobAmount\": 2.5,\n  \"_bobSpeed\": 5.0,\n  \"_bobbingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_checkpointSpriteNames\": \"CPPopup\",\n  \"_cutsceneEntityName\": \"\",\n  \"_floatSpeed\": 10.0,\n  \"_floatingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_forwardOffset\": 5.0,\n  \"_isBossCheckpoint\": true,\n  \"_lightNames\": \"ResPoint3_Light_1,ResPoint3_Light_2,ResPoint3_Light_3\",\n  \"_sequentialSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_voAudioClip1\": \"Resources/Audio/VO_checkpoint3_1.wav\",\n  \"_voAudioClip2\": \"Resources/Audio/VO_checkpoint3_2.wav\"\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0319244377, -0.241377637, -0.257090837]
@@ -10289,20 +10217,6 @@ ENTITIES:
       Mouse Sensitivity: 1
       Scroll Sensitivity: 1
       Start Lock Duration: 0.300000012
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_Dead
-      UID: 16775474597636124132
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.649999976, 0.857142925, -0.0500000007]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 947084306896258002
-      color: [0.196078435, 0.196078435, 0.196078435, 1]
-      renderAs3D: false
   - ColliderComponent:
       Collider:
         LocalPosition: [0.0259208549, -0.00411249651, -0.00168500014]
@@ -11381,20 +11295,6 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_4
-      UID: 13304020931239740115
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.649999976, 0.857142925, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -11456,34 +11356,6 @@ ENTITIES:
       Enabled: true
       TypeName: GameScripts.UIManager
       ParamsJSON: "{\n  \"_lbInvert\": false,\n  \"_lbSpeed\": 1.0,\n  \"_lbSqueeze\": 0.3400000035762787,\n  \"_lbStatus\": \"ID:148 | TEST (LOCKED) | sh:False | dt:0.041\",\n  \"_lbTest\": false\n}"
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_Dead
-      UID: 18081686699052920950
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.860000014, 0.857142925, -0.0500000007]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 947084306896258002
-      color: [0.19607842, 0.19607842, 0.19607842, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_Dead
-      UID: 10598076066696413096
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.790000021, 0.857142925, -0.129999995]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 947084306896258002
-      color: [0.196078435, 0.196078435, 0.196078435, 1]
-      renderAs3D: false
   - InfoComponent:
       Parent: 0
       Name: NewFloatingLanternLevel2_6
@@ -11616,10 +11488,46 @@ ENTITIES:
         Translate: [-0.504779816, 20.3323364, 38.4860764]
         Rotate: [0, -0, 0]
         Scale: [10.3088512, 5, 11.0389271]
+    SoundComponent:
+      Entries:
+        - name: _voAudioClip1
+          filePath: ""
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 15
+        - name: _voAudioClip2
+          filePath: ""
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 15
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.CPTrigger
-      ParamsJSON: "{\n  \"_activeColor\": {\n    \"X\": 0.07800000160932541,\n    \"Y\": 0.210999995470047,\n    \"Z\": 0.14800000190734863\n  },\n  \"_bobAmount\": 2.5,\n  \"_bobSpeed\": 5.0,\n  \"_bobbingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_checkpointSpriteName\": \"CPHealthNoti\",\n  \"_checkpointSpriteNames\": \"CPPopup\",\n  \"_cutsceneEntityName\": \"Level 2 CutScene\",\n  \"_floatSpeed\": 10.0,\n  \"_floatingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_isCheckpoint2\": true,\n  \"_lightNames\": \"ResPoint2_Light_1,ResPoint2_Light_2,ResPoint2_Light_3\",\n  \"_sequentialSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_spriteFadeSpeed\": 8.0,\n  \"_triggerIntroCutscene\": true\n}"
+      ParamsJSON: "{\n  \"_activeColor\": {\n    \"X\": 0.07800000160932541,\n    \"Y\": 0.210999995470047,\n    \"Z\": 0.14800000190734863\n  },\n  \"_bobAmount\": 2.5,\n  \"_bobSpeed\": 5.0,\n  \"_bobbingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_checkpointSpriteName\": \"CPHealthNoti\",\n  \"_checkpointSpriteNames\": \"CPPopup\",\n  \"_cutsceneEntityName\": \"Level 2 CutScene\",\n  \"_floatSpeed\": 10.0,\n  \"_floatingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_isCheckpoint2\": true,\n  \"_lightNames\": \"ResPoint2_Light_1,ResPoint2_Light_2,ResPoint2_Light_3\",\n  \"_sequentialSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_spriteFadeSpeed\": 8.0,\n  \"_triggerIntroCutscene\": true,\n  \"_voAudioClip1\": \"Resources/Audio/VO_checkpoint2_1.wav\",\n  \"_voAudioClip2\": \"Resources/Audio/VO_checkpoint2_2.wav\"\n}"
     TextComponent:
       text: ""
       fontName: Roboto-Regular
@@ -12699,25 +12607,6 @@ ENTITIES:
       Enabled: true
       TypeName: GameScripts.CrouchTriggerZone
       ParamsJSON: "{}"
-  - InfoComponent:
-      Parent: 0
-      Name: UI_GodMode
-      UID: 18341644754194887370
-      SortOrder: 563
-    TransformComponent:
-      Transform:
-        Translate: [0, 11.6872597, 0]
-        Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]
-    TextComponent:
-      text: ""
-      fontName: Cormorant-VariableFont_wght
-      color: [0, 0, 0, 0]
-      scale: 1
-      screenPosition: [100, 83]
-      renderAs3D: false
-      billboardMode: true
-      alignment: Left
   - InfoComponent:
       Parent: 7923053519804204270
       Name: SEAL3_2_level2

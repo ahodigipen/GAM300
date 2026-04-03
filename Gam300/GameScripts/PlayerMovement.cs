@@ -513,6 +513,11 @@ namespace GameScripts
                 s_godMode = !s_godMode;
                 API.Log($"[CHEAT] God Mode (No Detection): {(s_godMode ? "ON" : "OFF")}");
 
+                if (_godModeTextEntity == 0)
+                {
+                    _godModeTextEntity = API.FindEntity("UI_GodMode");
+                }
+
                 if (_godModeTextEntity != 0 && API.HasText(_godModeTextEntity))
                 {
                     if (s_godMode)
@@ -1036,6 +1041,24 @@ namespace GameScripts
         public static float GetCurrentMoveSpeed()
         {
             return s_instance != null ? s_instance._currentMoveSpeed : 0f;
+        }
+
+        public static bool IsGodModeActive => s_godMode;
+
+        public static void ForceHideGodModeText()
+        {
+            if (s_instance == null) return;
+            ulong e = s_instance._godModeTextEntity;
+            if (e != 0 && API.HasText(e))
+                API.SetTextColor(e, new Vec4(0f, 0f, 0f, 0f));
+        }
+
+        public static void ForceShowGodModeText()
+        {
+            if (s_instance == null || !s_godMode) return;
+            ulong e = s_instance._godModeTextEntity;
+            if (e != 0 && API.HasText(e))
+                API.SetTextColor(e, new Vec4(0f, 1f, 0f, 1f));
         }
     }
 }
