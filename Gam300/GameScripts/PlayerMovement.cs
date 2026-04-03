@@ -1092,6 +1092,7 @@ namespace GameScripts
         }
         public int GetHealth() => _health;
         public static ulong GetPlayerEntity() => s_playerEntity;
+        public static bool IsPlayingStartAnim => s_instance != null && s_instance._isPlayingStartAnim;
         public static bool IsPlayerInvisibleToEnemies()
         {
             if (s_instance == null) return false;

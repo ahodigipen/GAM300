@@ -2,6 +2,20 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
+      Name: Camera Hung
+      UID: 4780029432153329861
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-27.7407703, 28.1294174, 16.0655499]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.CutsceneSequencer
+      ParamsJSON: "{\n  \"AllowSkip\": false,\n  \"CutsceneFile\": \"Cutscene_Hung.seq\",\n  \"PlayOnStart\": true\n}"
+  - InfoComponent:
+      Parent: 0
       Name: Hangingpuppet (Copy) (Copy)
       UID: 15751485026157007463
       SortOrder: 151
@@ -2623,6 +2637,8 @@ ENTITIES:
           filePath: Resources/Models/Player/animations/Crouching Idle.fbx
         - name: Death
           filePath: Resources/Models/Player/animations/m6_death_animation.fbx
+        - name: StrungUp
+          filePath: Resources/Models/Player/animations/player strung up anim.fbx
       States:
         - name: Walk
           clipIndex: 2
@@ -3014,8 +3030,8 @@ ENTITIES:
       SortOrder: 179
     TransformComponent:
       Transform:
-        Translate: [-25.2055435, 29.5204086, 16.3212109]
-        Rotate: [-200.5, 7294.9375, 180]
+        Translate: [-24.2338943, 30.2683659, 16.3985367]
+        Rotate: [-198.375, 7673.875, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -4946,7 +4962,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.285498023, 0.170000002, 1.12]
+        Translate: [0.280549794, 0.170000002, 1.12]
         Rotate: [0, 0, 0]
         Scale: [0.0199999996, 0.0399999991, 1]
     SpriteComponent:
@@ -5018,9 +5034,9 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.255258977, 0.170000002, 1.11000001]
+        Translate: [0.277525902, 0.170000002, 1.11000001]
         Rotate: [0, 0, 0]
-        Scale: [0.00553613901, 0.0199999996, 1]
+        Scale: [0.00304487208, 0.0199999996, 1]
     SpriteComponent:
       textureID: 10258411235812800368
       color: [1, 1, 1, 1]

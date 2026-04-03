@@ -233,7 +233,7 @@ namespace GameScripts
                 _sceneInputDebounceTimer -= dt;
             }
 
-            if (IsGameplayScene(_currentSceneName) && _startSequenceDelay > 0.0f)
+            if (IsGameplayScene(_currentSceneName) && _startSequenceDelay > 0.0f && !PlayerMovement.IsPlayingStartAnim)
             {
                 _startSequenceDelay -= dt;
                 if (_startSequenceDelay <= 0.0f && !StoryDialogueManager.IsSequenceActive())
