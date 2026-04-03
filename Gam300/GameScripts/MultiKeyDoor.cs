@@ -395,13 +395,13 @@ namespace GameScripts
 
                                 // Play locked sound immediately as dialogue appears
                                 API.PlaySound("sfx_door_locked_2d", _doorLockedSoundPath, false);
-                                API.SetSoundVolume("sfx_door_locked_2d", 1.0f);
+                                API.SetSoundVolume("sfx_door_locked_2d", 0.2f);
                             }
                             else
                             {
                                 // Play locked sound
                                 API.PlaySound("sfx_door_locked_2d", _doorLockedSoundPath, false);
-                                API.SetSoundVolume("sfx_door_locked_2d", 1.0f);
+                                API.SetSoundVolume("sfx_door_locked_2d", 0.2f);
                             }
                         }
                         else
@@ -436,7 +436,7 @@ namespace GameScripts
                             }
 
                             API.PlaySound("sfx_door_slide_open_2d", _doorSoundPath, false);
-                            API.SetSoundVolume("sfx_door_slide_open_2d", 1.0f);
+                            API.SetSoundVolume("sfx_door_slide_open_2d", 0.2f);
                             API.Log("[MultiKeyDoor] Door opening.");
                         }
                     }
@@ -527,7 +527,7 @@ namespace GameScripts
                     // 3D positional version (subject to distance & mono asset rules)
                     var pos = API.GetPosition(_doorEntity);
                     API.PlaySoundAt("sfx_door_slide_open_3d", _doorSoundPath, pos, false);
-                    API.SetSoundVolume("sfx_door_slide_open_3d", 1.0f);
+                    API.SetSoundVolume("sfx_door_slide_open_3d", 0.2f);
                     API.Set3DMinMaxDistance("sfx_door_slide_open_3d", 1.5f, 35.0f);
                     API.Log("[MultiKeyDoor] Shift+K: played 3D positional door SFX.");
                 }
@@ -535,7 +535,7 @@ namespace GameScripts
                 {
                     // 2D guaranteed-audible fallback (no attenuation)
                     API.PlaySound("sfx_door_slide_open_2d", _doorSoundPath, false);
-                    API.SetSoundVolume("sfx_door_slide_open_2d", 1.0f);
+                    API.SetSoundVolume("sfx_door_slide_open_2d", 0.2f);
                     API.Log("[MultiKeyDoor] K: played 2D door SFX (always audible).");
                 }
             }
@@ -564,7 +564,7 @@ namespace GameScripts
                 _opening = true;
                 _closing = false;
                 API.PlaySound("sfx_door_slide_open_2d", _doorSoundPath, false);
-                API.SetSoundVolume("sfx_door_slide_open_2d", 1.0f);
+                API.SetSoundVolume("sfx_door_slide_open_2d", 0.2f);
             }
             _f5WasDown = f5Down;
         }

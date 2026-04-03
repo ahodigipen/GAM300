@@ -166,7 +166,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.519999981
+          volume: 0.370000005
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -345,7 +345,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.52700001
+          volume: 0.374000013
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -3378,7 +3378,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 0.527999997
+          volume: 0.389999986
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -3391,7 +3391,7 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 20.5
+          maxDistance: 4.19999981
         - name: _alertSoundPath
           filePaths:
             - Resources/Audio/VO_Patrol_Alert_020.wav
@@ -3414,7 +3414,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/VO_Patrol_001.wav
           loop: false
-          volume: 0.653999984
+          volume: 0.446999997
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -4069,7 +4069,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 0.51700002
+          volume: 0.389999986
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -4082,7 +4082,7 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 14.1999998
+          maxDistance: 4.80000019
         - name: _alertSoundPath
           filePaths:
             - Resources/Audio/VO_Patrol_Alert_020.wav
@@ -4105,7 +4105,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/VO_Patrol_001.wav
           loop: false
-          volume: 0.653999984
+          volume: 0.444000006
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -4214,7 +4214,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 0.521000028
+          volume: 0.393000007
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -4227,12 +4227,12 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 30.2000008
+          maxDistance: 4.80000019
         - name: _alertSoundPath
           filePaths:
             - Resources/Audio/VO_Patrol_Alert_020.wav
           loop: false
-          volume: 0.808000028
+          volume: 0.828999996
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -4250,7 +4250,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/VO_Patrol_001.wav
           loop: false
-          volume: 0.601000011
+          volume: 0.444000006
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -4357,7 +4357,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 0.527999997
+          volume: 0.389999986
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -4369,8 +4369,8 @@ ENTITIES:
           moveThreshold: 0.100000001
           repeatInterval: 0.5
           animTrigger: ""
-          minDistance: 1
-          maxDistance: 17
+          minDistance: 0.899999976
+          maxDistance: 4.19999981
         - name: _alertSoundPath
           filePaths:
             - Resources/Audio/VO_Patrol_Alert_020.wav
@@ -4393,7 +4393,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/VO_Patrol_001.wav
           loop: false
-          volume: 0.621999979
+          volume: 0.446999997
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -4500,7 +4500,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 0.513999999
+          volume: 0.393000007
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -4513,7 +4513,7 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 16.2999992
+          maxDistance: 4.19999981
         - name: _alertSoundPath
           filePaths:
             - Resources/Audio/VO_Patrol_Alert_020.wav
@@ -4536,7 +4536,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/VO_Patrol_001.wav
           loop: false
-          volume: 0.639999986
+          volume: 0.444000006
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -4646,7 +4646,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 0.513999999
+          volume: 0.389999986
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -4659,7 +4659,7 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 16.2999992
+          maxDistance: 4.19999981
         - name: _alertSoundPath
           filePaths:
             - Resources/Audio/VO_Patrol_Alert_020.wav
@@ -4682,7 +4682,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/VO_Patrol_001.wav
           loop: false
-          volume: 0.661000013
+          volume: 0.444000006
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -4789,7 +4789,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 0.527999997
+          volume: 0.395999998
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -4802,7 +4802,7 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 21.2000008
+          maxDistance: 4.80000019
         - name: _alertSoundPath
           filePaths:
             - Resources/Audio/VO_Patrol_Alert_020.wav
@@ -4825,7 +4825,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/VO_Patrol_001.wav
           loop: false
-          volume: 0.633000016
+          volume: 0.444000006
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -5117,8 +5117,8 @@ ENTITIES:
           filePaths:
             - Resources/Audio/HouseOfLanternsBGM1Mstr.wav
           loop: true
-          volume: 0.202999994
-          priority: 109
+          volume: 0.0359999985
+          priority: 181
           pitch: 1
           stereoPan: 0
           spatialBlend: 0
@@ -5130,7 +5130,7 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 121.699997
   - InfoComponent:
       Parent: 0
       Name: PlayerHP
@@ -5666,7 +5666,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.523000002
+          volume: 0.374000013
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -5856,7 +5856,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 0.527999997
+          volume: 0.389999986
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -5869,7 +5869,7 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 20.5
+          maxDistance: 4.80000019
         - name: _alertSoundPath
           filePaths:
             - Resources/Audio/VO_Patrol_Alert_020.wav
@@ -5892,7 +5892,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/VO_Patrol_001.wav
           loop: false
-          volume: 0.653999984
+          volume: 0.441000015
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -10270,8 +10270,8 @@ ENTITIES:
       SortOrder: 444
     TransformComponent:
       Transform:
-        Translate: [-84.1957245, 45.0368767, 19.738121]
-        Rotate: [-223.625, 2427.8125, 180]
+        Translate: [-27.0324516, 23.4069786, 60.2858429]
+        Rotate: [-214.4375, 2184.875, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -11311,7 +11311,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.518999994
+          volume: 0.374000013
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -16033,7 +16033,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 0.513999999
+          volume: 0.389999986
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -16046,7 +16046,7 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 16.2999992
+          maxDistance: 4.19999981
         - name: _alertSoundPath
           filePaths:
             - Resources/Audio/VO_Patrol_Alert_020.wav
@@ -16069,7 +16069,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/VO_Patrol_001.wav
           loop: false
-          volume: 0.639999986
+          volume: 0.444000006
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -16705,7 +16705,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.52700001
+          volume: 0.374000013
           priority: 128
           pitch: 1
           stereoPan: 0

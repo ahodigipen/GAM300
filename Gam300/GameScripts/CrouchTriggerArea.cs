@@ -20,7 +20,7 @@ namespace GameScripts
         private bool _playSoundOnEnter = false;
 
         [Boom.EditorExposed("Enter Sound", "Sound played when player enters the crouch zone")]
-        private string _enterSound = "Resources/Audio/ambient_warning.wav";
+        private string _enterSound = "Resources/Audio/invis.wav";
 
         public void OnStart(string jsonParams)
         {
@@ -75,7 +75,7 @@ namespace GameScripts
             {
                 var p = API.GetPosition(inst.Entity);
                 API.PlaySoundAt("sfx_crouch_zone_enter", inst._enterSound, p, false);
-                API.SetSoundVolume("sfx_crouch_zone_enter", 0.5f);
+                API.SetSoundVolume("sfx_crouch_zone_enter", 0.8f);
                 API.Set3DMinMaxDistance("sfx_crouch_zone_enter", 1.0f, 12.0f);
             }
 

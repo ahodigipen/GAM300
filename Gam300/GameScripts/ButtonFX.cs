@@ -11,8 +11,8 @@ namespace GameScripts
     public class ButtonFX
     {
         // Sound paths (relative to Editor working directory)
-        private const string HOVER_SOUND_PATH = "Resources/Audio/buttonHover.wav";
-        private const string CLICK_SOUND_PATH = "Resources/Audio/buttonPressed.wav";
+        private const string HOVER_SOUND_PATH = "Resources/Audio/buttonHovered.wav";
+        private const string CLICK_SOUND_PATH = "Resources/Audio/buttonPress.wav";
 
         private readonly ulong[] _buttonIDs;
         private readonly bool[]  _wasHovered;

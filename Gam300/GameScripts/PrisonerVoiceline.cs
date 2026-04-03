@@ -15,22 +15,22 @@ namespace GameScripts
         private float _minDistance = 1.0f;
 
         [EditorExposed("Max Distance", "Distance at which sound is silent", 0f, 100f, true)]
-        private float _maxDistance = 15.0f;
+        private float _maxDistance = 25.0f;
 
         [EditorExposed("Trigger Distance", "Player must be within this distance to trigger voiceline", 0f, 50f, true)]
-        private float _triggerDistance = 10.0f;
+        private float _triggerDistance = 25.0f;
 
         [EditorExposed("Volume", "Playback volume", 0f, 1f, true)]
-        private float _volume = 1.0f;
+        private float _volume = 0.7f;
 
         [EditorExposed("Min Delay", "Minimum seconds between voicelines", 0f, 60f, true)]
-        private float _minDelay = 2.0f;
+        private float _minDelay = 1.0f;
 
         [EditorExposed("Max Delay", "Maximum seconds between voicelines", 0f, 120f, true)]
-        private float _maxDelay = 5.0f;
+        private float _maxDelay = 3.0f;
 
         [EditorExposed("Initial Delay", "Seconds to wait before first voiceline", 0f, 30f, true)]
-        private float _initialDelay = 1.0f;
+        private float _initialDelay = 0.5f;
 
         [EditorExposed("First Voice File", "Select the _1.wav file (e.g. VO_Prisoner1_FX_1.wav)")]
         private string _firstVoiceFile = "Resources/Audio/VO_Prisoner1_FX_1.wav";

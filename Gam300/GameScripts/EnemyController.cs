@@ -29,13 +29,13 @@ namespace GameScripts
 
         // ===== Audio Settings =====
         [Boom.EditorExposed("Turn Sound 1", "First rotation sound variant")]
-        private string _turnSoundPath1 = "Resources/Audio/StatueTurn_01.wav";
+        private string _turnSoundPath1 = "Resources/Audio/StatueTurn01.wav";
 
         [Boom.EditorExposed("Turn Sound 2", "Second rotation sound variant")]
-        private string _turnSoundPath2 = "Resources/Audio/StatueTurn_02.wav";
+        private string _turnSoundPath2 = "Resources/Audio/StatueTurn02.wav";
 
         [Boom.EditorExposed("Turn Sound 3", "Third rotation sound variant")]
-        private string _turnSoundPath3 = "Resources/Audio/StatueTurn_03.wav";
+        private string _turnSoundPath3 = "Resources/Audio/StatueTurn03.wav";
 
         [Boom.EditorExposed("Alert Sound", "Sound played when enemy detects player")]
         private string _alertSoundPath = "Resources/Audio/VO_Statue_003.wav";
@@ -307,8 +307,8 @@ namespace GameScripts
                         //($"[EnemyController] Playing turn sound {index} at {enemyPos} ({clipPath})");
 
                         API.PlaySoundAt(soundId, clipPath, enemyPos, false);
-                        API.SetSoundVolume(soundId, 0.5f);
-                        API.Set3DMinMaxDistance(soundId, 1.0f, 25.0f);
+                        API.SetSoundVolume(soundId, 0.25f);
+                        API.Set3DMinMaxDistance(soundId, 1.0f, 20.0f);
                     }
                     catch (Exception)
                     {
