@@ -141,8 +141,8 @@ void AnimationTimelinePanel::Render()
             SequenceTrack newTrack;
             newTrack.entityName = dt.entityName;
             newTrack.type = dt.type;
-            const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot", "Look At Target", "Event Trigger" };
-            newTrack.label = dt.entityName + " : " + (dt.type >= 0 && dt.type < 6 ? typeNames[dt.type] : "Unknown");
+            const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot", "Look At Target", "Event Trigger", "Opacity" };
+            newTrack.label = dt.entityName + " : " + (dt.type >= 0 && dt.type < 7 ? typeNames[dt.type] : "Unknown");
             m_SequenceTracks.push_back(newTrack);
         }
         m_DeferredTracks.clear();
@@ -156,8 +156,8 @@ void AnimationTimelinePanel::Render()
             SequenceTrack newTrack;
             newTrack.entityName = dt.entityName;
             newTrack.type = dt.type;
-            const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot", "Look At Target", "Event Trigger" };
-            newTrack.label = dt.entityName + " : " + (dt.type >= 0 && dt.type < 6 ? typeNames[dt.type] : "Unknown");
+            const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot", "Look At Target", "Event Trigger", "Opacity" };
+            newTrack.label = dt.entityName + " : " + (dt.type >= 0 && dt.type < 7 ? typeNames[dt.type] : "Unknown");
             m_SequenceTracks.push_back(newTrack);
         }
         m_DeferredTracks.clear();
@@ -811,8 +811,8 @@ void AnimationTimelinePanel::RenderControlBar()
         {
             ImGui::TextDisabled("Property");
             ImGui::Separator();
-            const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot", "Look At Target", "Event Trigger" };
-            for (int i = 0; i < 6; i++)
+            const char* typeNames[] = { "Position", "Rotation", "Scale", "Animation Slot", "Look At Target", "Event Trigger", "Opacity" };
+            for (int i = 0; i < 7; i++)
             {
                 if (ImGui::Selectable(typeNames[i]))
                 {

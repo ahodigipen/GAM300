@@ -1752,6 +1752,7 @@ void AnimationTimelinePanel::RenderSequenceTracks(float duration)
                 case 1: fillColor = IM_COL32(100, 200, 100, 255); break; // Rot - Greenish
                 case 2: fillColor = IM_COL32(100, 100, 200, 255); break; // Scale - Blueish
                 case 3: fillColor = IM_COL32(200, 200, 100, 255); break; // Anim - Yellow
+                case 6: fillColor = IM_COL32(200, 200, 200, 255); break; // Opacity - Grayish
                 }
 
                 if (isHovered)
@@ -1957,12 +1958,45 @@ void AnimationTimelinePanel::RenderSequenceTracks(float duration)
                     }
                     else if (editTrack.type == 5) // Event Trigger
                     {
+                        // Array of standard pre-defined system events
+                        static const char* presetEvents[] = {
+                            "None",
+                            "GameScripts.CutsceneSequencer.WaitForInteract",
+                            "GameScripts.CutsceneSequencer.Skip",
+                            "GameScripts.UIManager.ShowLetterbox",
+                            "GameScripts.UIManager.HideLetterbox",
+                            "GameScripts.UIManager.ShowHoldPrompt",
+                            "GameScripts.UIManager.HideHoldPrompt",
+                            "GameScripts.PlayerMovement.EnableInput",
+                            "GameScripts.PlayerMovement.DisableInput"
+                        };
+
+                        const char* preview = kf_data->valueStr.empty() ? "None" : kf_data->valueStr.c_str();
+                        if (ImGui::BeginCombo("Event Presets", preview))
+                        {
+                            for (int i = 0; i < IM_ARRAYSIZE(presetEvents); i++)
+                            {
+                                bool is_selected = (kf_data->valueStr == presetEvents[i]);
+                                if (ImGui::Selectable(presetEvents[i], is_selected))
+                                {
+                                    kf_data->valueStr = (std::string(presetEvents[i]) == "None") ? "" : presetEvents[i];
+                                }
+                                if (is_selected) ImGui::SetItemDefaultFocus();
+                            }
+                            ImGui::EndCombo();
+                        }
+
+                        // Allow manual typing for completely custom ones
                         char buffer[256];
                         strncpy_s(buffer, sizeof(buffer), kf_data->valueStr.c_str(), _TRUNCATE);
-                        if (ImGui::InputText("Event Function", buffer, sizeof(buffer)))
+                        if (ImGui::InputText("Custom Function", buffer, sizeof(buffer)))
                         {
                             kf_data->valueStr = std::string(buffer);
                         }
+                    }
+                    else if (editTrack.type == 6) // Opacity
+                    {
+                        ImGui::DragFloat("Opacity", &kf_data->valueX, 0.01f, 0.0f, 1.0f);
                     }
 
                     ImGui::Separator();
