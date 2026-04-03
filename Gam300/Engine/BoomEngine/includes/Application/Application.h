@@ -653,6 +653,7 @@ namespace Boom
 			else if (sceneName.find("PopUp") != std::string::npos) targetType = MenuType::PopUp;
 			else if (sceneName.find("Tutorial") != std::string::npos) targetType = MenuType::PopUp;
 			else if (sceneName.find("Inventory") != std::string::npos) targetType = MenuType::Inventory;
+			else if (sceneName.find("HUD") != std::string::npos) targetType = MenuType::HUD;
 
 			// 2. Check if objects of this MenuType *already exist*
 			bool alreadyLoaded = false;
@@ -664,7 +665,7 @@ namespace Boom
 				{
 					alreadyLoaded = true;
 					// Ensure it is deactivated if we found it existing
-					if (targetType != MenuType::PopUp)
+					if (targetType != MenuType::PopUp && targetType != MenuType::HUD)
 					{
 						if (!reg.all_of<DeactivatedComponent>(entity))
 							reg.emplace_or_replace<DeactivatedComponent>(entity);
@@ -742,7 +743,7 @@ namespace Boom
 				if (menu.menuType != targetType) continue;
 
 				// Deactivate (Start hidden)
-				if (targetType != MenuType::PopUp)
+				if (targetType != MenuType::PopUp && targetType != MenuType::HUD)
 				{
 					reg.emplace_or_replace<DeactivatedComponent>(entity);
 				}
