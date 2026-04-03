@@ -57,12 +57,6 @@ namespace GameScripts
         [Boom.EditorExposed("Pulse Speed", "Speed of light pulsing")]
         private float _pulseSpeed = 8.0f;
 
-        [Boom.EditorExposed("Spotted FOV", "FOV when player is spotted (0 for no change)")]
-        private float _spottedFOV = 35.0f;
-
-        [Boom.EditorExposed("Normal FOV", "Restore FOV to this when lost (usually 45)")]
-        private float _normalFOV = 45.0f;
-
         [Boom.EditorExposed("Rotation Interval", "Legacy - now uses Min/Max range")]
         private float _rotationInterval = 8.0f;
 
@@ -255,6 +249,10 @@ namespace GameScripts
             _hasDealtDamage = false;
             _catchTimer = _catchDelay;
             _scanTimer = 0f;
+            _appliedScanYaw = 0f;
+            _appliedScanPitch = 0f;
+            _currentXRotation = _baseXRotation;
+            _targetXRotation = _baseXRotation;
             
             // Randomize the next interval
             _currentRotationInterval = (float)(_minRotationInterval + _random.NextDouble() * (_maxRotationInterval - _minRotationInterval));
@@ -524,7 +522,6 @@ namespace GameScripts
                         _catchTimer = _catchDelay;
                         ShowWarningText(true);
                         Console.WriteLine("[BossHideSeek] >>> SPOTTED! <<<");
-                        if (_spottedFOV > 0) API.SetCameraFOV(_spottedFOV);
                     }
                     _catchTimer -= dt;
                     UpdateWarningText(_catchTimer);
@@ -541,7 +538,7 @@ namespace GameScripts
             if (_isCountingDown) StopCountdown();
         }
 
-        private void StopCountdown() { if (!_isCountingDown) return; _isCountingDown = false; _catchTimer = _catchDelay; ShowWarningText(false); if (_showDebugLogs) Console.WriteLine("[BossHideSeek] Lost Sight."); if (_normalFOV > 0) API.SetCameraFOV(_normalFOV); }
+        private void StopCountdown() { if (!_isCountingDown) return; _isCountingDown = false; _catchTimer = _catchDelay; ShowWarningText(false); if (_showDebugLogs) Console.WriteLine("[BossHideSeek] Lost Sight."); }
         
         public void OnPlayerRespawned() 
         { 
@@ -554,6 +551,7 @@ namespace GameScripts
             {
                 Vec3 rot = API.GetRotation(Entity);
                 rot.Y = _currentYRotation;
+                rot.X = _baseXRotation;
                 _currentXRotation = _baseXRotation;
                 _targetXRotation = _baseXRotation;
                 API.SetRotation(Entity, rot);
