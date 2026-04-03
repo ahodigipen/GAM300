@@ -617,11 +617,16 @@ namespace Boom
 
                 // --- shared cone utilities ---
 
-                // Clamp an arc point to static walls only (enemy capsule is dynamic → ignored).
+                // The actor to exclude from wall/ground raycasts — set per-entity before RenderCone.
+                // Prevents static-body sentries from blocking their own vision cone raycasts.
+                physx::PxRigidActor* coneIgnoreActor = nullptr;
+
+                // Clamp an arc point to static walls only (dynamic enemy capsules are ignored automatically;
+                // static ones are excluded via coneIgnoreActor).
                 auto ClampToWall = [&](const glm::vec3& rayOrigin, float angle, float maxRange) -> glm::vec3
                 {
                     glm::vec3 dir(glm::sin(angle), 0.f, glm::cos(angle));
-                    auto hit = m_Context->physics->RaycastStaticOnly(rayOrigin, dir, maxRange);
+                    auto hit = m_Context->physics->RaycastStaticOnly(rayOrigin, dir, maxRange, coneIgnoreActor);
                     if (hit.hitFound && hit.distance < maxRange)
                     {
                         // Ignore floor hits as "walls" if they are relatively flat (slopes up to ~45 deg)
@@ -653,7 +658,7 @@ namespace Boom
                         constexpr float kMaxStepDown = 0.8f;
 
                         glm::vec3 from(pt.x, referenceY + kProbeUp, pt.z);
-                        auto hit = m_Context->physics->RaycastStaticOnly(from, { 0.f, -1.f, 0.f }, kProbeUp + kProbeDown);
+                        auto hit = m_Context->physics->RaycastStaticOnly(from, { 0.f, -1.f, 0.f }, kProbeUp + kProbeDown, coneIgnoreActor);
                         if (hit.hitFound)
                         {
                             float dy = hit.position.y - referenceY;
@@ -746,9 +751,17 @@ namespace Boom
                 };
 
                 // --- VisualConeComponent enemies (PatrolEnemyController, EnemyController, etc.) ---
-                EnttView<Entity, VisualConeComponent, TransformComponent>([&](auto /*entity*/, VisualConeComponent& vc, TransformComponent& tc)
+                EnttView<Entity, VisualConeComponent, TransformComponent>([&](auto entity, VisualConeComponent& vc, TransformComponent& tc)
                 {
                     if (!vc.enabled) return;
+
+                    // Exclude this entity's own physics actor from wall/ground raycasts so that
+                    // static-body enemies don't collapse their own vision cone.
+                    coneIgnoreActor = nullptr;
+                    if (entity.template Has<RigidBodyComponent>())
+                        coneIgnoreActor = entity.template Get<RigidBodyComponent>().RigidBody.actor;
+                    else if (entity.template Has<ColliderComponent>())
+                        coneIgnoreActor = entity.template Get<ColliderComponent>().Collider.actor;
 
                     glm::vec3 facing = vc.facingDir;
                     facing.y = 0.f;
