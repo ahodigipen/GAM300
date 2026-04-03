@@ -145,10 +145,3 @@ Gam300/Editor/SceneTest.yaml
 
 # --- Allow GameScripts.dll to be tracked ---
 !GAM300/Editor/GameScripts.dll
-
-!FMOD Studio API Windows/
-!FMOD Studio API Windows/**
-!Compressonator/
-!Compressonator/**
-!mono/
-!mono/**
