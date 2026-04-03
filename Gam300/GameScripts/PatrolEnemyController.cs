@@ -116,6 +116,30 @@ namespace GameScripts
         private string _gruntSoundPath14 = "Resources/Audio/VO_Patrol_019.wav";
         private string _gruntSoundPath15 = "Resources/Audio/VO_Patrol_031.wav";
 
+        // ==== Vision Cone Particles ====
+        [Boom.EditorExposed("Enable Cone Particles", "Show dust particle effect in the vision cone")]
+        private bool _enableConeParticles = true;
+
+        [Boom.EditorExposed("Cone Particle Rate", "Particles per second in the cone", 5f, 500f, true)]
+        private float _coneParticleRate = 120f;
+
+        [Boom.EditorExposed("Cone Particle Speed Min", "", 0.0f, 5f, true)]
+        private float _coneSpeedMin = 0.05f;
+
+        [Boom.EditorExposed("Cone Particle Speed Max", "", 0.0f, 5f, true)]
+        private float _coneSpeedMax = 0.2f;
+
+        [Boom.EditorExposed("Cone Particle Gravity", "", -5f, 5f, true)]
+        private float _coneGravity = 0.0f;
+
+        [Boom.EditorExposed("Cone Particle Lifetime Min", "", 0.1f, 5f, true)]
+        private float _coneLifetimeMin = 0.3f;
+
+        [Boom.EditorExposed("Cone Particle Lifetime Max", "", 0.1f, 5f, true)]
+        private float _coneLifetimeMax = 0.7f;
+
+        private bool _coneParticlesInitialized = false;
+
         [Boom.EditorExposed("Detection", "For Enemy detection")]
         private bool EnemyDetection = true;
 
@@ -277,6 +301,12 @@ namespace GameScripts
             // NEW: Register with PlayerManager
             PlayerManager.RegisterEnemy(this);
 
+            // Add particle emitter for vision cone dust effect
+            if (_enableConeParticles)
+            {
+                API.AddParticleEmitter(Entity);
+            }
+
             // Register for spotlight lookup
             s_PatrolEnemies[_entityName] = this;
 
@@ -315,6 +345,14 @@ namespace GameScripts
         {
             if (Entity == 0 || dt <= 0f) return;
 
+            // Deferred: configure and start cone particles after first frame
+            if (_enableConeParticles && !_coneParticlesInitialized && API.HasParticleEmitter(Entity))
+            {
+                _coneParticlesInitialized = true;
+                ConfigureConeParticles();
+                API.PlayParticleEmitter(Entity);
+            }
+
             // --- FREEZE CHECK ---
             bool currentlyFrozen = FreezeManager.IsFrozen(API.GetPosition(Entity));
 
@@ -339,6 +377,10 @@ namespace GameScripts
                 API.TeleportRigidBody(Entity, _frozenPosition);
                 API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
 
+                // Stop cone particles while frozen
+                if (_enableConeParticles && API.HasParticleEmitter(Entity) && API.IsParticleEmitterPlaying(Entity))
+                    API.StopParticleEmitter(Entity);
+
                 return;
             }
             else
@@ -347,6 +389,13 @@ namespace GameScripts
                 {
                     _isFrozen = false;
                     API.SetNavAgentActive(Entity, true);
+
+                    // Resume cone particles after unfreeze
+                    if (_enableConeParticles && _coneParticlesInitialized && API.HasParticleEmitter(Entity) && !API.IsParticleEmitterPlaying(Entity))
+                    {
+                        ConfigureConeParticles();
+                        API.PlayParticleEmitter(Entity);
+                    }
                 }
             }
 
@@ -798,6 +847,9 @@ namespace GameScripts
             _vision?.OnDestroy();
             _proximityDetection?.OnDestroy();
 
+            if (_enableConeParticles && API.HasParticleEmitter(Entity))
+                API.StopParticleEmitter(Entity);
+
             // NEW: Unregister from PlayerManager
             PlayerManager.UnregisterEnemy(this);
 
@@ -830,6 +882,29 @@ namespace GameScripts
             _videoOwnerID = 0;
             _sharedVideoBaseScale = new Vec3(1, 1, 1);
             API.Log("[PatrolEnemyController] Registry cleared");
+        }
+
+        // ====== CONE PARTICLE CONFIGURATION ======
+        private void ConfigureConeParticles()
+        {
+            // Shape: spotlight volume — particles spawn throughout the cone, not from origin
+            API.SetParticleShapeType(Entity, 4); // 4 = spotlight volume
+            API.SetParticleShapeAngle(Entity, _visionDetectionAngle * 0.5f);
+            API.SetParticleShapeRange(Entity, _visionDetectionRange);
+
+            // Direction: local-space forward — the entity's world rotation handles orientation
+            API.SetParticleDirection(Entity, 0f, 0f, 1f);
+
+            // Dust motes in light: soft glow that fades in then out
+            API.SetParticleStartColor(Entity, 1.0f, 0.97f, 0.85f, 0.4f);
+            API.SetParticleEndColor(Entity, 1.0f, 0.9f, 0.7f, 0.0f);
+
+            API.SetParticleEmissionRate(Entity, _coneParticleRate);
+            API.SetParticleSpeed(Entity, _coneSpeedMin, _coneSpeedMax);
+            API.SetParticleGravity(Entity, _coneGravity);
+            // Tiny floating dust specks
+            API.SetParticleSize(Entity, 0.02f, 0.05f, 0.03f);
+            API.SetParticleLifetime(Entity, _coneLifetimeMin, _coneLifetimeMax);
         }
 
         // ====== AUDIO HELPER METHODS ======
