@@ -27,7 +27,43 @@ namespace GameScripts
         [Boom.EditorExposed("Activation Delay", "Seconds of safety after activation")]
         private float _activationDelay = 1.0f;
 
-        [Boom.EditorExposed("Rotation Interval", "Time between turns")]
+        [Boom.EditorExposed("Min Rotation Interval", "Minimum time between turns")]
+        private float _minRotationInterval = 5.0f;
+
+        [Boom.EditorExposed("Max Rotation Interval", "Maximum time between turns")]
+        private float _maxRotationInterval = 7.0f;
+
+        [Boom.EditorExposed("Scan Tilt", "Degrees to tilt down while searching")]
+        private float _scanTiltAmount = 15.0f;
+
+        [Boom.EditorExposed("Scan Yaw", "Degrees to scan left/right while searching")]
+        private float _scanYawAmount = 30.0f;
+
+        [Boom.EditorExposed("Scan Speed", "How fast to scan left/right")]
+        private float _scanSpeed = 2.0f;
+
+        [Boom.EditorExposed("Scan Forward Time", "Seconds to stare forward before scanning")]
+        private float _scanForwardDuration = 2.0f;
+
+        [Boom.EditorExposed("Scan Phase Time", "Seconds to scan left/right")]
+        private float _scanCycleDuration = 4.0f;
+
+        [Boom.EditorExposed("Shake Intensity", "Camera shake when turning (0 for none)")]
+        private float _shakeIntensity = 0.05f;
+
+        [Boom.EditorExposed("Pulse Intensity", "Light pulse strength (0 for none)")]
+        private float _pulseIntensity = 0.5f;
+
+        [Boom.EditorExposed("Pulse Speed", "Speed of light pulsing")]
+        private float _pulseSpeed = 8.0f;
+
+        [Boom.EditorExposed("Spotted FOV", "FOV when player is spotted (0 for no change)")]
+        private float _spottedFOV = 35.0f;
+
+        [Boom.EditorExposed("Normal FOV", "Restore FOV to this when lost (usually 45)")]
+        private float _normalFOV = 45.0f;
+
+        [Boom.EditorExposed("Rotation Interval", "Legacy - now uses Min/Max range")]
         private float _rotationInterval = 8.0f;
 
         [Boom.EditorExposed("Rotation Speed", "Degrees per second")]
@@ -79,6 +115,9 @@ namespace GameScripts
         private bool _isWatching = false;
         private float _targetYRotation = 0f;
         private float _currentYRotation = 0f;
+        private float _currentXRotation = 0f;
+        private float _targetXRotation = 0f;
+        private float _baseXRotation = 0f;
         private float _catchTimer = 0f;
         private bool _isCountingDown = false;
         private bool _hasDealtDamage = false;
@@ -87,6 +126,13 @@ namespace GameScripts
         private Vec3 _colorGreen = new Vec3(0, 1, 0);
         private float _debugLogTimer = 0f;
         private bool _wasPausedLastFrame = false;
+        private bool _currentRotationIntervalSet = false;
+        private float _currentRotationInterval = 8.0f;
+        private float _scanTimer = 0f;
+        private float _appliedScanYaw = 0f;
+        private float _appliedScanPitch = 0f;
+        private float _pulseTimer = 0f;
+        private static Random _random = new Random();
 
         // Turn sound
         private const string TURN_SOUND_NAME = "BossTurnLoop";
@@ -163,6 +209,9 @@ namespace GameScripts
             _targetYRotation = _initialYaw;
             Vec3 rot = API.GetRotation(Entity);
             rot.Y = _currentYRotation;
+            _baseXRotation = rot.X;
+            _currentXRotation = rot.X;
+            _targetXRotation = rot.X;
             API.SetRotation(Entity, rot);
 
             ResetToRestingState(false); // Initialize state without overriding rotation
@@ -205,6 +254,11 @@ namespace GameScripts
             _warningLineTimer = 0f;
             _hasDealtDamage = false;
             _catchTimer = _catchDelay;
+            _scanTimer = 0f;
+            
+            // Randomize the next interval
+            _currentRotationInterval = (float)(_minRotationInterval + _random.NextDouble() * (_maxRotationInterval - _minRotationInterval));
+
             if (_wasTurning) { API.StopSound(TURN_SOUND_NAME); _wasTurning = false; }
             API.StopSound(WARNING_SOUND_NAME);
             API.StopSound(WARNING_LINE_SOUND_NAME);
@@ -228,27 +282,15 @@ namespace GameScripts
             {
                 if (!_wasPausedLastFrame)
                 {
-                    // Stop sounds when entering pause
                     if (_wasTurning) API.StopSound(TURN_SOUND_NAME);
-                    if (_isWaitingToTurn)
-                    {
-                        API.StopSound(WARNING_SOUND_NAME);
-                        API.StopSound(WARNING_LINE_SOUND_NAME);
-                    }
+                    if (_isWaitingToTurn) { API.StopSound(WARNING_SOUND_NAME); API.StopSound(WARNING_LINE_SOUND_NAME); }
                     _wasPausedLastFrame = true;
                 }
                 return;
             }
             else if (_wasPausedLastFrame)
             {
-                // Resume sounds when leaving pause
-                if (_wasTurning)
-                {
-                    API.PlaySound(TURN_SOUND_NAME, TURN_SOUND_PATH, true);
-                    API.SetSoundVolume(TURN_SOUND_NAME, _turnSoundVolume);
-                }
-                // Note: Warning sound is short and random, probably better to just let it be gone 
-                // or wait for the next cycle rather than trying to resume mid-clip.
+                if (_wasTurning) { API.PlaySound(TURN_SOUND_NAME, TURN_SOUND_PATH, true); API.SetSoundVolume(TURN_SOUND_NAME, _turnSoundVolume); }
                 _wasPausedLastFrame = false;
             }
 
@@ -257,49 +299,128 @@ namespace GameScripts
             if (Entry.IsPlayerDead)
             {
                 if (_isCountingDown) StopCountdown();
-                // Stop all boss sounds when player dies
-                if (_wasTurning)
-                {
-                    API.StopSound(TURN_SOUND_NAME);
-                    _wasTurning = false;
-                }
-                if (_isWaitingToTurn)
-                {
-                    API.StopSound(WARNING_SOUND_NAME);
-                    API.StopSound(WARNING_LINE_SOUND_NAME);
-                    _isWaitingToTurn = false;
-                    _warningTimer = 0f;
-                }
+                if (_wasTurning) { API.StopSound(TURN_SOUND_NAME); _wasTurning = false; }
+                if (_isWaitingToTurn) { API.StopSound(WARNING_SOUND_NAME); API.StopSound(WARNING_LINE_SOUND_NAME); _isWaitingToTurn = false; _warningTimer = 0f; }
                 return;
             }
 
             if (_activationTimer < _activationDelay) { _activationTimer += dt; return; }
 
-            if (_isWaitingToTurn)
+            // 1. ANIMATION STATE CALCULATION
+            float targetScanYaw = 0f;
+            float targetScanPitch = 0f;
+
+            if (_isWatching && !_isWaitingToTurn)
             {
-                _warningTimer += dt;
-                if (_warningTimer >= _warningDelay)
+                _scanTimer += dt;
+                float totalCycle = _scanForwardDuration + _scanCycleDuration;
+                
+                // If the turn timer is up, we finish the current scan but don't start a new one
+                if (_timer >= _currentRotationInterval && _scanTimer >= totalCycle)
                 {
-                    _isWaitingToTurn = false;
-                    _warningTimer = 0f;
-                    _isTurning = true;
-                    _isWatching = _pendingWatchState;
-                    _targetYRotation = _isWatching ? _watchingYaw : _restingYaw;
-                    UpdateLights(_isWatching ? _colorRed : _colorGreen, _isWatching ? _redIntensities : _greenIntensities);
-                    if (!_isWatching) StopCountdown();
+                    targetScanPitch = 0f;
+                    targetScanYaw = 0f;
                 }
-                return;
+                else
+                {
+                    float cyclePos = _scanTimer % totalCycle;
+                    if (cyclePos >= _scanForwardDuration && _scanCycleDuration > 0)
+                    {
+                        // Normalized phase (0.0 to 1.0) of the scanning part of the cycle
+                        float scanPhase = (cyclePos - _scanForwardDuration) / _scanCycleDuration;
+                        
+                        // Pitch (X): Smoothly tilt down then back up
+                        targetScanPitch = (float)Math.Sin(scanPhase * Math.PI) * _scanTiltAmount;
+                        
+                        // Yaw (Y): Smoothly scan Left -> Right -> Center
+                        targetScanYaw = (float)Math.Sin(scanPhase * Math.PI * 2.0) * _scanYawAmount;
+                    }
+                }
+            }
+            else
+            {
+                _scanTimer = 0f;
             }
 
-            // Handle warning line sound after turn towards player completes
+            // Smoothly interpolate the scanning offsets to prevent "flicks"
+            _appliedScanYaw += (targetScanYaw - _appliedScanYaw) * dt * 8.0f;
+            _appliedScanPitch += (targetScanPitch - _appliedScanPitch) * dt * 8.0f;
+            
+            _targetXRotation = _baseXRotation + _appliedScanPitch;
+
+            // 2. STATE LOGIC
+            if (!_isTurning)
+            {
+                if (!_isWatching)
+                {
+                    if (_timer > _currentRotationInterval - 2.0f)
+                    {
+                        _pulseTimer += dt * _pulseSpeed;
+                        float pulse = 1.0f + (float)Math.Sin(_pulseTimer) * _pulseIntensity;
+                        List<float> pulsedIntensities = new List<float>();
+                        foreach (var intensity in _greenIntensities) pulsedIntensities.Add(intensity * pulse);
+                        UpdateLights(_colorGreen, pulsedIntensities);
+                    }
+                }
+
+                if (_isWaitingToTurn)
+                {
+                    _warningTimer += dt;
+                    if (_warningTimer >= _warningDelay)
+                    {
+                        _isWaitingToTurn = false;
+                        _warningTimer = 0f;
+                        _isTurning = true;
+                        _isWatching = _pendingWatchState;
+                        _targetYRotation = _watchingYaw;
+                        UpdateLights(_isWatching ? _colorRed : _colorGreen, _isWatching ? _redIntensities : _greenIntensities);
+                        if (_isWatching && _shakeIntensity > 0) API.TriggerCameraShake(_shakeIntensity, 0.5f);
+                    }
+                }
+                else
+                {
+                    _timer += dt;
+                    if (_timer >= _currentRotationInterval)
+                    {
+                        // SYNC: Only turn away when head is in the "Forward/Stare" phase of scanning
+                        // or has just finished a scan cycle.
+                        float totalCycle = _scanForwardDuration + _scanCycleDuration;
+                        float cyclePos = _scanTimer % totalCycle;
+                        bool isStaring = cyclePos < _scanForwardDuration;
+
+                        if (!_isWatching || isStaring)
+                        {
+                            _timer = 0f;
+                            _pendingWatchState = !_isWatching;
+                            if (_pendingWatchState)
+                            {
+                                string randomWarning = WARNING_SOUND_PATHS[_warningRandom.Next(WARNING_SOUND_PATHS.Length)];
+                                API.PlaySound(WARNING_SOUND_NAME, randomWarning, false);
+                                API.SetSoundVolume(WARNING_SOUND_NAME, _warningSoundVolume);
+                                _isWaitingToTurn = true;
+                            }
+                            else
+                            {
+                                _isTurning = true;
+                                _isWatching = false;
+                                _targetYRotation = _restingYaw;
+                                UpdateLights(_colorGreen, _greenIntensities);
+                                _currentRotationInterval = (float)(_minRotationInterval + _random.NextDouble() * (_maxRotationInterval - _minRotationInterval));
+                            }
+                        }
+                    }
+                }
+
+                if (_isWatching) UpdateDetection(dt);
+            }
+
+            // 3. SOUNDS & SECONDARY FX
             if (_isWaitingForWarningLine)
             {
                 _warningLineTimer += dt;
                 if (_warningLineTimer >= _warningLineAfterTurnDelay)
                 {
                     _isWaitingForWarningLine = false;
-                    _warningLineTimer = 0f;
-                    // Play warning line sound
                     string randomWarningLine = WARNING_LINE_SOUND_PATHS[_warningRandom.Next(WARNING_LINE_SOUND_PATHS.Length)];
                     string uniqueName = WARNING_LINE_SOUND_NAME + "_" + DateTime.Now.Ticks;
                     API.PlaySound(uniqueName, randomWarningLine, false);
@@ -307,59 +428,37 @@ namespace GameScripts
                 }
             }
 
-            if (!_isTurning)
-            {
-                _timer += dt;
-                if (_timer >= _rotationInterval)
-                {
-                    _timer = 0f;
-                    _pendingWatchState = !_isWatching;
-
-                    if (_pendingWatchState)
-                    {
-                        // Play warning sound (boss is about to turn towards player)
-                        string randomWarning = WARNING_SOUND_PATHS[_warningRandom.Next(WARNING_SOUND_PATHS.Length)];
-                        API.PlaySound(WARNING_SOUND_NAME, randomWarning, false);
-                        API.SetSoundVolume(WARNING_SOUND_NAME, _warningSoundVolume);
-                        _isWaitingToTurn = true;
-                        _warningTimer = 0f;
-                    }
-                    else
-                    {
-                        // Turn away immediately (no warning delay)
-                        _isTurning = true;
-                        _isWatching = false;
-                        _targetYRotation = _restingYaw;
-                        UpdateLights(_colorGreen, _greenIntensities);
-                        StopCountdown();
-                    }
-                }
-                if (_isWatching) UpdateDetection(dt);
-            }
-
+            // 4. ROTATION APPLICATION
             if (_isTurning)
             {
                 if (!_wasTurning) { API.PlaySound(TURN_SOUND_NAME, TURN_SOUND_PATH, true); API.SetSoundVolume(TURN_SOUND_NAME, _turnSoundVolume); _wasTurning = true; }
+                
                 float angleDiff = _targetYRotation - _currentYRotation;
                 while (angleDiff > 180f) angleDiff -= 360f;
                 while (angleDiff < -180f) angleDiff += 360f;
+
                 float step = _rotationSpeed * dt;
+                
                 if (Math.Abs(angleDiff) <= step)
                 {
                     _currentYRotation = _targetYRotation;
                     _isTurning = false;
                     API.StopSound(TURN_SOUND_NAME);
                     _wasTurning = false;
-                    // Start warning line timer when boss finishes turning towards player
-                    if (_isWatching)
-                    {
-                        _isWaitingForWarningLine = true;
-                        _warningLineTimer = 0f;
-                    }
+                    if (_isWatching) _isWaitingForWarningLine = true;
                 }
-                else { _currentYRotation += Math.Sign(angleDiff) * step; }
-                Vec3 rot = API.GetRotation(Entity); rot.Y = _currentYRotation; API.SetRotation(Entity, rot);
+                else
+                {
+                    _currentYRotation += Math.Sign(angleDiff) * step;
+                }
             }
+
+            _currentXRotation += (_targetXRotation - _currentXRotation) * dt * 6.0f;
+
+            Vec3 finalRot = API.GetRotation(Entity);
+            finalRot.Y = _currentYRotation + _appliedScanYaw;
+            finalRot.X = _currentXRotation;
+            API.SetRotation(Entity, finalRot);
         }
 
         private void DrawDebugVision()
@@ -425,6 +524,7 @@ namespace GameScripts
                         _catchTimer = _catchDelay;
                         ShowWarningText(true);
                         Console.WriteLine("[BossHideSeek] >>> SPOTTED! <<<");
+                        if (_spottedFOV > 0) API.SetCameraFOV(_spottedFOV);
                     }
                     _catchTimer -= dt;
                     UpdateWarningText(_catchTimer);
@@ -441,7 +541,7 @@ namespace GameScripts
             if (_isCountingDown) StopCountdown();
         }
 
-        private void StopCountdown() { if (!_isCountingDown) return; _isCountingDown = false; _catchTimer = _catchDelay; ShowWarningText(false); if (_showDebugLogs) Console.WriteLine("[BossHideSeek] Lost Sight."); }
+        private void StopCountdown() { if (!_isCountingDown) return; _isCountingDown = false; _catchTimer = _catchDelay; ShowWarningText(false); if (_showDebugLogs) Console.WriteLine("[BossHideSeek] Lost Sight."); if (_normalFOV > 0) API.SetCameraFOV(_normalFOV); }
         
         public void OnPlayerRespawned() 
         { 
@@ -454,6 +554,8 @@ namespace GameScripts
             {
                 Vec3 rot = API.GetRotation(Entity);
                 rot.Y = _currentYRotation;
+                _currentXRotation = _baseXRotation;
+                _targetXRotation = _baseXRotation;
                 API.SetRotation(Entity, rot);
             }
 
