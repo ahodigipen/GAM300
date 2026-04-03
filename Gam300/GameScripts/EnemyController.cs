@@ -107,6 +107,30 @@ namespace GameScripts
         [Boom.EditorExposed("Entity Name", "Name of this sentry for spotlight lookup")]
         private string _entityName = "Sentry_1";
 
+        // ==== Vision Cone Particles ====
+        [Boom.EditorExposed("Enable Cone Particles", "Show particle effect in the vision cone direction")]
+        private bool _enableConeParticles = true;
+
+        [Boom.EditorExposed("Cone Particle Rate", "Particles per second in the cone", 5f, 300f, true)]
+        private float _coneParticleRate = 60f;
+
+        [Boom.EditorExposed("Cone Particle Speed Min", "", 0.1f, 20f, true)]
+        private float _coneSpeedMin = 2.0f;
+
+        [Boom.EditorExposed("Cone Particle Speed Max", "", 0.1f, 20f, true)]
+        private float _coneSpeedMax = 5.0f;
+
+        [Boom.EditorExposed("Cone Particle Gravity", "", -5f, 5f, true)]
+        private float _coneGravity = -0.3f;
+
+        [Boom.EditorExposed("Cone Particle Lifetime Min", "", 0.1f, 5f, true)]
+        private float _coneLifetimeMin = 0.5f;
+
+        [Boom.EditorExposed("Cone Particle Lifetime Max", "", 0.1f, 5f, true)]
+        private float _coneLifetimeMax = 1.5f;
+
+        private bool _coneParticlesInitialized = false;
+
         // Alert sound tracking
         private bool _alertSoundPlayed = false;
         private Random _random = new Random();
@@ -155,6 +179,12 @@ namespace GameScripts
             // NOTE: Visual cone is initialized in the first OnUpdate frame, after physics has
             // finished initializing, otherwise the rigidbody invalidates the cone render state.
 
+            // Add particle emitter to this entity at runtime for the vision cone effect
+            if (_enableConeParticles)
+            {
+                API.AddParticleEmitter(Entity);
+            }
+
             // NEW: Register with PlayerManager
             PlayerManager.RegisterEnemy(this);
 
@@ -181,6 +211,14 @@ namespace GameScripts
                 API.SetVisualConeFacing(Entity, _initialYRotation);
             }
 
+            // Deferred: configure and start cone particles after first frame
+            if (_enableConeParticles && !_coneParticlesInitialized && API.HasParticleEmitter(Entity))
+            {
+                _coneParticlesInitialized = true;
+                ConfigureConeParticles();
+                API.PlayParticleEmitter(Entity);
+            }
+
             // --- FREEZE CHECK ---
             if (FreezeManager.IsFrozen(API.GetPosition(Entity)))
             {
@@ -190,7 +228,17 @@ namespace GameScripts
                 {
                     _proximityDetection?.OnUpdate(dt);
                 }
+                // Stop cone particles while frozen
+                if (_enableConeParticles && API.HasParticleEmitter(Entity) && API.IsParticleEmitterPlaying(Entity))
+                    API.StopParticleEmitter(Entity);
                 return;
+            }
+
+            // Resume cone particles after unfreeze
+            if (_enableConeParticles && _coneParticlesInitialized && API.HasParticleEmitter(Entity) && !API.IsParticleEmitterPlaying(Entity))
+            {
+                ConfigureConeParticles();
+                API.PlayParticleEmitter(Entity);
             }
 
             // Update vision system (always active)
@@ -221,6 +269,15 @@ namespace GameScripts
             if (_vision?.GetState() != VisionComponent.VisionState.Alert)
             {
                 UpdateRotation(dt);
+            }
+
+            // Update cone particle direction to match the sentry's current facing
+            if (_enableConeParticles && _coneParticlesInitialized && API.HasParticleEmitter(Entity))
+            {
+                float yawRad = (float)(_currentYRotation * Math.PI / 180.0);
+                float dirX = -(float)Math.Sin(yawRad);
+                float dirZ = -(float)Math.Cos(yawRad);
+                API.SetParticleDirection(Entity, dirX, 0f, dirZ);
             }
 
             // NEW: Auto-reset damage flag after delay
@@ -593,10 +650,35 @@ namespace GameScripts
             _alertSoundPlayed = true;
         }
 
+        private void ConfigureConeParticles()
+        {
+            // Shape: cone matching the vision cone
+            API.SetParticleShapeType(Entity, 2); // 2 = cone
+            API.SetParticleShapeAngle(Entity, _visionDetectionAngle * 0.5f);
+            API.SetParticleShapeRange(Entity, _visionDetectionRange);
+
+            // Direction: forward along current facing
+            float yawRad = (float)(_currentYRotation * Math.PI / 180.0);
+            API.SetParticleDirection(Entity, -(float)Math.Sin(yawRad), 0f, -(float)Math.Cos(yawRad));
+
+            // Warm light-like colour — normal state
+            API.SetParticleStartColor(Entity, 1.0f, 0.95f, 0.7f, 0.45f);
+            API.SetParticleEndColor(Entity, 1.0f, 0.85f, 0.5f, 0.0f);
+
+            API.SetParticleEmissionRate(Entity, _coneParticleRate);
+            API.SetParticleSpeed(Entity, _coneSpeedMin, _coneSpeedMax);
+            API.SetParticleGravity(Entity, _coneGravity);
+            API.SetParticleSize(Entity, 0.03f, 0.10f, 0.01f);
+            API.SetParticleLifetime(Entity, _coneLifetimeMin, _coneLifetimeMax);
+        }
+
         public void OnDestroy()
         {
             _vision?.OnDestroy();
             _proximityDetection?.OnDestroy();
+
+            if (_enableConeParticles && API.HasParticleEmitter(Entity))
+                API.StopParticleEmitter(Entity);
 
             // NEW: Unregister from PlayerManager
             PlayerManager.UnregisterEnemy(this);
