@@ -84,9 +84,9 @@ namespace GameScripts
             {
                 Vec3 glowColor = new Vec3(_glowR, _glowG, _glowB);
                 Vec3 color = new Vec3(
-                    _baseColor.x + (glowColor.x - _baseColor.x) * t,
-                    _baseColor.y + (glowColor.y - _baseColor.y) * t,
-                    _baseColor.z + (glowColor.z - _baseColor.z) * t
+                    _baseColor.X + (glowColor.X - _baseColor.X) * t,
+                    _baseColor.Y + (glowColor.Y - _baseColor.Y) * t,
+                    _baseColor.Z + (glowColor.Z - _baseColor.Z) * t
                 );
 
                 if (_hasSpotLight)
@@ -100,9 +100,9 @@ namespace GameScripts
             {
                 float scaleY = _minScaleY + (_maxScaleY - _minScaleY) * t;
                 Vec3 newScale = new Vec3(
-                    _originalScale.x,
-                    _originalScale.y * scaleY,
-                    _originalScale.z
+                    _originalScale.X,
+                    _originalScale.Y * scaleY,
+                    _originalScale.Z
                 );
                 API.SetScale(Entity, newScale);
             }
