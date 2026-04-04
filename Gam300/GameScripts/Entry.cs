@@ -260,6 +260,14 @@ namespace GameScripts
                         API.Log("[Entry] Delay finished. Triggering Start Dialogue Sequence...");
                         StoryDialogueManager.PlayStartSequence(() => { IsInventoryOpen = true; API.ShowInventoryMenu(); });
                     }
+                    else if (_currentSceneName == LEVEL2_SCENE_NAME)
+                    {
+                        // No start dialogue on Level2, but inventory carries over from Level1
+                        API.Log("[Entry] Level2 delay finished. Restoring inventory...");
+                        _startSequenceDelay = -1f;
+                        IsInventoryOpen = true;
+                        API.ShowInventoryMenu();
+                    }
                     else if (_currentSceneName == TUTORIAL_ZONE_SCENE_NAME)
                     {
                         API.Log("[Entry] Delay finished. Triggering Tutorial Zone Dialogue Sequence...");
