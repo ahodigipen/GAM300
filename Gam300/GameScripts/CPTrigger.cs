@@ -41,6 +41,12 @@ namespace GameScripts
         [Boom.EditorExposed("Floating Sprite Names", "Comma-separated names of sprites that should float upwards")]
         private string _floatingSpriteNames = "";
 
+        [Boom.EditorExposed("Particle Entity Name", "Name of a ParticleEmitter entity to play for 4 seconds when checkpoint activates")]
+        private string _particleEntityName = "";
+
+        [Boom.EditorExposed("Particle Duration", "How long the particle effect plays (seconds)")]
+        private float _particleDuration = 4.0f;
+
         [Boom.EditorExposed("Is Checkpoint 1", "Whether to play the intro cutscene and checkpoint dialogue when activated")]
         private bool _triggerIntroCutscene = false;
 
@@ -107,6 +113,10 @@ namespace GameScripts
         // Short delay before starting cutscene (lets checkpoint sound finish)
         private float _cutsceneDelay = 0f;
 
+        // Particle effect state
+        private ulong _particleEntity = 0;
+        private float _particleTimer = 0f;
+
         // Static instance tracking
         private static readonly Dictionary<ulong, CPTrigger> s_instances = new Dictionary<ulong, CPTrigger>();
 
@@ -153,6 +163,14 @@ namespace GameScripts
                         else if (API.HasPointLight(id)) API.SetPointLightIntensity(id, 0.0f);
                     }
                 }
+            }
+
+            // Find and stop particle emitter so it doesn't play before activation
+            if (!string.IsNullOrEmpty(_particleEntityName))
+            {
+                _particleEntity = API.FindEntity(_particleEntityName.Trim());
+                if (_particleEntity != 0 && API.HasParticleEmitter(_particleEntity))
+                    API.StopParticleEmitter(_particleEntity);
             }
 
             // Pre-cache sprite metadata (order doesn't matter for bobbing/floating)
@@ -210,6 +228,18 @@ namespace GameScripts
                     Action cb = _spriteOnCompleteAction;
                     _spriteOnCompleteAction = null;
                     cb?.Invoke();
+                }
+            }
+
+            // Countdown particle effect timer
+            if (_particleTimer > 0f)
+            {
+                _particleTimer -= dt;
+                if (_particleTimer <= 0f)
+                {
+                    _particleTimer = 0f;
+                    if (_particleEntity != 0 && API.HasParticleEmitter(_particleEntity))
+                        API.StopParticleEmitter(_particleEntity);
                 }
             }
 
@@ -503,6 +533,19 @@ namespace GameScripts
                         if (id == 0) continue;
                         if (API.HasSpotLight(id)) { API.SetSpotLightIntensity(id, _activeIntensity); API.SetSpotLightColor(id, _activeColor); }
                         else if (API.HasPointLight(id)) { API.SetPointLightIntensity(id, _activeIntensity); API.SetPointLightColor(id, _activeColor); }
+                    }
+                }
+
+                // Play checkpoint particle effect
+                if (!string.IsNullOrEmpty(_particleEntityName))
+                {
+                    _particleEntity = API.FindEntity(_particleEntityName.Trim());
+                    if (_particleEntity != 0 && API.HasParticleEmitter(_particleEntity))
+                    {
+                        if (API.HasTransform(_particleEntity) && API.HasTransform(Entity))
+                            API.SetPosition(_particleEntity, API.GetPosition(Entity));
+                        API.PlayParticleEmitter(_particleEntity);
+                        _particleTimer = _particleDuration;
                     }
                 }
                 

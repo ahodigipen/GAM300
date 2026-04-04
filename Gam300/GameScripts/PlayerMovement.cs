@@ -1062,12 +1062,20 @@ namespace GameScripts
                     {
                         API.Log($"[PlayerMovement] Instant Pickup: Freeze Powerup (ID: {triggerEntity})");
 
+                        // Play pickup SFX at talisman's position (same sound as key pickup)
+                        if (API.HasTransform(triggerEntity))
+                        {
+                            var p = API.GetPosition(triggerEntity);
+                            API.PlaySoundAt("sfx_freeze_pickup", "Resources/Audio/woodKey.wav", p, false);
+                            API.SetSoundVolume("sfx_freeze_pickup", 0.9f);
+                        }
+
                         // Show pickup tutorial (first-time or repeat) for Talisman
                         TutorialManager.ShowPickupTutorial(
                             TutorialManager.ItemType.Talisman,
                             PlayerInventory.GetTalismanPickupCount()
                         );
-                        
+
                         API.DestroyEntity(triggerEntity);
                     }
                     return;
