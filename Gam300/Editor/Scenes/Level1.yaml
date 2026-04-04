@@ -2,6 +2,16 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
+      Name: Cutscene First Scene
+      UID: 7520019831429812164
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [11.2302856, 15.655817, 25.844059]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+  - InfoComponent:
+      Parent: 0
       Name: Dialgoue_Tutorial_KeyFound
       UID: 11507625187866156368
       SortOrder: 0
@@ -9,7 +19,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, -0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 6362442348357752979
       color: [1, 1, 1, 0]
@@ -50,7 +60,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, -0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 8458684468829784464
       color: [1, 1, 1, 0]
@@ -64,7 +74,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, -0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 3996107689341689705
       color: [1, 1, 1, 0]
@@ -1123,7 +1133,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 4701116167440719570
       color: [1, 1, 1, 0]
@@ -1520,7 +1530,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 2021043633113812075
       color: [1, 1, 1, 0]
@@ -1534,7 +1544,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 7108622298376919790
       color: [1, 1, 1, 0]
@@ -2201,7 +2211,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 3060421424103211675
       color: [1, 1, 1, 0]
@@ -2215,7 +2225,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 15496482806259426187
       color: [1, 1, 1, 0]
@@ -2229,7 +2239,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 16104766830198919102
       color: [1, 1, 1, 0]
@@ -2702,7 +2712,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 1675251116774239397
       color: [1, 1, 1, 0]
@@ -3660,7 +3670,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 16941480273148992840
       color: [1, 1, 1, 0]
@@ -4015,8 +4025,8 @@ ENTITIES:
       SortOrder: 444
     TransformComponent:
       Transform:
-        Translate: [25.3312073, 37.6168137, -13.8486786]
-        Rotate: [151.1875, 407.6875, 180]
+        Translate: [9.03528023, 19.2364025, 19.593565]
+        Rotate: [143.5, 312.3125, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -4129,7 +4139,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 13835020763985653587
       color: [1, 1, 1, 0]
@@ -6589,7 +6599,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 6301776291998926800
       color: [1, 1, 1, 0]
@@ -6662,7 +6672,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 12278568808582628673
       color: [1, 1, 1, 0]
@@ -7071,7 +7081,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 3879166641941139899
       color: [1, 1, 1, 0]
@@ -7085,7 +7095,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 15364468852678004646
       color: [1, 1, 1, 0]
@@ -7147,7 +7157,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 17822574376099780435
       color: [1, 1, 1, 0]
@@ -7197,7 +7207,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 2629327657053304990
       color: [1, 1, 1, 0]
@@ -8375,7 +8385,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 3701287540548707637
       color: [1, 1, 1, 0]
@@ -8389,7 +8399,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 367559179714889467
       color: [1, 1, 1, 0]
@@ -8895,7 +8905,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 13407014795456209896
       color: [1, 1, 1, 0]
@@ -8996,7 +9006,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 13161325346638212954
       color: [1, 1, 1, 0]
@@ -10565,7 +10575,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 15546537028350727031
       color: [1, 1, 1, 0]
@@ -10593,7 +10603,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 16134441578369664165
       color: [1, 1, 1, 0]
@@ -13521,7 +13531,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 12468824706065626304
       color: [1, 1, 1, 0]
@@ -13698,7 +13708,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 0
       color: [1, 1, 1, 0]
@@ -13730,7 +13740,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 16217278603049084796
       color: [1, 1, 1, 0]
@@ -14180,7 +14190,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 8481271093951499456
       color: [1, 1, 1, 0]
@@ -14481,7 +14491,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 9887804499288679027
       color: [1, 1, 1, 0]
@@ -14653,7 +14663,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 6991287239145553094
       color: [1, 1, 1, 0]
@@ -14667,7 +14677,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 9449392762567328883
       color: [1, 1, 1, 0]
@@ -14681,7 +14691,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 4095643092533174752
       color: [1, 1, 1, 0]
@@ -14695,7 +14705,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 11556852226015552069
       color: [1, 1, 1, 0]
@@ -14709,7 +14719,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 12527843001639722738
       color: [1, 1, 1, 0]
@@ -14723,7 +14733,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 4092832143501226655
       color: [1, 1, 1, 0]
@@ -15319,7 +15329,7 @@ ENTITIES:
       Transform:
         Translate: [0, -0.649999976, 0.00999999978]
         Rotate: [0, -0, 0]
-        Scale: [0.699999988, 0.41, 1]
+        Scale: [0.699999988, 0.409999996, 1]
     SpriteComponent:
       textureID: 4448433906749949767
       color: [1, 1, 1, 0]
