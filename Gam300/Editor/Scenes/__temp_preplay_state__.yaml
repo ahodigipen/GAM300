@@ -4151,3 +4151,921 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_Master_BG
+      UID: 4671019080698985014
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.280000001, -0.109999999, 1.10000002]
+        Rotate: [0, 0, 0]
+        Scale: [0.204999998, 0.0299999993, 1]
+    SpriteComponent:
+      textureID: 15235968341662935537
+      color: [1, 1, 1, 0.600000024]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause Menu Script
+      UID: 12608398802596728943
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PauseMenu
+      ParamsJSON: "{}"
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_Scroll
+      UID: 10224819476113975430
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 1]
+        Rotate: [0, 0, 0]
+        Scale: [1.20000005, 1, 0.100000001]
+    SpriteComponent:
+      textureID: 13415878511549165281
+      color: [0.431372523, 0.425401956, 0.363706261, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_RestartButton
+      UID: 5904394800213603709
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.349999994, 0.0700000003, 1.10000002]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.075000003, 1]
+    SpriteComponent:
+      textureID: 1815887354929855275
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_ReturnButton
+      UID: 5566590049786588666
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.349999994, -0.0949999988, 1.10000002]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.075000003, 1]
+    SpriteComponent:
+      textureID: 1920245529432086823
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_CreditsButton
+      UID: 6297404021137492667
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.349999994, -0.25999999, 1.10000002]
+        Rotate: [0, -0, 0]
+        Scale: [0.200000003, 0.075000003, 1]
+    SpriteComponent:
+      textureID: 3938594489715522154
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_QuitButton
+      UID: 8948746535193059584
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.349999994, -0.419999987, 1.10000002]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.075000003, 1]
+    SpriteComponent:
+      textureID: 13358858626374697893
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_ResumeButton
+      UID: 6722159140985515173
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.349999994, 0.234999999, 1.10000002]
+        Rotate: [0, -0, 0]
+        Scale: [0.200000003, 0.075000003, 0.00999999978]
+    SpriteComponent:
+      textureID: 18005541902257493201
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_SFX_Handle
+      UID: 13342355313482080434
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.479999989, -0.379999995, 1.12]
+        Rotate: [0, 0, 0]
+        Scale: [0.0199999996, 0.0399999991, 1]
+    SpriteComponent:
+      textureID: 12879034172909871896
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_Master_Fill
+      UID: 3931286615731204042
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.280000001, -0.109999999, 1.11000001]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.0199999996, 1]
+    SpriteComponent:
+      textureID: 10258411235812800368
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_Master_Handle
+      UID: 5003664612044735175
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.479999989, -0.109999999, 1.12]
+        Rotate: [0, 0, 0]
+        Scale: [0.0199999996, 0.0399999991, 1]
+    SpriteComponent:
+      textureID: 12879034172909871896
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_BGM_Fill
+      UID: 5852252158042436991
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.280000001, -0.239999995, 1.11000001]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.0199999996, 1]
+    SpriteComponent:
+      textureID: 10258411235812800368
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_BGM_Handle
+      UID: 16675060374144871009
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.479999989, -0.239999995, 1.12]
+        Rotate: [0, 0, 0]
+        Scale: [0.0199999996, 0.0399999991, 1]
+    SpriteComponent:
+      textureID: 12879034172909871896
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_BGM_BG
+      UID: 4971574730537095685
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.280000001, -0.239999995, 1.10000002]
+        Rotate: [0, 0, 0]
+        Scale: [0.204999998, 0.0299999993, 1]
+    SpriteComponent:
+      textureID: 15235968341662935537
+      color: [1, 1, 1, 0.600000024]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_Gamma_Handle
+      UID: 8554026230313328365
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.366719902, 0.170000002, 1.12]
+        Rotate: [0, 0, 0]
+        Scale: [0.0199999996, 0.0399999991, 1]
+    SpriteComponent:
+      textureID: 12879034172909871896
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_SFX_BG
+      UID: 4852565405374371737
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.280000001, -0.379999995, 1.10000002]
+        Rotate: [0, 0, 0]
+        Scale: [0.204999998, 0.0299999993, 1]
+    SpriteComponent:
+      textureID: 15235968341662935537
+      color: [1, 1, 1, 0.600000024]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_SFX_Fill
+      UID: 1900361381046245117
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.280000001, -0.379999995, 1.11000001]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.0199999996, 1]
+    SpriteComponent:
+      textureID: 10258411235812800368
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_Gamma_BG
+      UID: 15964893654232326128
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.280000001, 0.170000002, 1.10000002]
+        Rotate: [0, 0, 0]
+        Scale: [0.204999998, 0.0299999993, 1]
+    SpriteComponent:
+      textureID: 15235968341662935537
+      color: [1, 1, 1, 0.600000024]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Pause_Gamma_Fill
+      UID: 9799309324066039914
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.223359957, 0.170000002, 1.11000001]
+        Rotate: [0, 0, 0]
+        Scale: [0.143359959, 0.0199999996, 1]
+    SpriteComponent:
+      textureID: 10258411235812800368
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Death_Background
+      UID: 6565047407581518351
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0.200000003, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 0.699999988, 1]
+    SpriteComponent:
+      textureID: 12520623694830483264
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 1
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Death Menu Script
+      UID: 12489556233822804325
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.DeathMenu
+      ParamsJSON: "{}"
+    MenuComponent:
+      MenuType: 1
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Death_RestartButton
+      UID: 3023727914892643418
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.400000006, 0]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.100000001, 1]
+    SpriteComponent:
+      textureID: 1815887354929855275
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 1
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Death_ReturnButton
+      UID: 15993560601461334781
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.600000024, 0]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.100000001, 1]
+    SpriteComponent:
+      textureID: 1920245529432086823
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 1
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: End_Background
+      UID: 3080625518488956998
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 1]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    SpriteComponent:
+      textureID: 5109979046645362819
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 4
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: End Menu Script
+      UID: 9314872925983614062
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.EndMenu
+      ParamsJSON: "{}"
+    MenuComponent:
+      MenuType: 4
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: End_ReturnButton
+      UID: 15731111703162505266
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, -0.300000012, 1.10000002]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.100000001, 1]
+    SpriteComponent:
+      textureID: 1920245529432086823
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 4
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Inventory_Slot3_Text
+      UID: 12358960695862455396
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 2.0999999]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    TextComponent:
+      text: 0
+      fontName: Cormorant-VariableFont_wght
+      color: [1, 1, 1, 0]
+      scale: 0.600000024
+      screenPosition: [1590, 808]
+      renderAs3D: false
+      billboardMode: true
+      alignment: Left
+    MenuComponent:
+      MenuType: 6
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Inventory_Slot1_Text
+      UID: 13182539916817199809
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 2.0999999]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    TextComponent:
+      text: 0
+      fontName: Cormorant-VariableFont_wght
+      color: [1, 1, 1, 0]
+      scale: 0.600000024
+      screenPosition: [1450, 808]
+      renderAs3D: false
+      billboardMode: true
+      alignment: Left
+    MenuComponent:
+      MenuType: 6
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Inventory_Script
+      UID: 9991983927043961746
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.InventoryMenu
+      ParamsJSON: "{}"
+    MenuComponent:
+      MenuType: 6
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Inventory_BG
+      UID: 1920285388016120200
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.75, 0.850000024, 2]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.0900000036, 1]
+    SpriteComponent:
+      textureID: 6430292677676923924
+      color: [0.435294122, 0.435294122, 0.435294122, 0]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 6
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Inventory_Slot2_Text
+      UID: 16253247769133231383
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 2.0999999]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    TextComponent:
+      text: 0
+      fontName: Cormorant-VariableFont_wght
+      color: [1, 1, 1, 0]
+      scale: 0.600000024
+      screenPosition: [1518, 808]
+      renderAs3D: false
+      billboardMode: true
+      alignment: Left
+    MenuComponent:
+      MenuType: 6
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Inventory_Slot5_Text
+      UID: 5361210359208858907
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 2.0999999]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    TextComponent:
+      text: 0
+      fontName: Cormorant-VariableFont_wght
+      color: [1, 1, 1, 0]
+      scale: 0.600000024
+      screenPosition: [1733, 808]
+      renderAs3D: false
+      billboardMode: true
+      alignment: Left
+    MenuComponent:
+      MenuType: 6
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Inventory_Slot3_Icon
+      UID: 16724695954102488179
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.755999982, 0.860000014, 2.0999999]
+        Rotate: [0, 0, 0]
+        Scale: [0.0299999993, 0.0599999987, 1]
+    SpriteComponent:
+      textureID: 0
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 6
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Inventory_Slot1_Icon
+      UID: 2360031116440682998
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.59799999, 0.860000014, 2.0999999]
+        Rotate: [0, 0, 0]
+        Scale: [0.0299999993, 0.0599999987, 1]
+    SpriteComponent:
+      textureID: 0
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 6
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Inventory_Slot2_Icon
+      UID: 4147139391751340254
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.675999999, 0.860000014, 2.0999999]
+        Rotate: [0, 0, 0]
+        Scale: [0.0299999993, 0.0599999987, 1]
+    SpriteComponent:
+      textureID: 0
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 6
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Inventory_Slot4_Icon
+      UID: 13298599901300585657
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.83099997, 0.860000014, 2.0999999]
+        Rotate: [0, 0, 0]
+        Scale: [0.0299999993, 0.0599999987, 1]
+    SpriteComponent:
+      textureID: 0
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 6
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Inventory_Slot5_Icon
+      UID: 10983682895800366250
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.907999992, 0.860000014, 2.0999999]
+        Rotate: [0, 0, 0]
+        Scale: [0.0299999993, 0.0599999987, 1]
+    SpriteComponent:
+      textureID: 0
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 6
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: Inventory_Slot4_Text
+      UID: 371793761870256784
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 2.0999999]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    TextComponent:
+      text: 0
+      fontName: Cormorant-VariableFont_wght
+      color: [1, 1, 1, 0]
+      scale: 0.600000024
+      screenPosition: [1664, 808]
+      renderAs3D: false
+      billboardMode: true
+      alignment: Left
+    MenuComponent:
+      MenuType: 6
+    DeactivatedComponent:
+      {}
+  - InfoComponent:
+      Parent: 0
+      Name: UI_Stance
+      UID: 10500341996070685860
+      SortOrder: 458
+    TransformComponent:
+      Transform:
+        Translate: [0.899999976, -0.770739496, 0]
+        Rotate: [0, 0, 0]
+        Scale: [0.0599999987, 0.100000001, 0.5]
+    SpriteComponent:
+      textureID: 2900915588722288564
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 7
+  - InfoComponent:
+      Parent: 18428452598414175165
+      Name: Heart_Dead_1
+      UID: 18081686699052920950
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.860000014, 0.857142925, -0.0500000007]
+        Rotate: [0, -0, 0]
+        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
+    SpriteComponent:
+      textureID: 947084306896258002
+      color: [0.196078435, 0.196078435, 0.196078435, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 7
+  - InfoComponent:
+      Parent: 18428452598414175165
+      Name: Heart_Dead_2
+      UID: 10598076066696413096
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.790000021, 0.857142925, -0.129999995]
+        Rotate: [0, -0, 0]
+        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
+    SpriteComponent:
+      textureID: 947084306896258002
+      color: [0.196078435, 0.196078435, 0.196078435, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 7
+  - InfoComponent:
+      Parent: 18428452598414175165
+      Name: Heart_Dead_3
+      UID: 7305709452366689602
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.720000029, 0.857142925, -0.150000006]
+        Rotate: [0, -0, 0]
+        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
+    SpriteComponent:
+      textureID: 947084306896258002
+      color: [0.196078435, 0.196078435, 0.196078435, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 7
+  - InfoComponent:
+      Parent: 18428452598414175165
+      Name: Heart_Dead_4
+      UID: 16775474597636124132
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.649999976, 0.857142925, -0.0500000007]
+        Rotate: [0, -0, 0]
+        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
+    SpriteComponent:
+      textureID: 947084306896258002
+      color: [0.196078435, 0.196078435, 0.196078435, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 7
+  - InfoComponent:
+      Parent: 18428452598414175165
+      Name: Heart_Dead_5
+      UID: 6115143401978660500
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.579999983, 0.857142925, -0.170000002]
+        Rotate: [0, -0, 0]
+        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
+    SpriteComponent:
+      textureID: 947084306896258002
+      color: [0.196078435, 0.196078435, 0.196078435, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 7
+  - InfoComponent:
+      Parent: 18428452598414175165
+      Name: Heart_1
+      UID: 16075859986944912680
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.860000014, 0.856999993, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
+    SpriteComponent:
+      textureID: 9683671951523272381
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 7
+  - InfoComponent:
+      Parent: 18428452598414175165
+      Name: Heart_2
+      UID: 2471808296830425899
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.790000021, 0.857142925, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
+    SpriteComponent:
+      textureID: 9683671951523272381
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 7
+  - InfoComponent:
+      Parent: 18428452598414175165
+      Name: Heart_3
+      UID: 8738239648003058153
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.720000029, 0.857142925, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
+    SpriteComponent:
+      textureID: 9683671951523272381
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 7
+  - InfoComponent:
+      Parent: 18428452598414175165
+      Name: Heart_4
+      UID: 13304020931239740115
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.649999976, 0.857142925, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
+    SpriteComponent:
+      textureID: 9683671951523272381
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 7
+  - InfoComponent:
+      Parent: 18428452598414175165
+      Name: Heart_5
+      UID: 5351145407601607575
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.579999983, 0.857142925, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
+    SpriteComponent:
+      textureID: 9683671951523272381
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 7
+  - InfoComponent:
+      Parent: 0
+      Name: PlayerHP
+      UID: 18428452598414175165
+      SortOrder: 565
+    TransformComponent:
+      Transform:
+        Translate: [-0.209999993, 0.360000014, 0]
+        Rotate: [0, 0, 0]
+        Scale: [0.800000012, 0.600000024, 1]
+    MenuComponent:
+      MenuType: 7
+  - InfoComponent:
+      Parent: 0
+      Name: UI_GodMode
+      UID: 18341644754194887370
+      SortOrder: 563
+    TransformComponent:
+      Transform:
+        Translate: [0, 11.6872597, 0]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    TextComponent:
+      text: ""
+      fontName: Cormorant-VariableFont_wght
+      color: [0, 0, 0, 0]
+      scale: 1
+      screenPosition: [100, 83]
+      renderAs3D: false
+      billboardMode: true
+      alignment: Left
+    MenuComponent:
+      MenuType: 7
