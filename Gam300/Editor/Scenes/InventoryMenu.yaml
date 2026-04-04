@@ -15,9 +15,10 @@ ENTITIES:
       fontName: Cormorant-VariableFont_wght
       color: [1, 1, 1, 1]
       scale: 0.600000024
-      screenPosition: [1590, 808]
+      screenPosition: [1547, 805]
       renderAs3D: false
       billboardMode: true
+      alignment: Left
     MenuComponent:
       MenuType: 6
   - InfoComponent:
@@ -31,13 +32,14 @@ ENTITIES:
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
     TextComponent:
-      text: 0
+      text: "0\n"
       fontName: Cormorant-VariableFont_wght
       color: [1, 1, 1, 1]
       scale: 0.600000024
-      screenPosition: [1450, 808]
+      screenPosition: [1407, 805]
       renderAs3D: false
       billboardMode: true
+      alignment: Left
     MenuComponent:
       MenuType: 6
   - InfoComponent:
@@ -63,7 +65,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.75, 0.850000024, 2]
+        Translate: [0.699999988, 0.839999974, 2]
         Rotate: [0, 0, 0]
         Scale: [0.200000003, 0.0900000036, 1]
     SpriteComponent:
@@ -87,9 +89,10 @@ ENTITIES:
       fontName: Cormorant-VariableFont_wght
       color: [1, 1, 1, 1]
       scale: 0.600000024
-      screenPosition: [1518, 808]
+      screenPosition: [1477, 805]
       renderAs3D: false
       billboardMode: true
+      alignment: Left
     MenuComponent:
       MenuType: 6
   - InfoComponent:
@@ -116,7 +119,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.755999982, 0.860000014, 2.0999999]
+        Translate: [0.700999975, 0.839999974, 2.0999999]
         Rotate: [0, 0, 0]
         Scale: [0.0299999993, 0.0599999987, 1]
     SpriteComponent:
@@ -132,7 +135,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.59799999, 0.860000014, 2.0999999]
+        Translate: [0.545000017, 0.839999974, 2.0999999]
         Rotate: [0, 0, 0]
         Scale: [0.0299999993, 0.0599999987, 1]
     SpriteComponent:
@@ -148,7 +151,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.675999999, 0.860000014, 2.0999999]
+        Translate: [0.623000026, 0.839999974, 2.0999999]
         Rotate: [0, 0, 0]
         Scale: [0.0299999993, 0.0599999987, 1]
     SpriteComponent:
@@ -164,7 +167,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.83099997, 0.860000014, 2.0999999]
+        Translate: [0.778999984, 0.839999974, 2.0999999]
         Rotate: [0, 0, 0]
         Scale: [0.0299999993, 0.0599999987, 1]
     SpriteComponent:
@@ -180,7 +183,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.907999992, 0.860000014, 2.0999999]
+        Translate: [0.856999993, 0.839999974, 2.0999999]
         Rotate: [0, 0, 0]
         Scale: [0.0299999993, 0.0599999987, 1]
     SpriteComponent:
@@ -204,9 +207,10 @@ ENTITIES:
       fontName: Cormorant-VariableFont_wght
       color: [1, 1, 1, 1]
       scale: 0.600000024
-      screenPosition: [1664, 808]
+      screenPosition: [1617, 805]
       renderAs3D: false
       billboardMode: true
+      alignment: Left
     MenuComponent:
       MenuType: 6
   - InfoComponent:
@@ -224,8 +228,9 @@ ENTITIES:
       fontName: Cormorant-VariableFont_wght
       color: [1, 1, 1, 1]
       scale: 0.600000024
-      screenPosition: [1733, 808]
+      screenPosition: [1687, 805]
       renderAs3D: false
       billboardMode: true
+      alignment: Left
     MenuComponent:
       MenuType: 6
