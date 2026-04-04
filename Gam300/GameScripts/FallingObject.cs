@@ -6,6 +6,7 @@ namespace GameScripts
     /// <summary>
     /// FallingObject (Maze Blocker Edition):
     /// Uses Predictive Coordinate Sweeping to ensure no clipping.
+    /// Includes robust safety checks for death animations and respawn timing.
     /// </summary>
     public class FallingObject : IEnemyController
     {
@@ -13,6 +14,9 @@ namespace GameScripts
 
         [Boom.EditorExposed("Trigger Radius", "Horizontal distance to start the telegraph", 0.5f, 20f)]
         private float _triggerRadius = 6.0f;
+
+        [Boom.EditorExposed("Trigger Height Limit", "How far below the rock the player can be to trigger it", 1f, 50f)]
+        private float _triggerHeightLimit = 10.0f;
 
         [Boom.EditorExposed("Fall Speed", "How fast the rock slams down", 1f, 200f)]
         private float _fallSpeed = 80.0f;
@@ -36,6 +40,8 @@ namespace GameScripts
         private bool _isTelegraphing = false;
         private bool _hasHitGround = false;
         private float _telegraphTimer = 0.0f;
+        private float _respawnCooldown = 0.0f;
+        private bool _needsReset = false;
 
         private Vec3 _initialPosition;
         private Vec3 _initialRotation;
@@ -61,6 +67,8 @@ namespace GameScripts
             _isTelegraphing = false;
             _hasHitGround = false;
             _telegraphTimer = 0.0f;
+            _respawnCooldown = 0.0f;
+            _needsReset = false;
 
             PlayerManager.RegisterEnemy(this);
         }
@@ -68,6 +76,24 @@ namespace GameScripts
         public void OnUpdate(float dt)
         {
             if (!API.HasTransform(Entity)) return;
+
+            // Pause logic if game is paused
+            if (API.GetApplicationState() == API.APP_STATE_PAUSED) return;
+
+            // Handle forced reset if OnPlayerRespawned was called
+            if (_needsReset)
+            {
+                PerformReset();
+                return;
+            }
+
+            // Handle respawn cooldown to prevent immediate re-triggering during animations/fades
+            if (_respawnCooldown > 0)
+            {
+                _respawnCooldown -= dt;
+                return;
+            }
+
             if (_hasHitGround) return; 
 
             // STATE: WAITING
@@ -75,6 +101,9 @@ namespace GameScripts
             {
                 API.SetPosition(Entity, _initialPosition);
                 API.SetRotation(Entity, _initialRotation);
+
+                // SAFETY: Don't trigger if player is dead, in death anim, or respawning
+                if (HUD.HealthRatio <= 0 || PlayerMovement.IsRespawning) return;
 
                 ulong pEntity = PlayerMovement.GetPlayerEntity();
                 if (pEntity != 0)
@@ -84,16 +113,29 @@ namespace GameScripts
                     float dz = pPos.Z - _initialPosition.Z;
                     float horizontalDist = (float)Math.Sqrt(dx * dx + dz * dz);
 
-                    if (horizontalDist < _triggerRadius && pPos.Y < _initialPosition.Y)
+                    // Check horizontal distance
+                    if (horizontalDist < _triggerRadius)
                     {
-                        _isTelegraphing = true;
-                        _telegraphTimer = _telegraphDuration;
+                        float verticalDist = _initialPosition.Y - pPos.Y;
+                        // Check vertical distance (must be below but within the height limit)
+                        if (verticalDist > 0 && verticalDist < _triggerHeightLimit)
+                        {
+                            _isTelegraphing = true;
+                            _telegraphTimer = _telegraphDuration;
+                        }
                     }
                 }
             }
             // STATE: TELEGRAPHING
             else if (_isTelegraphing)
             {
+                // If player dies/respawns during telegraph, reset the rock
+                if (HUD.HealthRatio <= 0 || PlayerMovement.IsRespawning)
+                {
+                    OnPlayerRespawned();
+                    return;
+                }
+
                 _telegraphTimer -= dt;
                 float shakeX = ((float)_rng.NextDouble() * 2f - 1f) * _shakeIntensity;
                 float shakeZ = ((float)_rng.NextDouble() * 2f - 1f) * _shakeIntensity;
@@ -119,7 +161,6 @@ namespace GameScripts
                 float frameMovement = _fallSpeed * dt;
                 float targetY = prevY - frameMovement;
 
-                // 1. Min Y Safety
                 if (targetY <= _minY)
                 {
                     _currentY = _minY;
@@ -128,33 +169,20 @@ namespace GameScripts
                 }
                 else
                 {
-                    // 2. COORDINATE-BASED COLLISION CHECK
-                    // We check if the rock is about to pass through a floor this frame.
-                    // Since we don't have hit distance, we use binary refinement to find the floor.
-                    
                     bool hitThisFrame = CheckFloorAtY(targetY);
-
                     if (hitThisFrame)
                     {
-                        // The floor is somewhere between prevY and targetY.
-                        // Let's find the exact coordinate by subdividing the frame.
                         float high = prevY;
                         float low = targetY;
-                        
-                        // 4 iterations of binary search is usually enough for visual accuracy
                         for(int i = 0; i < 4; i++)
                         {
                             float mid = (high + low) * 0.5f;
-                            if (CheckFloorAtY(mid))
-                                high = mid; // Floor is higher
-                            else
-                                low = mid;  // Rock is still in the air
+                            if (CheckFloorAtY(mid)) high = mid;
+                            else low = mid;
                         }
-                        
-                        _currentY = high; // Snap to the refined "highest point of collision"
+                        _currentY = high; 
                         _hasHitGround = true;
                         _isFalling = false;
-                        API.Log($"[FallingObject] {Entity} landed at refined Y: {_currentY}");
                     }
                     else
                     {
@@ -169,33 +197,32 @@ namespace GameScripts
             }
         }
 
-        /// <summary>
-        /// Checks if the bottom of the rock would be inside a floor at the given Y coordinate.
-        /// </summary>
         private bool CheckFloorAtY(float y)
         {
-            // We use a very short raycast (0.05 units) downwards from the point we want to test.
-            // If it hits anything immediately, it means that point is "on or inside" the floor.
             Vec3 testPoint = _initialPosition;
             testPoint.Y = y - _pivotToBottomOffset;
-
-            // Start slightly above the point to catch the floor exactly
             testPoint.Y += 0.02f; 
-            
             ulong hit = API.Raycast(testPoint, new Vec3(0, -1, 0), 0.05f);
-            
             ulong pEntity = PlayerMovement.GetPlayerEntity();
             return (hit != 0 && hit != Entity && hit != pEntity);
         }
 
         public void OnPlayerRespawned()
         {
+            _needsReset = true;
+            API.Log($"[FallingObject] {Entity} marked for reset.");
+        }
+
+        private void PerformReset()
+        {
             _isFalling = false;
             _isTelegraphing = false;
             _hasHitGround = false;
             _currentY = _initialPosition.Y;
             _telegraphTimer = 0.0f;
-            
+            _respawnCooldown = 2.0f; // Long cooldown to cover animations/fades
+            _needsReset = false;
+
             if (API.HasTransform(Entity))
             {
                 API.SetPosition(Entity, _initialPosition);

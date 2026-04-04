@@ -92,6 +92,8 @@ namespace GameScripts
         private static ulong s_playerEntity = 0;
         private static PlayerMovement s_instance = null;
 
+        public static bool IsRespawning => s_instance != null && (s_instance._isRespawning || s_instance._isPlayingDeathAnim);
+
         private float _modelForwardOffset = 0;
 
         private const float MOVE_EPS = 0.10f;
