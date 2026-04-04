@@ -2,8 +2,8 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
-      Name: Inventory_Slot3_Text
-      UID: 12358960695862455396
+      Name: Inventory_Slot5_Text
+      UID: 5361210359208858907
       SortOrder: 0
     TransformComponent:
       Transform:
@@ -15,7 +15,7 @@ ENTITIES:
       fontName: Cormorant-VariableFont_wght
       color: [1, 1, 1, 1]
       scale: 0.600000024
-      screenPosition: [1547, 805]
+      screenPosition: [1687, 786]
       renderAs3D: false
       billboardMode: true
       alignment: Left
@@ -23,8 +23,8 @@ ENTITIES:
       MenuType: 6
   - InfoComponent:
       Parent: 0
-      Name: Inventory_Slot1_Text
-      UID: 13182539916817199809
+      Name: Inventory_Slot4_Text
+      UID: 371793761870256784
       SortOrder: 0
     TransformComponent:
       Transform:
@@ -32,11 +32,11 @@ ENTITIES:
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
     TextComponent:
-      text: "0\n"
+      text: 0
       fontName: Cormorant-VariableFont_wght
       color: [1, 1, 1, 1]
       scale: 0.600000024
-      screenPosition: [1407, 805]
+      screenPosition: [1617, 786]
       renderAs3D: false
       billboardMode: true
       alignment: Left
@@ -44,55 +44,82 @@ ENTITIES:
       MenuType: 6
   - InfoComponent:
       Parent: 0
-      Name: Inventory_Script
-      UID: 9991983927043961746
+      Name: Inventory_Slot5_Icon
+      UID: 10983682895800366250
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, 0, 0]
+        Translate: [0.856999993, 0.810000002, 2.0999999]
         Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.InventoryMenu
-      ParamsJSON: "{}"
-    MenuComponent:
-      MenuType: 6
-  - InfoComponent:
-      Parent: 0
-      Name: Inventory_BG
-      UID: 1920285388016120200
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.699999988, 0.839999974, 2]
-        Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.0900000036, 1]
+        Scale: [0.0299999993, 0.0599999987, 1]
     SpriteComponent:
-      textureID: 6430292677676923924
-      color: [0.435294122, 0.435294122, 0.435294122, 1]
+      textureID: 0
+      color: [1, 1, 1, 1]
       renderAs3D: false
     MenuComponent:
       MenuType: 6
   - InfoComponent:
       Parent: 0
-      Name: Inventory_Slot2_Text
-      UID: 16253247769133231383
+      Name: Inventory_Slot4_Icon
+      UID: 13298599901300585657
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, 0, 2.0999999]
+        Translate: [0.778999984, 0.810000002, 2.0999999]
         Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    TextComponent:
-      text: 0
-      fontName: Cormorant-VariableFont_wght
+        Scale: [0.0299999993, 0.0599999987, 1]
+    SpriteComponent:
+      textureID: 0
       color: [1, 1, 1, 1]
-      scale: 0.600000024
-      screenPosition: [1477, 805]
       renderAs3D: false
-      billboardMode: true
-      alignment: Left
+    MenuComponent:
+      MenuType: 6
+  - InfoComponent:
+      Parent: 0
+      Name: Inventory_Slot2_Icon
+      UID: 4147139391751340254
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.623000026, 0.810000002, 2.0999999]
+        Rotate: [0, 0, 0]
+        Scale: [0.0299999993, 0.0599999987, 1]
+    SpriteComponent:
+      textureID: 0
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 6
+  - InfoComponent:
+      Parent: 0
+      Name: Inventory_Slot1_Icon
+      UID: 2360031116440682998
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.545000017, 0.810000002, 2.0999999]
+        Rotate: [0, 0, 0]
+        Scale: [0.0299999993, 0.0599999987, 1]
+    SpriteComponent:
+      textureID: 0
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 6
+  - InfoComponent:
+      Parent: 0
+      Name: Inventory_Slot3_Icon
+      UID: 16724695954102488179
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.700999975, 0.810000002, 2.0999999]
+        Rotate: [0, 0, 0]
+        Scale: [0.0299999993, 0.0599999987, 1]
+    SpriteComponent:
+      textureID: 0
+      color: [1, 1, 1, 1]
+      renderAs3D: false
     MenuComponent:
       MenuType: 6
   - InfoComponent:
@@ -114,88 +141,8 @@ ENTITIES:
       MenuType: 6
   - InfoComponent:
       Parent: 0
-      Name: Inventory_Slot3_Icon
-      UID: 16724695954102488179
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.700999975, 0.839999974, 2.0999999]
-        Rotate: [0, 0, 0]
-        Scale: [0.0299999993, 0.0599999987, 1]
-    SpriteComponent:
-      textureID: 0
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 6
-  - InfoComponent:
-      Parent: 0
-      Name: Inventory_Slot1_Icon
-      UID: 2360031116440682998
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.545000017, 0.839999974, 2.0999999]
-        Rotate: [0, 0, 0]
-        Scale: [0.0299999993, 0.0599999987, 1]
-    SpriteComponent:
-      textureID: 0
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 6
-  - InfoComponent:
-      Parent: 0
-      Name: Inventory_Slot2_Icon
-      UID: 4147139391751340254
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.623000026, 0.839999974, 2.0999999]
-        Rotate: [0, 0, 0]
-        Scale: [0.0299999993, 0.0599999987, 1]
-    SpriteComponent:
-      textureID: 0
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 6
-  - InfoComponent:
-      Parent: 0
-      Name: Inventory_Slot4_Icon
-      UID: 13298599901300585657
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.778999984, 0.839999974, 2.0999999]
-        Rotate: [0, 0, 0]
-        Scale: [0.0299999993, 0.0599999987, 1]
-    SpriteComponent:
-      textureID: 0
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 6
-  - InfoComponent:
-      Parent: 0
-      Name: Inventory_Slot5_Icon
-      UID: 10983682895800366250
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.856999993, 0.839999974, 2.0999999]
-        Rotate: [0, 0, 0]
-        Scale: [0.0299999993, 0.0599999987, 1]
-    SpriteComponent:
-      textureID: 0
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 6
-  - InfoComponent:
-      Parent: 0
-      Name: Inventory_Slot4_Text
-      UID: 371793761870256784
+      Name: Inventory_Slot2_Text
+      UID: 16253247769133231383
       SortOrder: 0
     TransformComponent:
       Transform:
@@ -207,7 +154,7 @@ ENTITIES:
       fontName: Cormorant-VariableFont_wght
       color: [1, 1, 1, 1]
       scale: 0.600000024
-      screenPosition: [1617, 805]
+      screenPosition: [1477, 786]
       renderAs3D: false
       billboardMode: true
       alignment: Left
@@ -215,8 +162,61 @@ ENTITIES:
       MenuType: 6
   - InfoComponent:
       Parent: 0
-      Name: Inventory_Slot5_Text
-      UID: 5361210359208858907
+      Name: Inventory_BG
+      UID: 1920285388016120200
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.699999988, 0.810000002, 2]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.0900000036, 1]
+    SpriteComponent:
+      textureID: 6430292677676923924
+      color: [0.435294122, 0.435294122, 0.435294122, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 6
+  - InfoComponent:
+      Parent: 0
+      Name: Inventory_Script
+      UID: 9991983927043961746
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.InventoryMenu
+      ParamsJSON: "{}"
+    MenuComponent:
+      MenuType: 6
+  - InfoComponent:
+      Parent: 0
+      Name: Inventory_Slot1_Text
+      UID: 13182539916817199809
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 2.0999999]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    TextComponent:
+      text: "0\n"
+      fontName: Cormorant-VariableFont_wght
+      color: [1, 1, 1, 1]
+      scale: 0.600000024
+      screenPosition: [1407, 786]
+      renderAs3D: false
+      billboardMode: true
+      alignment: Left
+    MenuComponent:
+      MenuType: 6
+  - InfoComponent:
+      Parent: 0
+      Name: Inventory_Slot3_Text
+      UID: 12358960695862455396
       SortOrder: 0
     TransformComponent:
       Transform:
@@ -228,7 +228,7 @@ ENTITIES:
       fontName: Cormorant-VariableFont_wght
       color: [1, 1, 1, 1]
       scale: 0.600000024
-      screenPosition: [1687, 805]
+      screenPosition: [1547, 786]
       renderAs3D: false
       billboardMode: true
       alignment: Left

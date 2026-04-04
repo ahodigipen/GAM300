@@ -2,174 +2,28 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
-      Name: HUDCamera
-      UID: 17758105772402509105
-      SortOrder: 0
+      Name: UI_Stance
+      UID: 10500341996070685860
+      SortOrder: 458
     TransformComponent:
       Transform:
-        Translate: [0.899999976, -0.520739496, 0.5]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    CameraComponent:
-      Camera:
-        NearPlane: 0.300000012
-        FarPlane: 1000
-        FOV: 45
-    MenuComponent:
-      MenuType: 7
-  - InfoComponent:
-      Parent: 0
-      Name: UI_GodMode
-      UID: 18341644754194887370
-      SortOrder: 563
-    TransformComponent:
-      Transform:
-        Translate: [0, 11.6872597, 0]
+        Translate: [0.853999972, -0.770739496, 0]
         Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]
-    TextComponent:
-      text: ""
-      fontName: Cormorant-VariableFont_wght
-      color: [0, 0, 0, 0]
-      scale: 1
-      screenPosition: [100, 83]
-      renderAs3D: false
-      billboardMode: true
-      alignment: Left
-    MenuComponent:
-      MenuType: 7
-  - InfoComponent:
-      Parent: 0
-      Name: PlayerHP
-      UID: 18428452598414175165
-      SortOrder: 565
-    TransformComponent:
-      Transform:
-        Translate: [-0.209999993, 0.360000014, 0]
-        Rotate: [0, 0, 0]
-        Scale: [0.800000012, 0.600000024, 1]
-    MenuComponent:
-      MenuType: 7
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_5
-      UID: 5351145407601607575
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.579999983, 0.857142925, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
+        Scale: [0.0599999987, 0.100000001, 0.5]
     SpriteComponent:
-      textureID: 9683671951523272381
+      textureID: 2900915588722288564
       color: [1, 1, 1, 1]
       renderAs3D: false
     MenuComponent:
       MenuType: 7
   - InfoComponent:
       Parent: 18428452598414175165
-      Name: Heart_4
-      UID: 13304020931239740115
+      Name: Heart_Dead_1
+      UID: 18081686699052920950
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.649999976, 0.857142925, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 7
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_3
-      UID: 8738239648003058153
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.720000029, 0.857142925, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 7
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_2
-      UID: 2471808296830425899
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.790000021, 0.857142925, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 7
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_1
-      UID: 16075859986944912680
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.860000014, 0.856999993, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 7
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_Dead_5
-      UID: 6115143401978660500
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.579999983, 0.857142925, -0.170000002]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 947084306896258002
-      color: [0.196078435, 0.196078435, 0.196078435, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 7
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_Dead_4
-      UID: 16775474597636124132
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.649999976, 0.857142925, -0.0500000007]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 947084306896258002
-      color: [0.196078435, 0.196078435, 0.196078435, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 7
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_Dead_3
-      UID: 7305709452366689602
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.720000029, 0.857142925, -0.150000006]
+        Translate: [-0.860000014, 0.857142925, -0.0500000007]
         Rotate: [0, -0, 0]
         Scale: [0.0299999993, 0.0599999987, 0.0800000429]
     SpriteComponent:
@@ -196,12 +50,12 @@ ENTITIES:
       MenuType: 7
   - InfoComponent:
       Parent: 18428452598414175165
-      Name: Heart_Dead_1
-      UID: 18081686699052920950
+      Name: Heart_Dead_3
+      UID: 7305709452366689602
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.860000014, 0.857142925, -0.0500000007]
+        Translate: [-0.720000029, 0.857142925, -0.150000006]
         Rotate: [0, -0, 0]
         Scale: [0.0299999993, 0.0599999987, 0.0800000429]
     SpriteComponent:
@@ -211,18 +65,164 @@ ENTITIES:
     MenuComponent:
       MenuType: 7
   - InfoComponent:
-      Parent: 0
-      Name: UI_Stance
-      UID: 10500341996070685860
-      SortOrder: 458
+      Parent: 18428452598414175165
+      Name: Heart_Dead_4
+      UID: 16775474597636124132
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.857620239, -0.770739496, 0]
+        Translate: [-0.649999976, 0.857142925, -0.0500000007]
         Rotate: [0, -0, 0]
-        Scale: [0.0599999987, 0.100000001, 0.5]
+        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
     SpriteComponent:
-      textureID: 2900915588722288564
+      textureID: 947084306896258002
+      color: [0.196078435, 0.196078435, 0.196078435, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 7
+  - InfoComponent:
+      Parent: 18428452598414175165
+      Name: Heart_Dead_5
+      UID: 6115143401978660500
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.579999983, 0.857142925, -0.170000002]
+        Rotate: [0, -0, 0]
+        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
+    SpriteComponent:
+      textureID: 947084306896258002
+      color: [0.196078435, 0.196078435, 0.196078435, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 7
+  - InfoComponent:
+      Parent: 18428452598414175165
+      Name: Heart_1
+      UID: 16075859986944912680
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.860000014, 0.856999993, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
+    SpriteComponent:
+      textureID: 9683671951523272381
       color: [1, 1, 1, 1]
       renderAs3D: false
+    MenuComponent:
+      MenuType: 7
+  - InfoComponent:
+      Parent: 18428452598414175165
+      Name: Heart_2
+      UID: 2471808296830425899
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.790000021, 0.857142925, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
+    SpriteComponent:
+      textureID: 9683671951523272381
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 7
+  - InfoComponent:
+      Parent: 18428452598414175165
+      Name: Heart_3
+      UID: 8738239648003058153
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.720000029, 0.857142925, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
+    SpriteComponent:
+      textureID: 9683671951523272381
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 7
+  - InfoComponent:
+      Parent: 18428452598414175165
+      Name: Heart_4
+      UID: 13304020931239740115
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.649999976, 0.857142925, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
+    SpriteComponent:
+      textureID: 9683671951523272381
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 7
+  - InfoComponent:
+      Parent: 18428452598414175165
+      Name: Heart_5
+      UID: 5351145407601607575
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.579999983, 0.857142925, 0]
+        Rotate: [0, -0, 0]
+        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
+    SpriteComponent:
+      textureID: 9683671951523272381
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 7
+  - InfoComponent:
+      Parent: 0
+      Name: PlayerHP
+      UID: 18428452598414175165
+      SortOrder: 565
+    TransformComponent:
+      Transform:
+        Translate: [-0.209999993, 0.360000014, 0]
+        Rotate: [0, 0, 0]
+        Scale: [0.800000012, 0.600000024, 1]
+    MenuComponent:
+      MenuType: 7
+  - InfoComponent:
+      Parent: 0
+      Name: UI_GodMode
+      UID: 18341644754194887370
+      SortOrder: 563
+    TransformComponent:
+      Transform:
+        Translate: [0, 11.6872597, 0]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+    TextComponent:
+      text: ""
+      fontName: Cormorant-VariableFont_wght
+      color: [0, 0, 0, 0]
+      scale: 1
+      screenPosition: [100, 83]
+      renderAs3D: false
+      billboardMode: true
+      alignment: Left
+    MenuComponent:
+      MenuType: 7
+  - InfoComponent:
+      Parent: 0
+      Name: HUDCamera
+      UID: 17758105772402509105
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.899999976, -0.520739496, 0.5]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        NearPlane: 0.300000012
+        FarPlane: 1000
+        FOV: 45
     MenuComponent:
       MenuType: 7
