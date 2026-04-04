@@ -2,51 +2,19 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
-      Name: SplashManager
-      UID: 900000000000000005
+      Name: Camera
+      UID: 900000000000000001
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, 0, 0]
+        Translate: [0, 0, 10]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.DigiPenSplash
-      ParamsJSON: "{\n  \"displayDuration\": 3.0,\n  \"nextSceneName\": \"GameSplash\"\n}"
-  - InfoComponent:
-      Parent: 0
-      Name: CopyrightNotice
-      UID: 900000000000000004
-      SortOrder: 2
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    TextComponent:
-      text: © 2026 DigiPen Institute of Technology. All Rights Reserved
-      fontName: Roboto-Regular
-      color: [1, 1, 1, 1]
-      scale: 0.5
-      screenPosition: [950, 50]
-      renderAs3D: false
-      billboardMode: true
-      alignment: Center
-  - InfoComponent:
-      Parent: 0
-      Name: DigiPenLogo
-      UID: 900000000000000003
-      SortOrder: 1
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [0.879999995, 0.495000005, 1]
-    SpriteComponent:
-      textureID: 17800483581353822611
-      color: [1, 1, 1, 1]
-      renderAs3D: false
+    CameraComponent:
+      Camera:
+        NearPlane: 0.100000001
+        FarPlane: 1000
+        FOV: 90
   - InfoComponent:
       Parent: 0
       Name: SplashBackground
@@ -63,16 +31,48 @@ ENTITIES:
       renderAs3D: false
   - InfoComponent:
       Parent: 0
-      Name: Camera
-      UID: 900000000000000001
+      Name: DigiPenLogo
+      UID: 900000000000000003
+      SortOrder: 1
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [0.879999995, 0.485000014, 1]
+    SpriteComponent:
+      textureID: 17800483581353822611
+      color: [1, 1, 1, 0]
+      renderAs3D: false
+  - InfoComponent:
+      Parent: 0
+      Name: CopyrightNotice
+      UID: 900000000000000004
+      SortOrder: 2
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    TextComponent:
+      text: © 2026 DigiPen Institute of Technology. All Rights Reserved
+      fontName: Roboto-Regular
+      color: [1, 1, 1, 0]
+      scale: 0.5
+      screenPosition: [950, 50]
+      renderAs3D: false
+      billboardMode: true
+      alignment: Center
+  - InfoComponent:
+      Parent: 0
+      Name: SplashManager
+      UID: 900000000000000005
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, 0, 10]
+        Translate: [0, 0, 0]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
-    CameraComponent:
-      Camera:
-        NearPlane: 0.100000001
-        FarPlane: 1000
-        FOV: 90
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.DigiPenSplash
+      ParamsJSON: "{\n  \"displayDuration\": 3.0,\n  \"nextSceneName\": \"GameSplash\"\n}"

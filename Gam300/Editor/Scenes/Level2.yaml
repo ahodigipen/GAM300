@@ -15836,3 +15836,302 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+  - InfoComponent:
+      Parent: 0
+      Name: Token_light_9
+      UID: 11425858438340857688
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-79.4245987, 38.4188232, -19.7049351]
+        Rotate: [49.628273, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 0
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.521568656, 0.423529416]
+        Intensity: 6
+        Range: 10
+        BloomStrength: 0.75
+  - InfoComponent:
+      Parent: 0
+      Name: Freeze_Light_3
+      UID: 11476890854475338874
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-42.1288719, 28.7145405, 3.18001938]
+        Rotate: [49.628273, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 0
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [0.368627459, 0.737254918, 1]
+        Intensity: 7
+        Range: 7
+        BloomStrength: 0.75
+  - InfoComponent:
+      Parent: 0
+      Name: Token_Light_8
+      UID: 12229875973848427883
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-40.5282516, 40.6148834, -4.84583282]
+        Rotate: [49.628273, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 0
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.521316707, 0.422764242]
+        Intensity: 10
+        Range: 6.3499999
+        BloomStrength: 1
+  - InfoComponent:
+      Parent: 0
+      Name: Freeze_Light_1.1
+      UID: 11025112541588261729
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-32.0517578, 14.8983269, 78.1595154]
+        Rotate: [49.628273, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 0
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [0.369918704, 0.738746881, 1]
+        Intensity: 8
+        Range: 10
+        BloomStrength: 1
+  - InfoComponent:
+      Parent: 0
+      Name: Token_Light_7
+      UID: 14032977108079719147
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-9.91830826, 12.3822947, 73.2896805]
+        Rotate: [49.628273, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 0
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.521568656, 0.423529416]
+        Intensity: 6
+        Range: 10
+        BloomStrength: 1
+  - InfoComponent:
+      Parent: 0
+      Name: Freeze_Light_2
+      UID: 264170354015376317
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-24.835001, 14.5852566, 74.6291199]
+        Rotate: [49.628273, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 0
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [0.369918704, 0.738746881, 1]
+        Intensity: 8
+        Range: 6.3499999
+        BloomStrength: 1
+  - InfoComponent:
+      Parent: 0
+      Name: Freeze_Light_1
+      UID: 4886918579126301598
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-32.0517578, 14.8983269, 76.3394394]
+        Rotate: [49.628273, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 0
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [0.369918704, 0.738746881, 1]
+        Intensity: 8
+        Range: 10
+        BloomStrength: 1
+  - InfoComponent:
+      Parent: 0
+      Name: Token_Light_6
+      UID: 7609356723318757738
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-21.3185883, 16.898241, 47.4572029]
+        Rotate: [49.628273, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 0
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.521316707, 0.422764242]
+        Intensity: 10
+        Range: 6.3499999
+        BloomStrength: 1
+  - InfoComponent:
+      Parent: 0
+      Name: Token_Light_1 (Copy)
+      UID: 14841077548995802509
+      SortOrder: 8
+    TransformComponent:
+      Transform:
+        Translate: [32.0487747, 11.3955784, -10.4533043]
+        Rotate: [0, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 0
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.866347849, 0.739837408]
+        Intensity: 6.42999983
+        Range: 6.3499999
+        BloomStrength: 1
+  - InfoComponent:
+      Parent: 0
+      Name: Token_Light_5
+      UID: 5311670446332962591
+      SortOrder: 2
+    TransformComponent:
+      Transform:
+        Translate: [36.397377, 15.5640831, 23.7699966]
+        Rotate: [0, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 0
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.423529387, 0.423529387]
+        Intensity: 6.42999983
+        Range: 6.3499999
+        BloomStrength: 1
+  - InfoComponent:
+      Parent: 0
+      Name: Token_Light_3
+      UID: 18154089653758930591
+      SortOrder: 11
+    TransformComponent:
+      Transform:
+        Translate: [-0.697339416, 25.25214, 10.4527454]
+        Rotate: [0, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 0
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.423529387, 0.423529387]
+        Intensity: 6.42999983
+        Range: 6.3499999
+        BloomStrength: 1
+  - InfoComponent:
+      Parent: 0
+      Name: Token_Light_4
+      UID: 16032679602406081982
+      SortOrder: 9
+    TransformComponent:
+      Transform:
+        Translate: [-22.1155548, 15.8370132, 18.8287525]
+        Rotate: [0, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 0
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.423529387, 0.423529387]
+        Intensity: 6.42999983
+        Range: 6.3499999
+        BloomStrength: 1
+  - InfoComponent:
+      Parent: 0
+      Name: Token_Light_2
+      UID: 18131422163738847842
+      SortOrder: 12
+    TransformComponent:
+      Transform:
+        Translate: [-0.697339416, 25.25214, 11.8769312]
+        Rotate: [0, -0, 0]
+        Scale: [0.0504000187, 0.0504000187, 0.0504000187]
+    ModelComponent:
+      ModelID: 0
+      MaterialID: 0
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+    PointLightComponent:
+      Light:
+        Radiance: [1, 0.423529387, 0.423529387]
+        Intensity: 6.42999983
+        Range: 6.3499999
+        BloomStrength: 1
