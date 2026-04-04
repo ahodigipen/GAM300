@@ -171,10 +171,15 @@ namespace GameScripts
                 API.LoadSceneAdditive(PAUSE_SCENE_NAME);
                 API.LoadSceneAdditive(DEATH_SCENE_NAME);
                 API.LoadSceneAdditive(END_SCENE_NAME);
-                // Tutorial zone has no inventory system
-                if (_currentSceneName != TUTORIAL_ZONE_SCENE_NAME)
+                // Tutorial zone and Boss Arena have no inventory system
+                if (_currentSceneName != TUTORIAL_ZONE_SCENE_NAME &&
+                    _currentSceneName != BOSS_ARENA_SCENE_NAME)
                 {
                     API.LoadSceneAdditive(INVENTORY_SCENE_NAME);
+                }
+                // Boss Arena needs HUD; Tutorial Zone does not
+                if (_currentSceneName != TUTORIAL_ZONE_SCENE_NAME)
+                {
                     API.LoadSceneAdditive(HUD_SCENE_NAME);
                 }
             }
@@ -213,7 +218,8 @@ namespace GameScripts
 
         public static void OnCutsceneCompleted()
         {
-            if (IsGameplayScene(_currentSceneName) && !StoryDialogueManager.IsSequenceActive())
+            if (IsGameplayScene(_currentSceneName) && !StoryDialogueManager.IsSequenceActive() &&
+                _currentSceneName != BOSS_ARENA_SCENE_NAME)
             {
                 API.Log("[Entry] Cutscene Finished. Triggering Start Dialogue Sequence...");
                 StoryDialogueManager.PlayStartSequence(() => { IsInventoryOpen = true; API.ShowInventoryMenu(); });
@@ -449,8 +455,8 @@ namespace GameScripts
                 }
                 _p_KeyWasDown = p_KeyDown;
 
-                // Handle I key or Gamepad Back to open inventory (not available in Tutorial Zone)
-                if (_currentSceneName != TUTORIAL_ZONE_SCENE_NAME && !IsInventoryOpen && (i_KeyDown || inventory_ButtonDown) && !_i_KeyWasDown && !ctrl_KeyDown)
+                // Handle I key or Gamepad Back to open inventory (not available in Tutorial Zone or Boss Arena)
+                if (_currentSceneName != TUTORIAL_ZONE_SCENE_NAME && _currentSceneName != BOSS_ARENA_SCENE_NAME && !IsInventoryOpen && (i_KeyDown || inventory_ButtonDown) && !_i_KeyWasDown && !ctrl_KeyDown)
                 {
                     API.Log("Opening inventory...");
                     IsInventoryOpen = true;
