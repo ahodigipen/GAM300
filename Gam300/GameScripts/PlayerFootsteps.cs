@@ -15,13 +15,13 @@ namespace Boom
 
         // Footstep configuration
         [EditorExposed("Footstep Interval", "Time between footstep sounds in seconds", 0.1f, 2f, true)]
-        private float _footstepInterval = 0.5f;
+        private float _footstepInterval = 0.4f;
 
         [EditorExposed("Min Speed", "Minimum movement speed to trigger footsteps", 0.1f, 5f, true)]
         private float _minSpeed = 1.0f;
 
         [EditorExposed("Footstep Volume", "Volume of footstep sounds", 0f, 1f, true)]
-        private float _footstepVolume = 0.95f;
+        private float _footstepVolume = 0.65f;
 
         // Runtime state
         private float _timeSinceLastFootstep = 0f;

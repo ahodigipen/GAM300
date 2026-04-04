@@ -759,7 +759,7 @@ ENTITIES:
       SortOrder: 215
     TransformComponent:
       Transform:
-        Translate: [-1.9828918, 21.1709309, -13.6384344]
+        Translate: [-1.9828918, 21.0133705, -13.6384344]
         Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
@@ -954,8 +954,8 @@ ENTITIES:
       SortOrder: 264
     TransformComponent:
       Transform:
-        Translate: [19.3534565, 13.4210215, -10.1728048]
-        Rotate: [180, 90, 180]
+        Translate: [5.25775051, 13.4210224, -10.1728048]
+        Rotate: [0, 89.980217, 0]
         Scale: [0.0200004727, 0.0199999996, 0.0200004727]
     RigidBodyComponent:
       RigidBody:
@@ -980,7 +980,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 0.527999997
+          volume: 0.365999997
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -993,7 +993,7 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 20.5
+          maxDistance: 4.19999981
         - name: _alertSoundPath
           filePaths:
             - Resources/Audio/VO_Patrol_Alert_020.wav
@@ -1016,7 +1016,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/VO_Patrol_001.wav
           loop: false
-          volume: 0.653999984
+          volume: 0.444000006
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -1986,7 +1986,7 @@ ENTITIES:
       SortOrder: 461
     TransformComponent:
       Transform:
-        Translate: [-5.1960001, 19.761776, 32.7099991]
+        Translate: [-5.1960001, 19.9785557, 32.7099991]
         Rotate: [0, 90, 0]
         Scale: [0.0292000007, 0.0292000007, 0.0292000007]
     ModelComponent:
@@ -2099,8 +2099,8 @@ ENTITIES:
       SortOrder: 368
     TransformComponent:
       Transform:
-        Translate: [-2.47148323, 13.4210215, 7.53667545]
-        Rotate: [180, 90, 180]
+        Translate: [3.06907225, 13.4210215, 7.53667545]
+        Rotate: [0, 90, 0]
         Scale: [0.0199999977, 0.0199999996, 0.0199999977]
     RigidBodyComponent:
       RigidBody:
@@ -2125,7 +2125,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 0.541999996
+          volume: 0.389999986
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -2138,7 +2138,7 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 21.2000008
+          maxDistance: 4.80000019
         - name: _alertSoundPath
           filePaths:
             - Resources/Audio/VO_Patrol_Alert_020.wav
@@ -2161,7 +2161,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/VO_Patrol_001.wav
           loop: false
-          volume: 0.619000018
+          volume: 0.444000006
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -2663,7 +2663,7 @@ ENTITIES:
       Entries:
         - name: _enterSound
           filePaths:
-            - Resources/Audio/ambient_warning.wav
+            - Resources/Audio/invis.wav
           loop: false
           volume: 1
           priority: 128
@@ -2682,7 +2682,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.CrouchTriggerZone
-      ParamsJSON: "{}"
+      ParamsJSON: "{\n  \"_enterSound\": \"Resources/Audio/invis.wav\"\n}"
   - InfoComponent:
       Parent: 9691864251179230668
       Name: PrisonGateBar9 (Copy) (Copy)
@@ -2746,7 +2746,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.518999994
+          volume: 0
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -3632,25 +3632,25 @@ ENTITIES:
       SortOrder: 444
     TransformComponent:
       Transform:
-        Translate: [9.69899082, 7.14315081, -15.6118088]
-        Rotate: [-233.625, 1390.6875, 180]
+        Translate: [5.27726078, 13.6750317, -10.1746187]
+        Rotate: [191.5625, -444.6875, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.00100000005
         FarPlane: 935.47998
-        FOV: 75
+        FOV: 65
     ThirdPersonCameraComponent:
       Target UID: 2377197601835279376
       Offset: [0.5, 3.79999995, 0]
       Current Distance: 5
       Min Distance: 2
       Max Distance: 5
-      Current Yaw: 1525
-      Current Pitch: 15
+      Current Yaw: 1508
+      Current Pitch: 2
       Mouse Sensitivity: 1
       Scroll Sensitivity: 1
-      Start Lock Duration: 0.300000012
+      Start Lock Duration: 0
   - InfoComponent:
       Parent: 0
       Name: Skybox
@@ -6806,7 +6806,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [9.27553558, 0.550991118, -12.913641]
-        Rotate: [0, 90, 0]
+        Rotate: [0, 160.712204, 0]
         Scale: [0.0145000946, 0.0145000005, 0.0145000946]
     RigidBodyComponent:
       RigidBody:
@@ -6949,7 +6949,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-17.1420422, 13.3514919, 18.490139]
-        Rotate: [0, 90, 0]
+        Rotate: [0, 180, 0]
         Scale: [0.0145000033, 0.0145000005, 0.0145000033]
     RigidBodyComponent:
       RigidBody:
@@ -7253,8 +7253,8 @@ ENTITIES:
       SortOrder: 420
     TransformComponent:
       Transform:
-        Translate: [-22.3117981, 13.4210215, 1.55976033]
-        Rotate: [180, 24.42663, 180]
+        Translate: [-22.3117981, 13.4210224, 3.44227624]
+        Rotate: [0, 1.79370006e-22, 0]
         Scale: [0.0199999996, 0.0199999996, 0.0199999996]
     RigidBodyComponent:
       RigidBody:
@@ -7279,7 +7279,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 0.541999996
+          volume: 0.368999988
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -7292,7 +7292,7 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 21.2000008
+          maxDistance: 4.19999981
         - name: _alertSoundPath
           filePaths:
             - Resources/Audio/VO_Patrol_Alert_020.wav
@@ -7315,7 +7315,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/VO_Patrol_001.wav
           loop: false
-          volume: 0.619000018
+          volume: 0.441000015
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -7355,7 +7355,7 @@ ENTITIES:
         ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-22.3117981, 13.5816135, -12.4054985]
+      Target: [-22.3117981, 13.5816135, 3.93043709]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -7396,8 +7396,8 @@ ENTITIES:
       SortOrder: 543
     TransformComponent:
       Transform:
-        Translate: [-7.07150507, 13.4210215, 18.0792179]
-        Rotate: [180, -90, 180]
+        Translate: [14.6516714, 13.4210224, 18.0792179]
+        Rotate: [0, -89.980217, 0]
         Scale: [0.0200004783, 0.0199999996, 0.0200004783]
     RigidBodyComponent:
       RigidBody:
@@ -7422,7 +7422,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 0.527999997
+          volume: 0.386999995
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -7435,7 +7435,7 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 20.5
+          maxDistance: 4.19999981
         - name: _alertSoundPath
           filePaths:
             - Resources/Audio/VO_Patrol_Alert_020.wav
@@ -7458,7 +7458,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/VO_Patrol_001.wav
           loop: false
-          volume: 0.653999984
+          volume: 0.441000015
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -7514,7 +7514,7 @@ ENTITIES:
       PatrolPoints:
         - [22.6875935, 13.4344044, 18.0792179]
         - [-7.56895161, 13.4344044, 18.0792179]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -7539,8 +7539,8 @@ ENTITIES:
       SortOrder: 350
     TransformComponent:
       Transform:
-        Translate: [36.8592491, 17.1388817, -7.04222631]
-        Rotate: [0, -9.92651112e-05, 0]
+        Translate: [36.8592491, 17.2142544, -7.39773703]
+        Rotate: [180, -4.59900912e-05, 180]
         Scale: [0.0200004727, 0.0199999996, 0.0200004727]
     RigidBodyComponent:
       RigidBody:
@@ -7565,7 +7565,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 0.527999997
+          volume: 0.365999997
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -7578,7 +7578,7 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 20.5
+          maxDistance: 4.30000019
         - name: _alertSoundPath
           filePaths:
             - Resources/Audio/VO_Patrol_Alert_020.wav
@@ -7601,7 +7601,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/VO_Patrol_001.wav
           loop: false
-          volume: 0.653999984
+          volume: 0.444000006
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -7641,7 +7641,7 @@ ENTITIES:
         ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [36.8592453, 13.8080444, 11.1173725]
+      Target: [36.8592453, 19.1183891, -15.5547409]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -7657,7 +7657,7 @@ ENTITIES:
       PatrolPoints:
         - [36.8592453, 13.8080444, 11.1173725]
         - [36.8592453, 19.1183891, -15.5547409]
-      PatrolIndex: 0
+      PatrolIndex: 1
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -7745,7 +7745,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.523000002
+          volume: 0.374000013
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -8136,8 +8136,8 @@ ENTITIES:
           filePaths:
             - Resources/Audio/HouseOfLanternsBGM1Mstr.wav
           loop: true
-          volume: 0.202999994
-          priority: 109
+          volume: 0.0370000005
+          priority: 181
           pitch: 1
           stereoPan: 0
           spatialBlend: 0
@@ -8149,7 +8149,7 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 50
+          maxDistance: 121.699997
   - InfoComponent:
       Parent: 0
       Name: Hut_Base (Copy)
@@ -8187,8 +8187,8 @@ ENTITIES:
       SortOrder: 468
     TransformComponent:
       Transform:
-        Translate: [-17.6910992, 13.1255484, 31.8400154]
-        Rotate: [180, 89.980217, 180]
+        Translate: [-20.101799, 13.1255484, 31.8400154]
+        Rotate: [180, -90, 180]
         Scale: [0.0399999954, 0.0250000004, 0.0399999954]
     RigidBodyComponent:
       RigidBody:
@@ -8213,7 +8213,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 0.513999999
+          volume: 0.375
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -8226,7 +8226,7 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 16.2999992
+          maxDistance: 4.5
         - name: _alertSoundPath
           filePaths:
             - Resources/Audio/VO_Patrol_Alert_020.wav
@@ -8249,7 +8249,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/VO_Patrol_001.wav
           loop: false
-          volume: 0.661000013
+          volume: 0.444000006
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -8289,7 +8289,7 @@ ENTITIES:
         ApplyRootMotion: false
       CurrentStateIndex: 0
     NavAgentComponent:
-      Target: [-12.0609379, 13.4397764, 31.8400135]
+      Target: [-23.0942459, 13.4397764, 31.8400135]
       Speed: 2.5
       ArriveRadius: 0.150000006
       Active: true
@@ -8305,7 +8305,7 @@ ENTITIES:
       PatrolPoints:
         - [-23.0942459, 13.4397764, 31.8400135]
         - [-12.0609379, 13.4397764, 31.8400135]
-      PatrolIndex: 1
+      PatrolIndex: 0
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
@@ -8592,8 +8592,8 @@ ENTITIES:
       SortOrder: 516
     TransformComponent:
       Transform:
-        Translate: [20.6923141, 13.4210215, -2.18050003]
-        Rotate: [0, 3.65912056, 0]
+        Translate: [20.6923141, 13.4210215, -1.16930377]
+        Rotate: [0, 0.00667825807, 0]
         Scale: [0.0200004503, 0.0199999996, 0.0200004503]
     RigidBodyComponent:
       RigidBody:
@@ -8618,7 +8618,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/footstep_stone_1.wav
           loop: false
-          volume: 0.527999997
+          volume: 0.384000003
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -8631,7 +8631,7 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 20.5
+          maxDistance: 4.80000019
         - name: _alertSoundPath
           filePaths:
             - Resources/Audio/VO_Patrol_Alert_020.wav
@@ -8654,7 +8654,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/VO_Patrol_001.wav
           loop: false
-          volume: 0.653999984
+          volume: 0.444000006
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -9853,7 +9853,7 @@ ENTITIES:
       SortOrder: 108
     TransformComponent:
       Transform:
-        Translate: [-3.17404819, 8.24580002, 15.6589346]
+        Translate: [-3.17404819, 8.46258068, 15.6589346]
         Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
@@ -10281,7 +10281,7 @@ ENTITIES:
       SortOrder: 216
     TransformComponent:
       Transform:
-        Translate: [-6.8604722, 20.1824036, -8.56045818]
+        Translate: [-6.8604722, 19.9550743, -8.56045818]
         Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
@@ -10327,7 +10327,7 @@ ENTITIES:
       SortOrder: 261
     TransformComponent:
       Transform:
-        Translate: [-16.9751892, 21.1709309, -10.2263298]
+        Translate: [-16.9751892, 21.0133705, -10.2263298]
         Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
@@ -10373,7 +10373,7 @@ ENTITIES:
       SortOrder: 246
     TransformComponent:
       Transform:
-        Translate: [-9.17730331, 21.1709309, -0.46067363]
+        Translate: [-9.17730331, 21.0133705, -0.46067363]
         Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
@@ -10419,7 +10419,7 @@ ENTITIES:
       SortOrder: 301
     TransformComponent:
       Transform:
-        Translate: [-19.8696327, 18.4579544, -0.46067363]
+        Translate: [-19.8696327, 18.1398125, -0.46067363]
         Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
@@ -10465,7 +10465,7 @@ ENTITIES:
       SortOrder: 278
     TransformComponent:
       Transform:
-        Translate: [6.16914749, 20.9524288, -7.53651047]
+        Translate: [6.16914749, 21.1692085, -7.53651047]
         Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
@@ -10511,7 +10511,7 @@ ENTITIES:
       SortOrder: 281
     TransformComponent:
       Transform:
-        Translate: [13.4454613, 20.9524288, -10.7921572]
+        Translate: [13.4454613, 21.1692085, -10.7921572]
         Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
@@ -10557,7 +10557,7 @@ ENTITIES:
       SortOrder: 235
     TransformComponent:
       Transform:
-        Translate: [18.8259869, 20.1824036, -1.81189764]
+        Translate: [18.8259869, 19.9550743, -1.81189764]
         Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
@@ -10603,7 +10603,7 @@ ENTITIES:
       SortOrder: 288
     TransformComponent:
       Transform:
-        Translate: [21.7581711, 20.9524288, 10.8551626]
+        Translate: [21.7581711, 21.1692085, 10.8551626]
         Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
@@ -10649,7 +10649,7 @@ ENTITIES:
       SortOrder: 287
     TransformComponent:
       Transform:
-        Translate: [15.7786045, 20.9523983, 19.2140217]
+        Translate: [15.7786045, 21.169178, 19.2140217]
         Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
@@ -10695,7 +10695,7 @@ ENTITIES:
       SortOrder: 298
     TransformComponent:
       Transform:
-        Translate: [9.90716553, 7.11625767, 9.75248432]
+        Translate: [9.90716553, 7.41450596, 9.75248432]
         Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
@@ -10741,7 +10741,7 @@ ENTITIES:
       SortOrder: 234
     TransformComponent:
       Transform:
-        Translate: [-9.16900158, 8.85177517, 5.0495882]
+        Translate: [-9.16900158, 9.82139492, 5.0495882]
         Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
@@ -10787,7 +10787,7 @@ ENTITIES:
       SortOrder: 242
     TransformComponent:
       Transform:
-        Translate: [-18.0627708, 19.2482471, 15.2779427]
+        Translate: [-18.0627708, 19.7717838, 15.2779427]
         Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
@@ -10847,7 +10847,7 @@ ENTITIES:
       SortOrder: 241
     TransformComponent:
       Transform:
-        Translate: [1.76659966, 27.6113949, 13.4858646]
+        Translate: [1.76659966, 27.4538345, 13.4858646]
         Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
@@ -11246,7 +11246,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.52700001
+          volume: 0.374000013
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -11379,7 +11379,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.519999981
+          volume: 0.374000013
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -11671,7 +11671,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.52700001
+          volume: 0.374000013
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -11798,6 +11798,10 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PrisonerVoiceline
+      ParamsJSON: "{\n  \"_maxDistance\": 6.711999893188477\n}"
   - InfoComponent:
       Parent: 0
       Name: DeadSamurai2
@@ -11815,6 +11819,10 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.PrisonerVoiceline
+      ParamsJSON: "{\n  \"_firstVoiceFile\": \"Resources/Audio/VO_Prisoner2_FX_1.wav\",\n  \"_maxDistance\": 5.889999866485596\n}"
   - InfoComponent:
       Parent: 7274614006067905703
       Name: PrisonGateBar
@@ -13041,7 +13049,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [28.0240536, 15.4747601, 0.404775023]
-        Rotate: [0, 90, 0]
+        Rotate: [0, 19.2877865, 0]
         Scale: [0.0144998673, 0.0145000014, 0.0144998422]
     RigidBodyComponent:
       RigidBody:
@@ -13267,7 +13275,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-8.06918335, 0.550991118, -12.913641]
-        Rotate: [0, 270, 0]
+        Rotate: [0, 199.287796, 0]
         Scale: [0.0145000936, 0.0145000005, 0.0145000936]
     RigidBodyComponent:
       RigidBody:
@@ -13739,7 +13747,7 @@ ENTITIES:
           filePaths:
             - Resources/Audio/unlock.wav
           loop: false
-          volume: 0.676999986
+          volume: 0.131999999
           priority: 128
           pitch: 1
           stereoPan: 0
@@ -14194,7 +14202,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [5.27946186, 20.1163883, 14.7985392]
+        Translate: [5.27946186, 20.333168, 14.7985392]
         Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
@@ -14215,7 +14223,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-3.17404819, 26.2975788, 11.7307339]
+        Translate: [-3.17404819, 26.5143585, 11.7307339]
         Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:
@@ -14236,7 +14244,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-8.97251892, 21.3189373, 20.7180004]
+        Translate: [-8.97251892, 21.535717, 20.7180004]
         Rotate: [0, -0, 0]
         Scale: [0.00999999978, 0.00999999978, 0.00999999978]
     ModelComponent:

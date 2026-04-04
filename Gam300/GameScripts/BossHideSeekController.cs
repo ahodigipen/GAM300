@@ -129,8 +129,8 @@ namespace GameScripts
         private static Random _random = new Random();
 
         // Turn sound
-        private const string TURN_SOUND_NAME = "BossTurnLoop";
-        private const string TURN_SOUND_PATH = "Resources/Audio/BossTurn_Loop.wav";
+        private const string TURN_SOUND_NAME = "BossTurn";
+        private const string TURN_SOUND_PATH = "Resources/Audio/bossturn2.wav";
         private bool _wasTurning = false;
 
         [Boom.EditorExposed("Turn Sound Volume", "Volume of the turning sound (0.0 - 1.0)")]
@@ -162,10 +162,10 @@ namespace GameScripts
         };
 
         [Boom.EditorExposed("Warning Line Volume", "Volume of warning line when boss turns to player (0.0 - 1.0)")]
-        private float _warningLineVolume = 1.0f;
+        private float _warningLineVolume = 0.5f;
 
         [Boom.EditorExposed("Warning Sound Volume", "Volume of the warning sound (0.0 - 1.0)")]
-        private float _warningSoundVolume = 1.0f;
+        private float _warningSoundVolume = 0.5f;
 
         [Boom.EditorExposed("Warning Delay", "Seconds to wait after warning before turning towards player")]
         private float _warningDelay = 3.0f;
