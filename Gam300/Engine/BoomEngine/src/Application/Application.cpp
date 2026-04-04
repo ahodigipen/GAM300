@@ -1382,6 +1382,8 @@ namespace Boom
 
         auto textView = m_Context->scene.view<TextComponent>();
         for (auto entity : textView) {
+            Entity textEnt(&m_Context->scene, entity);
+            if (textEnt.Has<DeactivatedComponent>()) continue;
             auto& textComp = textView.get<TextComponent>(entity);
 
             float screenX, screenY;

@@ -7,7 +7,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.280000001, -0.109999999, 1.10000002]
+        Translate: [0.25, -0.0799999982, 1.10000002]
         Rotate: [0, 0, 0]
         Scale: [0.204999998, 0.0299999993, 1]
     SpriteComponent:
@@ -152,7 +152,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.280000001, -0.109999999, 1.11000001]
+        Translate: [0.25, -0.0799999982, 1.11000001]
         Rotate: [0, 0, 0]
         Scale: [0.200000003, 0.0199999996, 1]
     SpriteComponent:
@@ -168,7 +168,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.479999989, -0.109999999, 1.12]
+        Translate: [0.449999988, -0.0799999982, 1.12]
         Rotate: [0, 0, 0]
         Scale: [0.0199999996, 0.0399999991, 1]
     SpriteComponent:
@@ -184,7 +184,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.280000001, -0.239999995, 1.11000001]
+        Translate: [0.25, -0.209999993, 1.11000001]
         Rotate: [0, 0, 0]
         Scale: [0.200000003, 0.0199999996, 1]
     SpriteComponent:
@@ -200,7 +200,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.479999989, -0.239999995, 1.12]
+        Translate: [0.449999988, -0.209999993, 1.12]
         Rotate: [0, 0, 0]
         Scale: [0.0199999996, 0.0399999991, 1]
     SpriteComponent:
@@ -216,7 +216,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.280000001, -0.239999995, 1.10000002]
+        Translate: [0.25, -0.209999993, 1.10000002]
         Rotate: [0, 0, 0]
         Scale: [0.204999998, 0.0299999993, 1]
     SpriteComponent:
@@ -227,12 +227,12 @@ ENTITIES:
       MenuType: 0
   - InfoComponent:
       Parent: 0
-      Name: Pause_Gamma_Handle
-      UID: 8554026230313328365
+      Name: Pause_SFX_Handle
+      UID: 13342355313482080434
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.479999989, 0.170000002, 1.12]
+        Translate: [0.449999988, -0.340000004, 1.12]
         Rotate: [0, 0, 0]
         Scale: [0.0199999996, 0.0399999991, 1]
     SpriteComponent:
@@ -248,7 +248,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.280000001, -0.379999995, 1.10000002]
+        Translate: [0.25, -0.340000004, 1.10000002]
         Rotate: [0, 0, 0]
         Scale: [0.204999998, 0.0299999993, 1]
     SpriteComponent:
@@ -264,7 +264,7 @@ ENTITIES:
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.280000001, -0.379999995, 1.11000001]
+        Translate: [0.25, -0.340000004, 1.11000001]
         Rotate: [0, 0, 0]
         Scale: [0.200000003, 0.0199999996, 1]
     SpriteComponent:
@@ -275,48 +275,16 @@ ENTITIES:
       MenuType: 0
   - InfoComponent:
       Parent: 0
-      Name: Pause_Gamma_BG
-      UID: 15964893654232326128
+      Name: Pause_GammaButton
+      UID: 10882709530937286843
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.280000001, 0.170000002, 1.10000002]
+        Translate: [0.25, 0.175999999, 1.10000002]
         Rotate: [0, 0, 0]
-        Scale: [0.204999998, 0.0299999993, 1]
+        Scale: [0.170000002, 0.0599999987, 1]
     SpriteComponent:
-      textureID: 15235968341662935537
-      color: [1, 1, 1, 0.600000024]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 0
-  - InfoComponent:
-      Parent: 0
-      Name: Pause_Gamma_Fill
-      UID: 9799309324066039914
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.280000001, 0.170000002, 1.11000001]
-        Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.0199999996, 1]
-    SpriteComponent:
-      textureID: 10258411235812800368
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 0
-  - InfoComponent:
-      Parent: 0
-      Name: Pause_SFX_Handle
-      UID: 13342355313482080434
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.479999989, -0.379999995, 1.12]
-        Rotate: [0, 0, 0]
-        Scale: [0.0199999996, 0.0399999991, 1]
-    SpriteComponent:
-      textureID: 12879034172909871896
+      textureID: 13385154000069506808
       color: [1, 1, 1, 1]
       renderAs3D: false
     MenuComponent:

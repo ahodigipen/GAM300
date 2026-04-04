@@ -900,7 +900,7 @@ struct VisualConeComponent {
          >
          ) };
 
-enum class MenuType { Pause = 0, Death = 1, Settings = 2, Main = 3, End = 4, PopUp = 5, Inventory = 6, HUD = 7 };
+enum class MenuType { Pause = 0, Death = 1, Settings = 2, Main = 3, End = 4, PopUp = 5, Inventory = 6, HUD = 7, GammaAdjust = 8 };
 struct MenuComponent {
      BOOM_INLINE MenuComponent(const MenuComponent&) = default;
      BOOM_INLINE MenuComponent() = default;

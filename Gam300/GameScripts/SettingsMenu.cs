@@ -11,6 +11,7 @@ namespace GameScripts
         private const string MAINMENU_TEX_NORMAL  = "Resources/Textures/MenusUI/ReturnMenuButton.png";
         private const string MAINMENU_TEX_CLICKED = "Resources/Textures/MenusUI/ReturnMenuButton_Clicked.png";
         private const string GAMMA_BTN_TEX_NORMAL  = "Resources/Textures/MenusUI/GammaButton.png";
+        private const string GAMMA_BTN_TEX_HOVER   = "Resources/Textures/MenusUI/GammaButton_Hover.png";
         private const string GAMMA_BTN_TEX_CLICKED = "Resources/Textures/MenusUI/GammaButton_Clicked.png";
 
         private ulong _mainMenuButtonID;
@@ -65,7 +66,7 @@ namespace GameScripts
             _mainMenuButtonID = API.FindEntity("Settings_ReturnButton");
             _gammaButtonID    = API.FindEntity("Settings_GammaButton");
 
-            _buttonFX = new ButtonFX(_mainMenuButtonID);
+            _buttonFX = new ButtonFX(_mainMenuButtonID, _gammaButtonID);
 
             _masterSlider = new VolumeSlider("Settings_Master_BG", "Settings_Master_Fill", "Settings_Master_Handle", "Master");
             _bgmSlider    = new VolumeSlider("Settings_BGM_BG",    "Settings_BGM_Fill",    "Settings_BGM_Handle",    "Music");
@@ -86,6 +87,7 @@ namespace GameScripts
         public void OnUpdate(float dt)
         {
             _buttonFX?.Update(dt);
+            UpdateGammaTexture();
 
             if (_isFadingIn)
             {
@@ -224,11 +226,19 @@ namespace GameScripts
         private void UpdateVisuals()
         {
             API.SetSpriteTexture(_mainMenuButtonID, _selectedIndex == 0 ? MAINMENU_TEX_CLICKED : MAINMENU_TEX_NORMAL);
-            API.SetSpriteTexture(_gammaButtonID,    _selectedIndex == 4 ? GAMMA_BTN_TEX_CLICKED : GAMMA_BTN_TEX_NORMAL);
 
             SetSliderHighlight("Settings_Master_BG", _selectedIndex == 1);
             SetSliderHighlight("Settings_BGM_BG",    _selectedIndex == 2);
             SetSliderHighlight("Settings_SFX_BG",    _selectedIndex == 3);
+        }
+
+        private void UpdateGammaTexture()
+        {
+            if (_gammaButtonID == 0) return;
+            bool clicked = (_currentState == SettingsState.ButtonDelay && _clickedButtonID == _gammaButtonID) || _selectedIndex == 4;
+            if (clicked) { API.SetSpriteTexture(_gammaButtonID, GAMMA_BTN_TEX_CLICKED); return; }
+            bool hovered = API.GetMousePosInViewport(out Vec2 mp) && API.Check2DViewportClick(_gammaButtonID, mp.X, mp.Y);
+            API.SetSpriteTexture(_gammaButtonID, hovered ? GAMMA_BTN_TEX_HOVER : GAMMA_BTN_TEX_NORMAL);
         }
 
         private void SetSliderHighlight(string bgEntityName, bool highlight)
@@ -317,7 +327,15 @@ namespace GameScripts
             if (_fadeTimer >= FADE_DURATION)
             {
                 API.SetScreenFadeAlpha(1f);
-                API.LoadScene(_fadingToGamma ? "GammaAdjust" : "MainMenu");
+                if (_fadingToGamma)
+                {
+                    GammaAdjustMenu.s_returnScene = "SettingsMenu";
+                    API.LoadScene("GammaAdjustMenu");
+                }
+                else
+                {
+                    API.LoadScene("MainMenu");
+                }
             }
         }
 
