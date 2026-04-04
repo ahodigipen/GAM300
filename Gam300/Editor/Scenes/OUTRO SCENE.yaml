@@ -22,4 +22,5 @@ ENTITIES:
       PlaybackSpeed: 1
       RenderAs3D: false
       RemoveBlackBackground: false
-      TintColor: [1, 1, 1, 1]
+      Brightness: 0.689999998
+      TintColor: [0.433179736, 0.433179736, 0.433179736, 1]
