@@ -80,6 +80,7 @@ namespace GameScripts
             _fadeTimer  = 0f;
 
             UpdateVisuals();
+            API.SetSpriteTexture(_mainMenuButtonID, MAINMENU_TEX_NORMAL);
         }
 
         public void OnUpdate(float dt)
