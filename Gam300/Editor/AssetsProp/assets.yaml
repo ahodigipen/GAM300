@@ -111,28 +111,6 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
-    UID: 5492247716426239787
-    Name: spikes
-    Source: spikes
-    Properties:
-      Data:
-        emissive: [0, 0, 0]
-        albedo: [1, 1, 1]
-        roughness: 0.400000006
-        metallic: 0.5
-        occlusion: 1
-        opacity: 1
-        useWorldSpaceUV: false
-        textureScale: 1
-      AlbedoMapID: 16212527279611504695
-      NormalMapID: 3958029045455338805
-      RoughnessMapID: 13339206725868457610
-      MetallicMapID: 5618225631434775639
-      OcclusionMapID: 0
-      EmissiveMapID: 0
-      OpacityMapID: 0
-      DoubleSided: false
-  - Type: MATERIAL
     UID: 9126702018428758169
     Name: Lamp Texture
     Source: Lamp Texture
@@ -173,6 +151,28 @@ ASSETS:
       RoughnessMapID: 6305281938924181745
       MetallicMapID: 9033368879326419558
       OcclusionMapID: 14205466992706534584
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
+    UID: 5492247716426239787
+    Name: spikes
+    Source: spikes
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 16212527279611504695
+      NormalMapID: 3958029045455338805
+      RoughnessMapID: 13339206725868457610
+      MetallicMapID: 5618225631434775639
+      OcclusionMapID: 0
       EmissiveMapID: 0
       OpacityMapID: 0
       DoubleSided: false
@@ -1893,6 +1893,17 @@ ASSETS:
         mipLevel: 0
         isGamma: false
   - Type: TEXTURE
+    UID: 3752540044536367869
+    Name: GammaSlider
+    Source: Resources/Textures/MenusUI/GammaSlider.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
     UID: 1920245529432086823
     Name: ReturnMenuButton
     Source: Resources/Textures/MenusUI/ReturnMenuButton.png
@@ -1969,6 +1980,17 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
+  - Type: TEXTURE
+    UID: 8950115335940363103
+    Name: GammaBar
+    Source: Resources/Textures/MenusUI/GammaBar.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
   - Type: TEXTURE
     UID: 8481271093951499456
     Name: BossCheckpoint_Dialogue4
@@ -2409,6 +2431,17 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
+  - Type: TEXTURE
+    UID: 11793615254444071550
+    Name: GammaButton_Clicked
+    Source: Resources/Textures/MenusUI/GammaButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
   - Type: TEXTURE
     UID: 14205466992706534584
     Name: Pillow_openPBR_shader1_Height
@@ -3696,6 +3729,17 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
+  - Type: TEXTURE
+    UID: 17298273243005333276
+    Name: GammaBright
+    Source: Resources/Textures/MenusUI/GammaBright.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
   - Type: TEXTURE
     UID: 7774158445587761763
     Name: ExitButton_Clicked
@@ -5753,6 +5797,61 @@ ASSETS:
         alphaThreshold: 127
         mipLevel: 0
         isGamma: false
+  - Type: TEXTURE
+    UID: 2823587026538571193
+    Name: ConfirmButton
+    Source: Resources/Textures/MenusUI/ConfirmButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 6663183395066381875
+    Name: ConfirmButton_Clicked
+    Source: Resources/Textures/MenusUI/ConfirmButton_Clicked.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 13385154000069506808
+    Name: GammaButton
+    Source: Resources/Textures/MenusUI/GammaButton.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 6526446604008139444
+    Name: GammaDark
+    Source: Resources/Textures/MenusUI/GammaDark.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
+  - Type: TEXTURE
+    UID: 3939406481084891188
+    Name: GammaGradient
+    Source: Resources/Textures/MenusUI/GammaGradient.png
+    Properties:
+      Data:
+        CompileAsCompressed: true
+        quality: 0.5
+        alphaThreshold: 128
+        mipLevel: 10
+        isGamma: true
   - Type: SKYBOX
     UID: 4245843529762785392
     Name: NightSkyHDRI003_8K_HDR
@@ -7698,9 +7797,17 @@ ASSETS:
     Name: Boss_Warning_03
     Source: Resources/Audio/Boss_Warning_03.wav
   - Type: AUDIO
+    UID: 13029159885881823612
+    Name: VO_checkpoint2_1
+    Source: Resources/Audio/VO_checkpoint2_1.wav
+  - Type: AUDIO
     UID: 12267195745784827679
     Name: Kairos_Cave-Vuk_Loop
     Source: Resources/Audio/Kairos_Cave-Vuk_Loop.wav
+  - Type: AUDIO
+    UID: 16740961915277050147
+    Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_1
+    Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_1.wav
   - Type: AUDIO
     UID: 1512395405601140110
     Name: playerWalk_05
@@ -7709,10 +7816,6 @@ ASSETS:
     UID: 4631183016260115183
     Name: playerRun_04
     Source: Resources/Audio/playerRun_04.wav
-  - Type: AUDIO
-    UID: 16740961915277050147
-    Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_1
-    Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_1.wav
   - Type: AUDIO
     UID: 16323725886752035261
     Name: VO_Patrol_017
@@ -8301,6 +8404,26 @@ ASSETS:
     UID: 5306370064232780520
     Name: tutorialSuspense2
     Source: Resources/Audio/tutorialSuspense2.wav
+  - Type: AUDIO
+    UID: 6692677308908368989
+    Name: VO_checkpoint1_1
+    Source: Resources/Audio/VO_checkpoint1_1.wav
+  - Type: AUDIO
+    UID: 14433259027887272608
+    Name: VO_checkpoint1_2
+    Source: Resources/Audio/VO_checkpoint1_2.wav
+  - Type: AUDIO
+    UID: 10805029161226573657
+    Name: VO_checkpoint2_2
+    Source: Resources/Audio/VO_checkpoint2_2.wav
+  - Type: AUDIO
+    UID: 17831350362611637175
+    Name: VO_checkpoint3_1
+    Source: Resources/Audio/VO_checkpoint3_1.wav
+  - Type: AUDIO
+    UID: 11881548792581359086
+    Name: VO_checkpoint3_2
+    Source: Resources/Audio/VO_checkpoint3_2.wav
   - Type: ANIMATION
     UID: 4483381614930560572
     Name: mixamo.com

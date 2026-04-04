@@ -32,6 +32,7 @@ namespace GameScripts
         public const string DEATH_SCENE_NAME = "DeathMenu";
         public const string END_SCENE_NAME = "EndMenu";
         public const string INVENTORY_SCENE_NAME = "InventoryMenu";
+        public const string HUD_SCENE_NAME = "HUDMenu";
         public const string CREDITS_SCENE_NAME = "Credits";
 
         public const string OUTRO_SCENE_NAME = "OUTRO SCENE";
@@ -172,7 +173,10 @@ namespace GameScripts
                 API.LoadSceneAdditive(END_SCENE_NAME);
                 // Tutorial zone has no inventory system
                 if (_currentSceneName != TUTORIAL_ZONE_SCENE_NAME)
+                {
                     API.LoadSceneAdditive(INVENTORY_SCENE_NAME);
+                    API.LoadSceneAdditive(HUD_SCENE_NAME);
+                }
             }
         }
 

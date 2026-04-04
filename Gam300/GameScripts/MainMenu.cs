@@ -327,7 +327,7 @@ namespace GameScripts
             {
                 API.Log(">> Settings Button Clicked! Loading Settings...");
                 _currentState = MenuState.Idle;
-                API.LoadScene("Settings");
+                API.LoadScene("SettingsMenu");
             }
             else if (_clickedButtonID == _quitButtonID)
             {

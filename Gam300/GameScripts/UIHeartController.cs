@@ -26,6 +26,13 @@ namespace GameScripts
         private ulong _heart2 = 0;
         private ulong _heart1 = 0;
 
+        // Dead (empty slot) heart entities
+        private ulong _heartDead1 = 0;
+        private ulong _heartDead2 = 0;
+        private ulong _heartDead3 = 0;
+        private ulong _heartDead4 = 0;
+        private ulong _heartDead5 = 0;
+
         // Animation parameters
         private float _fadeSpeed = 5.0f;  // Speed of heart fade animation
 
@@ -37,29 +44,50 @@ namespace GameScripts
         private int _lastHP = 5;
         private const int MAX_HP = 5;
 
+        // Flag to track if the UI has been found and initialized
+        private bool _isInitialized = false;
+
         public void OnStart(string jsonParams)
         {
-            // Find all heart sprite entities
-            _heart5 = API.FindEntity(_heart5Name);
-            _heart4 = API.FindEntity(_heart4Name);
-            _heart3 = API.FindEntity(_heart3Name);
-            _heart2 = API.FindEntity(_heart2Name);
-            _heart1 = API.FindEntity(_heart1Name);
+            // Try to initialize immediately (will succeed if not loaded additively)
+            TryInitialize();
+        }
 
-            // Get actual current HP from HUD ratio
-            int startHP = GetCurrentHPFromRatio();
-            _lastHP = startHP;
+        private void TryInitialize()
+        {
+            if (_isInitialized) return;
 
-            // Initialize all hearts to correct starting alpha based on current HP
-            InitializeHeart(_heart5, 0, startHP >= 5);
-            InitializeHeart(_heart4, 1, startHP >= 4);
-            InitializeHeart(_heart3, 2, startHP >= 3);
-            InitializeHeart(_heart2, 3, startHP >= 2);
-            InitializeHeart(_heart1, 4, startHP >= 1);
+            // Try to find all heart sprite entities
+            if (_heart5 == 0) _heart5 = API.FindEntity(_heart5Name);
+            if (_heart4 == 0) _heart4 = API.FindEntity(_heart4Name);
+            if (_heart3 == 0) _heart3 = API.FindEntity(_heart3Name);
+            if (_heart2 == 0) _heart2 = API.FindEntity(_heart2Name);
+            if (_heart1 == 0) _heart1 = API.FindEntity(_heart1Name);
+            if (_heartDead1 == 0) _heartDead1 = API.FindEntity("Heart_Dead_1");
+            if (_heartDead2 == 0) _heartDead2 = API.FindEntity("Heart_Dead_2");
+            if (_heartDead3 == 0) _heartDead3 = API.FindEntity("Heart_Dead_3");
+            if (_heartDead4 == 0) _heartDead4 = API.FindEntity("Heart_Dead_4");
+            if (_heartDead5 == 0) _heartDead5 = API.FindEntity("Heart_Dead_5");
 
-            UpdateHeartTargets(startHP);
+            // Check if at least Heart_1 is found (assuming the UI prefab loads together)
+            if (_heart1 != 0 && API.HasSprite(_heart1))
+            {
+                // Get actual current HP from HUD ratio
+                int startHP = GetCurrentHPFromRatio();
+                _lastHP = startHP;
 
-            API.Log($"[UIHeartController] Initialized heart UI system with {startHP} active hearts");
+                // Initialize all hearts to correct starting alpha based on current HP
+                InitializeHeart(_heart5, 0, startHP >= 5);
+                InitializeHeart(_heart4, 1, startHP >= 4);
+                InitializeHeart(_heart3, 2, startHP >= 3);
+                InitializeHeart(_heart2, 3, startHP >= 2);
+                InitializeHeart(_heart1, 4, startHP >= 1);
+
+                UpdateHeartTargets(startHP);
+
+                _isInitialized = true;
+                API.Log($"[UIHeartController] Initialized heart UI system with {startHP} active hearts");
+            }
         }
 
         private void InitializeHeart(ulong heartEntity, int index, bool visible)
@@ -78,8 +106,47 @@ namespace GameScripts
             }
         }
 
+        public void ForceHide()
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                _currentAlpha[i] = 0f;
+                _targetAlpha[i] = 0f;
+            }
+            _lastHP = -1; // force target recalculation when ShowHUD is called
+            if (_heart5 != 0 && API.HasSprite(_heart5)) API.SetSpriteAlpha(_heart5, 0f);
+            if (_heart4 != 0 && API.HasSprite(_heart4)) API.SetSpriteAlpha(_heart4, 0f);
+            if (_heart3 != 0 && API.HasSprite(_heart3)) API.SetSpriteAlpha(_heart3, 0f);
+            if (_heart2 != 0 && API.HasSprite(_heart2)) API.SetSpriteAlpha(_heart2, 0f);
+            if (_heart1 != 0 && API.HasSprite(_heart1)) API.SetSpriteAlpha(_heart1, 0f);
+            if (_heartDead1 != 0 && API.HasSprite(_heartDead1)) API.SetSpriteAlpha(_heartDead1, 0f);
+            if (_heartDead2 != 0 && API.HasSprite(_heartDead2)) API.SetSpriteAlpha(_heartDead2, 0f);
+            if (_heartDead3 != 0 && API.HasSprite(_heartDead3)) API.SetSpriteAlpha(_heartDead3, 0f);
+            if (_heartDead4 != 0 && API.HasSprite(_heartDead4)) API.SetSpriteAlpha(_heartDead4, 0f);
+            if (_heartDead5 != 0 && API.HasSprite(_heartDead5)) API.SetSpriteAlpha(_heartDead5, 0f);
+        }
+
+        public void ForceShow()
+        {
+            // Restore dead hearts immediately; filled hearts restore via _lastHP=-1 on next OnUpdate
+            if (_heartDead1 != 0 && API.HasSprite(_heartDead1)) API.SetSpriteAlpha(_heartDead1, 1f);
+            if (_heartDead2 != 0 && API.HasSprite(_heartDead2)) API.SetSpriteAlpha(_heartDead2, 1f);
+            if (_heartDead3 != 0 && API.HasSprite(_heartDead3)) API.SetSpriteAlpha(_heartDead3, 1f);
+            if (_heartDead4 != 0 && API.HasSprite(_heartDead4)) API.SetSpriteAlpha(_heartDead4, 1f);
+            if (_heartDead5 != 0 && API.HasSprite(_heartDead5)) API.SetSpriteAlpha(_heartDead5, 1f);
+        }
+
         public void OnUpdate(float dt)
         {
+            if (UIManager.IsHUDHidden) return;
+
+            // --- NEW FIX: Lazy Initialization ---
+            if (!_isInitialized)
+            {
+                TryInitialize();
+                if (!_isInitialized) return; // Still not loaded, exit and try again next frame
+            }
+
             // Get current HP from HUD system
             int currentHP = GetCurrentHPFromRatio();
 

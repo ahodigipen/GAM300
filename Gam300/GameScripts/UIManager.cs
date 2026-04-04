@@ -28,6 +28,8 @@ namespace GameScripts
 
         // Global state to persist across scene loads / instance changes
         private static bool s_lbActiveGlobal = false;
+        private static bool s_isHUDHidden = false;
+        public static bool IsHUDHidden => s_isHUDHidden;
         private string _topBarName = "UI_LetterboxTop";
 
         [EditorExposed("Bottom Bar Name", "Name of the bottom letterbox entity")]
@@ -302,6 +304,34 @@ namespace GameScripts
             if (s_instance != null)
             {
                 API.Log($"[UIManager] HideLetterbox (Global=OFF) -> Master:{s_instance.Entity}");
+            }
+        }
+
+        /// <summary>
+        /// Hide the HUD (hearts + stance) by zeroing their alphas and suppressing updates
+        /// </summary>
+        public static void HideHUD()
+        {
+            s_isHUDHidden = true;
+            if (s_instance != null)
+            {
+                s_instance._heartUI?.ForceHide();
+                s_instance._stanceUI?.ForceHide();
+                PlayerMovement.ForceHideGodModeText();
+                API.Log("[UIManager] HUD hidden (alpha-based)");
+            }
+        }
+
+        /// <summary>
+        /// Restore the HUD — controllers will resume updating next frame
+        /// </summary>
+        public static void ShowHUD()
+        {
+            s_isHUDHidden = false;
+            if (s_instance != null)
+            {
+                s_instance._heartUI?.ForceShow();
+                API.Log("[UIManager] HUD shown (alpha-based)");
             }
         }
     }

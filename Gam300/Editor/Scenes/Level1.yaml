@@ -2,6 +2,41 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
+      Name: SamuraiStealthParticles
+      UID: 14832380188500465922
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    ParticleEmitterComponent:
+      EmissionRate: 20
+      MaxParticles: 500
+      Looping: true
+      Duration: 5
+      PlayOnStart: true
+      LifetimeMin: 1
+      LifetimeMax: 3
+      SpeedMin: 1
+      SpeedMax: 3
+      ShapeType: 3
+      ShapeRadius: 1
+      ShapeAngle: 25
+      ShapeSize: [1, 1, 1]
+      ShapeRange: 10
+      Direction: [0, 1, 0]
+      Gravity: -9.81000042
+      StartSizeMin: 0.100000001
+      StartSizeMax: 0.300000012
+      EndSize: 0
+      StartColor: [1, 0.899999976, 0.300000012, 1]
+      EndColor: [1, 0.200000003, 0, 0]
+      TextureID: 0
+      Billboard: true
+      AdditiveBlend: false
+  - InfoComponent:
+      Parent: 0
       Name: Fruit_Tree_Outside_Hut33 (Copy) (Copy)
       UID: 1834700707365114245
       SortOrder: 96
@@ -1367,25 +1402,6 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: UI_GodMode
-      UID: 18341644754194887370
-      SortOrder: 563
-    TransformComponent:
-      Transform:
-        Translate: [0, 11.6872597, 0]
-        Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]
-    TextComponent:
-      text: ""
-      fontName: Cormorant-VariableFont_wght
-      color: [0, 0, 0, 0]
-      scale: 1
-      screenPosition: [100, 83]
-      renderAs3D: false
-      billboardMode: true
-      alignment: Left
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -2607,34 +2623,6 @@ ENTITIES:
         Range: 4
         BloomStrength: 1
   - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_Dead
-      UID: 10598076066696413096
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.790000021, 0.857142925, -0.129999995]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 947084306896258002
-      color: [0.196078435, 0.196078435, 0.196078435, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_Dead
-      UID: 18081686699052920950
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.860000014, 0.857142925, -0.0500000007]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 947084306896258002
-      color: [0.19607842, 0.19607842, 0.19607842, 1]
-      renderAs3D: false
-  - InfoComponent:
       Parent: 0
       Name: PlayerUI
       UID: 15030438282683852635
@@ -2695,20 +2683,6 @@ ENTITIES:
       Enabled: true
       TypeName: GameScripts.CrouchTriggerZone
       ParamsJSON: "{\n  \"_enterSound\": \"Resources/Audio/invis.wav\"\n}"
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_4
-      UID: 13304020931239740115
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.649999976, 0.857142925, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
   - InfoComponent:
       Parent: 9691864251179230668
       Name: PrisonGateBar9 (Copy) (Copy)
@@ -3109,7 +3083,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PlayerMovement
-      ParamsJSON: "{\n  \"_levelStartPos\": {\n    \"X\": -55.20199966430664,\n    \"Y\": 1.7999999523162842,\n    \"Z\": 5.014999866485596\n  },\n  \"_teleportToStartTrigger\": false\n}"
+      ParamsJSON: "{\n  \"_levelStartPos\": {\n    \"X\": -55.20199966430664,\n    \"Y\": 1.7999999523162842,\n    \"Z\": 5.014999866485596\n  },\n  \"_particleGravity\": -0.7300000190734863,\n  \"_particleStartSizeMax\": 0.2680000066757202,\n  \"_teleportToStartTrigger\": false\n}"
   - InfoComponent:
       Parent: 3352920676548593171
       Name: PrisonGateBar7 (Copy)
@@ -3651,20 +3625,6 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_Dead
-      UID: 16775474597636124132
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.649999976, 0.857142925, -0.0500000007]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 947084306896258002
-      color: [0.196078435, 0.196078435, 0.196078435, 1]
-      renderAs3D: false
   - InfoComponent:
       Parent: 0
       Name: Camera
@@ -6553,10 +6513,46 @@ ENTITIES:
         Translate: [-0.226999998, 3.08800006, 7.51678181]
         Rotate: [0, -0, 0]
         Scale: [16.8070908, 5, 11.0492229]
+    SoundComponent:
+      Entries:
+        - name: _voAudioClip1
+          filePath: ""
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 15
+        - name: _voAudioClip2
+          filePath: ""
+          loop: false
+          volume: 1
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: false
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 15
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.CPTrigger
-      ParamsJSON: "{\n  \"_activeColor\": {\n    \"X\": 0.07800000160932541,\n    \"Y\": 0.8270000219345093,\n    \"Z\": 0.5799999833106995\n  },\n  \"_bobAmount\": 2.5,\n  \"_bobSpeed\": 5.0,\n  \"_bobbingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_checkpointSpriteNames\": \"CPPopup\",\n  \"_floatSpeed\": 10.0,\n  \"_floatingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_forwardOffset\": -5.0,\n  \"_lightNames\": \"ResPoint1_Light_1,ResPoint1_Light_2,ResPoint1_Light_3\",\n  \"_sequentialSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_spawnOffsetY\": 1.5,\n  \"_triggerIntroCutscene\": true\n}"
+      ParamsJSON: "{\n  \"_activeColor\": {\n    \"X\": 0.07800000160932541,\n    \"Y\": 0.8270000219345093,\n    \"Z\": 0.5799999833106995\n  },\n  \"_bobAmount\": 2.5,\n  \"_bobSpeed\": 5.0,\n  \"_bobbingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_checkpointSpriteNames\": \"CPPopup\",\n  \"_floatSpeed\": 10.0,\n  \"_floatingSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_forwardOffset\": -5.0,\n  \"_lightNames\": \"ResPoint1_Light_1,ResPoint1_Light_2,ResPoint1_Light_3\",\n  \"_sequentialSpriteNames\": \"CPHealthNoti,CPHealthNoti1\",\n  \"_spawnOffsetY\": 1.5,\n  \"_triggerIntroCutscene\": true,\n  \"_voAudioClip1\": \"Resources/Audio/VO_checkpoint1_1.wav\",\n  \"_voAudioClip2\": \"Resources/Audio/VO_checkpoint1_2.wav\"\n}"
   - InfoComponent:
       Parent: 9691864251179230668
       Name: PrisonGateBar12 (Copy) (Copy)
@@ -6906,7 +6902,32 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.EnemyController
-      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Sentry_2\",\n  \"_pingPong\": true,\n  \"_rotation\": false,\n  \"_rotationAngle\": 180.0,\n  \"_visionDetectionRange\": 10.310999870300293\n}"
+      ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Sentry_2\",\n  \"_pingPong\": true,\n  \"_rotation\": false,\n  \"_rotationAngle\": 180.0,\n  \"_showVisionCone\": false,\n  \"_visionDetectionRange\": 10.310999870300293\n}"
+    ParticleEmitterComponent:
+      EmissionRate: 20
+      MaxParticles: 500
+      Looping: true
+      Duration: 5
+      PlayOnStart: true
+      LifetimeMin: 1
+      LifetimeMax: 3
+      SpeedMin: 1
+      SpeedMax: 3
+      ShapeType: 4
+      ShapeRadius: 1
+      ShapeAngle: 25
+      ShapeSize: [1, 1, 1]
+      ShapeRange: 10
+      Direction: [0, 1, 0]
+      Gravity: -9.81000042
+      StartSizeMin: 0.100000001
+      StartSizeMax: 0.300000012
+      EndSize: 0
+      StartColor: [0.906504035, 0.231164843, 0.0921244174, 1]
+      EndColor: [1, 0.200000003, 0, 0]
+      TextureID: 0
+      Billboard: true
+      AdditiveBlend: false
   - ColliderComponent:
       Collider:
         LocalPosition: [-0.0884959623, 1.7778976, 0.0210991912]
@@ -7642,34 +7663,6 @@ ENTITIES:
       TypeName: GameScripts.PatrolEnemyController
       ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Patrol Enemy SR1\",\n  \"_spotlightName\": \"Patrol Vision Cone HR1\"\n}"
   - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_2
-      UID: 2471808296830425899
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.790000021, 0.857142925, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_Dead
-      UID: 6115143401978660500
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.579999983, 0.857142925, -0.170000002]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 947084306896258002
-      color: [0.196078435, 0.196078435, 0.196078435, 1]
-      renderAs3D: false
-  - InfoComponent:
       Parent: 0
       Name: CPPopup
       UID: 5670854238749381119
@@ -7829,34 +7822,6 @@ ENTITIES:
       ModelSource: ""
       MaterialSource: ""
   - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_1
-      UID: 16075859986944912680
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.860000014, 0.856999993, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_3
-      UID: 8738239648003058153
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.720000029, 0.857142925, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-  - InfoComponent:
       Parent: 15030438282683852635
       Name: FirstTime_Dialogue3_Talisman
       UID: 5138869695883949167
@@ -7924,34 +7889,6 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_5
-      UID: 5351145407601607575
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.579999983, 0.857142925, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 18428452598414175165
-      Name: Heart_Dead
-      UID: 7305709452366689602
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [-0.720000029, 0.857142925, -0.150000006]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0599999987, 0.0800000429]
-    SpriteComponent:
-      textureID: 947084306896258002
-      color: [0.196078435, 0.196078435, 0.196078435, 1]
-      renderAs3D: false
   - InfoComponent:
       Parent: 0
       Name: QuitButton
@@ -8183,16 +8120,6 @@ ENTITIES:
       Enabled: true
       TypeName: GameScripts.CrouchTriggerZone
       ParamsJSON: "{}"
-  - InfoComponent:
-      Parent: 0
-      Name: PlayerHP
-      UID: 18428452598414175165
-      SortOrder: 565
-    TransformComponent:
-      Transform:
-        Translate: [-0.209999993, 0.360000014, 0]
-        Rotate: [0, 0, 0]
-        Scale: [0.800000012, 0.600000024, 1]
   - InfoComponent:
       Parent: 0
       Name: Gameplay BGM
@@ -8645,20 +8572,6 @@ ENTITIES:
       Enabled: true
       TypeName: GameScripts.DebugTeleporter
       ParamsJSON: "{}"
-  - InfoComponent:
-      Parent: 0
-      Name: UI_Stance
-      UID: 10500341996070685860
-      SortOrder: 458
-    TransformComponent:
-      Transform:
-        Translate: [0.899999976, -0.770739496, 0]
-        Rotate: [0, 0, 0]
-        Scale: [0.0599999987, 0.100000001, 0.5]
-    SpriteComponent:
-      textureID: 2900915588722288564
-      color: [1, 1, 1, 1]
-      renderAs3D: false
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 1.98000002, 0]

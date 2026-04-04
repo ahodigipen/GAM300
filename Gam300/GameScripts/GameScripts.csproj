@@ -55,6 +55,7 @@
     <Compile Include="CrouchTriggerArea.cs" />
     <Compile Include="CrouchTutorialManager.cs" />
     <Compile Include="CutsceneController.cs" />
+    <Compile Include="GammaAdjustMenu.cs" />
     <Compile Include="LightIntensityTrigger.cs" />
     <Compile Include="PrisonBreak.cs" />
     <Compile Include="PrisonerVoiceline.cs" />
@@ -117,6 +118,7 @@
     <Compile Include="EnemyController.cs" />
     <Compile Include="FPSLimitToggle.cs" />
     <Compile Include="DebugTeleporter.cs" />
+    <Compile Include="EnvironmentalDust.cs" />
     <Compile Include="PlayerMovement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpawnPoint.cs" />

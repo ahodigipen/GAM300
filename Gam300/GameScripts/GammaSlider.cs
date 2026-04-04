@@ -33,7 +33,12 @@ namespace GameScripts
         private float _lastMouseX;
 
         // --- Configuration ---
-        private const float DRAG_SENSITIVITY = 0.004f;
+        // Base sensitivity was tuned for a bar that is DRAG_REF_WIDTH world-units wide.
+        // For any other bar width, sensitivity scales inversely so that dragging across
+        // the full visible bar always sweeps the full [0, 1] range at the same pixel cost.
+        private const float DRAG_SENSITIVITY_BASE = 0.004f;
+        private const float DRAG_REF_WIDTH        = 0.4f;
+        private float       _dragSensitivity;          // set in constructor after calibration
         private const float MIN_ENGINE_SCALE = 0.0001f;
 
         // Stacking order (Z-axis)
@@ -64,35 +69,60 @@ namespace GameScripts
                 return;
             }
 
-            // --- Calibration (same algorithm as VolumeSlider) ---
-            TransformData initBg = API.GetTransform(_bgID);
-            TransformData initFill = API.GetTransform(_fillID);
+            // --- Calibration (position-invariant: works regardless of saved slider position) ---
+            TransformData initBg     = API.GetTransform(_bgID);
+            TransformData initFill   = API.GetTransform(_fillID);
             TransformData initHandle = API.GetTransform(_handleID);
 
             _fixedY = initBg.PositionY;
             _fixedZ = initBg.PositionZ;
 
-            // The handle must be placed at the far-right (100%) in the editor
-            float centerPos = initBg.PositionX;
-            float rightPos = initHandle.PositionX;
-            float halfWidth = Math.Abs(rightPos - centerPos);
+            float centerX    = initBg.PositionX;
+            float handleX    = initHandle.PositionX;
+            float fillCenterX = initFill.PositionX;
 
-            _leftAnchorX = centerPos - halfWidth;
-            _rightAnchorX = centerPos + halfWidth;
+            // The fill center and handle always satisfy:
+            //   fillCenter = leftAnchor + (handle - leftAnchor) / 2
+            //   => leftAnchor = 2 * fillCenter - handle
+            // This holds at ANY saved t, not just t = 1.
+            float leftAnchor  = 2f * fillCenterX - handleX;
+            float halfWidth   = centerX - leftAnchor;
+
+            // Fallback: if slider was saved at t ≈ 0, handle ≈ fill ≈ leftAnchor
+            // so the formula degenerates. Use BG scale as an approximation instead.
+            if (halfWidth < 0.001f)
+                halfWidth = Math.Abs(initBg.ScaleX);
+
+            _leftAnchorX     = centerX - halfWidth;
+            _rightAnchorX    = centerX + halfWidth;
             _totalWorldWidth = _rightAnchorX - _leftAnchorX;
 
             if (_totalWorldWidth < 0.001f) _totalWorldWidth = 1.0f;
 
-            float rawFillScale = Math.Max(MIN_ENGINE_SCALE, Math.Abs(initFill.ScaleX));
-            _fillVisualMultiplier = _totalWorldWidth / rawFillScale;
+            // Dynamic sensitivity: inversely proportional to bar width so that dragging
+            // from one end of the bar to the other always takes the same pixel distance,
+            // regardless of how long the bar is in world space.
+            _dragSensitivity = DRAG_SENSITIVITY_BASE * DRAG_REF_WIDTH / _totalWorldWidth;
 
-            // Z ordering
+            // Derive fillVisualMultiplier from the current saved t.
+            // At saved t: fill_ScaleX = (totalWidth * t) / fillVisualMultiplier
+            //             t           = (handleX - leftAnchor) / totalWidth
+            float savedT        = (handleX - _leftAnchorX) / _totalWorldWidth;
+            float rawFillScale  = Math.Max(MIN_ENGINE_SCALE, Math.Abs(initFill.ScaleX));
+            if (savedT > 0.001f)
+                _fillVisualMultiplier = (_totalWorldWidth * savedT) / rawFillScale;
+            else
+                // t ≈ 0 fallback: totalWidth / bgScaleX ≈ 2.0 by design convention
+                _fillVisualMultiplier = _totalWorldWidth / Math.Max(MIN_ENGINE_SCALE, Math.Abs(initBg.ScaleX));
+
+            // Fix BG Z ordering
             initBg.PositionZ = _fixedZ + Z_BG;
             API.SetTransform(_bgID, initBg);
 
-            // Read current gamma and set slider position accordingly
+            // Read current gamma and drive the visuals to the correct position.
+            // This overwrites wherever the handle/fill were saved in the editor.
             _currentNorm = GammaToNorm(API.GetGamma());
-            API.Log($"[GammaSlider] Initialised. Current gamma: {API.GetGamma():0.00}, norm: {_currentNorm:0.00}");
+            API.Log($"[GammaSlider] Calibrated. leftAnchor={_leftAnchorX:0.000} rightAnchor={_rightAnchorX:0.000} fillMul={_fillVisualMultiplier:0.000} norm={_currentNorm:0.000}");
 
             UpdateVisuals(_currentNorm);
         }
@@ -149,7 +179,7 @@ namespace GameScripts
                 float deltaX = mouseScreenPos.X - _lastMouseX;
                 if (Math.Abs(deltaX) > 0.0001f)
                 {
-                    _currentNorm = Clamp(_currentNorm + deltaX * DRAG_SENSITIVITY, 0f, 1f);
+                    _currentNorm = Clamp(_currentNorm + deltaX * _dragSensitivity, 0f, 1f);
                     float gamma = NormToGamma(_currentNorm);
                     API.SetGamma(gamma);
                     API.Log($"[GammaSlider] Gamma: {gamma:0.00}");

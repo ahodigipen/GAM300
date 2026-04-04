@@ -76,6 +76,10 @@ namespace GameScripts
         private static bool s_justDismissed = false;
         private static Action s_onSequenceComplete = null;
 
+        // HUD/inventory save state (BossTransition sequence only)
+        private static bool s_wasInventoryOpen = false;
+        private static bool s_wasGodModeOn     = false;
+
         public static void Reset()
         {
             s_activeSequence = SequenceType.None;
@@ -184,6 +188,12 @@ namespace GameScripts
 
             s_enterWasDown = true;
             s_aButtonWasDown = true;
+
+            s_wasInventoryOpen = Entry.IsInventoryOpen;
+            s_wasGodModeOn     = PlayerMovement.IsGodModeActive;
+            UIManager.HideHUD();
+            if (s_wasInventoryOpen)
+                Entry.IsInventoryOpen = false;
 
             SetAlpha(s_tutorialWhiteBackground, 1f);
             FadeInEntity(s_bossCpD4);
@@ -598,6 +608,17 @@ namespace GameScripts
 
         private static void CloseSequence()
         {
+            if (s_activeSequence == SequenceType.BossTransition)
+            {
+                UIManager.ShowHUD();
+                if (s_wasInventoryOpen)
+                    Entry.IsInventoryOpen = true;
+                if (s_wasGodModeOn)
+                    PlayerMovement.ForceShowGodModeText();
+                s_wasInventoryOpen = false;
+                s_wasGodModeOn     = false;
+            }
+
             s_activeSequence = SequenceType.None;
             s_justDismissed = true;
             API.SetGameLogicPaused(false);
