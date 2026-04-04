@@ -22,14 +22,19 @@ namespace GameScripts
         private float timer = 0.0f;
         private bool isFinished = false;
         private ulong logoID;
+        private Vec4 _logoColor = new Vec4(1, 1, 1, 1); // RGB read from YAML at start
 
         public void OnStart(string jsonParams)
         {
             API.Log("[GameSplash] OnStart called.");
             logoID = API.FindEntity(logoName);
-            
-            // Start with logo transparent
-            if (logoID != 0) API.SetSpriteColor(logoID, new Vec4(1, 1, 1, 0));
+
+            // Read the RGB set in the YAML so the colour is preserved during the fade.
+            // Only the alpha is driven by code; R/G/B come from the entity's saved colour.
+            if (logoID != 0) _logoColor = API.GetSpriteColor(logoID);
+
+            // Start with logo fully transparent
+            if (logoID != 0) API.SetSpriteColor(logoID, new Vec4(_logoColor.X, _logoColor.Y, _logoColor.Z, 0));
 
             API.SetCutsceneMode(true);
         }
@@ -64,7 +69,7 @@ namespace GameScripts
 
             alpha = Math.Max(0, Math.Min(1, alpha));
 
-            if (logoID != 0) API.SetSpriteColor(logoID, new Vec4(1, 1, 1, alpha));
+            if (logoID != 0) API.SetSpriteColor(logoID, new Vec4(_logoColor.X, _logoColor.Y, _logoColor.Z, alpha));
 
             // Auto-transition after displayDuration
             if (timer >= displayDuration)
