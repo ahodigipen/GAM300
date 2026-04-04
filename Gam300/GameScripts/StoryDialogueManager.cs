@@ -49,11 +49,10 @@ namespace GameScripts
         private static ulong s_tzD4 = 0;
         private static ulong s_tzD5 = 0;
 
-        // Tutorial Zone Death UI (shown after repeated catches)
-        private static ulong s_tzDeathA1 = 0; // 3rd catch, panel 1
-        private static ulong s_tzDeathA2 = 0; // 3rd catch, panel 2
-        private static ulong s_tzDeathB1 = 0; // 6th catch, panel 1
-        private static ulong s_tzDeathB2 = 0; // 6th catch, panel 2
+        // Tutorial Zone Death UI (1st, 2nd, 3rd+ death dialogues)
+        private static ulong s_tzDeathD1 = 0; // 1st death
+        private static ulong s_tzDeathD2 = 0; // 2nd death
+        private static ulong s_tzDeathD3 = 0; // 3rd+ death (repeats)
         private static int s_tzDeathThreshold = 0;
 
         // Generic sequence (used by TutorialDialogueTrigger)
@@ -103,7 +102,7 @@ namespace GameScripts
             s_cp2D1 = 0; s_cp2D2 = 0; s_cp2D3 = 0; s_cp2D4 = 0; s_cp2D5 = 0; s_redMeter = 0; s_tutorialBlackBackground = 0;
             s_bossCpD1 = 0; s_bossCpD2 = 0; s_bossCpD3 = 0; s_bossCpD4 = 0; s_bossCpD5 = 0; s_tutorialWhiteBackground = 0;
             s_tzD1 = 0; s_tzD2 = 0; s_tzD3 = 0; s_tzD4 = 0; s_tzD5 = 0;
-            s_tzDeathA1 = 0; s_tzDeathA2 = 0; s_tzDeathB1 = 0; s_tzDeathB2 = 0;
+            s_tzDeathD1 = 0; s_tzDeathD2 = 0; s_tzDeathD3 = 0;
             s_tzDeathThreshold = 0;
             s_genericEntities = new ulong[0];
             s_genericCount = 0;
@@ -233,7 +232,7 @@ namespace GameScripts
             s_eWasDown = true;
             s_aButtonWasDown = true;
 
-            ulong first = (deathCount == 3) ? s_tzDeathA1 : s_tzDeathB1;
+            ulong first = deathCount == 1 ? s_tzDeathD1 : deathCount == 2 ? s_tzDeathD2 : s_tzDeathD3;
             FadeInEntity(first);
             API.SetGameLogicPaused(true);
             API.SetCutsceneMode(true);
@@ -579,18 +578,11 @@ namespace GameScripts
 
         private static void AdvanceTutorialZoneDeathSequence()
         {
-            ulong panel1 = (s_tzDeathThreshold == 3) ? s_tzDeathA1 : s_tzDeathB1;
-            ulong panel2 = (s_tzDeathThreshold == 3) ? s_tzDeathA2 : s_tzDeathB2;
-            ulong current = (s_dialogueIndex == 1) ? panel1 : panel2;
+            ulong current = s_tzDeathThreshold == 1 ? s_tzDeathD1
+                          : s_tzDeathThreshold == 2 ? s_tzDeathD2
+                          : s_tzDeathD3;
 
-            FadeOutEntity(current, () =>
-            {
-                s_dialogueIndex++;
-                if (s_dialogueIndex > 2)
-                    CloseSequence();
-                else
-                    FadeInEntity(panel2);
-            });
+            FadeOutEntity(current, () => CloseSequence());
         }
 
         private static void AdvanceGenericSequence()
@@ -714,10 +706,9 @@ namespace GameScripts
             s_tzD4 = FindEntity("TutorialZone_Dialogue4");
             s_tzD5 = FindEntity("TutorialZone_Dialogue5");
 
-            s_tzDeathA1 = FindEntity("TutorialZone_Death3_Dialogue1");
-            s_tzDeathA2 = FindEntity("TutorialZone_Death3_Dialogue2");
-            s_tzDeathB1 = FindEntity("TutorialZone_Death6_Dialogue1");
-            s_tzDeathB2 = FindEntity("TutorialZone_Death6_Dialogue2");
+            s_tzDeathD1 = FindEntity("TutorialZone_Death_Dialogue1");
+            s_tzDeathD2 = FindEntity("TutorialZone_Death_Dialogue2");
+            s_tzDeathD3 = FindEntity("TutorialZone_Death_Dialogue3");
 
             // Hide all initially
             SetAlpha(s_startD1, 0f); SetAlpha(s_startD2, 0f); SetAlpha(s_startD3, 0f);
@@ -730,8 +721,7 @@ namespace GameScripts
             SetAlpha(s_bossCpD1, 0f); SetAlpha(s_bossCpD2, 0f); SetAlpha(s_bossCpD3, 0f);
             SetAlpha(s_bossCpD4, 0f); SetAlpha(s_bossCpD5, 0f); SetAlpha(s_tutorialWhiteBackground, 0f);
             SetAlpha(s_tzD1, 0f); SetAlpha(s_tzD2, 0f); SetAlpha(s_tzD3, 0f); SetAlpha(s_tzD4, 0f); SetAlpha(s_tzD5, 0f);
-            SetAlpha(s_tzDeathA1, 0f); SetAlpha(s_tzDeathA2, 0f);
-            SetAlpha(s_tzDeathB1, 0f); SetAlpha(s_tzDeathB2, 0f);
+            SetAlpha(s_tzDeathD1, 0f); SetAlpha(s_tzDeathD2, 0f); SetAlpha(s_tzDeathD3, 0f);
 
             s_entitiesResolved = true;
         }

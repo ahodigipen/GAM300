@@ -1,35 +1,5 @@
 Version: 1.0
 ENTITIES:
-  - InfoComponent:
-      Parent: 0
-      Name: BGM
-      UID: 1434188935201091828
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
-        Scale: [1, 1, 1]
-    SoundComponent:
-      Entries:
-        - name: NewSound
-          filePaths:
-            - Resources/Audio/Kairos_Cave-Vuk_Loop.wav
-          loop: true
-          volume: 0.0370000005
-          priority: 181
-          pitch: 1
-          stereoPan: 0
-          spatialBlend: 0
-          mute: false
-          playOnStart: true
-          triggerKey: -1
-          playOnMove: false
-          moveThreshold: 0.100000001
-          repeatInterval: 0.5
-          animTrigger: ""
-          minDistance: 1
-          maxDistance: 120.199997
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1189,9 +1159,9 @@ ENTITIES:
       SortOrder: 102
     TransformComponent:
       Transform:
-        Translate: [0.279752523, 0.170000002, 1.11000001]
+        Translate: [0.221943945, 0.170000002, 1.11000001]
         Rotate: [0, 0, 0]
-        Scale: [0.00999999978, 0.0199999996, 1]
+        Scale: [0.014332151, 0.0199999996, 1]
     SpriteComponent:
       textureID: 10258411235812800368
       color: [1, 1, 1, 1]
@@ -1261,7 +1231,7 @@ ENTITIES:
       SortOrder: 91
     TransformComponent:
       Transform:
-        Translate: [0.280054986, 0.170000002, 1.12]
+        Translate: [0.368887872, 0.170000002, 1.12]
         Rotate: [0, 0, 0]
         Scale: [0.0199999996, 0.0399999991, 1]
     SpriteComponent:
@@ -1525,22 +1495,38 @@ ENTITIES:
     DeactivatedComponent:
       {}
   - InfoComponent:
-      Parent: 7241083956104285001
-      Name: TutorialZone_Death6_Dialogue2
-      UID: 7241083956104285008
+      Parent: 0
+      Name: BGM
+      UID: 1434188935201091828
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, -0.649999976, 0.00999999978]
+        Translate: [0, 0, 0]
         Rotate: [0, 0, 0]
-        Scale: [0.699999988, 0.5, 1]
-    SpriteComponent:
-      textureID: 0
-      color: [1, 1, 1, 0]
-      renderAs3D: false
+        Scale: [1, 1, 1]
+    SoundComponent:
+      Entries:
+        - name: NewSound
+          filePaths:
+            - Resources/Audio/Kairos_Cave-Vuk_Loop.wav
+          loop: true
+          volume: 0.0370000005
+          priority: 181
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 0
+          mute: false
+          playOnStart: true
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 120.199997
   - InfoComponent:
       Parent: 7241083956104285001
-      Name: TutorialZone_Death6_Dialogue1
+      Name: TutorialZone_Death_Dialogue3
       UID: 7241083956104285007
       SortOrder: 0
     TransformComponent:
@@ -1549,12 +1535,12 @@ ENTITIES:
         Rotate: [0, 0, 0]
         Scale: [0.699999988, 0.5, 1]
     SpriteComponent:
-      textureID: 0
+      textureID: 17544406446342785399
       color: [1, 1, 1, 0]
       renderAs3D: false
   - InfoComponent:
       Parent: 7241083956104285001
-      Name: TutorialZone_Death3_Dialogue2
+      Name: TutorialZone_Death_Dialogue2
       UID: 7241083956104285006
       SortOrder: 0
     TransformComponent:
@@ -1563,12 +1549,12 @@ ENTITIES:
         Rotate: [0, 0, 0]
         Scale: [0.699999988, 0.5, 1]
     SpriteComponent:
-      textureID: 0
+      textureID: 16814201081845404996
       color: [1, 1, 1, 0]
       renderAs3D: false
   - InfoComponent:
       Parent: 7241083956104285001
-      Name: TutorialZone_Death3_Dialogue1
+      Name: TutorialZone_Death_Dialogue1
       UID: 7241083956104285005
       SortOrder: 0
     TransformComponent:
@@ -1577,7 +1563,7 @@ ENTITIES:
         Rotate: [0, 0, 0]
         Scale: [0.699999988, 0.5, 1]
     SpriteComponent:
-      textureID: 0
+      textureID: 11200633352436760381
       color: [1, 1, 1, 0]
       renderAs3D: false
   - InfoComponent:
@@ -2721,7 +2707,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 2.47031236
+        Speed: 0
       BoolParams:
         ApplyRootMotion: false
       CurrentStateIndex: 0
@@ -2747,6 +2733,31 @@ ENTITIES:
       Enabled: true
       TypeName: GameScripts.PatrolEnemyController
       ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_entityName\": \"Patrol enemy 3\",\n  \"_spotlightName\": \"Patrol Vision Cone 10\"\n}"
+    ParticleEmitterComponent:
+      EmissionRate: 20
+      MaxParticles: 500
+      Looping: true
+      Duration: 5
+      PlayOnStart: true
+      LifetimeMin: 1
+      LifetimeMax: 3
+      SpeedMin: 1
+      SpeedMax: 3
+      ShapeType: 0
+      ShapeRadius: 1
+      ShapeAngle: 25
+      ShapeSize: [1, 1, 1]
+      ShapeRange: 10
+      Direction: [0, 1, 0]
+      Gravity: -9.81000042
+      StartSizeMin: 0.100000001
+      StartSizeMax: 0.300000012
+      EndSize: 0
+      StartColor: [1, 0.899999976, 0.300000012, 1]
+      EndColor: [1, 0.200000003, 0, 0]
+      TextureID: 0
+      Billboard: true
+      AdditiveBlend: false
   - ColliderComponent:
       Collider:
         LocalPosition: [-0.107912615, 2.16796827, 0.0257285051]
@@ -2865,6 +2876,31 @@ ENTITIES:
       Enabled: true
       TypeName: GameScripts.EnemyController
       ParamsJSON: "{\n  \"EnemyDetection\": false,\n  \"_pingPong\": false,\n  \"_rotation\": false,\n  \"_rotationAngle\": 90.0,\n  \"_rotationInterval\": 2.6610000133514404,\n  \"_visionDetectionAngle\": 93.47799682617188,\n  \"_visionDetectionRange\": 12.032999992370605\n}"
+    ParticleEmitterComponent:
+      EmissionRate: 20
+      MaxParticles: 500
+      Looping: true
+      Duration: 5
+      PlayOnStart: true
+      LifetimeMin: 1
+      LifetimeMax: 3
+      SpeedMin: 1
+      SpeedMax: 3
+      ShapeType: 0
+      ShapeRadius: 1
+      ShapeAngle: 25
+      ShapeSize: [1, 1, 1]
+      ShapeRange: 10
+      Direction: [0, 1, 0]
+      Gravity: -9.81000042
+      StartSizeMin: 0.100000001
+      StartSizeMax: 0.300000012
+      EndSize: 0
+      StartColor: [1, 0.899999976, 0.300000012, 1]
+      EndColor: [1, 0.200000003, 0, 0]
+      TextureID: 0
+      Billboard: true
+      AdditiveBlend: false
   - InfoComponent:
       Parent: 0
       Name: Samurai
@@ -2872,7 +2908,7 @@ ENTITIES:
       SortOrder: 178
     TransformComponent:
       Transform:
-        Translate: [-7.70807457, 22.1882286, 23.641819]
+        Translate: [-31.2873707, 25.8922958, 15.8961716]
         Rotate: [0, -53.9999847, 0]
         Scale: [0.0164994597, 0.0164999999, 0.0164994597]
     CharacterControllerComponent:
@@ -3027,7 +3063,7 @@ ENTITIES:
               hasExitTime: false
               exitTime: 0.899999976
       FloatParams:
-        Speed: 9.33088813e-05
+        Speed: 0
       BoolParams:
         IsMoving: false
         Sprint: false
@@ -3303,8 +3339,8 @@ ENTITIES:
       SortOrder: 179
     TransformComponent:
       Transform:
-        Translate: [5.02701569, 29.152874, 44.6174316]
-        Rotate: [-182.0625, -59.1874847, 180]
+        Translate: [-33.5753593, 30.0406361, 19.9131165]
+        Rotate: [-192.875, -76.2499847, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
