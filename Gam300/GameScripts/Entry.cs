@@ -34,6 +34,7 @@ namespace GameScripts
         public const string INVENTORY_SCENE_NAME = "InventoryMenu";
         public const string HUD_SCENE_NAME = "HUDMenu";
         public const string CREDITS_SCENE_NAME = "Credits";
+        public const string GAMMA_ADJUST_SCENE_NAME = "GammaAdjustMenu";
 
         public const string OUTRO_SCENE_NAME = "OUTRO SCENE";
         public const string POPUP_SCENE_NAME = "PopUpMenu";
@@ -46,6 +47,7 @@ namespace GameScripts
         public static bool IsPlayerDead = false;
         public static bool IsGameEnded = false;
         public static bool IsInventoryOpen = false;
+        public static bool s_fadeInAfterGamma = false; // Set by GammaAdjustMenu before unloading, triggers fade-in
 
         public static bool IsStartPopupActive = false;
         private static float _sceneInputDebounceTimer = 0.0f;
@@ -60,7 +62,8 @@ namespace GameScripts
             Restart,
             MainMenu,
             Credits,
-            Quit
+            Quit,
+            OpenGamma
         }
 
         public enum DeathMenuAction
@@ -169,6 +172,7 @@ namespace GameScripts
             {
                 API.Log("Pre-loading pause menu additively...");
                 API.LoadSceneAdditive(PAUSE_SCENE_NAME);
+                API.LoadSceneAdditive(GAMMA_ADJUST_SCENE_NAME);
                 API.LoadSceneAdditive(DEATH_SCENE_NAME);
                 API.LoadSceneAdditive(END_SCENE_NAME);
                 // Tutorial zone and Boss Arena have no inventory system
@@ -230,6 +234,13 @@ namespace GameScripts
         {
             // Always advance the screen fader first
             SceneFader.Update(dt);
+
+            // If GammaAdjust was just unloaded, fade the screen back in
+            if (s_fadeInAfterGamma)
+            {
+                s_fadeInAfterGamma = false;
+                SceneFader.StartFadeIn(0.6f);
+            }
 
             // Block all game logic while fading out to a new scene
             if (SceneFader.IsFadingOut) return;
@@ -319,7 +330,8 @@ namespace GameScripts
             // Pause
             if (s_RequestedPauseAction == PauseMenuAction.MainMenu ||
                 s_RequestedPauseAction == PauseMenuAction.Restart ||
-                s_RequestedPauseAction == PauseMenuAction.Quit)
+                s_RequestedPauseAction == PauseMenuAction.Quit ||
+                s_RequestedPauseAction == PauseMenuAction.OpenGamma)
             {
                 UpdatePauseMenu(dt);
                 return;
@@ -639,6 +651,15 @@ namespace GameScripts
                     API.Log("Quitting game (Button Click)...");
                     s_RequestedPauseAction = PauseMenuAction.None;
                     API.ShutdownApplication();
+                    return;
+
+                case PauseMenuAction.OpenGamma:
+                    API.Log("Opening Gamma Adjust from Pause Menu (additive)...");
+                    GammaAdjustMenu.s_returnScene = _currentSceneName;
+                    GammaAdjustMenu.s_needsReset = true;
+                    s_RequestedPauseAction = PauseMenuAction.None;
+                    API.UnloadPauseMenu();
+                    API.ShowGammaAdjustMenu();
                     return;
             }
         }

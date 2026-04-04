@@ -656,6 +656,7 @@ namespace Boom
 			else if (sceneName.find("Tutorial") != std::string::npos) targetType = MenuType::PopUp;
 			else if (sceneName.find("Inventory") != std::string::npos) targetType = MenuType::Inventory;
 			else if (sceneName.find("HUD") != std::string::npos) targetType = MenuType::HUD;
+			else if (sceneName.find("Gamma") != std::string::npos) targetType = MenuType::GammaAdjust;
 
 			// 2. Check if objects of this MenuType *already exist*
 			bool alreadyLoaded = false;
@@ -793,6 +794,9 @@ namespace Boom
 		}
 
 		// REPLACED: No longer templated on TagComponent, takes MenuType enum
+		BOOM_INLINE void ShowGammaAdjustMenu()   { ShowAdditiveScene(MenuType::GammaAdjust); }
+		BOOM_INLINE void UnloadGammaAdjustMenu() { UnloadAdditiveScene(MenuType::GammaAdjust); }
+
 		BOOM_INLINE void UnloadAdditiveScene(MenuType type)
 		{
 			BOOM_INFO("[Scene] Unloading additive scene (Type: {})...", (int)type);
