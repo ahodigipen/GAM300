@@ -2,60 +2,98 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
-      Name: Settings_SFX_Handle
-      UID: 13342355313482080434
+      Name: Scene Settings
+      UID: 16
+      SortOrder: 0
+    SceneNavmeshComponent:
+      NavmeshFile: ""
+      AmbientStrength: 0.5
+      BloomEnabled: false
+      BloomIntensity: 1
+      BloomThreshold: 1
+      BloomIterations: 10
+      PointLightBloomMultiplier: 1
+      FogEnabled: false
+      FogColor: [0.5, 0.600000024, 0.699999988]
+      FogDensity: 0.00999999978
+      FogHeightFalloff: 0.5
+      FogHeight: 0
+      TonemapExposure: 1
+      TonemapGamma: 2.20000005
+      TonemapWarmTint: [1.08000004, 0.980000019, 0.819999993]
+  - InfoComponent:
+      Parent: 0
+      Name: Settings_GammaButton
+      UID: 15922398384533760157
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.479999989, -0.379999995, 1.12]
-        Rotate: [0, 0, 0]
-        Scale: [0.0199999996, 0.0399999991, 1]
+        Translate: [0.282936603, 0.194999993, 1.10000002]
+        Rotate: [0, -0, 0]
+        Scale: [0.215000004, 0.0850000009, 1]
     SpriteComponent:
-      textureID: 12879034172909871896
+      textureID: 1497699413008869377
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 0
+  - InfoComponent:
+      Parent: 0
+      Name: Settings_Scroll
+      UID: 10224819476113975430
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 1]
+        Rotate: [0, 0, 0]
+        Scale: [1.20000005, 1.20000005, 0.100000001]
+    SpriteComponent:
+      textureID: 10276305241760085177
+      color: [0.431372523, 0.425401956, 0.363706261, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 2
+  - InfoComponent:
+      Parent: 0
+      Name: Settings_ReturnButton
+      UID: 5566590049786588666
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [-0.289999992, -0.0879999995, 1.10000002]
+        Rotate: [0, 0, 0]
+        Scale: [0.25, 0.0949999988, 1]
+    SpriteComponent:
+      textureID: 1920245529432086823
       color: [1, 1, 1, 1]
       renderAs3D: false
     MenuComponent:
       MenuType: 2
   - InfoComponent:
       Parent: 0
-      Name: Settings_Master_BG
-      UID: 4671019080698985014
+      Name: Settings_Camera
+      UID: 9201024860084647067
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.280000001, -0.109999999, 1.10000002]
-        Rotate: [0, 0, 0]
-        Scale: [0.204999998, 0.0299999993, 1]
-    SpriteComponent:
-      textureID: 15235968341662935537
-      color: [1, 1, 1, 0.600000024]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 2
-  - InfoComponent:
-      Parent: 0
-      Name: Settings Script
-      UID: 12608398802596728943
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 0]
-        Rotate: [0, 0, 0]
+        Translate: [0.307780445, 0.751749516, 2.04295826]
+        Rotate: [-19.375, 1.6875, 0]
         Scale: [1, 1, 1]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.SettingsMenu
-      ParamsJSON: "{}"
+    CameraComponent:
+      Camera:
+        NearPlane: 0.300000012
+        FarPlane: 1000
+        FOV: 86
     MenuComponent:
       MenuType: 2
   - InfoComponent:
       Parent: 0
-      Name: Settings_SFX_Fill
-      UID: 1900361381046245117
+      Name: Settings_Master_Fill
+      UID: 3931286615731204042
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.280000001, -0.379999995, 1.11000001]
+        Translate: [0.280000001, -0.129999995, 1.11000001]
         Rotate: [0, 0, 0]
         Scale: [0.200000003, 0.0199999996, 1]
     SpriteComponent:
@@ -66,12 +104,60 @@ ENTITIES:
       MenuType: 2
   - InfoComponent:
       Parent: 0
-      Name: Settings_SFX_BG
-      UID: 4852565405374371737
+      Name: Settings_Master_Handle
+      UID: 5003664612044735175
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.280000001, -0.379999995, 1.10000002]
+        Translate: [0.479999989, -0.129999995, 1.12]
+        Rotate: [0, 0, 0]
+        Scale: [0.0199999996, 0.0299999993, 1]
+    SpriteComponent:
+      textureID: 12879034172909871896
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 2
+  - InfoComponent:
+      Parent: 0
+      Name: Settings_BGM_Fill
+      UID: 5852252158042436991
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.280000001, -0.280000001, 1.11000001]
+        Rotate: [0, 0, 0]
+        Scale: [0.200000003, 0.0199999996, 1]
+    SpriteComponent:
+      textureID: 10258411235812800368
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 2
+  - InfoComponent:
+      Parent: 0
+      Name: Settings_BGM_Handle
+      UID: 16675060374144871009
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.479999989, -0.280000001, 1.12]
+        Rotate: [0, 0, 0]
+        Scale: [0.0199999996, 0.0299999993, 1]
+    SpriteComponent:
+      textureID: 12879034172909871896
+      color: [1, 1, 1, 1]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 2
+  - InfoComponent:
+      Parent: 0
+      Name: Settings_BGM_BG
+      UID: 4971574730537095685
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.280000001, -0.280000001, 1.10000002]
         Rotate: [0, 0, 0]
         Scale: [0.204999998, 0.0299999993, 1]
     SpriteComponent:
@@ -96,12 +182,12 @@ ENTITIES:
       renderAs3D: false
   - InfoComponent:
       Parent: 0
-      Name: Settings_BGM_BG
-      UID: 4971574730537095685
+      Name: Settings_SFX_BG
+      UID: 4852565405374371737
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.280000001, -0.239999995, 1.10000002]
+        Translate: [0.280000001, -0.449999988, 1.10000002]
         Rotate: [0, 0, 0]
         Scale: [0.204999998, 0.0299999993, 1]
     SpriteComponent:
@@ -112,28 +198,12 @@ ENTITIES:
       MenuType: 2
   - InfoComponent:
       Parent: 0
-      Name: Settings_BGM_Handle
-      UID: 16675060374144871009
+      Name: Settings_SFX_Fill
+      UID: 1900361381046245117
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.479999989, -0.239999995, 1.12]
-        Rotate: [0, 0, 0]
-        Scale: [0.0199999996, 0.0399999991, 1]
-    SpriteComponent:
-      textureID: 12879034172909871896
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 2
-  - InfoComponent:
-      Parent: 0
-      Name: Settings_BGM_Fill
-      UID: 5852252158042436991
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.280000001, -0.239999995, 1.11000001]
+        Translate: [0.280000001, -0.449999988, 1.11000001]
         Rotate: [0, 0, 0]
         Scale: [0.200000003, 0.0199999996, 1]
     SpriteComponent:
@@ -144,98 +214,49 @@ ENTITIES:
       MenuType: 2
   - InfoComponent:
       Parent: 0
-      Name: Settings_Master_Handle
-      UID: 5003664612044735175
+      Name: Settings Script
+      UID: 12608398802596728943
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0.479999989, -0.109999999, 1.12]
+        Translate: [0, 0, 0]
         Rotate: [0, 0, 0]
-        Scale: [0.0199999996, 0.0399999991, 1]
-    SpriteComponent:
-      textureID: 12879034172909871896
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 2
-  - InfoComponent:
-      Parent: 0
-      Name: Settings_Master_Fill
-      UID: 3931286615731204042
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.280000001, -0.109999999, 1.11000001]
-        Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.0199999996, 1]
-    SpriteComponent:
-      textureID: 10258411235812800368
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 2
-  - InfoComponent:
-      Parent: 0
-      Name: Settings_Camera
-      UID: 9201024860084647067
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.307780445, 0.751749516, 2.04295826]
-        Rotate: [-19.375, 1.6875, 0]
         Scale: [1, 1, 1]
-    CameraComponent:
-      Camera:
-        NearPlane: 0.300000012
-        FarPlane: 1000
-        FOV: 86
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.SettingsMenu
+      ParamsJSON: "{}"
     MenuComponent:
       MenuType: 2
   - InfoComponent:
       Parent: 0
-      Name: Settings_ReturnButton
-      UID: 5566590049786588666
+      Name: Settings_Master_BG
+      UID: 4671019080698985014
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [-0.31099999, -0.0879999995, 1.10000002]
+        Translate: [0.280000001, -0.129999995, 1.10000002]
         Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.100000001, 1]
+        Scale: [0.204999998, 0.0299999993, 1]
     SpriteComponent:
-      textureID: 1920245529432086823
+      textureID: 15235968341662935537
+      color: [1, 1, 1, 0.600000024]
+      renderAs3D: false
+    MenuComponent:
+      MenuType: 2
+  - InfoComponent:
+      Parent: 0
+      Name: Settings_SFX_Handle
+      UID: 13342355313482080434
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0.479999989, -0.449999988, 1.12]
+        Rotate: [0, 0, 0]
+        Scale: [0.0199999996, 0.0299999993, 1]
+    SpriteComponent:
+      textureID: 12879034172909871896
       color: [1, 1, 1, 1]
       renderAs3D: false
     MenuComponent:
       MenuType: 2
-  - InfoComponent:
-      Parent: 0
-      Name: Settings_Scroll
-      UID: 10224819476113975430
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0, 0, 1]
-        Rotate: [0, 0, 0]
-        Scale: [1.20000005, 1, 0.100000001]
-    SpriteComponent:
-      textureID: 10276305241760085177
-      color: [0.431372523, 0.425401956, 0.363706261, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 2
-  - InfoComponent:
-      Parent: 0
-      Name: Settings_GammaButton
-      UID: 15922398384533760157
-      SortOrder: 0
-    TransformComponent:
-      Transform:
-        Translate: [0.284999996, 0.150000006, 1.10000002]
-        Rotate: [0, 0, 0]
-        Scale: [0.200000003, 0.075000003, 1]
-    SpriteComponent:
-      textureID: 1497699413008869377
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-    MenuComponent:
-      MenuType: 0
