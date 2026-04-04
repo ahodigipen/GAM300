@@ -3046,7 +3046,7 @@ ENTITIES:
         - name: Death
           filePath: Resources/Models/Player/animations/m6_death_animation.fbx
         - name: StrungUp
-          filePath: Resources/Models/Player/animations/player strung up anim.fbx
+          filePath: Resources/Models/Player/animations/300 frame player hanging animation.fbx
       States:
         - name: Walk
           clipIndex: 2
