@@ -104,6 +104,9 @@ namespace GameScripts
         private static MultiKeyDoor s_activeDialogueDoor = null;
         private static bool s_dialogueEnterWasDown = false;
 
+        // HUD/inventory save state for dialogue
+        private bool _wasInventoryOpen = false;
+
         // ── Dialogue fade ────────────────────────────────────────────────────
         private enum FadeMode { None, FadeIn, FadeOut }
         private FadeMode  _fadeMode      = FadeMode.None;
@@ -369,11 +372,18 @@ namespace GameScripts
                                 API.SetGameLogicPaused(true);
                                 API.Log("[MultiKeyDoor] Dialogue started - game paused.");
 
-                                // Hide E prompt
-                                if (_ePromptEntity != 0) 
+                                // Hide inventory and HUD for the duration of the dialogue
+                                _wasInventoryOpen = Entry.IsInventoryOpen;
+                                Entry.IsInventoryOpen = false;
+                                UIManager.HideHUD();
+
+                                // Hide E prompt immediately (game logic is paused during dialogue
+                                // so the fade animation won't run — snap to hidden instead)
+                                if (_ePromptEntity != 0)
                                 {
-                                    _eFadeState = EPromptFadeState.FadeOut;
-                                    _eFadeTimer = (1f - _eCurrentAlpha) * E_FADE_DURATION;
+                                    _eFadeState    = EPromptFadeState.None;
+                                    _eCurrentAlpha = 0f;
+                                    API.SetSpriteAlpha(_ePromptEntity, 0f);
                                 }
 
                                 // Prepare and fade-in KeysNeeded + Dialogue 1
@@ -681,18 +691,23 @@ namespace GameScripts
 
                 case PendingAction.CloseDialogue:
                     _pendingAction = PendingAction.None;
-                    
+
                     // Force fully hidden
                     if (_dialogueEntity != 0) API.SetSpriteAlpha(_dialogueEntity, 0f);
                     if (_keysNeededEntity != 0) API.SetSpriteAlpha(_keysNeededEntity, 0f);
-                    
+
                     _dialogueState = DialogueState.None;
                     s_activeDialogueDoor = null;
-                    if (_ePromptEntity != 0) 
+                    if (_ePromptEntity != 0)
                     {
                         _eFadeState = EPromptFadeState.FadeIn;
                         _eFadeTimer = _eCurrentAlpha * E_FADE_DURATION;
                     }
+
+                    // Restore inventory and HUD
+                    Entry.IsInventoryOpen = _wasInventoryOpen;
+                    UIManager.ShowHUD();
+
                     API.SetGameLogicPaused(false);
                     API.Log("[MultiKeyDoor] Dialogue ended - game resumed.");
                     break;

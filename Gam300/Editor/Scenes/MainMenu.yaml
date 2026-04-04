@@ -35,6 +35,9 @@ ENTITIES:
       TonemapExposure: 1
       TonemapGamma: 2.20000005
       TonemapWarmTint: [1, 1, 1]
+      VignetteEnabled: false
+      VignetteIntensity: 0.5
+      VignetteRadius: 0.75
   - InfoComponent:
       Parent: 0
       Name: New Entity
@@ -97,7 +100,7 @@ ENTITIES:
       PlaybackSpeed: 1
       RenderAs3D: false
       RemoveBlackBackground: false
-      Brightness: 0.5
+      Brightness: 0.800000012
       TintColor: [0.356862754, 0.509803951, 0.623529434, 1]
   - InfoComponent:
       Parent: 0
@@ -196,7 +199,7 @@ ENTITIES:
         Scale: [0.330845296, 0.146376148, 0.0199999996]
     SpriteComponent:
       textureID: 16541366282253303416
-      color: [0.854901969, 0.121568628, 0.121568628, 1]
+      color: [0.529411793, 0.402768195, 0.402768195, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 0
