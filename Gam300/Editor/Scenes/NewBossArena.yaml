@@ -4645,6 +4645,8 @@ ENTITIES:
           filePath: Resources/Models/Player/animations/Stand To Roll (1).fbx
         - name: Crouching Idle
           filePath: Resources/Models/Player/animations/Crouching Idle.fbx
+        - name: Death
+          filePath: Resources/Models/Player/animations/m6_death_animation.fbx
       States:
         - name: Walk
           clipIndex: 2
@@ -4766,7 +4768,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PlayerMovement
-      ParamsJSON: "{\n  \"_controllerOffsetY\": 2.4000000953674316,\n  \"_level2Pos\": {\n    \"X\": 0.0,\n    \"Y\": 10.0,\n    \"Z\": 0.0\n  },\n  \"_levelStartPos\": {\n    \"X\": 0.0,\n    \"Y\": 10.300000190734863,\n    \"Z\": -13.0\n  },\n  \"_particleGravity\": -0.7239999771118164\n}"
+      ParamsJSON: "{\n  \"_controllerOffsetY\": 2.4000000953674316,\n  \"_deathAnimClipName\": \"Death\",\n  \"_deathAnimDuration\": 3.5,\n  \"_level2Pos\": {\n    \"X\": 0.0,\n    \"Y\": 10.0,\n    \"Z\": 0.0\n  },\n  \"_levelStartPos\": {\n    \"X\": 0.0,\n    \"Y\": 10.300000190734863,\n    \"Z\": -13.0\n  }\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0.670000017, 0]

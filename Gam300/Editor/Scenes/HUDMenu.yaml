@@ -7,8 +7,8 @@ ENTITIES:
       SortOrder: 458
     TransformComponent:
       Transform:
-        Translate: [0.899999976, -0.770739496, 0]
-        Rotate: [0, 0, 0]
+        Translate: [0.853999972, -0.770739496, 0]
+        Rotate: [0, -0, 0]
         Scale: [0.0599999987, 0.100000001, 0.5]
     SpriteComponent:
       textureID: 2900915588722288564

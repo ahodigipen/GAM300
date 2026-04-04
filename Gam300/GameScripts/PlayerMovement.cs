@@ -78,6 +78,12 @@ namespace GameScripts
         [Boom.EditorExposed("Start Anim Duration", "Seconds to play the start animation before handing control to the player.")]
         private float _startAnimDuration = 3.0f;
 
+        [Boom.EditorExposed("Post Start Anim Pos", "If set, teleport the player to this position after the start animation ends.")]
+        private Vec3 _postStartAnimPos = new Vec3(0f, 0f, 0f);
+
+        [Boom.EditorExposed("Use Post Start Anim Pos", "Enable teleport to Post Start Anim Pos after the start animation ends.")]
+        private bool _usePostStartAnimPos = false;
+
         private bool _isPlayingStartAnim = false;
         private float _startAnimTimer = 0f;
 
@@ -427,6 +433,8 @@ namespace GameScripts
                 _isRespawning = false;
                 if (_hasAnimator)
                     API.AnimatorSetStateMachineEnabled(Entity, true);
+                if (_usePostStartAnimPos)
+                    TeleportTo(_postStartAnimPos);
                 API.Log("[PlayerMovement] Start animation finished — handing control to player.");
             }
         }
@@ -1054,12 +1062,20 @@ namespace GameScripts
                     {
                         API.Log($"[PlayerMovement] Instant Pickup: Freeze Powerup (ID: {triggerEntity})");
 
+                        // Play pickup SFX at talisman's position (same sound as key pickup)
+                        if (API.HasTransform(triggerEntity))
+                        {
+                            var p = API.GetPosition(triggerEntity);
+                            API.PlaySoundAt("sfx_freeze_pickup", "Resources/Audio/woodKey.wav", p, false);
+                            API.SetSoundVolume("sfx_freeze_pickup", 0.9f);
+                        }
+
                         // Show pickup tutorial (first-time or repeat) for Talisman
                         TutorialManager.ShowPickupTutorial(
                             TutorialManager.ItemType.Talisman,
                             PlayerInventory.GetTalismanPickupCount()
                         );
-                        
+
                         API.DestroyEntity(triggerEntity);
                     }
                     return;
