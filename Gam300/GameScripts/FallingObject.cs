@@ -30,7 +30,7 @@ namespace GameScripts
         private float _floorDetectOffset = 1.0f;
 
         [Boom.EditorExposed("Fall Sound Volume", "Volume of the falling sound (0.0 - 1.0)")]
-        private float _fallSoundVolume = 1.0f;
+        private float _fallSoundVolume = 0.3f;
 
         private bool _isFalling = false;
         private bool _hasHitGround = false;

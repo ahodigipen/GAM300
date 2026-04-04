@@ -12,7 +12,7 @@ ENTITIES:
         Scale: [0.214000002, 0.0560000017, 1]
     SpriteComponent:
       textureID: 16244244589917169999
-      color: [0.87843138, 0.686274529, 0.384313732, 0]
+      color: [0.87843138, 0.686274529, 0.384313732, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 0
@@ -51,11 +51,11 @@ ENTITIES:
           filePaths:
             - Resources/Audio/10Suns_WalkAbout_BGM1_Loop.wav
           loop: true
-          volume: 1
+          volume: 0.400999993
           priority: 128
           pitch: 1
           stereoPan: 0
-          spatialBlend: 1
+          spatialBlend: 0
           mute: false
           playOnStart: true
           triggerKey: -1
@@ -77,22 +77,28 @@ ENTITIES:
         Scale: [0.214000002, 0.0560000017, 0.600000024]
     SpriteComponent:
       textureID: 5138487839712909877
-      color: [0.87843138, 0.686274529, 0.384313732, 0]
+      color: [0.87843138, 0.686274529, 0.384313732, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 0
-      Name: Home Screen GUI
-      UID: 3413859284316912550
+      Name: Home Screen Animation
+      UID: 15577448700444994158
       SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, 0, -1.21000004]
+        Translate: [0, 0, -1.20000005]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
-    SpriteComponent:
-      textureID: 13983692512001316939
-      color: [0.392156839, 0.353936225, 0.34217605, 0]
-      renderAs3D: false
+    VideoComponent:
+      VideoPath: MainMenuAnimation.mpeg
+      PlayOnStart: true
+      Loop: true
+      Volume: 1
+      PlaybackSpeed: 1
+      RenderAs3D: false
+      RemoveBlackBackground: false
+      Brightness: 0.5
+      TintColor: [0.356862754, 0.509803951, 0.623529434, 1]
   - InfoComponent:
       Parent: 0
       Name: NewGameButton
@@ -105,7 +111,7 @@ ENTITIES:
         Scale: [0.2144088, 0.0560174845, 0.324000001]
     SpriteComponent:
       textureID: 9051997344452271848
-      color: [0.87843138, 0.686274529, 0.384313732, 0]
+      color: [0.87843138, 0.686274529, 0.384313732, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 0
@@ -119,7 +125,7 @@ ENTITIES:
         Scale: [0.214000002, 0.0560000017, 1]
     SpriteComponent:
       textureID: 5561377318240942818
-      color: [0.878048778, 0.685828626, 0.385484815, 0]
+      color: [0.878048778, 0.685828626, 0.385484815, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 0
@@ -190,7 +196,7 @@ ENTITIES:
         Scale: [0.330845296, 0.146376148, 0.0199999996]
     SpriteComponent:
       textureID: 16541366282253303416
-      color: [0.549019575, 0.26912722, 0.26912722, 0]
+      color: [0.854901969, 0.121568628, 0.121568628, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 0
@@ -204,5 +210,5 @@ ENTITIES:
         Scale: [0.0823467821, 0.0289314743, 0.00999999978]
     SpriteComponent:
       textureID: 5600707374096394357
-      color: [0.447154462, 0.447154462, 0.447154462, 0]
+      color: [0.447154462, 0.447154462, 0.447154462, 1]
       renderAs3D: false

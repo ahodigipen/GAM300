@@ -114,6 +114,32 @@ namespace GameScripts
         // NEW: Track all crouch zone entity IDs
         private HashSet<ulong> _crouchZoneIDs = new HashSet<ulong>();
 
+        // ==== Stealth Particle Fields ====
+        [Boom.EditorExposed("Stealth Particle Entity", "Name of the entity with a ParticleEmitterComponent to play when the player turns invisible")]
+        private string _stealthParticleEntityName = "SamuraiStealthParticles";
+        private ulong _stealthParticleEntity = 0;
+
+        [Boom.EditorExposed("Particle Emission Rate", "Particles per second while invisible", 5f, 200f, true)]
+        private float _particleEmissionRate = 50f;
+
+        [Boom.EditorExposed("Particle Speed Min", "Min upward speed of particles", 0.1f, 10f, true)]
+        private float _particleSpeedMin = 0.8f;
+
+        [Boom.EditorExposed("Particle Speed Max", "Max upward speed of particles", 0.1f, 10f, true)]
+        private float _particleSpeedMax = 2.5f;
+
+        [Boom.EditorExposed("Particle Gravity", "Negative = float up", -5f, 5f, true)]
+        private float _particleGravity = -0.6f;
+
+        [Boom.EditorExposed("Particle Start Size Min", "Smallest starting particle size", 0.01f, 1f, true)]
+        private float _particleStartSizeMin = 0.03f;
+
+        [Boom.EditorExposed("Particle Start Size Max", "Largest starting particle size", 0.01f, 1f, true)]
+        private float _particleStartSizeMax = 0.10f;
+
+        [Boom.EditorExposed("Particle End Size", "Size at end of particle life", 0.0f, 1f, true)]
+        private float _particleEndSize = 0.0f;
+
         // ==== God Mode (No Detection Cheat) ====
         private static bool s_godMode = false;
         private bool _wasGodModePressed = false;
@@ -152,6 +178,48 @@ namespace GameScripts
         {
             if (!API.HasModelComponent(Entity)) return;
             API.SetModelOpacity(Entity, invisible ? STEALTH_OPACITY : 1.0f);
+
+            // Play or stop the stealth particle effect
+            if (_stealthParticleEntity != 0 && API.HasParticleEmitter(_stealthParticleEntity))
+            {
+                if (invisible)
+                {
+                    // Configure teal magical particles (editor-tunable via Inspector)
+                    API.SetParticleStartColor(_stealthParticleEntity, 0.0f, 0.9f, 0.8f, 0.85f);
+                    API.SetParticleEndColor(_stealthParticleEntity, 0.0f, 0.5f, 0.7f, 0.0f);
+                    API.SetParticleEmissionRate(_stealthParticleEntity, _particleEmissionRate);
+                    API.SetParticleSpeed(_stealthParticleEntity, _particleSpeedMin, _particleSpeedMax);
+                    API.SetParticleGravity(_stealthParticleEntity, _particleGravity);
+                    API.SetParticleSize(_stealthParticleEntity, _particleStartSizeMin, _particleStartSizeMax, _particleEndSize);
+
+                    // Snap emitter to player position before playing
+                    if (API.HasTransform(Entity) && API.HasTransform(_stealthParticleEntity))
+                        API.SetPosition(_stealthParticleEntity, API.GetPosition(Entity));
+
+                    API.PlayParticleEmitter(_stealthParticleEntity);
+                }
+                else
+                {
+                    // Kill particles instantly: zero out alpha so any remaining ones vanish,
+                    // stop the emitter, then move it off-screen so nothing lingers
+                    API.SetParticleStartColor(_stealthParticleEntity, 0f, 0f, 0f, 0f);
+                    API.SetParticleEndColor(_stealthParticleEntity, 0f, 0f, 0f, 0f);
+                    API.SetParticleSize(_stealthParticleEntity, 0f, 0f, 0f);
+                    API.StopParticleEmitter(_stealthParticleEntity);
+                    if (API.HasTransform(_stealthParticleEntity))
+                        API.SetPosition(_stealthParticleEntity, new Vec3(0f, -9999f, 0f));
+                }
+            }
+        }
+
+        // ==== Keep stealth particles following the player ====
+        private void UpdateStealthParticlePosition()
+        {
+            if (_stealthParticleEntity == 0) return;
+            if (!s_isStealthInvisible) return;
+            if (!API.HasTransform(Entity) || !API.HasTransform(_stealthParticleEntity)) return;
+
+            API.SetPosition(_stealthParticleEntity, API.GetPosition(Entity));
         }
 
         // ==== DEBUG: Helper to log crouch state ====
@@ -252,6 +320,11 @@ namespace GameScripts
             // Initialize current move speed
             _currentMoveSpeed = 0f;
 
+            // Find stealth particle entity (optional - add a ParticleEmitterComponent entity named in _stealthParticleEntityName)
+            _stealthParticleEntity = API.FindEntity(_stealthParticleEntityName);
+            if (_stealthParticleEntity != 0 && API.HasParticleEmitter(_stealthParticleEntity))
+                API.StopParticleEmitter(_stealthParticleEntity);
+
             // Find god mode text entity (optional - add a TextComponent entity named "UI_GodMode" to scene)
             _godModeTextEntity = API.FindEntity("UI_GodMode");
             if (_godModeTextEntity != 0 && API.HasText(_godModeTextEntity))
@@ -290,10 +363,8 @@ namespace GameScripts
             {
                 s_tutorialDeathCount++;
                 int countSnapshot = s_tutorialDeathCount;
-                if (countSnapshot == 3 || countSnapshot == 6)
-                    StartDeathAnimation(() => StartRespawn(() => StoryDialogueManager.PlayTutorialZoneDeathSequence(countSnapshot)));
-                else
-                    StartDeathAnimation(() => StartRespawn());
+                int deathIndex = Math.Min(countSnapshot, 3);
+                StartRespawn(() => StoryDialogueManager.PlayTutorialZoneDeathSequence(deathIndex));
                 return;
             }
 
@@ -722,6 +793,9 @@ namespace GameScripts
                 _prevStealthInvisible = s_isStealthInvisible;
                 ApplyStealthOpacity(s_isStealthInvisible);
             }
+
+            // Keep stealth particles glued to the player while invisible
+            UpdateStealthParticlePosition();
 
             if (_isCrouching)
             {
