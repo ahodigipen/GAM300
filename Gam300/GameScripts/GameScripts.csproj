@@ -60,6 +60,7 @@
     <Compile Include="PrisonBreak.cs" />
     <Compile Include="PrisonerVoiceline.cs" />
     <Compile Include="SettingsMenu.cs" />
+    <Compile Include="SimpleAnimator.cs" />
     <Compile Include="StoryDialogueManager.cs" />
     <Compile Include="CutsceneSequencer.cs" />
     <Compile Include="FallingObject.cs" />

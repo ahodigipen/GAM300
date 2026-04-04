@@ -1,0 +1,12 @@
+DURATION 800
+TRACK "Camera" 4
+KEY 0 0 0 0 0 "Samurai"
+KEY 780 0 0 0 0 "Samurai"
+TRACK "Camera" 1
+KEY 0 0 90 0 0 "Samurai"
+KEY 780 0 90 0 0 "Samurai"
+TRACK "Camera" 0
+KEY 0 2 4 0.5 0 "Samurai"
+KEY 480 2 4 0.5 0 "Samurai"
+KEY 485 2 4 0.5 0 "Samurai"
+KEY 780 2 2 0.5 0 "Samurai"

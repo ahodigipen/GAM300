@@ -156,9 +156,9 @@ namespace Boom {
  obj_member<"ModelName", &ModelComponent::modelName>,
  obj_member<"MaterialName", &ModelComponent::materialName>,
  obj_member<"ModelSource", &ModelComponent::modelSource>,
- obj_member<"MaterialSource", &ModelComponent::materialSource>
+ obj_member<"MaterialSource", &ModelComponent::materialSource>,
+ obj_member<"OpacityOverride", &ModelComponent::opacityOverride>
  )
-
  };
 
  //Animator Component

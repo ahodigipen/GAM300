@@ -4484,6 +4484,8 @@ ENTITIES:
           filePath: Resources//Models/Player/animations/Stand To Roll (1).fbx
         - name: Crouching Idle
           filePath: Resources/Models/Player/animations/Crouching Idle.fbx
+        - name: Death
+          filePath: Resources/Models/Player/animations/m6_death_animation.fbx
       States:
         - name: Walk
           clipIndex: 2
@@ -4605,7 +4607,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PlayerMovement
-      ParamsJSON: "{\n  \"_levelStartPos\": {\n    \"X\": -55.20199966430664,\n    \"Y\": 1.7999999523162842,\n    \"Z\": 5.014999866485596\n  },\n  \"_teleportToStartTrigger\": false\n}"
+      ParamsJSON: "{\n  \"_deathAnimClipName\": \"Death\",\n  \"_deathAnimDuration\": 3.5,\n  \"_levelStartPos\": {\n    \"X\": -55.20199966430664,\n    \"Y\": 1.7999999523162842,\n    \"Z\": 5.014999866485596\n  },\n  \"_teleportToStartTrigger\": false\n}"
   - InfoComponent:
       Parent: 0
       Name: Wall_To_Level_4

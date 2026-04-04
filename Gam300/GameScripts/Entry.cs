@@ -114,7 +114,7 @@ namespace GameScripts
 
             IsStartPopupActive = false;
             _sceneInputDebounceTimer = 0.5f;
-            _startSequenceDelay = 0.2f; // No delay — start dialogue fades in immediately
+            _startSequenceDelay = 0.1f;
 
             s_RequestedPauseAction = PauseMenuAction.None;
             s_RequestedDeathAction = DeathMenuAction.None;
@@ -233,7 +233,7 @@ namespace GameScripts
                 _sceneInputDebounceTimer -= dt;
             }
 
-            if (IsGameplayScene(_currentSceneName) && _startSequenceDelay > 0.0f)
+            if (IsGameplayScene(_currentSceneName) && _startSequenceDelay > 0.0f && !PlayerMovement.IsPlayingStartAnim)
             {
                 _startSequenceDelay -= dt;
                 if (_startSequenceDelay <= 0.0f && !StoryDialogueManager.IsSequenceActive())
