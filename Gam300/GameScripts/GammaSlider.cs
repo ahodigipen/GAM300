@@ -30,15 +30,8 @@ namespace GameScripts
         public bool IsDragging => _isDragging;
 
         private float _currentNorm = 0.0f;   // normalised [0, 1] position
-        private float _lastMouseX;
 
         // --- Configuration ---
-        // Base sensitivity was tuned for a bar that is DRAG_REF_WIDTH world-units wide.
-        // For any other bar width, sensitivity scales inversely so that dragging across
-        // the full visible bar always sweeps the full [0, 1] range at the same pixel cost.
-        private const float DRAG_SENSITIVITY_BASE = 0.004f;
-        private const float DRAG_REF_WIDTH        = 0.4f;
-        private float       _dragSensitivity;          // set in constructor after calibration
         private const float MIN_ENGINE_SCALE = 0.0001f;
 
         // Stacking order (Z-axis)
@@ -98,11 +91,6 @@ namespace GameScripts
             _totalWorldWidth = _rightAnchorX - _leftAnchorX;
 
             if (_totalWorldWidth < 0.001f) _totalWorldWidth = 1.0f;
-
-            // Dynamic sensitivity: inversely proportional to bar width so that dragging
-            // from one end of the bar to the other always takes the same pixel distance,
-            // regardless of how long the bar is in world space.
-            _dragSensitivity = DRAG_SENSITIVITY_BASE * DRAG_REF_WIDTH / _totalWorldWidth;
 
             // Derive fillVisualMultiplier from the current saved t.
             // At saved t: fill_ScaleX = (totalWidth * t) / fillVisualMultiplier
@@ -170,22 +158,14 @@ namespace GameScripts
                     API.Check2DViewportClick(_handleID, mouseScreenPos.X, mouseScreenPos.Y))
                 {
                     _isDragging = true;
-                    _lastMouseX = mouseScreenPos.X;
                 }
             }
-            else
+
+            if (_isDragging)
             {
-                // ------- Continue drag -------
-                float deltaX = mouseScreenPos.X - _lastMouseX;
-                if (Math.Abs(deltaX) > 0.0001f)
-                {
-                    _currentNorm = Clamp(_currentNorm + deltaX * _dragSensitivity, 0f, 1f);
-                    float gamma = NormToGamma(_currentNorm);
-                    API.SetGamma(gamma);
-                    API.Log($"[GammaSlider] Gamma: {gamma:0.00}");
-                    UpdateVisuals(_currentNorm);
-                    _lastMouseX = mouseScreenPos.X;
-                }
+                _currentNorm = NdcToNorm(mouseScreenPos.X);
+                API.SetGamma(NormToGamma(_currentNorm));
+                UpdateVisuals(_currentNorm);
             }
         }
 
@@ -214,6 +194,18 @@ namespace GameScripts
             fillTrans.PositionY = _fixedY;
             fillTrans.PositionZ = _fixedZ + Z_FILL;
             API.SetTransform(_fillID, fillTrans);
+        }
+
+        // Maps a screen-pixel X (from GetMousePosInViewport) to a [0,1] slider norm.
+        // 2D entity world X is NDC (-1..+1); screen X = (worldX + 1) * 0.5 * viewportWidth.
+        private float NdcToNorm(float screenX)
+        {
+            API.GetViewportSize(out float vW, out float _);
+            float leftScreenX  = (_leftAnchorX  + 1f) * 0.5f * vW;
+            float rightScreenX = (_rightAnchorX + 1f) * 0.5f * vW;
+            float range = rightScreenX - leftScreenX;
+            if (Math.Abs(range) < 0.0001f) return _currentNorm;
+            return Clamp((screenX - leftScreenX) / range, 0f, 1f);
         }
 
         // Linear mapping helpers

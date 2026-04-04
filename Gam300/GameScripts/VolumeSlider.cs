@@ -14,10 +14,8 @@ namespace GameScripts
         public bool IsDragging => _isDragging;
 
         private float _currentValue = 1.0f;
-        private float _lastMouseX;
 
         // --- Configuration ---
-        private const float DRAG_SENSITIVITY = 0.004f;
         private const float MIN_ENGINE_SCALE = 0.0001f;
 
         // Stacking order (Z-axis)
@@ -125,24 +123,14 @@ namespace GameScripts
                     API.Check2DViewportClick(_handleID, mouseScreenPos.X, mouseScreenPos.Y))
                 {
                     _isDragging = true;
-                    _lastMouseX = mouseScreenPos.X;
                 }
             }
-            else
+
+            if (_isDragging)
             {
-                // Handle Drag Movement
-                float deltaX = mouseScreenPos.X - _lastMouseX;
-                if (Math.Abs(deltaX) > 0.0001f)
-                {
-                    _currentValue += deltaX * DRAG_SENSITIVITY;
-                    _currentValue = Clamp(_currentValue, 0f, 1f);
-
-                    API.SetGroupVolume(_audioGroup, _currentValue);
-                    API.Log($"[Slider] {_audioGroup} Volume: {_currentValue:0.00}");
-
-                    UpdateVisuals(_currentValue);
-                    _lastMouseX = mouseScreenPos.X;
-                }
+                _currentValue = NdcToNorm(mouseScreenPos.X);
+                API.SetGroupVolume(_audioGroup, _currentValue);
+                UpdateVisuals(_currentValue);
             }
         }
 
@@ -169,6 +157,18 @@ namespace GameScripts
             fillTrans.PositionY = _fixedY;
             fillTrans.PositionZ = _fixedZ + Z_FILL;
             API.SetTransform(_fillID, fillTrans);
+        }
+
+        // Maps a screen-pixel X (from GetMousePosInViewport) to a [0,1] slider norm.
+        // 2D entity world X is NDC (-1..+1); screen X = (worldX + 1) * 0.5 * viewportWidth.
+        private float NdcToNorm(float screenX)
+        {
+            API.GetViewportSize(out float vW, out float _);
+            float leftScreenX  = (_leftAnchorX  + 1f) * 0.5f * vW;
+            float rightScreenX = (_rightAnchorX + 1f) * 0.5f * vW;
+            float range = rightScreenX - leftScreenX;
+            if (Math.Abs(range) < 0.0001f) return _currentValue;
+            return Clamp((screenX - leftScreenX) / range, 0f, 1f);
         }
 
         private static float Clamp(float x, float lo, float hi)
