@@ -508,9 +508,8 @@ namespace Boom
 		BOOM_INLINE bool SaveScene(const std::string& sceneName, const std::string& scenePath = "Scenes/")
 		{
 			// 1. Determine "Mode": Is this a Menu file?
-			// "PauseMenu" -> true. "Level1" -> false.
-			bool isMenuFile = (sceneName.find("Menu") != std::string::npos) || 
-							  (sceneName.find("Tutorial") != std::string::npos);
+			// "PauseMenu" -> true. "Level1" / "TutorialZone" -> false.
+			bool isMenuFile = (sceneName.find("Menu") != std::string::npos);
 
 			DataSerializer serializer;
 
@@ -566,8 +565,11 @@ namespace Boom
 				m_Context->renderer->tonemapExposure = sn.tonemapExposure;
 				m_Context->renderer->tonemapGamma = sn.tonemapGamma;
 				m_Context->renderer->tonemapWarmTint = sn.tonemapWarmTint;
-				BOOM_INFO("[Scene] Applied scene settings: ambient={}, bloom={}, intensity={}, threshold={}, iterations={}, pointLightBloom={}, fog={}",
-					sn.ambientStrength, sn.bloomEnabled, sn.bloomIntensity, sn.bloomThreshold, sn.bloomIterations, sn.pointLightBloomMultiplier, sn.fogEnabled);
+				m_Context->renderer->enabledVignette = sn.vignetteEnabled;
+				m_Context->renderer->vignetteIntensity = sn.vignetteIntensity;
+				m_Context->renderer->vignetteRadius = sn.vignetteRadius;
+				BOOM_INFO("[Scene] Applied scene settings: ambient={}, bloom={}, intensity={}, threshold={}, iterations={}, pointLightBloom={}, fog={}, vignette={}",
+					sn.ambientStrength, sn.bloomEnabled, sn.bloomIntensity, sn.bloomThreshold, sn.bloomIterations, sn.pointLightBloomMultiplier, sn.fogEnabled, sn.vignetteEnabled);
 			}
 
 			if (sn.navmeshFile.empty())
@@ -654,6 +656,7 @@ namespace Boom
 			else if (sceneName.find("Tutorial") != std::string::npos) targetType = MenuType::PopUp;
 			else if (sceneName.find("Inventory") != std::string::npos) targetType = MenuType::Inventory;
 			else if (sceneName.find("HUD") != std::string::npos) targetType = MenuType::HUD;
+			else if (sceneName.find("Gamma") != std::string::npos) targetType = MenuType::GammaAdjust;
 
 			// 2. Check if objects of this MenuType *already exist*
 			bool alreadyLoaded = false;
@@ -791,6 +794,9 @@ namespace Boom
 		}
 
 		// REPLACED: No longer templated on TagComponent, takes MenuType enum
+		BOOM_INLINE void ShowGammaAdjustMenu()   { ShowAdditiveScene(MenuType::GammaAdjust); }
+		BOOM_INLINE void UnloadGammaAdjustMenu() { UnloadAdditiveScene(MenuType::GammaAdjust); }
+
 		BOOM_INLINE void UnloadAdditiveScene(MenuType type)
 		{
 			BOOM_INFO("[Scene] Unloading additive scene (Type: {})...", (int)type);

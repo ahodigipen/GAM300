@@ -936,6 +936,16 @@ namespace Boom
         };
         std::vector<DeferredSprite3D> sprite3DList;
 
+        // 3D video quads deferred like sprite3DList so they render AFTER opaque geometry.
+        // Previously videos were drawn immediately inside the entity loop (before any geometry
+        // batches), so all subsequent geometry writes overwrote them entirely.
+        struct DeferredVideo3D {
+            uint32_t  textureId;
+            Transform3D transform;
+            glm::vec4 tint;
+        };
+        std::vector<DeferredVideo3D> video3DList;
+
         glm::vec3 cameraPos = m_Context->renderer->GetCameraPosition();
 
         // Begin instance collection for this frame (only for rendering, not picking)
@@ -944,7 +954,7 @@ namespace Boom
         }
 
         //pbr ecs (always render)
-        EnttView<Entity, TransformComponent>([this, &guiList, &isPicking, &transparentObjects, &immediateDraws, &cameraPos, &sprite3DList](auto entity, TransformComponent&) {
+        EnttView<Entity, TransformComponent>([this, &guiList, &isPicking, &transparentObjects, &immediateDraws, &cameraPos, &sprite3DList, &video3DList](auto entity, TransformComponent&) {
             if (entity.Has<DeactivatedComponent>()) return;
 
             if (entity.Has<ModelComponent>()) {
@@ -1122,23 +1132,13 @@ namespace Boom
                     // fog — fluctuating video pixels (especially with
                     // removeBlackBackground) would cause the fog, and therefore
                     // scene lighting, to flicker every frame.
-                    glDepthMask(GL_FALSE);
-
                     if (comp.renderAs3D) {
-                        // Render as 3D quad in world space
-                        m_Context->renderer->DrawQuadRaw(textureId, worldTransform, adjustedTint);
+                        // Defer 3D video to render after opaque/transparent geometry so
+                        // depth testing works correctly (same reason sprite3DList is deferred).
+                        video3DList.push_back({ textureId, worldTransform, adjustedTint });
                     }
-                    else if (!m_Context->renderer->showLowPoly) {
-                        // Render as 2D UI overlay (skip when low poly; rendered at full res after compositing)
-                        Transform2D transform2D{
-                            worldTransform.translate,
-                            worldTransform.rotate.z,
-                            glm::vec2(worldTransform.scale.x, worldTransform.scale.y)
-                        };
-                        m_Context->renderer->DrawQuadRaw(textureId, transform2D, adjustedTint);
-                    }
-
-                    glDepthMask(GL_TRUE);
+                    // 2D videos (renderAs3D: false) are rendered exclusively in
+                    // RenderSpriteOverlay after compositing — nothing to do here.
                 }
             }
             // ParticleEmitterComponent picking — draw a small quad at world position so the
@@ -1207,6 +1207,14 @@ namespace Boom
             }
             for (auto& sprite : sprite3DList) {
                 m_Context->renderer->DrawQuad(sprite.tex, sprite.transform, sprite.color);
+            }
+
+            // === 3D VIDEO PASS ===
+            // Same depth state as 3D sprites (depth test on, depth write off).
+            // Deferred from the entity loop so geometry is already in the depth buffer,
+            // meaning the video quad is correctly occluded by closer geometry.
+            for (auto& vid : video3DList) {
+                m_Context->renderer->DrawQuadRaw(vid.textureId, vid.transform, vid.tint);
             }
 
             glDepthMask(GL_TRUE);
@@ -1374,6 +1382,8 @@ namespace Boom
 
         auto textView = m_Context->scene.view<TextComponent>();
         for (auto entity : textView) {
+            Entity textEnt(&m_Context->scene, entity);
+            if (textEnt.Has<DeactivatedComponent>()) continue;
             auto& textComp = textView.get<TextComponent>(entity);
 
             float screenX, screenY;

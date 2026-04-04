@@ -564,6 +564,9 @@ namespace Boom
                     << YAML::Flow << YAML::BeginSeq
                     << sn.tonemapWarmTint.r << sn.tonemapWarmTint.g << sn.tonemapWarmTint.b
                     << YAML::EndSeq;
+                e << YAML::Key << "VignetteEnabled" << YAML::Value << sn.vignetteEnabled;
+                e << YAML::Key << "VignetteIntensity" << YAML::Value << sn.vignetteIntensity;
+                e << YAML::Key << "VignetteRadius" << YAML::Value << sn.vignetteRadius;
                 e << YAML::EndMap;
             },
             // ----- DESERIALIZE -----
@@ -624,6 +627,15 @@ namespace Boom
                     sn.tonemapWarmTint.g = c[1].as<float>(sn.tonemapWarmTint.g);
                     sn.tonemapWarmTint.b = c[2].as<float>(sn.tonemapWarmTint.b);
                 }
+
+                if (auto v = data["VignetteEnabled"])
+                    sn.vignetteEnabled = v.as<bool>(sn.vignetteEnabled);
+
+                if (auto v = data["VignetteIntensity"])
+                    sn.vignetteIntensity = v.as<float>(sn.vignetteIntensity);
+
+                if (auto v = data["VignetteRadius"])
+                    sn.vignetteRadius = v.as<float>(sn.vignetteRadius);
             }
         );
 

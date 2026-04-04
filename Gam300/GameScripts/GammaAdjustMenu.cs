@@ -12,6 +12,11 @@ namespace GameScripts
     {
         public ulong Entity;
 
+        // Set this before loading GammaAdjust so the Confirm button returns to the right place.
+        // "SettingsMenu" = came from Settings; gameplay scene name = came from PauseMenu.
+        public static string s_returnScene = "SettingsMenu";
+        public static bool s_needsReset = false;
+
         private const int MOUSE_LEFT = 0;
 
         private const string RETURN_TEX_NORMAL = "Resources/Textures/MenusUI/ConfirmButton.png";
@@ -64,6 +69,16 @@ namespace GameScripts
 
         public void OnUpdate(float dt)
         {
+            if (s_needsReset)
+            {
+                s_needsReset = false;
+                _state = State.WaitingForMouseUp;
+                _fadeTimer = 0f;
+                _isFadingIn = true;
+                API.SetScreenFadeAlpha(1f);
+                UpdateVisuals();
+            }
+
             _buttonFX?.Update(dt);
 
             if (_isFadingIn)
@@ -195,6 +210,7 @@ namespace GameScripts
         private void ExecuteClick()
         {
             API.Log(">> GammaAdjust: Return to Settings");
+            SettingsManager.SaveSettings();
             _state = State.FadingOut;
             _fadeTimer = 0f;
         }
@@ -208,7 +224,19 @@ namespace GameScripts
             if (_fadeTimer >= FADE_DURATION)
             {
                 API.SetScreenFadeAlpha(1f);
-                API.LoadScene("SettingsMenu");
+                if (Entry.IsGameplayScene(s_returnScene))
+                {
+                    // Opened from PauseMenu — hide gamma, restore pause menu
+                    Entry.s_fadeInAfterGamma = true;
+                    API.UnloadGammaAdjustMenu();
+                    API.ShowPauseMenu();
+                    Entry.s_ActivePauseMenuInstance?.ResetButtonState();
+                }
+                else
+                {
+                    // Opened from SettingsMenu — full scene switch back
+                    API.LoadScene(s_returnScene);
+                }
             }
         }
 

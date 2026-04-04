@@ -223,6 +223,13 @@ namespace Boom
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_EnableFileWatcher(bool enable);
         
+        // Gamma Adjust Menu
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_ShowGammaAdjustMenu();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Boom_API_UnloadGammaAdjustMenu();
+
         // Pause Menu
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Boom_API_UnloadPauseMenu();
@@ -1025,6 +1032,10 @@ namespace Boom
         public static void LoadSceneAdditive(string name) => Native.Boom_API_LoadSceneAdditive(name);
         public static void TogglePause() => Native.Boom_API_TogglePause();
         public static int GetApplicationState() => Native.Boom_API_GetApplicationState();
+
+        // Gamma Adjust Menu
+        public static void ShowGammaAdjustMenu()   => Native.Boom_API_ShowGammaAdjustMenu();
+        public static void UnloadGammaAdjustMenu() => Native.Boom_API_UnloadGammaAdjustMenu();
 
         // Pause Menu
         public static void UnloadPauseMenu() => Native.Boom_API_UnloadPauseMenu();

@@ -123,6 +123,8 @@
     <Compile Include="PlayerMovement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpawnPoint.cs" />
+    <Compile Include="BossDeathTrigger.cs" />
+    <Compile Include="PortalLightPulse.cs" />
     <Compile Include="VolumeSlider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

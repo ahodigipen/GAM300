@@ -12,26 +12,29 @@ namespace GameScripts
         private const string RESTART_TEX_NORMAL = "Resources/Textures/MenusUI/RestartButton.png";
         private const string MAINMENU_TEX_NORMAL = "Resources/Textures/MenusUI/ReturnMenuButton.png";
         private const string CREDITS_TEX_NORMAL = "Resources/Textures/MenusUI/CreditsButton.png";
-        private const string QUIT_TEX_NORMAL = "Resources/Textures/MenusUI/QuitButton.png";
+        private const string QUIT_TEX_NORMAL   = "Resources/Textures/MenusUI/QuitButton.png";
+        private const string GAMMA_BTN_TEX_NORMAL  = "Resources/Textures/MenusUI/GammaButton.png";
+        private const string GAMMA_BTN_TEX_HOVER   = "Resources/Textures/MenusUI/GammaButton_Hover.png";
+        private const string GAMMA_BTN_TEX_CLICKED = "Resources/Textures/MenusUI/GammaButton_Clicked.png";
 
-        private const string RESUME_TEX_CLICKED = "Resources/Textures/MenusUI/ResumeButton_Clicked.png";
-        private const string RESTART_TEX_CLICKED = "Resources/Textures/MenusUI/RestartButton_Clicked.png";
-        private const string MAINMENU_TEX_CLICKED = "Resources/Textures/MenusUI/ReturnMenuButton_Clicked.png";
-        private const string CREDITS_TEX_CLICKED = "Resources/Textures/MenusUI/CreditsButton_Clicked.png";
-        private const string QUIT_TEX_CLICKED = "Resources/Textures/MenusUI/QuitButton_Clicked.png";
+        private const string RESUME_TEX_CLICKED    = "Resources/Textures/MenusUI/ResumeButton_Clicked.png";
+        private const string RESTART_TEX_CLICKED   = "Resources/Textures/MenusUI/RestartButton_Clicked.png";
+        private const string MAINMENU_TEX_CLICKED  = "Resources/Textures/MenusUI/ReturnMenuButton_Clicked.png";
+        private const string CREDITS_TEX_CLICKED   = "Resources/Textures/MenusUI/CreditsButton_Clicked.png";
+        private const string QUIT_TEX_CLICKED      = "Resources/Textures/MenusUI/QuitButton_Clicked.png";
 
         private ulong _resumeButtonID;
         private ulong _restartButtonID;
         private ulong _mainMenuButtonID;
         private ulong _creditsButtonID;
         private ulong _quitButtonID;
+        private ulong _gammaButtonID;
 
         private ButtonFX _buttonFX;
 
         private VolumeSlider _masterSlider;
         private VolumeSlider _bgmSlider;
         private VolumeSlider _sfxSlider;
-        private GammaSlider  _gammaSlider;
 
         private enum PauseMenuState
         {
@@ -45,7 +48,7 @@ namespace GameScripts
         private bool _wasPausedLastFrame = false;
 
         // Controller navigation
-        // -1: None, 0: Resume, 1: Restart, 2: Main Menu, 3: Credits, 4: Quit, 5: Master, 6: BGM, 7: SFX, 8: Gamma
+        // -1: None, 0: Resume, 1: Restart, 2: Main Menu, 3: Credits, 4: Quit, 5: Master, 6: BGM, 7: SFX, 8: Gamma Button
         private int _selectedIndex = -1; 
 
         private bool _wasDpadUp = false;
@@ -75,12 +78,13 @@ namespace GameScripts
             _creditsButtonID = API.FindEntity("Pause_CreditsButton");
             _quitButtonID = API.FindEntity("Pause_QuitButton");
 
-            _buttonFX = new ButtonFX(_resumeButtonID, _restartButtonID, _mainMenuButtonID, _creditsButtonID, _quitButtonID);
+            _gammaButtonID = API.FindEntity("Pause_GammaButton");
+
+            _buttonFX = new ButtonFX(_resumeButtonID, _restartButtonID, _mainMenuButtonID, _creditsButtonID, _quitButtonID, _gammaButtonID);
 
             _masterSlider = new VolumeSlider("Pause_Master_BG", "Pause_Master_Fill", "Pause_Master_Handle", "Master");
             _bgmSlider = new VolumeSlider("Pause_BGM_BG", "Pause_BGM_Fill", "Pause_BGM_Handle", "Music");
             _sfxSlider = new VolumeSlider("Pause_SFX_BG", "Pause_SFX_Fill", "Pause_SFX_Handle", "SFX");
-            _gammaSlider = new GammaSlider("Pause_Gamma_BG", "Pause_Gamma_Fill", "Pause_Gamma_Handle");
 
             _selectedIndex = -1;
             ResetButtonState();
@@ -104,6 +108,7 @@ namespace GameScripts
 
             // Always update hover effects
             _buttonFX?.Update(dt);
+            UpdateGammaTexture();
 
             bool isAnyDragging = false;
 
@@ -120,11 +125,6 @@ namespace GameScripts
             else if (_sfxSlider != null && _sfxSlider.IsDragging)
             {
                 _sfxSlider.Update();
-                isAnyDragging = true;
-            }
-            else if (_gammaSlider != null && _gammaSlider.IsDragging)
-            {
-                _gammaSlider.Update();
                 isAnyDragging = true;
             }
             else
@@ -145,12 +145,6 @@ namespace GameScripts
                 {
                     _sfxSlider.Update();
                     if (_sfxSlider.IsDragging) isAnyDragging = true;
-                }
-
-                if (!isAnyDragging && _gammaSlider != null)
-                {
-                    _gammaSlider.Update();
-                    if (_gammaSlider.IsDragging) isAnyDragging = true;
                 }
             }
 
@@ -219,8 +213,8 @@ namespace GameScripts
                 UpdateVisuals();
             }
 
-            // Horizontal Navigation (Slider Control)
-            if (_selectedIndex >= 5)
+            // Horizontal Navigation (Slider Control — indices 5, 6, 7 only)
+            if (_selectedIndex >= 5 && _selectedIndex <= 7)
             {
                 float stickX = API.GetGamepadAxis(API.GAMEPAD_AXIS_LEFT_X);
                 bool dpadLeft = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_DPAD_LEFT);
@@ -234,21 +228,11 @@ namespace GameScripts
                 if (Math.Abs(moveAmount) > 0.0001f)
                 {
                     if (_selectedIndex == 5 && _masterSlider != null)
-                    {
                         _masterSlider.SetValue(API.GetGroupVolume("Master") + moveAmount);
-                    }
                     else if (_selectedIndex == 6 && _bgmSlider != null)
-                    {
                         _bgmSlider.SetValue(API.GetGroupVolume("Music") + moveAmount);
-                    }
                     else if (_selectedIndex == 7 && _sfxSlider != null)
-                    {
                         _sfxSlider.SetValue(API.GetGroupVolume("SFX") + moveAmount);
-                    }
-                    else if (_selectedIndex == 8 && _gammaSlider != null)
-                    {
-                        _gammaSlider.SetNormDelta(moveAmount);
-                    }
                 }
             }
 
@@ -260,6 +244,7 @@ namespace GameScripts
                 else if (_selectedIndex == 2) buttonID = _mainMenuButtonID;
                 else if (_selectedIndex == 3) buttonID = _creditsButtonID;
                 else if (_selectedIndex == 4) buttonID = _quitButtonID;
+                else if (_selectedIndex == 8) buttonID = _gammaButtonID;
 
                 if (buttonID != 0) StartClickDelay(buttonID);
             }
@@ -284,7 +269,6 @@ namespace GameScripts
             SetSliderHighlight("Pause_Master_BG", _selectedIndex == 5);
             SetSliderHighlight("Pause_BGM_BG", _selectedIndex == 6);
             SetSliderHighlight("Pause_SFX_BG", _selectedIndex == 7);
-            SetSliderHighlight("Pause_Gamma_BG", _selectedIndex == 8);
 
             if (_selectedIndex == -1) return;
 
@@ -294,6 +278,15 @@ namespace GameScripts
             else if (_selectedIndex == 2) API.SetSpriteTexture(_mainMenuButtonID, MAINMENU_TEX_CLICKED);
             else if (_selectedIndex == 3) API.SetSpriteTexture(_creditsButtonID, CREDITS_TEX_CLICKED);
             else if (_selectedIndex == 4) API.SetSpriteTexture(_quitButtonID, QUIT_TEX_CLICKED);
+        }
+
+        private void UpdateGammaTexture()
+        {
+            if (_gammaButtonID == 0) return;
+            bool clicked = (_currentState == PauseMenuState.ButtonDelay && _clickedButtonID == _gammaButtonID) || _selectedIndex == 8;
+            if (clicked) { API.SetSpriteTexture(_gammaButtonID, GAMMA_BTN_TEX_CLICKED); return; }
+            bool hovered = API.GetMousePosInViewport(out Vec2 mp) && API.Check2DViewportClick(_gammaButtonID, mp.X, mp.Y);
+            API.SetSpriteTexture(_gammaButtonID, hovered ? GAMMA_BTN_TEX_HOVER : GAMMA_BTN_TEX_NORMAL);
         }
 
         private void SetSliderHighlight(string bgEntityName, bool highlight)
@@ -320,8 +313,7 @@ namespace GameScripts
         {
             bool isAnySliderDragging = (_masterSlider != null && _masterSlider.IsDragging) ||
                                        (_bgmSlider != null && _bgmSlider.IsDragging) ||
-                                       (_sfxSlider != null && _sfxSlider.IsDragging) ||
-                                       (_gammaSlider != null && _gammaSlider.IsDragging);
+                                       (_sfxSlider != null && _sfxSlider.IsDragging);
 
             if (isAnySliderDragging) return;
 
@@ -354,10 +346,14 @@ namespace GameScripts
                     _selectedIndex = 4;
                     StartClickDelay(_quitButtonID);
                 }
+                else if (_gammaButtonID != 0 && API.Check2DViewportClick(_gammaButtonID, mousePos.X, mousePos.Y))
+                {
+                    _selectedIndex = 8;
+                    StartClickDelay(_gammaButtonID);
+                }
                 else if (IsSliderClicked("Pause_Master_BG", mousePos)) _selectedIndex = 5;
                 else if (IsSliderClicked("Pause_BGM_BG", mousePos)) _selectedIndex = 6;
                 else if (IsSliderClicked("Pause_SFX_BG", mousePos)) _selectedIndex = 7;
-                else if (IsSliderClicked("Pause_Gamma_BG", mousePos)) _selectedIndex = 8;
             }
         }
 
@@ -394,6 +390,8 @@ namespace GameScripts
                 API.SetSpriteTexture(buttonID, CREDITS_TEX_CLICKED);
             else if (buttonID == _quitButtonID)
                 API.SetSpriteTexture(buttonID, QUIT_TEX_CLICKED);
+            else if (buttonID == _gammaButtonID)
+                API.SetSpriteTexture(buttonID, GAMMA_BTN_TEX_CLICKED);
         }
 
         private void ExecuteClickAction()
@@ -419,6 +417,10 @@ namespace GameScripts
             else if (_clickedButtonID == _quitButtonID)
             {
                 Entry.s_RequestedPauseAction = Entry.PauseMenuAction.Quit;
+            }
+            else if (_clickedButtonID == _gammaButtonID)
+            {
+                Entry.s_RequestedPauseAction = Entry.PauseMenuAction.OpenGamma;
             }
         }
     }

@@ -467,6 +467,16 @@ namespace Boom {
         }
     }
 
+    // Gamma Adjust Menu
+    static void ICALL_API_ShowGammaAdjustMenu() {
+        if (!s_Ctx || !s_Ctx->app) return;
+        s_Ctx->app->ShowGammaAdjustMenu();
+    }
+    static void ICALL_API_UnloadGammaAdjustMenu() {
+        if (!s_Ctx || !s_Ctx->app) return;
+        s_Ctx->app->UnloadGammaAdjustMenu();
+    }
+
     // Pause Menu
     static void ICALL_API_UnloadPauseMenu() {
         if (!s_Ctx || !s_Ctx->app) return;
@@ -2811,6 +2821,9 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_ShutdownApplication", (const void*)ICALL_API_ShutdownApplication); // CORRECT QUIT
         
         mono_add_internal_call("Boom.Native::Boom_API_LoadSceneAdditive", (const void*)ICALL_API_LoadSceneAdditive);
+        // Gamma Adjust Menu
+        mono_add_internal_call("Boom.Native::Boom_API_ShowGammaAdjustMenu",   (const void*)ICALL_API_ShowGammaAdjustMenu);
+        mono_add_internal_call("Boom.Native::Boom_API_UnloadGammaAdjustMenu", (const void*)ICALL_API_UnloadGammaAdjustMenu);
         // Pause Menu
         mono_add_internal_call("Boom.Native::Boom_API_UnloadPauseMenu", (const void*)ICALL_API_UnloadPauseMenu);
         mono_add_internal_call("Boom.Native::Boom_API_ShowPauseMenu", (const void*)ICALL_API_ShowPauseMenu);

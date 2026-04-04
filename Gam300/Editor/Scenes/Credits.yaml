@@ -157,18 +157,24 @@ ENTITIES:
       TonemapWarmTint: [1, 1, 1]
   - InfoComponent:
       Parent: 0
-      Name: Home Screen GUI
-      UID: 3413859284316912550
-      SortOrder: 4
+      Name: Home Screen Animation
+      UID: 15577448700444994158
+      SortOrder: 0
     TransformComponent:
       Transform:
-        Translate: [0, 0, -1.21000004]
+        Translate: [0, 0, -1.20000005]
         Rotate: [0, 0, 0]
         Scale: [1, 1, 1]
-    SpriteComponent:
-      textureID: 13983692512001316939
-      color: [0.392156839, 0.353936225, 0.34217605, 1]
-      renderAs3D: false
+    VideoComponent:
+      VideoPath: MainMenuAnimation.mpeg
+      PlayOnStart: true
+      Loop: true
+      Volume: 1
+      PlaybackSpeed: 1
+      RenderAs3D: false
+      RemoveBlackBackground: false
+      Brightness: 0.5
+      TintColor: [0.356862754, 0.509803951, 0.623529434, 1]
   - InfoComponent:
       Parent: 0
       Name: Logo

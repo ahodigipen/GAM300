@@ -15,7 +15,7 @@ namespace GameScripts
             s_freezeCenter = center;
             s_freezeRadius = radius;
 
-            // Log confirmation
+            API.PlaySound("FreezeActivate", "Resources/Audio/freeze.wav");
             API.Log($"[FreezeManager] ACTIVATED! Duration: {duration}s");
         }
 
@@ -27,6 +27,7 @@ namespace GameScripts
                 if (s_freezeTimer <= 0f)
                 {
                     s_freezeTimer = 0f;
+                    API.PlaySound("FreezeExpire", "Resources/Audio/unfreeze.wav");
                     API.Log("[FreezeManager] Time resumed.");
                 }
             }

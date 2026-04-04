@@ -26,8 +26,8 @@ namespace GameScripts
         [Boom.EditorExposed("GO: Level 2 Area", "Shortcut: F3", 0, 0, false)]
         private bool _teleportToLevel2 = false;
 
-        [Boom.EditorExposed("GO: Custom Position", "Shortcut: F4", 0, 0, false)]
-        private bool _teleportToCustom = false;
+        [Boom.EditorExposed("GO: Before Boss Level Checkpoint", "Shortcut: F4", 0, 0, false)]
+        private bool _teleportToBossCheckpoint = false;
 
         public void OnUpdate(float dt)
         {
@@ -59,11 +59,19 @@ namespace GameScripts
                 API.Log("[DebugTeleporter] F3: Teleporting to Level 2");
             }
 
-            if (_teleportToCustom || API.IsKeyDown(API.KEY_F4))
+            if (_teleportToBossCheckpoint || API.IsKeyDown(API.KEY_F4))
             {
-                _teleportToCustom = false;
+                _teleportToBossCheckpoint = false;
+
+                // Disable this teleport specifically for Level 1 as requested
+                if (API.GetCurrentSceneName() == Entry.LEVEL1_SCENE_NAME)
+                {
+                    API.Log("[DebugTeleporter] F4: Teleport to Boss Checkpoint is disabled on Level 1.");
+                    return;
+                }
+
                 player.TeleportTo(new Vec3(-40.770f, 26.960f, -31.0f));
-                API.Log("[DebugTeleporter] F4: Teleporting to Custom Position (-40.77, 26.96, -31)");
+                API.Log("[DebugTeleporter] F4: Teleporting to Before Boss Level Checkpoint (-40.77, 26.96, -31)");
             }
         }
     }
