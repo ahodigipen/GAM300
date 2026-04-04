@@ -21,15 +21,6 @@ namespace GameScripts
         [Boom.EditorExposed("Pulse Speed", "How fast the light pulses (cycles per second)")]
         private float _pulseSpeed = 1.5f;
 
-        [Boom.EditorExposed("Pulse Scale Y", "If true, also pulses the Y scale for a vertical stretch effect")]
-        private bool _pulseScaleY = true;
-
-        [Boom.EditorExposed("Min Scale Y", "Minimum Y scale multiplier")]
-        private float _minScaleY = 0.8f;
-
-        [Boom.EditorExposed("Max Scale Y", "Maximum Y scale multiplier")]
-        private float _maxScaleY = 1.3f;
-
         [Boom.EditorExposed("Pulse Color", "If true, shifts color between base and bright white")]
         private bool _pulseColor = true;
 
@@ -43,7 +34,6 @@ namespace GameScripts
         private float _glowB = 1.0f;
 
         private float _timer = 0f;
-        private Vec3 _originalScale;
         private Vec3 _baseColor;
         private bool _hasSpotLight;
         private bool _hasPointLight;
@@ -54,9 +44,6 @@ namespace GameScripts
 
             _hasSpotLight = API.HasSpotLight(Entity);
             _hasPointLight = API.HasPointLight(Entity);
-
-            if (API.HasTransform(Entity))
-                _originalScale = API.GetScale(Entity);
 
             if (_hasSpotLight)
                 _baseColor = API.GetSpotLightColor(Entity);
@@ -95,17 +82,6 @@ namespace GameScripts
                     API.SetPointLightColor(Entity, color);
             }
 
-            // Pulse Y scale for vertical stretch effect
-            if (_pulseScaleY && API.HasTransform(Entity))
-            {
-                float scaleY = _minScaleY + (_maxScaleY - _minScaleY) * t;
-                Vec3 newScale = new Vec3(
-                    _originalScale.X,
-                    _originalScale.Y * scaleY,
-                    _originalScale.Z
-                );
-                API.SetScale(Entity, newScale);
-            }
         }
 
         public void OnDestroy()
@@ -120,10 +96,6 @@ namespace GameScripts
                 API.SetPointLightColor(Entity, _baseColor);
             }
 
-            if (_pulseScaleY && API.HasTransform(Entity))
-            {
-                API.SetScale(Entity, _originalScale);
-            }
         }
     }
 }
