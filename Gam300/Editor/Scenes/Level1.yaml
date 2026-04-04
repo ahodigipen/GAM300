@@ -3927,8 +3927,8 @@ ENTITIES:
       SortOrder: 444
     TransformComponent:
       Transform:
-        Translate: [-27.8848782, 8.50455761, 11.0368786]
-        Rotate: [124.875, 154.625, 180]
+        Translate: [33.4935265, 20.5926075, -8.30640221]
+        Rotate: [147.8125, 408.8125, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -7061,7 +7061,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [9.27553558, 0.550991118, -12.913641]
-        Rotate: [0, 335.361084, 0]
+        Rotate: [0, 90, 0]
         Scale: [0.0145000946, 0.0145000005, 0.0145000946]
     RigidBodyComponent:
       RigidBody:
@@ -13454,7 +13454,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [28.0240536, 15.4747601, 0.404775023]
-        Rotate: [0, 335.361084, 0]
+        Rotate: [0, 90, 0]
         Scale: [0.0144998673, 0.0145000014, 0.0144998422]
     RigidBodyComponent:
       RigidBody:
@@ -13705,7 +13705,7 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-8.06918335, 0.550991118, -12.913641]
-        Rotate: [0, 24.6389408, 0]
+        Rotate: [0, 270, 0]
         Scale: [0.0145000936, 0.0145000005, 0.0145000936]
     RigidBodyComponent:
       RigidBody:

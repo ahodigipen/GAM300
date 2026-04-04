@@ -1,24 +1,32 @@
 Version: 1.0
 ENTITIES:
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [3, 3, 3]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
       Parent: 0
-      Name: UI_GodMode
-      UID: 9823746501837264951
-      SortOrder: 179
+      Name: PlayerSpawn
+      UID: 13742085224280917219
+      SortOrder: 145
     TransformComponent:
       Transform:
-        Translate: [0, 11.6872597, 0]
+        Translate: [0, 13.3230076, -21.7175274]
         Rotate: [0, -0, 0]
         Scale: [1, 1, 1]
-    TextComponent:
-      text: ""
-      fontName: Cormorant-VariableFont_wght
-      color: [0, 0, 0, 0]
-      scale: 1
-      screenPosition: [100, 83]
-      renderAs3D: false
-      billboardMode: true
-      alignment: Left
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.SpawnPoint
+      ParamsJSON: "{}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -770,76 +778,133 @@ ENTITIES:
       Enabled: true
       TypeName: GameScripts.UIManager
       ParamsJSON: "{}"
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
       Parent: 0
-      Name: Heart_Dead
-      UID: 11527860442457317382
-      SortOrder: 71
+      Name: Main_Wall_Left_Fill
+      UID: 1676710222772089113
+      SortOrder: 90
     TransformComponent:
       Transform:
-        Translate: [-0.674000025, 0.874000013, 0]
+        Translate: [8.05599976, 11.9738646, -22.1669159]
         Rotate: [0, -0, 0]
-        Scale: [0.0240000002, 0.0359999985, 0.0799999982]
-    SpriteComponent:
-      textureID: 947084306896258002
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-  - InfoComponent:
+        Scale: [5.55999994, 3.52900004, 44.2949982]
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 5692762562094318330
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
       Parent: 0
-      Name: Heart_Dead
-      UID: 1873590737519739616
-      SortOrder: 69
+      Name: Main_Wall_Right_Fill
+      UID: 3234482310908122713
+      SortOrder: 97
     TransformComponent:
       Transform:
-        Translate: [-0.730000019, 0.874000013, 0]
+        Translate: [-8.18999958, 11.9738646, -22.1669159]
         Rotate: [0, -0, 0]
-        Scale: [0.0240000002, 0.0359999985, 0.0799999982]
-    SpriteComponent:
-      textureID: 947084306896258002
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-  - InfoComponent:
+        Scale: [5.55999994, 3.52900004, 44.2949982]
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 5692762562094318330
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
       Parent: 0
-      Name: Heart_Dead
-      UID: 7476722325394003748
-      SortOrder: 67
+      Name: start_collider
+      UID: 15225252566924062669
+      SortOrder: 156
     TransformComponent:
       Transform:
-        Translate: [-0.786000013, 0.874000013, 0]
+        Translate: [-0.180000007, 18.9239998, -26.2329998]
         Rotate: [0, -0, 0]
-        Scale: [0.0240000002, 0.0359999985, 0.0799999982]
-    SpriteComponent:
-      textureID: 947084306896258002
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-  - InfoComponent:
+        Scale: [24.5699997, 7.48000002, 1]
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0, 0, 0]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [1, 1, 1]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: true
+        ShowPhysicsDebug: false
+        PhysicsMesh: 0
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
       Parent: 0
-      Name: Heart_Dead
-      UID: 18092647864905269017
-      SortOrder: 65
+      Name: BossTrigger
+      UID: 18170557694918562529
+      SortOrder: 83
     TransformComponent:
       Transform:
-        Translate: [-0.842000008, 0.874000013, 0]
+        Translate: [-0.0500000007, 11.2340002, -5.5]
         Rotate: [0, -0, 0]
-        Scale: [0.0240000002, 0.0359999985, 0.0799999982]
-    SpriteComponent:
-      textureID: 947084306896258002
-      color: [1, 1, 1, 1]
-      renderAs3D: false
+        Scale: [10.3800001, 1.98000002, 1.38999999]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.BossActivationTrigger
+      ParamsJSON: "{\n  \"_bossEntityName\": \"BOSS\",\n  \"_onlyTriggerOnce\": false\n}"
   - InfoComponent:
       Parent: 0
-      Name: Heart_Dead
-      UID: 8476416355653194670
-      SortOrder: 63
+      Name: right main wall
+      UID: 13836464900825464380
+      SortOrder: 146
     TransformComponent:
       Transform:
-        Translate: [-0.898000002, 0.874000013, 0]
+        Translate: [-13.3995094, 18, -22]
         Rotate: [0, -0, 0]
-        Scale: [0.0240000002, 0.0359999985, 0.0799999982]
-    SpriteComponent:
-      textureID: 947084306896258002
-      color: [1, 1, 1, 1]
-      renderAs3D: false
+        Scale: [1, 20.8787899, 46]
+    ModelComponent:
+      ModelID: 7633162898494281895
+      MaterialID: 5692762562094318330
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -860,9 +925,9 @@ ENTITIES:
       SortOrder: 89
     TransformComponent:
       Transform:
-        Translate: [-6.96400023, 10.8160763, 60]
+        Translate: [-15.3439999, 10.8160763, 60]
         Rotate: [0, -0, 0]
-        Scale: [3.5, 2.5999999, 120]
+        Scale: [1, 2.5999999, 120]
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -883,9 +948,9 @@ ENTITIES:
       SortOrder: 164
     TransformComponent:
       Transform:
-        Translate: [6.90616941, 10.8160763, 60]
+        Translate: [13.3559999, 10.8160763, 60]
         Rotate: [0, -0, 0]
-        Scale: [3.5, 2.5999999, 120]
+        Scale: [1, 2.5999999, 120]
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1618,7 +1683,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.BossHideSeekController
-      ParamsJSON: "{\n  \"_activationDelay\": 0.0,\n  \"_catchDelay\": 0.5,\n  \"_detectionRange\": 200.0,\n  \"_flipForward\": false,\n  \"_greenIntensitiesCSV\": \"50.0,1.0\",\n  \"_greenIntensity\": 25.0,\n  \"_invertForward\": true,\n  \"_lightNamesCSV\": \"LightMain,LightShadows\",\n  \"_redIntensitiesCSV\": \"50.0,1.0\",\n  \"_redIntensity\": 25.0,\n  \"_restingYaw\": 0.0,\n  \"_rotationInterval\": 6.0,\n  \"_rotationSpeed\": 120.0,\n  \"_startFacingForward\": false,\n  \"_targetNamesCSV\": \"Samurai\",\n  \"_turnSoundVolume\": 0.6000000238418579,\n  \"_verticalTolerance\": 8.0,\n  \"_warningLineVolume\": 0.4000000059604645,\n  \"_warningSoundVolume\": 0.5,\n  \"_watchingYaw\": 180.0\n}"
+      ParamsJSON: "{\n  \"_activationDelay\": 0.0,\n  \"_catchDelay\": 0.5,\n  \"_detectionRange\": 200.0,\n  \"_flipForward\": false,\n  \"_greenIntensitiesCSV\": \"50.0,1.0\",\n  \"_greenIntensity\": 25.0,\n  \"_invertForward\": true,\n  \"_lightNamesCSV\": \"LightMain,LightShadows\",\n  \"_redIntensitiesCSV\": \"50.0,1.0\",\n  \"_redIntensity\": 25.0,\n  \"_restingYaw\": 0.0,\n  \"_rotationInterval\": 6.0,\n  \"_rotationSpeed\": 120.0,\n  \"_startFacingForward\": false,\n  \"_targetNamesCSV\": \"Samurai\",\n  \"_turnSoundVolume\": 3.5,\n  \"_verticalTolerance\": 8.0,\n  \"_warningSoundVolume\": 3.5999999046325684,\n  \"_watchingYaw\": 180.0\n}"
     SpotLightComponent:
       Light:
         Radiance: [1, 1, 1]
@@ -1765,15 +1830,15 @@ ENTITIES:
       SortOrder: 149
     TransformComponent:
       Transform:
-        Translate: [0, 6.62599993, 60]
+        Translate: [-0.991999984, 6.62599993, 60]
         Rotate: [0, -0, 0]
-        Scale: [10.1999998, 7, 120.305]
+        Scale: [29.5900002, 7, 120.305]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [10.1999998, 7, 120.305]
+        Previous Scale: [29.5900002, 7, 120.305]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
@@ -1821,14 +1886,14 @@ ENTITIES:
       SortOrder: 121
     TransformComponent:
       Transform:
-        Translate: [-8.490592, 17.8472576, 14.5377302]
-        Rotate: [174.000015, -55.760025, 179.999985]
+        Translate: [0.306050122, 29.6250343, -11.7627163]
+        Rotate: [127.750015, -0.885025024, 179.999985]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
         NearPlane: 0.00100000005
         FarPlane: 935.47998
-        FOV: 100
+        FOV: 99
     ThirdPersonCameraComponent:
       Target UID: 15509033343906787136
       Offset: [0.00999999978, 4.55000019, -1.00999999]
@@ -3486,8 +3551,8 @@ ENTITIES:
           filePaths:
             - Resources/Audio/Deathless BGM 1 v2.wav
           loop: true
-          volume: 0.0370000005
-          priority: 181
+          volume: 0.202999994
+          priority: 109
           pitch: 1
           stereoPan: 0
           spatialBlend: 0
@@ -3499,7 +3564,7 @@ ENTITIES:
           repeatInterval: 0.5
           animTrigger: ""
           minDistance: 1
-          maxDistance: 121.699997
+          maxDistance: 50.0999985
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0.670000017, 0]
@@ -3680,118 +3745,35 @@ ENTITIES:
         BloomStrength: 1
   - InfoComponent:
       Parent: 0
-      Name: Heart_1
-      UID: 15616386779732526889
-      SortOrder: 62
+      Name: ToriGate
+      UID: 4234174040328018575
+      SortOrder: 9
     TransformComponent:
       Transform:
-        Translate: [-0.898000002, 0.874000013, 0]
+        Translate: [0.0977584124, 10.1504192, 111.659424]
         Rotate: [0, -0, 0]
-        Scale: [0.0240000002, 0.0359999985, 0.0799999982]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
+        Scale: [0.0299999993, 0.0299999993, 0.0299999993]
+    ModelComponent:
+      ModelID: 2284009292012450060
+      MaterialID: 7666986193932932989
+      ModelName: ""
+      MaterialName: ""
+      ModelSource: ""
+      MaterialSource: ""
   - InfoComponent:
       Parent: 0
-      Name: Heart_2
-      UID: 15141600237030746592
-      SortOrder: 64
+      Name: Cutscene for boss
+      UID: 7261308031552102205
+      SortOrder: 48
     TransformComponent:
       Transform:
-        Translate: [-0.842000008, 0.874000013, 0]
+        Translate: [0, 9.99270344, -8.31653309]
         Rotate: [0, -0, 0]
-        Scale: [0.0240000002, 0.0359999985, 0.0799999982]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 0
-      Name: Heart_3
-      UID: 7990280458861593247
-      SortOrder: 66
-    TransformComponent:
-      Transform:
-        Translate: [-0.786000013, 0.874000013, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0240000002, 0.0359999985, 0.0799999982]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 0
-      Name: Heart_4
-      UID: 12636296475842031521
-      SortOrder: 68
-    TransformComponent:
-      Transform:
-        Translate: [-0.730000019, 0.874000013, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0240000002, 0.0359999985, 0.0799999982]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 0
-      Name: Heart_5
-      UID: 14531722547117863261
-      SortOrder: 70
-    TransformComponent:
-      Transform:
-        Translate: [-0.674000025, 0.874000013, 0]
-        Rotate: [0, -0, 0]
-        Scale: [0.0240000002, 0.0359999985, 0.0799999982]
-    SpriteComponent:
-      textureID: 9683671951523272381
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [3, 3, 3]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: true
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: PlayerSpawn
-      UID: 13742085224280917219
-      SortOrder: 145
-    TransformComponent:
-      Transform:
-        Translate: [0, 13.3230076, -21.7175274]
-        Rotate: [0, -0, 0]
-        Scale: [1, 1, 1]
+        Scale: [5.34000015, 6.05000019, 4.25]
     ScriptComponent:
       Enabled: true
-      TypeName: GameScripts.SpawnPoint
-      ParamsJSON: "{}"
-  - InfoComponent:
-      Parent: 0
-      Name: right main wall
-      UID: 13836464900825464380
-      SortOrder: 146
-    TransformComponent:
-      Transform:
-        Translate: [-13.3995094, 18, -22]
-        Rotate: [0, -0, 0]
-        Scale: [1, 20.8787899, 46]
-    ModelComponent:
-      ModelID: 7633162898494281895
-      MaterialID: 5692762562094318330
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
+      TypeName: GameScripts.CutsceneSequencer
+      ParamsJSON: "{\n  \"AllowSkip\": true,\n  \"BlockInput\": false,\n  \"CutsceneFile\": \"BossCutscene.seq\",\n  \"PlayOnStart\": true,\n  \"PlayOnTrigger\": false,\n  \"VisualDebug\": true\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -3807,74 +3789,14 @@ ENTITIES:
         Type: BOX
     InfoComponent:
       Parent: 0
-      Name: Main_Wall_Left_Fill
-      UID: 1676710222772089113
-      SortOrder: 90
+      Name: front_Black_Wall
+      UID: 3995974847516589675
+      SortOrder: 101
     TransformComponent:
       Transform:
-        Translate: [8.05599976, 11.9738646, -22.1669159]
+        Translate: [-1.04900002, 11, 136.185089]
         Rotate: [0, -0, 0]
-        Scale: [5.55999994, 3.52900004, 44.2949982]
-    ModelComponent:
-      ModelID: 7633162898494281895
-      MaterialID: 5692762562094318330
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Main_Wall_Left_Fill_2
-      UID: 3924406664193600481
-      SortOrder: 99
-    TransformComponent:
-      Transform:
-        Translate: [9.67099953, 14.9178638, -22.1669159]
-        Rotate: [0, -0, 0]
-        Scale: [3.3900001, 2.35899997, 45.1549988]
-    ModelComponent:
-      ModelID: 7633162898494281895
-      MaterialID: 5692762562094318330
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: Main_Wall_Right_Fill
-      UID: 3234482310908122713
-      SortOrder: 97
-    TransformComponent:
-      Transform:
-        Translate: [-8.18999958, 11.9738646, -22.1669159]
-        Rotate: [0, -0, 0]
-        Scale: [5.55999994, 3.52900004, 44.2949982]
+        Scale: [30, 70, 4.40199995]
     ModelComponent:
       ModelID: 7633162898494281895
       MaterialID: 5692762562094318330
@@ -3927,37 +3849,14 @@ ENTITIES:
         Type: BOX
     InfoComponent:
       Parent: 0
-      Name: start_collider
-      UID: 15225252566924062669
-      SortOrder: 156
+      Name: Main_Wall_Left_Fill_2
+      UID: 3924406664193600481
+      SortOrder: 99
     TransformComponent:
       Transform:
-        Translate: [-0.180000007, 18.9239998, -26.2329998]
+        Translate: [9.67099953, 14.9178638, -22.1669159]
         Rotate: [0, -0, 0]
-        Scale: [24.5699997, 7.48000002, 1]
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: false
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: front_Black_Wall
-      UID: 3995974847516589675
-      SortOrder: 101
-    TransformComponent:
-      Transform:
-        Translate: [-1.04900002, 11, 136.185089]
-        Rotate: [0, -0, 0]
-        Scale: [30, 70, 4.40199995]
+        Scale: [3.3900001, 2.35899997, 45.1549988]
     ModelComponent:
       ModelID: 7633162898494281895
       MaterialID: 5692762562094318330
@@ -3965,94 +3864,3 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
-  - ColliderComponent:
-      Collider:
-        LocalPosition: [0, 0, 0]
-        LocalRotation: [0, 0, 0]
-        LocalScale: [1, 1, 1]
-        DynamicFriction: 0.5
-        StaticFriction: 0
-        Restitution: 0.100000001
-        IsTrigger: true
-        ShowPhysicsDebug: false
-        PhysicsMesh: 0
-        SurfaceType: DEFAULT
-        Type: BOX
-    InfoComponent:
-      Parent: 0
-      Name: BossTrigger
-      UID: 18170557694918562529
-      SortOrder: 83
-    TransformComponent:
-      Transform:
-        Translate: [-0.0500000007, 11.2340002, -5.5]
-        Rotate: [0, -0, 0]
-        Scale: [10.3800001, 1.98000002, 1.38999999]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.BossActivationTrigger
-      ParamsJSON: "{\n  \"_bossEntityName\": \"BOSS\",\n  \"_onlyTriggerOnce\": false\n}"
-  - InfoComponent:
-      Parent: 0
-      Name: Cutscene for boss
-      UID: 7261308031552102205
-      SortOrder: 48
-    TransformComponent:
-      Transform:
-        Translate: [0, 9.99270344, -8.31653309]
-        Rotate: [0, -0, 0]
-        Scale: [5.34000015, 6.05000019, 4.25]
-    ScriptComponent:
-      Enabled: true
-      TypeName: GameScripts.CutsceneSequencer
-      ParamsJSON: "{\n  \"AllowSkip\": true,\n  \"BlockInput\": false,\n  \"CutsceneFile\": \"BossCutscene.seq\",\n  \"PlayOnStart\": true,\n  \"PlayOnTrigger\": false,\n  \"VisualDebug\": true\n}"
-  - InfoComponent:
-      Parent: 0
-      Name: UI_Stance
-      UID: 15005240768927206956
-      SortOrder: 35
-    TransformComponent:
-      Transform:
-        Translate: [0.899999976, -0.771000028, 0]
-        Rotate: [0, 0, 0]
-        Scale: [0.0599999987, 0.100000001, 0.5]
-    SpriteComponent:
-      textureID: 2900915588722288564
-      color: [1, 1, 1, 1]
-      renderAs3D: false
-  - InfoComponent:
-      Parent: 0
-      Name: ToriGate
-      UID: 4234174040328018575
-      SortOrder: 9
-    TransformComponent:
-      Transform:
-        Translate: [0.0977584124, 10.1504192, 111.659424]
-        Rotate: [0, -0, 0]
-        Scale: [0.0299999993, 0.0299999993, 0.0299999993]
-    ModelComponent:
-      ModelID: 2284009292012450060
-      MaterialID: 7666986193932932989
-      ModelName: ""
-      MaterialName: ""
-      ModelSource: ""
-      MaterialSource: ""
-  - InfoComponent:
-      Parent: 0
-      Name: video gate
-      UID: 9479157243688346801
-      SortOrder: 24
-    TransformComponent:
-      Transform:
-        Translate: [0.411574125, 14.1149578, 111.392952]
-        Rotate: [0, -0, 0]
-        Scale: [4, 3.20000005, 1]
-    VideoComponent:
-      VideoPath: ENDPORTAL.mpeg
-      PlayOnStart: true
-      Loop: true
-      Volume: 1
-      PlaybackSpeed: 1
-      RenderAs3D: true
-      RemoveBlackBackground: false
-      TintColor: [1, 1, 1, 1]
