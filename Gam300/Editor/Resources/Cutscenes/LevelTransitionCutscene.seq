@@ -3,8 +3,8 @@ TRACK "Camera" 4
 KEY 0 0 0 0 0 "Level2_PatrolEnemy_3"
 KEY 231 0 0 0 0 "Level2_PatrolEnemy_3"
 TRACK "Camera" 0
-KEY 0 5 3 0 0 "Level2_PatrolEnemy_3"
-KEY 231 0 5 0 0 "Level2_PatrolEnemy_3"
+KEY 0 5 0 0 0 "Level 2 Map (1 CutScene)"
+KEY 231 -5 0 0 0 "Level 2 Map (1 CutScene)"
 KEY 246 5 5 0 0 "Level 2 Map (CutScene)"
 KEY 480 0 2 25 0 "Level 2 Map (1 CutScene)"
 KEY 720 0 2 0 0 "Level 2 Map (2 CutScene)"

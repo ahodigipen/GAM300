@@ -2,6 +2,16 @@ Version: 1.0
 ENTITIES:
   - InfoComponent:
       Parent: 0
+      Name: Cutscene First Scene
+      UID: 10914770633658741841
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [10.3625631, 15.74652, 25.3268223]
+        Rotate: [0, -0, 0]
+        Scale: [1, 1, 1]
+  - InfoComponent:
+      Parent: 0
       Name: Token_Light_2
       UID: 18131422163738847842
       SortOrder: 12
@@ -11636,8 +11646,8 @@ ENTITIES:
       SortOrder: 444
     TransformComponent:
       Transform:
-        Translate: [25.3312073, 37.6168137, -13.8486786]
-        Rotate: [151.1875, 407.6875, 180]
+        Translate: [12.0299549, 18.5586033, 16.7711239]
+        Rotate: [161, 356.1875, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
