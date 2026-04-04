@@ -1,5 +1,19 @@
 Version: 1.0
 ENTITIES:
+  - InfoComponent:
+      Parent: 0
+      Name: Cutscene
+      UID: 14347940080400925792
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    ScriptComponent:
+      Enabled: true
+      TypeName: GameScripts.CutsceneSequencer
+      ParamsJSON: "{\n  \"AllowSkip\": false,\n  \"CutsceneFile\": \"Cutscene_Hung.seq\",\n  \"PlayOnStart\": true\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -71,6 +85,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
@@ -88,6 +103,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy)
@@ -105,6 +121,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy) (Copy)
@@ -122,6 +139,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy)
@@ -139,6 +157,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy)
@@ -156,6 +175,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy)
@@ -173,6 +193,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
@@ -190,6 +211,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy)
@@ -207,6 +229,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy)
@@ -224,6 +247,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy) (Copy)
@@ -241,6 +265,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy)
@@ -258,6 +283,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy)
@@ -275,6 +301,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy)
@@ -292,6 +319,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy)
@@ -309,6 +337,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy)
@@ -326,6 +355,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy)
@@ -343,6 +373,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy)
@@ -360,6 +391,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy)
@@ -377,6 +409,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy)
@@ -394,6 +427,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy)
@@ -411,6 +445,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy)
@@ -428,6 +463,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR2
@@ -445,6 +481,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR32
@@ -462,6 +499,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR12
@@ -479,6 +517,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR23
@@ -496,6 +535,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR33
@@ -513,6 +553,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR26
@@ -530,6 +571,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR42
@@ -547,6 +589,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR48
@@ -564,6 +607,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR15
@@ -581,6 +625,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR13
@@ -598,6 +643,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR17
@@ -615,6 +661,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR41
@@ -632,6 +679,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR14
@@ -649,6 +697,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR28
@@ -666,6 +715,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy)
@@ -683,6 +733,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR24
@@ -700,6 +751,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR50
@@ -717,6 +769,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR34
@@ -734,6 +787,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR4
@@ -751,6 +805,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR47
@@ -768,6 +823,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: 44
@@ -785,6 +841,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR39
@@ -802,6 +859,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR37
@@ -819,6 +877,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR35
@@ -836,6 +895,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR22
@@ -853,6 +913,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -897,6 +958,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BarSmallify (Copy) (Copy)
@@ -944,6 +1006,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Inventory_BG
@@ -1686,6 +1749,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 8420205164133478996
       Name: DialoguePatrol_2
@@ -1717,6 +1781,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1777,6 +1842,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -1835,6 +1901,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -1858,6 +1925,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -1881,6 +1949,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -1904,6 +1973,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -1927,6 +1997,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -1950,6 +2021,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -1973,6 +2045,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -1996,6 +2069,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -2019,6 +2093,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -2065,6 +2140,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -2105,6 +2181,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -2145,6 +2222,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -2185,6 +2263,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -2225,6 +2304,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 18142273225304105880
       Name: DialogueExit1
@@ -2256,6 +2336,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BARTOP
@@ -2273,6 +2354,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 8420205164133478996
       Name: DialoguePatrol_1
@@ -2420,6 +2502,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -2460,6 +2543,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -2504,6 +2588,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet
@@ -2521,6 +2606,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Inventory_Slot5_Text
@@ -2584,6 +2670,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 1, 1]
@@ -2630,6 +2717,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _footstepSoundPath
@@ -2798,6 +2886,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     SoundComponent:
       Entries:
         - name: _turnSoundPath1
@@ -2908,8 +2997,8 @@ ENTITIES:
       SortOrder: 178
     TransformComponent:
       Transform:
-        Translate: [-31.2873707, 25.8922958, 15.8961716]
-        Rotate: [0, -53.9999847, 0]
+        Translate: [-31.2873707, 23.75, 15.8961716]
+        Rotate: [0, 90, 0]
         Scale: [0.0164994597, 0.0164999999, 0.0164994597]
     CharacterControllerComponent:
       Radius: 0.800000012
@@ -2935,6 +3024,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     AnimatorComponent:
       Clips:
         - name: mixamo.com
@@ -2953,6 +3043,10 @@ ENTITIES:
           filePath: Resources//Models/Player/animations/Stand To Roll (1).fbx
         - name: Crouching Idle
           filePath: Resources/Models/Player/animations/Crouching Idle.fbx
+        - name: Death
+          filePath: Resources/Models/Player/animations/m6_death_animation.fbx
+        - name: StrungUp
+          filePath: Resources/Models/Player/animations/player strung up anim.fbx
       States:
         - name: Walk
           clipIndex: 2
@@ -3074,7 +3168,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PlayerMovement
-      ParamsJSON: "{\n  \"_levelStartPos\": {\n    \"X\": -55.20199966430664,\n    \"Y\": 1.7999999523162842,\n    \"Z\": 5.014999866485596\n  },\n  \"_teleportToStartTrigger\": false\n}"
+      ParamsJSON: "{\n  \"_deathAnimClipName\": \"Death\",\n  \"_deathAnimDuration\": 3.5,\n  \"_levelStartPos\": {\n    \"X\": -55.20199966430664,\n    \"Y\": 1.7999999523162842,\n    \"Z\": 5.014999866485596\n  },\n  \"_startAnimClipName\": \"StrungUp\",\n  \"_startAnimDuration\": 0.0,\n  \"_teleportToStartTrigger\": false\n}"
   - InfoComponent:
       Parent: 0
       Name: PlayerSpawn
@@ -3082,7 +3176,7 @@ ENTITIES:
       SortOrder: 177
     TransformComponent:
       Transform:
-        Translate: [-31.2873707, 25.8922958, 15.8961716]
+        Translate: [-31.2873707, 23.75, 15.8961716]
         Rotate: [0, -0, 0]
         Scale: [1, 0.999999464, 1.00000036]
     ScriptComponent:
@@ -3129,6 +3223,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -3169,6 +3264,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: DialogueSentry
@@ -3219,6 +3315,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: Resources/Models/Cube.fbx
       MaterialSource: Marble
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Skybox
@@ -3271,6 +3368,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Scene Settings
@@ -3332,6 +3430,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Camera
@@ -3339,8 +3438,8 @@ ENTITIES:
       SortOrder: 179
     TransformComponent:
       Transform:
-        Translate: [-33.5753593, 30.0406361, 19.9131165]
-        Rotate: [-192.875, -76.2499847, 180]
+        Translate: [-28.0287762, 26.9891853, 16.5885296]
+        Rotate: [-202.9375, 88.4375153, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -3353,8 +3452,8 @@ ENTITIES:
       Current Distance: 4
       Min Distance: 2
       Max Distance: 5
-      Current Yaw: 791
-      Current Pitch: -85
+      Current Yaw: 1525
+      Current Pitch: 15
       Mouse Sensitivity: 1
       Scroll Sensitivity: 1
       Start Lock Duration: 0
@@ -3398,6 +3497,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Direction
@@ -3454,6 +3554,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -3494,6 +3595,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -3534,6 +3636,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -3574,6 +3677,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy)
@@ -3591,6 +3695,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Light2
@@ -3647,6 +3752,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy) (Copy) (Copy)
@@ -3664,6 +3770,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -3704,6 +3811,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Inventory_Slot2_Text
@@ -3744,6 +3852,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR31
@@ -3761,6 +3870,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR11
@@ -3778,6 +3888,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR6
@@ -3795,6 +3906,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR30
@@ -3812,6 +3924,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR55
@@ -3829,6 +3942,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Spotlight
@@ -3898,6 +4012,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR20
@@ -3915,6 +4030,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR54
@@ -3932,6 +4048,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR27
@@ -3949,6 +4066,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: DialogueCell
@@ -3976,6 +4094,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR5
@@ -3993,6 +4112,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR53
@@ -4010,6 +4130,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR19
@@ -4027,6 +4148,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: BAR36
@@ -4044,6 +4166,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: StaircaseHandle
@@ -4061,6 +4184,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -4101,6 +4225,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hanging_Lantern_1
@@ -4118,6 +4243,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
     PointLightComponent:
       Light:
         Radiance: [1, 0.744809687, 0.421568632]
@@ -4164,6 +4290,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -4204,6 +4331,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.519999981, 0, 0]
@@ -4244,6 +4372,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0.519999981, 0, 0]
@@ -4284,6 +4413,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -4324,6 +4454,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -4655,6 +4786,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy) (Copy)
@@ -4672,6 +4804,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy)
@@ -4689,6 +4822,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy)
@@ -4706,6 +4840,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy)
@@ -4723,6 +4858,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy)
@@ -4740,6 +4876,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy)
@@ -4757,6 +4894,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy) (Copy)
@@ -4774,6 +4912,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy)
@@ -4791,6 +4930,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy)
@@ -4808,6 +4948,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy)
@@ -4825,6 +4966,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy)
@@ -4842,6 +4984,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy)
@@ -4859,6 +5002,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy)
@@ -4876,6 +5020,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy)
@@ -4893,6 +5038,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy)
@@ -4910,6 +5056,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy)
@@ -4927,6 +5074,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy)
@@ -4944,6 +5092,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: Hangingpuppet (Copy) (Copy) (Copy) (Copy)
@@ -4961,6 +5110,7 @@ ENTITIES:
       MaterialName: ""
       ModelSource: ""
       MaterialSource: ""
+      OpacityOverride: 1
   - InfoComponent:
       Parent: 0
       Name: RoomTone

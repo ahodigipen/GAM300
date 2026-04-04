@@ -1433,10 +1433,17 @@ namespace Boom
     }
     void Application::RenderSpriteOverlay()
     {
-        // Re-collect and render 2D screen-space sprites at full resolution (same logic as guiList in RenderScene)
-        std::vector<std::tuple<SpriteComponent, Transform2D, uint32_t>> guiList;
+        // Unified draw list for 2D sprites and 2D videos, sorted together by Z so that
+        // VideoComponents participate in the same depth order as SpriteComponents.
+        // Previously videos were rendered in a separate pass after all sprites, making
+        // them always appear on top regardless of their Z position.
+        struct OverlayItem {
+            float           z;
+            std::function<void()> draw;
+        };
+        std::vector<OverlayItem> overlayItems;
 
-        EnttView<Entity, TransformComponent>([this, &guiList](auto entity, TransformComponent&) {
+        EnttView<Entity, TransformComponent>([this, &overlayItems](auto entity, TransformComponent&) {
             if (entity.Has<DeactivatedComponent>()) return;
 
             if (entity.Has<SpriteComponent>()) {
@@ -1454,57 +1461,60 @@ namespace Boom
                     glm::vec2(worldTransform.scale.x, worldTransform.scale.y)
                 };
 
-                guiList.push_back({ comp, guiTransform, entt::to_integral(entity.ID()) });
+                TextureAsset* texture{ m_Context->assets->TryGet<TextureAsset>(comp.textureID) };
+                if (!texture) return;
+
+                glm::vec4 color = comp.color;
+                overlayItems.push_back({ worldTransform.translate.z,
+                    [this, texture, guiTransform, color]() {
+                        m_Context->renderer->DrawQuad(texture->data, guiTransform, color);
+                    }
+                });
+            }
+            else if (entity.Has<VideoComponent>()) {
+                VideoComponent& comp{ entity.Get<VideoComponent>() };
+                if (comp.videoPath.empty()) return;
+                if (comp.renderAs3D) return; // Only 2D videos
+
+                VideoPlayer* player = m_Context->videoSystem ? m_Context->videoSystem->GetPlayer(entity.ID()) : nullptr;
+                if (!player || !player->IsLoaded()) return;
+
+                uint32_t textureId = player->GetTextureID();
+                if (textureId == 0) return;
+
+                glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
+                Transform3D worldTransform;
+                DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
+
+                glm::vec4 adjustedTint = comp.tintColor;
+                adjustedTint.r *= comp.brightness;
+                adjustedTint.g *= comp.brightness;
+                adjustedTint.b *= comp.brightness;
+
+                Transform2D transform2D{
+                    worldTransform.translate,
+                    worldTransform.rotate.z,
+                    glm::vec2(worldTransform.scale.x, worldTransform.scale.y)
+                };
+
+                overlayItems.push_back({ worldTransform.translate.z,
+                    [this, textureId, transform2D, adjustedTint]() {
+                        glDepthMask(GL_FALSE);
+                        m_Context->renderer->DrawQuadRaw(textureId, transform2D, adjustedTint);
+                        glDepthMask(GL_TRUE);
+                    }
+                });
             }
         });
 
-        // Sort by Z for proper depth ordering
-        std::sort(guiList.begin(), guiList.end(), [](const auto& a, const auto& b) {
-            return std::get<1>(a).translate.z < std::get<1>(b).translate.z;
+        // Sort all 2D overlay items together by Z (most negative first = furthest back)
+        std::sort(overlayItems.begin(), overlayItems.end(), [](const OverlayItem& a, const OverlayItem& b) {
+            return a.z < b.z;
         });
 
-        // Render sorted 2D sprites
-        for (auto const& gui : guiList) {
-            TextureAsset* texture{ m_Context->assets->TryGet<TextureAsset>(std::get<0>(gui).textureID) };
-            if (texture)
-                m_Context->renderer->DrawQuad(texture->data, std::get<1>(gui), std::get<0>(gui).color);
-        }
-
-        // Render 2D video overlays
-        EnttView<Entity, TransformComponent>([this](auto entity, TransformComponent&) {
-            if (entity.Has<DeactivatedComponent>()) return;
-            if (!entity.Has<VideoComponent>()) return;
-
-            VideoComponent& comp{ entity.Get<VideoComponent>() };
-            if (comp.videoPath.empty()) return;
-            if (comp.renderAs3D) return; // Only 2D videos
-
-            VideoPlayer* player = m_Context->videoSystem ? m_Context->videoSystem->GetPlayer(entity.ID()) : nullptr;
-            if (!player || !player->IsLoaded()) return;
-
-            uint32_t textureId = player->GetTextureID();
-            if (textureId == 0) return;
-
-            glm::mat4 worldMatrix = Boom::GetWorldMatrix(m_Context->scene, entity.ID());
-            Transform3D worldTransform;
-            DecomposeMatrix(worldMatrix, worldTransform.translate, worldTransform.rotate, worldTransform.scale);
-
-            // Apply brightness to tint color (multiply RGB, preserve alpha)
-            glm::vec4 adjustedTint = comp.tintColor;
-            adjustedTint.r *= comp.brightness;
-            adjustedTint.g *= comp.brightness;
-            adjustedTint.b *= comp.brightness;
-
-            Transform2D transform2D{
-                worldTransform.translate,
-                worldTransform.rotate.z,
-                glm::vec2(worldTransform.scale.x, worldTransform.scale.y)
-            };
-
-            glDepthMask(GL_FALSE);
-            m_Context->renderer->DrawQuadRaw(textureId, transform2D, adjustedTint);
-            glDepthMask(GL_TRUE);
-        });
+        // Draw in sorted order — sprites and videos interleaved by Z depth
+        for (auto const& item : overlayItems)
+            item.draw();
     }
 
     void Application::UpdateThirdPersonCameras()

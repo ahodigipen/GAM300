@@ -189,6 +189,12 @@ namespace Boom
         internal extern static void Boom_API_AnimatorSetStateMachineEnabled(ulong h, bool enabled);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static int Boom_API_AnimatorGetClipCount(ulong h);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static string Boom_API_AnimatorGetClipName(ulong h, int index);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Boom_API_HasAnimator(ulong handle);
 
         // ========= TRANSFORM STRUCT INTERNAL CALLS =========
@@ -1066,6 +1072,8 @@ namespace Boom
         public static void AnimatorSetTrigger(ulong h, string n) => Native.Boom_API_AnimatorSetTrigger(h, n);
         public static void AnimatorPlay(ulong h, string state) => Native.Boom_API_AnimatorPlay(h, state);
         public static void AnimatorSetStateMachineEnabled(ulong h, bool enabled) => Native.Boom_API_AnimatorSetStateMachineEnabled(h, enabled);
+        public static int  AnimatorGetClipCount(ulong h) => Native.Boom_API_AnimatorGetClipCount(h);
+        public static string AnimatorGetClipName(ulong h, int index) => Native.Boom_API_AnimatorGetClipName(h, index) ?? "";
 
         // ===== Input Constants =====
         // ===== SOUND / AUDIO API =====

@@ -62,6 +62,25 @@ namespace GameScripts
         private float _blackHoldDuration = 0.15f;
         private float _fadeInDuration = 0.75f;
 
+        [Boom.EditorExposed("Death Anim Clip", "Exact name of the death animation clip to play (leave empty to skip).")]
+        private string _deathAnimClipName = "";
+
+        [Boom.EditorExposed("Death Anim Duration", "Seconds to wait for the death animation before fading/respawning.")]
+        private float _deathAnimDuration = 1.5f;
+
+        private bool _isPlayingDeathAnim = false;
+        private float _deathAnimTimer = 0f;
+        private Action _deathAnimCallback = null;
+
+        [Boom.EditorExposed("Start Anim Clip", "Clip to play on game start before control is given to the player (leave empty to skip).")]
+        private string _startAnimClipName = "";
+
+        [Boom.EditorExposed("Start Anim Duration", "Seconds to play the start animation before handing control to the player.")]
+        private float _startAnimDuration = 3.0f;
+
+        private bool _isPlayingStartAnim = false;
+        private float _startAnimTimer = 0f;
+
         private FootstepComponent _footstepComponent;
 
         private static ulong s_playerEntity = 0;
@@ -314,6 +333,16 @@ namespace GameScripts
                 API.SetTextColor(_godModeTextEntity, new Vec4(0, 0, 0, 0));
             }
 
+            if (_hasAnimator && !string.IsNullOrEmpty(_startAnimClipName))
+            {
+                _isPlayingStartAnim = true;
+                _isRespawning = true;
+                _startAnimTimer = 0f;
+                API.AnimatorSetStateMachineEnabled(Entity, false);
+                API.AnimatorPlay(Entity, _startAnimClipName);
+                API.Log($"[PlayerMovement] Playing start animation \"{_startAnimClipName}\" for {_startAnimDuration}s.");
+            }
+
             DebugCrouch($"OnStart complete. Player Entity: {Entity}");
             DebugLogCrouchState("OnStart");
         }
@@ -335,7 +364,7 @@ namespace GameScripts
                 s_tutorialDeathCount++;
                 int countSnapshot = s_tutorialDeathCount;
                 int deathIndex = Math.Min(countSnapshot, 3);
-                StartRespawn(() => StoryDialogueManager.PlayTutorialZoneDeathSequence(deathIndex));
+                StartDeathAnimation(() => StartRespawn(() => StoryDialogueManager.PlayTutorialZoneDeathSequence(deathIndex)));
                 return;
             }
 
@@ -349,9 +378,57 @@ namespace GameScripts
             API.SetSoundVolume("player_damage", 1.0f);
 
             if (_health <= 0)
-                Entry.TriggerPlayerDeath();
+                StartDeathAnimation(() => Entry.TriggerPlayerDeath());
             else
-                StartRespawn();
+                StartDeathAnimation(() => StartRespawn());
+        }
+
+        private void StartDeathAnimation(Action onComplete)
+        {
+            _isRespawning = true; // freeze input/movement immediately
+            _verticalVelocity = 0f;
+            API.SetLinearVelocity(Entity, new Vec3(0, 0, 0));
+            _deathAnimCallback = onComplete;
+            _deathAnimTimer = 0f;
+            _isPlayingDeathAnim = true;
+
+            if (_hasAnimator && !string.IsNullOrEmpty(_deathAnimClipName))
+            {
+                API.AnimatorSetStateMachineEnabled(Entity, false);
+                API.AnimatorPlay(Entity, _deathAnimClipName);
+                API.Log($"[PlayerMovement] Playing death animation \"{_deathAnimClipName}\" for {_deathAnimDuration}s.");
+            }
+            else
+            {
+                API.Log("[PlayerMovement] No death animation clip set — skipping straight to callback.");
+            }
+        }
+
+        private void UpdateDeathAnim(float dt)
+        {
+            if (!_isPlayingDeathAnim) return;
+            _deathAnimTimer += dt;
+            if (_deathAnimTimer >= _deathAnimDuration)
+            {
+                _isPlayingDeathAnim = false;
+                Action cb = _deathAnimCallback;
+                _deathAnimCallback = null;
+                cb?.Invoke();
+            }
+        }
+
+        private void UpdateStartAnim(float dt)
+        {
+            if (!_isPlayingStartAnim) return;
+            _startAnimTimer += dt;
+            if (_startAnimTimer >= _startAnimDuration)
+            {
+                _isPlayingStartAnim = false;
+                _isRespawning = false;
+                if (_hasAnimator)
+                    API.AnimatorSetStateMachineEnabled(Entity, true);
+                API.Log("[PlayerMovement] Start animation finished — handing control to player.");
+            }
         }
 
         private void StartRespawn(Action onComplete = null)
@@ -380,12 +457,15 @@ namespace GameScripts
         {
             _verticalVelocity = 0f;
 
-            // Apply manual offset to the teleport position since API.TeleportController 
+            // Apply manual offset to the teleport position since API.TeleportController
             // ignores the localOffset in CharacterControllerComponent
             Vec3 teleportPos = new Vec3(_spawnPoint.X, _spawnPoint.Y + _controllerOffsetY, _spawnPoint.Z);
             API.TeleportController(Entity, teleportPos);
-            
+
             API.SetPosition(Entity, _spawnPoint);
+
+            if (_hasAnimator)
+                API.AnimatorSetStateMachineEnabled(Entity, true);
 
             _isInvulnerable = true;
             _invulnerabilityTimer = 0f;
@@ -556,6 +636,8 @@ namespace GameScripts
                 return;
             }
 
+            UpdateStartAnim(dt);
+            UpdateDeathAnim(dt);
             UpdateFade(dt);
             if (!API.HasTransform(Entity) || !API.HasScript(Entity)) return;
 
@@ -1084,6 +1166,7 @@ namespace GameScripts
         }
         public int GetHealth() => _health;
         public static ulong GetPlayerEntity() => s_playerEntity;
+        public static bool IsPlayingStartAnim => s_instance != null && s_instance._isPlayingStartAnim;
         public static bool IsPlayerInvisibleToEnemies()
         {
             if (s_instance == null) return false;

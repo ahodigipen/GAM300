@@ -11,6 +11,7 @@ namespace GameScripts
 
         // Static Registry by ID (Used by animation tracks/events)
         public static System.Collections.Generic.Dictionary<ulong, CutsceneSequencer> InstancesById = new System.Collections.Generic.Dictionary<ulong, CutsceneSequencer>();
+        public static CutsceneSequencer ActiveInstance = null;
 
         public static void PlayCutscene(string entityName)
         {
@@ -99,6 +100,7 @@ namespace GameScripts
         private int _duration = 600;
         private Action _onCompleteCallback = null;
         private bool _hasTriggered = false;
+        private int _waitForKey = 0;
 
         public class KeyFrame
         {
@@ -222,6 +224,7 @@ namespace GameScripts
             API.Log("[CutsceneSequencer] Play() Called!");
             _isPlaying = true;
             _currentTime = 0f;
+            ActiveInstance = this;
 
             // Explicit Blocking
             if (BlockInput)
@@ -267,10 +270,26 @@ namespace GameScripts
             Stop();
         }
 
+        public static void WaitForInteract()
+        {
+            if (ActiveInstance != null)
+            {
+                ActiveInstance._waitForKey = API.KEY_E;
+                UIManager.ShowHoldPrompt();
+            }
+        }
+
         public void Stop()
         {
             _isPlaying = false;
             _currentTime = 0f;
+
+            if (_waitForKey != 0)
+            {
+                _waitForKey = 0;
+                UIManager.HideHoldPrompt();
+            }
+            if (ActiveInstance == this) ActiveInstance = null;
 
             PlayerMovement.CutsceneMode = false;
 
@@ -323,6 +342,20 @@ namespace GameScripts
                     {
                         Skip();
                         return;
+                    }
+                }
+
+                // WAIT FOR INTERACTION
+                if (_waitForKey != 0)
+                {
+                    if (API.IsKeyDown(_waitForKey))
+                    {
+                        _waitForKey = 0;
+                        UIManager.HideHoldPrompt();
+                    }
+                    else
+                    {
+                        return; // Pause time advancement
                     }
                 }
 
@@ -636,6 +669,7 @@ namespace GameScripts
                         API.SetRotation(track.cachedEntityID, new Vec3(x, y, z));
                     }
                     else if (track.type == 2) API.SetScale(track.cachedEntityID, new Vec3(x, y, z));
+                    else if (track.type == 6) API.SetModelOpacity(track.cachedEntityID, x);
                     continue;
                 }
 
@@ -662,6 +696,7 @@ namespace GameScripts
                         API.SetRotation(track.cachedEntityID, new Vec3(x, y, z));
                     }
                     else if (track.type == 2) API.SetScale(track.cachedEntityID, new Vec3(x, y, z));
+                    else if (track.type == 6) API.SetModelOpacity(track.cachedEntityID, x);
                     continue;
                 }
 
@@ -720,6 +755,10 @@ namespace GameScripts
                     else if (track.type == 2) // Scale
                     {
                         API.SetScale(track.cachedEntityID, new Vec3(x, y, z));
+                    }
+                    else if (track.type == 6) // Opacity
+                    {
+                        API.SetModelOpacity(track.cachedEntityID, x);
                     }
                 }
             }
