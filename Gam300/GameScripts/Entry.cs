@@ -48,6 +48,8 @@ namespace GameScripts
         public static bool IsGameEnded = false;
         public static bool IsInventoryOpen = false;
         public static bool s_fadeInAfterGamma = false; // Set by GammaAdjustMenu before unloading, triggers fade-in
+        private static bool s_wasInventoryOpenBeforePause = false;
+        private static bool s_wasGodModeOnBeforePause = false;
 
         public static bool IsStartPopupActive = false;
         private static float _sceneInputDebounceTimer = 0.0f;
@@ -451,9 +453,7 @@ namespace GameScripts
                 if ((escape_KeyDown && !_escape_KeyWasDown) || (start_ButtonDown && !_start_ButtonWasDown))
                 {
                     API.Log("Pausing game...");
-                    IsGamePaused = true;
-                    API.ShowPauseMenu();
-                    API.EnableFileWatcher(false);
+                    PauseGame();
 
                     _escape_KeyWasDown = escape_KeyDown;
                     _start_ButtonWasDown = start_ButtonDown;
@@ -466,9 +466,7 @@ namespace GameScripts
                 if (p_KeyDown && !_p_KeyWasDown && !ctrl_KeyDown)
                 {
                     API.Log("Pausing game (P key)...");
-                    IsGamePaused = true;
-                    API.ShowPauseMenu();
-                    API.EnableFileWatcher(false);
+                    PauseGame();
 
                     _p_KeyWasDown = p_KeyDown;
                     return;
@@ -671,6 +669,17 @@ namespace GameScripts
                     return;
             }
         }
+        private static void PauseGame()
+        {
+            s_wasInventoryOpenBeforePause = IsInventoryOpen;
+            s_wasGodModeOnBeforePause = PlayerMovement.IsGodModeActive;
+            IsInventoryOpen = false;
+            UIManager.HideHUD();
+            IsGamePaused = true;
+            API.ShowPauseMenu();
+            API.EnableFileWatcher(false);
+        }
+
         public static void ResumeGame()
         {
             API.Log("Resuming game (Button click)...");
@@ -682,6 +691,10 @@ namespace GameScripts
 
             API.UnloadPauseMenu();
             IsGamePaused = false;
+            IsInventoryOpen = s_wasInventoryOpenBeforePause;
+            UIManager.ShowHUD();
+            if (s_wasGodModeOnBeforePause)
+                PlayerMovement.ForceShowGodModeText();
             API.EnableFileWatcher(true);
         }
     }
