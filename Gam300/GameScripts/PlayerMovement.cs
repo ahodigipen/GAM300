@@ -364,7 +364,7 @@ namespace GameScripts
                 s_tutorialDeathCount++;
                 int countSnapshot = s_tutorialDeathCount;
                 int deathIndex = Math.Min(countSnapshot, 3);
-                StartRespawn(() => StoryDialogueManager.PlayTutorialZoneDeathSequence(deathIndex));
+                StartDeathAnimation(() => StartRespawn(() => StoryDialogueManager.PlayTutorialZoneDeathSequence(deathIndex)));
                 return;
             }
 
