@@ -1,5 +1,40 @@
 Version: 1.0
 ENTITIES:
+  - InfoComponent:
+      Parent: 0
+      Name: SamuraiStealthParticles
+      UID: 5909626681165258279
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    ParticleEmitterComponent:
+      EmissionRate: 20
+      MaxParticles: 500
+      Looping: true
+      Duration: 5
+      PlayOnStart: true
+      LifetimeMin: 1
+      LifetimeMax: 3
+      SpeedMin: 1
+      SpeedMax: 3
+      ShapeType: 3
+      ShapeRadius: 1
+      ShapeAngle: 25
+      ShapeSize: [1, 1, 1]
+      ShapeRange: 10
+      Direction: [0, 1, 0]
+      Gravity: -9.81000042
+      StartSizeMin: 0.100000001
+      StartSizeMax: 0.300000012
+      EndSize: 0
+      StartColor: [1, 0.899999976, 0.300000012, 1]
+      EndColor: [1, 0.200000003, 0, 0]
+      TextureID: 0
+      Billboard: true
+      AdditiveBlend: false
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -605,7 +640,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 15 (Copy) (Copy)
@@ -838,7 +873,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 8 (Copy) (Copy)
@@ -883,7 +918,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 6 (Copy) (Copy) (Copy)
@@ -1145,7 +1180,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -1153,7 +1188,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 16 (Copy)
@@ -1190,7 +1225,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -1198,7 +1233,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 16 (Copy)
@@ -1235,7 +1270,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -1243,7 +1278,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 16 (Copy)
@@ -1288,7 +1323,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 16 (Copy)
@@ -1333,7 +1368,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 16 (Copy)
@@ -1370,7 +1405,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -1378,7 +1413,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 16 (Copy)
@@ -1423,7 +1458,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 16 (Copy)
@@ -1460,7 +1495,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -1468,7 +1503,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 16 (Copy)
@@ -1513,7 +1548,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 15 (Copy)
@@ -1550,7 +1585,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -1558,7 +1593,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 15 (Copy)
@@ -1595,7 +1630,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -1603,7 +1638,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 15 (Copy)
@@ -1640,7 +1675,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -1648,7 +1683,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 15 (Copy)
@@ -1693,7 +1728,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 15 (Copy)
@@ -1738,7 +1773,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 15 (Copy)
@@ -2233,7 +2268,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 9 (Copy)
@@ -2278,7 +2313,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 9 (Copy)
@@ -2315,7 +2350,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -2323,7 +2358,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 9 (Copy)
@@ -2360,7 +2395,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -2368,7 +2403,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 8 (Copy)
@@ -2405,7 +2440,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -2413,7 +2448,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 8 (Copy)
@@ -2450,7 +2485,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -2458,7 +2493,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 8 (Copy)
@@ -2503,7 +2538,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 6 (Copy) (Copy)
@@ -2548,7 +2583,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 6 (Copy)
@@ -2593,7 +2628,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 6 (Copy)
@@ -3180,7 +3215,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 3 (Copy) (Copy) (Copy)
@@ -3225,7 +3260,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 3 (Copy) (Copy) (Copy)
@@ -3262,7 +3297,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -3270,7 +3305,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 3 (Copy) (Copy) (Copy)
@@ -3495,7 +3530,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 4 (Copy)
@@ -3532,7 +3567,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -3540,7 +3575,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 3 (Copy) (Copy) (Copy) (Copy)
@@ -3585,7 +3620,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 3 (Copy) (Copy) (Copy)
@@ -3622,7 +3657,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -3630,7 +3665,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 3 (Copy) (Copy) (Copy)
@@ -3675,7 +3710,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 3 (Copy) (Copy) (Copy)
@@ -3937,7 +3972,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -3945,7 +3980,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 3 (Copy) (Copy)
@@ -3982,7 +4017,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -3990,7 +4025,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 3 (Copy) (Copy)
@@ -4035,7 +4070,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 3 (Copy) (Copy)
@@ -4387,7 +4422,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -4395,7 +4430,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 3 (Copy)
@@ -4432,7 +4467,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -4440,7 +4475,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 1 (Copy)
@@ -4485,7 +4520,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 4 (Copy)
@@ -4522,7 +4557,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -4530,7 +4565,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 2 (Copy)
@@ -4575,7 +4610,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 2 (Copy)
@@ -6352,7 +6387,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.PlayerMovement
-      ParamsJSON: "{\n  \"_controllerOffsetY\": 2.4000000953674316,\n  \"_level2Pos\": {\n    \"X\": 0.0,\n    \"Y\": 10.0,\n    \"Z\": 0.0\n  },\n  \"_levelStartPos\": {\n    \"X\": 0.0,\n    \"Y\": 10.300000190734863,\n    \"Z\": -13.0\n  }\n}"
+      ParamsJSON: "{\n  \"_controllerOffsetY\": 2.4000000953674316,\n  \"_level2Pos\": {\n    \"X\": 0.0,\n    \"Y\": 10.0,\n    \"Z\": 0.0\n  },\n  \"_levelStartPos\": {\n    \"X\": 0.0,\n    \"Y\": 10.300000190734863,\n    \"Z\": -13.0\n  },\n  \"_particleGravity\": -0.7239999771118164\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -6666,8 +6701,8 @@ ENTITIES:
       SortOrder: 121
     TransformComponent:
       Transform:
-        Translate: [-2.21914792, 33.5809174, 90.1447678]
-        Rotate: [161.000015, -3.26002502, 179.999985]
+        Translate: [2.85858917, 15.2434969, 40.4691811]
+        Rotate: [139.437515, -365.01001, 179.999985]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -6920,7 +6955,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 1
@@ -6965,7 +7000,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 2
@@ -7010,7 +7045,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 3
@@ -7055,7 +7090,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 4
@@ -7644,7 +7679,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 5
@@ -7689,7 +7724,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 6
@@ -7734,7 +7769,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 7
@@ -7779,7 +7814,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 8
@@ -7824,7 +7859,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 9
@@ -7914,7 +7949,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 11
@@ -8141,7 +8176,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 12
@@ -8186,7 +8221,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 13
@@ -8231,7 +8266,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 14
@@ -8276,7 +8311,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 15
@@ -8321,7 +8356,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 16
@@ -9153,7 +9188,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 3 (Copy) (Copy) (Copy)
@@ -9190,7 +9225,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -9198,7 +9233,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 3 (Copy) (Copy) (Copy)
@@ -9235,7 +9270,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -9243,7 +9278,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 5 (Copy)
@@ -9288,7 +9323,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 5 (Copy)
@@ -9333,7 +9368,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 5 (Copy)
@@ -9370,7 +9405,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -9378,7 +9413,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 5 (Copy)
@@ -9415,7 +9450,7 @@ ENTITIES:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
         LocalRotation: [0, 0, 0]
-        LocalScale: [245.680847, 222.793533, 223.497803]
+        LocalScale: [300, 300, 300]
         DynamicFriction: 0.5
         StaticFriction: 0
         Restitution: 0.100000001
@@ -9423,7 +9458,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 5 (Copy)
@@ -9468,7 +9503,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 5 (Copy)
@@ -9513,7 +9548,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 5 (Copy)
@@ -9558,7 +9593,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 5 (Copy)
@@ -9603,7 +9638,7 @@ ENTITIES:
         ShowPhysicsDebug: false
         PhysicsMesh: 0
         SurfaceType: DEFAULT
-        Type: SPHERE
+        Type: BOX
     InfoComponent:
       Parent: 0
       Name: rock 5 (Copy)
