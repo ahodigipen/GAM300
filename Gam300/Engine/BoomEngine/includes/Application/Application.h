@@ -565,8 +565,11 @@ namespace Boom
 				m_Context->renderer->tonemapExposure = sn.tonemapExposure;
 				m_Context->renderer->tonemapGamma = sn.tonemapGamma;
 				m_Context->renderer->tonemapWarmTint = sn.tonemapWarmTint;
-				BOOM_INFO("[Scene] Applied scene settings: ambient={}, bloom={}, intensity={}, threshold={}, iterations={}, pointLightBloom={}, fog={}",
-					sn.ambientStrength, sn.bloomEnabled, sn.bloomIntensity, sn.bloomThreshold, sn.bloomIterations, sn.pointLightBloomMultiplier, sn.fogEnabled);
+				m_Context->renderer->enabledVignette = sn.vignetteEnabled;
+				m_Context->renderer->vignetteIntensity = sn.vignetteIntensity;
+				m_Context->renderer->vignetteRadius = sn.vignetteRadius;
+				BOOM_INFO("[Scene] Applied scene settings: ambient={}, bloom={}, intensity={}, threshold={}, iterations={}, pointLightBloom={}, fog={}, vignette={}",
+					sn.ambientStrength, sn.bloomEnabled, sn.bloomIntensity, sn.bloomThreshold, sn.bloomIterations, sn.pointLightBloomMultiplier, sn.fogEnabled, sn.vignetteEnabled);
 			}
 
 			if (sn.navmeshFile.empty())
