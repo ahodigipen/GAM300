@@ -174,6 +174,17 @@ namespace GameScripts
             _buttonDelayTimer = 0.0f;
             _buttonFX?.Reset();
 
+            // Initialize controller flags to current state to prevent immediate triggers
+            if (API.IsGamepadConnected())
+            {
+                _wasDpadUp = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_DPAD_UP);
+                _wasDpadDown = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_DPAD_DOWN);
+                float stickY = API.GetGamepadAxis(API.GAMEPAD_AXIS_LEFT_Y);
+                _wasStickUp = stickY < -0.5f;
+                _wasStickDown = stickY > 0.5f;
+                _wasAButtonPressed = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A);
+            }
+
             UpdateVisuals();
         }
 

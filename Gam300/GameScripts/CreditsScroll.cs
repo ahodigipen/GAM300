@@ -171,7 +171,10 @@ namespace GameScripts
                 }
 
                 // Skip support
-                if (API.IsKeyDown(API.KEY_SPACE) || API.IsKeyDown(API.KEY_ESCAPE) || API.IsKeyDown(API.KEY_ENTER))
+                if (API.IsKeyDown(API.KEY_SPACE) || API.IsKeyDown(API.KEY_ESCAPE) || API.IsKeyDown(API.KEY_ENTER) ||
+                    (API.IsGamepadConnected() && (API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A) || 
+                                                  API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_B) || 
+                                                  API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_START))))
                 {
                     StartMenuScroll();
                 }

@@ -38,12 +38,13 @@ namespace GameScripts
 
         // Controller navigation
         // 0: Return to Main Menu, 1: Master, 2: BGM, 3: SFX, 4: Gamma
-        private int _selectedIndex = 0;
+        private int _selectedIndex = -1; 
         private bool _wasDpadUp = false;
         private bool _wasDpadDown = false;
         private bool _wasStickUp = false;
         private bool _wasStickDown = false;
         private bool _wasAButtonPressed = false;
+        private bool _wasBButtonPressed = false;
 
         private float _buttonDelayTimer = 0.0f;
         private const float CLICK_DELAY_DURATION = 0.1f;
@@ -70,15 +71,27 @@ namespace GameScripts
 
             _masterSlider = new VolumeSlider("Settings_Master_BG", "Settings_Master_Fill", "Settings_Master_Handle", "Master");
             _bgmSlider    = new VolumeSlider("Settings_BGM_BG",    "Settings_BGM_Fill",    "Settings_BGM_Handle",    "Music");
-            _sfxSlider    = new VolumeSlider("Settings_SFX_BG",    "Settings_SFX_Fill",    "Settings_SFX_Handle",    "SFX");
+            _sfxSlider = new VolumeSlider("Settings_SFX_BG", "Settings_SFX_Fill", "Settings_SFX_Handle", "SFX");
 
-            _selectedIndex = 0;
-            _currentState  = SettingsState.WaitingForMouseUp;
+            _selectedIndex = -1; // Start with nothing selected for controller
+            _currentState = SettingsState.WaitingForMouseUp;
+
+            // Initialize controller flags to current state to prevent immediate triggers
+            if (API.IsGamepadConnected())
+            {
+                _wasDpadUp = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_DPAD_UP);
+                _wasDpadDown = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_DPAD_DOWN);
+                float stickY = API.GetGamepadAxis(API.GAMEPAD_AXIS_LEFT_Y);
+                _wasStickUp = stickY < -0.5f;
+                _wasStickDown = stickY > 0.5f;
+                _wasAButtonPressed = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A);
+                _wasBButtonPressed = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_B);
+            }
 
             // Fade in from black
             API.SetScreenFadeAlpha(1f);
             _isFadingIn = true;
-            _fadeTimer  = 0f;
+            _fadeTimer = 0f;
 
             UpdateVisuals();
             API.SetSpriteTexture(_mainMenuButtonID, MAINMENU_TEX_NORMAL);
@@ -174,6 +187,25 @@ namespace GameScripts
             bool stickUp   = stickY < -0.5f;
             bool stickDown = stickY >  0.5f;
             bool aPressed  = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A);
+            bool bPressed  = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_B);
+
+            if (_selectedIndex == -1)
+            {
+                if ((dpadUp && !_wasDpadUp) || (dpadDown && !_wasDpadDown) ||
+                    (stickUp && !_wasStickUp) || (stickDown && !_wasStickDown))
+                {
+                    _selectedIndex = 0;
+                    UpdateVisuals();
+                }
+
+                _wasDpadUp = dpadUp;
+                _wasDpadDown = dpadDown;
+                _wasStickUp = stickUp;
+                _wasStickDown = stickDown;
+                _wasAButtonPressed = aPressed;
+                _wasBButtonPressed = bPressed;
+                return;
+            }
 
             // Vertical navigation (5 items: 0 button + 4 sliders)
             if ((dpadUp && !_wasDpadUp) || (stickUp && !_wasStickUp))
@@ -216,11 +248,17 @@ namespace GameScripts
                 else if (_selectedIndex == 4) StartClickDelay(_gammaButtonID);
             }
 
+            if (bPressed && !_wasBButtonPressed)
+            {
+                StartClickDelay(_mainMenuButtonID);
+            }
+
             _wasDpadUp         = dpadUp;
             _wasDpadDown       = dpadDown;
             _wasStickUp        = stickUp;
             _wasStickDown      = stickDown;
             _wasAButtonPressed = aPressed;
+            _wasBButtonPressed = bPressed;
         }
 
         private void UpdateVisuals()
