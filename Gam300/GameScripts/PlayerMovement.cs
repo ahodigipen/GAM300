@@ -78,6 +78,12 @@ namespace GameScripts
         [Boom.EditorExposed("Start Anim Duration", "Seconds to play the start animation before handing control to the player.")]
         private float _startAnimDuration = 3.0f;
 
+        [Boom.EditorExposed("Post Start Anim Pos", "If set, teleport the player to this position after the start animation ends.")]
+        private Vec3 _postStartAnimPos = new Vec3(0f, 0f, 0f);
+
+        [Boom.EditorExposed("Use Post Start Anim Pos", "Enable teleport to Post Start Anim Pos after the start animation ends.")]
+        private bool _usePostStartAnimPos = false;
+
         private bool _isPlayingStartAnim = false;
         private float _startAnimTimer = 0f;
 
@@ -427,6 +433,8 @@ namespace GameScripts
                 _isRespawning = false;
                 if (_hasAnimator)
                     API.AnimatorSetStateMachineEnabled(Entity, true);
+                if (_usePostStartAnimPos)
+                    TeleportTo(_postStartAnimPos);
                 API.Log("[PlayerMovement] Start animation finished — handing control to player.");
             }
         }
