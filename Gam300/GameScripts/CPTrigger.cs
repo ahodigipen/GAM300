@@ -110,6 +110,32 @@ namespace GameScripts
         // Static instance tracking
         private static readonly Dictionary<ulong, CPTrigger> s_instances = new Dictionary<ulong, CPTrigger>();
 
+        // When true, all notification sprites are suppressed (used by MultiKeyDoor dialogue)
+        public static bool s_notificationsHidden = false;
+
+        public static void HideAllNotifications()
+        {
+            s_notificationsHidden = true;
+            foreach (var kvp in s_instances)
+            {
+                var inst = kvp.Value;
+                // Immediately zero alpha so it hides regardless of script update order
+                foreach (ulong id in inst._simultaneousIDs)
+                    if (API.HasSprite(id)) API.SetSpriteAlpha(id, 0f);
+                foreach (ulong id in inst._sequentialIDs)
+                    if (API.HasSprite(id)) API.SetSpriteAlpha(id, 0f);
+                inst._simAlpha = 0f;
+                inst._seqAlpha = 0f;
+                inst._simTimer = 0f;
+                inst._seqTimer = 0f;
+            }
+        }
+
+        public static void ShowAllNotifications()
+        {
+            s_notificationsHidden = false;
+        }
+
         public void OnStart(string jsonParams)
         {
             s_instances[Entity] = this;
@@ -203,6 +229,14 @@ namespace GameScripts
         {
             if (_simultaneousIDs.Count == 0) return false;
 
+            if (s_notificationsHidden)
+            {
+                foreach (ulong id in _simultaneousIDs)
+                    if (API.HasSprite(id)) API.SetSpriteAlpha(id, 0f);
+                _simAlpha = 0f;
+                return false;
+            }
+
             float targetAlpha = (_simTimer > 0) ? 1.0f : 0.0f;
             
             if (_simAlpha > 0.001f || targetAlpha > 0.001f)
@@ -242,6 +276,14 @@ namespace GameScripts
         private bool UpdateSequentialLogos(float dt)
         {
             if (_sequentialIDs.Count == 0) return false;
+
+            if (s_notificationsHidden)
+            {
+                foreach (ulong id in _sequentialIDs)
+                    if (API.HasSprite(id)) API.SetSpriteAlpha(id, 0f);
+                _seqAlpha = 0f;
+                return false;
+            }
 
             // Fading out the final logo or sequence finished
             if (_currentSpriteIndex < 0 || _currentSpriteIndex >= _sequentialIDs.Count)

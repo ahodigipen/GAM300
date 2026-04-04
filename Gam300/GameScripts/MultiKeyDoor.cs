@@ -85,6 +85,7 @@ namespace GameScripts
         private ulong _keysNeededEntity = 0;
         private ulong _dialogueEntity = 0;
 
+
         // E Prompt Fade State (used for interaction prompt)
         private enum EPromptFadeState { None, FadeIn, FadeOut }
         private EPromptFadeState _eFadeState = EPromptFadeState.None;
@@ -372,10 +373,11 @@ namespace GameScripts
                                 API.SetGameLogicPaused(true);
                                 API.Log("[MultiKeyDoor] Dialogue started - game paused.");
 
-                                // Hide inventory and HUD for the duration of the dialogue
+                                // Hide inventory, HUD and checkpoint notifications for the duration of the dialogue
                                 _wasInventoryOpen = Entry.IsInventoryOpen;
                                 Entry.IsInventoryOpen = false;
                                 UIManager.HideHUD();
+                                CPTrigger.HideAllNotifications();
 
                                 // Hide E prompt immediately (game logic is paused during dialogue
                                 // so the fade animation won't run — snap to hidden instead)
@@ -704,9 +706,10 @@ namespace GameScripts
                         _eFadeTimer = _eCurrentAlpha * E_FADE_DURATION;
                     }
 
-                    // Restore inventory and HUD
+                    // Restore inventory, HUD and checkpoint notifications
                     Entry.IsInventoryOpen = _wasInventoryOpen;
                     UIManager.ShowHUD();
+                    CPTrigger.ShowAllNotifications();
 
                     API.SetGameLogicPaused(false);
                     API.Log("[MultiKeyDoor] Dialogue ended - game resumed.");

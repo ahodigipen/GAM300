@@ -191,6 +191,7 @@ namespace GameScripts
             s_wasInventoryOpen = Entry.IsInventoryOpen;
             s_wasGodModeOn     = PlayerMovement.IsGodModeActive;
             UIManager.HideHUD();
+            CPTrigger.HideAllNotifications();
             if (s_wasInventoryOpen)
                 Entry.IsInventoryOpen = false;
 
@@ -603,6 +604,7 @@ namespace GameScripts
             if (s_activeSequence == SequenceType.BossTransition)
             {
                 UIManager.ShowHUD();
+                CPTrigger.ShowAllNotifications();
                 if (s_wasInventoryOpen)
                     Entry.IsInventoryOpen = true;
                 if (s_wasGodModeOn)

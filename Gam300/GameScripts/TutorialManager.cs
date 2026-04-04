@@ -134,6 +134,7 @@ namespace GameScripts
             s_wasInventoryOpen = Entry.IsInventoryOpen;
             s_wasGodModeOn     = PlayerMovement.IsGodModeActive;
             UIManager.HideHUD();
+            CPTrigger.HideAllNotifications();
             if (s_wasInventoryOpen)
                 Entry.IsInventoryOpen = false;
 
@@ -341,6 +342,7 @@ namespace GameScripts
                 s_state = TutorialState.None;
                 s_justDismissed = true;
                 UIManager.ShowHUD();
+                CPTrigger.ShowAllNotifications();
                 if (s_wasInventoryOpen)
                     Entry.IsInventoryOpen = true;
                 if (s_wasGodModeOn)
