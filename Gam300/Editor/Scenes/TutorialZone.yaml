@@ -3094,6 +3094,9 @@ ENTITIES:
       TonemapExposure: 1
       TonemapGamma: 2.20000005
       TonemapWarmTint: [1.08000004, 0.980000019, 0.819999993]
+      VignetteEnabled: true
+      VignetteIntensity: 0.731000006
+      VignetteRadius: 0.688000023
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
