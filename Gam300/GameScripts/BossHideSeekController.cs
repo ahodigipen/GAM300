@@ -8,9 +8,33 @@ namespace GameScripts
     {
         public ulong Entity;
         private static Dictionary<ulong, BossHideSeekController> s_instances = new Dictionary<ulong, BossHideSeekController>();
+        private static Dictionary<string, BossHideSeekController> s_instancesByName = new Dictionary<string, BossHideSeekController>();
+
+        public static void SetCinematicTilt(string bossName, float tiltAmount)
+        {
+            if (s_instancesByName.TryGetValue(bossName, out var boss))
+            {
+                boss._targetXRotation = boss._baseXRotation + tiltAmount;
+            }
+        }
+
+        public static void TriggerBossLookDown()
+        {
+            foreach (var boss in s_instances.Values)
+                boss._targetXRotation = boss._baseXRotation + boss._cinematicTiltAmount;
+        }
+
+        public static void TriggerBossLookReset()
+        {
+            foreach (var boss in s_instances.Values)
+                boss._targetXRotation = boss._baseXRotation;
+        }
 
         [Boom.EditorExposed("Is Active", "Whether the boss is currently active")]
         private bool _isActive = false;
+
+        [Boom.EditorExposed("Boss Name", "Unique name for this boss (used by cutscenes)")]
+        private string _bossName = "GiantDaruma";
 
         [Boom.EditorExposed("Watching Yaw", "Yaw angle when looking at player")]
         private float _watchingYaw = 0f;
@@ -47,6 +71,9 @@ namespace GameScripts
 
         [Boom.EditorExposed("Scan Phase Time", "Seconds to scan left/right")]
         private float _scanCycleDuration = 4.0f;
+
+        [Boom.EditorExposed("Cinematic Tilt", "Degrees to tilt down when TriggerBossLookDown is called")]
+        private float _cinematicTiltAmount = 25.0f;
 
         [Boom.EditorExposed("Shake Intensity", "Camera shake when turning (0 for none)")]
         private float _shakeIntensity = 0.05f;
@@ -120,7 +147,6 @@ namespace GameScripts
         private Vec3 _colorGreen = new Vec3(0, 1, 0);
         private float _debugLogTimer = 0f;
         private bool _wasPausedLastFrame = false;
-        private bool _currentRotationIntervalSet = false;
         private float _currentRotationInterval = 8.0f;
         private float _scanTimer = 0f;
         private float _appliedScanYaw = 0f;
@@ -184,6 +210,9 @@ namespace GameScripts
         public void OnStart(string jsonParams)
         {
             s_instances[Entity] = this;
+            string myName = _bossName;
+            if (!string.IsNullOrEmpty(myName)) s_instancesByName[myName] = this;
+
             if (!API.HasTransform(Entity)) return;
             
             _colorRed = ParseVec3(_redColorCSV, new Vec3(1, 0, 0));
@@ -293,22 +322,12 @@ namespace GameScripts
             }
 
             if (_drawVisionDebug) DrawDebugVision();
-            if (!_isActive) return;
-            if (Entry.IsPlayerDead)
-            {
-                if (_isCountingDown) StopCountdown();
-                if (_wasTurning) { API.StopSound(TURN_SOUND_NAME); _wasTurning = false; }
-                if (_isWaitingToTurn) { API.StopSound(WARNING_SOUND_NAME); API.StopSound(WARNING_LINE_SOUND_NAME); _isWaitingToTurn = false; _warningTimer = 0f; }
-                return;
-            }
-
-            if (_activationTimer < _activationDelay) { _activationTimer += dt; return; }
 
             // 1. ANIMATION STATE CALCULATION
             float targetScanYaw = 0f;
             float targetScanPitch = 0f;
 
-            if (_isWatching && !_isWaitingToTurn)
+            if (_isActive && _isWatching && !_isTurning && !_isWaitingToTurn && !Entry.IsPlayerDead)
             {
                 _scanTimer += dt;
                 float totalCycle = _scanForwardDuration + _scanCycleDuration;
@@ -324,13 +343,8 @@ namespace GameScripts
                     float cyclePos = _scanTimer % totalCycle;
                     if (cyclePos >= _scanForwardDuration && _scanCycleDuration > 0)
                     {
-                        // Normalized phase (0.0 to 1.0) of the scanning part of the cycle
                         float scanPhase = (cyclePos - _scanForwardDuration) / _scanCycleDuration;
-                        
-                        // Pitch (X): Smoothly tilt down then back up
                         targetScanPitch = (float)Math.Sin(scanPhase * Math.PI) * _scanTiltAmount;
-                        
-                        // Yaw (Y): Smoothly scan Left -> Right -> Center
                         targetScanYaw = (float)Math.Sin(scanPhase * Math.PI * 2.0) * _scanYawAmount;
                     }
                 }
@@ -344,97 +358,103 @@ namespace GameScripts
             _appliedScanYaw += (targetScanYaw - _appliedScanYaw) * dt * 8.0f;
             _appliedScanPitch += (targetScanPitch - _appliedScanPitch) * dt * 8.0f;
             
-            _targetXRotation = _baseXRotation + _appliedScanPitch;
+            // Only use scanning pitch if active, otherwise targetX is driven by cinematic triggers
+            if (_isActive) _targetXRotation = _baseXRotation + _appliedScanPitch;
 
             // 2. STATE LOGIC
-            if (!_isTurning)
+            if (_isActive && !Entry.IsPlayerDead)
             {
-                if (!_isWatching)
+                if (!_isTurning)
                 {
-                    if (_timer > _currentRotationInterval - 2.0f)
+                    if (!_isWatching)
                     {
-                        _pulseTimer += dt * _pulseSpeed;
-                        float pulse = 1.0f + (float)Math.Sin(_pulseTimer) * _pulseIntensity;
-                        List<float> pulsedIntensities = new List<float>();
-                        foreach (var intensity in _greenIntensities) pulsedIntensities.Add(intensity * pulse);
-                        UpdateLights(_colorGreen, pulsedIntensities);
-                    }
-                }
-
-                if (_isWaitingToTurn)
-                {
-                    _warningTimer += dt;
-                    if (_warningTimer >= _warningDelay)
-                    {
-                        _isWaitingToTurn = false;
-                        _warningTimer = 0f;
-                        _isTurning = true;
-                        _isWatching = _pendingWatchState;
-                        _targetYRotation = _watchingYaw;
-                        UpdateLights(_isWatching ? _colorRed : _colorGreen, _isWatching ? _redIntensities : _greenIntensities);
-                        if (_isWatching && _shakeIntensity > 0) API.TriggerCameraShake(_shakeIntensity, 0.5f);
-                    }
-                }
-                else
-                {
-                    _timer += dt;
-                    if (_timer >= _currentRotationInterval)
-                    {
-                        // SYNC: Only turn away when head is in the "Forward/Stare" phase of scanning
-                        // or has just finished a scan cycle.
-                        float totalCycle = _scanForwardDuration + _scanCycleDuration;
-                        float cyclePos = _scanTimer % totalCycle;
-                        bool isStaring = cyclePos < _scanForwardDuration;
-
-                        if (!_isWatching || isStaring)
+                        if (_timer > _currentRotationInterval - 2.0f)
                         {
-                            _timer = 0f;
-                            _pendingWatchState = !_isWatching;
-                            if (_pendingWatchState)
+                            _pulseTimer += dt * _pulseSpeed;
+                            float pulse = 1.0f + (float)Math.Sin(_pulseTimer) * _pulseIntensity;
+                            List<float> pulsedIntensities = new List<float>();
+                            foreach (var intensity in _greenIntensities) pulsedIntensities.Add(intensity * pulse);
+                            UpdateLights(_colorGreen, pulsedIntensities);
+                        }
+                    }
+
+                    if (_isWaitingToTurn)
+                    {
+                        _warningTimer += dt;
+                        if (_warningTimer >= _warningDelay)
+                        {
+                            _isWaitingToTurn = false;
+                            _warningTimer = 0f;
+                            _isTurning = true;
+                            _isWatching = _pendingWatchState;
+                            _targetYRotation = _watchingYaw;
+                            UpdateLights(_isWatching ? _colorRed : _colorGreen, _isWatching ? _redIntensities : _greenIntensities);
+                            if (_isWatching && _shakeIntensity > 0) API.TriggerCameraShake(_shakeIntensity, 0.5f);
+                        }
+                    }
+                    else
+                    {
+                        _timer += dt;
+                        if (_timer >= _currentRotationInterval)
+                        {
+                            float totalCycle = _scanForwardDuration + _scanCycleDuration;
+                            float cyclePos = _scanTimer % totalCycle;
+                            bool isStaring = cyclePos < _scanForwardDuration;
+
+                            if (!_isWatching || isStaring)
                             {
-                                string randomWarning = WARNING_SOUND_PATHS[_warningRandom.Next(WARNING_SOUND_PATHS.Length)];
-                                API.PlaySound(WARNING_SOUND_NAME, randomWarning, false);
-                                API.SetSoundVolume(WARNING_SOUND_NAME, _warningSoundVolume);
-                                _isWaitingToTurn = true;
-                            }
-                            else
-                            {
-                                _isTurning = true;
-                                _isWatching = false;
-                                _targetYRotation = _restingYaw;
-                                UpdateLights(_colorGreen, _greenIntensities);
-                                _currentRotationInterval = (float)(_minRotationInterval + _random.NextDouble() * (_maxRotationInterval - _minRotationInterval));
+                                _timer = 0f;
+                                _pendingWatchState = !_isWatching;
+                                if (_pendingWatchState)
+                                {
+                                    string randomWarning = WARNING_SOUND_PATHS[_warningRandom.Next(WARNING_SOUND_PATHS.Length)];
+                                    API.PlaySound(WARNING_SOUND_NAME, randomWarning, false);
+                                    API.SetSoundVolume(WARNING_SOUND_NAME, _warningSoundVolume);
+                                    _isWaitingToTurn = true;
+                                }
+                                else
+                                {
+                                    _isTurning = true;
+                                    _isWatching = false;
+                                    _targetYRotation = _restingYaw;
+                                    UpdateLights(_colorGreen, _greenIntensities);
+                                    _currentRotationInterval = (float)(_minRotationInterval + _random.NextDouble() * (_maxRotationInterval - _minRotationInterval));
+                                }
                             }
                         }
                     }
+
+                    if (_isWatching) UpdateDetection(dt);
                 }
 
-                if (_isWatching) UpdateDetection(dt);
-            }
-
-            // 3. SOUNDS & SECONDARY FX
-            if (_isWaitingForWarningLine)
-            {
-                _warningLineTimer += dt;
-                if (_warningLineTimer >= _warningLineAfterTurnDelay)
+                if (_isWaitingForWarningLine)
                 {
-                    _isWaitingForWarningLine = false;
-                    string randomWarningLine = WARNING_LINE_SOUND_PATHS[_warningRandom.Next(WARNING_LINE_SOUND_PATHS.Length)];
-                    string uniqueName = WARNING_LINE_SOUND_NAME + "_" + DateTime.Now.Ticks;
-                    API.PlaySound(uniqueName, randomWarningLine, false);
-                    API.SetSoundVolume(uniqueName, _warningLineVolume);
+                    _warningLineTimer += dt;
+                    if (_warningLineTimer >= _warningLineAfterTurnDelay)
+                    {
+                        _isWaitingForWarningLine = false;
+                        string randomWarningLine = WARNING_LINE_SOUND_PATHS[_warningRandom.Next(WARNING_LINE_SOUND_PATHS.Length)];
+                        string uniqueName = WARNING_LINE_SOUND_NAME + "_" + DateTime.Now.Ticks;
+                        API.PlaySound(uniqueName, randomWarningLine, false);
+                        API.SetSoundVolume(uniqueName, _warningLineVolume);
+                    }
                 }
             }
+            else if (Entry.IsPlayerDead)
+            {
+                if (_isCountingDown) StopCountdown();
+                if (_wasTurning) { API.StopSound(TURN_SOUND_NAME); _wasTurning = false; }
+                if (_isWaitingToTurn) { API.StopSound(WARNING_SOUND_NAME); API.StopSound(WARNING_LINE_SOUND_NAME); _isWaitingToTurn = false; _warningTimer = 0f; }
+            }
 
-            // 4. ROTATION APPLICATION
-            if (_isTurning)
+            // 4. ROTATION APPLICATION (Always runs for cinematic support)
+            if (_isTurning && _isActive)
             {
                 if (!_wasTurning) { API.PlaySound(TURN_SOUND_NAME, TURN_SOUND_PATH, true); API.SetSoundVolume(TURN_SOUND_NAME, _turnSoundVolume); _wasTurning = true; }
                 
                 float angleDiff = _targetYRotation - _currentYRotation;
                 while (angleDiff > 180f) angleDiff -= 360f;
                 while (angleDiff < -180f) angleDiff += 360f;
-
                 float step = _rotationSpeed * dt;
                 
                 if (Math.Abs(angleDiff) <= step)
@@ -445,10 +465,7 @@ namespace GameScripts
                     _wasTurning = false;
                     if (_isWatching) _isWaitingForWarningLine = true;
                 }
-                else
-                {
-                    _currentYRotation += Math.Sign(angleDiff) * step;
-                }
+                else { _currentYRotation += Math.Sign(angleDiff) * step; }
             }
 
             _currentXRotation += (_targetXRotation - _currentXRotation) * dt * 6.0f;
@@ -479,12 +496,9 @@ namespace GameScripts
                     boss._isActive = true;
                     boss._timer = 0f;
                     boss._activationTimer = 0f;
-                    
-                    // Trigger the cinematic "turn to back" immediately upon activation
                     boss._isTurning = true;
                     boss._targetYRotation = boss._restingYaw;
-                    boss._isWatching = false; // Turn green as we turn away
-                    
+                    boss._isWatching = false;
                     boss.UpdateLights(boss._colorGreen, boss._greenIntensities);
                 }
             }
@@ -498,53 +512,59 @@ namespace GameScripts
             ulong player = PlayerMovement.GetPlayerEntity();
             if (player == 0) player = API.FindEntity("Player");
             if (player == 0) return;
-            if (PlayerMovement.IsPlayerInvisibleToEnemies()) { if (_isCountingDown) StopCountdown(); return; }
+            if (PlayerMovement.IsPlayerInvisibleToEnemies()) { 
+                if (log) API.Log("[BossHideSeek] Player is invisible to enemies.");
+                if (_isCountingDown) StopCountdown(); 
+                return; 
+            }
             Vec3 bPos = API.GetPosition(Entity); Vec3 pPos = API.GetPosition(player);
-            if (Math.Abs(pPos.Y - bPos.Y) > _verticalTolerance) { if (_isCountingDown) StopCountdown(); return; }
+            if (Math.Abs(pPos.Y - bPos.Y) > _verticalTolerance) { 
+                if (log) API.Log("[BossHideSeek] Player out of vertical tolerance.");
+                if (_isCountingDown) StopCountdown(); 
+                return; 
+            }
             float dx = pPos.X - bPos.X; float dz = pPos.Z - bPos.Z; float dist = (float)Math.Sqrt(dx * dx + dz * dz);
             if (dist < _detectionRange)
             {
                 float yawRad = _currentYRotation * (float)Math.PI / 180.0f;
                 float fx = (float)Math.Sin(yawRad); float fz = (float)Math.Cos(yawRad);
                 if (_inverseForward) { fx = -fx; fz = -fz; }
-
-                float tx = dx / dist;
-                float tz = dz / dist;
-
+                float tx = dx / dist; float tz = dz / dist;
                 float dot = tx * fx + tz * fz;
                 float cosHalf = (float)Math.Cos((_detectionAngle * 0.5f) * Math.PI / 180.0);
-                if (log) Console.WriteLine($"[BossHideSeek] Watch: Dist:{dist:F1}, Dot:{dot:F2} (Target:{cosHalf:F2})");
                 if (dot > cosHalf)
                 {
                     if (!_isCountingDown)
                     {
+                        if (log) API.Log("[BossHideSeek] Player SPOTTED! Starting countdown...");
                         _isCountingDown = true;
                         _catchTimer = _catchDelay;
                         ShowWarningText(true);
-                        Console.WriteLine("[BossHideSeek] >>> SPOTTED! <<<");
                     }
                     _catchTimer -= dt;
                     UpdateWarningText(_catchTimer);
                     if (_catchTimer <= 0f && !_hasDealtDamage)
                     {
+                        if (log) API.Log("[BossHideSeek] Player CAUGHT! Dealing damage.");
                         _hasDealtDamage = true;
                         ShowWarningText(false);
-                        Console.WriteLine("[BossHideSeek] !!! CAUGHT !!!");
                         PlayerManager.NotifyPlayerCaught(Entity);
                     }
                     return;
                 }
             }
-            if (_isCountingDown) StopCountdown();
+            if (_isCountingDown)
+            {
+                if (log) API.Log("[BossHideSeek] Player lost. Stopping countdown.");
+                StopCountdown();
+            }
         }
 
-        private void StopCountdown() { if (!_isCountingDown) return; _isCountingDown = false; _catchTimer = _catchDelay; ShowWarningText(false); if (_showDebugLogs) Console.WriteLine("[BossHideSeek] Lost Sight."); }
+        private void StopCountdown() { if (!_isCountingDown) return; _isCountingDown = false; _catchTimer = _catchDelay; ShowWarningText(false); }
         
         public void OnPlayerRespawned() 
         { 
             _isActive = false; 
-
-            // Reset rotation to initial cinematic state
             _currentYRotation = _initialYaw;
             _targetYRotation = _initialYaw;
             if (API.HasTransform(Entity))
@@ -556,10 +576,7 @@ namespace GameScripts
                 _targetXRotation = _baseXRotation;
                 API.SetRotation(Entity, rot);
             }
-
             ResetToRestingState(false); 
-
-            // Reset to cinematic red start
             _isWatching = true;
             UpdateLights(_colorRed, _redIntensities);
         }
@@ -570,16 +587,41 @@ namespace GameScripts
             {
                 ulong l = _lightEntities[i];
                 float intensity = (i < intensities.Count) ? intensities[i] : 1.0f;
-
                 if (API.HasSpotLight(l)) { API.SetSpotLightColor(l, color); API.SetSpotLightIntensity(l, intensity); }
                 else if (API.HasPointLight(l)) { API.SetPointLightColor(l, color); API.SetPointLightIntensity(l, intensity); }
                 else if (API.HasDirectLight(l)) { API.SetDirectLightColor(l, color); API.SetDirectLightIntensity(l, intensity); }
             }
         }
 
+        private void UpdateLightsInterpolated(float t)
+        {
+            t = Math.Max(0f, Math.Min(1f, t));
+            Vec3 color = new Vec3(
+                _colorGreen.X + (_colorRed.X - _colorGreen.X) * t,
+                _colorGreen.Y + (_colorRed.Y - _colorGreen.Y) * t,
+                _colorGreen.Z + (_colorRed.Z - _colorGreen.Z) * t
+            );
+            List<float> intensities = new List<float>();
+            for (int i = 0; i < _lightEntities.Count; i++)
+            {
+                float g = (i < _greenIntensities.Count) ? _greenIntensities[i] : 1.0f;
+                float r = (i < _redIntensities.Count) ? _redIntensities[i] : 1.0f;
+                intensities.Add(g + (r - g) * t);
+            }
+            UpdateLights(color, intensities);
+        }
+
         private void ShowWarningText(bool show) { if (_warningText == 0 || !API.HasText(_warningText)) return; var c = API.GetTextColor(_warningText); c.W = show ? 1f : 0f; API.SetTextColor(_warningText, c); }
         private void UpdateWarningText(float remaining) { if (_warningText == 0 || !API.HasText(_warningText)) return; int s = (int)System.Math.Ceiling(System.Math.Max(0.0f, remaining)); API.SetText(_warningText, "Spotted! HIDE in " + s + "s!"); }
         private Vec3 ParseVec3(string csv, Vec3 def) { try { string[] p = csv.Split(','); return new Vec3(float.Parse(p[0]), float.Parse(p[1]), float.Parse(p[2])); } catch { return def; } }
-        public void OnDestroy() { if (_wasTurning) { API.StopSound(TURN_SOUND_NAME); _wasTurning = false; } API.StopSound(WARNING_SOUND_NAME); API.StopSound(WARNING_LINE_SOUND_NAME); if (s_instances.ContainsKey(Entity)) s_instances.Remove(Entity); PlayerManager.UnregisterEnemy(this); }
+        public void OnDestroy() 
+        { 
+            if (_wasTurning) { API.StopSound(TURN_SOUND_NAME); _wasTurning = false; } 
+            API.StopSound(WARNING_SOUND_NAME); API.StopSound(WARNING_LINE_SOUND_NAME); 
+            if (s_instances.ContainsKey(Entity)) s_instances.Remove(Entity); 
+            string myName = _bossName;
+            if (!string.IsNullOrEmpty(myName) && s_instancesByName.ContainsKey(myName)) s_instancesByName.Remove(myName);
+            PlayerManager.UnregisterEnemy(this); 
+        }
     }
 }
