@@ -1593,22 +1593,32 @@ namespace Boom
                 glm::vec3 targetPosition = targetTransform.translate;
 
                 // Tick down the startup input lock
+                float dt = static_cast<float>(m_Context->DeltaTime);
                 if (cam.startLockDuration > 0.0f)
                 {
-                    cam.startLockDuration -= static_cast<float>(m_Context->DeltaTime);
+                    cam.startLockDuration -= dt;
                     if (cam.startLockDuration < 0.0f) cam.startLockDuration = 0.0f;
                 }
 
-                //camera movement (combine mouse and gamepad) — suppressed during startup lock
+                // camera movement (combine mouse and gamepad) — suppressed during startup lock
                 if (cam.startLockDuration <= 0.0f)
                 {
-                cam.currentYaw -= (mouseDelta.x + gamepadCamDelta.x) * cam.mouseSensitivity;
-                cam.currentPitch += (mouseDelta.y + gamepadCamDelta.y) * cam.mouseSensitivity;
-                cam.currentPitch = glm::clamp(cam.currentPitch, -85.f, 85.f);
+                    // Mouse: Displacement-based. Inherently frame-rate independent (total pixels = total rotation).
+                    float mouseX = mouseDelta.x * cam.mouseSensitivity;
+                    float mouseY = mouseDelta.y * cam.mouseSensitivity;
+
+                    // Gamepad: Rate-based. Must be scaled by dt. 
+                    // 80.0f is a balanced multiplier that feels responsive but controlled.
+                    float gpRateScale = 80.0f * dt;
+                    float gpX = gamepadCamDelta.x * cam.mouseSensitivity * gpRateScale;
+                    float gpY = gamepadCamDelta.y * cam.mouseSensitivity * gpRateScale;
+
+                    cam.currentYaw   -= (mouseX + gpX);
+                    cam.currentPitch += (mouseY + gpY);
+                    cam.currentPitch = glm::clamp(cam.currentPitch, -85.f, 85.f);
                 }
 
                 // zoom (combine scroll and gamepad dpad)
-                float dt = static_cast<float>(m_Context->DeltaTime);
                 cam.currentDistance -= (scrollDelta.y + gamepadZoomDelta * 5.0f * dt) * cam.scrollSensitivity;
                 cam.currentDistance = glm::clamp(cam.currentDistance, cam.minDistance, cam.maxDistance);
 

@@ -79,6 +79,17 @@ namespace GameScripts
             _clickedButtonID = 0;
             _selectedIndex = -1;
 
+            // Initialize controller flags to current state to prevent immediate triggers
+            if (API.IsGamepadConnected())
+            {
+                _wasDpadUp = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_DPAD_UP);
+                _wasDpadDown = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_DPAD_DOWN);
+                float stickY = API.GetGamepadAxis(API.GAMEPAD_AXIS_LEFT_Y);
+                _wasStickUp = stickY < -0.5f;
+                _wasStickDown = stickY > 0.5f;
+                _wasAButtonPressed = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A);
+            }
+
             // Note: In our engine, script OnStart runs BEFORE Entry.Start updates currentSceneName.
             // This means Entry._currentSceneName still holds the name of the scene we just LEFT.
             string sceneWeCameFrom = Entry._currentSceneName;

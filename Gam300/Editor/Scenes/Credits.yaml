@@ -22,7 +22,7 @@ ENTITIES:
         Scale: [0.331, 0.145999998, 0.0199999996]
     SpriteComponent:
       textureID: 16541366282253303416
-      color: [0.549019575, 0.26912722, 0.26912722, 1]
+      color: [0.854901969, 0.121568628, 0.121568628, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 0
@@ -187,7 +187,7 @@ ENTITIES:
         Scale: [0.310000002, 0.140000001, 0.0199999996]
     SpriteComponent:
       textureID: 16541366282253303416
-      color: [0.549019575, 0.26912722, 0.26912722, 1]
+      color: [0.854901969, 0.121568628, 0.121568628, 1]
       renderAs3D: false
   - InfoComponent:
       Parent: 9308802260659797843

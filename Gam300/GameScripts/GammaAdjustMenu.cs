@@ -33,6 +33,7 @@ namespace GameScripts
         private bool _wasStickUp = false;
         private bool _wasStickDown = false;
         private bool _wasAButton = false;
+        private bool _wasBButton = false;
 
         private float _buttonDelayTimer = 0f;
         private const float CLICK_DELAY_DURATION = 0.1f;
@@ -57,8 +58,20 @@ namespace GameScripts
             _buttonFX = new ButtonFX(_returnButtonID);
             _gammaSlider = new GammaSlider("GammaAdjust_Gamma_BG", "GammaAdjust_Gamma_Fill", "GammaAdjust_Gamma_Handle");
 
-            _selectedIndex = 1;
+            _selectedIndex = -1; // Start with nothing selected for controller
             _state = State.WaitingForMouseUp;
+
+            // Initialize controller flags to current state to prevent immediate triggers
+            if (API.IsGamepadConnected())
+            {
+                _wasDpadUp = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_DPAD_UP);
+                _wasDpadDown = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_DPAD_DOWN);
+                float stickY = API.GetGamepadAxis(API.GAMEPAD_AXIS_LEFT_Y);
+                _wasStickUp = stickY < -0.5f;
+                _wasStickDown = stickY > 0.5f;
+                _wasAButton = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A);
+                _wasBButton = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_B);
+            }
 
             API.SetScreenFadeAlpha(1f);
             _isFadingIn = true;
@@ -137,6 +150,25 @@ namespace GameScripts
             bool stickUp = stickY < -0.5f;
             bool stickDown = stickY > 0.5f;
             bool aPressed = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_A);
+            bool bPressed = API.IsGamepadButtonDown(API.GAMEPAD_BUTTON_B);
+
+            if (_selectedIndex == -1)
+            {
+                if ((dpadUp && !_wasDpadUp) || (dpadDown && !_wasDpadDown) ||
+                    (stickUp && !_wasStickUp) || (stickDown && !_wasStickDown))
+                {
+                    _selectedIndex = 1; // Default to slider
+                    UpdateVisuals();
+                }
+
+                _wasDpadUp = dpadUp;
+                _wasDpadDown = dpadDown;
+                _wasStickUp = stickUp;
+                _wasStickDown = stickDown;
+                _wasAButton = aPressed;
+                _wasBButton = bPressed;
+                return;
+            }
 
             if ((dpadUp && !_wasDpadUp) || (stickUp && !_wasStickUp))
             {
@@ -168,11 +200,15 @@ namespace GameScripts
             if (aPressed && !_wasAButton && _selectedIndex == 0)
                 StartClickDelay();
 
+            if (bPressed && !_wasBButton)
+                StartClickDelay();
+
             _wasDpadUp = dpadUp;
             _wasDpadDown = dpadDown;
             _wasStickUp = stickUp;
             _wasStickDown = stickDown;
             _wasAButton = aPressed;
+            _wasBButton = bPressed;
         }
 
         private void UpdateVisuals()
