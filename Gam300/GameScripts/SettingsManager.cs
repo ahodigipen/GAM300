@@ -42,29 +42,40 @@ namespace GameScripts
 
         public static void LoadSettings()
         {
-            if (!File.Exists(_path)) return;
+            float m = 1.0f;
+            float b = 1.0f;
+            float s = 1.0f;
+            float g = DEFAULT_GAMMA;
 
-            try
+            if (File.Exists(_path))
             {
-                string json = File.ReadAllText(_path);
+                try
+                {
+                    string json = File.ReadAllText(_path);
 
-                // Parse values using internal helper to avoid full JSON library requirements
-                float m = ParseJsonFloat(json, "Master", 1.0f);
-                float b = ParseJsonFloat(json, "BGM", 1.0f);
-                float s = ParseJsonFloat(json, "SFX", 1.0f);
-                float g = ParseJsonFloat(json, "Gamma", DEFAULT_GAMMA);
+                    // Parse values using internal helper to avoid full JSON library requirements
+                    m = ParseJsonFloat(json, "Master", 1.0f);
+                    b = ParseJsonFloat(json, "BGM", 1.0f);
+                    s = ParseJsonFloat(json, "SFX", 1.0f);
+                    g = ParseJsonFloat(json, "Gamma", DEFAULT_GAMMA);
 
-                API.SetGroupVolume("Master", m);
-                API.SetGroupVolume("Music", b);
-                API.SetGroupVolume("SFX", s);
-                API.SetGamma(g);
-
-                API.Log($"[Settings] Loaded Successfully | Master: {m:0.00} | BGM: {b:0.00} | SFX: {s:0.00} | Gamma: {g:0.00}");
+                    API.Log($"[Settings] Loaded Successfully | Master: {m:0.00} | BGM: {b:0.00} | SFX: {s:0.00} | Gamma: {g:0.00}");
+                }
+                catch
+                {
+                    API.Log("[Settings] Failed to load settings. Using defaults.");
+                }
             }
-            catch
+            else
             {
-                API.Log("[Settings] Failed to load settings.");
+                API.Log("[Settings] No save file found. Applying defaults.");
             }
+
+            // Always apply values (defaults or loaded) to ensure audio isn't left at 0 from a previous fade-out
+            API.SetGroupVolume("Master", m);
+            API.SetGroupVolume("Music", b);
+            API.SetGroupVolume("SFX", s);
+            API.SetGamma(g);
         }
 
         // Basic string-based parser for simple JSON key-value pairs.
