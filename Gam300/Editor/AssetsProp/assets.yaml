@@ -111,28 +111,6 @@ ASSETS:
       OpacityMapID: 0
       DoubleSided: false
   - Type: MATERIAL
-    UID: 295392599374634747
-    Name: Cushion Texture
-    Source: Cushion Texture
-    Properties:
-      Data:
-        emissive: [0, 0, 0]
-        albedo: [1, 1, 1]
-        roughness: 0.810000002
-        metallic: 0
-        occlusion: 0.800000012
-        opacity: 1
-        useWorldSpaceUV: false
-        textureScale: 1
-      AlbedoMapID: 2408227857109572219
-      NormalMapID: 5635053925849247296
-      RoughnessMapID: 6305281938924181745
-      MetallicMapID: 9033368879326419558
-      OcclusionMapID: 14205466992706534584
-      EmissiveMapID: 0
-      OpacityMapID: 0
-      DoubleSided: false
-  - Type: MATERIAL
     UID: 5492247716426239787
     Name: spikes
     Source: spikes
@@ -173,6 +151,28 @@ ASSETS:
       RoughnessMapID: 0
       MetallicMapID: 0
       OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
+  - Type: MATERIAL
+    UID: 295392599374634747
+    Name: Cushion Texture
+    Source: Cushion Texture
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.810000002
+        metallic: 0
+        occlusion: 0.800000012
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 2408227857109572219
+      NormalMapID: 5635053925849247296
+      RoughnessMapID: 6305281938924181745
+      MetallicMapID: 9033368879326419558
+      OcclusionMapID: 14205466992706534584
       EmissiveMapID: 0
       OpacityMapID: 0
       DoubleSided: false
@@ -1452,6 +1452,28 @@ ASSETS:
       EmissiveMapID: 0
       OpacityMapID: 0
       DoubleSided: true
+  - Type: MATERIAL
+    UID: 776825147894795468
+    Name: RED
+    Source: RED
+    Properties:
+      Data:
+        emissive: [0, 0, 0]
+        albedo: [1, 1, 1]
+        roughness: 0.400000006
+        metallic: 0.5
+        occlusion: 1
+        opacity: 1
+        useWorldSpaceUV: false
+        textureScale: 1
+      AlbedoMapID: 0
+      NormalMapID: 0
+      RoughnessMapID: 0
+      MetallicMapID: 0
+      OcclusionMapID: 0
+      EmissiveMapID: 0
+      OpacityMapID: 0
+      DoubleSided: false
   - Type: PHYSICS_MESH
     UID: 8633576229273901496
     Name: Wall_With_Hole (Tri)
@@ -1640,6 +1662,10 @@ ASSETS:
     UID: 3709588994413660334
     Name: Wall_Roof (Tri)
     Source: Resources/Physics/Wall_Roof_tri.pxm
+  - Type: PHYSICS_MESH
+    UID: 1525550456170862887
+    Name: tori_gate_model_uncloured (Tri)
+    Source: Resources/Physics/tori_gate_model_uncloured_tri.pxm
   - Type: PHYSICS_MESH
     UID: 1336452752375064697
     Name: Floor_With_Roof (Tri)
@@ -3857,10 +3883,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 5109979046645362819
     Name: EndMenuBackground
@@ -4803,10 +4829,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 4689470001490689997
     Name: GammaButton_Hover
@@ -6167,10 +6193,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 13508612934011980521
     Name: ReturnMenuButton_Clicked
@@ -6178,10 +6204,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 1497699413008869377
     Name: GammaButton
@@ -6189,10 +6215,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 2832688480571210620
     Name: GammaButton_Hover
@@ -6200,10 +6226,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: TEXTURE
     UID: 3597259883917124210
     Name: ConfirmButton_Clicked
@@ -6211,10 +6237,10 @@ ASSETS:
     Properties:
       Data:
         CompileAsCompressed: true
-        quality: 0.5
-        alphaThreshold: 128
-        mipLevel: 10
-        isGamma: true
+        quality: 0.949999988
+        alphaThreshold: 127
+        mipLevel: 0
+        isGamma: false
   - Type: SKYBOX
     UID: 4245843529762785392
     Name: NightSkyHDRI003_8K_HDR
@@ -8231,6 +8257,18 @@ ASSETS:
           Scale: [1, 1, 1]
         boundingRadius: 0
       HasJoints: false
+  - Type: MODEL
+    UID: 17854830378130587448
+    Name: string
+    Source: Resources/Models/Player/string.fbx
+    Properties:
+      Model Transform:
+        transform:
+          Translate: [0, 0, 0]
+          Rotate: [0, 0, 0]
+          Scale: [1, 1, 1]
+        boundingRadius: 0
+      HasJoints: false
   - Type: AUDIO
     UID: 5064117765438422255
     Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_5
@@ -8252,10 +8290,6 @@ ASSETS:
     Name: Kairos_Cave-Vuk_Loop
     Source: Resources/Audio/Kairos_Cave-Vuk_Loop.wav
   - Type: AUDIO
-    UID: 1512395405601140110
-    Name: playerWalk_05
-    Source: Resources/Audio/playerWalk_05.wav
-  - Type: AUDIO
     UID: 4631183016260115183
     Name: playerRun_04
     Source: Resources/Audio/playerRun_04.wav
@@ -8263,6 +8297,10 @@ ASSETS:
     UID: 16740961915277050147
     Name: ._Footsteps-Stealth-Sneaking-Wood-Socks_1
     Source: Resources/Audio/._Footsteps-Stealth-Sneaking-Wood-Socks_1.wav
+  - Type: AUDIO
+    UID: 1512395405601140110
+    Name: playerWalk_05
+    Source: Resources/Audio/playerWalk_05.wav
   - Type: AUDIO
     UID: 16323725886752035261
     Name: VO_Patrol_017
@@ -8979,6 +9017,10 @@ ASSETS:
     UID: 13827257400801925872
     Name: snap
     Source: Resources/Audio/snap.wav
+  - Type: AUDIO
+    UID: 6863557126314577561
+    Name: exclamation
+    Source: Resources/Audio/exclamation.wav
   - Type: ANIMATION
     UID: 4483381614930560572
     Name: mixamo.com
