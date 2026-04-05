@@ -103,7 +103,7 @@ namespace GameScripts
                 API.SetRotation(Entity, _initialRotation);
 
                 // SAFETY: Don't trigger if player is dead, in death anim, or respawning
-                if (HUD.HealthRatio <= 0 || PlayerMovement.IsRespawning) return;
+                if (HUD.HealthRatio <= 0 || PlayerMovement.IsRespawning || PlayerMovement.IsGodModeActive) return;
 
                 ulong pEntity = PlayerMovement.GetPlayerEntity();
                 if (pEntity != 0)

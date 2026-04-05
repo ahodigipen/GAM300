@@ -360,6 +360,13 @@ namespace GameScripts
             DebugCrouch($"OnCaughtByEnemy called! Enemy: {enemyEntity}");
             DebugLogCrouchState("OnCaughtByEnemy");
 
+            // Cheat: God Mode bypass
+            if (s_godMode)
+            {
+                DebugCrouch("  -> BLOCKED: God Mode is active!");
+                return;
+            }
+
             if (_isInvulnerable || _isRespawning)
             {
                 DebugCrouch($"  -> BLOCKED: _isInvulnerable={_isInvulnerable}, _isRespawning={_isRespawning}");

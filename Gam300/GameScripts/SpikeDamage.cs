@@ -48,6 +48,9 @@ namespace GameScripts
             // Only react when the player enters this trigger
             if (otherEntity != PlayerMovement.GetPlayerEntity()) return;
 
+            // Cheat: God Mode bypass
+            if (PlayerMovement.IsGodModeActive) return;
+
             API.Log("[SpikeDamage] Player collided with spikes!");
 
             if (inst._instantKill)

@@ -351,8 +351,11 @@ namespace GameScripts
                 s_wasGodModeOn     = false;
                 API.SetGameLogicPaused(false);
                 API.Log($"[TutorialManager] Tutorial closed for {capturedItem}. Game resumed.");
-            });
-        }
+
+                // Cheat: If God Mode is active, ensure text is shown (it might have been toggled during tutorial)
+                if (PlayerMovement.IsGodModeActive)
+                    PlayerMovement.ForceShowGodModeText();
+                });        }
 
         private static void HideCurrentSprite()
         {
