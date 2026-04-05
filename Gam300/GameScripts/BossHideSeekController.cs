@@ -434,6 +434,7 @@ namespace GameScripts
                     {
                         _isWaitingForWarningLine = false;
                         string randomWarningLine = WARNING_LINE_SOUND_PATHS[_warningRandom.Next(WARNING_LINE_SOUND_PATHS.Length)];
+                        // Use a unique name to allow multiple lines/instances to overlap naturally
                         string uniqueName = WARNING_LINE_SOUND_NAME + "_" + DateTime.Now.Ticks;
                         API.PlaySound(uniqueName, randomWarningLine, false);
                         API.SetSoundVolume(uniqueName, _warningLineVolume);

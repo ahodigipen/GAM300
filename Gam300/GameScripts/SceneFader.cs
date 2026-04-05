@@ -21,6 +21,7 @@ namespace GameScripts
         private static float _timer    = 0f;
         private static float _duration = 0.5f;
         private static string _pendingScene = "";
+        private static float _initialMasterVolume = 1.0f;
 
         // True while fading to black before a scene load — callers should block input.
         public static bool IsFadingOut => _state == State.FadingOut;
@@ -40,6 +41,9 @@ namespace GameScripts
             _duration     = duration;
             _timer        = 0f;
             _state        = State.FadingOut;
+
+            // Capture the current master volume as the starting point for the fade-out
+            _initialMasterVolume = API.GetGroupVolume("Master");
         }
 
         /// <summary>
@@ -54,6 +58,11 @@ namespace GameScripts
             _timer    = 0f;
             _state    = State.FadingIn;
             API.SetScreenFadeAlpha(1f);
+
+            // Capture the current master volume (set by SettingsManager.LoadSettings) as the target for the fade-in
+            _initialMasterVolume = API.GetGroupVolume("Master");
+            // Start silent
+            API.SetGroupVolume("Master", 0f);
         }
 
         /// <summary>
@@ -70,18 +79,34 @@ namespace GameScripts
             {
                 case State.FadingIn:
                     API.SetScreenFadeAlpha(1f - t);
+                    
+                    // Fade audio in from 0 to its initial volume
+                    API.SetGroupVolume("Master", _initialMasterVolume * t);
+
                     if (_timer >= _duration)
                     {
                         API.SetScreenFadeAlpha(0f);
+                        API.SetGroupVolume("Master", _initialMasterVolume);
                         _state = State.Idle;
                     }
                     break;
 
                 case State.FadingOut:
                     API.SetScreenFadeAlpha(t);
+
+                    // Fade audio out from its initial volume to 0
+                    API.SetGroupVolume("Master", _initialMasterVolume * (1f - t));
+
                     if (_timer >= _duration)
                     {
                         API.SetScreenFadeAlpha(1f);
+                        API.SetGroupVolume("Master", 0f);
+
+                        // CRITICAL: Stop the looping boss turn sound. 
+                        // If a scene transition occurs mid-turn, this sound might otherwise persist 
+                        // as a global sound and roll over into the next scene.
+                        API.StopSound("BossTurn");
+
                         string scene = _pendingScene;
                         _state = State.Idle;
                         _timer = 0f;

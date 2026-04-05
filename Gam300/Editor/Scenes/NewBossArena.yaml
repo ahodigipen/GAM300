@@ -2680,7 +2680,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 80.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -2725,7 +2725,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 80.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -2770,7 +2770,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 80.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -2815,7 +2815,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 80.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0.670000017, 0]
@@ -3042,7 +3042,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 80.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0.670000017, 0]
@@ -3132,7 +3132,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 80.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -3177,7 +3177,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 80.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -3222,7 +3222,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 80.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -3267,7 +3267,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 80.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -3312,7 +3312,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 80.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -3901,7 +3901,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 80.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -3946,7 +3946,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 80.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -3991,7 +3991,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 80.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -4036,7 +4036,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.FallingObject
-      ParamsJSON: "{\n  \"_fallSpeed\": 15.0\n}"
+      ParamsJSON: "{\n  \"_fallSpeed\": 80.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]

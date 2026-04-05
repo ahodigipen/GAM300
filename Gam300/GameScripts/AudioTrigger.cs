@@ -81,6 +81,12 @@ namespace GameScripts
 
         public void OnDestroy()
         {
+            // Stop looping sound if it's currently playing to prevent rollover
+            if (_loop && !string.IsNullOrWhiteSpace(_soundPath))
+            {
+                API.StopSound(_soundKey);
+            }
+
             if (s_instances.ContainsKey(Entity)) s_instances.Remove(Entity);
             API.UnregisterTriggerCallbacks(Entity);
         }
