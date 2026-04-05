@@ -3145,8 +3145,8 @@ ENTITIES:
       SortOrder: 179
     TransformComponent:
       Transform:
-        Translate: [-23.1394043, 27.4838104, 16.3034153]
-        Rotate: [-178, 81.2500153, 180]
+        Translate: [31.7181206, 43.3461266, 21.1179123]
+        Rotate: [-212.0625, 104.687515, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -3815,7 +3815,20 @@ ENTITIES:
       ModelSource: ""
       MaterialSource: ""
       OpacityOverride: 1
-  - InfoComponent:
+  - ColliderComponent:
+      Collider:
+        LocalPosition: [0.127083316, 5.0291605, -2.02170324]
+        LocalRotation: [0, 0, 0]
+        LocalScale: [0.500001371, 11.0389977, 10.0000038]
+        DynamicFriction: 0.5
+        StaticFriction: 0
+        Restitution: 0.100000001
+        IsTrigger: false
+        ShowPhysicsDebug: false
+        PhysicsMesh: 2061877446978793964
+        SurfaceType: DEFAULT
+        Type: BOX
+    InfoComponent:
       Parent: 0
       Name: StaircaseHandle
       UID: 770232246594019764
@@ -3825,6 +3838,16 @@ ENTITIES:
         Translate: [28.3988266, 30.3865089, 21.8385353]
         Rotate: [180, -1.67433381e-18, 180]
         Scale: [1.00000119, 1.11339915, 1.88202024]
+    RigidBodyComponent:
+      RigidBody:
+        Density: 1
+        Mass: 1
+        InitialVelocity: [0, 0, 0]
+        Previous Scale: [1.00000119, 1.11339915, 1.88202024]
+        FreezeRotationX: false
+        FreezeRotationY: false
+        FreezeRotationZ: false
+        Type: STATIC
     ModelComponent:
       ModelID: 14419591904238952119
       MaterialID: 1190950372665560984
