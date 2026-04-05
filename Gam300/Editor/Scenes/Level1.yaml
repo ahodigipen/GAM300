@@ -4025,8 +4025,8 @@ ENTITIES:
       SortOrder: 444
     TransformComponent:
       Transform:
-        Translate: [27.0272446, 10.6270819, 11.5535564]
-        Rotate: [165.875, 928.125, 180]
+        Translate: [26.495266, 31.0787888, 26.1004219]
+        Rotate: [145.5625, 900.6875, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -14025,15 +14025,15 @@ ENTITIES:
       SortOrder: 94
     TransformComponent:
       Transform:
-        Translate: [32.6948166, 5.4712491, 6.09309292]
+        Translate: [32.6948166, 5.45376253, 6.09309292]
         Rotate: [0, -0, 0]
-        Scale: [0.0190636702, 0.0190636702, 0.0190636702]
+        Scale: [0.0190636702, 0.020908352, 0.0190636702]
     RigidBodyComponent:
       RigidBody:
         Density: 1
         Mass: 1
         InitialVelocity: [0, 0, 0]
-        Previous Scale: [0.0190636702, 0.0190636702, 0.0190636702]
+        Previous Scale: [0.0190636702, 0.020908352, 0.0190636702]
         FreezeRotationX: false
         FreezeRotationY: false
         FreezeRotationZ: false
