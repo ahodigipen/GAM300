@@ -2814,8 +2814,8 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-40.9093285, 26.6099205, 3.34225225]
-        Rotate: [0, -0, 0]
-        Scale: [0.0292000007, 0.0292000007, 0.0292000007]
+        Rotate: [1.76863148e-06, 87.8799362, 1.77027096e-06]
+        Scale: [0.0291999839, 0.0292000007, 0.0291999839]
     ModelComponent:
       ModelID: 5551161321672247114
       MaterialID: 16305148809392937752
@@ -11037,8 +11037,8 @@ ENTITIES:
       SortOrder: 444
     TransformComponent:
       Transform:
-        Translate: [-4.56557465, 42.7974968, 0.601709604]
-        Rotate: [-179.625, 4044.875, 180]
+        Translate: [-22.6271706, 19.2075768, 56.7595062]
+        Rotate: [-199.875, 4515.9375, 180]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -12442,8 +12442,8 @@ ENTITIES:
     TransformComponent:
       Transform:
         Translate: [-24.6790676, 12.3425789, 74.0176468]
-        Rotate: [0, -0, 0]
-        Scale: [0.0292000007, 0.0292000007, 0.0292000007]
+        Rotate: [180, -85.9522781, 180]
+        Scale: [0.0291999709, 0.0292000007, 0.0291999709]
     ModelComponent:
       ModelID: 5551161321672247114
       MaterialID: 16305148809392937752
