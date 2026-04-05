@@ -635,6 +635,21 @@ namespace Boom
         internal extern static void Boom_API_SetParticleShapeRange(ulong handle, float range);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleShapeRadius(ulong handle, float radius);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleShapeSize(ulong handle, float x, float y, float z);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleLooping(ulong handle, bool looping);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleAdditiveBlend(ulong handle, bool additive);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Boom_API_SetParticleMaxParticles(ulong handle, int maxParticles);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static void Boom_API_SetParticleDirection(ulong handle, float x, float y, float z);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -1739,6 +1754,21 @@ namespace Boom
 
         /// <summary>Set spotlight volume range (how far the cone extends)</summary>
         public static void SetParticleShapeRange(ulong entity, float range) => Native.Boom_API_SetParticleShapeRange(entity, range);
+
+        /// <summary>Set sphere/cone radius for particle spawn shape</summary>
+        public static void SetParticleShapeRadius(ulong entity, float radius) => Native.Boom_API_SetParticleShapeRadius(entity, radius);
+
+        /// <summary>Set box half-extents for box spawn shape (shapeType=3)</summary>
+        public static void SetParticleShapeSize(ulong entity, float x, float y, float z) => Native.Boom_API_SetParticleShapeSize(entity, x, y, z);
+
+        /// <summary>Set whether the particle emitter loops</summary>
+        public static void SetParticleLooping(ulong entity, bool looping) => Native.Boom_API_SetParticleLooping(entity, looping);
+
+        /// <summary>Set additive blending (true for fire/sparks, false for smoke/dust)</summary>
+        public static void SetParticleAdditiveBlend(ulong entity, bool additive) => Native.Boom_API_SetParticleAdditiveBlend(entity, additive);
+
+        /// <summary>Set max particle pool size</summary>
+        public static void SetParticleMaxParticles(ulong entity, int maxParticles) => Native.Boom_API_SetParticleMaxParticles(entity, maxParticles);
 
         /// <summary>Set particle emission direction (local space)</summary>
         public static void SetParticleDirection(ulong entity, float x, float y, float z) => Native.Boom_API_SetParticleDirection(entity, x, y, z);

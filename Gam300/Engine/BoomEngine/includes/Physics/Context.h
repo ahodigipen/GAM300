@@ -1012,10 +1012,10 @@ namespace Boom {
             PxVec3 finalPos = idealCamPos;
 
             // 2. MULTI-RAY CLUSTER PROBE
-            // Use 5 rays to catch narrow edges and corners
-            float probeRadius = 0.35f;
+            // Use 9 rays (cardinal + diagonal) to catch walls at screen edges
+            float probeRadius = 0.75f;
             struct ProbeOffset { float x, y; };
-            ProbeOffset offsets[] = { {0,0}, {1,0}, {-1,0}, {0,1}, {0,-1} };
+            ProbeOffset offsets[] = { {0,0}, {1,0}, {-1,0}, {0,1}, {0,-1}, {0.707f,0.707f}, {-0.707f,0.707f}, {0.707f,-0.707f}, {-0.707f,-0.707f} };
             
             float closestHitDist = maxDist;
             bool anyHit = false;
@@ -1037,8 +1037,8 @@ namespace Boom {
             }
 
             if (anyHit) {
-                // Resolved position along the ray cluster
-                finalPos = targetPos + dir * PxMax(closestHitDist - 0.2f, minDist);
+                // Resolved position along the ray cluster — pull camera further from wall
+                finalPos = targetPos + dir * PxMax(closestHitDist - 0.5f, minDist);
             }
 
             // 3. OMNI-DIRECTIONAL REPULSION (Force Away)
@@ -1050,7 +1050,7 @@ namespace Boom {
                 dir, -dir                           // Forward/Back
             };
             
-            float personalSpace = 0.45f; // Radius around camera that must be clear
+            float personalSpace = 0.8f; // Radius around camera that must be clear
             for (int i = 0; i < 5; i++) { // Max 5 nudge iterations
                 bool adjusted = false;
                 for (auto& rDir : repulsionDirs) {

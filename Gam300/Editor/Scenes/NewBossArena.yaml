@@ -4267,18 +4267,18 @@ ENTITIES:
       SortOrder: 242
     TransformComponent:
       Transform:
-        Translate: [6.82594919, 34.3321304, -16.7600098]
-        Rotate: [146.750015, -342.69751, 179.999985]
+        Translate: [9.51226044, 16.4582901, 3.86294961]
+        Rotate: [151.000015, -357.69751, 179.999985]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
-        NearPlane: 0.00100000005
+        NearPlane: 0.479999989
         FarPlane: 935.47998
-        FOV: 100
+        FOV: 75
     ThirdPersonCameraComponent:
       Target UID: 15509033343906787136
       Offset: [0.00999999978, 4.55000019, -1.00999999]
-      Current Distance: 4
+      Current Distance: 3.5
       Min Distance: 1
       Max Distance: 5
       Current Yaw: -6843.49023
@@ -5230,7 +5230,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.BossDeathTrigger
-      ParamsJSON: "{\n  \"_bossName\": \"BOSS\",\n  \"_destroyAfterFade\": true,\n  \"_fadeDuration\": 3.0,\n  \"_oneShot\": true,\n  \"_particleDuration\": 2.5,\n  \"_particleRate\": 80.0,\n  \"_particleSpeedMax\": 6.0,\n  \"_particleSpeedMin\": 2.0\n}"
+      ParamsJSON: "{\n  \"_bossName\": \"BOSS\",\n  \"_destroyAfterFade\": true,\n  \"_fadeDuration\": 4.0,\n  \"_oneShot\": true,\n  \"_particleDuration\": 3.0999999046325684,\n  \"_particleRate\": 500.0,\n  \"_particleSpeedMax\": 41.599998474121094,\n  \"_particleSpeedMin\": 12.0\n}"
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -5253,7 +5253,7 @@ ENTITIES:
       Transform:
         Translate: [13.3559999, 10.8160763, 60]
         Rotate: [0, -0, 0]
-        Scale: [1, 2.5999999, 120]
+        Scale: [1, 15, 120]
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, 0]
@@ -5276,7 +5276,7 @@ ENTITIES:
       Transform:
         Translate: [-15.3439999, 10.8160763, 60]
         Rotate: [0, -0, 0]
-        Scale: [1, 2.5999999, 120]
+        Scale: [1, 15, 120]
   - InfoComponent:
       Parent: 0
       Name: right main wall

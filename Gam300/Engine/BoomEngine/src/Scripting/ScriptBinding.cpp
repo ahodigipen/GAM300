@@ -2775,6 +2775,51 @@ namespace Boom {
         if (pe) pe->shapeRange = range;
     }
 
+    static void ICALL_API_SetParticleShapeRadius(uint64_t handle, float radius)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) pe->shapeRadius = radius;
+    }
+
+    static void ICALL_API_SetParticleShapeSize(uint64_t handle, float x, float y, float z)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) pe->shapeSize = glm::vec3(x, y, z);
+    }
+
+    static void ICALL_API_SetParticleLooping(uint64_t handle, bool looping)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) pe->looping = looping;
+    }
+
+    static void ICALL_API_SetParticleAdditiveBlend(uint64_t handle, bool additive)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) pe->additiveBlend = additive;
+    }
+
+    static void ICALL_API_SetParticleMaxParticles(uint64_t handle, int maxParticles)
+    {
+        if (!s_Ctx) return;
+        entt::entity e = static_cast<entt::entity>(static_cast<uint32_t>(handle));
+        if (e == entt::null || !s_Ctx->scene.valid(e)) return;
+        auto* pe = s_Ctx->scene.try_get<ParticleEmitterComponent>(e);
+        if (pe) pe->maxParticles = maxParticles;
+    }
+
     static void ICALL_API_SetParticleDirection(uint64_t handle, float x, float y, float z)
     {
         if (!s_Ctx) return;
@@ -3052,6 +3097,11 @@ namespace Boom {
         mono_add_internal_call("Boom.Native::Boom_API_SetParticleShapeType", (const void*)ICALL_API_SetParticleShapeType);
         mono_add_internal_call("Boom.Native::Boom_API_SetParticleShapeAngle", (const void*)ICALL_API_SetParticleShapeAngle);
         mono_add_internal_call("Boom.Native::Boom_API_SetParticleShapeRange", (const void*)ICALL_API_SetParticleShapeRange);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleShapeRadius", (const void*)ICALL_API_SetParticleShapeRadius);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleShapeSize", (const void*)ICALL_API_SetParticleShapeSize);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleLooping", (const void*)ICALL_API_SetParticleLooping);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleAdditiveBlend", (const void*)ICALL_API_SetParticleAdditiveBlend);
+        mono_add_internal_call("Boom.Native::Boom_API_SetParticleMaxParticles", (const void*)ICALL_API_SetParticleMaxParticles);
         mono_add_internal_call("Boom.Native::Boom_API_SetParticleDirection", (const void*)ICALL_API_SetParticleDirection);
         mono_add_internal_call("Boom.Native::Boom_API_SetParticleLifetime", (const void*)ICALL_API_SetParticleLifetime);
         // Inventory Menu
