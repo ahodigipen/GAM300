@@ -264,6 +264,12 @@ namespace GameScripts
             s_eWasDown = true;
             s_aButtonWasDown = true;
 
+            s_wasInventoryOpen = Entry.IsInventoryOpen;
+            s_wasGodModeOn     = PlayerMovement.IsGodModeActive;
+            Entry.IsInventoryOpen = false;
+            UIManager.HideHUD();
+            CPTrigger.HideAllNotifications();
+
             FadeInEntity(s_genericEntities[0]);
             API.SetGameLogicPaused(true);
             API.SetCutsceneMode(true);
@@ -601,7 +607,7 @@ namespace GameScripts
 
         private static void CloseSequence()
         {
-            if (s_activeSequence == SequenceType.BossTransition)
+            if (s_activeSequence == SequenceType.BossTransition || s_activeSequence == SequenceType.Generic)
             {
                 UIManager.ShowHUD();
                 CPTrigger.ShowAllNotifications();
