@@ -1,5 +1,35 @@
 Version: 1.0
 ENTITIES:
+  - InfoComponent:
+      Parent: 0
+      Name: roomtone
+      UID: 14772668956002615993
+      SortOrder: 0
+    TransformComponent:
+      Transform:
+        Translate: [0, 0, 0]
+        Rotate: [0, 0, 0]
+        Scale: [1, 1, 1]
+    SoundComponent:
+      Entries:
+        - name: NewSound
+          filePaths:
+            - Resources/Audio/20.Room-Tone_SFX_Ambience_Loop.wav
+          loop: true
+          volume: 0.134000003
+          priority: 128
+          pitch: 1
+          stereoPan: 0
+          spatialBlend: 1
+          mute: false
+          playOnStart: true
+          triggerKey: -1
+          playOnMove: false
+          moveThreshold: 0.100000001
+          repeatInterval: 0.5
+          animTrigger: ""
+          minDistance: 1
+          maxDistance: 141.399994
   - ColliderComponent:
       Collider:
         LocalPosition: [0, 0, -1.11748898]
@@ -2618,11 +2648,11 @@ ENTITIES:
         Scale: [1, 1, 1]
     SoundComponent:
       Entries:
-        - name: NewSound
+        - name: BGM
           filePaths:
             - Resources/Audio/Deathless BGM 1 v2.wav
           loop: true
-          volume: 0.202999994
+          volume: 0.0250000004
           priority: 109
           pitch: 1
           stereoPan: 0
@@ -4267,8 +4297,8 @@ ENTITIES:
       SortOrder: 242
     TransformComponent:
       Transform:
-        Translate: [9.51226044, 16.4582901, 3.86294961]
-        Rotate: [151.000015, -357.69751, 179.999985]
+        Translate: [5.50942469, 16.4581833, 3.76054716]
+        Rotate: [167.625015, -358.01001, 179.999985]
         Scale: [2.5, 2.5, 2.5]
     CameraComponent:
       Camera:
@@ -4502,7 +4532,7 @@ ENTITIES:
     ScriptComponent:
       Enabled: true
       TypeName: GameScripts.BossHideSeekController
-      ParamsJSON: "{\n  \"_activationDelay\": 0.0,\n  \"_catchDelay\": 0.5,\n  \"_detectionRange\": 200.0,\n  \"_flipForward\": false,\n  \"_greenIntensitiesCSV\": \"50.0,1.0\",\n  \"_greenIntensity\": 25.0,\n  \"_invertForward\": true,\n  \"_lightNamesCSV\": \"LightMain,LightShadows\",\n  \"_redIntensitiesCSV\": \"50.0,1.0\",\n  \"_redIntensity\": 25.0,\n  \"_restingYaw\": 0.0,\n  \"_rotationInterval\": 6.0,\n  \"_rotationSpeed\": 120.0,\n  \"_startFacingForward\": false,\n  \"_targetNamesCSV\": \"Samurai\",\n  \"_turnSoundVolume\": 3.5,\n  \"_verticalTolerance\": 8.0,\n  \"_warningSoundVolume\": 3.5999999046325684,\n  \"_watchingYaw\": 180.0\n}"
+      ParamsJSON: "{\n  \"_activationDelay\": 0.0,\n  \"_catchDelay\": 0.5,\n  \"_detectionRange\": 200.0,\n  \"_flipForward\": false,\n  \"_greenIntensitiesCSV\": \"50.0,1.0\",\n  \"_greenIntensity\": 25.0,\n  \"_invertForward\": true,\n  \"_lightNamesCSV\": \"LightMain,LightShadows\",\n  \"_redIntensitiesCSV\": \"50.0,1.0\",\n  \"_redIntensity\": 25.0,\n  \"_restingYaw\": 0.0,\n  \"_rotationInterval\": 6.0,\n  \"_rotationSpeed\": 120.0,\n  \"_startFacingForward\": false,\n  \"_targetNamesCSV\": \"Samurai\",\n  \"_turnSoundVolume\": 0.4000000059604645,\n  \"_verticalTolerance\": 8.0,\n  \"_warningLineVolume\": 0.20000000298023224,\n  \"_warningSoundVolume\": 0.30000001192092896,\n  \"_watchingYaw\": 180.0\n}"
     SpotLightComponent:
       Light:
         Radiance: [1, 1, 1]

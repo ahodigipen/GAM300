@@ -34,7 +34,7 @@ namespace GameScripts
         private float _pivotToBottomOffset = 0.0f;
 
         [Boom.EditorExposed("Fall Sound Volume", "Volume of the falling sound (0.0 - 1.0)")]
-        private float _fallSoundVolume = 0.3f;
+        private float _fallSoundVolume = 0.05f;
 
         private bool _isFalling = false;
         private bool _isTelegraphing = false;

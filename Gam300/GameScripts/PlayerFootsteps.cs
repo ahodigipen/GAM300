@@ -21,7 +21,7 @@ namespace Boom
         private float _minSpeed = 1.0f;
 
         [EditorExposed("Footstep Volume", "Volume of footstep sounds", 0f, 1f, true)]
-        private float _footstepVolume = 0.65f;
+        private float _footstepVolume = 0.35f;
 
         // Runtime state
         private float _timeSinceLastFootstep = 0f;

@@ -160,7 +160,7 @@ namespace GameScripts
         private bool _wasTurning = false;
 
         [Boom.EditorExposed("Turn Sound Volume", "Volume of the turning sound (0.0 - 1.0)")]
-        private float _turnSoundVolume = 1.0f;
+        private float _turnSoundVolume = 0.4f;
 
         // Warning sound (plays when turning away from player - boss turning to rest)
         private const string WARNING_SOUND_NAME = "BossWarning";
@@ -188,10 +188,10 @@ namespace GameScripts
         };
 
         [Boom.EditorExposed("Warning Line Volume", "Volume of warning line when boss turns to player (0.0 - 1.0)")]
-        private float _warningLineVolume = 0.5f;
+        private float _warningLineVolume = 0.3f;
 
         [Boom.EditorExposed("Warning Sound Volume", "Volume of the warning sound (0.0 - 1.0)")]
-        private float _warningSoundVolume = 0.5f;
+        private float _warningSoundVolume = 0.3f;
 
         [Boom.EditorExposed("Warning Delay", "Seconds to wait after warning before turning towards player")]
         private float _warningDelay = 3.0f;
