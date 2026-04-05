@@ -294,8 +294,8 @@ namespace GameScripts
             }
 
             // Find seal entities (MainDoor only)
-            if (_isMainDoor)
-                FindSealEntities();
+            //if (_isMainDoor)
+            FindSealEntities();
 
             API.RegisterTriggerEnterCallback(Entity, OnTriggerEnter);
             API.RegisterTriggerExitCallback(Entity, OnTriggerExit);
@@ -431,7 +431,7 @@ namespace GameScripts
                             _closing = false;
 
                             // Start seal lift animation
-                            if (_isMainDoor) StartSealAnimation();
+                            StartSealAnimation();
 
                             // Vanish the lock entity
                             if (_lockEntity != 0 && API.HasTransform(_lockEntity))
@@ -571,7 +571,7 @@ namespace GameScripts
                     _eFadeTimer = (1f - _eCurrentAlpha) * E_FADE_DURATION;
                 }
 
-                if (_isMainDoor) StartSealAnimation();
+                StartSealAnimation();
 
                 _opening = true;
                 _closing = false;
