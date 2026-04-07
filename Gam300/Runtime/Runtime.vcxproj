@@ -25,7 +25,11 @@
       $(SolutionDir)Engine\BoomEngine\includes\common;
       $(SolutionDir)Engine\BoomEngine\Vendors\Detour\Include;
       $(SolutionDir)Engine\BoomEngine\Vendors\DetourCrowd\Include;
-      $(SolutionDir)Engine\BoomEngine\Vendors\DetourTileCache\Include
+      $(SolutionDir)Engine\BoomEngine\Vendors\DetourTileCache\Include;
+      $(SolutionDir)..\FMOD Studio API Windows\api\core\inc;
+      $(SolutionDir)..\FMOD Studio API Windows\api\studio\inc;
+      $(SolutionDir)..\mono\include\mono-2.0;
+      $(SolutionDir)..\Compressonator\include
     </EngineIncludeRoots>
   </PropertyGroup>
   <PropertyGroup Label="Globals">
