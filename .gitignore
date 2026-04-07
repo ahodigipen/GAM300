@@ -133,15 +133,13 @@ Gam300/Editor/AssetsTest.yaml
 Gam300/Editor/SceneTest.yaml
 
 
-# --- Allow Mono & managed DLLs to be versioned ---
-!GAM300/mono/
-!GAM300/mono/**
-!GAM300/mono/bin/
-!GAM300/mono/bin/**
-!GAM300/mono/lib/
-!GAM300/mono/lib/**
-!GAM300/mono/include/
-!GAM300/mono/include/**
+# --- Allow SDK folders at repo root ---
+!mono/
+!mono/**
+!FMOD Studio API Windows/
+!FMOD Studio API Windows/**
+!Compressonator/
+!Compressonator/**
 
 # --- Allow GameScripts.dll to be tracked ---
 !GAM300/Editor/GameScripts.dll
