@@ -33,7 +33,7 @@
   <!-- ===== Compressonator ===== -->
   <PropertyGroup Label="Compressonator">
     <CompressonatorRoot Condition="Exists('D:\dependencies\Compressonator')">D:\dependencies\Compressonator</CompressonatorRoot>
-    <CompressonatorRoot Condition="'$(CompressonatorRoot)'==''">$(SolutionDir)..\Compressonator</CompressonatorRoot>
+    <CompressonatorRoot Condition="'$(CompressonatorRoot)'==''">$(MSBuildThisFileDirectory)..\Compressonator</CompressonatorRoot>
     <CompressonatorInc>$(CompressonatorRoot)\include</CompressonatorInc>
     <CompressonatorLibDir>$(CompressonatorRoot)</CompressonatorLibDir>
     <CompressonatorDebugSuffix Condition="'$(Configuration)'=='Debug'">d</CompressonatorDebugSuffix>
@@ -42,7 +42,7 @@
   <!-- ===== FMOD ===== -->
   <PropertyGroup Label="FMOD">
     <FMODRoot Condition="Exists('D:\dependencies\FMOD Studio API Windows\api')">D:\dependencies\FMOD Studio API Windows\api</FMODRoot>
-    <FMODRoot Condition="'$(FMODRoot)'==''">$(SolutionDir)..\FMOD Studio API Windows\api</FMODRoot>
+    <FMODRoot Condition="'$(FMODRoot)'==''">$(MSBuildThisFileDirectory)..\FMOD Studio API Windows\api</FMODRoot>
     <FMODCoreInc>$(FMODRoot)\core\inc</FMODCoreInc>
     <FMODStudioInc>$(FMODRoot)\studio\inc</FMODStudioInc>
     <FMODCoreLibDir>$(FMODRoot)\core\lib\x64</FMODCoreLibDir>
@@ -53,7 +53,7 @@
   <!-- ===== MONO (sibling of Gam300: $(SolutionDir)..\mono ) ===== -->
   <PropertyGroup Label="Mono">
     <MonoRoot Condition="Exists('D:\dependencies\mono')">D:\dependencies\mono</MonoRoot>
-    <MonoRoot Condition="'$(MonoRoot)'==''">$(SolutionDir)..\mono</MonoRoot>
+    <MonoRoot Condition="'$(MonoRoot)'==''">$(MSBuildThisFileDirectory)..\mono</MonoRoot>
     <MonoInc>$(MonoRoot)\include\mono-2.0</MonoInc>
     <MonoLibDir>$(MonoRoot)\lib</MonoLibDir>
     <MonoBinDir>$(MonoRoot)\bin</MonoBinDir>
