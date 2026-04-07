@@ -21,15 +21,15 @@
   <PropertyGroup Label="RuntimePaths">
     <RuntimeRoot>$(ProjectDir)</RuntimeRoot>
     <EngineIncludeRoots>
-      $(SolutionDir)Engine\BoomEngine\includes;
-      $(SolutionDir)Engine\BoomEngine\includes\common;
-      $(SolutionDir)Engine\BoomEngine\Vendors\Detour\Include;
-      $(SolutionDir)Engine\BoomEngine\Vendors\DetourCrowd\Include;
-      $(SolutionDir)Engine\BoomEngine\Vendors\DetourTileCache\Include;
-      $(SolutionDir)..\FMOD Studio API Windows\api\core\inc;
-      $(SolutionDir)..\FMOD Studio API Windows\api\studio\inc;
-      $(SolutionDir)..\mono\include\mono-2.0;
-      $(SolutionDir)..\Compressonator\include
+      $(ProjectDir)..\Engine\BoomEngine\includes;
+      $(ProjectDir)..\Engine\BoomEngine\includes\common;
+      $(ProjectDir)..\Engine\BoomEngine\Vendors\Detour\Include;
+      $(ProjectDir)..\Engine\BoomEngine\Vendors\DetourCrowd\Include;
+      $(ProjectDir)..\Engine\BoomEngine\Vendors\DetourTileCache\Include;
+      $(ProjectDir)..\..\FMOD Studio API Windows\api\core\inc;
+      $(ProjectDir)..\..\FMOD Studio API Windows\api\studio\inc;
+      $(ProjectDir)..\..\mono\include\mono-2.0;
+      $(ProjectDir)..\..\Compressonator\include
     </EngineIncludeRoots>
   </PropertyGroup>
   <PropertyGroup Label="Globals">

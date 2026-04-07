@@ -31,12 +31,12 @@
     $(VendorsRoot)\imgui\misc\cpp
   </EditorIncludeRoots>
     <EngineIncludeRoots>
-    $(SolutionDir)Engine\BoomEngine\includes;
-    $(SolutionDir)Engine\BoomEngine\includes\common;
-    $(SolutionDir)..\FMOD Studio API Windows\api\core\inc;
-    $(SolutionDir)..\FMOD Studio API Windows\api\studio\inc;
-    $(SolutionDir)..\mono\include\mono-2.0;
-    $(SolutionDir)..\Compressonator\include
+    $(ProjectDir)..\Engine\BoomEngine\includes;
+    $(ProjectDir)..\Engine\BoomEngine\includes\common;
+    $(ProjectDir)..\..\FMOD Studio API Windows\api\core\inc;
+    $(ProjectDir)..\..\FMOD Studio API Windows\api\studio\inc;
+    $(ProjectDir)..\..\mono\include\mono-2.0;
+    $(ProjectDir)..\..\Compressonator\include
   </EngineIncludeRoots>
   </PropertyGroup>
   <PropertyGroup Label="Globals">
