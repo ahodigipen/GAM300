@@ -3,7 +3,12 @@ setlocal enabledelayedexpansion
 
 echo === Starting Installer Package Build ===
 
-set WORKSPACE=D:\jenkins-agent\workspace\Team 11\Team Obsession\Gam300
+if exist "D:\jenkins-agent\workspace\Team 11\Team Obsession\Gam300" (
+    set WORKSPACE=D:\jenkins-agent\workspace\Team 11\Team Obsession\Gam300
+) else (
+    cd /d "%~dp0.."
+    for /f "tokens=*" %%a in ('cd') do set WORKSPACE=%%a
+)
 set OUT_DIR=%WORKSPACE%\installer\output
 set ZIP_NAME=TeamObsession_GAM300_Build_%BUILD_NUMBER%.zip
 set ZIP_PATH=%WORKSPACE%\installer\%ZIP_NAME%
