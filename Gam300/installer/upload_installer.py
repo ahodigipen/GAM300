@@ -56,7 +56,7 @@ if mode == "github":
         sys.exit(1)
 
     # Update this to your actual GitHub repo
-    REPO_NAME = "InfamousJokim/BoomEngine"
+    REPO_NAME = "ahodigipen/GAM300"
 
     try:
         from github import Github, GithubException
