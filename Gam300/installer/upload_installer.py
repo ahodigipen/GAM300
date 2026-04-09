@@ -13,8 +13,17 @@ import os
 # ========================
 BUILD_NUMBER = os.environ.get("BUILD_NUMBER", "0")
 GIT_BRANCH   = os.environ.get("GIT_BRANCH", "unknown")
-WORKSPACE    = r"D:\jenkins-agent\workspace\Team 11\Team Obsession\Gam300"
-ENV_FILE     = os.path.join(WORKSPACE, "installer", "last_build.env")
+
+# Auto-detect workspace: Jenkins path if it exists, otherwise local
+JENKINS_WORKSPACE = r"D:\jenkins-agent\workspace\Team 11\Team Obsession\Gam300"
+LOCAL_WORKSPACE   = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+if os.path.exists(JENKINS_WORKSPACE):
+    WORKSPACE = JENKINS_WORKSPACE
+else:
+    WORKSPACE = LOCAL_WORKSPACE
+
+ENV_FILE = os.path.join(WORKSPACE, "installer", "last_build.env")
 
 # Read zip path/name written by build_installer.bat
 zip_path = None
